@@ -11,11 +11,42 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
 ## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
+This work in progress version supports Minecraft:BE `1.20.40 (Protocol Version 622)`.
+
+## Added
+
+- [#1407] Add `camel_spawn_egg`.
+- [#1410] Add some repice.
+- [#1413] Add ability to change Minecraft version in query.
+
+## Changed
+
+- [#1406] Updated shaped and shapeless crafting recipes.  
+- [#1411] Update `block_color.json` & `block_property_types.json`.
+
+## Fixes
+
+- [#1405] Fixed `Block Properties` for the new MC Version.
+- [#1410] Fix `chest pair`.
+
+## [1.20.40-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.40-r1) - 2023-10-26
+This work in progress version supports Minecraft:BE `1.20.40 (Protocol Version 622)`.
+
+## Added
+
+- [#1404] `PNX-1.20.40-r1` released.
+
+## Fixes
+
+- [#1400] Fix AmethystBud Block FACING_DIRECTION property.
+
+## [1.20.30-r2-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.30-r2) - 2023-10-19
 This work in progress version supports Minecraft:BE `1.20.30 (Protocol Version 618)`.
 
 ## Added
 
 - [#1379] Added Deepslate Generation.
+- [#1399] `PNX-1.20.30-r2` released.
 
 ## Changed
 
@@ -24,8 +55,12 @@ This work in progress version supports Minecraft:BE `1.20.30 (Protocol Version 6
 ## Fixes
 
 - [#1385] Fix colored terracotta blocks.
-- [#1386] Fix: anvil property operate.
+- [#1386] Fix anvil property operate.
 - [#1387] Fix furnace facing.
+- [#1392] Fix `EntityIntelligent` and `EmptyBehaviorGroup` from causing NPEs.
+- [#1393] Fix `PlayerToggleFlightEvent` trigge.
+- [#1395] Fix `Redstone Repeater` Direction Bug.
+- [#1397] Fix Directions for Logs.
 
 ## [1.20.30-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.30-r1) - 2023-9-25
 This work in progress version supports Minecraft:BE `1.20.30 (Protocol Version 618)`.
@@ -1915,6 +1950,14 @@ Fixes several anvil issues.
   <summary>1.20.30-PNX</summary>
 
    1. [#1.20.30-r1] PNX-1.20.30-r1 (Protocol Version 618)
+   2. [#1.20.30-r2] PNX-1.20.30-r2 (Protocol Version 618)
+
+</details>
+
+<details>
+  <summary>1.20.40-PNX</summary>
+
+   1. [#1.20.40-r1] PNX-1.20.40-r1 (Protocol Version 622)
 
 </details>
 
@@ -2775,6 +2818,19 @@ Need to switch languages?
 [#1386]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1386
 [#1387]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1387
 [#1390]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1390
+[#1392]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1392
+[#1393]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1393
+[#1395]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1395
+[#1397]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1397
+[#1399]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1399
+[#1400]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1400
+[#1404]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1404
+[#1405]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1405
+[#1406]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1406
+[#1407]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1407
+[#1410]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1410
+[#1411]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1411
+[#1413]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1413
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -2795,74 +2851,64 @@ Need to switch languages?
 <!--1.19.10-r1-PNX Protocol Version 534-->
 [#1.19.10-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.10-r1
 
-<!--1.19.20-r1-PNX Protocol Verison 544-->
+<!--1.19.20-PNX Protocol Verison 544-->
 [#1.19.20-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r1
-<!--1.19.20-r2-PNX Protocol Version 544-->
 [#1.19.20-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r2
-<!--1.19.20-r3-PNX Protocol Version 544-->
 [#1.19.20-r3]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r3
-<!--1.19.20-r4-PNX Protocol Version 544-->
 [#1.19.20-r4]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r4
-<!--1.19.20-r5-PNX Protocol Version 544-->
 [#1.19.20-r5]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r5
 
-<!--1.19.21-r1-PNX Protocol Version 545-->
+<!--1.19.21-PNX Protocol Version 545-->
 [#1.19.21-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r1
-<!--1.19.21-r2-PNX Protocol Version 545-->
 [#1.19.21-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r2
-<!--1.19.21-r3-PNX Protocol Version 545-->
 [#1.19.21-r3]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r3
-<!--1.19.21-r4-PNX Protocol Version 545-->
 [#1.19.21-r4]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r4
 
-<!--1.19.30-r1-PNX Protocol Version 554-->
+<!--1.19.30-PNX Protocol Version 554-->
 [#1.19.30-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.30-r1
-<!--1.19.30-r2-PNX Protocol Version 554-->
 [#1.19.30-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.30-r2
 
-<!--1.19.31-r1-PNX Protocol Version 554-->
+<!--1.19.31-PNX Protocol Version 554-->
 [#1.19.31-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.31-r1
 
-<!--1.19.40-r1-PNX Protocol Version 557-->
+<!--1.19.40-PNX Protocol Version 557-->
 [#1.19.40-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r1
-<!--1.19.40-r2-PNX Protocol Version 557-->
 [#1.19.40-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r2
-<!--1.19.40-r3-PNX Protocol Version 557-->
 [#1.19.40-r3]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r3
 
-<!--1.19.50-r1-PNX Protocol Version 560-->
+<!--1.19.50-PNX Protocol Version 560-->
 [#1.19.50-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.50-r1
-<!--1.19.50-r2-PNX Protocol Version 560-->
 [#1.19.50-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.50-r2
-<!--1.19.50-r3-PNX Protocol Version 560-->
 [#1.19.50-r3]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.50-r3
 
-<!--1.19.60-r1-PNX Protocol Version 567-->
+<!--1.19.60-PNX Protocol Version 567-->
 [#1.19.60-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.60-r1
-<!--1.19.62-r1-PNX Protocol Version 567-->
+<!--1.19.62-PNX Protocol Version 567-->
 [#1.19.62-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.62-r1
-<!--1.19.63-r1-PNX Protocol Version 568-->
+<!--1.19.63-PNX Protocol Version 568-->
 [#1.19.63-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.63-r1
 
-<!--1.19.70-r1-PNX Protocol Version 575-->
+<!--1.19.70-PNX Protocol Version 575-->
 [#1.19.70-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.70-r1
 [#1.19.70-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.70-r2
 
-<!--1.19.80-r1-PNX Protocol Version 582-->
+<!--1.19.80-PNX Protocol Version 582-->
 [#1.19.80-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.80-r1
 [#1.19.80-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.80-r2
 [#1.19.80-r3]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.80-r3
 <!--1.19.xx-PNX Version summary End-->
 
 <!--1.20.xx-PNX Version summary Start-->
-<!--1.20.0-r1-PNX Protocol Version 589-->
+<!--1.20.0-PNX Protocol Version 589-->
 [#1.20.0-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.0-r1
-<!--1.20.0-r2-PNX Protocol Version 589-->
 [#1.20.0-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.0-r2
-<!--1.20.10-r1-PNX Protocol Version 594-->
+<!--1.20.10-PNX Protocol Version 594-->
 [#1.20.10-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.10-r1
-<!--1.20.30-r1-PNX Protocol Version 618-->
+<!--1.20.30-PNX Protocol Version 618-->
 [#1.20.30-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.30-r1
+[#1.20.30-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.30-r2
+<!--1.20.40-PNX Protocol Version 622-->
+[#1.20.40-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.40-r1
 <!--1.20.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
