@@ -15,7 +15,7 @@ public class BlockAncientDebris extends BlockSolid {
 
     @Override
     public int getId() {
-        return ANCIENT_DERBRIS;
+        return ANCIENT_DEBRIS;
     }
 
     @Override

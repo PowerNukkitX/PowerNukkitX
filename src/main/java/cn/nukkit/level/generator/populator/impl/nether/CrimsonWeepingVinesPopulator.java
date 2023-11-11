@@ -40,7 +40,7 @@ public class CrimsonWeepingVinesPopulator extends Populator {
                     b == NETHERRACK || b == CRIMSON_NYLIUM || b == BLOCK_NETHER_WART_BLOCK ||
                             b == STILL_LAVA || b == FLOWING_LAVA ||
                             b == CRIMSON_FUNGUS || b == CRIMSON_ROOTS ||
-                            b == QUARTZ_ORE || b == NETHER_GOLD_ORE || b == ANCIENT_DERBRIS)) {
+                            b == QUARTZ_ORE || b == NETHER_GOLD_ORE || b == ANCIENT_DEBRIS)) {
                 break;
             }
         }
