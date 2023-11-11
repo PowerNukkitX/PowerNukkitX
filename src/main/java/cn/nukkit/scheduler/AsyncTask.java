@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Log4j2
 public abstract class AsyncTask implements Runnable {
 
-    public static final Queue<AsyncTask> FINISHED_LIST = new ConcurrentLinkedQueue<>();
+    public static final ConcurrentLinkedQueue<AsyncTask> FINISHED_LIST = new ConcurrentLinkedQueue<>();
 
     private Object result;
     private int taskId;
