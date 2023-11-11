@@ -389,7 +389,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public void drippingLiquid(){//features according to https://minecraft.fandom.com/zh/wiki/%E6%BB%B4%E6%B0%B4%E7%9F%B3%E9%94%A5
+    public void drippingLiquid(){//features according to https://zh.minecraft.wiki/w/%E6%BB%B4%E6%B0%B4%E7%9F%B3%E9%94%A5
         if (this.getBlock(this,1) instanceof BlockLiquid || !this.getThickness().equals("tip") || !this.isHanging()) {
             return;
         }
