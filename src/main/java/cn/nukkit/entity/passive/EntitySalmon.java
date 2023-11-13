@@ -60,12 +60,12 @@ public class EntitySalmon extends EntityFish {
     public Item[] getDrops() {
         int rand = Utils.rand(0, 3);
         if (this.isLarge()) {
-            //只有25%获得骨头 来自wiki https://minecraft.fandom.com/zh/wiki/%E9%B2%91%E9%B1%BC
+            //只有25%获得骨头 来自wiki https://zh.minecraft.wiki/w/%E9%B2%91%E9%B1%BC
             if (rand == 1) {
                 return new Item[]{Item.get(Item.BONE, 0, Utils.rand(1, 2)), Item.get(((this.isOnFire()) ? Item.COOKED_SALMON : Item.RAW_SALMON))};
             }
         } else if (!this.isLarge()) {
-            //只有25%获得骨头 来自wiki https://minecraft.fandom.com/zh/wiki/%E9%B2%91%E9%B1%BC
+            //只有25%获得骨头 来自wiki https://zh.minecraft.wiki/w/%E9%B2%91%E9%B1%BC
             if (rand == 1) {
                 return new Item[]{Item.get(Item.BONE), Item.get(((this.isOnFire()) ? Item.COOKED_SALMON : Item.RAW_SALMON))};
             }
