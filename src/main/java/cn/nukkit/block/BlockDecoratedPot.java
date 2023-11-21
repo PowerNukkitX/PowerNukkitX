@@ -52,7 +52,6 @@ public class BlockDecoratedPot extends BlockTransparentMeta implements Faceable,
         if (item.getNamedTag() != null) {
             Map<String, Tag> customData = item.getNamedTag().getTags();
             for (Map.Entry<String, Tag> tag : customData.entrySet()) {
-                System.out.println(tag.getKey() + " : " + tag.getValue());
                 nbt.put(tag.getKey(), tag.getValue());
             }
         }
