@@ -120,8 +120,8 @@ public class Nether extends Generator {
                 new OreType(Block.get(BlockID.FLOWING_LAVA), 32, 1, 0, 32, NETHERRACK),
                 new OreType(Block.get(BlockID.MAGMA), 32, 16, 26, 37, NETHERRACK),
                 new OreType(Block.get(BlockID.NETHER_GOLD_ORE), 5, 16, 10, 117, NETHERRACK),
-                new OreType(Block.get(BlockID.ANCIENT_DERBRIS), 2, 2, 8, 119, NETHERRACK),
-                new OreType(Block.get(BlockID.ANCIENT_DERBRIS), 1, 3, 8, 22, NETHERRACK),
+                new OreType(Block.get(BlockID.ANCIENT_DEBRIS), 2, 2, 8, 119, NETHERRACK),
+                new OreType(Block.get(BlockID.ANCIENT_DEBRIS), 1, 3, 8, 22, NETHERRACK),
         });
         this.populators.add(ore);
     }

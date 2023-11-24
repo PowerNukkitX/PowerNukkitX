@@ -1,13 +1,13 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 public class BlockPinkPetals extends BlockFlowable {
 
     public static final IntBlockProperty GROWTH = new IntBlockProperty("growth", false, 7, 0);
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.DIRECTION, GROWTH);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION, GROWTH);
 
     @Override
     public String getName() {
@@ -45,7 +45,7 @@ public class BlockPinkPetals extends BlockFlowable {
         if (!isSupportValid(block.down()))
             return false;
         if (player != null)
-            setPropertyValue(CommonBlockProperties.DIRECTION, player.getHorizontalFacing().getOpposite());
+            setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, player.getHorizontalFacing().getOpposite());
         return this.getLevel().setBlock(this, this);
     }
 
@@ -77,9 +77,11 @@ public class BlockPinkPetals extends BlockFlowable {
             } else {
                 getLevel().dropItem(this, Block.get(Item.PINK_PETALS).toItem());
             }
+            this.level.addParticle(new BoneMealParticle(this));
             item.count--;
             return true;
-        } else if (item.getId() == Item.PINK_PETALS && getPropertyValue(GROWTH) < 3) {
+        }
+        if (item.getId() == Item.fromString("minecraft:pink_petals").getId() && getPropertyValue(GROWTH) < 3) {
             setPropertyValue(GROWTH, getPropertyValue(GROWTH) + 1);
             getLevel().setBlock(this, this);
             item.count--;

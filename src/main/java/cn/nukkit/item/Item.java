@@ -1,5 +1,6 @@
 package cn.nukkit.item;
 
+import cn.nukkit.ItemSkullPotterySherd;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
@@ -457,6 +458,28 @@ public class Item implements Cloneable, BlockID, ItemID {
             list[SPYGLASS] = ItemSpyglass.class; //772
 
             list[SOUL_CAMPFIRE] = ItemCampfireSoul.class; //801
+            list[TORCHFLOWER_SEEDS] = ItemTorchflowerSeeds.class; // 802
+
+            list[ANGLER_POTTERY_SHERD] = ItemAnglerPotterySherd.class; //804
+            list[ARCHER_POTTERY_SHERD] = ItemArcherPotterySherd.class; //805
+            list[ARMS_UP_POTTERY_SHERD] = ItemArmsUpPotterySherd.class; //806
+            list[BLADE_POTTERY_SHERD] = ItemBladePotterySherd.class; //807
+            list[BREWER_POTTERY_SHERD] = ItemBrewerPotterySherd.class; //808
+            list[BURN_POTTERY_SHERD] = ItemBurnPotterySherd.class; //809
+            list[DANGER_POTTERY_SHERD] = ItemDangerPotterySherd.class; //810
+            list[EXPLORER_POTTERY_SHERD] = ItemExplorerPotterySherd.class; //811
+            list[FRIEND_POTTERY_SHERD] = ItemFriendPotterySherd.class; //812
+            list[HEART_POTTERY_SHERD] = ItemHeartPotterySherd.class; //813
+            list[HEARTBREAK_POTTERY_SHERD] = ItemHeartbreakPotterySherd.class; //814
+            list[HOWL_POTTERY_SHERD] = ItemHowlPotterySherd.class; //815
+            list[MINER_POTTERY_SHERD] = ItemMinerPotterySherd.class; //816
+            list[MOURNER_POTTERY_SHERD] = ItemMournerPotterySherd.class; //817
+            list[PLENTY_POTTERY_SHERD] = ItemPlentyPotterySherd.class; //818
+            list[PRIZE_POTTERY_SHERD] = ItemPrizePotterySherd.class; //819
+            list[SHEAF_POTTERY_SHERD] = ItemSheafPotterySherd.class; //820
+            list[SHELTER_POTTERY_SHERD] = ItemShelterPotterySherd.class; //821
+            list[SKULL_POTTERY_SHERD] = ItemSkullPotterySherd.class; //822
+            list[SNORT_POTTERY_SHERD] = ItemSnortPotterySherd.class; //823
 
 
             for (int i = 0; i < 256; ++i) {

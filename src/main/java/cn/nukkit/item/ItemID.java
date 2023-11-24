@@ -399,5 +399,96 @@ public interface ItemID {
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     int SOUL_CAMPFIRE = 801;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int TORCHFLOWER_SEEDS = 802;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int BRUSH = 803;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int ANGLER_POTTERY_SHERD = 804;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int ARCHER_POTTERY_SHERD= 805;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int ARMS_UP_POTTERY_SHERD = 806;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int BLADE_POTTERY_SHERD = 807;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int BREWER_POTTERY_SHERD = 808;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int BURN_POTTERY_SHERD = 809;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int DANGER_POTTERY_SHERD = 810;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int EXPLORER_POTTERY_SHERD = 811;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int FRIEND_POTTERY_SHERD = 812;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int HEART_POTTERY_SHERD = 813;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int HEARTBREAK_POTTERY_SHERD = 814;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int HOWL_POTTERY_SHERD = 815;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int MINER_POTTERY_SHERD = 816;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int MOURNER_POTTERY_SHERD = 817;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int PLENTY_POTTERY_SHERD = 818;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int PRIZE_POTTERY_SHERD = 819;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int SHEAF_POTTERY_SHERD = 820;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int SHELTER_POTTERY_SHERD = 821;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int SKULL_POTTERY_SHERD = 822;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int SNORT_POTTERY_SHERD = 823;
+
+
+
     //@PowerNukkitOnly int DEBUG_STICK = <Possible:> 802+;
 }

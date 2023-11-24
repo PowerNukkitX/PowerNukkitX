@@ -310,14 +310,14 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(DIRECTION);
+        return getPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION);
     }
 
     @Override
     @PowerNukkitOnly
     @Since("1.3.0.0-PN")
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(DIRECTION, face);
+        setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, face);
     }
 
     @Override

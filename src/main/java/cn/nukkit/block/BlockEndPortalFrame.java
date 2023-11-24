@@ -35,8 +35,6 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
     @Since("1.5.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION, END_PORTAL_EYE);
 
-    private static final int[] FACES = {2, 3, 0, 1};
-
     public BlockEndPortalFrame() {
         this(0);
     }
@@ -223,14 +221,14 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(DIRECTION);
+        return getPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION);
     }
     
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(DIRECTION, face);
+        setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, face);
     }
 
     @Override

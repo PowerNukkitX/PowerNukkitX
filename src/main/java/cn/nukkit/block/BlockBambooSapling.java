@@ -140,8 +140,10 @@ public class BlockBambooSapling extends BlockFlowable {
     }
 
     private boolean isSupportInvalid() {
-        int downId = down().getId();
-        return downId != DIRT && downId != GRASS && downId != SAND && downId != GRAVEL && downId != PODZOL;
+        return switch(down().getId()) {
+            case BAMBOO, DIRT, GRASS, SAND, GRAVEL, PODZOL, BAMBOO_SAPLING, MOSS_BLOCK -> false;
+            default -> true;
+        };
     }
 
     @Override
