@@ -23,6 +23,9 @@ public class LogUpdater implements Updater {
         }
 
         int newLogID = getNewID(state.getExactIntStorage(), blockId);
+        if (newLogID == blockId) {
+            return false;
+        }
         return section.setBlock(x, y, z, newLogID);
     }
 
