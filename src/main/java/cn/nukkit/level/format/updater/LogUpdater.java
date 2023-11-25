@@ -22,15 +22,15 @@ public class LogUpdater implements Updater {
             return false;
         }
 
-        int newLogID = getNewID(state.getExactIntStorage());
+        int newLogID = getNewID(state.getExactIntStorage(), blockId);
         return section.setBlock(x, y, z, newLogID);
     }
 
-    private int getNewID(int fromData) {
+    private int getNewID(int fromData, int originID) {
         return switch (fromData) {
             case 4, 5 -> // old block states for acacia and dark oak logs
                     162; // new block id for acacia log and dark oak log
-            default -> fromData;
+            default -> originID;
         };
     }
 }
