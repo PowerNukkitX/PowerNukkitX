@@ -34,7 +34,7 @@ public class ChunkUpdater {
     @Since("1.4.0.0-PN")
     @SuppressWarnings("java:S3400")
     public int getCurrentContentVersion() {
-        return 12;
+        return 13;
     }
 
     @PowerNukkitOnly
@@ -65,11 +65,23 @@ public class ChunkUpdater {
             if (section.getContentVersion() == 11) {
                 updated = upgradeFrameFromV11toV12(chunk, section, updated);
             }
+            if (section.getContentVersion() == 12) {
+                updated = upgradeFrameFromV12toV13(chunk, section, updated);
+            }
         }
 
         if (updated) {
             chunk.setChanged();
         }
+    }
+
+    private static boolean upgradeFrameFromV12toV13(BaseChunk chunk, ChunkSection section, boolean updated) {
+        updated |= walk(chunk, section, new GroupedUpdaters(
+                new FacingToCardinalUpdater(section),
+                new LogUpdater(section)
+        ));
+        section.setContentVersion(13);
+        return updated;
     }
 
     private static boolean upgradeFrameFromV11toV12(BaseChunk chunk, ChunkSection section, boolean updated) {
@@ -84,18 +96,18 @@ public class ChunkUpdater {
         return updated;
     }
 
-    private boolean upgradeWallsFromV8toV9(Level level, BaseChunk chunk, boolean updated, ChunkSection section) {
-        updated = walk(chunk, section, new WallUpdater(level, section)) || updated;
-        section.setContentVersion(9);
-        return updated;
-    }
-
     private boolean upgradeSnowLayersFromV9toV10(Level level, BaseChunk chunk, boolean updated, ChunkSection section) {
         updated |= walk(chunk, section, new GroupedUpdaters(
                 new NewLeafUpdater(section),
                 new SnowLayerUpdater(level, section)
         ));
         section.setContentVersion(10);
+        return updated;
+    }
+
+    private boolean upgradeWallsFromV8toV9(Level level, BaseChunk chunk, boolean updated, ChunkSection section) {
+        updated = walk(chunk, section, new WallUpdater(level, section)) || updated;
+        section.setContentVersion(9);
         return updated;
     }
 
