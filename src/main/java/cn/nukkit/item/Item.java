@@ -1,6 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.ItemSkullPotterySherd;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
