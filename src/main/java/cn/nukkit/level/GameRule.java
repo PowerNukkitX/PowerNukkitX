@@ -45,7 +45,8 @@ public enum GameRule {
     SPAWN_RADIUS("spawnRadius"),
     TNT_EXPLODES("tntExplodes"),
     @PowerNukkitOnly EXPERIMENTAL_GAMEPLAY("experimentalGameplay"),
-    SHOW_TAGS("showTags");
+    SHOW_TAGS("showTags"),
+    PLAYERS_SLEEPING_PERCENTAGE("playersSleepingPercentage");
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
