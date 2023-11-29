@@ -330,6 +330,14 @@ public interface ItemID {
     @Since("1.19.50-r1")
     int ECHO_SHARD = 647;
 
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int BAMBOO_CHEST_RAFT = 648;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int CHERRY_CHEST_BOAT = 649;
+
     @Since("1.6.0.0-PNX")
     @PowerNukkitXOnly
     int GLOW_BERRIES = 654;
