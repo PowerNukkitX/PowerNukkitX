@@ -8,6 +8,7 @@ import cn.nukkit.level.ChunkManager;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitRandom;
 
+import static cn.nukkit.block.BlockID.DEEPSLATE;
 import static cn.nukkit.block.BlockID.STONE;
 
 /**
@@ -88,7 +89,7 @@ public class OreType {
                                 double zVal = ((double) zSeg + 0.5D - scaleZ) / (randVec1 / 2.0D);
 
                                 if (xVal * xVal + yVal * yVal + zVal * zVal < 1.0D) {
-                                    if (level.getBlockIdAt(xSeg, ySeg, zSeg) != 0) {
+                                    if (level.getBlockIdAt(xSeg, ySeg, zSeg) == STONE || level.getBlockIdAt(xSeg, ySeg, zSeg) == DEEPSLATE) {
                                         level.setBlockAt(xSeg, ySeg, zSeg, blockId, blockData);
                                     }
                                 }
