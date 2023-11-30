@@ -30,7 +30,7 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
         Vector3 dispensePos = source.getDispensePosition();
 
         CompoundTag nbt = Entity.getDefaultNBT(dispensePos);
-        this.correctNBT(nbt);
+        this.correctNBT(nbt, item);
 
         Entity projectile = Entity.createEntity(getEntityType(), source.level.getChunk(dispensePos.getChunkX(), dispensePos.getChunkZ()), nbt);
 
@@ -86,6 +86,14 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
      * @param nbt tag
      */
     protected void correctNBT(CompoundTag nbt) {
+        this.correctNBT(nbt, null);
+    }
 
+    protected void correctNBT(CompoundTag nbt, Item item) {
+        if (item != null) {
+            if (item.getId() == Item.SPLASH_POTION || item.getId() == Item.LINGERING_POTION) {
+                nbt.putInt("PotionId", item.getDamage());
+            }
+        }
     }
 }
