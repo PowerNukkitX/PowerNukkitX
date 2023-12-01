@@ -19,7 +19,6 @@ import cn.nukkit.inventory.ItemTag;
 import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.item.randomitem.ItemEchoShard;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
