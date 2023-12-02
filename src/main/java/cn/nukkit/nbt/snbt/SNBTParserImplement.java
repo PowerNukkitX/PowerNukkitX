@@ -79,17 +79,19 @@ public class SNBTParserImplement implements SNBTConstants {
     }
 
     /**
-     * @Deprecated Use the constructor that takes a #java.nio.files.Path or just
+     * Use the constructor that takes a #java.nio.files.Path or just
      * a String (i.e. CharSequence) directly.
      */
+    @Deprecated
     public SNBTParserImplement(InputStream stream) {
         this(new InputStreamReader(stream));
     }
 
     /**
-     * @Deprecated Use the constructor that takes a #java.nio.files.Path or just
+     * Use the constructor that takes a #java.nio.files.Path or just
      * a String (i.e. CharSequence) directly.
      */
+    @Deprecated
     public SNBTParserImplement(Reader reader) {
         this(new SNBTLexer("input", reader));
     }

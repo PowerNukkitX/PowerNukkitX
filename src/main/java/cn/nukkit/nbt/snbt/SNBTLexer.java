@@ -100,7 +100,7 @@ public class SNBTLexer implements SNBTConstants {
     }
 
     /**
-     * @param inputSource just the naem of the input source (typically the filename)
+     * @param inputSource just the name of the input source (typically the filename)
      *                    that will be used in error messages and so on.
      * @param input       the input
      */
@@ -112,10 +112,13 @@ public class SNBTLexer implements SNBTConstants {
      * @param inputSource just the name of the input source (typically the filename) that
      *                    will be used in error messages and so on.
      * @param input       the input
-     * @param line        The line number at which we are starting for the purposes of location/error messages. In most
-     *                    normal usage, this is 1.
-     * @param column      number at which we are starting for the purposes of location/error messages. In most normal
-     *                    usages this is 1.
+     * @param lexState    the lexical state to use
+     * @param startingLine
+     * The line number at which we are starting for the purposes of location/error messages.
+     * In most normal usage, this is 1.
+     * @param startingColumn
+     * The column number at which we are starting for the purposes of location/error messages.
+     * In most normal usages this is 1.
      */
     public SNBTLexer(String inputSource, CharSequence input, LexicalState lexState, int startingLine, int startingColumn) {
         this.inputSource = inputSource;
@@ -130,25 +133,28 @@ public class SNBTLexer implements SNBTConstants {
     }
 
     /**
-     * @Deprecated Preferably use the constructor that takes a #java.nio.files.Path or simply a String,
+     * Preferably use the constructor that takes a #java.nio.files.Path or simply a String,
      * depending on your use case
      */
+    @Deprecated
     public SNBTLexer(Reader reader) {
         this("input", reader, LexicalState.SNBT, 1, 1);
     }
 
     /**
-     * @Deprecated Preferably use the constructor that takes a #java.nio.files.Path or simply a String,
+     * Preferably use the constructor that takes a #java.nio.files.Path or simply a String,
      * depending on your use case
      */
+    @Deprecated
     public SNBTLexer(String inputSource, Reader reader) {
         this(inputSource, reader, LexicalState.SNBT, 1, 1);
     }
 
     /**
-     * @Deprecated Preferably use the constructor that takes a #java.nio.files.Path or simply a String,
+     * Preferably use the constructor that takes a #java.nio.files.Path or simply a String,
      * depending on your use case
      */
+    @Deprecated
     public SNBTLexer(String inputSource, Reader reader, LexicalState lexState, int line, int column) {
         this(inputSource, readToEnd(reader), lexState, line, column);
         switchTo(lexState);
@@ -686,7 +692,7 @@ public class SNBTLexer implements SNBTConstants {
      * @param bytes   the raw byte array
      * @param charset The encoding to use to decode the bytes. If this is null, we check for the
      *                initial byte order mark (used by Microsoft a lot seemingly)
-     *                See: https://docs.microsoft.com/es-es/globalization/encoding/byte-order-markc
+     *        See: <a href="https://docs.microsoft.com/es-es/globalization/encoding/byte-order-markc">Microsoft docs</a>
      * @return A String taking into account the encoding passed in or in the byte order mark (if it was present).
      * And if no encoding was passed in and no byte-order mark was present, we assume the raw input
      * is in UTF-8.
