@@ -673,7 +673,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     /**
-     * @see #registerEntity(String, Class<? extends Entity>, boolean)
+     * @see #registerEntity(String, Class, boolean)
      */
     @Nullable
     public static Entity createEntity(@NotNull String name, @NotNull FullChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
@@ -725,7 +725,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     /**
-     * @see #registerEntity(EntityProvider<? extends Entity>, boolean)
+     * @see #registerEntity(EntityProvider, boolean)
      */
     @PowerNukkitXOnly
     @Since("1.19.21-r2")
@@ -974,7 +974,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     /**
-     * @see #playAnimationOnEntities(AnimateEntityPacket.Animation, Collection<Entity>, Collection<Player>)
+     * @see #playAnimationOnEntities(AnimateEntityPacket.Animation, Collection, Collection)
      */
     @PowerNukkitXOnly
     @Since("1.19.50-r3")

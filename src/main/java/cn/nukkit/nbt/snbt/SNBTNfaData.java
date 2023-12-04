@@ -28,7 +28,7 @@ class SNBTNfaData implements SNBTConstants {
     }
 
     /**
-     * @param the lexical state
+     * @param lexicalState the lexical state
      * @return the table of function pointers that implement the lexical state
      */
     static final NfaFunction[] getFunctionTableMap(LexicalState lexicalState) {
