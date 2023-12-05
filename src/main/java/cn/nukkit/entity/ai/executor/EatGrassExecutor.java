@@ -38,11 +38,11 @@ public class EatGrassExecutor implements IBehaviorExecutor {
                 }
             }
             if (entity instanceof EntitySheep sheep) {
-                if (sheep.sheared) {
+                if (sheep.isSheared()) {
                     sheep.growWool();
                     return false;
                 }
-                if (sheep.isBaby())
+                if (sheep.isBaby()) //TODO: Accelerated growth instead of instant growth
                     sheep.setBaby(false);
             }
             return false;
