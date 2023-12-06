@@ -111,13 +111,13 @@ public class QueryRegenerateEvent extends ServerEvent {
     }
 
     @PowerNukkitXOnly
-    @Since("1.20.40-r2")
+    @Since("1.20.50-r1")
     public String getVersion() {
         return this.version;
     }
 
     @PowerNukkitXOnly
-    @Since("1.20.40-r2")
+    @Since("1.20.50-r1")
     public void setVersion(String version) {
         this.version = version;
     }

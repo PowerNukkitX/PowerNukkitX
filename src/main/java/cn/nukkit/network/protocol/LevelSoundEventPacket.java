@@ -608,7 +608,14 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_AMBIENT_UNDERWATER_EXIT = 476;
     public static final int SOUND_BOTTLE_FILL = 477;
     public static final int SOUND_BOTTLE_EMPTY = 478;
-    public static final int SOUND_UNDEFINED = dynamic(479);
+    public static final int SOUND_CRAFTER_CRAFT = 479;
+    public static final int SOUND_CRAFTER_FAILED = 480;
+    public static final int SOUND_DECORATED_POT_INSERT = 481;
+    public static final int SOUND_DECORATED_POT_INSERT_FAILED = 482;
+    public static final int SOUND_CRAFTER_DISABLE_SLOT = 483;
+    public static final int SOUND_COPPER_BULB_ON = 490;
+    public static final int SOUND_COPPER_BULB_OFF = 491;
+    public static final int SOUND_UNDEFINED = dynamic(492);
 
     public int sound;
     public float x;

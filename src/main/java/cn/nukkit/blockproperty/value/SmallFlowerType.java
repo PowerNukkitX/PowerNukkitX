@@ -94,7 +94,7 @@ public enum SmallFlowerType {
     WITHER_ROSE("Wither Rose", DyeColor.BLACK, BlockID.WITHER_ROSE),
 
     @PowerNukkitXOnly
-    @Since("1.20.40-r2")
+    @Since("1.20.50-r1")
     TORCHFLOWER("Torchflower", DyeColor.ORANGE, BlockID.TORCHFLOWER);
 
     private final String englishName;

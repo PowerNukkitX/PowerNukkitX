@@ -156,7 +156,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
         this.raknet.send(socketAddress, payload);
     }
 
-    @PowerNukkitXDifference(since = "1.20.40-r2", info = "now Minecraft version in query same as in the query information")
+    @PowerNukkitXDifference(since = "1.20.50-r1", info = "now Minecraft version in query same as in the query information")
     @Override
     public void setName(String name) {
         QueryRegenerateEvent info = this.server.getQueryInformation();

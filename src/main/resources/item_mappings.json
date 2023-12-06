@@ -309,5 +309,22 @@
     "133": "minecraft:tadpole_spawn_egg",
     "134": "minecraft:allay_spawn_egg",
     "138": "minecraft:camel_spawn_egg"
+  },
+  "minecraft:planks": {
+    "0": "minecraft:oak_planks",
+    "1": "minecraft:spruce_planks",
+    "2": "minecraft:birch_planks",
+    "3": "minecraft:jungle_planks",
+    "4": "minecraft:acacia_planks",
+    "5": "minecraft:dark_oak_planks"
+  },
+  "minecraft:stone": {
+    "0": "minecraft:stone",
+    "1": "minecraft:granite",
+    "2": "minecraft:polished_granite",
+    "3": "minecraft:diorite",
+    "4": "minecraft:polished_diorite",
+    "5": "minecraft:andesite",
+    "6": "minecraft:polished_andesite"
   }
 }
