@@ -80,7 +80,7 @@ public abstract class BlockEntity extends Position {
     @Since("1.20.0-r2")
     public static final String CHISELED_BOOKSHELF = "ChiseledBookshelf";
     @PowerNukkitXOnly
-    @Since("1.20.40-r2")
+    @Since("1.20.50-r1")
     public static final String DECORATED_POT = "DecoratedPot";
 
     public static long count = 1;
