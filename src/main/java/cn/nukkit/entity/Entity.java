@@ -483,7 +483,6 @@ public abstract class Entity extends Location implements Metadatable {
     protected final Map<Integer, Effect> effects = new ConcurrentHashMap<>();
     protected final EntityMetadata dataProperties = new EntityMetadata()
             .putLong(DATA_FLAGS, 0)
-            .putByte(DATA_COLOR, 0)
             .putShort(DATA_AIR, 400)
             .putShort(DATA_MAX_AIR, 400)
             .putString(DATA_NAMETAG, "")
@@ -1306,7 +1305,8 @@ public abstract class Entity extends Location implements Metadatable {
         }
         this.scale = this.namedTag.getFloat("Scale");
         this.setDataProperty(new FloatEntityData(DATA_SCALE, scale), false);
-        this.setDataProperty(new ByteEntityData(DATA_COLOR, 0), false);
+
+        //Color is handled via EntityColor
 
         try {
             this.chunk.addEntity(this);

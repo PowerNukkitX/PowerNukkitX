@@ -22,11 +22,10 @@ public class ShearsDispenseBehavior extends DefaultDispenseBehavior {
                 1, 1, 1)
                 .offset(target.x, target.y, target.z);
         for (var entity : block.level.getCollidingEntities(bb)) {
-            if (entity instanceof EntityShearable shearable) {
-                shearable.shear();
-                item.useOn(entity);
-                return item.getDamage() >= item.getMaxDurability() ? null : item;
-            }
+            if (!(entity instanceof EntityShearable shearable)) { continue; }
+            if (!shearable.shear()) { continue; }
+            item.useOn(entity);
+            return item.getDamage() >= item.getMaxDurability() ? null : item;
         }
         return item;
     }
