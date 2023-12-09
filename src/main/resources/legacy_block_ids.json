@@ -1,4 +1,5 @@
 {
+    "minecraft:air": 0,
     "minecraft:acacia_button": 395,
     "minecraft:acacia_door": 196,
     "minecraft:acacia_fence": 830,
@@ -12,7 +13,6 @@
     "minecraft:acacia_trapdoor": 400,
     "minecraft:acacia_wall_sign": 446,
     "minecraft:activator_rail": 126,
-    "minecraft:air": 413,
     "minecraft:allow": 210,
     "minecraft:amethyst_block": 582,
     "minecraft:amethyst_cluster": 584,
@@ -124,7 +124,9 @@
     "minecraft:calibrated_sculk_sensor": 835,
     "minecraft:camera": 242,
     "minecraft:campfire": 464,
+    "minecraft:lava_cauldron": 465,
     "minecraft:candle": 667,
+    "minecraft:mangrove_propagule_hanging": 731,
     "minecraft:candle_cake": 684,
     "minecraft:carrots": 141,
     "minecraft:cartography_table": 455,
