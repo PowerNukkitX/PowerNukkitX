@@ -20,6 +20,9 @@ import cn.nukkit.nbt.tag.LinkedCompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.*;
 import com.google.common.base.Preconditions;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.*;
@@ -74,31 +77,19 @@ public class BlockStateRegistry {
     //</editor-fold>
 
     private void init() {
-        //<editor-fold desc="Loading block_ids.csv" defaultstate="collapsed">
-        try (InputStream stream = Server.class.getModule().getResourceAsStream("block_ids.csv")) {
+        //<editor-fold desc="Loading legacy_block_ids.json" defaultstate="collapsed">
+        try (InputStream stream = Server.class.getModule().getResourceAsStream("legacy_block_ids.json")) {
             if (stream == null) {
-                throw new AssertionError("Unable to locate block_ids.csv");
+                throw new AssertionError("Unable to locate legacy_block_ids.json");
             }
 
-            int count = 0;
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    count++;
-                    line = line.trim();
-                    if (line.isEmpty()) {
-                        continue;
-                    }
-                    String[] parts = line.split(",");
-                    Preconditions.checkArgument(parts.length == 2 || parts[0].matches("^[0-9]+$"));
-                    if (parts.length > 1 && parts[1].startsWith("minecraft:")) {
-                        int id = Integer.parseInt(parts[0]);
-                        blockIdToPersistenceName.put(id, parts[1]);
-                        persistenceNameToBlockId.put(parts[1], id);
-                    }
-                }
-            } catch (Exception e) {
-                throw new IOException("Error reading the line " + count + " of the block_ids.csv", e);
+            JsonObject json = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
+            for (String identifier : json.keySet()) {
+
+                int id = json.get(identifier).getAsInt();
+                persistenceNameToBlockId.put(identifier, id);
+                blockIdToPersistenceName.put(id, identifier);
+
             }
 
         } catch (IOException e) {
