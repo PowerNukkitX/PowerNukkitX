@@ -147,7 +147,7 @@ public class BlockStateRegistry {
             } else if (blockId == -1) {
                 if (RuntimeItems.getRuntimeMapping().fromIdentifier(name) == null) {
                     if (warned.add(name)) {
-                        log.warn("Unknown block id for the block named {}", name);
+                        //log.warn("Unknown block id for the block named {}", name);
                     }
                 }
                 registerStateId(state, runtimeId);

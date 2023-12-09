@@ -4,7 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
-@Since("1.20.40-r2")
+@Since("1.20.50-r1")
 public class ItemMinerPotterySherd extends ItemPotterySherd {
     public ItemMinerPotterySherd() {
         this(0, 1);

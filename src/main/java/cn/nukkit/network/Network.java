@@ -531,6 +531,7 @@ public class Network {
         this.registerPacket(ProtocolInfo.START_GAME_PACKET, StartGamePacket.class);
         this.registerPacket(ProtocolInfo.TAKE_ITEM_ENTITY_PACKET, TakeItemEntityPacket.class);
         this.registerPacket(ProtocolInfo.TEXT_PACKET, TextPacket.class);
+        this.registerPacket(ProtocolInfo.SERVER_POST_MOVE_POSITION, ServerPostMovePositionPacket.class);
         this.registerPacket(ProtocolInfo.UPDATE_ATTRIBUTES_PACKET, UpdateAttributesPacket.class);
         this.registerPacket(ProtocolInfo.UPDATE_BLOCK_PACKET, UpdateBlockPacket.class);
         this.registerPacket(ProtocolInfo.UPDATE_TRADE_PACKET, UpdateTradePacket.class);
@@ -616,6 +617,7 @@ public class Network {
         this.registerPacketNew(ProtocolInfo.TRIM_DATA, TrimDataPacket.class);
         this.registerPacketNew(ProtocolInfo.OPEN_SIGN, OpenSignPacket.class);
         this.registerPacketNew(ProtocolInfo.AGENT_ANIMATION, AgentAnimationPacket.class);
+        this.registerPacketNew(ProtocolInfo.TOGGLE_CRAFTER_SLOT_REQUEST, ToggleCrafterSlotRequestPacket.class);
 
         this.packetPool.trim();
     }

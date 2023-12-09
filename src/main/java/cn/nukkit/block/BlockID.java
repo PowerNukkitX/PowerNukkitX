@@ -951,11 +951,11 @@ public interface BlockID {
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     int NETHERITE_BLOCK = 525;
-    @Since("1.20.40-r2")
+    @Since("1.20.50-r1")
     @PowerNukkitXOnly
     int ANCIENT_DEBRIS = 526;
     @Deprecated
-    @DeprecationDetails(by = "PowerNukkitX", since = "1.20.40-r2",
+    @DeprecationDetails(by = "PowerNukkitX", since = "1.20.50-r1",
             replaceWith = "ANCIENT_DEBRIS", reason = "Wrong Minecraft block name")
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
