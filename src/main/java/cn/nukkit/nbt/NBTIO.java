@@ -80,7 +80,7 @@ public class NBTIO {
         Item item;
         if (tag.containsShort("id")) {
             int id = (short) tag.getShort("id");
-            item = fixItem(id, damage, amount);
+            item = Item.get(id, damage, amount);
             if (item == null) {
                 try {
                     item = Item.get(id, damage, amount);
