@@ -80,7 +80,7 @@ public class NBTIO {
         Item item;
         if (tag.containsShort("id")) {
             int id = (short) tag.getShort("id");
-            item = Item.get(id, damage, amount);
+            item = fixItem(id, damage, amount);
             if (item == null) {
                 try {
                     item = Item.get(id, damage, amount);
@@ -194,7 +194,7 @@ public class NBTIO {
 
 
     private static Item fixItem(int id, int damage, int count) {
-        //TODO 目前最好的解决方案|The best way to revert item mapping for now
+        //TODO
 
         switch (id) {
             case -552 -> {
