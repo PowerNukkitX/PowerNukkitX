@@ -197,6 +197,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>net.daporkchop</groupId>
+            <artifactId>leveldb-mcpe-jni</artifactId>
+            <version>0.0.10-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>org.cloudburstmc</groupId>
             <artifactId>nbt</artifactId>
             <version>3.0.2.Final</version>
@@ -205,6 +210,12 @@
             <groupId>org.cloudburstmc</groupId>
             <artifactId>block-state-updater</artifactId>
             <version>1.20.50-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.cloudburstmc</groupId>
+                    <artifactId>nbt</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!--   JMH     -->
         <dependency>
@@ -286,18 +297,6 @@
             <artifactId>snakeyaml</artifactId>
             <version>1.32</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powernukkit.bedrock.leveldb</groupId>
-            <artifactId>bedrock-leveldb</artifactId>
-            <version>0.11.0-PN</version>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.sentry</groupId>
@@ -464,6 +463,14 @@
                     <groupId>commons-io</groupId>
                     <artifactId>commons-io</artifactId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>jackson-databind</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -483,10 +490,11 @@
             <artifactId>annotations</artifactId>
             <version>12.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-to-slf4j -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j18-impl</artifactId>
-            <version>2.17.1</version>
+            <artifactId>log4j-to-slf4j</artifactId>
+            <version>2.22.0</version>
         </dependency>
         <dependency>
             <groupId>org.graalvm.sdk</groupId>
@@ -530,6 +538,12 @@
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
             <version>5.8.7</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>cn.powernukkitx</groupId>
