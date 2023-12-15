@@ -4,6 +4,7 @@ import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.utils.SemVersion;
 import com.google.common.primitives.Ints;
 
 import java.util.List;
@@ -23,6 +24,12 @@ public interface ProtocolInfo {
     List<Integer> SUPPORTED_PROTOCOLS = Ints.asList(CURRENT_PROTOCOL);
 
     String MINECRAFT_VERSION_NETWORK = dynamic("1.20.50");
+
+    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 20, 50, 0, 0);
+
+    int BLOCK_STATE_VERSION_NO_REVISION = (MINECRAFT_SEMVERSION.major() << 24) | //major
+            (MINECRAFT_SEMVERSION.minor() << 16) | //minor
+            (MINECRAFT_SEMVERSION.patch() << 8); //patch
 
     String MINECRAFT_VERSION = 'v' + MINECRAFT_VERSION_NETWORK;
 

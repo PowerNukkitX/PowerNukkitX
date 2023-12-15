@@ -4,8 +4,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.scheduler.AsyncTask;
 
@@ -28,21 +26,21 @@ public interface LevelProvider {
 
     Map<String, Object> getGeneratorOptions();
 
-    BaseFullChunk getLoadedChunk(int X, int Z);
+    Chunk getLoadedChunk(int X, int Z);
 
-    BaseFullChunk getLoadedChunk(long hash);
+    Chunk getLoadedChunk(long hash);
 
-    BaseFullChunk getChunk(int X, int Z);
+    Chunk getChunk(int X, int Z);
 
-    BaseFullChunk getChunk(int X, int Z, boolean create);
+    Chunk getChunk(int X, int Z, boolean create);
 
-    BaseFullChunk getEmptyChunk(int x, int z);
+    Chunk getEmptyChunk(int x, int z);
 
     void saveChunks();
 
     void saveChunk(int X, int Z);
 
-    void saveChunk(int X, int Z, FullChunk chunk);
+    void saveChunk(int X, int Z, Chunk chunk);
 
     void unloadChunks();
 
@@ -62,7 +60,7 @@ public interface LevelProvider {
 
     boolean isChunkLoaded(long hash);
 
-    void setChunk(int chunkX, int chunkZ, FullChunk chunk);
+    void setChunk(int chunkX, int chunkZ, Chunk chunk);
 
     String getName();
 
@@ -98,12 +96,11 @@ public interface LevelProvider {
 
     void setSpawn(Vector3 pos);
 
-    Map<Long, ? extends FullChunk> getLoadedChunks();
+    Map<Long, Chunk> getLoadedChunks();
 
     void doGarbageCollection();
 
     default void doGarbageCollection(long time) {
-
     }
 
     Level getLevel();

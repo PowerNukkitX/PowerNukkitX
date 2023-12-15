@@ -196,6 +196,16 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>org.cloudburstmc</groupId>
+            <artifactId>nbt</artifactId>
+            <version>3.0.2.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.cloudburstmc</groupId>
+            <artifactId>block-state-updater</artifactId>
+            <version>1.20.50-SNAPSHOT</version>
+        </dependency>
         <!--   JMH     -->
         <dependency>
             <groupId>org.openjdk.jmh</groupId>

@@ -20,6 +20,8 @@ import java.util.function.BiPredicate;
  */
 @ParametersAreNonnullByDefault
 public interface ChunkSection {
+    int SIZE = 16 * 16 * 16;
+
     int getY();
 
     @NotNull
