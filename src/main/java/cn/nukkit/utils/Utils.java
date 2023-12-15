@@ -8,6 +8,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
+import io.netty.buffer.ByteBuf;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
@@ -616,6 +617,44 @@ public class Utils {
         }
 
         return 0;
+    }
+
+    public static byte[] appendBytes(byte[] bytes1, byte[]... bytes2) {
+        int length = bytes1.length;
+        for (byte[] bytes : bytes2) {
+            length += bytes.length;
+        }
+
+        byte[] appendedBytes = new byte[length];
+        System.arraycopy(bytes1, 0, appendedBytes, 0, bytes1.length);
+        int index = bytes1.length;
+
+        for (byte[] b : bytes2) {
+            System.arraycopy(b, 0, appendedBytes, index, b.length);
+            index += b.length;
+        }
+        return appendedBytes;
+    }
+
+    /**
+     * Calculates the number of bit that the specified value convert to binary
+     *
+     * @param value the value
+     * @return the bits
+     */
+    public static byte computeRequiredBits(int value) {
+        if (value <= 1) return 1;
+        byte bits = 1;
+        while (value >= (1 << bits)) {
+            bits++;
+        }
+        return bits;
+    }
+
+    public static byte[] convertByteBuf2Array(ByteBuf buf) {
+        byte[] payload = new byte[buf.readableBytes()];
+        buf.readBytes(payload);
+        return payload;
     }
 
     public static final boolean[] isPlant = new boolean[2048];
