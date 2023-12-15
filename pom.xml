@@ -201,22 +201,6 @@
             <artifactId>leveldb-mcpe-jni</artifactId>
             <version>0.0.10-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>org.cloudburstmc</groupId>
-            <artifactId>nbt</artifactId>
-            <version>3.0.2.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.cloudburstmc</groupId>
-            <artifactId>block-state-updater</artifactId>
-            <version>1.20.50-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.cloudburstmc</groupId>
-                    <artifactId>nbt</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         <!--   JMH     -->
         <dependency>
             <groupId>org.openjdk.jmh</groupId>

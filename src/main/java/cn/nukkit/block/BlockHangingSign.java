@@ -25,9 +25,6 @@ import javax.annotation.Nullable;
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
 public abstract class BlockHangingSign extends BlockSignBase implements BlockEntityHolder<BlockEntityHangingSign> {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.FACING_DIRECTION, CommonBlockProperties.GROUND_SIGN_DIRECTION,
-            CommonBlockProperties.ATTACHED, CommonBlockProperties.HANGING);
-
     @NotNull
     @Override
     public BlockProperties getProperties() {

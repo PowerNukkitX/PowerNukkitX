@@ -3,7 +3,11 @@ package cn.nukkit.level.newformat.palette;
 import cn.nukkit.level.newformat.ChunkSection;
 import cn.nukkit.level.newformat.bitarray.BitArray;
 import cn.nukkit.level.newformat.bitarray.BitArrayVersion;
-import cn.nukkit.level.util.HashUtils;
+import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.stream.NBTInputStream;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.SemVersion;
 import com.google.common.base.Objects;
 import com.nukkitx.network.VarInts;
@@ -11,16 +15,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import it.unimi.dsi.fastutil.Pair;
-import org.cloudburstmc.blockstateupdater.BlockStateUpdaters;
-import org.cloudburstmc.blockstateupdater.util.tagupdater.CompoundTagUpdaterContext;
-import org.cloudburstmc.nbt.NBTInputStream;
-import org.cloudburstmc.nbt.NBTOutputStream;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtUtils;
-import org.cloudburstmc.nbt.util.stream.LittleEndianDataInputStream;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
@@ -82,9 +79,8 @@ public final class Palette<V> {
         byteBuf.writeByte(Palette.getPaletteHeader(this.bitArray.version(), false));
         for (int word : this.bitArray.words()) byteBuf.writeIntLE(word);
         byteBuf.writeIntLE(this.palette.size());
-        try (final ByteBufOutputStream bufOutputStream = new ByteBufOutputStream(byteBuf);
-             final NBTOutputStream outputStream = NbtUtils.createWriterLE(bufOutputStream)) {
-            for (V value : this.palette) outputStream.writeTag(serializer.serialize(value));
+        try (final ByteBufOutputStream bufOutputStream = new ByteBufOutputStream(byteBuf)) {
+            for (V value : this.palette) NBTIO.write(serializer.serialize(value), bufOutputStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -92,20 +88,19 @@ public final class Palette<V> {
 
     public void readFromStoragePersistent(ByteBuf byteBuf, RuntimeDataDeserializer<V> deserializer) {
         try (final ByteBufInputStream bufInputStream = new ByteBufInputStream(byteBuf);
-             final LittleEndianDataInputStream input = new LittleEndianDataInputStream(bufInputStream);
-             final NBTInputStream nbtInputStream = new NBTInputStream(input)) {
+             NBTInputStream nbtInputStream = new NBTInputStream(bufInputStream, ByteOrder.LITTLE_ENDIAN)) {
             final BitArrayVersion bversion = readBitArrayVersion(byteBuf);
             if (bversion == BitArrayVersion.V0) {
                 this.bitArray = bversion.createArray(ChunkSection.SIZE, null);
                 this.palette.clear();
-                addBlockPalette(byteBuf, deserializer, input, nbtInputStream);
+                addBlockPalette(byteBuf, deserializer, nbtInputStream);
                 this.onResize(BitArrayVersion.V2);
                 return;
             }
             readWords(byteBuf, bversion);
             final int paletteSize = byteBuf.readIntLE();
             for (int i = 0; i < paletteSize; i++) {
-                addBlockPalette(byteBuf, deserializer, input, nbtInputStream);
+                addBlockPalette(byteBuf, deserializer, nbtInputStream);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -114,12 +109,13 @@ public final class Palette<V> {
 
     private void addBlockPalette(ByteBuf byteBuf,
                                  RuntimeDataDeserializer<V> deserializer,
-                                 LittleEndianDataInputStream input,
-                                 NBTInputStream nbtInputStream) throws IOException {
+                                 NBTInputStream input) throws IOException {
         Pair<Integer, SemVersion> p = PaletteUtils.fastReadBlockHash(input, byteBuf);
         if (p.left() == null) {
-            NbtMap oldNbtMap = (NbtMap) nbtInputStream.readTag();
+            CompoundTag oldNbtMap = (CompoundTag) Tag.readNamedTag(input);
             SemVersion semVersion = p.right();
+
+            //embe
             int version = CompoundTagUpdaterContext.makeVersion(semVersion.major(), semVersion.minor(), semVersion.patch());
             NbtMap newNbtMap = BlockStateUpdaters.updateBlockState(oldNbtMap, version);
             var states = new TreeMap<>(newNbtMap.getCompound("states"));
@@ -127,23 +123,10 @@ public final class Palette<V> {
                     .putString("name", newNbtMap.getString("name"))
                     .putCompound("states", NbtMap.fromMap(states))
                     .build();
-            this.palette.add(deserializer.deserialize(fnv1a_32_nbt(tag)));
+            this.palette.add(deserializer.deserialize(HashUtils.fnv1a_32_nbt(tag)));
         } else {
             this.palette.add(deserializer.deserialize(p.left()));
         }
-    }
-
-    private int fnv1a_32_nbt(NbtMap tag) {
-        byte[] bytes;
-        try (var stream = new ByteArrayOutputStream();
-             var outputStream = NbtUtils.createWriterLE(stream)) {
-            outputStream.writeTag(tag);
-            bytes = stream.toByteArray();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return HashUtils.fnv1a_32(bytes);
     }
 
     public void writeToStorageRuntime(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer, Palette<V> last) {

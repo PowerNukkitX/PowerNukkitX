@@ -1,6 +1,5 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 
 import java.nio.charset.StandardCharsets;
@@ -8,11 +7,6 @@ import java.nio.charset.StandardCharsets;
 public class MinecraftNamespaceComparator {
     private static final long FNV1_64_INIT = 0xcbf29ce484222325L;
     private static final long FNV1_PRIME_64 = 1099511628211L;
-
-
-    public static int compareBlocks(Block blockA, Block blockB) {
-        return compare(blockA.getPersistenceName(), blockB.getPersistenceName());
-    }
 
     public static int compareItems(Item itemA, Item itemB) {
         return compare(itemA.getNamespaceId(), itemB.getNamespaceId());
@@ -55,6 +49,7 @@ public class MinecraftNamespaceComparator {
     }
 
     private static final int FNV1_32_INIT = 0x811c9dc5;
+
     private static final int FNV1_PRIME_32 = 0x01000193;
 
     public static int fnv1a_32(byte[] data) {

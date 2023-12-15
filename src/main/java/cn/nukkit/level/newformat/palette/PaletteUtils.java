@@ -1,12 +1,12 @@
 package cn.nukkit.level.newformat.palette;
 
-import cn.nukkit.level.util.HashUtils;
+import cn.nukkit.nbt.stream.NBTInputStream;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.SemVersion;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.Pair;
-import org.cloudburstmc.nbt.NbtType;
-import org.cloudburstmc.nbt.util.stream.LittleEndianDataInputStream;
 
 import java.io.IOException;
 
@@ -16,42 +16,41 @@ import java.io.IOException;
  * @author Cool_Loong
  */
 public class PaletteUtils {
-    public static Pair<Integer, SemVersion> fastReadBlockHash(LittleEndianDataInputStream input, ByteBuf byteBuf) {
+    public static Pair<Integer, SemVersion> fastReadBlockHash(NBTInputStream input, ByteBuf byteBuf) {
         try {
             byteBuf.markReaderIndex();
             int start = byteBuf.readerIndex();
             int typeId = input.readUnsignedByte();
-            NbtType<?> type = NbtType.byId(typeId);
-            input.skipBytes(input.readUnsignedShort()); // Root tag name
-            return deserialize(input, byteBuf, type, 16, start);
+            input.skipBytes(input.readUnsignedShort()); //Skip Root tag name
+            return deserialize(input, byteBuf, typeId, 16, start);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static Pair<Integer, SemVersion> deserialize(LittleEndianDataInputStream input,
+    private static Pair<Integer, SemVersion> deserialize(NBTInputStream input,
                                                          ByteBuf byteBuf,
-                                                         NbtType<?> type,
+                                                         int type,
                                                          int maxDepth,
                                                          int start
     ) throws IOException {
         if (maxDepth < 0) {
             throw new IllegalArgumentException("NBT compound is too deeply nested");
         }
-        switch (type.getEnum()) {
-            case END -> {
+        switch (type) {
+            case Tag.TAG_End -> {
             }
-            case BYTE -> input.skipBytes(1);
-            case SHORT -> input.skipBytes(2);
-            case INT, FLOAT -> input.skipBytes(4);
-            case LONG, DOUBLE -> input.skipBytes(8);
-            case BYTE_ARRAY -> {
+            case Tag.TAG_Byte -> input.skipBytes(1);
+            case Tag.TAG_Short -> input.skipBytes(2);
+            case Tag.TAG_Int, Tag.TAG_Float -> input.skipBytes(4);
+            case Tag.TAG_Long, Tag.TAG_Double -> input.skipBytes(8);
+            case Tag.TAG_Byte_Array -> {
                 input.skipBytes(input.readInt());
             }
-            case STRING -> input.skipBytes(input.readUnsignedShort());
-            case COMPOUND -> {
-                NbtType<?> nbtType;
-                while ((nbtType = NbtType.byId(input.readUnsignedByte())) != NbtType.END) {
+            case Tag.TAG_String -> input.skipBytes(input.readUnsignedShort());
+            case Tag.TAG_Compound -> {
+                int nbtType;
+                while ((nbtType = input.readUnsignedByte()) != Tag.TAG_End) {
                     String name;
                     int end = byteBuf.readerIndex();
                     name = input.readUTF();
@@ -73,16 +72,14 @@ public class PaletteUtils {
                     deserialize(input, byteBuf, nbtType, maxDepth - 1, start);
                 }
             }
-            case LIST -> {
+            case Tag.TAG_List -> {
                 int typeId = input.readUnsignedByte();
-                NbtType<?> listType = NbtType.byId(typeId);
                 int listLength = input.readInt();
                 for (int i = 0; i < listLength; i++) {
-                    deserialize(input, byteBuf, listType, maxDepth - 1, start);
+                    deserialize(input, byteBuf, typeId, maxDepth - 1, start);
                 }
             }
-            case INT_ARRAY -> input.skipBytes(input.readInt() * 4);
-            case LONG_ARRAY -> input.skipBytes(input.readInt() * 8);
+            case Tag.TAG_Int_Array -> input.skipBytes(input.readInt() * 4);
         }
         return null;
     }
