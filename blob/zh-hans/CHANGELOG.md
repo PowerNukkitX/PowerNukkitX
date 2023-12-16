@@ -19,16 +19,32 @@
 - [#1407] 添加`骆驼`刷怪蛋。
 - [#1410] 添加新的配方。
 - [#1413] 添加能在查询中更改Minecraft版本的功能。
+- [#1414] `1.20`特性更新。
+- [#1423] 为新版本添加了`ChunkUpdater`/`LogUpdater`/`FacingToCardinalDirectionUpdater` 。
+- [#1427] 添加更多的`船`。
+- [#1430] 添加`playersSleepingPercentage`游戏规则。
 
 ## 修改记录
 
 - [#1406] 更新了有形状和无形状的制作配方。
 - [#1411] 更新`block_color.json`和`block_property_types.json`。
+- [#1416] 更新`Minecraft Wiki`链接。
+- [#1431] 改进`PopulatorSugarcane`。
+- [#1433] JavaDoc内容修正。
 
 ## BUG修复
 
 - [#1405] 修复了新版本`Block Properties`的问题。
 - [#1410] 修复`chest pair`。
+- [#1414] `1.20.4`BUG修复。
+- [#1424] 修复`ChunkUpdater`。
+- [#1425] 修复`newID`与`原始ID`相同的问题。
+- [#1426] 修复max sense not taken in action。
+- [#1427] 修复`SkullSherd package`。
+- [#1428] 修复`弓箭`不会消失的问题。
+- [#1429] 修复`矿物`和`石头`类方块的生成问题。
+- [#1432] 修复`发射器`无法发射药水的问题。
+- [#1434] 修复了`羊毛颜色`和`剪切状态`相关的问题。 <!-- #1434 Master branch only  -->
 
 ## [1.20.40-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.40-r1) - 2023-10-26
 该版本目前支持了Minecraft:BE `1.20.40 (协议版本622)`.
@@ -2835,6 +2851,21 @@ Need to switch languages?
 [#1410]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1410
 [#1411]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1411
 [#1413]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1413
+[#1414]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1414
+[#1416]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1416
+[#1423]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1423
+[#1424]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1424
+[#1425]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1425
+[#1426]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1426
+[#1427]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1427
+[#1428]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1428
+[#1429]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1429
+[#1430]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1430
+[#1431]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1431
+[#1432]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1432
+[#1433]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1433
+<!-- #1434 Master branch only -->
+[#1434]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1434 
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
