@@ -3,11 +3,11 @@
 <h2>🌐Need to switch languages?&ensp;/&ensp;多语言文档</h2>
 
 [![Discord](https://img.shields.io/discord/944227466912870410?color=7289da&logo=discord&logoColor=white&style=flat-square)](https://discord.gg/BcPhZCVJHJ)
-[![English](https://img.shields.io/badge/English-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
-[![简体中文](https://img.shields.io/badge/简体中文-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hans/README.md)
-[![繁體中文](https://img.shields.io/badge/繁體中文-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
-[![ChangeLog](https://img.shields.io/badge/ChangeLog-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CHANGELOG.md)
+[![English](https://img.shields.io/badge/English-Click%20me-purple?style=flat-square)](/README.md)
+[![简体中文](https://img.shields.io/badge/简体中文-Click%20me-purple?style=flat-square)](/blob/zh-hans/README.md)
+[![繁體中文](https://img.shields.io/badge/繁體中文-Click%20me-purple?style=flat-square)](/blob/zh-hant/README.md)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](/LICENSE)
+[![ChangeLog](https://img.shields.io/badge/ChangeLog-blue?style=flat-square)](/CHANGELOG.md)
 [![FAQ](https://img.shields.io/badge/FAQ-blue?style=flat-square)](https://www.powernukkitx.com/doc/en-us/faq/common.html)
 [![PNX-DOC](https://img.shields.io/badge/PNX-DOC-blue?style=flat-square)](https://doc.powernukkitx.cn)
 [![Maven Central](https://img.shields.io/maven-central/v/cn.powernukkitx/powernukkitx.svg?label=Maven%20Central&style=flat-square)](https://search.maven.org/search?q=g:%22cn.powernukkitx%22%20AND%20a:%22powernukkitx%22)
@@ -109,7 +109,7 @@ compatibility.
   to generate electricity with love. If you encounter any problems when using PowerNukkitX, you should
   first [create an issue](https://github.com/PowerNukkitX/PowerNukkitX/issues) in this repository (please also note to
   read the rules in
-  the [Contribution Help Guide](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CONTRIBUTING.md)).
+  the [Contribution Help Guide](/CODE_OF_CONDUCT.md)).
 
 * We also recommend that you perform regular backups and other operations, and use the plug-ins made
   for [PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX) and
@@ -175,7 +175,7 @@ dependencies {
 
 🧐 Contributing
 ---
-Please read the [CONTRIBUTING](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CONTRIBUTING.md) guide before submitting any issue.  Issues with insufficient information or in the wrong format will be closed and will not be reviewed.
+Please read the [CONTRIBUTING](/CODE_OF_CONDUCT.md) guide before submitting any issue.  Issues with insufficient information or in the wrong format will be closed and will not be reviewed.
 
 ---
 
