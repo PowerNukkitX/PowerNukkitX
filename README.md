@@ -24,19 +24,18 @@ Join US:
 
 What's new in PowerNukkitX? Let's See：
 
-1. Support for 1.20.40 protocol.
-2. Support for 384 world height.
-3. Support for The Nether world, no need to install additional plugin.
-4. Support 3D biomes.<!--Custom dimension interface TODO-->
-5. Support for vanilla commands and command block.
-6. Built-in [Terra](https://github.com/PolyhedralDev/Terra) generator (if you have
+- Support for 1.20.40 protocol.
+- Support for 384 world height.
+- Support for The Nether world, no need to install additional plugin.
+- Support 3D biomes.<!--Custom dimension interface TODO-->
+- Support for vanilla commands and command block.
+- Built-in [Terra](https://github.com/PolyhedralDev/Terra) generator (if you have
    questions [click here to view](https://www.powernukkitx.com/doc/en-us/faq/terra.html)) .
-7. Support for writing plugins using the JavaScript language (development documentation can be
+- Support for writing plugins using the JavaScript language (development documentation can be
    found [here](https://www.powernukkitx.com/doc/en-us/dev/js/setup_dev_env.html)).
-8. Support custom blocks / items / entity (refinement in progress, [documentation](https://doc.powernukkitx.cn/) to be
+- Support custom blocks / items / entity (refinement in progress, [documentation](https://doc.powernukkitx.cn/) to be
    added).
-9. Original Entity AI framework, no need to install MobPlugin (under development, Not all creature completed).
-10. Todo...
+- Original Entity AI framework, no need to install MobPlugin (under development, Not all creature completed).
 
 ---
 

@@ -24,17 +24,16 @@
 
 PowerNukkitX的優勢：
 
-1. 支持1.20.30協議。
-2. 原生支持384限高（目前僅限主世界，其餘則為256格限高）。
-3. 原生支持地獄世界，無需另外安裝插件補丁等。
-4. 支持3D生物群系（完善中）。<!--自定義維度接口 TODO-->
-5. 原生支持香草命令和命令方塊等（完善中）。
-6. 內置[Terra](https://github.com/PolyhedralDev/Terra)地形生成器（如有問題[點此查看](https://doc.powernukkitx.cn/zh-cn/faq/terra.html)）。
-7. 支持使用JavaSrcipt語言編寫插件
+- 支持1.20.30協議。
+- 原生支持384限高（目前僅限主世界，其餘則為256格限高）。
+- 原生支持地獄世界，無需另外安裝插件補丁等。
+- 支持3D生物群系（完善中）。<!--自定義維度接口 TODO-->
+- 原生支持香草命令和命令方塊等（完善中）。
+- 內置[Terra](https://github.com/PolyhedralDev/Terra)地形生成器（如有問題[點此查看](https://doc.powernukkitx.cn/zh-cn/faq/terra.html)）。
+- 支持使用JavaSrcipt語言編寫插件
    （初步完成，可在[此處](https://doc.powernukkitx.cn/zh-cn/dev/js/setup_dev_env.html)查找開發文檔）。
-8. 支持自定義方塊 / 物品 / 實體（完善中，[檔案](https://doc.powernukkitx.cn)待補充）。
-9. 內置生物AI，無需安裝MobPlugin（開發中，未完善）。
-10. Todo...
+- 支持自定義方塊 / 物品 / 實體（完善中，[檔案](https://doc.powernukkitx.cn)待補充）。
+- 內置生物AI，無需安裝MobPlugin（開發中，未完善）。
 
 ---
 
