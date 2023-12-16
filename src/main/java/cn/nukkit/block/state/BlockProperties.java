@@ -7,11 +7,10 @@ import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import lombok.Getter;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -21,31 +20,30 @@ import java.util.stream.Collectors;
  * @author Cool_Loong
  */
 public final class BlockProperties {
-    @Getter
     private final String identifier;
     private final BlockPropertyType<?>[] properties;
-    private final Map<Integer, BlockStateImpl> blockStateHashMap;
-    private final Map<Long, BlockStateImpl> specialValueMap;
+    private final Map<Short, BlockStateImpl> specialValueMap;
     @Getter
-    private final BlockStateImpl defaultState;
+    private final BlockState defaultState;
     private final byte bitSize;
 
-    public static Long computeSpecialValue(BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
+    public static short computeSpecialValue(BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
         byte specialValueBits = 0;
         for (var value : propertyValues) specialValueBits += value.getPropertyType().getBitSize();
         return computeSpecialValue(specialValueBits, propertyValues);
     }
 
-    public static long computeSpecialValue(byte specialValueBits, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
-        long specialValue = 0;
+    //todo match vanilla
+    public static short computeSpecialValue(byte specialValueBits, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
+        short specialValue = 0;
         for (var value : propertyValues) {
-            specialValue |= ((long) value.getIndex()) << (specialValueBits - value.getPropertyType().getBitSize());
+            specialValue |= ((short) value.getIndex()) << (specialValueBits - value.getPropertyType().getBitSize());
             specialValueBits -= value.getPropertyType().getBitSize();
         }
         return specialValue;
     }
 
-    public BlockProperties(String identifier, BlockPropertyType<?>[] properties) {
+    public BlockProperties(String identifier, BlockPropertyType<?>... properties) {
         Identifier.assertValid(identifier);
         this.identifier = identifier;
         this.properties = properties;
@@ -53,30 +51,26 @@ public final class BlockProperties {
         byte specialValueBits = 0;
         for (var value : this.properties) specialValueBits += value.getBitSize();
         this.bitSize = specialValueBits;
-        if (this.bitSize <= 64) {
-            Pair<Map<Integer, BlockStateImpl>, BlockStateImpl> mapBlockStatePair = initStates(true);
-            this.blockStateHashMap = mapBlockStatePair.left();
+        if (this.bitSize <= 16) {
+            Pair<Map<Integer, BlockStateImpl>, BlockStateImpl> mapBlockStatePair = initStates();
+            var blockStateHashMap = mapBlockStatePair.left();
             this.defaultState = mapBlockStatePair.right();
-            this.specialValueMap = Collections.unmodifiableMap(
-                    blockStateHashMap
-                            .values()
-                            .stream()
-                            .collect(Collectors.toMap(BlockStateImpl::specialValue, Function.identity(), (v1, v2) -> v1, Long2ObjectOpenHashMap::new))
-            );
+            this.specialValueMap = blockStateHashMap
+                    .values()
+                    .stream()
+                    .collect(Collectors.toMap(BlockStateImpl::specialValue, Function.identity(), (v1, v2) -> v1, Short2ObjectOpenHashMap::new));
+            blockStateHashMap.values().forEach(BlockStateRegistry::register);
         } else {
-            Pair<Map<Integer, BlockStateImpl>, BlockStateImpl> mapBlockStatePair = initStates(false);
-            this.blockStateHashMap = mapBlockStatePair.left();
-            this.defaultState = mapBlockStatePair.right();
-            this.specialValueMap = null;
+            throw new IllegalArgumentException();
         }
     }
 
-    private Pair<Map<Integer, BlockStateImpl>, BlockStateImpl> initStates(boolean createSpecialValue) {
+    private Pair<Map<Integer, BlockStateImpl>, BlockStateImpl> initStates() {
         List<BlockPropertyType<?>> propertyTypeList = Arrays.stream(this.properties).toList();
         int size = propertyTypeList.size();
         if (size == 0) {
             BlockStateImpl blockState = new BlockStateImpl(identifier, new BlockPropertyType.BlockPropertyValue[]{});
-            return Pair.of(new Int2ObjectArrayMap<>(new int[]{defaultState.blockStateHash()}, new BlockStateImpl[]{blockState}), blockState);
+            return Pair.of(new Int2ObjectArrayMap<>(new int[]{blockState.blockStateHash()}, new BlockStateImpl[]{blockState}), blockState);
         }
         Int2ObjectOpenHashMap<BlockStateImpl> blockStates = new Int2ObjectOpenHashMap<>();
 
@@ -94,17 +88,7 @@ public final class BlockProperties {
                 BlockPropertyType<?> type = propertyTypeList.get(i);
                 values.add(type.tryCreateValue(type.getValidValues().get(indices[i])));
             }
-            BlockStateImpl state;
-            if (createSpecialValue) {
-                state = new BlockStateImpl(identifier, values.build().toArray(BlockPropertyType.BlockPropertyValue[]::new));
-            } else {
-                state = new BlockStateImpl(
-                        identifier,
-                        HashUtils.computeBlockStateHash(identifier, values.build()),
-                        values.build().toArray(BlockPropertyType.BlockPropertyValue[]::new),
-                        null
-                );
-            }
+            BlockStateImpl state = new BlockStateImpl(identifier, values.build().toArray(BlockPropertyType.BlockPropertyValue[]::new));
             blockStates.put(state.blockStateHash(), state);
 
             // find the rightmost array that has more
@@ -140,15 +124,11 @@ public final class BlockProperties {
         }
         if (defaultState == null)
             throw new IllegalArgumentException("cant find default block state for block: " + identifier);
-        return Pair.of(Collections.unmodifiableMap(blockStates), defaultState);
+        return Pair.of(blockStates, defaultState);
     }
 
-    public BlockState getBlockStateBySpecialValue(long specialValue) {
+    public BlockState getBlockState(short specialValue) {
         return specialValueMap.get(specialValue);
-    }
-
-    public BlockState getBlockStateByHash(int blockhash) {
-        return blockStateHashMap.get(blockhash);
     }
 
     public byte getSpecialValueBits() {

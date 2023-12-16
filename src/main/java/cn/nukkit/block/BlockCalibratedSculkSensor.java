@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
+import org.jetbrains.annotations.NotNull;
 
 //todo complete
 @PowerNukkitXOnly
@@ -14,6 +15,7 @@ public class BlockCalibratedSculkSensor extends BlockTransparentMeta {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION, SCULK_SENSOR_PHASE);
 
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;

@@ -33,6 +33,7 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
         return SCULK_SENSOR;
     }
 
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;

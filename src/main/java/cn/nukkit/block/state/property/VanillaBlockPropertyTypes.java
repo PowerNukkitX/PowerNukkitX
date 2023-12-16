@@ -1,10 +1,10 @@
 package cn.nukkit.block.state.property;
 
 import cn.nukkit.block.state.property.enums.*;
-import cn.nukkit.newblockstate.property.type.BlockPropertyType;
-import cn.nukkit.newblockstate.property.type.BooleanPropertyType;
-import cn.nukkit.newblockstate.property.type.EnumPropertyType;
-import cn.nukkit.newblockstate.property.type.IntPropertyType;
+import cn.nukkit.block.state.property.type.BlockPropertyType;
+import cn.nukkit.block.state.property.type.BooleanPropertyType;
+import cn.nukkit.block.state.property.type.EnumPropertyType;
+import cn.nukkit.block.state.property.type.IntPropertyType;
 
 import java.util.List;
 

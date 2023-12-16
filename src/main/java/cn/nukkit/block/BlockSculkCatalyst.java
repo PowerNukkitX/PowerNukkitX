@@ -16,6 +16,7 @@ public class BlockSculkCatalyst extends BlockSolid implements BlockEntityHolder<
     public static final BooleanBlockProperty BLOOM = new BooleanBlockProperty("bloom", false);
     public static final BlockProperties PROPERTIES = new BlockProperties(BLOOM);
 
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;

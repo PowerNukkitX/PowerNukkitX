@@ -12,7 +12,7 @@ import java.lang.reflect.Modifier;
  *
  * @author Cool_Loong
  */
-public final class BlockPropertiesRegistry {
+public final class BlockRegistry {
     private static final Object2ObjectOpenHashMap<String, BlockProperties> REGISTRY = new Object2ObjectOpenHashMap<>();
 
     public static void init() {

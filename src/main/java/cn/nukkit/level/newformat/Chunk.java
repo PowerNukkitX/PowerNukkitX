@@ -1,205 +1,466 @@
 package cn.nukkit.level.newformat;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.biome.Biome;
-import cn.nukkit.level.format.ChunkSection;
-import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
+import com.google.common.base.Preconditions;
 
 import java.io.IOException;
 import java.util.Map;
 
 /**
- * @author MagicDroidX (Nukkit Project)
+ * Allay Project 12/16/2023
+ *
+ * @author Cool_Loong
  */
-public interface Chunk {
-    boolean isSectionEmpty(int fY);
+public class Chunk implements IChunk {
+    protected final Map<Long, Entity> entities;
+    protected final Map<Long, BlockEntity> blockEntities;
+    protected final LevelProvider provider;
+    protected final ChunkSection[] sections;
+    protected final short[] heightMap;//256 size
+    protected ChunkState chunkState;
+    protected long changes;
+    private int x;
+    private int z;
+    private long hash;
 
-    ChunkSection getSection(int fY);
-
-    boolean setSection(int fY, ChunkSection section);
-
-    ChunkSection[] getSections();
-
-    int getX();
-
-    void setX(int x);
-
-    int getZ();
-
-    void setZ(int z);
-
-    default void setPosition(int x, int z) {
-        setX(x);
-        setZ(z);
+    private Chunk(
+            final int chunkX,
+            final int chunkZ,
+            final cn.nukkit.level.newformat.LevelProvider levelProvider
+    ) {
+        this.chunkState = ChunkState.NEW;
+        this.x = chunkX;
+        this.z = chunkZ;
+        this.provider = levelProvider;
+        this.sections = new ChunkSection[levelProvider.getDimensionData().getChunkSectionCount()];
+        this.heightMap = new short[256];
+        this.entities = new Long2ObjectNonBlockingMap<>();
+        this.blockEntities = new Long2ObjectNonBlockingMap<>();
     }
 
-    long getIndex();
-
-    LevelProvider getProvider();
-
-    void setProvider(LevelProvider provider);
-
-    default BlockState getBlockState(int x, int y, int z) {
-        return getBlockState(x, y, z, 0);
+    private Chunk(
+            final ChunkState state,
+            final int chunkX,
+            final int chunkZ,
+            final cn.nukkit.level.newformat.LevelProvider levelProvider,
+            final ChunkSection[] sections,
+            final short[] heightMap,
+            final Map<Long, Entity> entities,
+            final Map<Long, BlockEntity> blockEntities
+    ) {
+        this.chunkState = state;
+        this.x = chunkX;
+        this.z = chunkZ;
+        this.provider = levelProvider;
+        this.sections = sections;
+        this.heightMap = heightMap;
+        this.entities = entities;
+        this.blockEntities = blockEntities;
     }
 
-    default BlockState getBlockState(int x, int y, int z, int layer) {
+    @Override
+    public boolean isSectionEmpty(int fY) {
+        return false;
+    }
+
+    @Override
+    public ChunkSection getSection(int fY) {
         return null;
     }
 
-    BlockState getAndSetBlockState(int x, int y, int z, int layer, BlockState state);
-
-    default BlockState getAndSetBlockState(int x, int y, int z, BlockState state) {
-        return getAndSetBlockState(x, y, z, 0, state);
+    @Override
+    public boolean setSection(int fY, ChunkSection section) {
+        return false;
     }
 
-    boolean setBlockState(int x, int y, int z, BlockState state);
-
-    boolean setBlockState(int x, int y, int z, BlockState state, int layer);
-
-    int getBlockSkyLight(int x, int y, int z);
-
-    void setBlockSkyLight(int x, int y, int z, int level);
-
-    int getBlockLight(int x, int y, int z);
-
-    void setBlockLight(int x, int y, int z, int level);
-
-    int getHighestBlockAt(int x, int z);
-
-    int getHighestBlockAt(int x, int z, boolean cache);
-
-    int getHeightMap(int x, int z);
-
-    void setHeightMap(int x, int z, int value);
-
-    void recalculateHeightMap();
-
-    int recalculateHeightMapColumn(int chunkX, int chunkZ);
-
-    void populateSkyLight();
-
-    /**
-     * 获取子区块中某个特定位置的生物群系id
-     *
-     * @param x [0, 16)
-     * @param y [0, 16)
-     * @param z [0, 16)
-     * @return 特定位置的生物群系id
-     */
-    int getBiomeId(int x, int y, int z);
-
-    Biome getBiome(int x, int y, int z);
-
-    /**
-     * 设置子区块中某个特定位置的生物群系id
-     *
-     * @param x [0, 16)
-     * @param y [0, 16)
-     * @param z [0, 16)
-     */
-    void setBiome(int x, int y, int z, Biome biome);
-
-    boolean isLightPopulated();
-
-    void setLightPopulated(boolean value);
-
-    void setLightPopulated();
-
-    boolean isPopulated();
-
-    void setPopulated(boolean value);
-
-    void setPopulated();
-
-    boolean isGenerated();
-
-    void setGenerated(boolean value);
-
-    void setGenerated();
-
-    void addEntity(Entity entity);
-
-    void removeEntity(Entity entity);
-
-    void addBlockEntity(BlockEntity blockEntity);
-
-    void removeBlockEntity(BlockEntity blockEntity);
-
-    Map<Long, Entity> getEntities();
-
-    Map<Long, BlockEntity> getBlockEntities();
-
-    BlockEntity getTile(int x, int y, int z);
-
-    boolean isLoaded();
-
-    boolean load() throws IOException;
-
-    boolean load(boolean generate) throws IOException;
-
-    boolean unload() throws Exception;
-
-    boolean unload(boolean save) throws Exception;
-
-    boolean unload(boolean save, boolean safe) throws Exception;
-
-    void initChunk();
-
-    byte[] getBiomeIdArray();
-
-    short[] getHeightMapArray();
-
-    byte[] getBlockSkyLightArray();
-
-    byte[] getBlockLightArray();
-
-    byte[] toBinary();
-
-    byte[] toFastBinary();
-
-    boolean hasChanged();
-
-    void setChanged();
-
-    void setChanged(boolean changed);
-
-    long getBlockChanges();
-
-    boolean isBlockChangeAllowed(int x, int y, int z);
-
-    default void reObfuscateChunk() {
+    @Override
+    public ChunkSection[] getSections() {
+        return new ChunkSection[0];
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    default boolean isOverWorld() {
-        return getProvider().isOverWorld();
+    @Override
+    public int getX() {
+        return 0;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    default boolean isNether() {
-        return getProvider().isNether();
+    @Override
+    public void setX(int x) {
+
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    default boolean isTheEnd() {
-        return getProvider().isTheEnd();
+    @Override
+    public int getZ() {
+        return 0;
     }
 
-    class Entry {
-        public final int chunkX;
-        public final int chunkZ;
+    @Override
+    public void setZ(int z) {
 
-        public Entry(int chunkX, int chunkZ) {
+    }
+
+    @Override
+    public long getIndex() {
+        return 0;
+    }
+
+    @Override
+    public LevelProvider getProvider() {
+        return null;
+    }
+
+    @Override
+    public void setProvider(LevelProvider provider) {
+
+    }
+
+    @Override
+    public Block getBlock(int x, int y, int z, int layer) {
+        return null;
+    }
+
+    @Override
+    public Block getAndSetBlock(Block block, int layer) {
+        return null;
+    }
+
+    @Override
+    public boolean setBlock(Block block) {
+        return false;
+    }
+
+    @Override
+    public boolean setBlock(Block block, int layer) {
+        return false;
+    }
+
+    @Override
+    public int getBlockSkyLight(int x, int y, int z) {
+        return 0;
+    }
+
+    @Override
+    public void setBlockSkyLight(int x, int y, int z, int level) {
+
+    }
+
+    @Override
+    public int getBlockLight(int x, int y, int z) {
+        return 0;
+    }
+
+    @Override
+    public void setBlockLight(int x, int y, int z, int level) {
+
+    }
+
+    @Override
+    public int getHighestBlockAt(int x, int z) {
+        return 0;
+    }
+
+    @Override
+    public int getHighestBlockAt(int x, int z, boolean cache) {
+        return 0;
+    }
+
+    @Override
+    public int getHeightMap(int x, int z) {
+        return 0;
+    }
+
+    @Override
+    public void setHeightMap(int x, int z, int value) {
+
+    }
+
+    @Override
+    public void recalculateHeightMap() {
+
+    }
+
+    @Override
+    public int recalculateHeightMapColumn(int chunkX, int chunkZ) {
+        return 0;
+    }
+
+    @Override
+    public void populateSkyLight() {
+
+    }
+
+    @Override
+    public int getBiomeId(int x, int y, int z) {
+        return 0;
+    }
+
+    @Override
+    public void setBiomeId(int x, int y, int z, int biomeId) {
+
+    }
+
+    @Override
+    public Biome getBiome(int x, int y, int z) {
+        return null;
+    }
+
+    @Override
+    public void setBiome(int x, int y, int z, Biome biome) {
+
+    }
+
+    @Override
+    public boolean isLightPopulated() {
+        return false;
+    }
+
+    @Override
+    public void setLightPopulated(boolean value) {
+
+    }
+
+    @Override
+    public void setLightPopulated() {
+
+    }
+
+    @Override
+    public boolean isPopulated() {
+        return false;
+    }
+
+    @Override
+    public void setPopulated(boolean value) {
+
+    }
+
+    @Override
+    public void setPopulated() {
+
+    }
+
+    @Override
+    public boolean isGenerated() {
+        return false;
+    }
+
+    @Override
+    public void setGenerated(boolean value) {
+
+    }
+
+    @Override
+    public void setGenerated() {
+
+    }
+
+    @Override
+    public void addEntity(Entity entity) {
+
+    }
+
+    @Override
+    public void removeEntity(Entity entity) {
+
+    }
+
+    @Override
+    public void addBlockEntity(BlockEntity blockEntity) {
+
+    }
+
+    @Override
+    public void removeBlockEntity(BlockEntity blockEntity) {
+
+    }
+
+    @Override
+    public Map<Long, Entity> getEntities() {
+        return null;
+    }
+
+    @Override
+    public Map<Long, BlockEntity> getBlockEntities() {
+        return null;
+    }
+
+    @Override
+    public BlockEntity getTile(int x, int y, int z) {
+        return null;
+    }
+
+    @Override
+    public boolean isLoaded() {
+        return false;
+    }
+
+    @Override
+    public boolean load() throws IOException {
+        return false;
+    }
+
+    @Override
+    public boolean load(boolean generate) throws IOException {
+        return false;
+    }
+
+    @Override
+    public boolean unload() throws Exception {
+        return false;
+    }
+
+    @Override
+    public boolean unload(boolean save) throws Exception {
+        return false;
+    }
+
+    @Override
+    public boolean unload(boolean save, boolean safe) throws Exception {
+        return false;
+    }
+
+    @Override
+    public void initChunk() {
+
+    }
+
+    @Override
+    public byte[] getBiomeIdArray() {
+        return new byte[0];
+    }
+
+    @Override
+    public short[] getHeightMapArray() {
+        return new short[0];
+    }
+
+    @Override
+    public byte[] getBlockSkyLightArray() {
+        return new byte[0];
+    }
+
+    @Override
+    public byte[] getBlockLightArray() {
+        return new byte[0];
+    }
+
+    @Override
+    public boolean hasChanged() {
+        return false;
+    }
+
+    @Override
+    public void setChanged() {
+
+    }
+
+    @Override
+    public void setChanged(boolean changed) {
+
+    }
+
+    @Override
+    public long getBlockChanges() {
+        return 0;
+    }
+
+    @Override
+    public boolean isBlockChangeAllowed(int x, int y, int z) {
+        return false;
+    }
+
+    public static class Builder implements IChunkBuilder {
+        ChunkState state;
+        int chunkZ;
+        int chunkX;
+        cn.nukkit.level.newformat.LevelProvider levelProvider;
+        ChunkSection[] sections;
+        short[] heightMap;
+        Map<Long, Entity> entities;
+        Map<Long, BlockEntity> blockEntities;
+
+        public Builder chunkX(int chunkX) {
             this.chunkX = chunkX;
+            return this;
+        }
+
+        @Override
+        public int getChunkX() {
+            return chunkX;
+        }
+
+        public Builder chunkZ(int chunkZ) {
             this.chunkZ = chunkZ;
+            return this;
+        }
+
+        @Override
+        public int getChunkZ() {
+            return chunkZ;
+        }
+
+        public Builder state(ChunkState state) {
+            this.state = state;
+            return this;
+        }
+
+        public Builder levelProvider(cn.nukkit.level.newformat.LevelProvider levelProvider) {
+            this.levelProvider = levelProvider;
+            return this;
+        }
+
+        @Override
+        public DimensionData getDimensionData() {
+            Preconditions.checkNotNull(levelProvider);
+            return levelProvider.getDimensionData();
+        }
+
+        public Builder sections(ChunkSection[] sections) {
+            this.sections = sections;
+            return this;
+        }
+
+        public Builder heightMap(short[] heightMap) {
+            this.heightMap = heightMap;
+            return this;
+        }
+
+        public Builder entities(Map<Long, Entity> entities) {
+            this.entities = entities;
+            return this;
+        }
+
+        public Builder blockEntities(Map<Long, BlockEntity> blockEntities) {
+            this.blockEntities = blockEntities;
+            return this;
+        }
+
+        public Chunk build() {
+            Preconditions.checkNotNull(levelProvider);
+            if (state == null) state = ChunkState.NEW;
+            if (sections == null) sections = new ChunkSection[levelProvider.getDimensionData().getChunkSectionCount()];
+            if (heightMap == null) heightMap = new short[256];
+            if (entities == null) entities = new Long2ObjectNonBlockingMap<>();
+            if (blockEntities == null) blockEntities = new Long2ObjectNonBlockingMap<>();
+            return new Chunk(
+                    state,
+                    chunkX,
+                    chunkZ,
+                    levelProvider,
+                    sections,
+                    heightMap,
+                    entities,
+                    blockEntities
+            );
+        }
+
+        public Chunk emptyChunk(int chunkX, int chunkZ) {
+            Preconditions.checkNotNull(levelProvider);
+            return new Chunk(chunkX, chunkZ, levelProvider);
         }
     }
 }

@@ -1,124 +1,123 @@
 package cn.nukkit.level.newformat;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.block.Block;
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.format.LevelProvider;
-import cn.nukkit.math.BlockVector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.utils.BinaryStream;
-import org.jetbrains.annotations.NotNull;
+import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.state.BlockState;
+import cn.nukkit.level.format.anvil.util.NibbleArray;
+import cn.nukkit.level.newformat.palette.Palette;
+import io.netty.buffer.ByteBuf;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.List;
-import java.util.function.BiPredicate;
+import javax.annotation.concurrent.NotThreadSafe;
+import java.util.concurrent.locks.StampedLock;
+
+import static cn.nukkit.level.newformat.IChunk.index;
 
 /**
- * @author MagicDroidX (Nukkit Project)
+ * Allay Project 2023/5/30
+ *
+ * @author Cool_Loong
  */
-@ParametersAreNonnullByDefault
-public interface ChunkSection {
-    int SIZE = 16 * 16 * 16;
+@NotThreadSafe
+public record ChunkSection(byte sectionY,
+                           Palette<BlockState>[] blockLayer,
+                           Palette<Integer> biomes,
+                           NibbleArray blockLights,
+                           NibbleArray skyLights,
+                           StampedLock lock) {
+    public static final int SIZE = 16 * 16 * 16;
+    public static final int LAYER_COUNT = 2;
+    public static final int VERSION = 9;
 
-    int getY();
-
-    @NotNull
-    default BlockState getBlockState(int x, int y, int z) {
-        return getBlockState(x, y, z, 0);
+    public ChunkSection(byte sectionY) {
+        this(sectionY,
+                new Palette[]{new Palette<>(BlockAir.PROPERTIES.getDefaultState()), new Palette<>(BlockAir.PROPERTIES.getDefaultState())},
+                new Palette<>(1),
+                new NibbleArray(SIZE),
+                new NibbleArray(SIZE),
+                new StampedLock());
     }
 
-    @NotNull
-    default BlockState getBlockState(int x, int y, int z, int layer) {
-        return null;
+    public ChunkSection(byte sectionY, Palette<BlockState>[] blockLayer) {
+        this(sectionY, blockLayer,
+                new Palette<>(1),
+                new NibbleArray(SIZE),
+                new NibbleArray(SIZE),
+                new StampedLock());
     }
 
-    default BlockState getAndSetBlockState(int x, int y, int z, BlockState state) {
-        return getAndSetBlockState(x, y, z, state, 0);
-    }
-
-    BlockState getAndSetBlockState(int x, int y, int z, BlockState state, int layer);
-
-    boolean setBlockState(int x, int y, int z, BlockState state, int layer);
-
-    default boolean setBlockState(int x, int y, int z, BlockState state) {
-        return setBlockState(x, y, z, state, 0);
-    }
-
-    int getBlockSkyLight(int x, int y, int z);
-
-    void setBlockSkyLight(int x, int y, int z, int level);
-
-    int getBlockLight(int x, int y, int z);
-
-    void setBlockLight(int x, int y, int z, int level);
-
-    byte[] getSkyLightArray();
-
-    byte[] getLightArray();
-
-    boolean isEmpty();
-
-    void writeTo(BinaryStream stream);
-
-    /**
-     * 以混淆方式将子区块写入二进制流，通常用于反矿透
-     *
-     * @param stream 二进制流
-     * @param level  子区块所在世界，包含混淆所用数据
-     */
-    default void writeObfuscatedTo(BinaryStream stream, Level level) {
-        writeTo(stream);
-    }
-
-    default void setNeedReObfuscate() {
-    }
-
-    /**
-     * @return 此section的方块变更数
-     */
-    long getBlockChanges();
-
-    /**
-     * 增加方块变更数
-     */
-    void addBlockChange();
-
-    int getMaximumLayer();
-
-    @NotNull
-    CompoundTag toNBT();
-
-    @NotNull
-    ChunkSection copy();
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    default List<Block> scanBlocks(LevelProvider provider, int offsetX, int offsetZ, BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition) {
-        /*int offsetY = getY() << 4;
-        List<Block> results = new ArrayList<>();
-
-        BlockVector3 current = new BlockVector3();
-
-        int minX = Math.max(0, min.x - offsetX);
-        int minY = Math.max(0, min.y - offsetY);
-        int minZ = Math.max(0, min.z - offsetZ);
-
-        for (int x = Math.min(max.x - offsetX, 15); x >= minX; x--) {
-            current.x = offsetX + x;
-            for (int z = Math.min(max.z - offsetZ, 15); z >= minZ; z--) {
-                current.z = offsetZ + z;
-                for (int y = Math.min(max.y - offsetY, 15); y >= minY; y--) {
-                    current.y = offsetY + y;
-                    BlockState state = getBlockState(x, y, z);
-                    if (condition.test(current, state)) {
-                        results.add(state.getBlockRepairing(provider.getLevel(), current, 0));
-                    }
-                }
+    public BlockState getBlockState(int x, int y, int z, int layer) {
+        long stamp = lock.tryOptimisticRead();
+        try {
+            for (; ; stamp = lock.readLock()) {
+                if (stamp == 0L) continue;
+                BlockState result = blockLayer[layer].get(index(x, y, z));
+                if (!lock.validate(stamp)) continue;
+                return result;
             }
-        }*/
+        } finally {
+            if (StampedLock.isReadLockStamp(stamp)) lock.unlockRead(stamp);
+        }
+    }
 
-        return null;
+    public void setBlockState(int x, int y, int z, BlockState blockState, int layer) {
+        long stamp = lock.writeLock();
+        try {
+            blockLayer[layer].set(index(x, y, z), blockState);
+        } finally {
+            lock.unlockWrite(stamp);
+        }
+    }
+
+    public BlockState getAndSetBlock(int x, int y, int z, BlockState blockstate, int layer) {
+        long stamp = lock.writeLock();
+        try {
+            BlockState result = blockLayer[layer].get(index(x, y, z));
+            blockLayer[layer].set(index(x, y, z), blockstate);
+            return result;
+        } finally {
+            lock.unlockWrite(stamp);
+        }
+    }
+
+    public void setBiomeId(int x, int y, int z, int biomeId) {
+        biomes.set(index(x, y, z), biomeId);
+    }
+
+    public int getBiomeId(int x, int y, int z) {
+        return biomes.get(index(x, y, z));
+    }
+
+    public byte getBlockLight(int x, int y, int z) {
+        return blockLights.get(index(x, y, z));
+    }
+
+    public byte getSkyLight(int x, int y, int z) {
+        return skyLights.get(index(x, y, z));
+    }
+
+    public void setBlockLight(int x, int y, int z, byte light) {
+        blockLights.set(index(x, y, z), light);
+    }
+
+    public void setSkyLight(int x, int y, int z, byte light) {
+        skyLights.set(index(x, y, z), light);
+    }
+
+    public boolean isEmpty() {
+        return blockLayer[0].isEmpty() && blockLayer[0].get(0) == BlockAir.PROPERTIES.getDefaultState();
+    }
+
+    public void writeToNetwork(ByteBuf byteBuf) {
+        long stamp = lock.writeLock();
+        try {
+            byteBuf.writeByte(VERSION);
+            //block layer count
+            byteBuf.writeByte(LAYER_COUNT);
+            byteBuf.writeByte(sectionY & 0xFF);
+
+            blockLayer[0].writeToNetwork(byteBuf, BlockState::blockStateHash);
+            blockLayer[1].writeToNetwork(byteBuf, BlockState::blockStateHash);
+        } finally {
+            lock.unlockWrite(stamp);
+        }
     }
 }

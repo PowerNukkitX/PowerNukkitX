@@ -21,6 +21,7 @@ public class BlockTorchflowerCrop extends BlockCrops {
     public static final IntBlockProperty GROWTH = new IntBlockProperty("growth", false, 1);
     public static final BlockProperties PROPERTIES = new BlockProperties(GROWTH);
 
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;

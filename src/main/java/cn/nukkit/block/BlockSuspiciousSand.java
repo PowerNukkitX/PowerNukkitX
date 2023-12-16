@@ -9,6 +9,7 @@ import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.entity.item.EntityFallingBlock;
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
@@ -23,6 +24,7 @@ public class BlockSuspiciousSand extends BlockFallableMeta {
         super(meta);
     }
 
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;

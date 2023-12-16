@@ -245,13 +245,8 @@
         </dependency>
         <dependency>
             <groupId>it.unimi.dsi</groupId>
-            <artifactId>fastutil-core</artifactId>
-            <version>8.5.4</version>
-        </dependency>
-        <dependency>
-            <groupId>it.unimi.dsi</groupId>
-            <artifactId>fastutil-extra</artifactId>
-            <version>8.5.4</version>
+            <artifactId>fastutil</artifactId>
+            <version>8.5.12</version>
         </dependency>
         <dependency>
             <groupId>org.powernukkit</groupId>

@@ -22,6 +22,7 @@ import java.util.Map;
 public class BlockDecoratedPot extends BlockTransparentMeta implements Faceable, BlockEntityHolder<BlockEntityDecoratedPot>{
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.DIRECTION);
 
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;

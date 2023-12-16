@@ -18,6 +18,7 @@ public class BlockSnifferEgg extends BlockTransparentMeta {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CRACKED_STATE);
 
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;

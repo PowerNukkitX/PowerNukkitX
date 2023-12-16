@@ -8,6 +8,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.state.BlockProperties;
 import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.state.property.type.BlockPropertyType;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.player.PlayerInteractEvent;
@@ -27,6 +28,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
+import com.google.common.base.Preconditions;
 import com.google.gson.JsonParser;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
@@ -37,11 +39,10 @@ import javax.annotation.Nullable;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
+
+import static cn.nukkit.block.state.BlockProperties.computeSpecialValue;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -49,11 +50,28 @@ import java.util.function.Predicate;
 @Slf4j
 public abstract class Block extends Position implements Metadatable, Cloneable, AxisAlignedBB {
     public static final Block[] EMPTY_ARRAY = new Block[0];
-
-    @PowerNukkitOnly
+    public static final double DEFAULT_FRICTION_FACTOR = 0.6;
+    public static final double DEFAULT_AIR_FLUID_FRICTION = 0.95;
     public int layer;
     protected BlockColor color;
     private BlockState blockstate;
+    //todo fix getcolor
+    protected static final Map<Long, BlockColor> VANILLA_BLOCK_COLOR_MAP = new Long2ObjectOpenHashMap<>();
+
+    static {
+        try (var reader = new InputStreamReader(new BufferedInputStream(Objects.requireNonNull(Block.class.getClassLoader().getResourceAsStream("block_color.json"))))) {
+            var parser = JsonParser.parseReader(reader);
+            for (var entry : parser.getAsJsonObject().entrySet()) {
+                var r = entry.getValue().getAsJsonObject().get("r").getAsInt();
+                var g = entry.getValue().getAsJsonObject().get("g").getAsInt();
+                var b = entry.getValue().getAsJsonObject().get("b").getAsInt();
+                var a = entry.getValue().getAsJsonObject().get("a").getAsInt();
+                VANILLA_BLOCK_COLOR_MAP.put(Long.parseLong(entry.getKey()), new BlockColor(r, g, b, a));
+            }
+        } catch (IOException e) {
+            log.error("Failed to load block color map", e);
+        }
+    }
 
     protected Block() {
     }
@@ -198,8 +216,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return ItemTool.TYPE_NONE;
     }
 
-    public static final double DEFAULT_FRICTION_FACTOR = 0.6;
-
     /**
      * 服务端侧的摩擦系数，用于控制玩家丢弃物品、实体、船其在上方移动的速度。值越大，移动越快。
      * <p>
@@ -208,8 +224,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public double getFrictionFactor() {
         return DEFAULT_FRICTION_FACTOR;
     }
-
-    public static final double DEFAULT_AIR_FLUID_FRICTION = 0.95;
 
     /**
      * 控制方块的通过阻力因素（0-1）。此值越小阻力越大<p/>
@@ -373,24 +387,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
-    //todo fix getcolor
-    protected static final Map<Long, BlockColor> VANILLA_BLOCK_COLOR_MAP = new Long2ObjectOpenHashMap<>();
-
-    static {
-        try (var reader = new InputStreamReader(new BufferedInputStream(Objects.requireNonNull(Block.class.getClassLoader().getResourceAsStream("block_color.json"))))) {
-            var parser = JsonParser.parseReader(reader);
-            for (var entry : parser.getAsJsonObject().entrySet()) {
-                var r = entry.getValue().getAsJsonObject().get("r").getAsInt();
-                var g = entry.getValue().getAsJsonObject().get("g").getAsInt();
-                var b = entry.getValue().getAsJsonObject().get("b").getAsInt();
-                var a = entry.getValue().getAsJsonObject().get("a").getAsInt();
-                VANILLA_BLOCK_COLOR_MAP.put(Long.parseLong(entry.getKey()), new BlockColor(r, g, b, a));
-            }
-        } catch (IOException e) {
-            log.error("Failed to load block color map", e);
-        }
-    }
-
     public BlockColor getColor() {
        /* if (color != null) return color;
         else color = VANILLA_BLOCK_COLOR_MAP.get(computeUnsignedBlockStateHash());
@@ -410,15 +406,83 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @NotNull
     public abstract BlockProperties getProperties();
 
-    @PowerNukkitOnly
-    @NotNull
-    public final BlockState getCurrentState() {
-        return this.blockstate;
+    public Map<BlockPropertyType<?>, BlockPropertyType.BlockPropertyValue<?, ?, ?>> getPropertyValues() {
+        return Collections.unmodifiableMap(Arrays.stream(this.blockstate.getBlockPropertyValues()).collect(
+                LinkedHashMap<BlockPropertyType<?>, BlockPropertyType.BlockPropertyValue<?, ?, ?>>::new,
+                (hashMap, blockPropertyValue) -> hashMap.put(blockPropertyValue.getPropertyType(), blockPropertyValue),
+                LinkedHashMap::putAll));
     }
 
-    @PowerNukkitOnly
+    public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> DATATYPE getPropertyValue(PROPERTY p) {
+        for (var property : this.blockstate.getBlockPropertyValues()) {
+            if (property.getPropertyType() == p) {
+                return (DATATYPE) property.getValue();
+            }
+        }
+        throw new IllegalArgumentException("Property " + p + " is not supported by this block");
+    }
+
+    public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> void setPropertyValue(PROPERTY property, DATATYPE value) {
+        setPropertyValue(property.createValue(value));
+    }
+
+    public void setPropertyValue(BlockPropertyType.BlockPropertyValue<?, ?, ?> propertyValue) {
+        final BlockPropertyType.BlockPropertyValue<?, ?, ?>[] blockPropertyValues = this.blockstate.getBlockPropertyValues();
+        final var newPropertyValues = new BlockPropertyType.BlockPropertyValue<?, ?, ?>[blockPropertyValues.length];
+        var succeed = false;
+        for (int i = 0; i < blockPropertyValues.length; i++) {
+            if (blockPropertyValues[i].getPropertyType() == propertyValue.getPropertyType()) {
+                succeed = true;
+                newPropertyValues[i] = propertyValue;
+            } else newPropertyValues[i] = blockPropertyValues[i];
+        }
+        if (!succeed) {
+            throw new IllegalArgumentException("Property " + propertyValue.getPropertyType() + " is not supported by this block");
+        }
+        this.blockstate = getNewBlockState(newPropertyValues);
+    }
+
+    public void setPropertyValues(BlockPropertyType.BlockPropertyValue<?, ?, ?>... values) {
+        final BlockPropertyType.BlockPropertyValue<?, ?, ?>[] blockPropertyValues = this.blockstate.getBlockPropertyValues();
+        final var newPropertyValues = new BlockPropertyType.BlockPropertyValue<?, ?, ?>[blockPropertyValues.length];
+        final var propertyValues = List.of(values);
+        final var succeed = new boolean[propertyValues.size()];
+        var succeedCount = 0;
+        for (int i = 0; i < blockPropertyValues.length; i++) {
+            int index;
+            if ((index = propertyValues.indexOf(blockPropertyValues[i])) != -1) {
+                succeedCount++;
+                succeed[index] = true;
+                newPropertyValues[i] = propertyValues.get(index);
+            } else newPropertyValues[i] = blockPropertyValues[i];
+        }
+        if (succeedCount != propertyValues.size()) {
+            var errorMsgBuilder = new StringBuilder("Properties ");
+            for (int i = 0; i < propertyValues.size(); i++) {
+                if (!succeed[i]) {
+                    errorMsgBuilder.append(propertyValues.get(i).getPropertyType().getName());
+                    if (i != propertyValues.size() - 1)
+                        errorMsgBuilder.append(", ");
+                }
+            }
+            errorMsgBuilder.append(" are not supported by this block");
+            throw new IllegalArgumentException(errorMsgBuilder.toString());
+        }
+        this.blockstate = getNewBlockState(newPropertyValues);
+    }
+
+    private BlockState getNewBlockState(BlockPropertyType.BlockPropertyValue<?, ?, ?>[] values) {
+        Preconditions.checkNotNull(getProperties());
+        byte bits = getProperties().getSpecialValueBits();
+        if (bits <= 16) {
+            return getProperties().getBlockState(computeSpecialValue(bits, values));
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
     public final int getRuntimeId() {
-        return getCurrentState().blockStateHash();
+        return this.blockstate.blockStateHash();
     }
 
     public void addVelocityToEntity(Entity entity, Vector3 vector) {

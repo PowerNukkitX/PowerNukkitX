@@ -26,21 +26,21 @@ public interface LevelProvider {
 
     Map<String, Object> getGeneratorOptions();
 
-    Chunk getLoadedChunk(int X, int Z);
+    IChunk getLoadedChunk(int X, int Z);
 
-    Chunk getLoadedChunk(long hash);
+    IChunk getLoadedChunk(long hash);
 
-    Chunk getChunk(int X, int Z);
+    IChunk getChunk(int X, int Z);
 
-    Chunk getChunk(int X, int Z, boolean create);
+    IChunk getChunk(int X, int Z, boolean create);
 
-    Chunk getEmptyChunk(int x, int z);
+    IChunk getEmptyChunk(int x, int z);
 
     void saveChunks();
 
     void saveChunk(int X, int Z);
 
-    void saveChunk(int X, int Z, Chunk chunk);
+    void saveChunk(int X, int Z, IChunk chunk);
 
     void unloadChunks();
 
@@ -60,7 +60,7 @@ public interface LevelProvider {
 
     boolean isChunkLoaded(long hash);
 
-    void setChunk(int chunkX, int chunkZ, Chunk chunk);
+    void setChunk(int chunkX, int chunkZ, IChunk chunk);
 
     String getName();
 
@@ -96,7 +96,7 @@ public interface LevelProvider {
 
     void setSpawn(Vector3 pos);
 
-    Map<Long, Chunk> getLoadedChunks();
+    Map<Long, IChunk> getLoadedChunks();
 
     void doGarbageCollection();
 
@@ -120,19 +120,15 @@ public interface LevelProvider {
         return 1;//two layer 0,1
     }
 
-    default int getDimension() {
-        return this.getDimensionData().getDimensionId();
-    }
-
     default boolean isOverWorld() {
-        return getDimension() == 0;
+        return this.getDimensionData().getDimensionId() == 0;
     }
 
     default boolean isNether() {
-        return getDimension() == 1;
+        return this.getDimensionData().getDimensionId() == 1;
     }
 
     default boolean isTheEnd() {
-        return getDimension() == 2;
+        return this.getDimensionData().getDimensionId() == 2;
     }
 }
