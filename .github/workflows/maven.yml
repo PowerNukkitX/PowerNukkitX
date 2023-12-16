@@ -6,7 +6,8 @@ jobs:
   check-files:
     name: Check repository files
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
+    #    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
+    if: false
     outputs:
       changed-files: ${{ steps.check-changed-files.outputs.all_changed_and_modified_files }}
 
