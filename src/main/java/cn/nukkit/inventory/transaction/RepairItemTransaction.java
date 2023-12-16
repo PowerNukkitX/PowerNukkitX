@@ -300,8 +300,14 @@ public class RepairItemTransaction extends InventoryTransaction {
     }
 
     private boolean isMapRecipe() {
-        return this.hasMaterial() && (this.inputItem.getId() == Item.MAP || this.inputItem.getId() == Item.EMPTY_MAP)
-                && (this.materialItem.getId() == Item.EMPTY_MAP || this.materialItem.getId() == Item.PAPER || this.materialItem.getId() == Item.COMPASS);
+        if (this.materialItem == null) {
+            this.materialItem = Item.AIR_ITEM;
+        }
+
+        boolean hasMaterial = this.hasMaterial();
+        boolean isMapOrEmptyMap = this.inputItem.getId() == Item.MAP || this.inputItem.getId() == Item.EMPTY_MAP;
+        boolean isMaterialValid = this.materialItem.getId() == Item.EMPTY_MAP || this.materialItem.getId() == Item.PAPER || this.materialItem.getId() == Item.COMPASS;
+        return hasMaterial && isMapOrEmptyMap && isMaterialValid;
     }
 
     private boolean matchMapRecipe() {
