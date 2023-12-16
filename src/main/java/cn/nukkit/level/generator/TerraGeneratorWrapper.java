@@ -29,11 +29,9 @@ public class TerraGeneratorWrapper extends Generator {
     protected static final Map<Integer, TerraGenerator> generators = new Int2ObjectOpenHashMap<>();
     //共享的Terra实例
     protected volatile TerraGenerator terra;
-    protected final Map<String, Object> option;
-
 
     public TerraGeneratorWrapper(Map<String, Object> option) {
-        this.option = option;
+        super(option);
     }
 
     @Override
@@ -42,7 +40,7 @@ public class TerraGeneratorWrapper extends Generator {
         if (this.terra == null) {
             synchronized (generators) {
                 if (this.terra == null) {
-                    this.terra = new TerraGenerator(this.option, getLevel());
+                    this.terra = new TerraGenerator(this.options, getLevel());
                     generators.put(getLevel().getId(), this.terra);
                 }
             }

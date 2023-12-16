@@ -1,10 +1,9 @@
 package cn.nukkit.level.newformat;
 
-import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
+import cn.nukkit.nbt.tag.CompoundTag;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * Allay Project 12/16/2023
@@ -28,11 +27,13 @@ public interface IChunkBuilder {
 
     IChunkBuilder sections(ChunkSection[] sections);
 
+    ChunkSection[] getSections();
+
     IChunkBuilder heightMap(short[] heightMap);
 
-    IChunkBuilder entities(Map<Long, Entity> entities);
+    IChunkBuilder entities(List<CompoundTag> entities);
 
-    IChunkBuilder blockEntities(Map<Long, BlockEntity> blockEntities);
+    IChunkBuilder blockEntities(List<CompoundTag> blockEntities);
 
     IChunk build();
 

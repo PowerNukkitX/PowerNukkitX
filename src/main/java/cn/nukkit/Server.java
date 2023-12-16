@@ -923,7 +923,7 @@ public class Server {
                 this.setPropertyString("level-name", defaultName);
             }
 
-            if (!this.loadLevel(defaultName)) {
+            if (!this.loadLevel(defaultName)) {//default world not exist
                 long seed;
                 String seedString = String.valueOf(this.getProperty("level-seed", System.currentTimeMillis()));
                 try {
@@ -931,7 +931,7 @@ public class Server {
                 } catch (NumberFormatException e) {
                     seed = seedString.hashCode();
                 }
-                this.generateLevel(defaultName, seed == 0 ? System.currentTimeMillis() : seed);
+                this.generateLevel(defaultName, seed == 0 ? System.currentTimeMillis() : seed);//generate the default world
             }
 
             this.setDefaultLevel(this.getLevelByName(defaultName));

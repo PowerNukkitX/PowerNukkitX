@@ -1,20 +1,33 @@
 package cn.nukkit.level.newformat;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.state.BlockState;
 import cn.nukkit.block.state.BlockStateRegistry;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.newformat.palette.Palette;
 import cn.nukkit.level.util.LevelDBKeyUtil;
+import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import lombok.extern.slf4j.Slf4j;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.WriteBatch;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Allay Project 8/23/2023
@@ -29,16 +42,17 @@ public class LevelDBChunkSerializer {
     }
 
     public void serialize(WriteBatch writeBatch, IChunk chunk) {
-        serializeBlock(writeBatch, chunk);
         writeBatch.put(LevelDBKeyUtil.VERSION.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData()), new byte[]{IChunk.VERSION});
+        serializeBlock(writeBatch, chunk);
         serializeHeightAndBiome(writeBatch, chunk);
-        //todo Entity and Block Entity
+        serializeTileAndEntity(writeBatch, chunk);
     }
 
-    public IChunk deserialize(DB db, IChunkBuilder builder) {
+    public void deserialize(DB db, IChunkBuilder builder) {
         deserializeBlock(db, builder);
         deserializeHeightAndBiome(db, builder);
-        //todo Entity and Block Entity
+        deserializeTileAndEntity(db, builder);
+        deserializeTileAndEntity(db, builder);
     }
 
     //serialize chunk section
@@ -132,7 +146,9 @@ public class LevelDBChunkSerializer {
                 biomePalette.writeToStorageRuntime(heightAndBiomesBuffer, Integer::intValue, last);
                 last = biomePalette;
             }
-            writeBatch.put(LevelDBKeyUtil.DATA_3D.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData()), Utils.convertByteBuf2Array(heightAndBiomesBuffer));
+            if (heightAndBiomesBuffer.readableBytes() > 0) {
+                writeBatch.put(LevelDBKeyUtil.DATA_3D.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData()), Utils.convertByteBuf2Array(heightAndBiomesBuffer));
+            }
         } finally {
             heightAndBiomesBuffer.release();
         }
@@ -149,21 +165,89 @@ public class LevelDBChunkSerializer {
                 for (int i = 0; i < 256; i++) {
                     heights[i] = heightAndBiomesBuffer.readShortLE();
                 }
-                builder.heightMap(new HeightMap(heights));
-                Palette<BiomeType> last = null;
-                Palette<BiomeType> biomePalette;
-                var minSectionY = builder.getDimensionInfo().minSectionY();
-                for (int y = minSectionY; y <= builder.getDimensionInfo().maxSectionY(); y++) {
+                builder.heightMap(heights);
+                Palette<Integer> last = null;
+                Palette<Integer> biomePalette;
+                var minSectionY = builder.getDimensionData().getMinSectionY();
+                for (int y = minSectionY; y <= builder.getDimensionData().getMaxSectionY(); y++) {
                     ChunkSection section = builder.getSections()[y - minSectionY];
                     if (section == null) continue;
                     biomePalette = section.biomes();
-                    biomePalette.readFromStorageRuntime(heightAndBiomesBuffer, VanillaBiomeId::fromId, last);
+                    biomePalette.readFromStorageRuntime(heightAndBiomesBuffer, Integer::valueOf, last);
                     last = biomePalette;
                 }
             }
         } finally {
             if (heightAndBiomesBuffer != null) {
                 heightAndBiomesBuffer.release();
+            }
+        }
+    }
+
+    private void deserializeTileAndEntity(DB db, IChunkBuilder builder) {
+        byte[] tileBytes = db.get(LevelDBKeyUtil.BLOCK_ENTITIES.getKey(builder.getChunkX(), builder.getChunkZ()));
+        if (tileBytes != null) {
+            List<CompoundTag> blockEntityTags = new ArrayList<>();
+            try (BufferedInputStream stream = new BufferedInputStream(new ByteArrayInputStream(tileBytes))) {
+                while (stream.available() > 0) {
+                    blockEntityTags.add(NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN));
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            builder.blockEntities(blockEntityTags);
+        }
+
+        byte[] entityBytes = db.get(LevelDBKeyUtil.ENTITIES.getKey(builder.getChunkX(), builder.getChunkZ()));
+        if (entityBytes == null) return;
+        List<CompoundTag> entityTags = new ArrayList<>();
+        try (BufferedInputStream stream = new BufferedInputStream(new ByteArrayInputStream(entityBytes))) {
+            while (stream.available() > 0) {
+                entityTags.add(NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        builder.entities(entityTags);
+    }
+
+    private void serializeTileAndEntity(WriteBatch writeBatch, IChunk chunk) {
+        //Write blockEntities
+        Collection<BlockEntity> blockEntities = chunk.getBlockEntities().values();
+        if (!blockEntities.isEmpty()) {
+            ByteBuf tileBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
+            try (var bufStream = new ByteBufOutputStream(tileBuffer)) {
+                for (BlockEntity blockEntity : blockEntities) {
+                    blockEntity.saveNBT();
+                    NBTIO.write(blockEntity.namedTag, bufStream, ByteOrder.LITTLE_ENDIAN);
+                }
+                if (tileBuffer.readableBytes() > 0) {
+                    writeBatch.put(LevelDBKeyUtil.BLOCK_ENTITIES.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData()), Utils.convertByteBuf2Array(tileBuffer));
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                tileBuffer.release();
+            }
+        }
+
+        Collection<Entity> entities = chunk.getEntities().values();
+        if (!entities.isEmpty()) {
+            ByteBuf entityBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
+            try (var bufStream = new ByteBufOutputStream(entityBuffer)) {
+                for (Entity e : entities) {
+                    if (!(e instanceof Player) && !e.closed && e.canBeSavedWithChunk()) {
+                        e.saveNBT();
+                        NBTIO.write(e.namedTag, bufStream, ByteOrder.LITTLE_ENDIAN);
+                    }
+                }
+                if (entityBuffer.readableBytes() > 0) {
+                    writeBatch.put(LevelDBKeyUtil.ENTITIES.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData()), Utils.convertByteBuf2Array(entityBuffer));
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                entityBuffer.release();
             }
         }
     }

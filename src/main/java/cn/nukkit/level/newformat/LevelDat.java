@@ -1,17 +1,13 @@
 package cn.nukkit.level.newformat;
 
-import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
-import cn.nukkit.math.Vector3;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.protocol.types.GameType;
 import cn.nukkit.utils.SemVersion;
-import com.dfsek.terra.api.world.World;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
-
-import java.util.Map;
 
 @Getter
 @Builder
@@ -25,9 +21,7 @@ public class LevelDat {
     @Builder.Default
     int difficulty = 1;
     @Builder.Default
-    String flatWorldLayers = """
-            {"biome_id":1,"block_layers":[{"block_name":"minecraft:bedrock","count":1},{"block_name":"minecraft:dirt","count":2},{"block_name":"minecraft:grass","count":1}],"encoding_version":6,"structure_options":null,"world_version":"version.post_1_18"}
-            """;
+    String flatWorldLayers = "";//used for pnx `generatorOptions`
     @Builder.Default
     boolean forceGameType = false;
     @Builder.Default
@@ -45,12 +39,12 @@ public class LevelDat {
     @Builder.Default
     String name = "Bedrock level";
     @Builder.Default
-    Vector3 limitedWorldOriginPoint = new Vector3(0, 64, 0);
+    BlockVector3 limitedWorldOriginPoint = new BlockVector3(0, 64, 0);
     @Builder.Default
     SemVersion minimumCompatibleClientVersion = new SemVersion(
             1,
             20,
-            40,
+            50,
             0,
             0
     );
@@ -71,7 +65,7 @@ public class LevelDat {
     @Builder.Default
     boolean spawnV1Villagers = false;
     @Builder.Default
-    Vector3 spawnPoint = new Vector3(0, 64, 0);
+    BlockVector3 spawnPoint = new BlockVector3(0, 64, 0);
     @Builder.Default
     int storageVersion = 10;
     @Builder.Default
@@ -140,7 +134,7 @@ public class LevelDat {
     @Builder.Default
     float lightningLevel = 0.0f;
     @Builder.Default
-    int lightningTime = 0;
+    int lightningTime = 0;//thunderTime
     @Builder.Default
     int limitedWorldDepth = 16;
     @Builder.Default
@@ -156,7 +150,7 @@ public class LevelDat {
     @Builder.Default
     float rainLevel = 0.0f;
     @Builder.Default
-    int rainTime = 0;
+    int rainTime = 0;//rainTime
     @Builder.Default
     int randomTickSpeed = 1;
     @Builder.Default
@@ -177,22 +171,24 @@ public class LevelDat {
     long worldStartCount = 0L;
     @Builder.Default
     WorldPolicies worldPolicies = new WorldPolicies();
+    @Builder.Default
+    long dayTime = 0L;//PNX Custom field
+    @Builder.Default
+    String generatorName = "normal";//PNX Custom field
 
-    World world;
-
-    public synchronized void setGameType(GameType gameType) {
+    public void setGameType(GameType gameType) {
         this.gameType = gameType;
     }
 
-    public synchronized GameType getGameType() {
+    public GameType getGameType() {
         return gameType;
     }
 
-    public synchronized String getName() {
+    public String getName() {
         return name;
     }
 
-    public synchronized void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -220,18 +216,22 @@ public class LevelDat {
         this.currentTick = currentTick;
     }
 
-    public Map<GameRule, GameRules.Value> getGameRules() {
-        return gameRules.getGameRules();
+    public GameRules getGameRules() {
+        return gameRules;
+    }
+
+    public void setGameRules(GameRules gameRules) {
+        this.gameRules = gameRules;
     }
 
     /**
      * The overworld default spawn point
      */
-    public Vector3 getSpawnPoint() {
+    public BlockVector3 getSpawnPoint() {
         return spawnPoint;
     }
 
-    public void setSpawnPoint(Vector3 spawnPoint) {
+    public void setSpawnPoint(BlockVector3 spawnPoint) {
         this.spawnPoint = spawnPoint;
     }
 
@@ -263,7 +263,7 @@ public class LevelDat {
         boolean invulnerable = false;
 
         @Builder.Default
-        boolean lightning = false;
+        boolean lightning = false;//thundering
 
         @Builder.Default
         boolean mayFly = false;

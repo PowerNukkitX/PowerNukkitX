@@ -1,7 +1,5 @@
 package cn.nukkit.level.newformat;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
@@ -16,14 +14,33 @@ import java.util.Map;
 public interface IChunk {
     int VERSION = 40;
 
+    /**
+     * Get Palette index
+     *
+     * @param x the x
+     * @param y the y
+     * @param z the z
+     * @return the int
+     */
     static int index(int x, int y, int z) {
         //The bedrock chunk order is xzy,the chunk order of java version is yzx
         return (x << 8) + (z << 4) + y;
     }
 
+    /**
+     * Is section empty.
+     *
+     * @param fY the f y
+     * @return the boolean
+     */
     boolean isSectionEmpty(int fY);
 
-    //-4 ~ 19
+    /**
+     * Gets section.
+     *
+     * @param fY range -4 ~ 19 for Overworld
+     * @return the section
+     */
     ChunkSection getSection(int fY);
 
     boolean setSection(int fY, ChunkSection section);
@@ -47,6 +64,11 @@ public interface IChunk {
 
     LevelProvider getProvider();
 
+    /**
+     * Sets provider.
+     *
+     * @param provider the provider
+     */
     void setProvider(LevelProvider provider);
 
     default Block getBlock(int x, int y, int z) {
@@ -154,6 +176,9 @@ public interface IChunk {
 
     boolean unload(boolean save, boolean safe) throws Exception;
 
+    /**
+     * Init chunk.Load block entity and entity NBT
+     */
     void initChunk();
 
     byte[] getBiomeIdArray();
@@ -177,20 +202,14 @@ public interface IChunk {
     default void reObfuscateChunk() {
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     default boolean isOverWorld() {
         return getProvider().isOverWorld();
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     default boolean isNether() {
         return getProvider().isNether();
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     default boolean isTheEnd() {
         return getProvider().isTheEnd();
     }

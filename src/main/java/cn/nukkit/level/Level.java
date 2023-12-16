@@ -82,7 +82,10 @@ import java.util.Queue;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -311,14 +314,7 @@ public class Level implements ChunkManager, Metadatable {
     private Iterator<cn.nukkit.utils.collection.nb.LongObjectEntry<Long>> lastUsingUnloadingIter;
 
     public Level(Server server, String name, String path, Class<? extends LevelProvider> provider) {
-        this(server, name, path,
-                () -> {
-                    try {
-                        return (boolean) provider.getMethod("usesChunkSection").invoke(null);
-                    } catch (ReflectiveOperationException e) {
-                        throw new LevelException("usesChunkSection of " + provider + " failed", e);
-                    }
-                },
+        this(server, name, path, true,
                 (level, levelPath) -> {
                     try {
                         return provider.getConstructor(Level.class, String.class).newInstance(level, levelPath);
@@ -334,14 +330,14 @@ public class Level implements ChunkManager, Metadatable {
      */
     @Since("1.4.0.0-PN")
     Level(Server server, String name, File path, boolean usesChunkSection, LevelProvider provider) {
-        this(server, name, path.getAbsolutePath() + "/", () -> usesChunkSection, (lvl, p) -> provider);
+        this(server, name, path.getAbsolutePath() + "/", usesChunkSection, (lvl, p) -> provider);
     }
 
     /**
      * Easier constructor to create PowerNukkit tests.
      */
     @Since("1.4.0.0-PN")
-    Level(Server server, String name, String path, BooleanSupplier usesChunkSection, BiFunction<Level, String, LevelProvider> provider) {
+    Level(Server server, String name, String path, boolean usesChunkSection, BiFunction<Level, String, LevelProvider> provider) {
         this.levelId = levelIdCounter++;
         this.blockMetadata = new BlockMetadataStore(this);
         this.server = server;
@@ -1252,8 +1248,8 @@ public class Level implements ChunkManager, Metadatable {
                         }), Server.getInstance().computeThreadPool).join();
                 for (long id : this.updateEntities.keySetLong()) {
                     Entity entity = this.updateEntities.get(id);
-                    if(entity instanceof EntityIntelligent intelligent) {
-                        if(intelligent.getBehaviorGroup() == null) {
+                    if (entity instanceof EntityIntelligent intelligent) {
+                        if (intelligent.getBehaviorGroup() == null) {
                             this.updateEntities.remove(id);
                             continue;
                         }

@@ -5,10 +5,13 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.biome.Biome;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,6 +22,9 @@ import java.util.Map;
 public class Chunk implements IChunk {
     protected final Map<Long, Entity> entities;
     protected final Map<Long, BlockEntity> blockEntities;
+    //delay load block entity and entity
+    protected List<CompoundTag> blockEntityNBT;
+    protected List<CompoundTag> entityNBT;
     protected final LevelProvider provider;
     protected final ChunkSection[] sections;
     protected final short[] heightMap;//256 size
@@ -41,6 +47,8 @@ public class Chunk implements IChunk {
         this.heightMap = new short[256];
         this.entities = new Long2ObjectNonBlockingMap<>();
         this.blockEntities = new Long2ObjectNonBlockingMap<>();
+        this.entityNBT = new ArrayList<>();
+        this.blockEntityNBT = new ArrayList<>();
     }
 
     private Chunk(
@@ -51,7 +59,9 @@ public class Chunk implements IChunk {
             final ChunkSection[] sections,
             final short[] heightMap,
             final Map<Long, Entity> entities,
-            final Map<Long, BlockEntity> blockEntities
+            final Map<Long, BlockEntity> blockEntities,
+            final List<CompoundTag> entityNBT,
+            final List<CompoundTag> blockEntityNBT
     ) {
         this.chunkState = state;
         this.x = chunkX;
@@ -61,6 +71,8 @@ public class Chunk implements IChunk {
         this.heightMap = heightMap;
         this.entities = entities;
         this.blockEntities = blockEntities;
+        this.entityNBT = entityNBT;
+        this.blockEntityNBT = blockEntityNBT;
     }
 
     @Override
@@ -380,8 +392,10 @@ public class Chunk implements IChunk {
         cn.nukkit.level.newformat.LevelProvider levelProvider;
         ChunkSection[] sections;
         short[] heightMap;
-        Map<Long, Entity> entities;
-        Map<Long, BlockEntity> blockEntities;
+        List<CompoundTag> entities;
+        List<CompoundTag> blockEntities;
+        List<CompoundTag> blockEntityNBT;
+        List<CompoundTag> entityNBT;
 
         public Builder chunkX(int chunkX) {
             this.chunkX = chunkX;
@@ -424,17 +438,22 @@ public class Chunk implements IChunk {
             return this;
         }
 
+        @Override
+        public ChunkSection[] getSections() {
+            return sections;
+        }
+
         public Builder heightMap(short[] heightMap) {
             this.heightMap = heightMap;
             return this;
         }
 
-        public Builder entities(Map<Long, Entity> entities) {
+        public Builder entities(List<CompoundTag> entities) {
             this.entities = entities;
             return this;
         }
 
-        public Builder blockEntities(Map<Long, BlockEntity> blockEntities) {
+        public Builder blockEntities(List<CompoundTag> blockEntities) {
             this.blockEntities = blockEntities;
             return this;
         }
@@ -444,8 +463,8 @@ public class Chunk implements IChunk {
             if (state == null) state = ChunkState.NEW;
             if (sections == null) sections = new ChunkSection[levelProvider.getDimensionData().getChunkSectionCount()];
             if (heightMap == null) heightMap = new short[256];
-            if (entities == null) entities = new Long2ObjectNonBlockingMap<>();
-            if (blockEntities == null) blockEntities = new Long2ObjectNonBlockingMap<>();
+            if (entities == null) entities = new ArrayList<>();
+            if (blockEntities == null) blockEntities = new ArrayList<>();
             return new Chunk(
                     state,
                     chunkX,
@@ -453,6 +472,8 @@ public class Chunk implements IChunk {
                     levelProvider,
                     sections,
                     heightMap,
+                    new Long2ObjectNonBlockingMap<>(),
+                    new Long2ObjectNonBlockingMap<>(),
                     entities,
                     blockEntities
             );

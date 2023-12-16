@@ -46,6 +46,7 @@ public class Nether extends Generator {
     }
 
     public Nether(Map<String, Object> options) {
+        super(options);
         //Nothing here. Just used for future update.
     }
 
@@ -62,11 +63,6 @@ public class Nether extends Generator {
     @Override
     public String getName() {
         return "nether";
-    }
-
-    @Override
-    public Map<String, Object> getSettings() {
-        return new HashMap<>();
     }
 
     @Override

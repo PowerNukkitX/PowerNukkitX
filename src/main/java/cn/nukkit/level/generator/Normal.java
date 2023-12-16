@@ -148,6 +148,7 @@ public class Normal extends Generator {
 
     public Normal(Map<String, Object> options) {
         //Nothing here. Just used for future update.
+        super(options);
     }
 
     @Override
@@ -168,11 +169,6 @@ public class Normal extends Generator {
     @Override
     public String getName() {
         return "normal";
-    }
-
-    @Override
-    public Map<String, Object> getSettings() {
-        return Collections.emptyMap();
     }
 
     public Biome pickBiome(int x, int z) {

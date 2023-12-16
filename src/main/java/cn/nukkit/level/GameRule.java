@@ -46,7 +46,10 @@ public enum GameRule {
     TNT_EXPLODES("tntExplodes"),
     @PowerNukkitOnly EXPERIMENTAL_GAMEPLAY("experimentalGameplay"),
     SHOW_TAGS("showTags"),
-    PLAYERS_SLEEPING_PERCENTAGE("playersSleepingPercentage");
+    PLAYERS_SLEEPING_PERCENTAGE("playersSleepingPercentage"),
+    DO_LIMITED_CRAFTING("dolimitedcrafting"),
+    RESPAWN_BLOCKS_EXPLODE("respawnBlocksExplode"),
+    SHOW_BORDER_EFFECT("showBorderEffect");
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

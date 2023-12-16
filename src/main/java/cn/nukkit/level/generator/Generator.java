@@ -60,6 +60,12 @@ public abstract class Generator implements BlockID {
         }
     }
 
+    protected final Map<String, Object> options;
+
+    public Generator(Map<String, Object> options) {
+        this.options = options;
+    }
+
     public abstract int getId();
 
     @PowerNukkitXOnly
@@ -125,7 +131,6 @@ public abstract class Generator implements BlockID {
         this.random = random;
     }
 
-    @Deprecated
     public int getDimension() {
         return Level.DIMENSION_OVERWORLD;
     }
@@ -227,7 +232,9 @@ public abstract class Generator implements BlockID {
         }
     }
 
-    public abstract Map<String, Object> getSettings();
+    public Map<String, Object> getSettings() {
+        return this.options;
+    }
 
     public abstract String getName();
 
@@ -248,6 +255,7 @@ public abstract class Generator implements BlockID {
      * 处理需要计算的异步地形生成任务<br/>
      * 有特殊需求的地形生成器可以覆写此方法并提供自己的逻辑<br/>
      * 默认采用Server类的fjp线程池
+     *
      * @param task 地形生成任务
      */
     @PowerNukkitXOnly
@@ -262,6 +270,7 @@ public abstract class Generator implements BlockID {
      * 处理需要计算的异步结构生成任务<br/>
      * 有特殊需求的地形生成器可以覆写此方法并提供自己的逻辑<br/>
      * 默认采用Server类的fjp线程池
+     *
      * @param task 结构生成任务
      */
     @PowerNukkitXOnly

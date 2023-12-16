@@ -1,7 +1,7 @@
 package cn.nukkit.level;
 
 import cn.nukkit.api.Since;
-import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.*;
 import cn.nukkit.utils.BinaryStream;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -59,6 +59,9 @@ public class GameRules {
         gameRules.gameRules.put(SHOW_TAGS, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(EXPERIMENTAL_GAMEPLAY, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(PLAYERS_SLEEPING_PERCENTAGE, new Value<>(Type.INTEGER, 100));
+        gameRules.gameRules.put(DO_LIMITED_CRAFTING, new Value<>(Type.BOOLEAN, false));
+        gameRules.gameRules.put(RESPAWN_BLOCKS_EXPLODE, new Value<>(Type.BOOLEAN, true));
+        gameRules.gameRules.put(SHOW_BORDER_EFFECT, new Value<>(Type.BOOLEAN, true));
 
         return gameRules;
     }
@@ -233,6 +236,21 @@ public class GameRules {
 
         public Type getType() {
             return this.type;
+        }
+
+        public Tag getTag() {
+            switch (this.type) {
+                case BOOLEAN -> {
+                    return new ByteTag(getValueAsBoolean() ? 1 : 0);
+                }
+                case INTEGER -> {
+                    return new IntTag(getValueAsInteger());
+                }
+                case FLOAT -> {
+                    return new FloatTag(getValueAsFloat());
+                }
+            }
+            throw new IllegalArgumentException("unknown type");
         }
 
         private boolean getValueAsBoolean() {

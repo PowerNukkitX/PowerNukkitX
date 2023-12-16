@@ -94,6 +94,7 @@ public class TheEnd extends Generator {
 
     public TheEnd(Map<String, Object> options) {
         // Nothing here. Just used for future update.
+        super(options);
     }
 
     @Override
@@ -109,11 +110,6 @@ public class TheEnd extends Generator {
     @Override
     public String getName() {
         return "the_end";
-    }
-
-    @Override
-    public Map<String, Object> getSettings() {
-        return new HashMap<>();
     }
 
     @Override
