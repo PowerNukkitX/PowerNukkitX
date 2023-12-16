@@ -31,7 +31,8 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemBucket;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.biome.Biome;
-import cn.nukkit.level.format.*;
+import cn.nukkit.level.format.DimensionDataProvider;
+import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.BaseLevelProvider;
 import cn.nukkit.level.format.generic.EmptyChunkSection;
@@ -40,6 +41,7 @@ import cn.nukkit.level.generator.PopChunkManager;
 import cn.nukkit.level.generator.task.GenerationTask;
 import cn.nukkit.level.generator.task.LightPopulationTask;
 import cn.nukkit.level.generator.task.PopulationTask;
+import cn.nukkit.level.newformat.LevelProvider;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.tickingarea.TickingArea;
@@ -75,14 +77,12 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.io.File;
 import java.lang.ref.SoftReference;
 import java.util.List;
 import java.util.Queue;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -314,42 +314,19 @@ public class Level implements ChunkManager, Metadatable {
     private Iterator<cn.nukkit.utils.collection.nb.LongObjectEntry<Long>> lastUsingUnloadingIter;
 
     public Level(Server server, String name, String path, Class<? extends LevelProvider> provider) {
-        this(server, name, path, true,
-                (level, levelPath) -> {
-                    try {
-                        return provider.getConstructor(Level.class, String.class).newInstance(level, levelPath);
-                    } catch (ReflectiveOperationException e) {
-                        throw new LevelException("Constructor of " + provider + " failed", e);
-                    }
-                }
-        );
-    }
-
-    /**
-     * Easier constructor to create PowerNukkit tests.
-     */
-    @Since("1.4.0.0-PN")
-    Level(Server server, String name, File path, boolean usesChunkSection, LevelProvider provider) {
-        this(server, name, path.getAbsolutePath() + "/", usesChunkSection, (lvl, p) -> provider);
-    }
-
-    /**
-     * Easier constructor to create PowerNukkit tests.
-     */
-    @Since("1.4.0.0-PN")
-    Level(Server server, String name, String path, boolean usesChunkSection, BiFunction<Level, String, LevelProvider> provider) {
         this.levelId = levelIdCounter++;
         this.blockMetadata = new BlockMetadataStore(this);
         this.server = server;
         serverLoadLevelTick = server.getTick();
         this.autoSave = server.getAutoSave();
-        this.provider = provider.apply(this, path);
+
+        try {
+            this.provider = provider.getConstructor(Level.class, String.class).newInstance(this, path);
+        } catch (ReflectiveOperationException e) {
+            throw new LevelException("Constructor of " + provider + " failed", e);
+        }
         LevelProvider levelProvider = requireProvider();
         levelProvider.updateLevelName(name);
-        if (levelProvider instanceof DimensionDataProvider dimensionDataProvider) {
-            this.dimensionData = dimensionDataProvider.getDimensionData();
-        }
-
         if (server.getConfig("anti-xray." + name + ".enabled", false)) {
             this.setAntiXrayEnabled(true);
             this.reinitAntiXray(false);
@@ -360,9 +337,7 @@ public class Level implements ChunkManager, Metadatable {
             });
             this.setPreDeObfuscate(server.getConfig("anti-xray." + name + ".pre-deobfuscate", true));
         }
-
-        log.info(this.server.getLanguage().tr("nukkit.level.preparing",
-                TextFormat.GREEN + levelProvider.getName() + TextFormat.WHITE));
+        log.info(this.server.getLanguage().tr("nukkit.level.preparing", TextFormat.GREEN + levelProvider.getName() + TextFormat.WHITE));
 
         this.generatorClass = Generator.getGenerator(levelProvider.getGenerator());
         this.generators = ThreadLocal.withInitial(() -> {
@@ -386,8 +361,7 @@ public class Level implements ChunkManager, Metadatable {
                 return null;
             }
         });
-        this.useSections = usesChunkSection.getAsBoolean();
-
+        levelProvider.initDimensionData(this.generators.get().getDimensionData());
         this.folderName = name;
         this.time = levelProvider.getTime();
 
@@ -420,6 +394,7 @@ public class Level implements ChunkManager, Metadatable {
 
         this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
     }
+
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -1664,39 +1639,19 @@ public class Level implements ChunkManager, Metadatable {
                 int tickSpeed = gameRules.getInteger(GameRule.RANDOM_TICK_SPEED);
 
                 if (tickSpeed > 0) {
-                    if (this.useSections) {
-                        for (ChunkSection section : ((Chunk) chunk).getSections()) {
-                            if (!(section instanceof EmptyChunkSection)) {
-                                int Y = section.getY();
-                                for (int i = 0; i < tickSpeed; ++i) {
-                                    int lcg = this.getUpdateLCG();
-                                    int x = lcg & 0x0f;
-                                    int y = lcg >>> 8 & 0x0f;
-                                    int z = lcg >>> 16 & 0x0f;
-
-                                    BlockState state = section.getBlockState(x, y, z);
-                                    if (randomTickBlocks.contains(state.getBlockId())) {
-                                        Block block = state.getBlockRepairing(this, chunkX * 16 + x, ((Y - (isOverWorld() ? 4 : 0))
-                                                << 4) + y, chunkZ * 16 + z);
-                                        block.onUpdate(BLOCK_UPDATE_RANDOM);
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        for (int Y = 0; Y < 8 && (Y < 3 || blockTest); ++Y) {
-                            blockTest = false;
+                    for (ChunkSection section : ((Chunk) chunk).getSections()) {
+                        if (!(section instanceof EmptyChunkSection)) {
+                            int Y = section.getY();
                             for (int i = 0; i < tickSpeed; ++i) {
                                 int lcg = this.getUpdateLCG();
                                 int x = lcg & 0x0f;
                                 int y = lcg >>> 8 & 0x0f;
                                 int z = lcg >>> 16 & 0x0f;
 
-                                BlockState state = chunk.getBlockState(x, y + (Y << 4), z);
-                                blockTest = blockTest || !state.equals(BlockState.AIR);
-                                if (Level.randomTickBlocks.contains(state.getBlockId())) {
-                                    Block block = state.getBlockRepairing(this, x, y + ((Y - (isOverWorld() ? 4 : 0))
-                                            << 4), z);
+                                BlockState state = section.getBlockState(x, y, z);
+                                if (randomTickBlocks.contains(state.getBlockId())) {
+                                    Block block = state.getBlockRepairing(this, chunkX * 16 + x, ((Y - (isOverWorld() ? 4 : 0))
+                                            << 4) + y, chunkZ * 16 + z);
                                     block.onUpdate(BLOCK_UPDATE_RANDOM);
                                 }
                             }

@@ -62,7 +62,11 @@ public enum LevelDBKeyUtil {
      * Bounding boxes for structure spawns stored in binary format
      */
     HARDCODED_SPAWNERS('9'),
-    LEGACY_VERSION('v');
+    LEGACY_VERSION('v'),
+    /**
+     * Stores PNX-defined extra data,BIG BYTE_ORDER NBT FORMAT
+     */
+    PNX_EXTRA_DATA('|');
 
     private final byte encoded;
 

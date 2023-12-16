@@ -41,17 +41,35 @@ public class LevelDBChunkSerializer {
     private LevelDBChunkSerializer() {
     }
 
-    public void serialize(WriteBatch writeBatch, IChunk chunk) {
+    public void serialize(WriteBatch writeBatch, IChunk chunk) throws IOException {
         writeBatch.put(LevelDBKeyUtil.VERSION.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData()), new byte[]{IChunk.VERSION});
+        writeBatch.put(LevelDBKeyUtil.CHUNK_FINALIZED_STATE.getKey(chunk.getX(), chunk.getZ(), chunk.getDimensionData()), Unpooled.buffer(4).writeIntLE(chunk.getChunkState().ordinal() - 1).array());
+        writeBatch.put(LevelDBKeyUtil.PNX_EXTRA_DATA.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData()), NBTIO.write(chunk.getExtraData()));
         serializeBlock(writeBatch, chunk);
         serializeHeightAndBiome(writeBatch, chunk);
         serializeTileAndEntity(writeBatch, chunk);
     }
 
-    public void deserialize(DB db, IChunkBuilder builder) {
+    public void deserialize(DB db, IChunkBuilder builder) throws IOException {
+        byte[] versionValue = db.get(LevelDBKeyUtil.VERSION.getKey(builder.getChunkX(), builder.getChunkZ(), builder.getDimensionData()));
+        if (versionValue == null) {
+            versionValue = db.get(LevelDBKeyUtil.LEGACY_VERSION.getKey(builder.getChunkX(), builder.getChunkZ(), builder.getDimensionData()));
+        }
+        if (versionValue == null) {
+            return;
+        }
+        byte[] finalized = db.get(LevelDBKeyUtil.CHUNK_FINALIZED_STATE.getKey(builder.getChunkX(), builder.getChunkZ(), builder.getDimensionData()));
+        if (finalized == null) {
+            builder.state(ChunkState.FINISHED);
+        } else {
+            builder.state(ChunkState.values()[Unpooled.wrappedBuffer(finalized).readIntLE() + 1]);
+        }
+        byte[] extraData = db.get(LevelDBKeyUtil.PNX_EXTRA_DATA.getKey(builder.getChunkX(), builder.getChunkZ(), builder.getDimensionData()));
+        if (extraData != null) {
+            builder.extraData(NBTIO.read(extraData));
+        }
         deserializeBlock(db, builder);
         deserializeHeightAndBiome(db, builder);
-        deserializeTileAndEntity(db, builder);
         deserializeTileAndEntity(db, builder);
     }
 
@@ -62,6 +80,7 @@ public class LevelDBChunkSerializer {
             if (section == null) {
                 continue;
             }
+            long l = section.lock().writeLock();
             ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
             try {
                 buffer.writeByte(ChunkSection.VERSION);
@@ -73,6 +92,7 @@ public class LevelDBChunkSerializer {
                 writeBatch.put(LevelDBKeyUtil.CHUNK_SECTION_PREFIX.getKey(chunk.getX(), chunk.getZ(), ySection, chunk.getProvider().getDimensionData()), Utils.convertByteBuf2Array(buffer));
             } finally {
                 buffer.release();
+                section.lock().unlock(l);
             }
         }
     }

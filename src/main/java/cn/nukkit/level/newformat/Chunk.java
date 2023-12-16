@@ -23,13 +23,14 @@ public class Chunk implements IChunk {
     protected final Map<Long, Entity> entities;
     protected final Map<Long, BlockEntity> blockEntities;
     //delay load block entity and entity
-    protected List<CompoundTag> blockEntityNBT;
-    protected List<CompoundTag> entityNBT;
+    protected final List<CompoundTag> blockEntityNBT;
+    protected final List<CompoundTag> entityNBT;
     protected final LevelProvider provider;
     protected final ChunkSection[] sections;
     protected final short[] heightMap;//256 size
-    protected ChunkState chunkState;
-    protected long changes;
+    protected final CompoundTag extraData;
+    protected volatile ChunkState chunkState;
+    protected volatile long changes;
     private int x;
     private int z;
     private long hash;
@@ -49,6 +50,7 @@ public class Chunk implements IChunk {
         this.blockEntities = new Long2ObjectNonBlockingMap<>();
         this.entityNBT = new ArrayList<>();
         this.blockEntityNBT = new ArrayList<>();
+        this.extraData = new CompoundTag();
     }
 
     private Chunk(
@@ -61,7 +63,8 @@ public class Chunk implements IChunk {
             final Map<Long, Entity> entities,
             final Map<Long, BlockEntity> blockEntities,
             final List<CompoundTag> entityNBT,
-            final List<CompoundTag> blockEntityNBT
+            final List<CompoundTag> blockEntityNBT,
+            final CompoundTag extraData
     ) {
         this.chunkState = state;
         this.x = chunkX;
@@ -73,66 +76,68 @@ public class Chunk implements IChunk {
         this.blockEntities = blockEntities;
         this.entityNBT = entityNBT;
         this.blockEntityNBT = blockEntityNBT;
+        this.extraData = extraData;
     }
 
     @Override
     public boolean isSectionEmpty(int fY) {
-        return false;
+        return this.sections[fY - getDimensionData().getMinSectionY()].isEmpty();
     }
 
     @Override
     public ChunkSection getSection(int fY) {
-        return null;
+        return this.sections[fY - getDimensionData().getMinSectionY()];
     }
 
     @Override
     public boolean setSection(int fY, ChunkSection section) {
-        return false;
+        if (section.isEmpty()) {
+            this.sections[fY - getDimensionData().getMinSectionY()] = ChunkSection.EMPTY[fY - getDimensionData().getMinSectionY()];
+        } else {
+            this.sections[fY - getDimensionData().getMinSectionY()] = section;
+        }
+        setChanged();
+        return true;
     }
 
     @Override
     public ChunkSection[] getSections() {
-        return new ChunkSection[0];
+        return this.sections;
     }
 
     @Override
     public int getX() {
-        return 0;
+        return x;
     }
 
     @Override
     public void setX(int x) {
-
+        this.x = x;
     }
 
     @Override
     public int getZ() {
-        return 0;
+        return z;
     }
 
     @Override
     public void setZ(int z) {
-
+        this.z = z;
     }
 
     @Override
     public long getIndex() {
-        return 0;
+        return this.hash;
     }
 
     @Override
     public LevelProvider getProvider() {
-        return null;
-    }
-
-    @Override
-    public void setProvider(LevelProvider provider) {
-
+        return provider;
     }
 
     @Override
     public Block getBlock(int x, int y, int z, int layer) {
-        return null;
+        getSection(y >> 4).getBlockState(x, y & 0x0f, z, layer);
     }
 
     @Override
@@ -241,32 +246,12 @@ public class Chunk implements IChunk {
     }
 
     @Override
-    public boolean isPopulated() {
-        return false;
+    public ChunkState getChunkState() {
+        return null;
     }
 
     @Override
-    public void setPopulated(boolean value) {
-
-    }
-
-    @Override
-    public void setPopulated() {
-
-    }
-
-    @Override
-    public boolean isGenerated() {
-        return false;
-    }
-
-    @Override
-    public void setGenerated(boolean value) {
-
-    }
-
-    @Override
-    public void setGenerated() {
+    public void setChunkState(ChunkState chunkState) {
 
     }
 
@@ -321,17 +306,17 @@ public class Chunk implements IChunk {
     }
 
     @Override
-    public boolean unload() throws Exception {
+    public boolean unload() {
         return false;
     }
 
     @Override
-    public boolean unload(boolean save) throws Exception {
+    public boolean unload(boolean save) {
         return false;
     }
 
     @Override
-    public boolean unload(boolean save, boolean safe) throws Exception {
+    public boolean unload(boolean save, boolean safe) {
         return false;
     }
 
@@ -361,6 +346,11 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    public CompoundTag getExtraData() {
+        return this.extraData;
+    }
+
+    @Override
     public boolean hasChanged() {
         return false;
     }
@@ -385,6 +375,10 @@ public class Chunk implements IChunk {
         return false;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public static class Builder implements IChunkBuilder {
         ChunkState state;
         int chunkZ;
@@ -396,6 +390,10 @@ public class Chunk implements IChunk {
         List<CompoundTag> blockEntities;
         List<CompoundTag> blockEntityNBT;
         List<CompoundTag> entityNBT;
+        CompoundTag extraData;
+
+        private Builder() {
+        }
 
         public Builder chunkX(int chunkX) {
             this.chunkX = chunkX;
@@ -458,6 +456,12 @@ public class Chunk implements IChunk {
             return this;
         }
 
+        @Override
+        public IChunkBuilder extraData(CompoundTag extraData) {
+            this.extraData = extraData;
+            return this;
+        }
+
         public Chunk build() {
             Preconditions.checkNotNull(levelProvider);
             if (state == null) state = ChunkState.NEW;
@@ -475,7 +479,8 @@ public class Chunk implements IChunk {
                     new Long2ObjectNonBlockingMap<>(),
                     new Long2ObjectNonBlockingMap<>(),
                     entities,
-                    blockEntities
+                    blockEntities,
+                    extraData
             );
         }
 

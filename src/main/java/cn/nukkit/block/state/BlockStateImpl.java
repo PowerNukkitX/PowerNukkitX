@@ -60,6 +60,11 @@ record BlockStateImpl(String identifier,
     }
 
     @Override
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    @Override
     public int blockStateHash() {
         return this.blockhash;
     }

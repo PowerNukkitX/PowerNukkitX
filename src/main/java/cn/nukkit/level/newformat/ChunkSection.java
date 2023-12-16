@@ -26,6 +26,13 @@ public record ChunkSection(byte sectionY,
     public static final int SIZE = 16 * 16 * 16;
     public static final int LAYER_COUNT = 2;
     public static final int VERSION = 9;
+    public static final ChunkSection[] EMPTY = new ChunkSection[64];//-32 ~ 31
+
+    static {
+        for (int i = 0; i < EMPTY.length; i++) {
+            EMPTY[i] = new ChunkSection((byte) i);
+        }
+    }
 
     public ChunkSection(byte sectionY) {
         this(sectionY,

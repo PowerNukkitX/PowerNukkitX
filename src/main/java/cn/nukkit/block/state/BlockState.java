@@ -9,6 +9,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @author daoge_cmd
  */
 public interface BlockState {
+    String getIdentifier();
+
     BlockPropertyType.BlockPropertyValue<?, ?, ?>[] getBlockPropertyValues();
 
     int blockStateHash();

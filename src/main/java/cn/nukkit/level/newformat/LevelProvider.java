@@ -16,6 +16,8 @@ public interface LevelProvider {
     byte ORDER_YZX = 0;
     byte ORDER_ZXY = 1;
 
+    void initDimensionData(DimensionData dimensionData);
+
     DimensionData getDimensionData();
 
     AsyncTask requestChunkTask(int X, int Z);

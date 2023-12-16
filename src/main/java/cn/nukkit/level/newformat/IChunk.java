@@ -3,7 +3,9 @@ package cn.nukkit.level.newformat;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.biome.Biome;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.io.IOException;
 import java.util.Map;
@@ -30,7 +32,7 @@ public interface IChunk {
     /**
      * Is section empty.
      *
-     * @param fY the f y
+     * @param fY range -4 ~ 19 for Overworld
      * @return the boolean
      */
     boolean isSectionEmpty(int fY);
@@ -43,6 +45,13 @@ public interface IChunk {
      */
     ChunkSection getSection(int fY);
 
+    /**
+     * Sets section.
+     *
+     * @param fY      range -4 ~ 19 for Overworld
+     * @param section the section
+     * @return the section
+     */
     boolean setSection(int fY, ChunkSection section);
 
     ChunkSection[] getSections();
@@ -64,17 +73,23 @@ public interface IChunk {
 
     LevelProvider getProvider();
 
-    /**
-     * Sets provider.
-     *
-     * @param provider the provider
-     */
-    void setProvider(LevelProvider provider);
+    default DimensionData getDimensionData() {
+        return getProvider().getDimensionData();
+    }
 
     default Block getBlock(int x, int y, int z) {
         return getBlock(x, y, z, 0);
     }
 
+    /**
+     * Gets block.
+     *
+     * @param x     the x
+     * @param y     the chunk y range -64 ~ 319 for OVERWORLD
+     * @param z     the z
+     * @param layer the layer
+     * @return the block
+     */
     Block getBlock(int x, int y, int z, int layer);
 
     Block getAndSetBlock(Block block, int layer);
@@ -138,17 +153,9 @@ public interface IChunk {
 
     void setLightPopulated();
 
-    boolean isPopulated();
+    ChunkState getChunkState();
 
-    void setPopulated(boolean value);
-
-    void setPopulated();
-
-    boolean isGenerated();
-
-    void setGenerated(boolean value);
-
-    void setGenerated();
+    void setChunkState(ChunkState chunkState);
 
     void addEntity(Entity entity);
 
@@ -170,11 +177,11 @@ public interface IChunk {
 
     boolean load(boolean generate) throws IOException;
 
-    boolean unload() throws Exception;
+    boolean unload();
 
-    boolean unload(boolean save) throws Exception;
+    boolean unload(boolean save);
 
-    boolean unload(boolean save, boolean safe) throws Exception;
+    boolean unload(boolean save, boolean safe);
 
     /**
      * Init chunk.Load block entity and entity NBT
@@ -188,6 +195,8 @@ public interface IChunk {
     byte[] getBlockSkyLightArray();
 
     byte[] getBlockLightArray();
+
+    CompoundTag getExtraData();
 
     boolean hasChanged();
 

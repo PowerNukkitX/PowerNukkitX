@@ -52,11 +52,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static final Block[] EMPTY_ARRAY = new Block[0];
     public static final double DEFAULT_FRICTION_FACTOR = 0.6;
     public static final double DEFAULT_AIR_FLUID_FRICTION = 0.95;
-    public int layer;
-    protected BlockColor color;
-    private BlockState blockstate;
     //todo fix getcolor
     protected static final Map<Long, BlockColor> VANILLA_BLOCK_COLOR_MAP = new Long2ObjectOpenHashMap<>();
+    private BlockState blockstate;
+    protected BlockColor color;
+    public int layer;
 
     static {
         try (var reader = new InputStreamReader(new BufferedInputStream(Objects.requireNonNull(Block.class.getClassLoader().getResourceAsStream("block_color.json"))))) {

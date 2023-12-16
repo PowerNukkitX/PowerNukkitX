@@ -35,6 +35,8 @@ public interface IChunkBuilder {
 
     IChunkBuilder blockEntities(List<CompoundTag> blockEntities);
 
+    IChunkBuilder extraData(CompoundTag extraData);
+
     IChunk build();
 
     IChunk emptyChunk(int chunkX, int chunkZ);

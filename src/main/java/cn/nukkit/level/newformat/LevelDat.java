@@ -21,7 +21,7 @@ public class LevelDat {
     @Builder.Default
     int difficulty = 1;
     @Builder.Default
-    String flatWorldLayers = "";//used for pnx `generatorOptions`
+    String flatWorldLayers = "";
     @Builder.Default
     boolean forceGameType = false;
     @Builder.Default
@@ -172,9 +172,37 @@ public class LevelDat {
     @Builder.Default
     WorldPolicies worldPolicies = new WorldPolicies();
     @Builder.Default
-    long dayTime = 0L;//PNX Custom field
-    @Builder.Default
     String generatorName = "normal";//PNX Custom field
+    @Builder.Default
+    String generatorOptions = "";//PNX Custom field
+    @Builder.Default
+    boolean raining = false;//PNX Custom field
+    @Builder.Default
+    boolean thundering = false;//PNX Custom field
+
+    public void setRandomSeed(long seed) {
+        this.randomSeed = seed;
+    }
+
+    public void setCurrentTick(int currentTick) {
+        this.currentTick = currentTick;
+    }
+
+    public void setLightningTime(int lightningTime) {
+        this.lightningTime = lightningTime;
+    }
+
+    public void setThundering(boolean thundering) {
+        this.thundering = thundering;
+    }
+
+    public void setRainTime(int rainTime) {
+        this.rainTime = rainTime;
+    }
+
+    public void setRaining(boolean raining) {
+        this.raining = raining;
+    }
 
     public void setGameType(GameType gameType) {
         this.gameType = gameType;
@@ -263,7 +291,7 @@ public class LevelDat {
         boolean invulnerable = false;
 
         @Builder.Default
-        boolean lightning = false;//thundering
+        boolean lightning = false;
 
         @Builder.Default
         boolean mayFly = false;

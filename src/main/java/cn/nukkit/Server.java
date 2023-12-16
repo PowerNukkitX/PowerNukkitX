@@ -2819,43 +2819,13 @@ public class Server {
             level.initLevel(givenDimensionData);
             level.setTickRate(this.baseTickRate);
         } catch (Exception e) {
-            log.error(this.getLanguage().tr("nukkit.level.generationError", new String[]{name, Utils.getExceptionMessage(e)}), e);
+            log.error(this.getLanguage().tr("nukkit.level.generationError", name, Utils.getExceptionMessage(e)), e);
             return false;
         }
 
         this.getPluginManager().callEvent(new LevelInitEvent(level));
 
         this.getPluginManager().callEvent(new LevelLoadEvent(level));
-
-        /*this.getLogger().notice(this.getLanguage().tr("nukkit.level.backgroundGeneration", name));
-
-        int centerX = (int) level.getSpawnLocation().getX() >> 4;
-        int centerZ = (int) level.getSpawnLocation().getZ() >> 4;
-
-        TreeMap<String, Integer> order = new TreeMap<>();
-
-        for (int X = -3; X <= 3; ++X) {
-            for (int Z = -3; Z <= 3; ++Z) {
-                int distance = X * X + Z * Z;
-                int chunkX = X + centerX;
-                int chunkZ = Z + centerZ;
-                order.put(Level.chunkHash(chunkX, chunkZ), distance);
-            }
-        }
-
-        List<Map.Entry<String, Integer>> sortList = new ArrayList<>(order.entrySet());
-
-        Collections.sort(sortList, new Comparator<Map.Entry<String, Integer>>() {
-            @Override
-            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
-                return o2.getValue() - o1.getValue();
-            }
-        });
-
-        for (String index : order.keySet()) {
-            Chunk.Entry entry = Level.getChunkXZ(index);
-            level.populateChunk(entry.chunkX, entry.chunkZ, true);
-        }*/
         return true;
     }
 
