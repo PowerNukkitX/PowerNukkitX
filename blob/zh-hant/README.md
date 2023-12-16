@@ -3,11 +3,11 @@
 <h2>🌐Need to switch languages?&ensp;/&ensp;多語言文檔</h2>
 
 [![Discord](https://img.shields.io/discord/944227466912870410?color=7289da&logo=discord&logoColor=white&style=flat-square)](https://discord.gg/BcPhZCVJHJ)
-[![English](https://img.shields.io/badge/English-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
-[![简体中文](https://img.shields.io/badge/简体中文-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hans/README.md)
-[![繁體中文](https://img.shields.io/badge/繁體中文-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
-[![ChangeLog](https://img.shields.io/badge/ChangeLog-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CHANGELOG.md)
+[![English](https://img.shields.io/badge/English-Click%20me-purple?style=flat-square)](../../README.md)
+[![简体中文](https://img.shields.io/badge/简体中文-Click%20me-purple?style=flat-square)](../zh-hans/README.md)
+[![繁體中文](https://img.shields.io/badge/繁體中文-Click%20me-purple?style=flat-square)](./README.md)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](../../LICENSE)
+[![ChangeLog](https://img.shields.io/badge/ChangeLog-blue?style=flat-square)](./CHANGELOG.md)
 [![FAQ](https://img.shields.io/badge/FAQ-blue?style=flat-square)](https://doc.powernukkitx.cn/zh-cn/faq/common.html)
 [![PNX-DOC](https://img.shields.io/badge/PNX-DOC文檔庫-blue?style=flat-square)](https://doc.powernukkitx.cn)
 [![Maven Central](https://img.shields.io/maven-central/v/cn.powernukkitx/powernukkitx.svg?label=Maven%20Central&style=flat-square)](https://search.maven.org/search?q=g:%22cn.powernukkitx%22%20AND%20a:%22powernukkitx%22)
@@ -24,17 +24,16 @@
 
 PowerNukkitX的優勢：
 
-1. 支持1.20.30協議。
-2. 原生支持384限高（目前僅限主世界，其餘則為256格限高）。
-3. 原生支持地獄世界，無需另外安裝插件補丁等。
-4. 支持3D生物群系（完善中）。<!--自定義維度接口 TODO-->
-5. 原生支持香草命令和命令方塊等（完善中）。
-6. 內置[Terra](https://github.com/PolyhedralDev/Terra)地形生成器（如有問題[點此查看](https://doc.powernukkitx.cn/zh-cn/faq/terra.html)）。
-7. 支持使用JavaSrcipt語言編寫插件
+- 支持1.20.30協議。
+- 原生支持384限高（目前僅限主世界，其餘則為256格限高）。
+- 原生支持地獄世界，無需另外安裝插件補丁等。
+- 支持3D生物群系（完善中）。<!--自定義維度接口 TODO-->
+- 原生支持香草命令和命令方塊等（完善中）。
+- 內置[Terra](https://github.com/PolyhedralDev/Terra)地形生成器（如有問題[點此查看](https://doc.powernukkitx.cn/zh-cn/faq/terra.html)）。
+- 支持使用JavaSrcipt語言編寫插件
    （初步完成，可在[此處](https://doc.powernukkitx.cn/zh-cn/dev/js/setup_dev_env.html)查找開發文檔）。
-8. 支持自定義方塊 / 物品 / 實體（完善中，[檔案](https://doc.powernukkitx.cn)待補充）。
-9. 內置生物AI，無需安裝MobPlugin（開發中，未完善）。
-10. Todo...
+- 支持自定義方塊 / 物品 / 實體（完善中，[檔案](https://doc.powernukkitx.cn)待補充）。
+- 內置生物AI，無需安裝MobPlugin（開發中，未完善）。
 
 ---
 
@@ -104,7 +103,7 @@ https://hub.docker.com/r/coolloong/powernukkitx
 
 * 請注意**PowerNukkitX**
   非Cloudburst的開發人員維護，它依靠的是開源社區的開發者們用愛發電，如果您在使用PowerNukkitX時遇到了發現了任何問題，您首先應該在此存儲庫[創建一條issue](https://github.com/PowerNukkitX/PowerNukkitX/issues)
-  （同時請注意閱讀[貢獻幫助指南](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CONTRIBUTING.md)中的規定）。
+  （同時請注意閱讀[貢獻幫助指南](./CODE_OF_CONDUCT.md)中的規定）。
 
 * 同時我們推薦您進行定期備份等操作，並使用為[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)
   製作的插件，並使用[穩定版PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases)進行部署。
@@ -164,7 +163,7 @@ dependencies {
 
 🧐 貢獻一份力量
 ---
-您在提交任何問題或代碼上傳合併等請求時，請先閱讀[貢獻幫助指南](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CONTRIBUTING.md)後再進行提問或其它操作，信息不足或格式錯誤等我們將不會回复您並關閉您的請求。
+您在提交任何問題或代碼上傳合併等請求時，請先閱讀[貢獻幫助指南](./CODE_OF_CONDUCT.md)後再進行提問或其它操作，信息不足或格式錯誤等我們將不會回复您並關閉您的請求。
 
 ---
 

@@ -3,11 +3,11 @@
 <h2>🌐Need to switch languages?&ensp;/&ensp;多语言文档</h2>
 
 [![Discord](https://img.shields.io/discord/944227466912870410?color=7289da&logo=discord&logoColor=white&style=flat-square)](https://discord.gg/BcPhZCVJHJ)
-[![English](https://img.shields.io/badge/English-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
-[![简体中文](https://img.shields.io/badge/简体中文-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hans/README.md)
-[![繁體中文](https://img.shields.io/badge/繁體中文-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
-[![ChangeLog](https://img.shields.io/badge/ChangeLog-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CHANGELOG.md)
+[![English](https://img.shields.io/badge/English-Click%20me-purple?style=flat-square)](/README.md)
+[![简体中文](https://img.shields.io/badge/简体中文-Click%20me-purple?style=flat-square)](/blob/zh-hans/README.md)
+[![繁體中文](https://img.shields.io/badge/繁體中文-Click%20me-purple?style=flat-square)](/blob/zh-hant/README.md)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](/LICENSE)
+[![ChangeLog](https://img.shields.io/badge/ChangeLog-blue?style=flat-square)](/CHANGELOG.md)
 [![FAQ](https://img.shields.io/badge/FAQ-blue?style=flat-square)](https://www.powernukkitx.com/doc/en-us/faq/common.html)
 [![PNX-DOC](https://img.shields.io/badge/PNX-DOC-blue?style=flat-square)](https://doc.powernukkitx.cn)
 [![Maven Central](https://img.shields.io/maven-central/v/cn.powernukkitx/powernukkitx.svg?label=Maven%20Central&style=flat-square)](https://search.maven.org/search?q=g:%22cn.powernukkitx%22%20AND%20a:%22powernukkitx%22)
@@ -24,19 +24,18 @@ Join US:
 
 What's new in PowerNukkitX? Let's See：
 
-1. Support for 1.20.40 protocol.
-2. Support for 384 world height.
-3. Support for The Nether world, no need to install additional plugin.
-4. Support 3D biomes.<!--Custom dimension interface TODO-->
-5. Support for vanilla commands and command block.
-6. Built-in [Terra](https://github.com/PolyhedralDev/Terra) generator (if you have
+- Support for 1.20.40 protocol.
+- Support for 384 world height.
+- Support for The Nether world, no need to install additional plugin.
+- Support 3D biomes.<!--Custom dimension interface TODO-->
+- Support for vanilla commands and command block.
+- Built-in [Terra](https://github.com/PolyhedralDev/Terra) generator (if you have
    questions [click here to view](https://www.powernukkitx.com/doc/en-us/faq/terra.html)) .
-7. Support for writing plugins using the JavaScript language (development documentation can be
+- Support for writing plugins using the JavaScript language (development documentation can be
    found [here](https://www.powernukkitx.com/doc/en-us/dev/js/setup_dev_env.html)).
-8. Support custom blocks / items / entity (refinement in progress, [documentation](https://doc.powernukkitx.cn/) to be
+- Support custom blocks / items / entity (refinement in progress, [documentation](https://doc.powernukkitx.cn/) to be
    added).
-9. Original Entity AI framework, no need to install MobPlugin (under development, Not all creature completed).
-10. Todo...
+- Original Entity AI framework, no need to install MobPlugin (under development, Not all creature completed).
 
 ---
 
@@ -109,7 +108,7 @@ compatibility.
   to generate electricity with love. If you encounter any problems when using PowerNukkitX, you should
   first [create an issue](https://github.com/PowerNukkitX/PowerNukkitX/issues) in this repository (please also note to
   read the rules in
-  the [Contribution Help Guide](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CONTRIBUTING.md)).
+  the [Contribution Help Guide](/CODE_OF_CONDUCT.md)).
 
 * We also recommend that you perform regular backups and other operations, and use the plug-ins made
   for [PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX) and
@@ -175,7 +174,7 @@ dependencies {
 
 🧐 Contributing
 ---
-Please read the [CONTRIBUTING](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CONTRIBUTING.md) guide before submitting any issue.  Issues with insufficient information or in the wrong format will be closed and will not be reviewed.
+Please read the [CONTRIBUTING](/CODE_OF_CONDUCT.md) guide before submitting any issue.  Issues with insufficient information or in the wrong format will be closed and will not be reviewed.
 
 ---
 

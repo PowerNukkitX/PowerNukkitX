@@ -18,16 +18,32 @@
 - [#1407] 加入`駱駝`刷怪蛋。
 - [#1410] 新增新的配方。
 - [#1413] 新增能在查詢中更改Minecraft版本的功能。
+- [#1414] `1.20`特性更新。
+- [#1423] 為新版本新增了`ChunkUpdater`/`LogUpdater`/`FacingToCardinalDirectionUpdater` 。
+- [#1427] 增加更多的`船`。
+- [#1430] 新增`playersSleepingPercentage`遊戲規則。
 
 ## 修改記錄
 
 - [#1406] 更新了有形狀和無形狀的製作配方。
 - [#1411] 更新`block_color.json`和`block_property_types.json`。
+- [#1416] 更新`Minecraft Wiki`連結。
+- [#1431] 改良`PopulatorSugarcane`。
+- [#1433] JavaDoc內容修正。
 
 ## BUG修復
 
 - [#1405] 修正了新版`Block Properties`的問題。
 - [#1410] 修復`chest pair`。
+- [#1414] `1.20.4`BUG修復。
+- [#1424] 修復`ChunkUpdater`。
+- [#1425] 修正`newID`與`原始ID`相同的問題。
+- [#1426] 修復max sense not taken in action。
+- [#1427] 修復`SkullSherd package`。
+- [#1428] 修復`弓箭`不會消失的問題。
+- [#1429] 修正`礦物`和`石頭`類方塊的生成問題。
+- [#1432] 修正`發射器`無法發射藥水的問題。
+- [#1434] 修正了`羊毛顏色`和`剪切狀態`相關的問題。 <!-- #1434 Master branch only -->
 
 ## [1.20.40-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.40-r1) - 2023-10-26
 該版本目前支援了Minecraft:BE `1.20.40 (協議版本622)`.
@@ -1969,11 +1985,11 @@ Fixes several anvil issues.
 ---
 Need to switch languages? 
 
-[![简体中文](https://img.shields.io/badge/简体中文-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hans/CHANGELOG.md)
-[![繁體中文](https://img.shields.io/badge/繁體中文-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CHANGELOG.md)
-[![English](https://img.shields.io/badge/English-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CHANGELOG.md)
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
-[![README](https://img.shields.io/badge/README-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
+[![简体中文](https://img.shields.io/badge/简体中文-Click%20me-purple?style=flat-square)](../zh-hans/CHANGELOG.md)
+[![繁體中文](https://img.shields.io/badge/繁體中文-Click%20me-purple?style=flat-square)](./CHANGELOG.md)
+[![English](https://img.shields.io/badge/English-Click%20me-purple?style=flat-square)](../../CHANGELOG.md)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](../../LICENSE)
+[![README](https://img.shields.io/badge/README-blue?style=flat-square)](./README.md)
 [![PNX-DOC](https://img.shields.io/badge/PNX-DOC-blue?style=flat-square)](https://doc.powernukkitx.cn)
 
 [updated changelog]:https://github.com/PowerNukkit/PowerNukkit/blob/bleeding/CHANGELOG.md
@@ -2834,6 +2850,21 @@ Need to switch languages?
 [#1410]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1410
 [#1411]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1411
 [#1413]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1413
+[#1414]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1414
+[#1416]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1416
+[#1423]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1423
+[#1424]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1424
+[#1425]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1425
+[#1426]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1426
+[#1427]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1427
+[#1428]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1428
+[#1429]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1429
+[#1430]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1430
+[#1431]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1431
+[#1432]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1432
+[#1433]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1433
+<!-- #1434 Master branch only -->
+[#1434]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1434 
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->

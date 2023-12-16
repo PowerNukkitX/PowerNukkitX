@@ -18,16 +18,32 @@ This work in progress version supports Minecraft:BE `1.20.40 (Protocol Version 6
 - [#1407] Add `camel_spawn_egg`.
 - [#1410] Add some repice.
 - [#1413] Add ability to change Minecraft version in query.
+- [#1414] `1.20` features update.
+- [#1423] Added `ChunkUpdaters` for newest version: `LogUpdater` and `FacingToCardinalDirectionUpdater`.
+- [#1427] Feat: more `boats`.
+- [#1430] Add `playersSleepingPercentage` GameRule.
 
 ## Changed
 
 - [#1406] Updated shaped and shapeless crafting recipes.  
 - [#1411] Update `block_color.json` & `block_property_types.json`.
+- [#1416] Update Chinese `Minecraft wiki` links to new domain.
+- [#1431] Improvement `PopulatorSugarcane`.
+- [#1433] Minor JavaDoc Organizing and Typo Fixes.
 
 ## Fixes
 
 - [#1405] Fixed `Block Properties` for the new MC Version.
 - [#1410] Fix `chest pair`.
+- [#1414] `1.20.4` BUG Fix.
+- [#1424] Fixed `ChunkUpdater`.
+- [#1425] Fixed newID being the same as the origin one.
+- [#1426] Fix max sense not taken in action.
+- [#1427] Fix `SkullSherd package`.
+- [#1428] Fix `arrow` does not disappear.
+- [#1429] Fix `ore & stone` types generation.
+- [#1432] Fix `dispenser` potion not working.
+- [#1434] Fixed `sheep wool color` and `sheared state` persistence issues. <!-- #1434 Master branch only  -->
 
 ## [1.20.40-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.40-r1) - 2023-10-26
 This work in progress version supports Minecraft:BE `1.20.40 (Protocol Version 622)`.
@@ -1966,11 +1982,11 @@ Fixes several anvil issues.
 ---
 Need to switch languages? 
 
-[![简体中文](https://img.shields.io/badge/简体中文-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hans/CHANGELOG.md)
-[![繁體中文](https://img.shields.io/badge/繁體中文-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CHANGELOG.md)
-[![English](https://img.shields.io/badge/English-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CHANGELOG.md)
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
-[![README](https://img.shields.io/badge/README-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
+[![简体中文](https://img.shields.io/badge/简体中文-Click%20me-purple?style=flat-square)](/blob/zh-hans/CHANGELOG.md)
+[![繁體中文](https://img.shields.io/badge/繁體中文-Click%20me-purple?style=flat-square)](/blob/zh-hant/CHANGELOG.md)
+[![English](https://img.shields.io/badge/English-Click%20me-purple?style=flat-square)](/CHANGELOG.md)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](/LICENSE)
+[![README](https://img.shields.io/badge/README-blue?style=flat-square)](/README.md)
 [![PNX-DOC](https://img.shields.io/badge/PNX-DOC-blue?style=flat-square)](https://doc.powernukkitx.cn)
 
 [updated changelog]:https://github.com/PowerNukkit/PowerNukkit/blob/bleeding/CHANGELOG.md
@@ -2831,6 +2847,21 @@ Need to switch languages?
 [#1410]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1410
 [#1411]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1411
 [#1413]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1413
+[#1414]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1414
+[#1416]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1416
+[#1423]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1423
+[#1424]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1424
+[#1425]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1425
+[#1426]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1426
+[#1427]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1427
+[#1428]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1428
+[#1429]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1429
+[#1430]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1430
+[#1431]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1431
+[#1432]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1432
+[#1433]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1433
+<!-- #1434 Master branch only -->
+[#1434]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1434 
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
