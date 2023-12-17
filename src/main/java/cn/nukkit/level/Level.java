@@ -4710,7 +4710,7 @@ public class Level implements ChunkManager, Metadatable {
         final int targZ = target.getFloorZ();
         //check if there's air above (at least 3 blocks)
         for (int i = 1; i < 4; i++) {
-            if (this.getBlockIdAt(targX, targY + i, targZ) != BlockID.AIR) {
+            if (!this.getBlock(targX, targY + i, targZ).isAir()) {
                 return false;
             }
         }
@@ -4719,28 +4719,28 @@ public class Level implements ChunkManager, Metadatable {
         int sizePosZ = 0;
         int sizeNegZ = 0;
         for (int i = 1; i < maxPortalSize; i++) {
-            if (this.getBlockIdAt(targX + i, targY, targZ) == BlockID.OBSIDIAN) {
+            if (this.getBlock(targX + i, targY, targZ).getId().equals(BlockID.OBSIDIAN)) {
                 sizePosX++;
             } else {
                 break;
             }
         }
         for (int i = 1; i < maxPortalSize; i++) {
-            if (this.getBlockIdAt(targX - i, targY, targZ) == BlockID.OBSIDIAN) {
+            if (this.getBlock(targX - i, targY, targZ).getId().equals(BlockID.OBSIDIAN)) {
                 sizeNegX++;
             } else {
                 break;
             }
         }
         for (int i = 1; i < maxPortalSize; i++) {
-            if (this.getBlockIdAt(targX, targY, targZ + i) == BlockID.OBSIDIAN) {
+            if (this.getBlock(targX, targY, targZ + i).getId().equals(BlockID.OBSIDIAN)) {
                 sizePosZ++;
             } else {
                 break;
             }
         }
         for (int i = 1; i < maxPortalSize; i++) {
-            if (this.getBlockIdAt(targX, targY, targZ - i) == BlockID.OBSIDIAN) {
+            if (this.getBlock(targX, targY, targZ - i).getId().equals(BlockID.OBSIDIAN)) {
                 sizeNegZ++;
             } else {
                 break;
@@ -4757,23 +4757,23 @@ public class Level implements ChunkManager, Metadatable {
             int scanZ = targZ;
             for (int i = 0; i < sizePosX + 1; i++) {
                 //this must be air
-                if (this.getBlockIdAt(scanX + i, scanY, scanZ) != BlockID.AIR) {
+                if (!this.getBlock(scanX + i, scanY, scanZ).isAir()) {
                     return false;
                 }
-                if (this.getBlockIdAt(scanX + i + 1, scanY, scanZ) == BlockID.OBSIDIAN) {
+                if (this.getBlock(scanX + i + 1, scanY, scanZ).getId().equals(BlockID.OBSIDIAN)) {
                     scanX += i;
                     break;
                 }
             }
             //make sure that the above loop finished
-            if (this.getBlockIdAt(scanX + 1, scanY, scanZ) != BlockID.OBSIDIAN) {
+            if (!this.getBlock(scanX + 1, scanY, scanZ).getId().equals(BlockID.OBSIDIAN)) {
                 return false;
             }
 
             int innerWidth = 0;
             LOOP:
             for (int i = 0; i < maxPortalSize - 2; i++) {
-                int id = this.getBlockIdAt(scanX - i, scanY, scanZ);
+                String id = this.getBlock(scanX - i, scanY, scanZ).getId();
                 switch (id) {
                     case BlockID.AIR:
                         innerWidth++;
@@ -4787,7 +4787,7 @@ public class Level implements ChunkManager, Metadatable {
             int innerHeight = 0;
             LOOP:
             for (int i = 0; i < maxPortalSize - 2; i++) {
-                int id = this.getBlockIdAt(scanX, scanY + i, scanZ);
+                String id = this.getBlock(scanX, scanY + i, scanZ).getId();
                 switch (id) {
                     case BlockID.AIR:
                         innerHeight++;
@@ -4808,18 +4808,18 @@ public class Level implements ChunkManager, Metadatable {
             for (int height = 0; height < innerHeight + 1; height++) {
                 if (height == innerHeight) {
                     for (int width = 0; width < innerWidth; width++) {
-                        if (this.getBlockIdAt(scanX - width, scanY + height, scanZ) != BlockID.OBSIDIAN) {
+                        if (!this.getBlock(scanX - width, scanY + height, scanZ).getId().equals(BlockID.OBSIDIAN)) {
                             return false;
                         }
                     }
                 } else {
-                    if (this.getBlockIdAt(scanX + 1, scanY + height, scanZ) != BlockID.OBSIDIAN
-                            || this.getBlockIdAt(scanX - innerWidth, scanY + height, scanZ) != BlockID.OBSIDIAN) {
+                    if (!this.getBlock(scanX + 1, scanY + height, scanZ).getId().equals(BlockID.OBSIDIAN)
+                            || !this.getBlock(scanX - innerWidth, scanY + height, scanZ).getId().equals(BlockID.OBSIDIAN)) {
                         return false;
                     }
 
                     for (int width = 0; width < innerWidth; width++) {
-                        if (this.getBlockIdAt(scanX - width, scanY + height, scanZ) != BlockID.AIR) {
+                        if (!this.getBlock(scanX - width, scanY + height, scanZ).isAir()) {
                             return false;
                         }
                     }
@@ -4828,7 +4828,7 @@ public class Level implements ChunkManager, Metadatable {
 
             for (int height = 0; height < innerHeight; height++) {
                 for (int width = 0; width < innerWidth; width++) {
-                    this.setBlock(new Vector3(scanX - width, scanY + height, scanZ), Block.get(BlockID.NETHER_PORTAL));
+                    this.setBlock(new Vector3(scanX - width, scanY + height, scanZ), Block.get(BlockID.PORTAL));
                 }
             }
 
@@ -4842,23 +4842,23 @@ public class Level implements ChunkManager, Metadatable {
             int scanZ = targZ;
             for (int i = 0; i < sizePosZ + 1; i++) {
                 //this must be air
-                if (this.getBlockIdAt(scanX, scanY, scanZ + i) != BlockID.AIR) {
+                if (!this.getBlock(scanX, scanY, scanZ + i).isAir()) {
                     return false;
                 }
-                if (this.getBlockIdAt(scanX, scanY, scanZ + i + 1) == BlockID.OBSIDIAN) {
+                if (this.getBlock(scanX, scanY, scanZ + i + 1).getId().equals(BlockID.OBSIDIAN)) {
                     scanZ += i;
                     break;
                 }
             }
             //make sure that the above loop finished
-            if (this.getBlockIdAt(scanX, scanY, scanZ + 1) != BlockID.OBSIDIAN) {
+            if (!this.getBlock(scanX, scanY, scanZ + 1).getId().equals(BlockID.OBSIDIAN)) {
                 return false;
             }
 
             int innerWidth = 0;
             LOOP:
             for (int i = 0; i < maxPortalSize - 2; i++) {
-                int id = this.getBlockIdAt(scanX, scanY, scanZ - i);
+                String id = this.getBlock(scanX, scanY, scanZ - i).getId();
                 switch (id) {
                     case BlockID.AIR:
                         innerWidth++;
@@ -4872,7 +4872,7 @@ public class Level implements ChunkManager, Metadatable {
             int innerHeight = 0;
             LOOP:
             for (int i = 0; i < maxPortalSize - 2; i++) {
-                int id = this.getBlockIdAt(scanX, scanY + i, scanZ);
+                String id = this.getBlock(scanX, scanY + i, scanZ).getId();
                 switch (id) {
                     case BlockID.AIR:
                         innerHeight++;
@@ -4893,18 +4893,18 @@ public class Level implements ChunkManager, Metadatable {
             for (int height = 0; height < innerHeight + 1; height++) {
                 if (height == innerHeight) {
                     for (int width = 0; width < innerWidth; width++) {
-                        if (this.getBlockIdAt(scanX, scanY + height, scanZ - width) != BlockID.OBSIDIAN) {
+                        if (!this.getBlock(scanX, scanY + height, scanZ - width).getId().equals(BlockID.OBSIDIAN)) {
                             return false;
                         }
                     }
                 } else {
-                    if (this.getBlockIdAt(scanX, scanY + height, scanZ + 1) != BlockID.OBSIDIAN
-                            || this.getBlockIdAt(scanX, scanY + height, scanZ - innerWidth) != BlockID.OBSIDIAN) {
+                    if (!this.getBlock(scanX, scanY + height, scanZ + 1).getId().equals(BlockID.OBSIDIAN)
+                            || !this.getBlock(scanX, scanY + height, scanZ - innerWidth).getId().equals(BlockID.OBSIDIAN)) {
                         return false;
                     }
 
                     for (int width = 0; width < innerWidth; width++) {
-                        if (this.getBlockIdAt(scanX, scanY + height, scanZ - width) != BlockID.AIR) {
+                        if (!this.getBlock(scanX, scanY + height, scanZ - width).isAir()) {
                             return false;
                         }
                     }
@@ -4913,7 +4913,7 @@ public class Level implements ChunkManager, Metadatable {
 
             for (int height = 0; height < innerHeight; height++) {
                 for (int width = 0; width < innerWidth; width++) {
-                    this.setBlock(new Vector3(scanX, scanY + height, scanZ - width), Block.get(BlockID.NETHER_PORTAL));
+                    this.setBlock(new Vector3(scanX, scanY + height, scanZ - width), Block.get(BlockID.PORTAL));
                 }
             }
 
