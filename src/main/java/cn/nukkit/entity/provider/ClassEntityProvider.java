@@ -3,7 +3,7 @@ package cn.nukkit.entity.provider;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.level.newformat.IChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;

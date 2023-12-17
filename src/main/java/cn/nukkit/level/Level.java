@@ -31,8 +31,10 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemBucket;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.biome.Biome;
+import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.DimensionDataProvider;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.BaseLevelProvider;
 import cn.nukkit.level.format.generic.EmptyChunkSection;
@@ -41,7 +43,6 @@ import cn.nukkit.level.generator.PopChunkManager;
 import cn.nukkit.level.generator.task.GenerationTask;
 import cn.nukkit.level.generator.task.LightPopulationTask;
 import cn.nukkit.level.generator.task.PopulationTask;
-import cn.nukkit.level.newformat.LevelProvider;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.tickingarea.TickingArea;
@@ -489,10 +490,6 @@ public class Level implements ChunkManager, Metadatable {
 
     public static Vector3 getBlockXYZ(BlockVector3 hash) {
         return new Vector3(hash.x, hash.y, hash.z);
-    }
-
-    public static Chunk.Entry getChunkXZ(long hash) {
-        return new Chunk.Entry(getHashX(hash), getHashZ(hash));
     }
 
     public static int generateChunkLoaderId(ChunkLoader loader) {
