@@ -3,6 +3,7 @@ package cn.nukkit.level.newformat;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.state.BlockRegistry;
 import cn.nukkit.block.state.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
@@ -43,6 +44,7 @@ public class Chunk implements IChunk {
     //delay load block entity and entity
     protected List<CompoundTag> blockEntityNBT;
     protected List<CompoundTag> entityNBT;
+
     private Chunk(
             final int chunkX,
             final int chunkZ,
@@ -227,7 +229,9 @@ public class Chunk implements IChunk {
         int max = getHighestBlockAt(x, z, false);
         int y;
         for (y = max; y >= 0; --y) {
-            if (Block.getLightFilter(getBlockIdAt(x, y, z)) > 1 || Block.diffusesSkyLight(getBlockIdAt(x, y, z))) {
+            BlockState blockState = getBlockState(x, y, z);
+            Block block = BlockRegistry.get(blockState);
+            if (block.getLightFilter() > 1 || block.diffusesSkyLight()) {
                 break;
             }
         }
@@ -238,7 +242,57 @@ public class Chunk implements IChunk {
 
     @Override
     public void populateSkyLight() {
+        // basic light calculation
+        for (int z = 0; z < 16; ++z) {
+            for (int x = 0; x < 16; ++x) { // iterating over all columns in chunk
+                int top = this.getHeightMap(x, z) - 1; // top-most block
 
+                int y;
+
+                for (y = getDimensionData().getMaxHeight(); y > top; --y) {
+                    // all the blocks above & including the top-most block in a column are exposed to sun and
+                    // thus have a skylight value of 15
+                    this.setBlockSkyLight(x, y, z, 15);
+                }
+
+                int nextLight = 15; // light value that will be applied starting with the next block
+                int nextDecrease = 0; // decrease that that will be applied starting with the next block
+
+                // TODO: remove nextLight & nextDecrease, use only light & decrease variables
+                for (y = top; y >= 0; --y) { // going under the top-most block
+                    nextLight -= nextDecrease;
+                    int light = nextLight; // this light value will be applied for this block. The following checks are all about the next blocks
+
+                    if (light < 0) {
+                        light = 0;
+                    }
+
+                    this.setBlockSkyLight(x, y, z, light);
+
+                    if (light == 0) { // skipping block checks, because everything under a block that has a skylight value
+                        // of 0 also has a skylight value of 0
+                        continue;
+                    }
+
+                    // START of checks for the next block
+                    BlockState blockState = getBlockState(x, y, z);
+                    Block block = BlockRegistry.get(blockState);
+
+                    if (!block.isTransparent()) { // if we encounter an opaque block, all the blocks under it will
+                        // have a skylight value of 0 (the block itself has a value of 15, if it's a top-most block)
+                        nextLight = 0;
+                    } else if (block.diffusesSkyLight()) {
+                        nextDecrease += 1; // skylight value decreases by one for each block under a block
+                        // that diffuses skylight. The block itself has a value of 15 (if it's a top-most block)
+                    } else {
+                        nextDecrease -= block.getLightFilter(); // blocks under a light filtering block will have a skylight value
+                        // decreased by the lightFilter value of that block. The block itself
+                        // has a value of 15 (if it's a top-most block)
+                    }
+                    // END of checks for the next block
+                }
+            }
+        }
     }
 
     @Override
