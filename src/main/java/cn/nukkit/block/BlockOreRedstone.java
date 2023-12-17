@@ -69,22 +69,19 @@ public class BlockOreRedstone extends BlockOre {
         return 0;
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     @Nullable
     @Override
     protected MinecraftItemID getRawMaterial() {
         return MinecraftItemID.REDSTONE;
     }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     public BlockState getLitState() {
         return BlockState.of(BlockID.LIT_REDSTONE_ORE);
     }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     public BlockState getUnlitState() {
         return BlockState.of(BlockID.REDSTONE_ORE);
     }

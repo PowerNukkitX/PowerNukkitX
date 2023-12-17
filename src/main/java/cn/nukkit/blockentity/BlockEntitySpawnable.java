@@ -37,12 +37,12 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
         player.dataPacket(getSpawnPacket());
     }
 
-    @PowerNukkitOnly
+
     public BlockEntityDataPacket getSpawnPacket() {
         return getSpawnPacket(null);
     }
 
-    @PowerNukkitOnly
+
     public BlockEntityDataPacket getSpawnPacket(CompoundTag nbt) {
         if (nbt == null) {
             nbt = this.getSpawnCompound();

@@ -30,8 +30,7 @@ public class BlockTerracotta extends BlockSolidMeta {
         return TERRACOTTA;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -59,7 +58,7 @@ public class BlockTerracotta extends BlockSolidMeta {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

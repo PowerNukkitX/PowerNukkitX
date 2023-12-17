@@ -10,8 +10,7 @@ import lombok.ToString;
 import java.util.ArrayList;
 import java.util.List;
 
-@PowerNukkitXOnly
-@Since("1.19.50-r3")
+
 @ToString
 public class PlayerFogPacket extends DataPacket {
 

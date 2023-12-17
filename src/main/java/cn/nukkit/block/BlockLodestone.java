@@ -20,12 +20,12 @@ import java.io.IOException;
 /**
  * @author joserobjr
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 @Log4j2
 public class BlockLodestone extends BlockSolid implements BlockEntityHolder<BlockEntityLodestone> {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public BlockLodestone() {
         // Does nothing
     }
@@ -35,16 +35,14 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
         return LODESTONE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntityLodestone> getBlockEntityClass() {
         return BlockEntityLodestone.class;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public String getBlockEntityType() {
@@ -129,8 +127,7 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
@@ -142,7 +139,7 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
     }
 
     @Override
-    @PowerNukkitOnly
+
     public  boolean sticksToPiston() {
         return false;
     }

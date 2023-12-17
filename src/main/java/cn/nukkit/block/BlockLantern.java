@@ -14,24 +14,23 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitOnly
+
 public class BlockLantern extends BlockFlowable {
     @Deprecated(since = "1.20.0-r2",forRemoval = true)
     @DeprecationDetails(since = "1.20.0-r2", reason = "replace to CommonBlockProperties")
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BooleanBlockProperty HANGING = new BooleanBlockProperty("hanging", false);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.HANGING);
 
-    @PowerNukkitOnly
+
     public BlockLantern() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockLantern(int meta) {
         super(meta);
     }
@@ -41,8 +40,7 @@ public class BlockLantern extends BlockFlowable {
         return LANTERN;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -184,25 +182,22 @@ public class BlockLantern extends BlockFlowable {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
 
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public boolean isHanging() {
         return getBooleanValue(CommonBlockProperties.HANGING);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setHanging(boolean hanging) {
         setBooleanValue(CommonBlockProperties.HANGING, hanging);
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;

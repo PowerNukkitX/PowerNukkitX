@@ -11,8 +11,7 @@ public class LevelException extends ServerException {
         super(message);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public LevelException(String message, Throwable cause) {
         super(message, cause);
     }

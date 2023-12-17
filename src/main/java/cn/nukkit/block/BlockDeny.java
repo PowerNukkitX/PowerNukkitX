@@ -11,12 +11,11 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 @ParametersAreNonnullByDefault
 public class BlockDeny extends BlockSolid {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public BlockDeny() {
         // Does nothing
     }
@@ -52,7 +51,7 @@ public class BlockDeny extends BlockSolid {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public  boolean canBePulled() {
         return false;
     }
@@ -70,8 +69,7 @@ public class BlockDeny extends BlockSolid {
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isBreakable(Vector3 vector, int layer, BlockFace face, Item item, @Nullable Player player, boolean setBlockDestroy) {
         if (player != null && (!player.isCreative() || !player.isOp())) {

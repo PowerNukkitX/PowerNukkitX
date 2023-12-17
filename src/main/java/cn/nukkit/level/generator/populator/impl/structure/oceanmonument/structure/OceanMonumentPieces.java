@@ -25,8 +25,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Set;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public class OceanMonumentPieces {
 
     private static final BlockState PRISMARINE = new BlockState(Block.PRISMARINE, BlockPrismarine.NORMAL);

@@ -35,15 +35,13 @@ public class BlockAzaleaLeaves extends BlockLeaves {
         return false;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean canHarvest(Item item) {
         return item.isShears();
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {

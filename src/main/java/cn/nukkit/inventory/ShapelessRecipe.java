@@ -24,11 +24,11 @@ public class ShapelessRecipe implements CraftingRecipe {
     private final Item output;
     private long least, most;
     private final List<Item> ingredientsAggregate;
-    @PowerNukkitXOnly
-    @Since("1.19.50-r2")
+
+
     private final List<String> needTags;
-    @PowerNukkitXOnly
-    @Since("1.19.50-r2")
+
+
     private final List<ItemDescriptor> newIngredients;
     private final int priority;
 
@@ -40,8 +40,7 @@ public class ShapelessRecipe implements CraftingRecipe {
         this(recipeId, priority, result, ingredients.stream().map(item -> (ItemDescriptor) new DefaultDescriptor(item)).toList());
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r2")
+
     public ShapelessRecipe(String recipeId, int priority, Item result, List<ItemDescriptor> ingredients) {
         this.recipeId = recipeId;
         this.priority = priority;
@@ -231,8 +230,7 @@ public class ShapelessRecipe implements CraftingRecipe {
         return ingredientsAggregate;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r2")
+
     public List<ItemDescriptor> getNewIngredients() {
         return newIngredients;
     }

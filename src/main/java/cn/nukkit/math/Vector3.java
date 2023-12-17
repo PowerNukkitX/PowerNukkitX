@@ -14,8 +14,7 @@ import javax.annotation.Nullable;
  */
 public class Vector3 implements Cloneable {
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public static final Vector3 ZERO = new Vector3(0, 0, 0);
 
     public double x;
@@ -52,19 +51,19 @@ public class Vector3 implements Cloneable {
         return this.z;
     }
 
-    @Since("1.19.60-r1")
+
     public Vector3 setX(double x) {
         this.x = x;
         return this;
     }
 
-    @Since("1.19.60-r1")
+
     public Vector3 setY(double y) {
         this.y = y;
         return this;
     }
 
-    @Since("1.19.60-r1")
+
     public Vector3 setZ(double z) {
         this.z = z;
         return this;
@@ -88,15 +87,13 @@ public class Vector3 implements Cloneable {
     public int getChunkZ() {
         return getFloorZ() >> 4;
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public int getChunkSectionY() {
         return getFloorY() >> 4;
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public ChunkVector2 getChunkVector() {
         return new ChunkVector2(getChunkX(), getChunkZ());
     }
@@ -244,8 +241,7 @@ public class Vector3 implements Cloneable {
         return getSide(BlockFace.WEST, step);
     }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     public int distanceManhattan(Vector3 pos) {
         double x = Math.abs(pos.getX() - this.getX());
         double y = Math.abs(pos.getY() - this.getY());
@@ -261,14 +257,12 @@ public class Vector3 implements Cloneable {
         return distanceSquared(pos.x, pos.y, pos.z);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public double distance(double x, double y, double z) {
         return Math.sqrt(distanceSquared(x, y, z));
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public double distanceSquared(double x, double y, double z) {
         double ex = this.x - x;
         double ey = this.y - y;
@@ -430,8 +424,7 @@ public class Vector3 implements Cloneable {
         return this;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     public Vector3 setComponentsAdding(double x, double y, double z, double ax, double ay, double az) {
         this.x = x + ax;
@@ -440,15 +433,13 @@ public class Vector3 implements Cloneable {
         return this;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     public Vector3 setComponentsAdding(@NotNull Vector3 pos, @NotNull BlockFace face) {
         return setComponentsAdding(pos.x, pos.y, pos.z, face.getXOffset(), face.getYOffset(), face.getZOffset());
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     public Vector3 setComponents(@NotNull Vector3 pos) {
         this.x = pos.x;
@@ -457,8 +448,7 @@ public class Vector3 implements Cloneable {
         return this;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public double getAxis(BlockFace.Axis axis) {
         switch (axis) {
             case X:

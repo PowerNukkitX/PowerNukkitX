@@ -4,8 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.*;
 
-@PowerNukkitXOnly
-@Since("1.19.63-r1")
+
 @SuppressWarnings("unchecked")
 public class NumberMemoryCodec<Data extends Number> extends MemoryCodec<Data> {
     public NumberMemoryCodec(String key) {

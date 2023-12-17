@@ -4,8 +4,8 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
 //\\ VanillaStates::WeirdoDirection
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
+
 public final class WeirdoDirection {
 
     public static final int EAST = 0b00;

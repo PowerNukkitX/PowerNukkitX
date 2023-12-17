@@ -6,23 +6,20 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 public class BlockSlabWarped extends BlockSlab {
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public BlockSlabWarped() {
         this(0);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public BlockSlabWarped(int meta) {
         super(meta, WARPED_DOUBLE_SLAB);
     }
 
-    @PowerNukkitOnly
+
     @Override
     public String getSlabName() {
         return "Warped";
@@ -32,7 +29,7 @@ public class BlockSlabWarped extends BlockSlab {
     public int getId() {
         return WARPED_SLAB;
     }
-    @PowerNukkitOnly
+
     @Override
     public boolean isSameType(BlockSlab slab) {
         return getId() == slab.getId();

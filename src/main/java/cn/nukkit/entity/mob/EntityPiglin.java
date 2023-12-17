@@ -11,7 +11,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author Erik Miller | EinBexiii
  */
-@Since("1.3.1.0-PN")
+
 public class EntityPiglin extends EntityMob implements EntityWalkable, EntityAgeable {
 
     public final static int NETWORK_ID = 123;
@@ -41,14 +41,13 @@ public class EntityPiglin extends EntityMob implements EntityWalkable, EntityAge
         return 1.9f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Piglin";
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isPreventingSleep(Player player) {
         return !this.isBaby()/*TODO: Should this check player's golden armor?*/;

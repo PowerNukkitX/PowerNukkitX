@@ -18,8 +18,7 @@ public class MesaPlateauFBiome extends MesaPlateauBiome {
         this.addPopulator(tree);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getCoverBlock() {
         if (useNewRakNetCover()) {

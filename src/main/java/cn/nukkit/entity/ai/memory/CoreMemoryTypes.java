@@ -22,8 +22,8 @@ import java.util.Map;
  * <p>
  * Enumeration of memory types used by the core
  */
-@PowerNukkitXOnly
-@Since("1.19.50-r1")
+
+
 public interface CoreMemoryTypes {
     // region 运动控制器相关
     /**

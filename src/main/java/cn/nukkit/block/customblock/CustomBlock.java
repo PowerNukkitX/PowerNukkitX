@@ -17,8 +17,8 @@ import java.util.Locale;
  * <p>
  * Inherit this class to implement a custom block, override the methods in the {@link Block} to control the feature of the block.
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public interface CustomBlock {
     /**
      * 覆写该方法设置自定义方块的摩擦因数。<br>
@@ -164,9 +164,9 @@ public interface CustomBlock {
      * 定义这个方块是否需要被注册到创造栏中
      * 当你对这个方块有其他的物品想作为其展示时推荐关闭
      */
-    @PowerNukkitXOnly
-    @Since("1.20.10-r2")
-    default boolean shouldBeRegisteredInCreative() {
+
+
+     default boolean shouldBeRegisteredInCreative() {
         return true;
     }
 }

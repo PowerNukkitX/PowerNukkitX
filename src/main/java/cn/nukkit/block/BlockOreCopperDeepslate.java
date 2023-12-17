@@ -8,11 +8,10 @@ import cn.nukkit.api.Since;
  * @since 11/06/2021
  */
 
-@PowerNukkitOnly
-@Since("FUTURE")
+
 public class BlockOreCopperDeepslate extends BlockOreCopper {
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
+
     public BlockOreCopperDeepslate() {
         // Does nothing
     }

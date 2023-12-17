@@ -17,24 +17,21 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitOnly
+
 public class BlockKelp extends BlockFlowable {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final IntBlockProperty KELP_AGE = new IntBlockProperty("kelp_age", false, 25);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(KELP_AGE);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public BlockKelp() {
         this(0);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public BlockKelp(int meta) {
         super(meta);
     }
@@ -44,8 +41,7 @@ public class BlockKelp extends BlockFlowable {
         return BLOCK_KELP;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -57,14 +53,12 @@ public class BlockKelp extends BlockFlowable {
         return "Kelp";
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public int getAge() {
         return getIntValue(KELP_AGE);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setAge(int age) {
         setIntValue(KELP_AGE, age);
     }
@@ -123,8 +117,8 @@ public class BlockKelp extends BlockFlowable {
         }
         return super.onUpdate(type);
     }
-    
-    @PowerNukkitOnly
+
+
     public boolean grow() {
         int age = getAge();
         int maxValue = KELP_AGE.getMaxValue();
@@ -194,8 +188,8 @@ public class BlockKelp extends BlockFlowable {
     public Item toItem() {
         return new ItemKelp();
     }
-    
-    @PowerNukkitOnly
+
+
     @Override
     public int getWaterloggingLevel() {
         return 2;

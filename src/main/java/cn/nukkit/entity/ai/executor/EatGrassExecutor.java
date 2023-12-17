@@ -10,8 +10,7 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.network.protocol.EntityEventPacket;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class EatGrassExecutor implements IBehaviorExecutor {
 
     protected int duration;

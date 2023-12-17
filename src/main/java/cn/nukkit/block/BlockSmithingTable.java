@@ -9,10 +9,10 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-@PowerNukkitOnly
+
 public class BlockSmithingTable extends BlockSolid {
 
-    @PowerNukkitOnly
+
     public BlockSmithingTable() {
     }
 

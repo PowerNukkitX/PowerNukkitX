@@ -35,7 +35,7 @@ public class BlockButtonStone extends BlockButton {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

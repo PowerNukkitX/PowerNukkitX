@@ -30,8 +30,8 @@ import static cn.nukkit.command.selector.SelectorType.*;
  * 目标选择器API<p/>
  * 通过{@code getAPI()}方法获取API对象
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public class EntitySelectorAPI {
     @Getter
     private static final EntitySelectorAPI API = new EntitySelectorAPI();

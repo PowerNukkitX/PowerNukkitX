@@ -8,8 +8,7 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.customitem.data.ItemCreativeCategory;
 import cn.nukkit.item.enchantment.Enchantment;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public abstract class ItemCustomBookEnchanted extends ItemBookEnchanted implements CustomItem {
     private final String id;
 
@@ -23,8 +22,7 @@ public abstract class ItemCustomBookEnchanted extends ItemBookEnchanted implemen
         return "book_enchanted";
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public String getNamespaceId() {
         return id;

@@ -23,8 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
 public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntityHolder<BlockEntityChiseledBookshelf>, Faceable {
     public static final IntBlockProperty BOOKS_STORED = new IntBlockProperty("books_stored", false, 63);
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.DIRECTION, BOOKS_STORED);
@@ -91,7 +90,7 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
         return BlockEntity.CHISELED_BOOKSHELF;
     }
 
-    @Since("1.20.0-r2")
+
     @Override
     public void onPlayerRightClick(@NotNull Player player, Item item, BlockFace face, Vector3 clickPoint) {
         BlockFace blockFace = getBlockFace();

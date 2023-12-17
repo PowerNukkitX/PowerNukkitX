@@ -15,19 +15,18 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitOnly
+
 public class BlockBambooSapling extends BlockFlowable {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = BlockSapling.PROPERTIES;
 
-    @PowerNukkitOnly
+
     public BlockBambooSapling() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockBambooSapling(int meta) {
         super(meta);
     }
@@ -37,8 +36,7 @@ public class BlockBambooSapling extends BlockFlowable {
         return BAMBOO_SAPLING;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -129,7 +127,7 @@ public class BlockBambooSapling extends BlockFlowable {
         return false;
     }
 
-    @PowerNukkitOnly
+
     public boolean grow(Block up) {
         BlockBamboo bamboo = new BlockBamboo();
         bamboo.x = x;
@@ -151,12 +149,12 @@ public class BlockBambooSapling extends BlockFlowable {
         return 5;
     }
 
-    @PowerNukkitOnly
+
     public int getAge() {
         return getDamage() & 0x1;
     }
 
-    @PowerNukkitOnly
+
     public void setAge(int age) {
         age = MathHelper.clamp(age, 0, 1) & 0x1;
         setDamage(getDamage() & (DATA_MASK ^ 0x1) | age);

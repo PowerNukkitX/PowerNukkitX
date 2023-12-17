@@ -9,12 +9,11 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author Kevims KCodeYT
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public class BlockEntitySculkShrieker extends BlockEntity {
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public BlockEntitySculkShrieker(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }

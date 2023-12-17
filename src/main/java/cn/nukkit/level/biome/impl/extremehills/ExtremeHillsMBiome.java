@@ -34,8 +34,7 @@ public class ExtremeHillsMBiome extends ExtremeHillsPlusBiome {
         return "Extreme Hills M";
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Override
     public BlockState getSurfaceState(int x, int y, int z) {
         return gravelNoise.noise2D(x, z, true) < -0.75f ? STATE_GRAVEL : STATE_GRASS;

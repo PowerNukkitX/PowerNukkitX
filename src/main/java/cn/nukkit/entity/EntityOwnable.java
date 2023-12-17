@@ -33,12 +33,12 @@ public interface EntityOwnable extends EntityComponent {
         return owner;
     }
 
-    @PowerNukkitXOnly
+
     default boolean hasOwner() {
         return hasOwner(true);
     }
 
-    @PowerNukkitXOnly
+
     default boolean hasOwner(boolean checkOnline) {
         if (checkOnline) {
             return getOwner() != null;

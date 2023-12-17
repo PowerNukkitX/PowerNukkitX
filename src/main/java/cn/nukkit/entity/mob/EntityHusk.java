@@ -88,20 +88,19 @@ public class EntityHusk extends EntityZombie {
         return this.isBaby() ? 0.95f : 1.9f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Husk";
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isUndead() {
         return true;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

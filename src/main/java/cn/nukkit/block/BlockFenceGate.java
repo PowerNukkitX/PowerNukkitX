@@ -40,12 +40,10 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
     // and gives the vanilla behavior; no idea how to make this better :d
     private static final List<Location> manualOverrides = new ArrayList<>();
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     public static final BooleanBlockProperty IN_WALL = new BooleanBlockProperty("in_wall_bit", false);
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, OPEN, IN_WALL);
 
     public BlockFenceGate() {
@@ -61,8 +59,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         return FENCE_GATE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -84,7 +81,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         return 15;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -182,8 +179,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         return this.setOpen(player, !this.isOpen());
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean setOpen(@Nullable Player player, boolean open) {
         if (open == this.isOpen()) {
             return false;
@@ -248,8 +244,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         return true;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void playOpenCloseSound() {
         if (this.isOpen()) {
             this.playOpenSound();
@@ -258,14 +253,12 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void playOpenSound() {
         level.addSound(this, Sound.RANDOM_DOOR_OPEN);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void playCloseSound() {
         level.addSound(this, Sound.RANDOM_DOOR_CLOSE);
     }
@@ -273,9 +266,8 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
     public boolean isOpen() {
         return getBooleanValue(OPEN);
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public void setOpen(boolean open) {
         setBooleanValue(OPEN, open);
     }
@@ -312,8 +304,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setManualOverride(boolean val) {
         if (val) {
             manualOverrides.add(this.getLocation());
@@ -322,8 +313,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean getManualOverride() {
         return manualOverrides.contains(this.getLocation());
     }
@@ -334,14 +324,12 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         return super.onBreak(item);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isInWall() {
         return getBooleanValue(IN_WALL);
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public void setInWall(boolean inWall) {
         setBooleanValue(IN_WALL, inWall);
     }
@@ -350,9 +338,8 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
     public BlockFace getBlockFace() {
         return getPropertyValue(DIRECTION);
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(DIRECTION, face);

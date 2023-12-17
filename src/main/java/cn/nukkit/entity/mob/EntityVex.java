@@ -39,14 +39,13 @@ public class EntityVex extends EntityMob implements EntityFlyable {
         return 0.8f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Vex";
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

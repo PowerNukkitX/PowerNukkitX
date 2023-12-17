@@ -2,14 +2,14 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 
-@PowerNukkitOnly
+
 public class BlockBlastFurnace extends BlockBlastFurnaceBurning {
-    @PowerNukkitOnly
+
     public BlockBlastFurnace() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockBlastFurnace(int meta) {
         super(meta);
     }

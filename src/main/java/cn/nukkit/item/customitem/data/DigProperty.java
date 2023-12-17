@@ -6,8 +6,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 import javax.annotation.Nullable;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class DigProperty {
     private CompoundTag states;
     private Integer speed;

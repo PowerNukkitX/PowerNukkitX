@@ -31,8 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Consumer;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public class PopulatorPillagerOutpost extends PopulatorStructure {
 
     protected static final ReadableStructureTemplate WATCHTOWER = new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/pillageroutpost/watchtower.nbt"));
@@ -186,7 +185,7 @@ public class PopulatorPillagerOutpost extends PopulatorStructure {
         fillBase(chunk, y, x, z, size.getX(), size.getZ());
     }
 
-    @Since("1.19.21-r2")
+
     @Override
     public boolean isAsync() {
         return true;

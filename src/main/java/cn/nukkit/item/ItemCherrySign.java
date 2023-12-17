@@ -4,8 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockCherrySignPost;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
 public class ItemCherrySign extends StringItemBase {
     public ItemCherrySign() {
         super("minecraft:cherry_sign", "Cherry Sign");

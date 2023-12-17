@@ -13,8 +13,7 @@ import java.net.URLClassLoader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@PowerNukkitXOnly
-@Since("1.19.20-r2")
+
 public class JSClassLoader extends URLClassLoader {
     public final static Map<String, Class<?>> javaClassCache = new ConcurrentHashMap<>();
 

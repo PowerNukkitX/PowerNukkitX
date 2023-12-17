@@ -15,8 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class CameraShakeCommand extends VanillaCommand {
 
     public CameraShakeCommand(String name) {

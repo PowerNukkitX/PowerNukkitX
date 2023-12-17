@@ -15,7 +15,7 @@ import cn.nukkit.math.NukkitRandom;
  * @author DaPorkchop_
  */
 public class PopulatorGroundCover extends Populator {
-    @PowerNukkitOnly
+
     public static final int STONE = BlockID.STONE << Block.DATA_BITS;
 
     @Override

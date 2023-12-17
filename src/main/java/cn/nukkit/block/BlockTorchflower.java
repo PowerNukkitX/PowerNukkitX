@@ -8,8 +8,7 @@ import cn.nukkit.blockproperty.value.SmallFlowerType;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.20.10-r2")
+
 public class BlockTorchflower extends BlockFlower {
     public BlockTorchflower() {
     }

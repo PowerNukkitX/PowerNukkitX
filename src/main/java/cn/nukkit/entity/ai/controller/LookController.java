@@ -9,8 +9,8 @@ import cn.nukkit.math.Vector3;
 /**
  * 处理实体Pitch/Yaw/HeadYaw
  */
-@PowerNukkitOnly
-@Since("1.6.0.0-PNX")
+
+
 public class LookController implements IController {
 
     protected boolean lookAtTarget;

@@ -12,20 +12,17 @@ import org.jetbrains.annotations.NotNull;
  * @since 08/06/2021
  */
 
-@PowerNukkitOnly
-@Since("FUTURE")
+
 public class BlockDripstone extends BlockSolid {
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
+
     public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     public BlockDripstone() {
     }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -57,8 +54,7 @@ public class BlockDripstone extends BlockSolid {
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;

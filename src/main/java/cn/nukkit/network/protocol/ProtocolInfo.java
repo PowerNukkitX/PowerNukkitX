@@ -139,20 +139,20 @@ public interface ProtocolInfo {
     byte SERVER_SETTINGS_RESPONSE_PACKET = 0x67;
     byte SHOW_PROFILE_PACKET = 0x68;
     byte SET_DEFAULT_GAME_TYPE_PACKET = 0x69;
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     byte REMOVE_OBJECTIVE_PACKET = 0x6a;
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     byte SET_DISPLAY_OBJECTIVE_PACKET = 0x6b;
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     byte SET_SCORE_PACKET = 0x6c;
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
+
+
     byte LAB_TABLE_PACKET = 0x6d;
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
+
+
     byte UPDATE_BLOCK_SYNCED_PACKET = 0x6e;
     byte MOVE_ENTITY_DELTA_PACKET = 0x6f;
     byte SET_SCOREBOARD_IDENTITY_PACKET = 0x70;
@@ -188,182 +188,182 @@ public interface ProtocolInfo {
     byte COMPLETED_USING_ITEM_PACKET = (byte) 0x8e;
     byte NETWORK_SETTINGS_PACKET = (byte) 0x8f;
     byte PLAYER_AUTH_INPUT_PACKET = (byte) 0x90;
-    @Since("1.3.0.0-PN")
+
     byte CREATIVE_CONTENT_PACKET = (byte) 0x91;
-    @Since("1.3.0.0-PN")
+
     byte PLAYER_ENCHANT_OPTIONS_PACKET = (byte) 0x92;
-    @Since("1.3.0.0-PN")
+
     byte ITEM_STACK_REQUEST_PACKET = (byte) 0x93;
-    @Since("1.3.0.0-PN")
+
     byte ITEM_STACK_RESPONSE_PACKET = (byte) 0x94;
-    @Since("1.3.0.0-PN")
+
     byte PLAYER_ARMOR_DAMAGE_PACKET = (byte) 0x95;
-    @Since("1.3.0.0-PN")
+
     byte CODE_BUILDER_PACKET = (byte) 0x96;
-    @Since("1.3.0.0-PN")
+
     byte UPDATE_PLAYER_GAME_TYPE_PACKET = (byte) 0x97;
-    @Since("1.3.0.0-PN")
+
     byte EMOTE_LIST_PACKET = (byte) 0x98;
-    @Since("1.3.0.0-PN")
+
     byte POS_TRACKING_SERVER_BROADCAST_PACKET = (byte) 0x99;
-    @Since("1.3.0.0-PN")
+
     byte POS_TRACKING_CLIENT_REQUEST_PACKET = (byte) 0x9a;
-    @Since("1.3.0.0-PN")
+
     byte DEBUG_INFO_PACKET = (byte) 0x9b;
-    @Since("1.3.0.0-PN")
+
     byte PACKET_VIOLATION_WARNING_PACKET = (byte) 0x9c;
-    @Since("1.4.0.0-PN")
+
     byte MOTION_PREDICTION_HINTS_PACKET = (byte) 0x9d;
-    @Since("1.4.0.0-PN")
+
     byte ANIMATE_ENTITY_PACKET = (byte) 0x9e;
-    @Since("1.4.0.0-PN")
+
     byte CAMERA_SHAKE_PACKET = (byte) 0x9f;
-    @Since("1.4.0.0-PN")
+
     byte PLAYER_FOG_PACKET = (byte) 0xa0;
-    @Since("1.4.0.0-PN")
+
     byte CORRECT_PLAYER_MOVE_PREDICTION_PACKET = (byte) 0xa1;
-    @Since("1.4.0.0-PN")
+
     byte ITEM_COMPONENT_PACKET = (byte) 0xa2;
-    @Since("1.4.0.0-PN")
+
     byte FILTER_TEXT_PACKET = (byte) 0xa3;
-    @Since("1.4.0.0-PN")
+
     byte CLIENTBOUND_DEBUG_RENDERER_PACKET = (byte) 0xa4;
-    @Since("1.5.2.0-PN")
-    @PowerNukkitOnly
+
+
     byte SYNC_ENTITY_PROPERTY_PACKET = (byte) 0xa5;
-    @Since("1.5.2.0-PN")
-    @PowerNukkitOnly
+
+
     byte ADD_VOLUME_ENTITY_PACKET = (byte) 0xa6;
-    @Since("1.5.2.0-PN")
-    @PowerNukkitOnly
+
+
     byte REMOVE_VOLUME_ENTITY_PACKET = (byte) 0xa7;
-    @Since("1.5.0.0-PN")
-    @PowerNukkitOnly
+
+
     @Deprecated
     @DeprecationDetails(since = "1.5.2.0-PN", reason = "Incorrect naming convention", by = "PowerNukkit", replaceWith = "SYNC_ENTITY_PROPERTY_PACKET")
     byte SYNC_ENTITY_PROPERTY = SYNC_ENTITY_PROPERTY_PACKET;
-    @Since("1.5.0.0-PN")
-    @PowerNukkitOnly
+
+
     @Deprecated
     @DeprecationDetails(since = "1.5.2.0-PN", reason = "Incorrect naming convention", by = "PowerNukkit", replaceWith = "ADD_VOLUME_ENTITY_PACKET")
     byte ADD_VOLUME_ENTITY = ADD_VOLUME_ENTITY_PACKET;
-    @Since("1.5.0.0-PN")
-    @PowerNukkitOnly
+
+
     @Deprecated
     @DeprecationDetails(since = "1.5.2.0-PN", reason = "Incorrect naming convention", by = "PowerNukkit", replaceWith = "REMOVE_VOLUME_ENTITY_PACKET")
     byte REMOVE_VOLUME_ENTITY = REMOVE_VOLUME_ENTITY_PACKET;
-    @Since("1.5.2.0-PN")
-    @PowerNukkitOnly
+
+
     byte SIMULATION_TYPE_PACKET = (byte) 0xa8;
-    @Since("1.5.2.0-PN")
-    @PowerNukkitOnly
+
+
     byte NPC_DIALOGUE_PACKET = (byte) 0xa9;
-    @Since("1.19.30-r1")
-    @PowerNukkitXOnly
+
+
     byte EDU_URI_RESOURCE_PACKET = (byte) 0xaa;
-    @Since("1.19.30-r1")
-    @PowerNukkitXOnly
+
+
     byte CREATE_PHOTO_PACKET = (byte) 0xab;
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
+
+
     byte UPDATE_SUB_CHUNK_BLOCKS_PACKET = (byte) 0xac;
-    @Since("1.19.30-r1")
-    @PowerNukkitXOnly
+
+
     byte PHOTO_INFO_REQUEST_PACKET = (byte) 0xad;
-    @Since("1.19.30-r1")
-    @PowerNukkitXOnly
+
+
     byte SUB_CHUNK_PACKET = (byte) 0xae;
-    @Since("1.19.30-r1")
-    @PowerNukkitXOnly
+
+
     byte SUB_CHUNK_REQUEST_PACKET = (byte) 0xaf;
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
+
+
     byte PLAYER_START_ITEM_COOL_DOWN_PACKET = (byte) 0xb0;
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
+
+
     byte SCRIPT_MESSAGE_PACKET = (byte) 0xb1;
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
+
+
     byte CODE_BUILDER_SOURCE_PACKET = (byte) 0xb2;
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
+
+
     byte AGENT_ACTION_EVENT_PACKET = (byte) 0xb3;
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
+
+
     byte CHANGE_MOB_PROPERTY_PACKET = (byte) 0xb4;
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
+
+
     byte DIMENSION_DATA_PACKET = (byte) 0xb5;
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
+
+
     byte TICKING_AREAS_LOAD_STATUS_PACKET = (byte) 0xb6;
-    @Since("1.19.30-r1")
-    @PowerNukkitXOnly
+
+
     byte LESSON_PROGRESS_PACKET = (byte) 0xb7;
-    @Since("1.19.30-r1")
-    @PowerNukkitXOnly
+
+
     byte REQUEST_ABILITY_PACKET = (byte) 0xb8;
-    @Since("1.19.30-r1")
-    @PowerNukkitXOnly
+
+
     byte REQUEST_PERMISSIONS_PACKET = (byte) 0xb9;
     byte TOAST_REQUEST_PACKET = (byte) 0xba;
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
+
+
     byte UPDATE_ABILITIES_PACKET = (byte) 0xbb;
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
+
+
     byte UPDATE_ADVENTURE_SETTINGS_PACKET = (byte) 0xbc;
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
+
+
     byte DEATH_INFO_PACKET = (byte) 0xbd;
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
+
+
     byte EDITOR_NETWORK_PACKET = (byte) 0xbe;
-    @Since("1.19.30-r1")
-    @PowerNukkitXOnly
+
+
     byte FEATURE_REGISTRY_PACKET = (byte) 0xbf;
-    @Since("1.19.30-r1")
-    @PowerNukkitXOnly
+
+
     byte SERVER_STATS_PACKET = (byte) 0xc0;
-    @Since("1.19.30-r1")
-    @PowerNukkitXOnly
+
+
     byte REQUEST_NETWORK_SETTINGS_PACKET = (byte) 0xc1;
-    @Since("1.19.30-r1")
-    @PowerNukkitXOnly
+
+
     byte GAME_TEST_REQUEST_PACKET = (byte) 0xc2;
-    @Since("1.19.30-r1")
-    @PowerNukkitXOnly
+
+
     byte GAME_TEST_RESULTS_PACKET = (byte) 0xc3;
     byte UPDATE_CLIENT_INPUT_LOCKS = (byte) 0xc4;
-    @Since("1.19.60-r1")
-    @PowerNukkitXOnly
+
+
     byte CLIENT_CHEAT_ABILITY_PACKET = (byte) 0xc5;
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
+
+
     byte CAMERA_PRESETS_PACKET = (byte) 0xc6;
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
+
+
     byte UNLOCKED_RECIPES_PACKET = (byte) 0xc7;
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
+
+
     int CAMERA_INSTRUCTION_PACKET = 300;
-    @Since("1.19.80-r1")
-    @PowerNukkitXOnly
+
+
     int COMPRESSED_BIOME_DEFINITIONS_LIST = 301;
-    @Since("1.19.80-r1")
-    @PowerNukkitXOnly
+
+
     int TRIM_DATA = 302;
-    @Since("1.19.80-r1")
-    @PowerNukkitXOnly
+
+
     int OPEN_SIGN = 303;
-    @Since("1.20.10-r1")
-    @PowerNukkitXOnly
+
+
     int AGENT_ANIMATION = 304;
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
+
     int REFRESH_ENTITLEMENTS = 305;
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
+
     int TOGGLE_CRAFTER_SLOT_REQUEST = 306;
     byte BATCH_PACKET = (byte) 0xff;
 

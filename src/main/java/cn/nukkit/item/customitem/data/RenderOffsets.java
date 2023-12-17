@@ -14,8 +14,8 @@ import javax.annotation.Nullable;
  * <p>
  * RenderOffsets is the component that sets the render_offsets item. Parameters can be set to offset the rendering of items in different views.
  */
-@PowerNukkitXOnly
-@Since("1.19.31-r1")
+
+
 public class RenderOffsets {
     public final CompoundTag nbt = new CompoundTag();
 

@@ -230,16 +230,13 @@ public class Server {
     public int networkCompressionLevel = 7;
     private int networkZlibProvider = 0;
 
-    @PowerNukkitXOnly
-    @Since("1.19.30-r2")
+
     private int maximumStaleDatagrams = 512;
 
-    @PowerNukkitXOnly
-    @Since("1.19.30-r2")
+
     private int maximumSizePerChunk = 1048576;
 
-    @Since("1.19.60-r1")
-    @PowerNukkitXOnly
+
     private int serverAuthoritativeMovementMode = 0;
 
     private boolean autoTickRate = true;
@@ -329,24 +326,19 @@ public class Server {
 
     private boolean checkMovement = true;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     private boolean allowTheEnd;
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     private boolean useTerra;
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     private boolean enableExperimentMode;
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r1")
+
     private FreezableArrayManager freezableArrayManager;
 
-    @PowerNukkitXOnly
-    @Since("1.19.80-r2")
+
     public boolean enabledNetworkEncryption;
 
 
@@ -1457,8 +1449,7 @@ public class Server {
         return tickingAreaManager;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public long getLaunchTime() {
         return launchTime;
     }
@@ -1995,7 +1986,7 @@ public class Server {
      *
      * @param player 玩家
      */
-    @Since("1.4.0.0-PN")
+
     public void removePlayerListData(UUID uuid, Player player) {
         PlayerListPacket pk = new PlayerListPacket();
         pk.type = PlayerListPacket.TYPE_REMOVE;
@@ -2459,7 +2450,7 @@ public class Server {
         return Nukkit.VERSION;
     }
 
-    @PowerNukkitOnly
+
     public String getGitCommit() {
         return Nukkit.GIT_COMMIT;
     }
@@ -2542,8 +2533,7 @@ public class Server {
         BlockEntity.init();
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     public PositionTrackingService getPositionTrackingService() {
         return positionTrackingService;
@@ -2733,8 +2723,7 @@ public class Server {
         return generateLevel(name, seed, generator, options, null);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.20-r3")
+
     public boolean generateLevel(String name, long seed, Class<? extends Generator> generator, Map<String, Object> options, DimensionData givenDimensionData) {
         return generateLevel(name, seed, generator, options, null, null);
     }
@@ -3193,12 +3182,12 @@ public class Server {
         return forceLanguage;
     }
 
-    @PowerNukkitOnly
+
     public boolean isRedstoneEnabled() {
         return redstoneEnabled;
     }
 
-    @PowerNukkitOnly
+
     public void setRedstoneEnabled(boolean redstoneEnabled) {
         this.redstoneEnabled = redstoneEnabled;
     }
@@ -3292,67 +3281,57 @@ public class Server {
         return this.allowNether;
     }
 
-    @Since("1.3.0.0-PN")
+
     public boolean isIgnoredPacket(Class<? extends DataPacket> clazz) {
         return this.ignoredPackets.contains(clazz.getSimpleName());
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isSafeSpawn() {
         return safeSpawn;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isForceSkinTrusted() {
         return forceSkinTrusted;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isCheckMovement() {
         return checkMovement;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isTheEndAllowed() {
         return this.allowTheEnd;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public boolean isEnableExperimentMode() {
         return this.enableExperimentMode;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r4")
+
     public boolean isWaterdogCapable() {
         return this.getConfig("settings.waterdogpe", false);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.30-r2")
+
     public int getMaximumStaleDatagrams() {
         return this.maximumStaleDatagrams;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.30-r2")
+
     public int getMaximumSizePerChunk() {
         return maximumSizePerChunk;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.40-r3")
+
     public int getServerAuthoritativeMovement() {
         return serverAuthoritativeMovementMode;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.0-r2")
+
     public boolean isEnableSnappy() {
         return this.getConfig("network.snappy", false);
     }

@@ -12,8 +12,7 @@ import cn.nukkit.level.Location;
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class Tag extends CachedSimpleSelectorArgument {
     @Override
     protected Predicate<Entity> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {

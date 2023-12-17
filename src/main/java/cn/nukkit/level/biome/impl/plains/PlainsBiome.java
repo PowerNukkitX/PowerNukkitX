@@ -21,8 +21,7 @@ public class PlainsBiome extends GrassyBiome {
         return "Plains";
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isDry() {
         return true;

@@ -39,8 +39,7 @@ public class EntitySlime extends EntityMob implements EntityWalkable {
         return 2.04f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Slime";

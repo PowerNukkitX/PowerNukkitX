@@ -14,7 +14,7 @@ public class PlayerBucketFillEvent extends PlayerBucketEvent {
         return handlers;
     }
 
-    @PowerNukkitOnly
+
     public PlayerBucketFillEvent(Player who, Block blockClicked, BlockFace blockFace, Block liquid, Item bucket, Item itemInHand) {
         super(who, blockClicked, blockFace, liquid, bucket, itemInHand);
     }

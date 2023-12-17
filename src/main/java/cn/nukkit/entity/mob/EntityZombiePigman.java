@@ -40,20 +40,19 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
         return 1.9f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Zombified Piglin";
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isUndead() {
         return true;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isPreventingSleep(Player player) {
         return this.getDataPropertyBoolean(DATA_FLAG_ANGRY);

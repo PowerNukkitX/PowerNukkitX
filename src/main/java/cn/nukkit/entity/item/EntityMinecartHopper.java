@@ -37,8 +37,7 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
         setDisplayBlock(Block.get(Block.HOPPER_BLOCK), false);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
     @Override
     public boolean onUpdate(int currentTick) {
         if (!super.onUpdate(currentTick)) return false;
@@ -80,20 +79,17 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
         return true;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
     public boolean isOnTransferCooldown() {
         return this.transferCooldown > 0;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
     public void setTransferCooldown(int transferCooldown) {
         this.transferCooldown = transferCooldown;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return getType().getName();
@@ -174,28 +170,24 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
         checkDisabled();
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
     public void updatePickupArea() {
         this.pickupArea = new SimpleAxisAlignedBB(this.x - 0.5, this.y - 0.5, this.z - 0.5, this.x + 1, this.y + 2.5, this.z + 1).expand(0.25, 0, 0.25);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
     public void checkDisabled() {
         if (getLevelBlock() instanceof BlockRailActivator rail) {
             setDisabled(rail.isActive());
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
     public boolean isDisabled() {
         return disabled;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
     }

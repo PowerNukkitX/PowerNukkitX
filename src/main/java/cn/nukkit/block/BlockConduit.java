@@ -13,9 +13,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-@PowerNukkitOnly
+
 public class BlockConduit extends BlockTransparent implements BlockEntityHolder<BlockEntityConduit> {
-    @PowerNukkitOnly
+
     public BlockConduit() {
         // Does nothing
     }
@@ -30,23 +30,21 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
         return "Conduit";
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntityConduit> getBlockEntityClass() {
         return BlockEntityConduit.class;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.CONDUIT;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 2;

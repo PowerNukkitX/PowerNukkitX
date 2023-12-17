@@ -70,10 +70,10 @@ public class Potion implements Cloneable {
     public static final int TURTLE_MASTER_II = 39;
     public static final int SLOW_FALLING = 40;
     public static final int SLOW_FALLING_LONG = 41;
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
+
     public static final int SLOWNESS_IV = 42;
-    @Since("1.4.0.0-PN")
+
     @Deprecated
     @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", reason =
             "Incorrect name, there is vanilla potion with slowness long 2, the result of potion with slowness 1 + glowstone is slowness 4", replaceWith = "SLOWNESS_IV")
@@ -340,8 +340,7 @@ public class Potion implements Cloneable {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     @NotNull
     public String getPotionTypeName() {
         return switch (getId()) {
@@ -369,7 +368,7 @@ public class Potion implements Cloneable {
         };
     }
 
-    @PowerNukkitOnly
+
     @NotNull
     public String getName() {
         String name = getPotionTypeName();
@@ -393,7 +392,7 @@ public class Potion implements Cloneable {
         return finalName.toString();
     }
 
-    @PowerNukkitOnly
+
     @NotNull
     public String getRomanLevel() {
         int currentLevel = getLevel();

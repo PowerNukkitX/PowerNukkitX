@@ -5,8 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
 public class BlockEntityHangingSign extends BlockEntitySign {
     public BlockEntityHangingSign(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

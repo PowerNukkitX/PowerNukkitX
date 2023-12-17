@@ -8,12 +8,11 @@ import cn.nukkit.blockstate.BlockState;
  * @author joserobjr
  * @since 2021-06-13
  */
-@PowerNukkitOnly
-@Since("FUTURE")
+
+
 public class BlockOreRedstoneDeepslate extends BlockOreRedstone {
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     public BlockOreRedstoneDeepslate() {
         // Does nothing
     }
@@ -33,15 +32,13 @@ public class BlockOreRedstoneDeepslate extends BlockOreRedstone {
         return "Deepslate Redstone Ore";
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     @Override
     public BlockState getLitState() {
         return BlockState.of(LIT_DEEPSLATE_REDSTONE_ORE);
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     @Override
     public BlockState getUnlitState() {
         return BlockState.of(DEEPSLATE_REDSTONE_ORE);

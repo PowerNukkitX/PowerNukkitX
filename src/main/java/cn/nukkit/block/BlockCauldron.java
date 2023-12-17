@@ -41,16 +41,13 @@ import java.util.Map;
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
 public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<BlockEntityCauldron> {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final IntBlockProperty FILL_LEVEL = new IntBlockProperty("fill_level", false, 6);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final ArrayBlockProperty<CauldronLiquid> LIQUID = new ArrayBlockProperty<>("cauldron_liquid", false, CauldronLiquid.class);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(FILL_LEVEL, LIQUID);
 
     public BlockCauldron() {
@@ -66,24 +63,21 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
         return CAULDRON_BLOCK;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.CAULDRON;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntityCauldron> getBlockEntityClass() {
@@ -123,18 +117,17 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
         return getFillLevel() == FILL_LEVEL.getMinValue();
     }
 
-    @PowerNukkitOnly
+
     public int getFillLevel() {
         return getIntValue(FILL_LEVEL);
     }
 
-    @PowerNukkitOnly
+
     public void setFillLevel(int fillLevel) {
         this.setFillLevel(fillLevel, null);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r4")
+
     public void setFillLevel(int fillLevel, @Nullable Player player) {
         if (fillLevel == getFillLevel()) return;
         setIntValue(FILL_LEVEL, fillLevel);
@@ -146,14 +139,11 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
     }
 
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public CauldronLiquid getCauldronLiquid() {
         return this.getPropertyValue(LIQUID);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public void setCauldronLiquid(CauldronLiquid liquid) {
         this.setPropertyValue(LIQUID, liquid);
     }
@@ -544,7 +534,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
         }
     }
 
-    @PowerNukkitOnly
+
     public void clearWithFizz(BlockEntityCauldron cauldron) {
         clearWithFizz(cauldron, null);
     }
@@ -578,7 +568,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -603,8 +593,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
         return false;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
@@ -616,8 +605,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
         return true;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getLightFilter() {
         return 3;

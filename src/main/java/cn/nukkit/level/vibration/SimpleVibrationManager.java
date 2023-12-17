@@ -18,8 +18,7 @@ import cn.nukkit.network.protocol.LevelEventPacket;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r3")
+
 public class SimpleVibrationManager implements VibrationManager {
 
     protected Set<VibrationListener> listeners = new CopyOnWriteArraySet<>();

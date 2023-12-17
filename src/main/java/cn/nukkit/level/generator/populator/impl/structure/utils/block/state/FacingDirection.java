@@ -4,8 +4,8 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
 //\\ VanillaStates::FacingDirection
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
+
 public final class FacingDirection {
 
     public static final int DOWN = 0b000;

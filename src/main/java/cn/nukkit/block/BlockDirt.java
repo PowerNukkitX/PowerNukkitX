@@ -21,12 +21,11 @@ import java.util.Optional;
  */
 
 public class BlockDirt extends BlockSolidMeta {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BlockProperty<DirtType> DIRT_TYPE = new ArrayBlockProperty<>("dirt_type", true, DirtType.class);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(DIRT_TYPE);
 
     public BlockDirt() {
@@ -42,23 +41,20 @@ public class BlockDirt extends BlockSolidMeta {
         return DIRT;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     @NotNull
     public Optional<DirtType> getDirtType() {
         return Optional.of(getPropertyValue(DIRT_TYPE));
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setDirtType(@Nullable DirtType dirtType) {
         setPropertyValue(DIRT_TYPE, dirtType);
     }

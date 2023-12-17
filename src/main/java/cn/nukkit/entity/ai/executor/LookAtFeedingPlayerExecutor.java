@@ -13,8 +13,8 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
  * Entity looks at the nearest player carrying the food<br/>
  * The biggest difference between this executor and {@link LookAtTargetExecutor} is that it will set the entity's DATA_FLAG_INTERESTED to true
  */
-@PowerNukkitXOnly
-@Since("1.19.30-r1")
+
+
 public class LookAtFeedingPlayerExecutor implements EntityControl, IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {

@@ -18,8 +18,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
  */
 public class BlockQuartz extends BlockSolidMeta {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(CHISEL_TYPE, PILLAR_AXIS);
 
     public static final int QUARTZ_NORMAL = 0;
@@ -41,8 +40,7 @@ public class BlockQuartz extends BlockSolidMeta {
         return QUARTZ_BLOCK;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -91,7 +89,7 @@ public class BlockQuartz extends BlockSolidMeta {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

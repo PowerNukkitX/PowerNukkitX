@@ -13,8 +13,8 @@ import java.util.Map;
 /**
  * args like dx,dy,dz.
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public abstract class ScopeArgument implements ISelectorArgument {
     @Override
     public int getPriority() {

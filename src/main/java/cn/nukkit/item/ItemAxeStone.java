@@ -39,7 +39,7 @@ public class ItemAxeStone extends ItemTool {
         return 4;
     }
 
-    @Since("1.19.21-r4")
+
     @Override
     public boolean canBreakShield() {
         return true;

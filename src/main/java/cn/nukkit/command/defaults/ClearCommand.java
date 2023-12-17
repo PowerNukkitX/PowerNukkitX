@@ -16,8 +16,7 @@ import cn.nukkit.item.Item;
 import java.util.List;
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class ClearCommand extends VanillaCommand {
 
     public ClearCommand(String name) {

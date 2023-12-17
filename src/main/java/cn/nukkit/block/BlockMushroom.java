@@ -28,8 +28,7 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
         super(0);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -117,7 +116,7 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

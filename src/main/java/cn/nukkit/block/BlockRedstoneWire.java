@@ -28,8 +28,7 @@ import java.util.Set;
 @PowerNukkitDifference(info = "Implements RedstoneComponent and uses methods from it.", since = "1.4.0.0-PN")
 public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponent {
 
-    @Since("1.5.0.0-PN")
-    @PowerNukkitOnly
+
     public static final BlockProperties PROPERTIES = CommonBlockProperties.REDSTONE_SIGNAL_BLOCK_PROPERTY;
 
     private boolean canProvidePower = true;
@@ -53,8 +52,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         return REDSTONE_WIRE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -242,7 +240,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         return Level.BLOCK_UPDATE_NORMAL;
     }
 
-    @PowerNukkitOnly
+
     public boolean canBePlacedOn(Block support) {
         return support.isSolid(BlockFace.UP);
     }

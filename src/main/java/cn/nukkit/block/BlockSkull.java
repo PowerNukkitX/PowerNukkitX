@@ -33,13 +33,12 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
 @PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
 public class BlockSkull extends BlockTransparentMeta implements RedstoneComponent, BlockEntityHolder<BlockEntitySkull>, Faceable {
-    @PowerNukkitOnly
+
     @Deprecated
-    @Since("1.6.0.0-PNX")
+
     public static final BooleanBlockProperty NO_DROP = new BooleanBlockProperty("no_drop_bit", false);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION);
 
     public BlockSkull() {
@@ -55,24 +54,21 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
         return SKULL_BLOCK;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.SKULL;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntitySkull> getBlockEntityClass() {
@@ -94,14 +90,13 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
         return false;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -204,13 +199,13 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean sticksToPiston() {
         return false;
     }

@@ -17,8 +17,7 @@ public abstract class BlockSolid extends Block {
         return true;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isSolid(BlockFace side) {
         return true;

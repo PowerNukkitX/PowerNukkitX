@@ -30,8 +30,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
 @PowerNukkitDifference(info = "Implements RedstoneComponent and uses methods from it.", since = "1.4.0.0-PN")
 public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneComponent {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, CommonBlockProperties.ATTACHED, POWERED);
 
     public BlockTripWireHook() {
@@ -52,8 +51,7 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
         return TRIPWIRE_HOOK;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -277,7 +275,7 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
         return !isPowered() ? 0 : getFacing() == side ? 15 : 0;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 2;
@@ -298,8 +296,7 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
         return false;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isSolid(BlockFace side) {
         return false;

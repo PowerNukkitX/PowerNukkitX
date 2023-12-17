@@ -7,8 +7,7 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
 public class BlockBambooBlock extends BlockLog {
     public BlockBambooBlock() {
         this(0);

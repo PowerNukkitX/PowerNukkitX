@@ -10,8 +10,7 @@ import java.io.IOException;
 public class DoubleTag extends NumberTag<Double> {
     public double data;
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     public DoubleTag(double data) {
         super("");
         this.data = data;

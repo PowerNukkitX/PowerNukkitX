@@ -90,7 +90,7 @@ public class EntityPotion extends EntityProjectile {
         this.splash(entity);
     }
 
-    @PowerNukkitOnly
+
     protected void splash(Entity collidedWith) {
         Potion potion = Potion.getPotion(this.potionId);
         PotionCollideEvent event = new PotionCollideEvent(potion, this);
@@ -161,8 +161,6 @@ public class EntityPotion extends EntityProjectile {
     }
 
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Potion";

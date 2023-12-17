@@ -10,8 +10,7 @@ import cn.nukkit.plugin.InternalPlugin;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@PowerNukkitXOnly
-@Since("1.19.80-r3")
+
 public class ItemGoatHorn extends StringItemBase {
     protected int coolDownTick = 140;
     private final AtomicBoolean banUse = new AtomicBoolean(false);

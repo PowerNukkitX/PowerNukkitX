@@ -12,8 +12,8 @@ import lombok.Getter;
  * <p>
  * A single behavior object, containing an executor and an evaluator, with the behavior object delegating their methods
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 @Getter
 public class Behavior extends AbstractBehavior {
 

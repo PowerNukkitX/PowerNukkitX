@@ -25,7 +25,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
         super(chunk, nbt);
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     protected ContainerInventory requireContainerInventory() {
         return new ChestInventory(this);
@@ -189,8 +189,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
         return c;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     @Override
     public CompoundTag getCleanedNBT() {
         return super.getCleanedNBT().remove("pairx").remove("pairz");

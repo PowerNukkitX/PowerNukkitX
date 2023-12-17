@@ -111,8 +111,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
         return 1.3f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Sheep";

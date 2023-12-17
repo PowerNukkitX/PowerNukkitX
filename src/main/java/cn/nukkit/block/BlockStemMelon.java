@@ -32,15 +32,13 @@ public class BlockStemMelon extends BlockCropsStem implements Faceable {
         return MELON_STEM;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getFruitId() {
         return MELON_BLOCK;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getSeedsId() {
         return ItemID.MELON_SEEDS;
@@ -51,16 +49,16 @@ public class BlockStemMelon extends BlockCropsStem implements Faceable {
         return "Melon Stem";
     }
 
-    @PowerNukkitOnly("Implements Faceable only on PowerNukkit since 1.3.0.0-PN")
-    @Since("1.3.0.0-PN")
+    ("Implements Faceable only on PowerNukkit since 1.3.0.0-PN")
+
     @Override
     public BlockFace getBlockFace() {
         return super.getBlockFace();
     }
     
     @Override
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
+
+
     public void setBlockFace(BlockFace face) {
         super.setBlockFace(face);
     }

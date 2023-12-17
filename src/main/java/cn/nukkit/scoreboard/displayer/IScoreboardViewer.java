@@ -10,8 +10,8 @@ import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
  * 计分板观察者 (eg: Player)
  * 此接口用于抽象服务端到客户端的协议层方法
  */
-@PowerNukkitXOnly
-@Since("1.19.30-r1")
+
+
 public interface IScoreboardViewer {
     /**
      * 在指定槽位显示计分板

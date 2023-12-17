@@ -55,8 +55,7 @@ public class BlockOreLapis extends BlockOre {
         }
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     @Nullable
     @Override
     protected MinecraftItemID getRawMaterial() {

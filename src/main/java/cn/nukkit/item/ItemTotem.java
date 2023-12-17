@@ -4,7 +4,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 
 public class ItemTotem extends Item {
 
-    @PowerNukkitOnly
+
     public ItemTotem() {
         this(0, 1);
     }

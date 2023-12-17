@@ -66,8 +66,7 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
         return index < this.left.getSize() ? this.left.getItem(index) : this.right.getItem(index - this.right.getSize());
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     @Override
     public Item getUnclonedItem(int index) {
         return index < this.left.getSize() ? this.left.getUnclonedItem(index) : this.right.getUnclonedItem(index - this.right.getSize());

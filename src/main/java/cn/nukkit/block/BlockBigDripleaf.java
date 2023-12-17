@@ -26,20 +26,16 @@ import javax.annotation.Nullable;
 
 import static cn.nukkit.block.BlockBigDripleaf.Tilt.*;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public static final BlockProperty<Tilt> TILT = new ArrayBlockProperty<>("big_dripleaf_tilt", false, new Tilt[]{Tilt.NONE, PARTIAL_TILT, Tilt.FULL_TILT, Tilt.UNSTABLE});
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public static final BooleanBlockProperty HEAD = new BooleanBlockProperty("big_dripleaf_head", false);
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION, TILT, HEAD);
 
     protected BlockBigDripleaf() {
@@ -56,8 +52,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         return BlockID.BIG_DRIPLEAF;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -69,8 +64,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         return getPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION);
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, face);
@@ -96,7 +90,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         return true;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 2;
@@ -268,8 +262,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         return new Item[]{new BlockSmallDripleaf().toItem()};
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         setTiltAndScheduleTick(FULL_TILT);
@@ -319,8 +312,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         return bb;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isSolid(BlockFace side) {
         return false;

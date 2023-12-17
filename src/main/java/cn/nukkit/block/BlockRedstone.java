@@ -34,8 +34,7 @@ public class BlockRedstone extends BlockSolidMeta implements RedstoneComponent {
         return REDSTONE_BLOCK;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -63,7 +62,7 @@ public class BlockRedstone extends BlockSolidMeta implements RedstoneComponent {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

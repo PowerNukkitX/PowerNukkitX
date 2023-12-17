@@ -29,8 +29,8 @@ import java.util.stream.Collectors;
  * @author joserobjr
  * @since 2021-03-26
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 @UtilityClass
 public class NukkitCollectors {
     /**
@@ -45,8 +45,8 @@ public class NukkitCollectors {
      *     reducing(0, e -> 1, Integer::sum)
      * }</pre>
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static <T> Collector<T, ?, Integer> countingInt() {
         return Collectors.reducing(0, e -> 1, Integer::sum);
     }

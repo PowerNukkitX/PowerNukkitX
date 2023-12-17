@@ -27,11 +27,11 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
  */
 @PowerNukkitDifference(info = "Implements RedstoneComponent and uses methods from it.", since = "1.4.0.0-PN")
 public abstract class BlockButton extends BlockFlowable implements RedstoneComponent, Faceable {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     protected static final BooleanBlockProperty BUTTON_PRESSED = new BooleanBlockProperty("button_pressed_bit", false);
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BlockProperties PROPERTIES = new BlockProperties(
             FACING_DIRECTION,
             BUTTON_PRESSED
@@ -47,8 +47,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         super(meta);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -65,7 +64,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         return 0.5;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -151,14 +150,12 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         return getBooleanValue(BUTTON_PRESSED);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setActivated(boolean activated) {
         setActivated(activated, null);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r4")
+
     public void setActivated(boolean activated, @Nullable Player player) {
         setBooleanValue(BUTTON_PRESSED, activated);
         var pos = this.add(0.5, 0.5, 0.5);
@@ -188,8 +185,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         return getPropertyValue(FACING_DIRECTION);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(FACING_DIRECTION, face);

@@ -51,7 +51,7 @@ public class BlockDoorIron extends BlockDoor {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

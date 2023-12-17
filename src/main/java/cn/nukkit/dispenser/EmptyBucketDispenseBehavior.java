@@ -16,7 +16,7 @@ import cn.nukkit.math.BlockFace;
 @DeprecationDetails(reason = "implement it in BucketDispenseBehavior.java", since = "1.19.21-r3")
 public class EmptyBucketDispenseBehavior extends DefaultDispenseBehavior {
 
-    @PowerNukkitOnly
+
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);

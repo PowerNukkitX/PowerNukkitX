@@ -42,7 +42,7 @@ public class CraftingDataPacket_v575 extends DataPacket {
         Collections.addAll(entries, recipe);
     }
 
-    @PowerNukkitOnly
+
     public void addStonecutterRecipe(StonecutterRecipe... recipes) {
         Collections.addAll(entries, recipes);
     }
@@ -51,7 +51,7 @@ public class CraftingDataPacket_v575 extends DataPacket {
         Collections.addAll(entries, recipe);
     }
 
-    @PowerNukkitOnly
+
     public void addCartographyRecipe(CartographyRecipe... recipe) {
         Stream.of(recipe).filter(r -> r.getRecipeId() != null).forEachOrdered(r -> entries.add(r));
     }
@@ -60,22 +60,22 @@ public class CraftingDataPacket_v575 extends DataPacket {
         Collections.addAll(entries, recipe);
     }
 
-    @PowerNukkitOnly
+
     public void addSmokerRecipe(SmokerRecipe... recipe) {
         Collections.addAll(entries, recipe);
     }
 
-    @PowerNukkitOnly
+
     public void addBlastFurnaceRecipe(BlastFurnaceRecipe... recipe) {
         Collections.addAll(entries, recipe);
     }
 
-    @PowerNukkitOnly
+
     public void addCampfireRecipeRecipe(CampfireRecipe... recipe) {
         Collections.addAll(entries, recipe);
     }
 
-    @Since("1.4.0.0-PN")
+
     public void addMultiRecipe(MultiRecipe... recipe) {
         Collections.addAll(entries, recipe);
     }

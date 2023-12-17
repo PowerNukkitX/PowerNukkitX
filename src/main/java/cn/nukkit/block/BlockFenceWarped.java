@@ -10,18 +10,16 @@ import cn.nukkit.api.Since;
  * @author xtypr
  * @since 2015/12/7
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class BlockFenceWarped extends BlockFenceBase {
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     public BlockFenceWarped() {
         this(0);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     public BlockFenceWarped(int meta) {
         super(meta);
     }

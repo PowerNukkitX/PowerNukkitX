@@ -102,13 +102,13 @@ public class BlockChorusPlant extends BlockTransparent {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    @PowerNukkitOnly
+
     public  boolean sticksToPiston() {
         return false;
     }

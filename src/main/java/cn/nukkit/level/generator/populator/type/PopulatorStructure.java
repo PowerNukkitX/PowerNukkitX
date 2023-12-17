@@ -21,8 +21,7 @@ import cn.nukkit.level.generator.populator.impl.structure.village.PopulatorVilla
 import java.util.ArrayList;
 import java.util.List;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public abstract class PopulatorStructure extends Populator {
 
     protected static List<Class<? extends PopulatorStructure>> STRUCTURE_POPULATORS = new ArrayList<>();
@@ -66,8 +65,8 @@ public abstract class PopulatorStructure extends Populator {
      *
      * @return boolean
      */
-    @PowerNukkitXOnly
-    @Since("1.19.21-r2")
+
+
     public boolean isAsync() {
         return false;
     }

@@ -24,34 +24,31 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static cn.nukkit.block.BlockSapling.AGED;
 
-@PowerNukkitOnly
+
 public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.FlowerPotBlock {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final ArrayBlockProperty<BambooStalkThickness> STALK_THICKNESS = new ArrayBlockProperty<>(
             "bamboo_stalk_thickness", false, BambooStalkThickness.class
     );
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final ArrayBlockProperty<BambooLeafSize> LEAF_SIZE = new ArrayBlockProperty<>(
             "bamboo_leaf_size", false, BambooLeafSize.class);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(STALK_THICKNESS, LEAF_SIZE, AGED);
 
-    public @PowerNukkitOnly static final int LEAF_SIZE_NONE = 0;
-    public @PowerNukkitOnly static final int LEAF_SIZE_SMALL = 1;
-    public @PowerNukkitOnly static final int LEAF_SIZE_LARGE = 2;
+    public static final int LEAF_SIZE_NONE = 0;
+    public static final int LEAF_SIZE_SMALL = 1;
+    public static final int LEAF_SIZE_LARGE = 2;
 
-    @PowerNukkitOnly
+
     public BlockBamboo() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockBamboo(int meta) {
         super(meta);
     }
@@ -61,8 +58,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
         return BAMBOO;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -93,7 +89,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
         return 0;
     }
 
-    @PowerNukkitOnly
+
     public boolean grow(Block up) {
         BlockBamboo newState = new BlockBamboo();
         if (isThick()) {
@@ -116,7 +112,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
         return false;
     }
 
-    @PowerNukkitOnly
+
     public int countHeight() {
         int count = 0;
         Optional<Block> opt;
@@ -258,24 +254,22 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
         return 5;
     }
 
-    @PowerNukkitOnly
+
     public boolean isThick() {
         return getBambooStalkThickness().equals(BambooStalkThickness.THICK);
     }
 
-    @PowerNukkitOnly
+
     public void setThick(boolean thick) {
         setBambooStalkThickness(thick? BambooStalkThickness.THICK : BambooStalkThickness.THIN);
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public BambooStalkThickness getBambooStalkThickness() {
         return getPropertyValue(STALK_THICKNESS);
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public void setBambooStalkThickness(@NotNull BambooStalkThickness value) {
         setPropertyValue(STALK_THICKNESS, value);
     }
@@ -285,22 +279,21 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
         return ItemTool.TYPE_AXE;
     }
 
-    @PowerNukkitOnly
+
     @Deprecated
     @DeprecationDetails(by = "PowerNukkit", since = "1.5.0.0-PN", replaceWith = "getBambooLeafSize", reason = "magic values")
     public int getLeafSize() {
         return getBambooLeafSize().ordinal();
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public BambooLeafSize getBambooLeafSize() {
         return getPropertyValue(LEAF_SIZE);
     }
 
     @Deprecated
     @DeprecationDetails(by = "PowerNukkit", since = "1.5.0.0-PN", replaceWith = "getBambooLeafSize", reason = "magic values")
-    @PowerNukkitOnly
+
     public void setLeafSize(int leafSize) {
         leafSize = MathHelper.clamp(leafSize, LEAF_SIZE_NONE, LEAF_SIZE_LARGE) & 0b11;
         setDamage(getDamage() & (DATA_MASK ^ 0b110) | (leafSize << 1));
@@ -360,18 +353,18 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
         return false;
     }
 
-    @PowerNukkitOnly
+
     public int getAge() {
         return getBooleanValue(AGED)? 1 : 0;
     }
 
-    @PowerNukkitOnly
+
     public void setAge(int age) {
         age = MathHelper.clamp(age, 0, 1);
         setBooleanValue(AGED, age == 1);
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean breaksWhenMoved() {
         return true;

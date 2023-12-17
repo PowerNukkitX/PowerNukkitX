@@ -15,12 +15,11 @@ import org.jetbrains.annotations.NotNull;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockStone extends BlockSolidMeta {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BlockProperty<StoneType> STONE_TYPE = new ArrayBlockProperty<>("stone_type", true, StoneType.class);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(STONE_TYPE);
     
     @Deprecated
@@ -64,8 +63,7 @@ public class BlockStone extends BlockSolidMeta {
         return STONE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -86,15 +84,13 @@ public class BlockStone extends BlockSolidMeta {
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public StoneType getStoneType() {
         return getPropertyValue(STONE_TYPE);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setStoneType(StoneType stoneType) {
         setPropertyValue(STONE_TYPE, stoneType);
     }
@@ -105,7 +101,7 @@ public class BlockStone extends BlockSolidMeta {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

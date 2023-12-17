@@ -14,8 +14,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockWool extends BlockSolidMeta {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = CommonBlockProperties.COLOR_BLOCK_PROPERTIES;
 
     public BlockWool() {
@@ -40,8 +39,7 @@ public class BlockWool extends BlockSolidMeta {
         return WOOL;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {

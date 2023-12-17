@@ -51,8 +51,6 @@ public class EntityMule extends EntityAnimal implements EntityWalkable {
     }
 
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Mule";

@@ -26,8 +26,8 @@ import java.util.Map;
  * <p>
  * Universal melee attack actuator.
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
 
     protected MemoryType<? extends Entity> memory;
@@ -44,21 +44,21 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
      * <p>
      * Used to specify a specific attack target.
      */
-    @Since("1.19.30-r1")
+
     protected Entity target;
     /**
      * 用来指定特定的视线目标
      * <p>
      * Used to specify a specific look target.
      */
-    @Since("1.19.30-r1")
+
     protected Vector3 lookTarget;
     /**
      * 给予目标药水效果
      * <p>
      * Give target potion effect
      */
-    @Since("1.19.63-r2")
+
     protected Effect[] effects;
 
     public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {

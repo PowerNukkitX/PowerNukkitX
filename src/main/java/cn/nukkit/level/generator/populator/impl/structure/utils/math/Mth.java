@@ -4,8 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.math.NukkitRandom;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public final class Mth {
 
     private Mth() {

@@ -13,30 +13,24 @@ import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
 import java.util.HashSet;
 import java.util.Set;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 public class EntityArmorInventory extends BaseInventory {
 
     private final Entity entity;
 
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int SLOT_HEAD = 0;
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int SLOT_CHEST = 1;
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int SLOT_LEGS = 2;
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int SLOT_FEET = 3;
 
     /**
      * @param entity an Entity which implements {@link InventoryHolder}.
      * @throws ClassCastException if the entity does not implements {@link InventoryHolder}
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public EntityArmorInventory(Entity entity) {
         super((InventoryHolder) entity, InventoryType.ENTITY_ARMOR);
         this.entity = entity;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public Entity getEntity() {
         return entity;
     }
@@ -56,53 +50,45 @@ public class EntityArmorInventory extends BaseInventory {
         return 4;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public Item getHelmet(){
         return this.getItem(SLOT_HEAD);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public Item getChestplate(){
         return this.getItem(SLOT_CHEST);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public Item getLeggings(){
         return this.getItem(SLOT_LEGS);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public Item getBoots(){
         return this.getItem(SLOT_FEET);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @PowerNukkitDifference(info = "now this method will return an Boolean",since = "1.6.0.0-PNX")
     public boolean setHelmet(Item item) {
         return this.setItem(SLOT_HEAD, item);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @PowerNukkitDifference(info = "now this method will return an Boolean",since = "1.6.0.0-PNX")
     public boolean setChestplate(Item item) {
         return this.setItem(SLOT_CHEST, item);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @PowerNukkitDifference(info = "now this method will return an Boolean",since = "1.6.0.0-PNX")
     public boolean setLeggings(Item item) {
         return this.setItem(SLOT_LEGS, item);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @PowerNukkitDifference(info = "now this method will return an Boolean",since = "1.6.0.0-PNX")
     public boolean setBoots(Item item) {
         return  this.setItem(SLOT_FEET, item);

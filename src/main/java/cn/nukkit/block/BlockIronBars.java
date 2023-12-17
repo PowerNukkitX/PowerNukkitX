@@ -29,7 +29,7 @@ public class BlockIronBars extends BlockThin {
         return 5;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -51,7 +51,7 @@ public class BlockIronBars extends BlockThin {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

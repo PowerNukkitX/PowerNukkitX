@@ -35,12 +35,10 @@ import cn.nukkit.potion.Effect;
 
 import java.util.Collection;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 public class EntityArmorStand extends Entity implements EntityInventoryHolder, EntityInteractable, EntityNameable {
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final int NETWORK_ID = 61;
 
     private static final String TAG_MAINHAND = "Mainhand";
@@ -51,8 +49,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     private EntityEquipmentInventory equipmentInventory;
     private EntityArmorInventory armorInventory;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public EntityArmorStand(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         setMaxHealth(6);
@@ -127,13 +124,13 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isPersistent() {
         return true;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public void setPersistent(boolean persistent) {
         // Armor stands are always persistent
@@ -445,8 +442,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         return true;
     }
 
-    @Since("1.5.1.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public String getOriginalName() {
         return "Armor Stand";
@@ -474,8 +470,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         return this.armorInventory;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public EntityEquipmentInventory getEquipmentInventory() {
         return this.equipmentInventory;
     }

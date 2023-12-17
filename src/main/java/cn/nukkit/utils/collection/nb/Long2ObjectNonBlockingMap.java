@@ -80,8 +80,8 @@ import java.util.function.Function;
  * @author Cliff Click, SuperIceCN
  * @since 1.5
  */
-@Since("1.20.10-r1")
-@PowerNukkitXOnly
+
+
 @NonComputationAtomic
 public class Long2ObjectNonBlockingMap<TypeV>
         extends AbstractMap<Long, TypeV>

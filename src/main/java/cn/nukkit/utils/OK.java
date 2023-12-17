@@ -11,8 +11,8 @@ import java.util.Objects;
  *
  * @param <E> the error parameter
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public record OK<E>(boolean ok, @Nullable E error) {
     public static final OK<Void> TRUE = new OK<>(true);
 

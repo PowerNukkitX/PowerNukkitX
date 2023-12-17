@@ -5,8 +5,8 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 
 //todo: 更改为基于BlockProperty的实现
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
+
 public enum Rotation {
     NONE,
     CLOCKWISE_90,

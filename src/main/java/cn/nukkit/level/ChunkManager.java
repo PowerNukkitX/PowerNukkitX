@@ -14,12 +14,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface ChunkManager {
 
-    @PowerNukkitOnly
+
     int getBlockIdAt(int x, int y, int z, int layer);
 
     int getBlockIdAt(int x, int y, int z);
 
-    @PowerNukkitOnly
+
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN")
     void setBlockFullIdAt(int x, int y, int z, int layer, int fullId);
@@ -28,17 +28,17 @@ public interface ChunkManager {
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN")
     void setBlockFullIdAt(int x, int y, int z, int fullId);
 
-    @PowerNukkitOnly
+
     void setBlockIdAt(int x, int y, int z, int layer, int id);
 
     void setBlockIdAt(int x, int y, int z, int id);
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
-    @PowerNukkitOnly
+
     boolean setBlockAtLayer(int x, int y, int z, int layer, int id, int data);
 
-    @PowerNukkitOnly
+
     default boolean setBlockAtLayer(int x, int y, int z, int layer, int id) {
         return setBlockAtLayer(x, y, z, layer, id, 0);
     }
@@ -47,22 +47,18 @@ public interface ChunkManager {
         setBlockStateAt(x, y, z, BlockState.of(id));
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     boolean setBlockStateAt(int x, int y, int z, int layer, BlockState state);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     default boolean setBlockStateAt(int x, int y, int z, BlockState state) {
         return setBlockStateAt(x, y, z, 0, state);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     BlockState getBlockStateAt(int x, int y, int z, int layer);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     default BlockState getBlockStateAt(int x, int y, int z) {
         return getBlockStateAt(x, y, z, 0);
     }
@@ -73,7 +69,6 @@ public interface ChunkManager {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
-    @PowerNukkitOnly
     int getBlockDataAt(int x, int y, int z, int layer);
 
     @Deprecated
@@ -82,7 +77,6 @@ public interface ChunkManager {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
-    @PowerNukkitOnly
     void setBlockDataAt(int x, int y, int z, int layer, int data);
 
     @Deprecated
@@ -91,8 +85,7 @@ public interface ChunkManager {
 
     BaseFullChunk getChunk(int chunkX, int chunkZ);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     default BaseFullChunk getChunk(@NotNull ChunkVector2 pos) {
         return getChunk(pos.getX(), pos.getZ());
     }
@@ -103,15 +96,12 @@ public interface ChunkManager {
 
     long getSeed();
 
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
+
     boolean isOverWorld();
 
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
+
     boolean isNether();
 
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
+
     boolean isTheEnd();
 }

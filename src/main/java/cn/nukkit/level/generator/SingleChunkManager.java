@@ -35,19 +35,19 @@ public class SingleChunkManager extends SimpleChunkManager {
         }
     }
 
-    @Since("1.19.80-r3")
+
     @Override
     public boolean isOverWorld() {
         return chunk.isOverWorld();
     }
 
-    @Since("1.19.80-r3")
+
     @Override
     public boolean isNether() {
         return chunk.isNether();
     }
 
-    @Since("1.19.80-r3")
+
     @Override
     public boolean isTheEnd() {
         return chunk.isTheEnd();

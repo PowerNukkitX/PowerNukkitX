@@ -25,12 +25,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockChorusFlower extends BlockTransparentMeta {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final IntBlockProperty AGE = new IntBlockProperty("age", false, 5);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(AGE);
 
     public BlockChorusFlower() {
@@ -46,8 +44,7 @@ public class BlockChorusFlower extends BlockTransparentMeta {
         return CHORUS_FLOWER;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -208,19 +205,18 @@ public class BlockChorusFlower extends BlockTransparentMeta {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    @PowerNukkitOnly
+
     public  boolean sticksToPiston() {
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         if (projectile instanceof EntityArrow || projectile instanceof EntitySnowball || projectile instanceof EntitySmallFireBall) {
@@ -229,33 +225,28 @@ public class BlockChorusFlower extends BlockTransparentMeta {
         }
         return super.onProjectileHit(projectile, position, motion);
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public int getMaxAge() {
         return AGE.getMaxValue();
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public int getAge() {
         return getIntValue(AGE);
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public void setAge(int age) {
         setIntValue(AGE, age);
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public boolean isFullyAged() {
         return getAge() >= getMaxAge();
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     private boolean isHorizontalAir(Block block) {
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
             if (block.getSide(face).getId() != AIR) {
@@ -264,9 +255,8 @@ public class BlockChorusFlower extends BlockTransparentMeta {
         }
         return true;
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     private boolean isHorizontalAirExcept(Block block, BlockFace except) {
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
             if (face != except) {

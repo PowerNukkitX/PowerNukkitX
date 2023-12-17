@@ -32,15 +32,14 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.REDSTONE_SIGNAL;
  */
 @PowerNukkitDifference(info = "Implements RedstoneComponent and uses methods from it.", since = "1.4.0.0-PN")
 public abstract class BlockPressurePlateBase extends BlockFlowable implements RedstoneComponent {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BlockProperties PROPERTIES = CommonBlockProperties.REDSTONE_SIGNAL_BLOCK_PROPERTY;
 
     protected float onPitch;
     protected float offPitch;
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -104,14 +103,13 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
         return getRedstonePower() == 0;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public static boolean isSupportValid(Block block, BlockFace blockFace) {
         return BlockLever.isSupportValid(block, blockFace) || block instanceof BlockFence;
     }

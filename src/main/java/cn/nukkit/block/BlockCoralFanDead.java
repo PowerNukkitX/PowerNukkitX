@@ -3,14 +3,14 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.level.Level;
 
-@PowerNukkitOnly
+
 public class BlockCoralFanDead extends BlockCoralFan {
-    @PowerNukkitOnly
+
     public BlockCoralFanDead() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockCoralFanDead(int meta) {
         super(meta);
     }
@@ -25,7 +25,7 @@ public class BlockCoralFanDead extends BlockCoralFan {
         return "Dead " + super.getName();
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isDead() {
         return true;

@@ -22,7 +22,7 @@ import static cn.nukkit.math.VectorMath.calculateFace;
  */
 @PowerNukkitDifference(info = "Implements BlockConnectable only on PowerNukkit", since = "1.3.0.0-PN")
 public class BlockFence extends BlockTransparentMeta implements BlockConnectable {
-    @PowerNukkitOnly
+
     public static final BlockProperties PROPERTIES = new BlockProperties(WoodType.PROPERTY);
 
     @Deprecated @DeprecationDetails(reason = "Moved to the block property system", since = "1.4.0.0-PN", replaceWith = "getWoodType()")
@@ -51,8 +51,7 @@ public class BlockFence extends BlockTransparentMeta implements BlockConnectable
         return FENCE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -64,7 +63,7 @@ public class BlockFence extends BlockTransparentMeta implements BlockConnectable
         return 2;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -79,15 +78,13 @@ public class BlockFence extends BlockTransparentMeta implements BlockConnectable
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public void setWoodType(@Nullable WoodType woodType) {
         setPropertyValue(WoodType.PROPERTY, woodType);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public Optional<WoodType> getWoodType() {
         return Optional.of(getPropertyValue(WoodType.PROPERTY));
     }

@@ -18,8 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class BlockCaveVines extends BlockTransparentMeta {
     public static final IntBlockProperty AGE_PROPERTY = new IntBlockProperty("growing_plant_age", false, 25, 0);
     public static final BlockProperties PROPERTIES = new BlockProperties(AGE_PROPERTY);
@@ -34,8 +33,7 @@ public class BlockCaveVines extends BlockTransparentMeta {
         return CAVE_VINES;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {

@@ -194,8 +194,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         return new Item[]{Item.get(Item.LEATHER), getHorseArmor(), getSaddle()};
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Horse";

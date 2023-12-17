@@ -16,8 +16,7 @@ import cn.nukkit.math.NukkitRandom;
 
 import java.util.List;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public class PopulatorVillage extends PopulatorStructure {
 
     protected static final int SIZE = 0;
@@ -78,7 +77,7 @@ public class PopulatorVillage extends PopulatorStructure {
         }
     }
 
-    @Since("1.19.21-r2")
+
     @Override
     public boolean isAsync() {
         return true;

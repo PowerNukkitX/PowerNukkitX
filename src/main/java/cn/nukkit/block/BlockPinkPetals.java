@@ -17,8 +17,8 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author daoge_cmd
  */
-@PowerNukkitXOnly
-@Since("1.20.10-r1")
+
+
 public class BlockPinkPetals extends BlockFlowable {
 
     public static final IntBlockProperty GROWTH = new IntBlockProperty("growth", false, 7, 0);

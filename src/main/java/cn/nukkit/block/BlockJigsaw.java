@@ -12,20 +12,19 @@ import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 
-@PowerNukkitOnly
+
 public class BlockJigsaw extends BlockSolidMeta implements Faceable {
     private static final IntBlockProperty ROTATION = new IntBlockProperty("rotation", false, 3);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, ROTATION);
 
-    @PowerNukkitOnly
+
     public BlockJigsaw() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockJigsaw(int meta) {
         super(meta);
     }
@@ -40,8 +39,7 @@ public class BlockJigsaw extends BlockSolidMeta implements Faceable {
         return JIGSAW;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {

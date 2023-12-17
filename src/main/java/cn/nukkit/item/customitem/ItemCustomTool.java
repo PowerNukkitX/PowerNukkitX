@@ -12,8 +12,8 @@ import javax.annotation.Nullable;
 /**
  * @author lt_name
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public abstract class ItemCustomTool extends ItemTool implements ItemDurable, CustomItem {
     private final String id;
     private final String textureName;
@@ -39,8 +39,7 @@ public abstract class ItemCustomTool extends ItemTool implements ItemDurable, Cu
         return textureName;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public String getNamespaceId() {
         return id;

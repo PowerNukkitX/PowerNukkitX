@@ -39,15 +39,13 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable {
         return 2.04f;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r2")
+
     @Override
     public int getFrostbiteInjury() {
         return 5;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Magma Cube";

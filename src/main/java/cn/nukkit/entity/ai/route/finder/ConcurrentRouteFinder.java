@@ -14,8 +14,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * 实现了此类的寻路器应当提供完整的异步寻路支持 <br/>
  * PNX中未使用此寻路方案，但保留以提供API <br/>
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public abstract class ConcurrentRouteFinder extends SimpleRouteFinder {
 
     //同步访问锁

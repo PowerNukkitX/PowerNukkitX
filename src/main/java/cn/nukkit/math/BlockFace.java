@@ -151,8 +151,8 @@ public enum BlockFace {
      *
      * @return index
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public int getDUNESWIndex() {
         switch (getIndex()) {
             case 1:
@@ -176,8 +176,8 @@ public enum BlockFace {
      *
      * @return index
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public int getDUSWNEIndex() {
         switch (getIndex()) {
             case 1:
@@ -326,8 +326,7 @@ public enum BlockFace {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public CompassRoseDirection getCompassRoseDirection() {
         switch (this) {
             case NORTH:
@@ -343,8 +342,7 @@ public enum BlockFace {
         }
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     public Set<BlockFace> getEdges() {
         EnumSet<BlockFace> blockFaces = EnumSet.noneOf(BlockFace.class);
         if (axis.isVertical()) {
@@ -443,8 +441,7 @@ public enum BlockFace {
 
         private BlockFace[] faces;
 
-        @PowerNukkitOnly
-        @Since("1.4.0.0-PN")
+
         public BlockFace random() {
             return faces[ThreadLocalRandom.current().nextInt(faces.length)];
         }

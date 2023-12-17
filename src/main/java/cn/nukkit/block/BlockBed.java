@@ -38,17 +38,14 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
 @Log4j2
 public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEntityHolder<BlockEntityBed> {
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BooleanBlockProperty HEAD_PIECE = new BooleanBlockProperty("head_piece_bit", false);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BooleanBlockProperty OCCUPIED = new BooleanBlockProperty("occupied_bit", false);
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, OCCUPIED, HEAD_PIECE);
 
     public BlockBed() {
@@ -64,24 +61,21 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
         return BED_BLOCK;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntityBed> getBlockEntityClass() {
         return BlockEntityBed.class;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     @Override
     public String getBlockEntityType() {
@@ -113,7 +107,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
         return this.y + 0.5625;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -314,51 +308,45 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
         return getPropertyValue(DIRECTION);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(DIRECTION, face);
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public boolean isHeadPiece() {
         return getBooleanValue(HEAD_PIECE);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setHeadPiece(boolean headPiece) {
         setBooleanValue(HEAD_PIECE, headPiece);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isOccupied() {
         return getBooleanValue(OCCUPIED);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setOccupied(boolean occupied) {
         setBooleanValue(OCCUPIED, occupied);
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    @PowerNukkitOnly
+
     public  boolean sticksToPiston() {
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isBedValid() {
         BlockFace dir = getBlockFace();
         Block head;
@@ -376,8 +364,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
                 && !((BlockBed) foot).isHeadPiece() && ((BlockBed) foot).getBlockFace().equals(dir);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Nullable
     public BlockBed getHeadPart() {
         if (isHeadPiece()) {
@@ -391,8 +378,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
         return null;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Nullable
     public BlockBed getFootPart() {
         if (!isHeadPiece()) {

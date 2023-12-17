@@ -95,15 +95,13 @@ public class EntityExpBottle extends EntityProjectile {
         this.getLevel().dropExpOrb(this, ThreadLocalRandom.current().nextInt(3, 12));
     }
 
-    @PowerNukkitOnly
+
     @Override
     protected void addHitEffect() {
         this.getLevel().addSound(this, Sound.RANDOM_GLASS);
     }
 
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Bottle o' Enchanting";

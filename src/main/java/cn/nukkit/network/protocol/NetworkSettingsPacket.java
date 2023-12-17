@@ -5,8 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import lombok.ToString;
 
-@Since("1.19.30-r1")
-@PowerNukkitXOnly
+
 @ToString
 public class NetworkSettingsPacket extends DataPacket {
 

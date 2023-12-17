@@ -33,14 +33,13 @@ public class BlockSlime extends BlockTransparent {
         return 0;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getLightFilter() {
         return 1;
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     public boolean canSticksBlock() {
         return true;

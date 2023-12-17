@@ -24,8 +24,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * After filtering out the behaviors that return success, the group with the highest priority is selected<br>
  * If there are still multiple behaviors at this point, one of them is randomly selected for execution based on the return value of the {@link IBehavior#getWeight()} method of the behavior
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 @Getter
 public class WeightedMultiBehavior extends AbstractBehavior {
     /**

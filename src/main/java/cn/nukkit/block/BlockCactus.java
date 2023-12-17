@@ -24,8 +24,8 @@ import javax.annotation.Nullable;
  * @author Nukkit Project Team
  */
 public class BlockCactus extends BlockTransparentMeta implements BlockFlowerPot.FlowerPotBlock {
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
+
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.AGE_15);
 
     public BlockCactus(int meta) {
@@ -41,8 +41,7 @@ public class BlockCactus extends BlockTransparentMeta implements BlockFlowerPot.
         return CACTUS;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -59,7 +58,7 @@ public class BlockCactus extends BlockTransparentMeta implements BlockFlowerPot.
         return 2;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -179,13 +178,13 @@ public class BlockCactus extends BlockTransparentMeta implements BlockFlowerPot.
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    @PowerNukkitOnly
+
     public  boolean sticksToPiston() {
         return false;
     }

@@ -27,7 +27,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 import java.util.Base64;
 
-@PowerNukkitXOnly
+
 public final class EncryptionUtils {
 
     private static final ECPublicKey MOJANG_PUBLIC_KEY;

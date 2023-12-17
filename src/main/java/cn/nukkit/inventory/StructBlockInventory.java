@@ -16,8 +16,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class StructBlockInventory implements Inventory {
     protected final BlockEntityStructBlock holder;
 

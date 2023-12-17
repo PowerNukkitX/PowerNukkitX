@@ -265,8 +265,7 @@ public class EntityXPOrb extends Entity {
         this.pickupDelay = pickupDelay;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Experience Orb";

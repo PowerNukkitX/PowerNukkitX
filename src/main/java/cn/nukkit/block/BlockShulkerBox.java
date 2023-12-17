@@ -14,8 +14,7 @@ import org.jetbrains.annotations.NotNull;
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
 public class BlockShulkerBox extends BlockUndyedShulkerBox {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = CommonBlockProperties.COLOR_BLOCK_PROPERTIES;
 
     public BlockShulkerBox() {
@@ -28,8 +27,7 @@ public class BlockShulkerBox extends BlockUndyedShulkerBox {
         }
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {

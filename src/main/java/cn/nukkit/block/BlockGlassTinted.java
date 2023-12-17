@@ -9,11 +9,10 @@ import cn.nukkit.item.Item;
  * @since 13/06/2021
  */
 
-@PowerNukkitOnly
-@Since("FUTURE")
+
 public class BlockGlassTinted extends BlockGlass {
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
+
     public BlockGlassTinted() {
 
     }

@@ -30,12 +30,12 @@ import java.util.stream.Stream;
  * @author joserobjr
  * @since 2021-12-08
  */
-@PowerNukkitOnly
-@Since("FUTURE")
+
+
 @Log4j2
 public class AnnotationProblemScanner {
-    private static final String NEED_TO_ADD_POWERNUKKIT_ONLY = "Need to add @PowerNukkitOnly to ";
-    private static final String NEED_TO_REMOVE_POWERNUKKIT_ONLY = "Need to remove @PowerNukkitOnly from ";
+    private static final String NEED_TO_ADD_POWERNUKKIT_ONLY = "Need to add  to ";
+    private static final String NEED_TO_REMOVE_POWERNUKKIT_ONLY = "Need to remove  from ";
 
     Map<String, CtType<?>> nukkitTypes;
 

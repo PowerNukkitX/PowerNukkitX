@@ -6,8 +6,7 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class ConsoleCommandOutputEvent extends ServerEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     protected final CommandSender sender;

@@ -64,7 +64,7 @@ public class EnchantmentThorns extends Enchantment {
         return !(item instanceof ItemElytra) && super.canEnchant(item);
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isItemAcceptable(Item item) {
         if (item instanceof ItemArmor) {

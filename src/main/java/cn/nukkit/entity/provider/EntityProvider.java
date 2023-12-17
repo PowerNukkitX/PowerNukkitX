@@ -12,8 +12,8 @@ import javax.annotation.Nullable;
 /**
  * 实体创建的时候会被调用
  */
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
+
 public interface EntityProvider<T extends Entity> {
     T provideEntity(@NotNull IChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args);
 

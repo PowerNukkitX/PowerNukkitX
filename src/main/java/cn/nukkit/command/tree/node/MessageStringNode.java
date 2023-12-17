@@ -16,8 +16,8 @@ import java.util.StringJoiner;
  * 所有命令参数类型为{@link cn.nukkit.command.data.CommandParamType#MESSAGE MESSAGE}
  * 如果没有手动指定{@link IParamNode},则会默认使用这个解析
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public class MessageStringNode extends ParamNode<String> {
 
     private final List<String> TMP = new ArrayList<>();

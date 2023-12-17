@@ -15,12 +15,10 @@ import javax.annotation.Nullable;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 public class BlockChain extends BlockTransparent {
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public BlockChain() {
         // Does nothing
     }
@@ -35,22 +33,19 @@ public class BlockChain extends BlockTransparent {
         return CHAIN_BLOCK;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return BlockLog.PILLAR_PROPERTIES;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public BlockFace.Axis getPillarAxis() {
         return getPropertyValue(PILLAR_AXIS);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setPillarAxis(BlockFace.Axis axis) {
         setPropertyValue(PILLAR_AXIS, axis);
     }
@@ -66,7 +61,7 @@ public class BlockChain extends BlockTransparent {
         return 5;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -107,8 +102,7 @@ public class BlockChain extends BlockTransparent {
         return new ItemChain();
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;

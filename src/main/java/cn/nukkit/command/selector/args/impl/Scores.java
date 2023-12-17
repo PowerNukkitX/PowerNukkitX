@@ -19,8 +19,7 @@ import cn.nukkit.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class Scores extends CachedSimpleSelectorArgument {
 
     protected static final String SCORE_SEPARATOR = ",";

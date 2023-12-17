@@ -9,10 +9,10 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE,
         ElementType.FIELD, ElementType.PACKAGE})
-@PowerNukkitOnly @Since("1.2.1.0-PN")
+
 @Inherited
 @Documented
 public @interface PowerNukkitOnly {
-    @PowerNukkitOnly
+
     String value() default "";
 }

@@ -8,8 +8,8 @@ import cn.nukkit.api.Since;
  * <p>
  * The enum Block creative category.
  */
-@PowerNukkitXOnly
-@Since("1.19.31-r1")
+
+
 public enum BlockCreativeCategory {
     /**
      * 对应创造栏第一个

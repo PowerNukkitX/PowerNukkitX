@@ -19,8 +19,7 @@ public interface Recipe {
 
     RecipeType getType();
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     static boolean matchItemList(List<Item> haveItems, List<Item> needItems) {
         for (Item needItem : new ArrayList<>(needItems)) {
             for (Item haveItem : new ArrayList<>(haveItems)) {

@@ -8,8 +8,8 @@ import cn.nukkit.api.Since;
  * <p>
  * 不会默认使用，需要手动指定
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public class XpLevelNode extends ParamNode<Integer> {
     @Override
     public void fill(String arg) {

@@ -14,8 +14,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author Kevims KCodeYT
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public class BlockEntitySculkSensor extends BlockEntity implements VibrationListener {
 
     protected int lastActiveTime = Server.getInstance().getTick();
@@ -27,8 +27,7 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
 
     protected boolean waitForVibration = false;
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public BlockEntitySculkSensor(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }

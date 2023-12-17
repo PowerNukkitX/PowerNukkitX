@@ -4,11 +4,10 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemTool;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 public class BlockSoulSoil extends BlockSolid {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public BlockSoulSoil() {
         // Does nothing
     }
@@ -43,7 +42,7 @@ public class BlockSoulSoil extends BlockSolid {
         return true;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isSoulSpeedCompatible() {
         return true;

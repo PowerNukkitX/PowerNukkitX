@@ -18,8 +18,7 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.19.50-r1")
+
 public class DebugCommand extends TestCommand implements CoreCommand {
     public DebugCommand(String name) {
         super(name, "commands.debug.description");
@@ -38,7 +37,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         this.enableParamTree();
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();

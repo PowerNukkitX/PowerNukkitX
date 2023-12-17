@@ -3,8 +3,7 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
-@PowerNukkitXOnly
-@Since("1.19.30-r1")
+
 public class RemoveObjectivePacket extends DataPacket {
 
     public String objectiveName;

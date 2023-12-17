@@ -13,8 +13,8 @@ import java.nio.file.Files;
 import java.util.regex.Pattern;
 
 @Log4j2
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public class JSPluginLoader implements PluginLoader {
 
     public final Server server;

@@ -8,8 +8,7 @@ import cn.nukkit.block.BlockWater;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class GlassBottleDispenseBehavior extends DefaultDispenseBehavior {
 
     @Override

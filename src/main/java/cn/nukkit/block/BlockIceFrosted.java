@@ -12,23 +12,21 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitOnly
+
 public class BlockIceFrosted extends BlockTransparentMeta {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final IntBlockProperty AGE = new IntBlockProperty("age", false, 3);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(AGE);
 
-    @PowerNukkitOnly
+
     public BlockIceFrosted() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockIceFrosted(int meta) {
         super(meta);
     }
@@ -38,8 +36,7 @@ public class BlockIceFrosted extends BlockTransparentMeta {
         return ICE_FROSTED;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -107,7 +104,7 @@ public class BlockIceFrosted extends BlockTransparentMeta {
         return false;
     }
 
-    @PowerNukkitOnly
+
     protected void slightlyMelt(boolean isSource) {
         int age = getDamage();
         if (age < 3) {

@@ -12,7 +12,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author Erik Miller | EinBexiii
  */
-@Since("1.3.1.0-PN")
+
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements EntityAgeable only in PowerNukkit!")
 public class EntityZoglin extends EntityMob implements EntityWalkable, EntityAgeable {
 
@@ -49,20 +49,19 @@ public class EntityZoglin extends EntityMob implements EntityWalkable, EntityAge
         return 0.9f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Zoglin";
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isUndead() {
         return true;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

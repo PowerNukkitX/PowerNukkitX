@@ -54,7 +54,7 @@ public class DummyBossBar {
             return this;
         }
 
-        @Since("FUTURE")
+
         public Builder color(BossBarColor color) {
             this.color = color;
             return this;
@@ -97,7 +97,7 @@ public class DummyBossBar {
         }
     }
 
-    @Since("FUTURE")
+
     public void setColor(@Nullable BossBarColor color) {
         final BossBarColor currentColor = this.color;
         if (currentColor == null || !currentColor.equals(color)) {
@@ -106,7 +106,7 @@ public class DummyBossBar {
         }
     }
 
-    @Since("FUTURE")
+
     @Nullable
     public BossBarColor getColor() {
         return this.color;

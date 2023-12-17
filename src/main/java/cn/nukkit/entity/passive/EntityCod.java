@@ -23,8 +23,7 @@ public class EntityCod extends EntityFish {
         return NETWORK_ID;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Cod";

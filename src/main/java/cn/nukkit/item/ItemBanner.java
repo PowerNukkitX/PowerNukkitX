@@ -57,8 +57,7 @@ public class ItemBanner extends Item {
         this.setDamage(color.getDyeData() & 0x0f);
     }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     @NotNull
     public DyeColor getBaseDyeColor() {
         return Objects.requireNonNull(DyeColor.getByDyeData(getBaseColor()));
@@ -101,9 +100,8 @@ public class ItemBanner extends Item {
     public int getPatternsSize() {
         return (this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag()).getList("Patterns").size();
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public boolean hasPattern() {
         return (this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag()).contains("Patterns");
     }

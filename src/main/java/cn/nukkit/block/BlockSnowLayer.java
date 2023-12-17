@@ -35,14 +35,14 @@ import java.util.stream.Stream;
  */
 @PowerNukkitDifference(info = "Extends BlockFallableMeta instead of BlockFallable")
 public class BlockSnowLayer extends BlockFallableMeta {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final IntBlockProperty SNOW_HEIGHT = new IntBlockProperty("height", true, 7);
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BooleanBlockProperty COVERED = new BooleanBlockProperty("covered_bit", false);
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BlockProperties PROPERTIES = new BlockProperties(SNOW_HEIGHT, COVERED);
 
     public BlockSnowLayer() {
@@ -63,34 +63,29 @@ public class BlockSnowLayer extends BlockFallableMeta {
         return SNOW_LAYER;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public int getSnowHeight() {
         return getIntValue(SNOW_HEIGHT);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setSnowHeight(int snowHeight) {
         setIntValue(SNOW_HEIGHT, snowHeight);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isCovered() {
         return getBooleanValue(COVERED);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setCovered(boolean covered) {
         setBooleanValue(COVERED, covered);
     }
@@ -197,8 +192,6 @@ public class BlockSnowLayer extends BlockFallableMeta {
     }
 
 
-    @Since("1.2.1.0-PN")
-    @PowerNukkitOnly
     @Override
     public void afterRemoval(Block newBlock, boolean update) {
         if (layer != 0 || newBlock.getId() == getId()) {
@@ -249,14 +242,12 @@ public class BlockSnowLayer extends BlockFallableMeta {
         return 0;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean melt() {
         return melt(2);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean melt(int layers) {
         Preconditions.checkArgument(layers > 0, "Layers must be positive, got {}", layers);
         Block toMelt = this;
@@ -336,8 +327,7 @@ public class BlockSnowLayer extends BlockFallableMeta {
         return getSnowHeight() < 3;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isSolid(BlockFace side) {
         return side == BlockFace.UP && getSnowHeight() == SNOW_HEIGHT.getMaxValue();

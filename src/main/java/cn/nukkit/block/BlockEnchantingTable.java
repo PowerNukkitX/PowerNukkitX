@@ -38,16 +38,14 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
         return "Enchanting Table";
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.ENCHANT_TABLE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntityEnchantTable> getBlockEntityClass() {
@@ -69,7 +67,7 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
         return 6000;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -92,7 +90,7 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -138,8 +136,7 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
         return false;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isSolid(BlockFace side) {
         return false;

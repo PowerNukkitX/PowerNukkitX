@@ -10,8 +10,7 @@ import lombok.Setter;
 
 import javax.annotation.Nullable;
 
-@PowerNukkitXOnly
-@Since("1.19.30-r2")
+
 @Getter
 @Setter
 public class ScoreboardLineChangeEvent extends ScoreboardEvent {

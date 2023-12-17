@@ -14,8 +14,7 @@ import java.util.Set;
 
 import static cn.nukkit.inventory.BaseInventory.AIR_ITEM;
 
-@Since("1.19.50-r3")
-@PowerNukkitXOnly
+
 public class InventorySlice implements Inventory {
     @NotNull
     private final Inventory rawInv;
@@ -332,13 +331,13 @@ public class InventorySlice implements Inventory {
         rawInv.onSlotChange(index + startSlot, before, send);
     }
 
-    @PowerNukkitOnly
+
     @Override
     public void addListener(InventoryListener listener) {
         rawInv.addListener(((inventory, oldItem, slot) -> listener.onInventoryChanged(this, oldItem, slot - startSlot)));
     }
 
-    @PowerNukkitOnly
+
     @Override
     public void removeListener(InventoryListener listener) {
         rawInv.removeListener(((inventory, oldItem, slot) -> listener.onInventoryChanged(this, oldItem, slot - startSlot)));

@@ -10,8 +10,7 @@ import java.io.IOException;
 public class ByteTag extends NumberTag<Integer> {
     public int data;
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     public ByteTag(int data) {
         super("");
         this.data = data;

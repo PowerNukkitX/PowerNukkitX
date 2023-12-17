@@ -46,16 +46,14 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         return "Shulker Box";
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntityShulkerBox> getBlockEntityClass() {
         return BlockEntityShulkerBox.class;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     @Override
     public String getBlockEntityType() {
@@ -82,7 +80,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -193,13 +191,13 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean sticksToPiston() {
         return false;
     }
@@ -209,15 +207,13 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         return false;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getItemMaxStackSize() {
         return 1;

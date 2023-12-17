@@ -8,8 +8,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r1")
+
 public class TradeAction extends InventoryAction {
     private final EntityVillager villager;
     private final int type;

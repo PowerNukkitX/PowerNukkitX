@@ -13,8 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class TestForCommand extends VanillaCommand {
 
     public TestForCommand(String name) {
@@ -27,7 +26,7 @@ public class TestForCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         List<Entity> targets = result.getValue().getResult(0);

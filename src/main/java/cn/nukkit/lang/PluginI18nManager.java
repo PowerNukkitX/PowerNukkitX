@@ -27,8 +27,8 @@ import java.util.jar.JarFile;
  * <p>
  * Only support Java Plugin {@link PluginBase}
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 @Log4j2
 public final class PluginI18nManager {
     private static final HashMap<String, PluginI18n> PLUGINS_MULTI_LANGUAGE = new HashMap<>();

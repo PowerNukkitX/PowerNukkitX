@@ -17,8 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public class PopulatorNetherFortress extends PopulatorStructure {
 
     @Override
@@ -69,7 +68,7 @@ public class PopulatorNetherFortress extends PopulatorStructure {
         }
     }
 
-    @Since("1.19.21-r2")
+
     @Override
     public boolean isAsync() {
         return true;

@@ -19,8 +19,7 @@ import cn.nukkit.network.protocol.types.EntityLink;
 
 import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class EntityChestBoat extends EntityBoat implements InventoryHolder {
 
     public static final int NETWORK_ID = 218;
@@ -129,7 +128,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
         }
     }
 
-    @Since("1.6.0.0-PNX")
+
     @Override
     protected void dropItem() {
         switch (this.getVariant()) {

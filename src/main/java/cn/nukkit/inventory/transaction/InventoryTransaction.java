@@ -60,7 +60,7 @@ public class InventoryTransaction {
         return inventories;
     }
 
-    @Since("1.3.0.0-PN")
+
     public List<InventoryAction> getActionList() {
         return actions;
     }

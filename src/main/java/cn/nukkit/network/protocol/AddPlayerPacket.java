@@ -39,8 +39,8 @@ public class AddPlayerPacket extends DataPacket {
     public Item item;
     public int gameType = Server.getInstance().getGamemode();
     public EntityMetadata metadata = new EntityMetadata();
-    @PowerNukkitXOnly
-    @Since("1.19.40-r1")
+
+
     public PropertySyncData syncedProperties = new PropertySyncData(new int[]{}, new float[]{});
     //public EntityLink links = new EntityLink[0];
     public String deviceId = "";

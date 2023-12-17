@@ -46,8 +46,8 @@ public class ItemDye extends Item {
     @Deprecated
     public static final int BLACK = DyeColor.BLACK.getItemDyeMeta();
     @Deprecated
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public static final int BONE_MEAL = DyeColor.BONE_MEAL.getItemDyeMeta();
 
     public ItemDye() {
@@ -74,27 +74,23 @@ public class ItemDye extends Item {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected ItemDye(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isFertilizer() {
         return getId() == DYE && getDyeColor().equals(DyeColor.BONE_MEAL);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     public boolean isLapisLazuli() {
         return getId() == DYE && getDyeColor().equals(DyeColor.BLUE);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     public boolean isCocoaBeans() {
         return getId() == DYE && getDyeColor().equals(DyeColor.BROWN);
     }

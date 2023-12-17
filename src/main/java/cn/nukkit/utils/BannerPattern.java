@@ -56,8 +56,7 @@ public record BannerPattern(@NotNull cn.nukkit.utils.BannerPattern.Type type, @N
         PATTERN_SKULL("sku"),
         PATTERN_FLOWER("flo"),
         PATTERN_MOJANG("moj"),
-        @Since("1.20.0-r2") @PowerNukkitXOnly PATTERN_GLOBE("glb"),
-        @Since("1.4.0.0-PN") @PowerNukkitOnly PATTERN_SNOUT("pig");
+
 
         private final static Map<String, Type> BY_NAME = new HashMap<>();
 

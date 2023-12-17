@@ -14,8 +14,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 @Log4j2
 public class CustomClassEntityProvider extends CustomEntityProvider implements EntityProviderWithClass {
     private final Class<? extends Entity> clazz;

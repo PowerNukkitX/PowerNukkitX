@@ -9,11 +9,10 @@ import cn.nukkit.item.ItemTool;
  * @since 08/06/2021
  */
 
-@PowerNukkitOnly
-@Since("FUTURE")
+
 public class BlockDeepslateCobbled extends BlockSolid {
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
+
     public BlockDeepslateCobbled(){
     }
 
@@ -42,8 +41,7 @@ public class BlockDeepslateCobbled extends BlockSolid {
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;

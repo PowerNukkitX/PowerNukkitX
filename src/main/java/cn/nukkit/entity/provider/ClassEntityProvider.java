@@ -12,8 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 @Log4j2
 public class ClassEntityProvider implements EntityProvider<Entity>, EntityProviderWithClass {
     private final String name;

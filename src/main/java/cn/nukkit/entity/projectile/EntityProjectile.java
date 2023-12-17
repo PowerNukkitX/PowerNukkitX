@@ -33,11 +33,11 @@ import java.util.concurrent.ThreadLocalRandom;
 public abstract class EntityProjectile extends Entity {
 
     public static final int DATA_SHOOTER_ID = 17;
-    @Since("FUTURE")
+
     public static final int PICKUP_NONE = 0;
-    @Since("FUTURE")
+
     public static final int PICKUP_ANY = 1;
-    @Since("FUTURE")
+
     public static final int PICKUP_CREATIVE = 2;
 
     public Entity shootingEntity;
@@ -73,8 +73,8 @@ public abstract class EntityProjectile extends Entity {
         return 0;
     }
 
-    @PowerNukkitOnly("Allows to modify the damage based on the entity being damaged")
-    @Since("1.4.0.0-PN")
+    ("Allows to modify the damage based on the entity being damaged")
+
     public int getResultDamage(@Nullable Entity entity) {
         return getResultDamage();
     }
@@ -124,8 +124,7 @@ public abstract class EntityProjectile extends Entity {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected void afterCollisionWithEntity(Entity entity) {
 
     }
@@ -155,8 +154,7 @@ public abstract class EntityProjectile extends Entity {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected void updateMotion() {
         this.motionY -= this.getGravity();
         this.motionX *= 1 - this.getDrag();
@@ -259,14 +257,14 @@ public abstract class EntityProjectile extends Entity {
         return hasUpdate;
     }
 
-    @PowerNukkitOnly
+
     public void updateRotation() {
         double f = Math.sqrt((this.motionX * this.motionX) + (this.motionZ * this.motionZ));
         this.yaw = Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI;
         this.pitch = Math.atan2(this.motionY, f) * 180 / Math.PI;
     }
 
-    @PowerNukkitOnly
+
     public void inaccurate(float modifier) {
         Random rand = ThreadLocalRandom.current();
 
@@ -275,8 +273,7 @@ public abstract class EntityProjectile extends Entity {
         this.motionZ += rand.nextGaussian() * 0.007499999832361937 * modifier;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected void onCollideWithBlock(Position position, Vector3 motion) {
         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
         for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
@@ -284,19 +281,17 @@ public abstract class EntityProjectile extends Entity {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected boolean onCollideWithBlock(Position position, Vector3 motion, Block collisionBlock) {
         return collisionBlock.onProjectileHit(this, position, motion);
     }
 
-    @PowerNukkitOnly
+
     protected void addHitEffect() {
 
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Deprecated
     @DeprecationDetails(
             by = "PowerNukkit", since = "FUTURE", reason = "Bad method name", replaceWith = "getHasAge",
@@ -305,8 +300,7 @@ public abstract class EntityProjectile extends Entity {
         return getHasAge();
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Deprecated
     @DeprecationDetails(
             by = "PowerNukkit", since = "FUTURE", reason = "Bad method name", replaceWith = "setHasAge",
@@ -319,8 +313,7 @@ public abstract class EntityProjectile extends Entity {
         return !this.noAge;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setHasAge(boolean hasAge) {
         this.noAge = !hasAge;
     }

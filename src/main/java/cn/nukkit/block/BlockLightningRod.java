@@ -12,11 +12,10 @@ import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 
-@Since("1.6.0.0-PNX")
-@PowerNukkitOnly
+
 public class BlockLightningRod extends BlockTransparentMeta implements Faceable {
-    @PowerNukkitOnly
-    @Since("1.6.0.0-PN")
+
+
     public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION);
 
     @Override
@@ -34,14 +33,13 @@ public class BlockLightningRod extends BlockTransparentMeta implements Faceable 
         return false;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;

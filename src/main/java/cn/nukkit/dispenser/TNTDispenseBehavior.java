@@ -8,15 +8,15 @@ import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 
-@PowerNukkitOnly
+
 public class TNTDispenseBehavior extends DefaultDispenseBehavior {
 
-    @PowerNukkitOnly
+
     public TNTDispenseBehavior() {
         super();
     }
 
-    @PowerNukkitOnly
+
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Vector3 pos = block.getSide(face).add(0.5, 0, 0.5);

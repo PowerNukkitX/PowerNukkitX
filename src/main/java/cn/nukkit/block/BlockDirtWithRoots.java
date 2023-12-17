@@ -15,8 +15,8 @@ import org.jetbrains.annotations.NotNull;
  * @author CoolLoong
  * @since 02.12.2022
  */
-@PowerNukkitOnly
-@Since("FUTURE")
+
+
 public class BlockDirtWithRoots extends BlockSolid {
 
     public BlockDirtWithRoots() {

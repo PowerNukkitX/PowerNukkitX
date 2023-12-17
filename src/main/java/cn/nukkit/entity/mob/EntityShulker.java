@@ -38,8 +38,7 @@ public class EntityShulker extends EntityMob implements EntityWalkable {
         return 1f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Shulker";

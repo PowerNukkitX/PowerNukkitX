@@ -18,8 +18,8 @@ import java.util.Map;
 /**
  * @author lt_name
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public abstract class ItemCustomEdible extends ItemEdible implements CustomItem {
     private final String id;
     private final String textureName;
@@ -49,8 +49,7 @@ public abstract class ItemCustomEdible extends ItemEdible implements CustomItem 
         return textureName;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public String getNamespaceId() {
         return id;
@@ -61,7 +60,7 @@ public abstract class ItemCustomEdible extends ItemEdible implements CustomItem 
         return CustomItem.super.getId();
     }
 
-    @Since("1.19.60-r1")
+
     public abstract Map.Entry<Plugin, Food> getFood();
 
     public boolean isDrink() {

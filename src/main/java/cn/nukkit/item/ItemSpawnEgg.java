@@ -38,8 +38,7 @@ public class ItemSpawnEgg extends Item {
         updateName();
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected ItemSpawnEgg(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
@@ -50,8 +49,7 @@ public class ItemSpawnEgg extends Item {
         updateName();
     }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     protected void updateName() {
         String entityName = getEntityName();
         if (entityName == null) {
@@ -119,14 +117,12 @@ public class ItemSpawnEgg extends Item {
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public int getEntityNetworkId() {
         return this.meta;
     }
 
-    @PowerNukkitOnly
-    @Since("1.19.21-r1")
+
     @Nullable
     public String getEntityName() {
         String saveId = Entity.getSaveId(getEntityNetworkId());

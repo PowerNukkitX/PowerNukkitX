@@ -12,8 +12,8 @@ import java.util.Objects;
 /**
  * 寻路节点
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 @Getter
 @Setter
 public final class Node implements Comparable<Node> {

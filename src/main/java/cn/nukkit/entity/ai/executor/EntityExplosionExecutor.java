@@ -18,8 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import static cn.nukkit.entity.Entity.DATA_FLAGS;
 import static cn.nukkit.entity.Entity.DATA_FLAG_IGNITED;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class EntityExplosionExecutor implements IBehaviorExecutor {
 
     protected int explodeTime;

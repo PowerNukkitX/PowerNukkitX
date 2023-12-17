@@ -18,7 +18,7 @@ public class ItemSign extends Item {
         this(meta, 1);
     }
 
-    @PowerNukkitOnly
+
     protected ItemSign(int id, Integer meta, int count, String name, BlockSignPost block) {
         super(id, meta, count, name);
         this.block = block;

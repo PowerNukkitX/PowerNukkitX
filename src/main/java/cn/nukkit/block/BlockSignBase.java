@@ -26,11 +26,10 @@ import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
 public abstract class BlockSignBase extends BlockTransparentMeta implements Faceable {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.GROUND_SIGN_DIRECTION);
 
     public BlockSignBase() {
@@ -56,20 +55,19 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
         return false;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
     }
 
-    @Since("1.20.0-r2")
+
     @Override
     public void onPlayerRightClick(@NotNull Player player, Item item, BlockFace face, Vector3 clickPoint) {
         var blockEntity = this.getLevel().getBlockEntity(this);
@@ -151,14 +149,12 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
         return ItemTool.TYPE_AXE;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public CompassRoseDirection getSignDirection() {
         return getPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setSignDirection(CompassRoseDirection direction) {
         setPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION, direction);
     }
@@ -169,15 +165,14 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
         return getSignDirection().getClosestBlockFace();
     }
 
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
+
     @Override
     public void setBlockFace(BlockFace face) {
         setSignDirection(face.getCompassRoseDirection());
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean breaksWhenMoved() {
         return true;
     }

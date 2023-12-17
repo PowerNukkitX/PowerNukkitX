@@ -5,18 +5,15 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 public class BlockDoorWarped extends BlockDoorWood {
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public BlockDoorWarped() {
         this(0);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public BlockDoorWarped(int meta) {
         super(meta);
     }

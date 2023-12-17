@@ -14,8 +14,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockTerracottaStained extends BlockSolidMeta {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = CommonBlockProperties.COLOR_BLOCK_PROPERTIES;
 
     public BlockTerracottaStained() {
@@ -40,8 +39,7 @@ public class BlockTerracottaStained extends BlockSolidMeta {
         return STAINED_TERRACOTTA;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -63,8 +61,7 @@ public class BlockTerracottaStained extends BlockSolidMeta {
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;

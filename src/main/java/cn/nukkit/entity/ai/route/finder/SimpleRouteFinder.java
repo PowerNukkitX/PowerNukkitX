@@ -15,8 +15,8 @@ import java.util.List;
  * 在PowerNukkitX的生物AI架构中，不同实体的路径查找是并行的而不是异步的 <br/>
  * 所以说我们并不需要异步路径查找
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public abstract class SimpleRouteFinder implements IRouteFinder {
 
     //用于存储寻路结果的List

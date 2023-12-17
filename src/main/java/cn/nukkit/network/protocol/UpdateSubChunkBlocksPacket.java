@@ -7,8 +7,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.List;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class UpdateSubChunkBlocksPacket extends DataPacket {
     public final int chunkX;
     public final int chunkY;

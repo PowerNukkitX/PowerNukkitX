@@ -8,8 +8,8 @@ import cn.nukkit.blockproperty.IntBlockProperty;
 import org.jetbrains.annotations.NotNull;
 
 //todo complete
-@PowerNukkitXOnly
-@Since("1.20.10-r2")
+
+
 public class BlockCalibratedSculkSensor extends BlockTransparentMeta {
     public static final IntBlockProperty SCULK_SENSOR_PHASE = new IntBlockProperty("sculk_sensor_phase", false, 2);
 

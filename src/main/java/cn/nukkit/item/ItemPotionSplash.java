@@ -11,8 +11,7 @@ import cn.nukkit.potion.Potion;
  */
 public class ItemPotionSplash extends ProjectileItem {
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     public ItemPotionSplash() {
         this(0, 1);
     }

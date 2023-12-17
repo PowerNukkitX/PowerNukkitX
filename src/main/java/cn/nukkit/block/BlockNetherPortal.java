@@ -24,8 +24,7 @@ public class BlockNetherPortal extends BlockFlowable implements Faceable {
             new String[]{"unknown", "x", "z"}
     );
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(PORTAL_AXIS);
 
     public BlockNetherPortal() {
@@ -51,8 +50,7 @@ public class BlockNetherPortal extends BlockFlowable implements Faceable {
         return NETHER_PORTAL;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -89,7 +87,7 @@ public class BlockNetherPortal extends BlockFlowable implements Faceable {
         return false;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean canBePulled() {
         return false;

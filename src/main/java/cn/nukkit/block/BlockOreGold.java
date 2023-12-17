@@ -33,8 +33,7 @@ public class BlockOreGold extends BlockOre {
         return "Gold Ore";
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     @Nullable
     @Override
     protected MinecraftItemID getRawMaterial() {

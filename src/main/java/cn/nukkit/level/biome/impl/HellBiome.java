@@ -22,8 +22,7 @@ public class HellBiome extends Biome {
         return false;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isDry() {
         return true;

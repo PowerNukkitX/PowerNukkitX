@@ -8,8 +8,8 @@ import cn.nukkit.api.Since;
  * Date: 2023/6/11 <br>
  * PowerNukkitX Project <br>
  */
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
+
 public class RelativeFloatNode extends RelativeNumberNode<Float> {
     @Override
     public void fill(String arg) {

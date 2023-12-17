@@ -11,7 +11,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @author Pub4Game
  * @since 21.06.2016
  */
-@Since("1.19.21-r1")
+
 public class EntityVillagerV1 extends EntityCreature implements EntityNPC, EntityAgeable {
 
     public static final int PROFESSION_FARMER = 0;
@@ -42,8 +42,7 @@ public class EntityVillagerV1 extends EntityCreature implements EntityNPC, Entit
         return 1.9f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Villager";

@@ -16,17 +16,17 @@ import cn.nukkit.nbt.tag.ListTag;
 
 import java.util.HashSet;
 
-@PowerNukkitOnly
+
 public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer {
-    @PowerNukkitOnly
+
     protected ContainerInventory inventory;
 
-    @PowerNukkitOnly
+
     public BlockEntitySpawnableContainer(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -69,7 +69,7 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
         }
     }
 
-    @PowerNukkitOnly
+
     protected int getSlotIndex(int index) {
         ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
         for (int i = 0; i < list.size(); i++) {
@@ -116,7 +116,7 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
      * 继承于此类的容器方块实体必须实现此方法
      * @return ContainerInventory
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
+
     protected abstract ContainerInventory requireContainerInventory();
 }

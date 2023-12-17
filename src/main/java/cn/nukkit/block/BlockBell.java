@@ -32,46 +32,45 @@ import javax.annotation.Nullable;
 import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
 import static cn.nukkit.blockproperty.CommonBlockProperties.TOGGLE;
 
-@PowerNukkitOnly
+
 public class BlockBell extends BlockTransparentMeta implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityBell> {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BlockProperty<AttachmentType> ATTACHMENT_TYPE = new ArrayBlockProperty<>("attachment", false, AttachmentType.class);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, ATTACHMENT_TYPE, TOGGLE);
 
-    @PowerNukkitOnly
+
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
         reason = "Magic values", replaceWith = "BellAttachmentType.STANDING")
     public static final int TYPE_ATTACHMENT_STANDING = 0;
     
-    @PowerNukkitOnly
+
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
             reason = "Magic values", replaceWith = "BellAttachmentType.HANGING")
     public static final int TYPE_ATTACHMENT_HANGING = 1;
     
-    @PowerNukkitOnly
+
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
             reason = "Magic values", replaceWith = "BellAttachmentType.SIDE")
     public static final int TYPE_ATTACHMENT_SIDE = 2;
     
-    @PowerNukkitOnly
+
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
             reason = "Magic values", replaceWith = "BellAttachmentType.MULTIPLE")
     public static final int TYPE_ATTACHMENT_MULTIPLE = 3;
 
-    @PowerNukkitOnly
+
     public BlockBell() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockBell(int meta) {
         super(meta);
     }
@@ -86,24 +85,21 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
         return BELL;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntityBell> getBlockEntityClass() {
         return BlockEntityBell.class;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     @Override
     public String getBlockEntityType() {
@@ -212,12 +208,12 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
         return ring(player, player != null ? BellRingEvent.RingCause.HUMAN_INTERACTION : BellRingEvent.RingCause.UNKNOWN);
     }
 
-    @PowerNukkitOnly
+
     public boolean ring(Entity causeEntity, BellRingEvent.RingCause cause) {
         return ring(causeEntity, cause, null);
     }
 
-    @PowerNukkitOnly
+
     public boolean ring(Entity causeEntity, BellRingEvent.RingCause cause, BlockFace hitFace) {
         BlockEntityBell bell = getOrCreateBlockEntity();
         boolean addException = true;
@@ -362,8 +358,8 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
     }
 
     @Override
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public boolean isGettingPower() {
         for (BlockFace side : BlockFace.values()) {
             Block b = this.getSide(side);
@@ -409,8 +405,7 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         ring(projectile, BellRingEvent.RingCause.PROJECTILE);
@@ -425,45 +420,42 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
         return getPropertyValue(DIRECTION);
     }
 
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
+
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(DIRECTION, face);
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public AttachmentType getAttachment() {
         return getPropertyValue(ATTACHMENT_TYPE);
     }
-    
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
+
     public void setAttachment(AttachmentType attachmentType) {
         setPropertyValue(ATTACHMENT_TYPE, attachmentType);
     }
     
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic values.", replaceWith = "getAttachment()")
-    @PowerNukkitOnly
+
     public int getAttachmentType() {
         return getAttachment().ordinal();
     }
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic values.", replaceWith = "setAttachment(AttachmentType)")
-    @PowerNukkitOnly
+
     public void setAttachmentType(int attachmentType) {
         setAttachment(AttachmentType.values()[attachmentType]);
     }
 
-    @PowerNukkitOnly
+
     public boolean isToggled() {
         return getBooleanValue(TOGGLE);
     }
 
-    @PowerNukkitOnly
+
     public void setToggled(boolean toggled) {
         setBooleanValue(TOGGLE, toggled);
     }
@@ -473,7 +465,7 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
         return new ItemBlock(new BlockBell());
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -500,7 +492,7 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

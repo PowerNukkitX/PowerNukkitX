@@ -18,8 +18,7 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.List;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class FakeStructBlock extends SingleFakeBlock {
 
     public FakeStructBlock() {

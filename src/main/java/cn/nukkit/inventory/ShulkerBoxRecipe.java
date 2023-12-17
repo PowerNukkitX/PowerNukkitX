@@ -12,8 +12,8 @@ import java.util.List;
  * @author joserobjr
  * @since 2021-09-25
  */
-@PowerNukkitOnly
-@Since("1.5.2.0-PN")
+
+
 public class ShulkerBoxRecipe extends ShapelessRecipe {
 
     public ShulkerBoxRecipe(Item result, Collection<Item> ingredients) {

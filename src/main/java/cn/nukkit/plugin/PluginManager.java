@@ -45,7 +45,7 @@ public class PluginManager {
 
     protected final Set<Permissible> defSubsOp = Collections.newSetFromMap(new WeakHashMap<>());
 
-    @PowerNukkitXOnly
+
     @Getter
     protected final Map<String, PluginLoader> fileAssociations = new HashMap<>();
 
@@ -75,8 +75,7 @@ public class PluginManager {
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
+
     @PowerNukkitXDifference(info = "rename")
     public void loadInternalPlugin() {
         PluginLoader pluginLoader = fileAssociations.get(JavaPluginLoader.class.getName());

@@ -20,16 +20,16 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.potion.Effect;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitOnly
+
 @Deprecated(since = "1.20.10-r1")
 @DeprecationDetails(since = "1.20.10-r1", reason = "Use BlockCauldron instead")
 public class BlockCauldronLava extends BlockCauldron {
-    @PowerNukkitOnly
+
     public BlockCauldronLava() {
         this(0x8);
     }
 
-    @PowerNukkitOnly
+
     public BlockCauldronLava(int meta) {
         super(meta);
     }
@@ -59,7 +59,7 @@ public class BlockCauldronLava extends BlockCauldron {
         return shrink(0.3, 0.3, 0.3);
     }
 
-    @PowerNukkitOnly
+
     @Override
     public void setFillLevel(int fillLevel) {
         super.setFillLevel(fillLevel);

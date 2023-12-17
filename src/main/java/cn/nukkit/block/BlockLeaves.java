@@ -30,18 +30,18 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Angelic47 (Nukkit Project)
  */
 public class BlockLeaves extends BlockTransparentMeta {
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
+
     public static final ArrayBlockProperty<WoodType> OLD_LEAF_TYPE = new ArrayBlockProperty<>("old_leaf_type", true, new WoodType[]{
             WoodType.OAK, WoodType.SPRUCE, WoodType.BIRCH, WoodType.JUNGLE
     });
-    
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
+
+
     public static final BooleanBlockProperty PERSISTENT = new BooleanBlockProperty("persistent_bit", false);
-    
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
+
+
     public static final BooleanBlockProperty UPDATE = new BooleanBlockProperty("update_bit", false);
 
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
+
     public static final BlockProperties OLD_LEAF_PROPERTIES = new BlockProperties(OLD_LEAF_TYPE, PERSISTENT, UPDATE);
     
     private static final BlockFace[] VISIT_ORDER = new BlockFace[]{
@@ -70,8 +70,7 @@ public class BlockLeaves extends BlockTransparentMeta {
         return LEAVES;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -87,13 +86,13 @@ public class BlockLeaves extends BlockTransparentMeta {
     public int getToolType() {
         return ItemTool.TYPE_HOE;
     }
-    
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
+
+
     public WoodType getType() {
         return getPropertyValue(OLD_LEAF_TYPE);
     }
 
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
+
     public void setType(WoodType type) {
         setPropertyValue(OLD_LEAF_TYPE, type);
     }
@@ -108,7 +107,7 @@ public class BlockLeaves extends BlockTransparentMeta {
         return 30;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -267,7 +266,7 @@ public class BlockLeaves extends BlockTransparentMeta {
         return Item.get(BlockID.SAPLING, getIntValue(OLD_LEAF_TYPE));
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean diffusesSkyLight() {
         return true;
@@ -275,13 +274,13 @@ public class BlockLeaves extends BlockTransparentMeta {
 
 
     @Override
-    @PowerNukkitOnly
+
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    @PowerNukkitOnly
+
     public  boolean sticksToPiston() {
         return false;
     }

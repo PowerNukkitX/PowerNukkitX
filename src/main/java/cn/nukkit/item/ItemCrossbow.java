@@ -15,33 +15,33 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.*;
 import cn.nukkit.utils.Utils;
 
-@Since("1.6.0.0-PNX")
+
 public class ItemCrossbow extends ItemTool {
 
     private int loadTick;
 
-    @Since("1.4.0.0-PN")
+
     public ItemCrossbow() {
         this(0, 1);
     }
 
-    @Since("1.4.0.0-PN")
+
     public ItemCrossbow(Integer meta) {
         this(meta, 1);
     }
 
-    @Since("1.4.0.0-PN")
+
     public ItemCrossbow(Integer meta, int count) {
         super(CROSSBOW, meta, count, "Crossbow");
     }
 
     @Override
-    @Since("1.6.0.0-PN")
+
     public int getMaxDurability() {
         return ItemTool.DURABILITY_CROSSBOW;
     }
 
-    @Since("1.6.0.0-PNX")
+
     public boolean onUse(Player player, int ticksUsed) {
         int needTickUsed = 20;
         Enchantment enchantment = this.getEnchantment(Enchantment.ID_CROSSBOW_QUICK_CHARGE);
@@ -96,7 +96,7 @@ public class ItemCrossbow extends ItemTool {
         return true;
     }
 
-    @Since("1.6.0.0-PNX")
+
     protected boolean canLoad(Item item) {
         return switch (item.getId()) {
             case Item.ARROW, Item.FIREWORKS -> true;
@@ -104,17 +104,17 @@ public class ItemCrossbow extends ItemTool {
         };
     }
 
-    @Since("1.6.0.0-PNX")
+
     public boolean onClickAir(Player player, Vector3 directionVector) {
         return !this.launchArrow(player);
     }
 
-    @Since("1.6.0.0-PNX")
+
     public boolean onRelease(Player player, int ticksUsed) {
         return true;
     }
 
-    @Since("1.6.0.0-PNX")
+
     public void loadArrow(Player player, Item arrow) {
         if (arrow != null) {
             CompoundTag tag = this.getNamedTag() == null ? new CompoundTag() : this.getNamedTag();
@@ -126,13 +126,13 @@ public class ItemCrossbow extends ItemTool {
         }
     }
 
-    @Since("1.6.0.0-PNX")
+
     public void useArrow(Player player) {
         this.setCompoundTag(this.getNamedTag().putBoolean("Charged", false).remove("chargedItem"));
         player.getInventory().setItemInHand(this);
     }
 
-    @Since("1.6.0.0-PNX")
+
     public boolean isLoaded() {
         Tag itemInfo = this.getNamedTagEntry("chargedItem");
         if (itemInfo == null) {
@@ -143,7 +143,7 @@ public class ItemCrossbow extends ItemTool {
         }
     }
 
-    @Since("1.6.0.0-PNX")
+
     public boolean launchArrow(Player player) {
         if (this.isLoaded() && Server.getInstance().getTick() - this.loadTick > 20) {
             double mX;

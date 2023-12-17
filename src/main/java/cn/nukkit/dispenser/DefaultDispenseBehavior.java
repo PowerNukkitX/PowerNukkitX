@@ -22,10 +22,10 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class DefaultDispenseBehavior implements DispenseBehavior {
 
-    @PowerNukkitOnly
+
     public boolean success = true;
 
-    @PowerNukkitOnly
+
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Vector3 dispensePos = block.getDispensePosition();

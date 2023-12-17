@@ -39,14 +39,13 @@ public class EntityEvoker extends EntityMob implements EntityWalkable {
         return 1.9f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Evoker";
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

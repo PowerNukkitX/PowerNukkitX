@@ -9,11 +9,11 @@ import cn.nukkit.item.Item;
  * @author joserobjr
  * @since 2021-12-11
  */
-@PowerNukkitOnly
-@Since("FUTURE")
+
+
 public abstract class NoOpIventoryAction extends InventoryAction {
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
+
     protected NoOpIventoryAction(Item sourceItem, Item targetItem) {
         super(sourceItem, targetItem);
     }

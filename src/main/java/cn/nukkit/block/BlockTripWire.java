@@ -28,20 +28,17 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
 public class BlockTripWire extends BlockTransparentMeta {
     @Deprecated(since = "1.20.0-r2",forRemoval = true)
     @DeprecationDetails(since = "1.20.0-r2", reason = "replace to CommonBlockProperties")
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
+
     public static final BooleanBlockProperty ATTACHED = new BooleanBlockProperty("attached_bit", false);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BooleanBlockProperty DISARMED = new BooleanBlockProperty("disarmed_bit", false);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BooleanBlockProperty SUSPENDED = new BooleanBlockProperty("suspended_bit", false);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(POWERED, SUSPENDED, CommonBlockProperties.ATTACHED, DISARMED);
 
     public BlockTripWire(int meta) {
@@ -57,8 +54,7 @@ public class BlockTripWire extends BlockTransparentMeta {
         return TRIP_WIRE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -75,7 +71,7 @@ public class BlockTripWire extends BlockTransparentMeta {
         return true;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 2;

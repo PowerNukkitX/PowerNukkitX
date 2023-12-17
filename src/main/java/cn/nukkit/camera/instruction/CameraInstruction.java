@@ -8,7 +8,7 @@ import cn.nukkit.api.Since;
  * @date 2023/6/11
  * PowerNukkitX Project
  */
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
+
 public interface CameraInstruction {
 }

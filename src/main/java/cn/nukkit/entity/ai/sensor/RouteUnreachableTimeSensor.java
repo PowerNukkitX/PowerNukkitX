@@ -5,8 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.MemoryType;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r4")
+
 public class RouteUnreachableTimeSensor implements ISensor {
 
     protected MemoryType<Integer> type;

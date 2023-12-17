@@ -14,12 +14,11 @@ import javax.annotation.Nullable;
 /**
  * @author good777LUCKY
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class BlockOreGoldNether extends BlockOreGold {
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public BlockOreGoldNether() {
         // Does nothing
     }
@@ -78,8 +77,7 @@ public class BlockOreGoldNether extends BlockOreGold {
         return new Item[]{ Item.get(ItemID.GOLD_NUGGET, 0, count) };
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     @Nullable
     @Override
     protected MinecraftItemID getRawMaterial() {

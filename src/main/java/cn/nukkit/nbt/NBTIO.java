@@ -107,14 +107,12 @@ public class NBTIO {
         return item;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     public static CompoundTag putBlockHelper(Block block) {
         return putBlockHelper(block, "Block");
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
+
     public static CompoundTag putBlockHelper(Block block, String nbtName) {
         String[] states = BlockStateRegistry.getKnownBlockStateIdByRuntimeId(block.getRuntimeId()).split(";");
         CompoundTag result = new CompoundTag(nbtName).putString("name", states[0]);
@@ -157,8 +155,7 @@ public class NBTIO {
         return result.putInt("version", BlockStateRegistry.blockPaletteVersion.get());
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     @NotNull
     public static Block getBlockHelper(@NotNull CompoundTag block) {
         if (!block.containsString("name")) return Block.get(0);
@@ -481,26 +478,22 @@ public class NBTIO {
      * which do not write/read tag id and name
      */
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
     public static byte[] writeValue(CompoundTag tag) throws IOException {
         return writeValue(tag, ByteOrder.BIG_ENDIAN);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
     public static byte[] writeValue(CompoundTag tag, ByteOrder endianness) throws IOException {
         return writeValue(tag, endianness, false);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
     public static byte[] writeValue(CompoundTag tag, ByteOrder endianness, boolean network) throws IOException {
         return writeValue((Tag) tag, endianness, network);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
     public static byte[] writeValue(Tag tag, ByteOrder endianness, boolean network) throws IOException {
         FastByteArrayOutputStream baos = ThreadCache.fbaos.get().reset();
         try (NBTOutputStream stream = new NBTOutputStream(baos, endianness, network)) {
@@ -509,8 +502,7 @@ public class NBTIO {
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
     public static CompoundTag readCompoundValue(InputStream inputStream, ByteOrder endianness, boolean network) throws IOException {
         return Tag.readCompoundValue(new NBTInputStream(inputStream, endianness, network));
     }

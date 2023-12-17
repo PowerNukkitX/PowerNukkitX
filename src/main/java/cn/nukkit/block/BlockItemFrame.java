@@ -36,16 +36,14 @@ import static cn.nukkit.math.BlockFace.AxisDirection.POSITIVE;
  */
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder and Faceable only in PowerNukkit")
 public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityHolder<BlockEntityItemFrame>, Faceable {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BooleanBlockProperty HAS_MAP = new BooleanBlockProperty("item_frame_map_bit", false);
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
     public static final BooleanBlockProperty HAS_PHOTO = new BooleanBlockProperty("item_frame_photo_bit", false);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, HAS_MAP, HAS_PHOTO);
 
     public BlockItemFrame() {
@@ -61,63 +59,54 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
         return ITEM_FRAME_BLOCK;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockFace getBlockFace() {
         return getPropertyValue(FACING_DIRECTION);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public void setBlockFace(@NotNull BlockFace face) {
         setPropertyValue(FACING_DIRECTION, face);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isStoringMap() {
         return getBooleanValue(HAS_MAP);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setStoringMap(boolean map) {
         setBooleanValue(HAS_MAP, map);
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
     public boolean isStoringPhoto() {
         return getBooleanValue(HAS_PHOTO);
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
     public void setStoringPhoto(boolean hasPhoto) {
         setBooleanValue(HAS_PHOTO, hasPhoto);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.ITEM_FRAME;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntityItemFrame> getBlockEntityClass() {
@@ -148,14 +137,13 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
         return true;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int onTouch(@Nullable Player player, Action action) {
         onUpdate(Level.BLOCK_UPDATE_TOUCH);
@@ -289,13 +277,13 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean sticksToPiston() {
         return false;
     }

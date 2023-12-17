@@ -30,8 +30,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.function.Consumer;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public class PopulatorOceanRuin extends PopulatorStructure {
 
     protected static final List<ChunkPosition> ADJACENT_CHUNKS = Lists.newArrayList(
@@ -266,7 +265,7 @@ public class PopulatorOceanRuin extends PopulatorStructure {
         }
     }
 
-    @Since("1.19.21-r2")
+
     @Override
     public boolean isAsync() {
         return true;

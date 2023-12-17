@@ -8,10 +8,10 @@ import cn.nukkit.blockentity.BlockEntityBarrel;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 
-@PowerNukkitOnly
+
 public class BarrelInventory extends ContainerInventory {
 
-    @PowerNukkitOnly
+
     public BarrelInventory(BlockEntityBarrel barrel) {
         super(barrel, InventoryType.BARREL);
     }

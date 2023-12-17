@@ -16,11 +16,10 @@ import javax.annotation.Nullable;
  * @since 11/06/2021
  */
 
-@PowerNukkitOnly
-@Since("FUTURE")
+
 public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, Waxable {
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
+
     public BlockCopperBase() {
         // Does nothing
     }
@@ -40,8 +39,7 @@ public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, 
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getToolTier() {
         return ItemTool.TIER_STONE;
@@ -68,15 +66,13 @@ public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, 
         return false;
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     @Override
     public BlockState getStateWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
         return getCurrentState().withBlockId(getCopperId(isWaxed(), oxidizationLevel));
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     @Override
     public boolean setOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
         if (getOxidizationLevel().equals(oxidizationLevel)) {
@@ -85,8 +81,7 @@ public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, 
         return getValidLevel().setBlock(this, Block.get(getCopperId(isWaxed(), oxidizationLevel)));
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     @Override
     public boolean setWaxed(boolean waxed) {
         if (isWaxed() == waxed) {
@@ -95,15 +90,13 @@ public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, 
         return getValidLevel().setBlock(this, Block.get(getCopperId(waxed, getOxidizationLevel())));
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     @Override
     public boolean isWaxed() {
         return false;
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     protected int getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel) {
         if (oxidizationLevel == null) {
             return getId();

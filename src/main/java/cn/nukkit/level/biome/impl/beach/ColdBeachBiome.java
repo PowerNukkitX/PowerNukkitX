@@ -14,8 +14,7 @@ public class ColdBeachBiome extends SandyBiome {
         this.setHeightVariation(0.025f);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getCoverBlock() {
         if (useNewRakNetCover()) {

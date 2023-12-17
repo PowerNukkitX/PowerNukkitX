@@ -38,8 +38,7 @@ public class EntityGhast extends EntityMob implements EntityFlyable {
         return 4;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Ghast";

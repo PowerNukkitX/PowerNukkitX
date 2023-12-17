@@ -15,8 +15,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 
-@PowerNukkitOnly("Map between legacy integer biome id and new string id")
-@Since("1.6.0.0-PNX")
+("Map between legacy integer biome id and new string id")
+
 @Log4j2
 public final class BiomeLegacyId2StringIdMap {
     public static final BiomeLegacyId2StringIdMap INSTANCE = new BiomeLegacyId2StringIdMap();

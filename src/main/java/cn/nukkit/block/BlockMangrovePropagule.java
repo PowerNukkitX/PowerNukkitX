@@ -22,8 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class BlockMangrovePropagule extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
 
     public static final BooleanBlockProperty HANGING = new BooleanBlockProperty("hanging",false);
@@ -41,8 +40,7 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
         return MANGROVE_PROPAGULE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {

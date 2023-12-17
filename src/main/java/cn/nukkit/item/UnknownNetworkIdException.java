@@ -28,68 +28,59 @@ import javax.annotation.Nullable;
  * @author joserobjr
  * @since 2021-03-23
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class UnknownNetworkIdException extends IllegalStateException {
     @Nullable
     private final transient Item item;
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public UnknownNetworkIdException() {
         item = null;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public UnknownNetworkIdException(String s) {
         super(s);
         item = null;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public UnknownNetworkIdException(String message, Throwable cause) {
         super(message, cause);
         item = null;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public UnknownNetworkIdException(Throwable cause) {
         super(cause);
         item = null;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public UnknownNetworkIdException(Item item) {
         this.item = copy(item);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public UnknownNetworkIdException(Item item, String s) {
         super(s);
         this.item = copy(item);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public UnknownNetworkIdException(Item item, String message, Throwable cause) {
         super(message, cause);
         this.item = copy(item);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public UnknownNetworkIdException(Item item, Throwable cause) {
         super(cause);
         this.item = copy(item);
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     @Nullable
     public Item getItem() {
         return item == null? null : item.clone();

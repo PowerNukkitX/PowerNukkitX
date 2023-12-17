@@ -33,8 +33,8 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
     /**
      * Regular expression for validating player name. Allows only: Number nicknames, letter nicknames, number and letters nicknames, nicknames with underscores, nicknames with space in the middle
      */
-    @PowerNukkitXOnly
-    @Since("1.19.70-r3")
+
+
     private static final Pattern playerNamePattern = Pattern.compile("^(?! )([a-zA-Z0-9_ ]{2,15}[a-zA-Z0-9_])(?<! )$");
 
     @Override

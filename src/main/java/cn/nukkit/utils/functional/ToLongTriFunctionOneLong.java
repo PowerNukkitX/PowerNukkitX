@@ -19,8 +19,8 @@ import java.util.function.LongUnaryOperator;
  * @see Function
  * @since 1.4.0.0-PN
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 @FunctionalInterface
 public interface ToLongTriFunctionOneLong<F, S> {
 
@@ -32,8 +32,8 @@ public interface ToLongTriFunctionOneLong<F, S> {
      * @param t the third function argument
      * @return the function result
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     long apply(F f, S s, long t);
 
     /**
@@ -47,8 +47,8 @@ public interface ToLongTriFunctionOneLong<F, S> {
      * applies the {@code after} function
      * @throws NullPointerException if after is null
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     default ToLongTriFunctionOneLong<F, S> andThen(LongUnaryOperator after) {
         Objects.requireNonNull(after);
         return (F f, S s, long t) -> after.applyAsLong(apply(f, s, t));

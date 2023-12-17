@@ -18,8 +18,8 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
  */
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
 public class BlockWallSign extends BlockSignPost {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BlockProperties PROPERTIES = CommonBlockProperties.FACING_DIRECTION_BLOCK_PROPERTIES;
 
     public BlockWallSign() {
@@ -35,21 +35,20 @@ public class BlockWallSign extends BlockSignPost {
         return WALL_SIGN;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWallId() {
         return getId();
     }
 
-    @PowerNukkitOnly
+
     @Override
     protected int getPostId() {
         return SIGN_POST;
@@ -71,8 +70,7 @@ public class BlockWallSign extends BlockSignPost {
         return 0;
     }
 
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
+
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(FACING_DIRECTION, face);
@@ -83,13 +81,13 @@ public class BlockWallSign extends BlockSignPost {
         return getPropertyValue(FACING_DIRECTION);
     }
 
-    @PowerNukkitOnly
+
     @Override
     public void setSignDirection(CompassRoseDirection direction) {
         setBlockFace(direction.getClosestBlockFace());
     }
 
-    @PowerNukkitOnly
+
     @Override
     public CompassRoseDirection getSignDirection() {
         return getBlockFace().getCompassRoseDirection();

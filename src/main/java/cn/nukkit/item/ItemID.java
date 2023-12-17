@@ -8,7 +8,7 @@ import cn.nukkit.api.Since;
 import static cn.nukkit.utils.Utils.dynamic;
 
 public interface ItemID {
-    @PowerNukkitOnly
+
     int STRING_IDENTIFIED_ITEM = dynamic(255);
     int IRON_SHOVEL = 256;
     int IRON_PICKAXE = 257;
@@ -217,7 +217,7 @@ public interface ItemID {
     int DARK_OAK_DOOR = 431;
     int CHORUS_FRUIT = 432;
     int POPPED_CHORUS_FRUIT = 433;
-    @Since("1.2.1.0-PN")
+
     int BANNER_PATTERN = 434;
 
     int DRAGON_BREATH = 437;
@@ -251,12 +251,12 @@ public interface ItemID {
     int TURTLE_SHELL = 469;
     int PHANTOM_MEMBRANE = 470;
     int CROSSBOW = 471;
-    @PowerNukkitOnly int SPRUCE_SIGN = 472;
-    @PowerNukkitOnly int BIRCH_SIGN = 473;
-    @PowerNukkitOnly int JUNGLE_SIGN = 474;
-    @PowerNukkitOnly int ACACIA_SIGN = 475;
-    @PowerNukkitOnly int DARKOAK_SIGN = 476;
-    @PowerNukkitOnly int DARK_OAK_SIGN = 476;
+    int SPRUCE_SIGN = 472;
+    int BIRCH_SIGN = 473;
+    int JUNGLE_SIGN = 474;
+    int ACACIA_SIGN = 475;
+    int DARKOAK_SIGN = 476;
+    int DARK_OAK_SIGN = 476;
     int SWEET_BERRIES = 477;
 
     int RECORD_13 = 500;
@@ -274,229 +274,191 @@ public interface ItemID {
 
     int SHIELD = 513;
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
+
     int GLOW_ITEM_FRAME = 623;
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
+
     int ITEM_MANGROVE_DOOR = 633;
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
+
     int RECORD_OTHERSIDE = 626;
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
+
     int MANGROVE_SIGN = 634;
-    @Since("1.19.40-r2")
-    @PowerNukkitXOnly
+
+
     int RECORD_5 = 636;
-    @Since("1.19.50-r1")
-    @PowerNukkitXOnly
+
+
     int DISC_FRAGMENT_5 = 637;
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
+
+
     int OAK_CHEST_BOAT = 638;
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     int BIRCH_CHEST_BOAT = 639;
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     int JUNGLE_CHEST_BOAT = 640;
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
+
     int SPRUCE_CHEST_BOAT = 641;
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     int ACACIA_CHEST_BOAT = 642;
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     int DARK_OAK_CHEST_BOAT = 643;
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     int MANGROVE_CHEST_BOAT = 644;
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     int CHEST_BOAT = 645;
-    @PowerNukkitXOnly
-    @Since("1.19.50-r1")
+
+
     int ECHO_SHARD = 647;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int BAMBOO_CHEST_RAFT = 648;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int CHERRY_CHEST_BOAT = 649;
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
+
     int GLOW_BERRIES = 654;
 
-    @PowerNukkitOnly
+
     int CAMPFIRE = 720;
 
     int SUSPICIOUS_STEW = 734;
     int HONEYCOMB = 736;
     int HONEY_BOTTLE = 737;
 
-    @Since("1.4.0.0-PN")
+
     int LODESTONECOMPASS = 741;
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
+
     int LODESTONE_COMPASS = LODESTONECOMPASS;
-    @Since("1.4.0.0-PN")
+
     int NETHERITE_INGOT = 742;
-    @Since("1.4.0.0-PN")
+
     int NETHERITE_SWORD = 743;
-    @Since("1.4.0.0-PN")
+
     int NETHERITE_SHOVEL = 744;
-    @Since("1.4.0.0-PN")
+
     int NETHERITE_PICKAXE = 745;
-    @Since("1.4.0.0-PN")
+
     int NETHERITE_AXE = 746;
-    @Since("1.4.0.0-PN")
+
     int NETHERITE_HOE = 747;
-    @Since("1.4.0.0-PN")
+
     int NETHERITE_HELMET = 748;
-    @Since("1.4.0.0-PN")
+
     int NETHERITE_CHESTPLATE = 749;
-    @Since("1.4.0.0-PN")
+
     int NETHERITE_LEGGINGS = 750;
-    @Since("1.4.0.0-PN")
+
     int NETHERITE_BOOTS = 751;
-    @Since("1.4.0.0-PN")
+
     int NETHERITE_SCRAP = 752;
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
+
     int CRIMSON_SIGN = 753;
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
+
     int WARPED_SIGN = 754;
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
+
     int CRIMSON_DOOR = 755;
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
+
     int WARPED_DOOR = 756;
-    @Since("1.4.0.0-PN")
+
     int WARPED_FUNGUS_ON_A_STICK = 757;
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
+
     int CHAIN = 758;
-    @Since("1.4.0.0-PN")
+
     int RECORD_PIGSTEP = 759;
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
+
     int NETHER_SPROUTS = 760;
 
-    @Since("1.6.0.0-PNX")
+
     int AMETHYST_SHARD = 771;
-    @Since("FUTURE")
+
     int SPYGLASS = 772;
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     int SOUL_CAMPFIRE = 801;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int TORCHFLOWER_SEEDS = 802;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int BRUSH = 803;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int ANGLER_POTTERY_SHERD = 804;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int ARCHER_POTTERY_SHERD= 805;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int ARMS_UP_POTTERY_SHERD = 806;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int BLADE_POTTERY_SHERD = 807;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int BREWER_POTTERY_SHERD = 808;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int BURN_POTTERY_SHERD = 809;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int DANGER_POTTERY_SHERD = 810;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int EXPLORER_POTTERY_SHERD = 811;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int FRIEND_POTTERY_SHERD = 812;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int HEART_POTTERY_SHERD = 813;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int HEARTBREAK_POTTERY_SHERD = 814;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int HOWL_POTTERY_SHERD = 815;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int MINER_POTTERY_SHERD = 816;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int MOURNER_POTTERY_SHERD = 817;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int PLENTY_POTTERY_SHERD = 818;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int PRIZE_POTTERY_SHERD = 819;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int SHEAF_POTTERY_SHERD = 820;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int SHELTER_POTTERY_SHERD = 821;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int SKULL_POTTERY_SHERD = 822;
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
+
     int SNORT_POTTERY_SHERD = 823;
 
 
-
-    //@PowerNukkitOnly int DEBUG_STICK = <Possible:> 802+;
+    // int DEBUG_STICK = <Possible:> 802+;
 }

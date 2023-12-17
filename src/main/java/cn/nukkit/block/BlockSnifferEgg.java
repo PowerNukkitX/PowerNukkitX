@@ -11,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 //todo complete
-@PowerNukkitXOnly
-@Since("1.20.10-r2")
+
+
 public class BlockSnifferEgg extends BlockTransparentMeta {
     public static final ArrayBlockProperty<String> CRACKED_STATE = new ArrayBlockProperty("cracked_state", false, new String[]{"cracked", "max_cracked", "no_cracks"});
 

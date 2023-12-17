@@ -96,8 +96,7 @@ public class EntityPig extends EntityAnimal implements EntityWalkable {
         super.initEntity();
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Pig";

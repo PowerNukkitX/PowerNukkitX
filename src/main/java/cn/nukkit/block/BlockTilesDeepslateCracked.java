@@ -6,12 +6,11 @@ import cn.nukkit.api.Since;
 /**
  * @author GoodLucky777
  */
-@PowerNukkitOnly
-@Since("FUTURE")
+
+
 public class BlockTilesDeepslateCracked extends BlockTilesDeepslate {
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     public BlockTilesDeepslateCracked() {
         // Does nothing
     }

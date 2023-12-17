@@ -37,29 +37,25 @@ public class ResourcePackChunkDataPacket extends AbstractResourcePackDataPacket 
         this.putByteArray(this.data);
     }
 
-    @Since("1.5.2.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public Version getPackVersion() {
         return packVersion;
     }
 
-    @Since("1.5.2.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public void setPackVersion(Version packVersion) {
         this.packVersion = packVersion;
     }
 
-    @Since("1.5.2.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public UUID getPackId() {
         return packId;
     }
 
-    @Since("1.5.2.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public void setPackId(UUID packId) {
         this.packId = packId;

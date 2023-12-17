@@ -37,7 +37,7 @@ public class BlockStairsQuartz extends BlockStairs {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

@@ -7,18 +7,16 @@ import cn.nukkit.item.ItemTool;
 /**
  * @author GoodLucky777
  */
-@PowerNukkitOnly
-@Since("FUTURE")
+
+
 public class BlockWallDeepslateCobbled extends BlockWallBase {
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     public BlockWallDeepslateCobbled() {
         this(0);
     }
-    
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
+
     public BlockWallDeepslateCobbled(int meta) {
         super(meta);
     }

@@ -45,7 +45,7 @@ public class BlockWeightedPressurePlateLight extends BlockPressurePlateBase {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

@@ -7,8 +7,7 @@ import cn.nukkit.block.BlockBigDripleaf;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class BigDripleafTiltChangeEvent extends BlockEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();

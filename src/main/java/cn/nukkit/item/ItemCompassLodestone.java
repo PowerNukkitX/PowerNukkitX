@@ -12,23 +12,21 @@ import java.io.IOException;
 /**
  * @author joserobjr
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class ItemCompassLodestone extends Item {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public ItemCompassLodestone() {
         this(0, 1);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public ItemCompassLodestone(Integer meta) {
         this(meta, 1);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public ItemCompassLodestone(Integer meta, int count) {
         super(LODESTONE_COMPASS, meta, count, "Lodestone Compass");
     }
@@ -38,8 +36,7 @@ public class ItemCompassLodestone extends Item {
         return 1;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setTrackingPosition(@Nullable NamedPosition position) throws IOException {
         if (position == null) {
             setTrackingHandle(0);
@@ -47,9 +44,8 @@ public class ItemCompassLodestone extends Item {
         }
         setTrackingHandle(Server.getInstance().getPositionTrackingService().addOrReusePosition(position));
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     @Nullable
     public NamedPosition getTrackingPosition() throws IOException {
         int trackingHandle = getTrackingHandle();
@@ -59,14 +55,12 @@ public class ItemCompassLodestone extends Item {
         return Server.getInstance().getPositionTrackingService().getPosition(trackingHandle);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public int getTrackingHandle() {
         return hasCompoundTag()? getNamedTag().getInt("trackingHandle") : 0;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setTrackingHandle(int trackingHandle) {
         CompoundTag tag = getNamedTag();
         if (tag == null) {

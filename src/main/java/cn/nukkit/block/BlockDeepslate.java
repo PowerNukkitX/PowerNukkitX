@@ -16,15 +16,13 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
  * @since 08/06/2021
  */
 
-@PowerNukkitOnly
-@Since("FUTURE")
+
 public class BlockDeepslate extends BlockSolid {
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public static final BlockProperties PROPERTIES = new BlockProperties(PILLAR_AXIS);
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     public BlockDeepslate() {
         // Does nothing
     }
@@ -54,8 +52,7 @@ public class BlockDeepslate extends BlockSolid {
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
@@ -80,8 +77,7 @@ public class BlockDeepslate extends BlockSolid {
         return true;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {

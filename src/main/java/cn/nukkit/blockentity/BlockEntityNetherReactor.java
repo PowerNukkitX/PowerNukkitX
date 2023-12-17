@@ -16,14 +16,13 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * system and did not create a block property for the old nether reactor core block, making it
  * impossible for the server to tell the client to render the red and dark versions of the block.
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class BlockEntityNetherReactor extends BlockEntitySpawnable {
     private NetherReactorState reactorState;
     private int progress;
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public BlockEntityNetherReactor(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -33,31 +32,27 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
         return getLevelBlock().getId() == BlockID.NETHER_REACTOR;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public NetherReactorState getReactorState() {
         return reactorState;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setReactorState(NetherReactorState reactorState) {
         this.reactorState = reactorState;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public int getProgress() {
         return progress;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setProgress(int progress) {
         this.progress = MathHelper.clamp(progress, 0, 900);
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     public void loadNBT() {
         super.loadNBT();

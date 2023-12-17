@@ -9,8 +9,8 @@ import cn.nukkit.math.Vector3;
  * @param source    The vibration source pos
  * @param type      Vibration type
  */
-@PowerNukkitXOnly
-@Since("1.19.21-r3")
+
+
 public record VibrationEvent(Object initiator, Vector3 source, VibrationType type) {
     //nothing
 }

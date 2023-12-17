@@ -15,8 +15,7 @@ public class NukkitMath {
     private static final Short ZERO_SHORT = 0;
     private static final Long ZERO_LONG = 0L;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static boolean isZero(Number storage) {
         return ZERO_BYTE.equals(storage)
                 || ZERO_INTEGER.equals(storage)
@@ -77,7 +76,7 @@ public class NukkitMath {
         return value < min ? min : (value > max ? max : value);
     }
 
-    @Since("1.4.0.0-PN")
+
     public static float clamp(float value, float min, float max) {
         return value < min ? min : (value > max ? max : value);
     }
@@ -89,8 +88,7 @@ public class NukkitMath {
         return Math.max(diffX, diffZ);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static int bitLength(byte data) {
         if (data < 0) {
             return 32;
@@ -109,8 +107,7 @@ public class NukkitMath {
         return bits;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static int bitLength(int data) {
         if (data < 0) {
             return 32;
@@ -129,8 +126,7 @@ public class NukkitMath {
         return bits;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static int bitLength(long data) {
         if (data < 0) {
             return 64;
@@ -149,8 +145,7 @@ public class NukkitMath {
         return bits;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static int bitLength(BigInteger data) {
         if (data.compareTo(BigInteger.ZERO) < 0) {
             throw new UnsupportedOperationException("Negative BigIntegers are not supported (nearly infinite bits)");

@@ -11,8 +11,7 @@ import java.util.Arrays;
 public class IntArrayTag extends Tag {
     public int[] data;
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     public IntArrayTag(int[] data) {
         super("");
         this.data = data;

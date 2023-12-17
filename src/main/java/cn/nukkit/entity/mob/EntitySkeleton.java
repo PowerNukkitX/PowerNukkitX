@@ -59,8 +59,7 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
         return 1.9f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Skeleton";
@@ -71,13 +70,13 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
         return new Item[]{Item.get(Item.BONE, Item.ARROW)};
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isUndead() {
         return true;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;
@@ -89,7 +88,7 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
         return super.onUpdate(currentTick);
     }
 
-    @Since("1.19.80-r3")
+
     @Override
     protected IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(

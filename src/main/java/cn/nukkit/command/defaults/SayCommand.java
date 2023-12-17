@@ -26,7 +26,7 @@ public class SayCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         String senderString = sender.getName();

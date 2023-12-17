@@ -31,8 +31,7 @@ public class EntityMinecartChest extends EntityMinecartAbstract implements Inven
         setDisplayBlock(Block.get(Block.CHEST), false);
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return getType().getName();

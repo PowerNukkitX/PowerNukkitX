@@ -14,8 +14,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Set;
 
-@Since("1.19.30-r1")
-@PowerNukkitXOnly
+
 @ToString
 public class UpdateAbilitiesPacket extends DataPacket {
     public static final PlayerAbility[] VALID_FLAGS = {

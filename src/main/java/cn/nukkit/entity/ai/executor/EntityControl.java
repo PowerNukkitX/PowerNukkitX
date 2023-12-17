@@ -11,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
  * <p>
  * Involving some methods about controller.
  */
-@PowerNukkitXOnly
-@Since("1.19.30-r1")
+
+
 public interface EntityControl {
 
     default void setRouteTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {

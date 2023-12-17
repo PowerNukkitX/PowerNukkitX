@@ -13,8 +13,7 @@ import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public class DesertPyramid extends ScatteredStructurePiece {
 
     public DesertPyramid(BlockVector3 pos) {

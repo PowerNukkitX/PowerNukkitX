@@ -46,7 +46,7 @@ public class BlockDragonEgg extends BlockFallable {
         return true;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -60,8 +60,7 @@ public class BlockDragonEgg extends BlockFallable {
         return super.onUpdate(type);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int onTouch(@Nullable Player player, Action action) {
         if (player != null && (action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK)) {
@@ -102,13 +101,13 @@ public class BlockDragonEgg extends BlockFallable {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean sticksToPiston() {
         return false;
     }

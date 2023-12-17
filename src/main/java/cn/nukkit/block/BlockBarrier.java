@@ -7,10 +7,10 @@ import cn.nukkit.item.Item;
  * @author Pub4Game
  * @since 03.01.2016
  */
-@PowerNukkitOnly
+
 public class BlockBarrier extends BlockSolid {
 
-    @PowerNukkitOnly
+
     public BlockBarrier() {
     }
 
@@ -24,7 +24,7 @@ public class BlockBarrier extends BlockSolid {
         return "Barrier";
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;

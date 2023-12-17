@@ -20,8 +20,8 @@ import java.util.Set;
  * that consists of several (core) Behaviors{@link IBehavior}, Controllers{@link IController}, Sensors{@link ISensor} and a Pathfinder{@link IRouteFinder} and memory {@link IMemoryStorage} are composed<br>
  * Note: Core behavior refers to the behavior that will not be affected by the priority of the behavior, and its activation status only depends on its own evaluator
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public interface IBehaviorGroup {
 
     /**
@@ -149,7 +149,7 @@ public interface IBehaviorGroup {
     default void debugTick(EntityIntelligent entity) {
     }
 
-    @Since("1.19.63-r1")
+
     default void save(EntityIntelligent entity) {
         //EmptyBehaviorGroup will return null
         if (getMemoryStorage() != null)

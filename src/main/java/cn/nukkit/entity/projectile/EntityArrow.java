@@ -53,8 +53,7 @@ public class EntityArrow extends SlenderProjectile {
         return 0.01f;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     protected void updateMotion() {
         if (!isInsideOfWater()) {
@@ -139,8 +138,7 @@ public class EntityArrow extends SlenderProjectile {
         return !hadCollision;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     protected void afterCollisionWithEntity(Entity entity) {
         if (hadCollision) {
@@ -150,7 +148,7 @@ public class EntityArrow extends SlenderProjectile {
         }
     }
 
-    @PowerNukkitOnly
+
     @Override
     protected void addHitEffect() {
         this.level.addSound(this, Sound.RANDOM_BOWHIT);
@@ -178,8 +176,7 @@ public class EntityArrow extends SlenderProjectile {
         this.pickupMode = pickupMode;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Arrow";

@@ -16,8 +16,7 @@ import cn.nukkit.command.utils.CommandLogger;
 import java.util.List;
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class AbilityCommand extends VanillaCommand {
 
     public AbilityCommand(String name) {

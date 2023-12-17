@@ -8,8 +8,7 @@ import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
 public class BlockCherryLeaves extends BlockLeaves {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(PERSISTENT, UPDATE);
@@ -35,8 +34,7 @@ public class BlockCherryLeaves extends BlockLeaves {
         return WoodType.BIRCH;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {

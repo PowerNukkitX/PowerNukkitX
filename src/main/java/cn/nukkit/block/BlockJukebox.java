@@ -35,16 +35,14 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
         return JUKEBOX;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntityJukebox> getBlockEntityClass() {
         return BlockEntityJukebox.class;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     @Override
     public String getBlockEntityType() {

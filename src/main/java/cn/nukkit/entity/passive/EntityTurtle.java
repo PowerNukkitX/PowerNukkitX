@@ -24,8 +24,7 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
         return NETWORK_ID;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Turtle";
@@ -53,12 +52,12 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
         super.initEntity();
     }
 
-    @PowerNukkitOnly
+
     public void setBreedingAge(int ticks) {
 
     }
 
-    @PowerNukkitOnly
+
     public void setHomePos(Vector3 pos) {
 
     }

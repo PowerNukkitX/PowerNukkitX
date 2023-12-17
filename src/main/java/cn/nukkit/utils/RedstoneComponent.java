@@ -14,8 +14,8 @@ import java.util.List;
 /**
  * Interface, all redstone components implement, containing redstone related methods.
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public interface RedstoneComponent {
 
     //
@@ -27,8 +27,8 @@ public interface RedstoneComponent {
      *
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     default void updateAroundRedstone(@Nullable BlockFace... ignoredFaces) {
         if (ignoredFaces == null) ignoredFaces = new BlockFace[0];
         this.updateAroundRedstone(Arrays.asList(ignoredFaces));
@@ -39,8 +39,8 @@ public interface RedstoneComponent {
      *
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     default void updateAroundRedstone(@NotNull List<BlockFace> ignoredFaces) {
         if (this instanceof Position) updateAroundRedstone((Position) this, ignoredFaces);
     }
@@ -50,8 +50,8 @@ public interface RedstoneComponent {
      *
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     default void updateAllAroundRedstone(@Nullable BlockFace... ignoredFaces) {
         if (ignoredFaces == null) ignoredFaces = new BlockFace[0];
         this.updateAllAroundRedstone(Arrays.asList(ignoredFaces));
@@ -62,8 +62,8 @@ public interface RedstoneComponent {
      *
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     default void updateAllAroundRedstone(@NotNull List<BlockFace> ignoredFaces) {
         if (this instanceof Position) updateAllAroundRedstone((Position) this, ignoredFaces);
     }
@@ -78,8 +78,8 @@ public interface RedstoneComponent {
      * @param pos          The middle of the blocks around.
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     static void updateAroundRedstone(@NotNull Position pos, @Nullable BlockFace... ignoredFaces) {
         if (ignoredFaces == null) ignoredFaces = new BlockFace[0];
         updateAroundRedstone(pos, Arrays.asList(ignoredFaces));
@@ -91,8 +91,8 @@ public interface RedstoneComponent {
      * @param pos          The middle of the blocks around.
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     static void updateAroundRedstone(@NotNull Position pos, @NotNull List<BlockFace> ignoredFaces) {
         for (BlockFace face : BlockFace.values()) {
             if (ignoredFaces.contains(face)) continue;
@@ -107,8 +107,8 @@ public interface RedstoneComponent {
      * @param pos          The middle of the blocks around.
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     static void updateAllAroundRedstone(@NotNull Position pos, @Nullable BlockFace... ignoredFaces) {
         if (ignoredFaces == null) ignoredFaces = new BlockFace[0];
         updateAllAroundRedstone(pos, Arrays.asList(ignoredFaces));
@@ -120,8 +120,8 @@ public interface RedstoneComponent {
      * @param pos          The middle of the blocks around.
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     static void updateAllAroundRedstone(@NotNull Position pos, @NotNull List<BlockFace> ignoredFaces) {
         updateAroundRedstone(pos, ignoredFaces);
 

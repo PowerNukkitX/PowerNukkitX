@@ -10,8 +10,8 @@ import cn.nukkit.blockstate.BlockStateRegistry;
  * <p>
  * 所有命令枚举{@link cn.nukkit.command.data.CommandEnum#ENUM_BLOCK ENUM_BLOCK}如果没有手动指定{@link IParamNode},则会默认使用这个解析
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public class BlockNode extends ParamNode<Block> {
     @Override
     public void fill(String arg) {

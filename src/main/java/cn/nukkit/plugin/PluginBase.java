@@ -191,8 +191,7 @@ abstract public class PluginBase implements Plugin {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Nullable
     public PluginCommand<?> getPluginCommand(@NotNull String name) {
         PluginIdentifiableCommand command = getCommand(name);

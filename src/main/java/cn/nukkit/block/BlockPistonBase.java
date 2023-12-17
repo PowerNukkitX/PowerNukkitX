@@ -42,8 +42,7 @@ import java.util.stream.Collectors;
 @Log4j2
 public abstract class BlockPistonBase extends BlockTransparentMeta implements Faceable, RedstoneComponent, BlockEntityHolder<BlockEntityPistonArm> {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = CommonBlockProperties.FACING_DIRECTION_BLOCK_PROPERTIES;
 
     public boolean sticky = false;
@@ -73,24 +72,21 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
         return false;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntityPistonArm> getBlockEntityClass() {
         return BlockEntityPistonArm.class;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     @Override
     public String getBlockEntityType() {
@@ -107,7 +103,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
         return 0.5;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -196,8 +192,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
         return 0;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Override
     public boolean isGettingPower() {
         var face = getBlockFace();
@@ -340,12 +335,12 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
         return true;
     }
 
-    @PowerNukkitOnly
+
     protected BlockPistonHead createHead(int damage) {
         return (BlockPistonHead) Block.get(getPistonHeadBlockId(), damage);
     }
 
-    @PowerNukkitOnly
+
     public abstract int getPistonHeadBlockId();
 
     @Override

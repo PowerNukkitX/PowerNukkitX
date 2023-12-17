@@ -7,8 +7,7 @@ import lombok.Getter;
 
 import java.util.List;
 
-@Since("1.19.70-r1")
-@PowerNukkitXOnly
+
 @Getter
 public class UnlockedRecipesPacket extends DataPacket {
     public boolean unlockedNotification;

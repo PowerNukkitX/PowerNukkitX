@@ -5,8 +5,7 @@ import cn.nukkit.api.Since;
 import com.dfsek.terra.api.inventory.ItemStack;
 import com.dfsek.terra.api.inventory.item.Enchantment;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public record PNXEnchantmentDelegate(cn.nukkit.item.enchantment.Enchantment innerEnchantment) implements Enchantment {
     @Override
     public boolean canEnchantItem(ItemStack itemStack) {

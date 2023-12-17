@@ -13,8 +13,8 @@ import java.util.List;
  * <p>
  * This interface abstracts a pathfinder
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public interface IRouteFinder {
     /**
      * @return boolean 是否正在寻路

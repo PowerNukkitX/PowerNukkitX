@@ -15,8 +15,8 @@ import java.awt.*;
  * @date 2023/6/11
  * PowerNukkitX Project
  */
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
+
 @Builder
 @Getter
 public class FadeInstruction implements CameraInstruction {

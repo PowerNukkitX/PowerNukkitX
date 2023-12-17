@@ -10,17 +10,17 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 
-@PowerNukkitOnly
+
 public class FlintAndSteelDispenseBehavior extends DefaultDispenseBehavior {
 
-    @PowerNukkitOnly
+
     public FlintAndSteelDispenseBehavior() {
         super();
     }
 
     @Override
     @PowerNukkitDifference(info = "Reduce flint and steel usage instead of clearing.", since = "1.4.0.0-PN")
-    public @PowerNukkitOnly Item dispense(BlockDispenser block, BlockFace face, Item item) {
+    public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);
         item = item.clone();
 

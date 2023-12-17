@@ -20,8 +20,8 @@ public class PopulatorOre extends Populator {
     /**
      * @implNote Removed from the new-raknet branch
      */
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
+
     public PopulatorOre() {
         this(Block.STONE);
     }
@@ -29,8 +29,8 @@ public class PopulatorOre extends Populator {
     /**
      * @implNote Removed from the new-raknet branch
      */
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
+
     public PopulatorOre(int id) {
         this.replaceId = id;
     }
@@ -66,8 +66,8 @@ public class PopulatorOre extends Populator {
     /**
      * @implNote Removed from the new-raknet branch
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public void setOreTypes(OreType[] oreTypes) {
         this.oreTypes = oreTypes;
     }

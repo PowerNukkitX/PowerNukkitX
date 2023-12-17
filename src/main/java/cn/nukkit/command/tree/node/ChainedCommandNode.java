@@ -13,8 +13,8 @@ import java.util.StringJoiner;
 /**
  * {@link cn.nukkit.command.defaults.ExecuteCommand ExecuteCommand}命令的链命令节点
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public class ChainedCommandNode extends EnumNode {
     private static final HashSet<String> CHAINED = Sets.newHashSet("run", "as", "at", "positioned", "if", "unless", "in", "align", "anchored", "rotated", "facing");
     private boolean remain = false;

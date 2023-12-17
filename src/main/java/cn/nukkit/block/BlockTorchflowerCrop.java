@@ -15,8 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitXOnly
-@Since("1.20.10-r2")
+
 public class BlockTorchflowerCrop extends BlockCrops {
     public static final IntBlockProperty GROWTH = new IntBlockProperty("growth", false, 1);
     public static final BlockProperties PROPERTIES = new BlockProperties(GROWTH);

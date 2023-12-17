@@ -8,8 +8,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.UpdateTradePacket;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r1")
+
 public class TradeInventory extends BaseInventory {
     //hack实现
     public static final int TRADE_INPUT1_UI_SLOT = 4;

@@ -13,37 +13,31 @@ import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 public abstract class BlockLog extends BlockSolidMeta implements IBlockWood {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     protected static final BlockProperties PILLAR_PROPERTIES = new BlockProperties(CommonBlockProperties.PILLAR_AXIS);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected BlockLog(int meta) {
         super(meta);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public abstract BlockProperties getProperties();
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public abstract BlockState getStrippedState();
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public BlockFace.Axis getPillarAxis() {
         return getPropertyValue(PILLAR_AXIS);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setPillarAxis(BlockFace.Axis axis) {
         setPropertyValue(PILLAR_AXIS, axis);
     }

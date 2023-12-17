@@ -29,12 +29,10 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
  */
 public class BlockCocoa extends BlockTransparentMeta implements Faceable {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final IntBlockProperty AGE = new IntBlockProperty("age", false, 2);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, AGE);
 
     protected static final AxisAlignedBB[] EAST = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.6875D, 0.4375D, 0.375D, 0.9375D, 0.75D, 0.625D), new SimpleAxisAlignedBB(0.5625D, 0.3125D, 0.3125D, 0.9375D, 0.75D, 0.6875D), new SimpleAxisAlignedBB(0.5625D, 0.3125D, 0.3125D, 0.9375D, 0.75D, 0.6875D)};
@@ -56,8 +54,7 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
         return COCOA;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -207,12 +204,12 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
         return false;
     }
 
-    @PowerNukkitOnly
+
     public int getGrowthStage() {
         return this.getDamage() / 4;
     }
 
-    @PowerNukkitOnly
+
     public boolean grow() {
         Block block = this.clone();
         block.setDamage(block.getDamage() + 4);
@@ -236,7 +233,7 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
         return ItemTool.TYPE_AXE;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 2;
@@ -265,13 +262,13 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    @PowerNukkitOnly
+
     public  boolean sticksToPiston() {
         return false;
     }

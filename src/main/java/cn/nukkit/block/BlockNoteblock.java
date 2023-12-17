@@ -49,16 +49,14 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
         return ItemTool.TYPE_AXE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntityMusic> getBlockEntityClass() {
         return BlockEntityMusic.class;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     @Override
     public String getBlockEntityType() {
@@ -85,8 +83,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int onTouch(@Nullable Player player, Action action) {
         onUpdate(Level.BLOCK_UPDATE_TOUCH);
@@ -258,8 +255,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
         emitSound(null);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r4")
+
     public void emitSound(@Nullable Player player) {
         if (this.up().getId() != AIR) return;
 

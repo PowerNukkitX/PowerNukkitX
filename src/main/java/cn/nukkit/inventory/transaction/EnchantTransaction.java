@@ -15,13 +15,13 @@ import cn.nukkit.network.protocol.types.NetworkInventoryAction;
 
 import java.util.List;
 
-@Since("1.3.1.0-PN")
+
 public class EnchantTransaction extends InventoryTransaction {
     private Item inputItem;
     private Item outputItem;
     private int cost = -1;
 
-    @Since("1.3.1.0-PN")
+
     public EnchantTransaction(Player source, List<InventoryAction> actions) {
         super(source, actions);
         for (InventoryAction action : actions) {
@@ -115,7 +115,7 @@ public class EnchantTransaction extends InventoryTransaction {
         }
     }
 
-    @Since("1.3.1.0-PN")
+
     public boolean checkForEnchantPart(List<InventoryAction> actions) {
         for (InventoryAction action : actions) {
             if (action instanceof EnchantingAction) return true;
@@ -123,32 +123,32 @@ public class EnchantTransaction extends InventoryTransaction {
         return false;
     }
 
-    @Since("1.3.1.0-PN")
+
     public Item getInputItem() {
         return inputItem;
     }
 
-    @Since("1.3.1.0-PN")
+
     public void setInputItem(Item inputItem) {
         this.inputItem = inputItem;
     }
 
-    @Since("1.3.1.0-PN")
+
     public Item getOutputItem() {
         return outputItem;
     }
 
-    @Since("1.3.1.0-PN")
+
     public void setOutputItem(Item outputItem) {
         this.outputItem = outputItem;
     }
 
-    @Since("1.3.1.0-PN")
+
     public int getCost() {
         return cost;
     }
 
-    @Since("1.3.1.0-PN")
+
     public void setCost(int cost) {
         this.cost = cost;
     }

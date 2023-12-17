@@ -13,8 +13,7 @@ import com.dfsek.terra.api.entity.EntityType;
 import com.dfsek.terra.api.handle.WorldHandle;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class PNXWorldHandle implements WorldHandle {
     public static final PNXBlockStateDelegate AIR = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
     public static int err = 0;

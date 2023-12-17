@@ -11,7 +11,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author Erik Miller | EinBexiii
  */
-@Since("1.3.1.0-PN")
+
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements EntityAgeable only in PowerNukkit!")
 public class EntityHoglin extends EntityMob implements EntityWalkable, EntityAgeable {
 
@@ -48,8 +48,7 @@ public class EntityHoglin extends EntityMob implements EntityWalkable, EntityAge
         return 0.9f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Hoglin";

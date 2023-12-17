@@ -15,8 +15,7 @@ public abstract class SnowyBiome extends GrassyBiome {
         this.addPopulator(waterIce);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getCoverBlock() {
         if (useNewRakNetCover()) {

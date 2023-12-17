@@ -27,7 +27,7 @@ public class BlockStairsStoneBrick extends BlockStairs {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

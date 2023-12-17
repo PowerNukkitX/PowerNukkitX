@@ -3,6 +3,7 @@ package cn.nukkit.level.format;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.block.state.BlockRegistry;
 import cn.nukkit.block.state.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
@@ -20,6 +21,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Allay Project 12/16/2023
@@ -35,7 +38,7 @@ public class Chunk implements IChunk {
     protected final short[] heightMap;//256 size Values start at 0 and are 0-384 for the Overworld range
     protected final CompoundTag extraData;
     protected volatile ChunkState chunkState;
-    protected volatile long changes;
+    protected AtomicLong changes;
     private int x;
     private int z;
     private long hash;
@@ -204,7 +207,10 @@ public class Chunk implements IChunk {
 
     @Override
     public int getHeightMap(int x, int z) {
-        return this.heightMap[(z << 4) | x];
+        //基岩版3d-data保存heightMap是以0为索引保存的，所以这里需要减去世界最小值，详情查看
+        //Bedrock Edition 3d-data saves the height map start from index of 0, so need to subtract the world minimum height here, see for details:
+        //https://github.com/bedrock-dev/bedrock-level/blob/main/src/include/data_3d.h#L115
+        return this.heightMap[(z << 4) | x] + getDimensionData().getMinHeight();
     }
 
     @Override
@@ -441,7 +447,7 @@ public class Chunk implements IChunk {
         if (provider == null) {
             return true;
         }
-        if (save && this.changes != 0) {
+        if (save && this.changes.get() != 0) {
             provider.saveChunk(this.getX(), this.getZ());
         }
         if (safe) {
@@ -528,12 +534,12 @@ public class Chunk implements IChunk {
 
     @Override
     public boolean hasChanged() {
-        return this.changes != 0;
+        return this.changes.get() != 0;
     }
 
     @Override
     public void setChanged() {
-        this.changes++;
+        this.changes.incrementAndGet();
     }
 
     @Override
@@ -541,13 +547,19 @@ public class Chunk implements IChunk {
         if (changed) {
             setChanged();
         } else {
-            changes = 0;
+            changes.set(0);
         }
     }
 
     @Override
     public long getBlockChanges() {
-        return changes;
+        return changes.get();
+    }
+
+    @Override
+    public boolean isBlockChangeAllowed(int chunkX, int chunkY, int chunkZ) {
+        //todo complete
+        return true;
     }
 
     /**

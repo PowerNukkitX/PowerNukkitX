@@ -6,12 +6,11 @@ import cn.nukkit.api.Since;
 /**
  * @author GoodLucky777
  */
-@PowerNukkitOnly
-@Since("FUTURE")
+
+
 public class BlockDeepslateChiseled extends BlockDeepslateCobbled {
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     public BlockDeepslateChiseled() {
         // Does nothing
     }

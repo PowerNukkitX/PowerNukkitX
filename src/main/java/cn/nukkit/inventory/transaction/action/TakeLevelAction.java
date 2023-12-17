@@ -5,19 +5,19 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import lombok.ToString;
 
-@PowerNukkitOnly
+
 @ToString(callSuper = true)
 public class TakeLevelAction extends InventoryAction {
     
     private final int levels;
 
-    @PowerNukkitOnly
+
     public TakeLevelAction(int levels) {
         super(Item.get(0), Item.get(0));
         this.levels = levels;
     }
 
-    @PowerNukkitOnly
+
     public int getLevels() {
         return levels;
     }

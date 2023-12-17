@@ -8,17 +8,15 @@ import cn.nukkit.api.Since;
  * @since 08/06/2021
  */
 
-@PowerNukkitOnly
-@Since("FUTURE")
+
 public class BlockRawCopper extends BlockRaw {
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
+
     public BlockRawCopper() {
         this(0);
     }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     public BlockRawCopper(int meta) {
         super(meta);
     }

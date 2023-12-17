@@ -182,8 +182,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
         return 0.8f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Wolf";
@@ -270,8 +269,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
         return false;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
+
     @Override
     public boolean isBreedingItem(Item item) {
         return item.getId() == ItemID.RAW_CHICKEN ||
@@ -290,8 +288,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     /**
      * 获得可以治疗狼的物品的治疗量
      */
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
+
+
     public int getHealingAmount(Item item) {
         return switch (item.getId()) {
             case ItemID.RAW_PORKCHOP, ItemID.RAW_BEEF, ItemID.RAW_RABBIT -> 3;
@@ -307,8 +305,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     }
 
     //兔子、狐狸、骷髅及其变种、羊驼、绵羊和小海龟。然而它们被羊驼啐唾沫时会逃跑。
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
+
+
     @Override
     public boolean attackTarget(Entity entity) {
         return switch (entity.getNetworkId()) {

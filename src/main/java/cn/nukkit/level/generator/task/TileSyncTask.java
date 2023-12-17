@@ -7,8 +7,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.scheduler.Task;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public class TileSyncTask extends Task {
 
     public final String type;

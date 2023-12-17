@@ -20,8 +20,8 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
  * @author Cliff Click, SuperIceCN
  * @since 1.5
  */
-@Since("1.20.10-r1")
-@PowerNukkitXOnly
+
+
 public class ConcurrentAutoIntTable implements Serializable {
 
     // --- public interface ---

@@ -11,8 +11,8 @@ import java.util.Set;
  * <p>
  * An abstract class represents multiple behaviors that this evaluator will evaluate.
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public abstract class MultiBehaviorEvaluator implements IBehaviorEvaluator {
     protected Set<IBehaviorEvaluator> evaluators;
 

@@ -26,8 +26,7 @@ public abstract class BlockThin extends BlockTransparent implements BlockConnect
         return false;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isSolid(BlockFace side) {
         return false;

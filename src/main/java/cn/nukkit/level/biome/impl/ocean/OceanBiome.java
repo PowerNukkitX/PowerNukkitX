@@ -47,8 +47,7 @@ public class OceanBiome extends WateryBiome {
         return "Ocean";
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Override
     public int getGroundBlock(int y) {
         if (useNewRakNetGround()) {

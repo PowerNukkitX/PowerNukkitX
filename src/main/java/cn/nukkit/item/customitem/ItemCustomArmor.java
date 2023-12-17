@@ -13,8 +13,8 @@ import javax.annotation.Nullable;
 /**
  * @author lt_name
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public abstract class ItemCustomArmor extends ItemArmor implements CustomItem {
     private final String id;
     private final String textureName;
@@ -35,8 +35,7 @@ public abstract class ItemCustomArmor extends ItemArmor implements CustomItem {
         return textureName;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public String getNamespaceId() {
         return id;

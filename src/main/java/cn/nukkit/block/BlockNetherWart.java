@@ -21,12 +21,10 @@ import java.util.Random;
  */
 public class BlockNetherWart extends BlockFlowable {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final IntBlockProperty AGE = new IntBlockProperty("age", false, 3);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(AGE);
 
     public BlockNetherWart() {
@@ -86,8 +84,7 @@ public class BlockNetherWart extends BlockFlowable {
         return NETHER_WART_BLOCK;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {

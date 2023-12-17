@@ -4,17 +4,15 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemTool;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 public class BlockDoubleSlabBlackstonePolished extends BlockDoubleSlabBase {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public BlockDoubleSlabBlackstonePolished() {
         this(0);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public BlockDoubleSlabBlackstonePolished(int meta) {
         super(meta);
     }
@@ -24,13 +22,13 @@ public class BlockDoubleSlabBlackstonePolished extends BlockDoubleSlabBase {
         return POLISHED_BLACKSTONE_DOUBLE_SLAB;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getSingleSlabId() {
         return POLISHED_BLACKSTONE_SLAB;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public String getSlabName() {
         return "Polished Blackstone";

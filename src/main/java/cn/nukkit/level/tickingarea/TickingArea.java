@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class TickingArea {
 
     protected String name;

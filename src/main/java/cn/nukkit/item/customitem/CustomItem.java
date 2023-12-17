@@ -12,8 +12,8 @@ import cn.nukkit.item.StringItem;
  *
  * @author lt_name
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public interface CustomItem extends StringItem {
     /**
      * 定义该自定义物品的材质

@@ -413,8 +413,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         this.setDataProperty(new ShortEntityData(DATA_AIR, ticks));
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected boolean blockedByShield(EntityDamageEvent source) {
         Entity damager = null;
         if (source instanceof EntityDamageByChildEntityEvent) {
@@ -453,7 +452,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return true;
     }
 
-    @PowerNukkitOnly
+
     @PowerNukkitXDifference(since = "1.19.21-r4", info = "add EntityDamageEvent param to help cal the armor damage")
     protected void onBlock(Entity entity, EntityDamageEvent event, boolean animate) {
         if (animate) {
@@ -461,30 +460,27 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
     }
 
-    @PowerNukkitOnly
+
     public boolean isBlocking() {
         return this.getDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_BLOCKING);
     }
 
-    @PowerNukkitOnly
+
     public void setBlocking(boolean value) {
         this.setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_BLOCKING, value);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isPersistent() {
         return namedTag.containsByte("Persistent") && namedTag.getBoolean("Persistent");
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setPersistent(boolean persistent) {
         namedTag.putBoolean("Persistent", persistent);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void preAttack(Player player) {
         if (attackTimeByShieldKb) {
             attackTimeBefore = attackTime;
@@ -492,28 +488,24 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void postAttack(Player player) {
         if (attackTimeByShieldKb && attackTime == 0) {
             attackTime = attackTimeBefore;
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public int getAttackTime() {
         return attackTime;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public boolean isAttackTimeByShieldKb() {
         return attackTimeByShieldKb;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public int getAttackTimeBefore() {
         return attackTimeBefore;
     }

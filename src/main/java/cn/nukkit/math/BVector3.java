@@ -13,8 +13,8 @@ import static java.lang.StrictMath.*;
  * <p>
  * A vector calculation tool that integrates the conversion functions of yaw and pitch and coordinate space at the same time
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 @PowerNukkitXDifference(info = "update Angle algorithm", since = "1.19.60-r1")
 public final class BVector3 {
     /**

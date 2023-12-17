@@ -172,8 +172,7 @@ public class VersionCommand extends Command implements CoreCommand {
         return true;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     private CompletableFuture<JsonArray> listVersion() {
         return CompletableFuture.supplyAsync(() -> {
             if (this.listVersionCache != null) {

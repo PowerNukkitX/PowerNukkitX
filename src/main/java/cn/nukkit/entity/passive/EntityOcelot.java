@@ -34,8 +34,7 @@ public class EntityOcelot extends EntityAnimal implements EntityWalkable {
         return 0.7f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Ocelot";

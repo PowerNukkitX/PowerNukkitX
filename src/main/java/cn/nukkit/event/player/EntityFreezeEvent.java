@@ -7,8 +7,7 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.entity.EntityEvent;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class EntityFreezeEvent extends EntityEvent implements Cancellable {
     private final Entity entity;
 

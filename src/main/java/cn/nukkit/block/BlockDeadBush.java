@@ -38,15 +38,14 @@ public class BlockDeadBush extends BlockFlowable implements BlockFlowerPot.Flowe
         return DEAD_BUSH;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;

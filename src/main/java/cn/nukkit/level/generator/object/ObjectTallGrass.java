@@ -49,7 +49,7 @@ public class ObjectTallGrass {
         }
     }
 
-    @PowerNukkitOnly
+
     public static void growGrass(ChunkManager level, Vector3 pos, NukkitRandom random, int count, int radius) {
         int[][] arr = {
                 {Block.DANDELION, 0},

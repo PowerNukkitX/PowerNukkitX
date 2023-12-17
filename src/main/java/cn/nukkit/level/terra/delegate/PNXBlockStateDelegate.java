@@ -8,8 +8,7 @@ import com.dfsek.terra.api.block.BlockType;
 import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.block.state.properties.Property;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public record PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState innerBlockState) implements BlockState {
     @Override
     public boolean matches(BlockState blockState) {

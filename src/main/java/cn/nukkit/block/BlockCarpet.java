@@ -17,8 +17,8 @@ import org.jetbrains.annotations.NotNull;
  * @since 2015/11/24
  */
 public class BlockCarpet extends BlockFlowable {
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
+
     public static final BlockProperties PROPERTIES = CommonBlockProperties.COLOR_BLOCK_PROPERTIES;
 
     public BlockCarpet() {
@@ -40,7 +40,7 @@ public class BlockCarpet extends BlockFlowable {
 
     @NotNull
     @Override
-    @PowerNukkitOnly
+
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -60,8 +60,7 @@ public class BlockCarpet extends BlockFlowable {
         return false;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
@@ -77,7 +76,7 @@ public class BlockCarpet extends BlockFlowable {
         return false;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -120,8 +119,7 @@ public class BlockCarpet extends BlockFlowable {
         return getPropertyValue(CommonBlockProperties.COLOR);
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public void setDyeColor(@NotNull DyeColor color) {
         setPropertyValue(CommonBlockProperties.COLOR, color);
     }

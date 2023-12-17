@@ -32,8 +32,7 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
         return POWERED_RAIL;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -78,8 +77,7 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
         return 0;
     }
 
-    @Since("1.5.2.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public void afterRemoval(Block newBlock, boolean update) {
         RedstoneComponent.updateAroundRedstone(down());
@@ -212,15 +210,13 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
         return getBooleanValue(ACTIVE);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public OptionalBoolean isRailActive() {
         return OptionalBoolean.of(getBooleanValue(ACTIVE));
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public void setRailActive(boolean active) {
         setBooleanValue(ACTIVE, active);

@@ -6,8 +6,7 @@ import cn.nukkit.entity.EntityIntelligent;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class ProbabilityEvaluator implements IBehaviorEvaluator {
 
     protected int probability;

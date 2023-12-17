@@ -4,8 +4,8 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
 //\\ VanillaStates::TorchFacingDirection
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
+
 public final class TorchFacingDirection {
 
     public static final int UNKNOWN = 0b000;

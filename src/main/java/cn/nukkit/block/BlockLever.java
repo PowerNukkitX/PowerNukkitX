@@ -28,14 +28,14 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
  */
 @PowerNukkitDifference(info = "Implements RedstoneComponent and uses methods from it.", since = "1.4.0.0-PN")
 public class BlockLever extends BlockFlowable implements RedstoneComponent, Faceable {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final ArrayBlockProperty<LeverOrientation> LEVER_DIRECTION = new ArrayBlockProperty<>("lever_direction", false,
             LeverOrientation.values(), 3, "lever_direction", false, new String[]{
                     "down_east_west", "east", "west", "south", "north", "up_north_south", "up_east_west", "down_north_south"
     });
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BlockProperties PROPERTIES = new BlockProperties(LEVER_DIRECTION, OPEN);
 
     public BlockLever() {
@@ -56,8 +56,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         return LEVER;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -88,20 +87,17 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         return getBooleanValue(OPEN);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-P`N")
+
     public void setPowerOn(boolean powerOn) {
         setBooleanValue(OPEN, powerOn);
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-P`N")
+
+
     public LeverOrientation getLeverOrientation() {
         return getPropertyValue(LEVER_DIRECTION);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-P`N")
+
     public void setLeverOrientation(@Nullable LeverOrientation value) {
         setPropertyValue(LEVER_DIRECTION, value);
     }
@@ -167,8 +163,8 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
      * @param face The face that the torch will be touching the block
      * @return If the support and face combinations can hold the lever
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static boolean isSupportValid(Block support, BlockFace face) {
         switch (support.getId()) {
             case FARMLAND:
@@ -320,7 +316,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         }
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 2;
@@ -337,7 +333,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         return getLeverOrientation().getFacing();
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean breaksWhenMoved() {
         return true;

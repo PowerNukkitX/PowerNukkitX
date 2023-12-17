@@ -8,12 +8,11 @@ import cn.nukkit.item.Item;
  * @author joserobjr
  * @since 2021-06-13
  */
-@PowerNukkitOnly
-@Since("FUTURE")
+
+
 public class BlockOreRedstoneDeepslateGlowing extends BlockOreRedstoneDeepslate implements IBlockOreRedstoneGlowing {
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     public BlockOreRedstoneDeepslateGlowing() {
         // Does nothing
     }

@@ -13,17 +13,15 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-@Since("1.4.0.0-PN")
-@PowerNukkitOnly
+
 public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
+
     protected BlockFungus() {
         super(0);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -75,12 +73,10 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
         return true;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     protected abstract boolean canGrowOn(Block support);
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     protected boolean isValidSupport(@NotNull Block support) {
         switch (support.getId()) {
             case GRASS:
@@ -102,7 +98,6 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
         return true;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     public abstract boolean grow(@Nullable Player cause);
 }

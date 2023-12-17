@@ -12,14 +12,14 @@ import cn.nukkit.math.NukkitRandom;
 /**
  * @author GoodLucky777
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class PopulatorOreEmerald extends Populator {
 
     private static final BlockState STATE_STONE = BlockState.of(STONE);
     private static final BlockState STATE_EMERALD_ORE = BlockState.of(EMERALD_ORE);
 
-    @PowerNukkitOnly
+
     public PopulatorOreEmerald() {
         super();
     }

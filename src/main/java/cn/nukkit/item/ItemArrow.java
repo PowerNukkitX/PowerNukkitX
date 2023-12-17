@@ -56,8 +56,7 @@ public class ItemArrow extends Item {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     @Nullable
     public Potion getTippedArrowPotion() {
         final int damage = getDamage();

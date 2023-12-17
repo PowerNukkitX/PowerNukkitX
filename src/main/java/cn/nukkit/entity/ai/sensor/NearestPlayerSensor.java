@@ -8,8 +8,8 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import lombok.Getter;
 
 //存储最近的玩家的Memory
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 @Getter
 public class NearestPlayerSensor implements ISensor {
 

@@ -2,14 +2,14 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 
-@PowerNukkitOnly
+
 public class BlockTrapdoorDarkOak extends BlockTrapdoor {
-    @PowerNukkitOnly
+
     public BlockTrapdoorDarkOak() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockTrapdoorDarkOak(int meta) {
         super(meta);
     }

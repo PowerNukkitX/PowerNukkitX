@@ -8,15 +8,15 @@ import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-@PowerNukkitOnly
+
 public class BlockEntityBarrel extends BlockEntitySpawnableContainer implements BlockEntityNameable {
 
-    @PowerNukkitOnly
+
     public BlockEntityBarrel(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     protected ContainerInventory requireContainerInventory() {
         return new BarrelInventory(this);

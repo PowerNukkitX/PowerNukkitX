@@ -8,8 +8,8 @@ import cn.nukkit.level.generator.populator.impl.structure.utils.loot.Randomizabl
 import com.google.common.collect.Maps;
 
 //\\ ./data/behavior_packs/vanilla/loot_tables/chests/stronghold_corridor.json
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
+
 public class StrongholdCorridorChest extends RandomizableContainer {
 
     private static final StrongholdCorridorChest INSTANCE = new StrongholdCorridorChest();

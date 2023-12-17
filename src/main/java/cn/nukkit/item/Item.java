@@ -56,12 +56,11 @@ import java.util.stream.Stream;
  */
 @Log4j2
 public class Item implements Cloneable, BlockID, ItemID {
-    @PowerNukkitXOnly
-    @Since("1.19.70-r1")
+
+
     public static final Item AIR_ITEM = new Item(0);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final Item[] EMPTY_ARRAY = new Item[0];
 
     /**
@@ -115,12 +114,10 @@ public class Item implements Cloneable, BlockID, ItemID {
                     (e1, e2) -> e1, LinkedHashMap::new
             ));
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     private static final HashMap<String, Supplier<Item>> CUSTOM_ITEMS = new HashMap<>();
 
-    @PowerNukkitXOnly
-    @Since("1.19.31-r1")
+
     private static final HashMap<String, CustomItemDefinition> CUSTOM_ITEM_DEFINITIONS = new HashMap<>();
 
     protected Block block = null;
@@ -526,8 +523,7 @@ public class Item implements Cloneable, BlockID, ItemID {
      * rebuild ItemList
      */
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static List<String> rebuildItemList() {
         return itemList = Collections.unmodifiableList(Stream.of(
                 BlockStateRegistry.getPersistenceNames().stream()
@@ -542,8 +538,7 @@ public class Item implements Cloneable, BlockID, ItemID {
      * Get the list of item items and also get the list of reconstructed items
      */
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static List<String> getItemList() {
         List<String> itemList = Item.itemList;
         if (itemList == null) {
@@ -644,8 +639,8 @@ public class Item implements Cloneable, BlockID, ItemID {
      *          <p>
      *          Import in an instance of a custom item class
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public static OK<?> registerCustomItem(Class<? extends CustomItem> c) {
         return registerCustomItem(List.of(c));
     }
@@ -657,8 +652,8 @@ public class Item implements Cloneable, BlockID, ItemID {
      *
      * @param itemClassList 传入自定义物品class List<br>Import custom items class List
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public static OK<?> registerCustomItem(@NotNull List<Class<? extends CustomItem>> itemClassList) {
         if (!Server.getInstance().isEnableExperimentMode()) {
             return new OK<>(false, "The server does not have the custom item feature enabled. Unable to register the customItemList!");
@@ -714,8 +709,8 @@ public class Item implements Cloneable, BlockID, ItemID {
      *
      * @param namespaceId 传入自定义物品的namespaceId
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public static void deleteCustomItem(String namespaceId) {
         if (CUSTOM_ITEMS.containsKey(namespaceId)) {
             Item customItem = fromString(namespaceId);
@@ -731,8 +726,8 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Remove all custom items
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public static void deleteAllCustomItem() {
         for (String name : CUSTOM_ITEMS.keySet()) {
             Item customItem = fromString(name);
@@ -749,14 +744,12 @@ public class Item implements Cloneable, BlockID, ItemID {
      * Used to get the custom item data sent to the client
      */
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public static HashMap<String, Supplier<? extends Item>> getCustomItems() {
         return new HashMap<>(CUSTOM_ITEMS);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.31-r1")
+
     public static HashMap<String, CustomItemDefinition> getCustomItemDefinition() {
         return new HashMap<>(CUSTOM_ITEM_DEFINITIONS);
     }
@@ -836,22 +829,22 @@ public class Item implements Cloneable, BlockID, ItemID {
         return -1;
     }
 
-    @PowerNukkitOnly
+
     public static Item getBlock(int id) {
         return getBlock(id, 0);
     }
 
-    @PowerNukkitOnly
+
     public static Item getBlock(int id, Integer meta) {
         return getBlock(id, meta, 1);
     }
 
-    @PowerNukkitOnly
+
     public static Item getBlock(int id, Integer meta, int count) {
         return getBlock(id, meta, count, EmptyArrays.EMPTY_BYTES);
     }
 
-    @PowerNukkitOnly
+
     public static Item getBlock(int id, Integer meta, int count, byte[] tags) {
         var result = Block.get(id, meta).toItem();
         result.setCount(count);
@@ -1045,8 +1038,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         return get(id, Utils.toInt(data.getOrDefault("damage", 0)), Utils.toInt(data.getOrDefault("count", 1)), nbtBytes);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static Item fromJsonNetworkId(Map<String, Object> data) {
         String nbt = (String) data.get("nbt_b64");
         byte[] nbtBytes;
@@ -1172,8 +1164,8 @@ public class Item implements Cloneable, BlockID, ItemID {
     /**
      * 该物品是否可以应用附魔效果
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public boolean applyEnchantments() {
         return true;
     }
@@ -1204,8 +1196,8 @@ public class Item implements Cloneable, BlockID, ItemID {
      * @param id The enchantment ID from {@link Enchantment} constants.
      * @return {@code 0} if the item don't have that enchantment or the current level of the given enchantment.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public int getEnchantmentLevel(int id) {
         if (!this.hasEnchantments()) {
             return 0;
@@ -1229,8 +1221,8 @@ public class Item implements Cloneable, BlockID, ItemID {
      * @param id 要查询的附魔标识符
      * @return {@code 0} if the item don't have that enchantment or the current level of the given enchantment.
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
+
     public int getCustomEnchantmentLevel(String id) {
         if (!this.hasEnchantments()) {
             return 0;
@@ -1247,8 +1239,8 @@ public class Item implements Cloneable, BlockID, ItemID {
     /**
      * @param id 要查询的附魔标识符
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
+
     public Enchantment getCustomEnchantment(String id) {
         if (!this.hasEnchantments()) {
             return null;
@@ -1274,8 +1266,8 @@ public class Item implements Cloneable, BlockID, ItemID {
      *
      * @param id 要查询的附魔标识符
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
+
     public boolean hasCustomEnchantment(String id) {
         return this.getCustomEnchantmentLevel(id) > 0;
     }
@@ -1283,8 +1275,8 @@ public class Item implements Cloneable, BlockID, ItemID {
     /**
      * @param id 要查询的附魔标识符
      */
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
+
+
     public int getCustomEnchantmentLevel(@NotNull Identifier id) {
         return getCustomEnchantmentLevel(id.toString());
     }
@@ -1292,8 +1284,8 @@ public class Item implements Cloneable, BlockID, ItemID {
     /**
      * @param id 要查询的附魔标识符
      */
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
+
+
     public boolean hasCustomEnchantment(@NotNull Identifier id) {
         return hasCustomEnchantment(id.toString());
     }
@@ -1301,8 +1293,8 @@ public class Item implements Cloneable, BlockID, ItemID {
     /**
      * @param id 要查询的附魔标识符
      */
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
+
+
     public Enchantment getCustomEnchantment(@NotNull Identifier id) {
         return getCustomEnchantment(id.toString());
     }
@@ -1459,12 +1451,12 @@ public class Item implements Cloneable, BlockID, ItemID {
      *
      * @param id The enchantment ID from {@link Enchantment} constants.
      */
-    @Since("1.4.0.0-PN")
+
     public boolean hasEnchantment(int id) {
         return this.getEnchantmentLevel(id) > 0;
     }
 
-    @Since("1.4.0.0-PN")
+
     public int getRepairCost() {
         if (this.hasCompoundTag()) {
             CompoundTag tag = this.getNamedTag();
@@ -1478,7 +1470,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         return 0;
     }
 
-    @Since("1.4.0.0-PN")
+
     public Item setRepairCost(int cost) {
         if (cost <= 0 && this.hasCompoundTag()) {
             return this.setNamedTag(this.getNamedTag().remove("RepairCost"));
@@ -1720,8 +1712,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         return this.hasCustomName() ? this.getCustomName() : this.name;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.0-r2")
+
     @NotNull
     final public String getDisplayName() {
         return this.hasCustomName() ? this.getCustomName() : this.name == null ? StringItem.createItemName(getNamespaceId()) : name;
@@ -1740,7 +1731,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
     }
 
-    @Since("1.4.0.0-PN")
+
     @API(definition = API.Definition.INTERNAL, usage = API.Usage.INCUBATING)
     public Block getBlockUnsafe() {
         return this.block;
@@ -1750,8 +1741,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         return id;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public final int getNetworkId() throws UnknownNetworkIdException {
         try {
             return RuntimeItems.getRuntimeMapping().getNetworkId(this);
@@ -1760,15 +1750,13 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public String getNamespaceId() {
         RuntimeItemMapping runtimeMapping = RuntimeItems.getRuntimeMapping();
         return runtimeMapping.getNamespacedIdByNetworkId(this.getNetworkId());
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public int getBlockId() {
         if (block != null) {
             return block.getId();
@@ -1795,8 +1783,7 @@ public class Item implements Cloneable, BlockID, ItemID {
      * Create a wildcard recipe item,the item can be applied to a recipe without restriction on data(damage/meta) values
      */
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public Item createFuzzyCraftingRecipe() {
         Item item = clone();
         item.hasMeta = false;
@@ -2026,8 +2013,8 @@ public class Item implements Cloneable, BlockID, ItemID {
      *
      * @since 1.4.0.0-PN
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public boolean isLavaResistant() {
         return false;
     }
@@ -2038,8 +2025,7 @@ public class Item implements Cloneable, BlockID, ItemID {
      * Define if the item can break the shield
      */
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r4")
+
     public boolean canBreakShield() {
         return false;
     }
@@ -2100,14 +2086,12 @@ public class Item implements Cloneable, BlockID, ItemID {
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public final Item decrement(int amount) {
         return increment(-amount);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public final Item increment(int amount) {
         if (count + amount <= 0) {
             return getBlock(BlockID.AIR);
@@ -2124,8 +2108,8 @@ public class Item implements Cloneable, BlockID, ItemID {
      *
      * @return {@code true} if it can act like a bone meal
      */
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
+
     public boolean isFertilizer() {
         return false;
     }
@@ -2196,8 +2180,8 @@ public class Item implements Cloneable, BlockID, ItemID {
      *
      * @since 1.2.1.0-PN
      */
-    @PowerNukkitOnly
-    @Since("1.2.1.0-PN")
+
+
     public final boolean equalsIgnoringEnchantmentOrder(Item item, boolean checkDamage) {
         if (!this.equals(item, checkDamage, false)) {
             return false;
@@ -2277,8 +2261,8 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Controls what block types this block may be placed on.
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public void addCanPlaceOn(Block block) {
         CompoundTag tag = getOrCreateNamedTag();
         ListTag<StringTag> canPlaceOn = tag.getList("CanPlaceOn", StringTag.class);
@@ -2286,16 +2270,14 @@ public class Item implements Cloneable, BlockID, ItemID {
         this.setCompoundTag(tag);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public void addCanPlaceOn(Block[] blocks) {
         for (Block block : blocks) {
             addCanPlaceOn(block);
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public void setCanPlaceOn(Block[] blocks) {
         CompoundTag tag = getOrCreateNamedTag();
         ListTag<StringTag> canPlaceOn = new ListTag<>("CanPlaceOn");
@@ -2306,8 +2288,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         this.setCompoundTag(tag);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public ListTag<StringTag> getCanPlaceOn() {
         CompoundTag tag = getOrCreateNamedTag();
         return tag.getList("CanPlaceOn", StringTag.class);
@@ -2319,8 +2300,7 @@ public class Item implements Cloneable, BlockID, ItemID {
      * Controls what block types can destroy
      */
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public void addCanDestroy(Block block) {
         CompoundTag tag = getOrCreateNamedTag();
         ListTag<StringTag> canDestroy = tag.getList("CanDestroy", StringTag.class);
@@ -2328,16 +2308,14 @@ public class Item implements Cloneable, BlockID, ItemID {
         this.setCompoundTag(tag);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public void addCanDestroy(Block[] blocks) {
         for (Block block : blocks) {
             addCanDestroy(block);
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public void setCanDestroy(Block[] blocks) {
         CompoundTag tag = getOrCreateNamedTag();
         ListTag<StringTag> canDestroy = new ListTag<>("CanDestroy");
@@ -2348,8 +2326,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         this.setCompoundTag(tag);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public ListTag<StringTag> getCanDestroy() {
         CompoundTag tag = getOrCreateNamedTag();
         return tag.getList("CanDestroy", StringTag.class);
@@ -2365,16 +2342,14 @@ public class Item implements Cloneable, BlockID, ItemID {
      * LOCK_IN_INVENTORY Prevents the item from being moved or removed from its slot in the player's inventory, dropped, or crafted with
      */
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public enum ItemLockMode {
         NONE,//only used in server
         LOCK_IN_SLOT,
         LOCK_IN_INVENTORY
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public void setItemLockMode(ItemLockMode mode) {
         CompoundTag tag = getOrCreateNamedTag();
         if (mode == ItemLockMode.NONE) {
@@ -2392,8 +2367,8 @@ public class Item implements Cloneable, BlockID, ItemID {
      *
      * @return
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public ItemLockMode getItemLockMode() {
         CompoundTag tag = getOrCreateNamedTag();
         if (tag.contains("minecraft:item_lock")) {
@@ -2402,8 +2377,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         return ItemLockMode.NONE;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public void setKeepOnDeath(boolean keepOnDeath) {
         CompoundTag tag = getOrCreateNamedTag();
         if (keepOnDeath) {
@@ -2421,15 +2395,14 @@ public class Item implements Cloneable, BlockID, ItemID {
      *
      * @return
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public boolean keepOnDeath() {
         CompoundTag tag = getOrCreateNamedTag();
         return tag.contains("minecraft:keep_on_death");
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public static class ItemJsonComponents {
         private static Gson gson = new Gson();
 
@@ -2467,8 +2440,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         public KeepOnDeath keepOnDeath;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public void readItemJsonComponents(ItemJsonComponents components) {
         if (components.canPlaceOn != null)
             this.setCanPlaceOn(Arrays.stream(components.canPlaceOn.blocks).map(str -> Block.get(BlockStateRegistry.getBlockId(str.startsWith("minecraft:") ? str : "minecraft:" + str))).collect(Collectors.toList()).toArray(new Block[0]));

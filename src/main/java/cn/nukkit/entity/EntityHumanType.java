@@ -153,15 +153,14 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
         return false;
     }
 
-    @PowerNukkitOnly
+
     @Deprecated
     @Override
     public boolean applyNameTag(Item item) {
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @PowerNukkitXDifference(since = "1.19.21-r4", info = "add EntityDamageEvent param to help cal the armor damage")
     protected Item damageArmor(Item armor, Entity damager, EntityDamageEvent event) {
         if (armor.hasEnchantments()) {

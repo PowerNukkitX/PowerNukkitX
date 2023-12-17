@@ -5,8 +5,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.event.HandlerList;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r3")
+
 public class VibrationOccurEvent extends VibrationEvent{
 
     private static final HandlerList handlers = new HandlerList();

@@ -40,8 +40,7 @@ public interface SourceInterface {
     void shutdown();
 
     void emergencyShutdown();
-    
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
+
     Integer putResourcePacket(Player player, DataPacket packet);
 }

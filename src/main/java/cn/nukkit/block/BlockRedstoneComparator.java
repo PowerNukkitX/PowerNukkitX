@@ -28,16 +28,13 @@ import org.jetbrains.annotations.NotNull;
 @Log4j2
 public abstract class BlockRedstoneComparator extends BlockRedstoneDiode implements RedstoneComponent, BlockEntityHolder<BlockEntityComparator> {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BooleanBlockProperty OUTPUT_LIT = new BooleanBlockProperty("output_lit_bit", false);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BooleanBlockProperty OUTPUT_SUBTRACT = new BooleanBlockProperty("output_subtract_bit", false);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION, OUTPUT_SUBTRACT, OUTPUT_LIT);
 
     public BlockRedstoneComparator() {
@@ -48,24 +45,21 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
         super(meta);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntityComparator> getBlockEntityClass() {
         return BlockEntityComparator.class;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     @Override
     public String getBlockEntityType() {

@@ -33,12 +33,11 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockFire extends BlockFlowable {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final IntBlockProperty FIRE_AGE = CommonBlockProperties.AGE_15;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(FIRE_AGE);
 
     public BlockFire() {
@@ -54,8 +53,7 @@ public class BlockFire extends BlockFlowable {
         return FIRE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -339,8 +337,8 @@ public class BlockFire extends BlockFlowable {
      * 检查火焰是否应被雨水浇灭
      * @return 是否应被雨水浇灭
      */
-    @PowerNukkitXOnly
-    @Since("1.19.20-r3")
+
+
     protected boolean checkRain() {
         var down = down();
         int downId = down.getId();

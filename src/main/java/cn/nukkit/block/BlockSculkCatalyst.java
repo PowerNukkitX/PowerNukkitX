@@ -9,8 +9,7 @@ import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class BlockSculkCatalyst extends BlockSolid implements BlockEntityHolder<BlockEntitySculkCatalyst> {
 
     public static final BooleanBlockProperty BLOOM = new BooleanBlockProperty("bloom", false);

@@ -46,12 +46,10 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 @PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
 public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityEjectable> {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BooleanBlockProperty TRIGGERED = new BooleanBlockProperty("triggered_bit", false);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, TRIGGERED);
 
     public BlockDispenser() {
@@ -77,16 +75,14 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
         return DISPENSER;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     @Override
     public String getBlockEntityType() {
@@ -103,8 +99,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
         return 3.5;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntityEjectable> getBlockEntityClass() {
@@ -227,7 +222,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
         return 0;
     }
 
-    @PowerNukkitOnly
+
     public void dispense() {
         InventoryHolder blockEntity = getBlockEntity();
 
@@ -296,7 +291,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
         }
     }
 
-    @PowerNukkitOnly
+
     protected DispenseBehavior getDispenseBehavior(Item item) {
         return DispenseBehaviorRegister.getBehavior(item.getId());
     }
@@ -312,7 +307,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

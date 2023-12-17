@@ -237,8 +237,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
         this.server.handlePacket(datagramPacket.sender(), datagramPacket.content());
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
     @Override
     public Integer putResourcePacket(Player player, DataPacket packet) {
         RakNetPlayerSession session = this.sessions.get(player.getRawSocketAddress());

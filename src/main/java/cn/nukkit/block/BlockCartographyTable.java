@@ -8,10 +8,10 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-@PowerNukkitOnly
+
 public class BlockCartographyTable extends BlockSolid {
 
-    @PowerNukkitOnly
+
     public BlockCartographyTable() {
     }
 

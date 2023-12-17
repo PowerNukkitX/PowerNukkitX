@@ -41,8 +41,7 @@ public class BlockWater extends BlockLiquid {
         return ret;
     }
 
-    @Since("1.2.1.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public void afterRemoval(Block newBlock, boolean update) {
         if (!update) {
@@ -82,13 +81,13 @@ public class BlockWater extends BlockLiquid {
         return 5;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean usesWaterLogging() {
         return true;
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     public double getPassableBlockFrictionFactor() {
         return 0.5;

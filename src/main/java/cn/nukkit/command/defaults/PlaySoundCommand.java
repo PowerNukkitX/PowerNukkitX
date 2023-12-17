@@ -19,8 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class PlaySoundCommand extends VanillaCommand {
 
     public PlaySoundCommand(String name) {
@@ -38,7 +37,7 @@ public class PlaySoundCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();

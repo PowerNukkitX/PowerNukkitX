@@ -11,21 +11,18 @@ import cn.nukkit.network.protocol.MobEquipmentPacket;
 import java.util.HashSet;
 import java.util.Set;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 public class EntityEquipmentInventory extends BaseInventory {
 
     private final Entity entity;
 
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int MAIN_HAND = 0;
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int OFFHAND = 1;
 
     /**
      * @param entity an Entity which implements {@link InventoryHolder}.
      * @throws ClassCastException if the entity does not implements {@link InventoryHolder}
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public EntityEquipmentInventory(Entity entity) {
         super((InventoryHolder) entity, InventoryType.ENTITY_EQUIPMENT);
         this.entity = entity;
@@ -41,8 +38,7 @@ public class EntityEquipmentInventory extends BaseInventory {
         return 2;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public Entity getEntity() {
         return entity;
     }
@@ -85,33 +81,27 @@ public class EntityEquipmentInventory extends BaseInventory {
         this.viewers.remove( who );
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public Item getItemInHand() {
         return this.getItem( MAIN_HAND);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public Item getItemInOffhand() {
         return this.getItem( OFFHAND );
     }
 
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public boolean setItemInHand(Item item){
         return this.setItem(MAIN_HAND,item);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean setItemInHand( Item item, boolean send ) {
         return this.setItem( MAIN_HAND, item, send );
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean setItemInOffhand(Item item, boolean send ) {
         return this.setItem( OFFHAND, item, send );
     }

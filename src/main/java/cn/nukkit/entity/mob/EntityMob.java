@@ -199,8 +199,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
         return epf;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected Item damageArmor(Item armor, Entity damager) {
         if (armor.hasEnchantments()) {
             if (damager != null) {

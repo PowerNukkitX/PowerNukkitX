@@ -11,11 +11,10 @@ import javax.annotation.Nullable;
  * @since 11/06/2021
  */
 
-@PowerNukkitOnly
-@Since("FUTURE")
+
 public class BlockOreCopper extends BlockOre {
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
+
     public BlockOreCopper() {
         // Does nothing
     }
@@ -30,16 +29,14 @@ public class BlockOreCopper extends BlockOre {
         return COPPER_ORE;
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     @Nullable
     @Override
     protected MinecraftItemID getRawMaterial() {
         return MinecraftItemID.RAW_COPPER;
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     @Override
     protected float getDropMultiplier() {
         return 3;

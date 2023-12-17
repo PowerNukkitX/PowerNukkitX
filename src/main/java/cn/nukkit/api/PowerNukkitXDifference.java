@@ -10,33 +10,30 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE,
         ElementType.FIELD, ElementType.PACKAGE})
-@PowerNukkitXOnly
-@Since("1.19.20-r3")
+
+
 @Inherited
 @Documented
 @Repeatable(PowerNukkitXDifference.DifferenceList.class)
 public @interface PowerNukkitXDifference {
-    @PowerNukkitXOnly
-    @Since("1.19.20-r3")
+
+
     String info() default "";
 
-    @PowerNukkitXOnly
-    @Since("1.19.20-r3")
+
     String since() default "";
 
-    @PowerNukkitXOnly
-    @Since("1.19.20-r3")
+
     Class<?> extendsOnlyInPowerNukkitX() default Void.class;
 
-    @PowerNukkitXOnly
-    @Since("1.19.20-r3")
+
     Class<?> insteadOf() default Void.class;
 
     @Retention(RetentionPolicy.CLASS)
     @Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE,
             ElementType.FIELD, ElementType.PACKAGE})
-    @PowerNukkitXOnly
-    @Since("1.19.20-r3")
+
+
     @Inherited
     @Documented
     @interface DifferenceList {

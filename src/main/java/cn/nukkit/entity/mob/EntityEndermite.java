@@ -40,14 +40,13 @@ public class EntityEndermite extends EntityMob implements EntityWalkable, Entity
         return 0.3f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Endermite";
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

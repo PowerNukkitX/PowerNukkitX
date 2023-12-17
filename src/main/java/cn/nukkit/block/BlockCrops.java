@@ -19,55 +19,48 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockCrops extends BlockFlowable {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final IntBlockProperty GROWTH = new IntBlockProperty("growth", false, 7);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(GROWTH);
 
-    @PowerNukkitOnly
+
     public static final int MINIMUM_LIGHT_LEVEL = 9;
 
     protected BlockCrops(int meta) {
         super(meta);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public int getMinimumLightLevel() {
         return MINIMUM_LIGHT_LEVEL;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public int getMaxGrowth() {
         return GROWTH.getMaxValue();
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public int getGrowth() {
         return getIntValue(GROWTH);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setGrowth(int growth) {
         setIntValue(GROWTH, growth);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isFullyGrown() {
         return getGrowth() >= getMaxGrowth();
     }

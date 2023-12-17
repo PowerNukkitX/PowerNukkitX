@@ -10,17 +10,15 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 public abstract class BlockRoots extends BlockFlowable {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     protected BlockRoots() {
         super(0);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -41,8 +39,7 @@ public abstract class BlockRoots extends BlockFlowable {
         return isSupportValid() && super.place(item, block, target, face, fx, fy, fz, player);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected boolean isSupportValid() {
         switch (down().getId()) {
             case WARPED_NYLIUM:

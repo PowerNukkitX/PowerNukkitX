@@ -3,14 +3,14 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
 
-@PowerNukkitOnly
+
 public class BlockStairsSmoothRedSandstone extends BlockStairs {
-    @PowerNukkitOnly
+
     public BlockStairsSmoothRedSandstone() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockStairsSmoothRedSandstone(int meta) {
         super(meta);
     }
@@ -36,7 +36,7 @@ public class BlockStairsSmoothRedSandstone extends BlockStairs {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

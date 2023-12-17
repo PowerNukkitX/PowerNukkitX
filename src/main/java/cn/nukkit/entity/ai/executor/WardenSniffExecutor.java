@@ -8,8 +8,7 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.mob.EntityWarden;
 import cn.nukkit.level.Sound;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r4")
+
 public class WardenSniffExecutor implements IBehaviorExecutor {
     protected int angerAddition;
     protected int duration;//gt

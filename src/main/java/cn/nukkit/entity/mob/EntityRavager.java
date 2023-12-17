@@ -36,14 +36,13 @@ public class EntityRavager extends EntityMob implements EntityWalkable {
         return 1.2f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Ravager";
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

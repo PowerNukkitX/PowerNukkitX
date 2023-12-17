@@ -9,8 +9,7 @@ import lombok.Setter;
 
 import java.util.List;
 
-@Since("1.19.70-r1")
-@PowerNukkitXOnly
+
 @Getter
 @Setter
 public class CameraPresetsPacket extends DataPacket {

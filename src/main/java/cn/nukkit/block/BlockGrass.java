@@ -39,8 +39,7 @@ public class BlockGrass extends BlockDirt {
         super(0);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -67,16 +66,14 @@ public class BlockGrass extends BlockDirt {
         return "Grass Block";
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Optional<DirtType> getDirtType() {
         return Optional.empty();
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public void setDirtType(@Nullable DirtType dirtType) {
         if (dirtType != null) {

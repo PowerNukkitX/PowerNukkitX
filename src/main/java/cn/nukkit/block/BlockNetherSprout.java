@@ -5,12 +5,10 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 public class BlockNetherSprout extends BlockRoots {
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public BlockNetherSprout() {
     }
 

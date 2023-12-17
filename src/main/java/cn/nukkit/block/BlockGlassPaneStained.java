@@ -13,8 +13,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockGlassPaneStained extends BlockGlassPane {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = CommonBlockProperties.COLOR_BLOCK_PROPERTIES;
 
     public BlockGlassPaneStained() {
@@ -27,8 +26,7 @@ public class BlockGlassPaneStained extends BlockGlassPane {
         }
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {

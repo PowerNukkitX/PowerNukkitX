@@ -9,8 +9,8 @@ import cn.nukkit.entity.EntityIntelligent;
  * <p>
  * This interface abstracts a Behavior Evaluator that <br> decides whether to activate the Actuator bound to it
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public interface IBehaviorEvaluator {
 
     /**

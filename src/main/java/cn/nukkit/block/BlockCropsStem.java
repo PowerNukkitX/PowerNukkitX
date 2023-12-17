@@ -38,11 +38,11 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
  * @author joserobjr
  * @since 2020-09-15
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public abstract class BlockCropsStem extends BlockCrops implements Faceable {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BlockProperties PROPERTIES = new BlockProperties(GROWTH, FACING_DIRECTION);
 
     //https://minecraft.wiki/w/Melon_Seeds#Breaking
@@ -68,26 +68,22 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected BlockCropsStem(int meta) {
         super(meta);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public abstract int getFruitId();
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public abstract int getSeedsId();
 
     @Override
@@ -95,8 +91,7 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
         return getPropertyValue(FACING_DIRECTION);
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(FACING_DIRECTION, face);
@@ -142,9 +137,8 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
         growFruit();
         return Level.BLOCK_UPDATE_RANDOM;
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public boolean growFruit() {
         int fruitId = getFruitId();
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {

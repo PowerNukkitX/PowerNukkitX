@@ -24,7 +24,7 @@ public abstract class EnchantmentProtection extends Enchantment {
 
     protected final TYPE protectionType;
 
-    @PowerNukkitOnly("Re-added for backward compatibility")
+    ("Re-added for backward compatibility")
     @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
             reason = "The signature was changed and it doesn't exists anymore in Cloudburst Nukkit",
             replaceWith = "EnchantmentProtection(int id, String name, Rarity rarity, EnchantmentProtection.TYPE type)")
@@ -32,7 +32,7 @@ public abstract class EnchantmentProtection extends Enchantment {
         this(id, name, Rarity.fromWeight(weight), type);
     }
 
-    @Since("1.4.0.0-PN")
+
     protected EnchantmentProtection(int id, String name, Rarity rarity, EnchantmentProtection.TYPE type) {
         super(id, name, rarity, EnchantmentType.ARMOR);
         this.protectionType = type;

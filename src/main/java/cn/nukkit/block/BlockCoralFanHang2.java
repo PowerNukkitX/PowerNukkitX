@@ -9,24 +9,23 @@ import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.PERMANENTLY_DEAD;
 
-@PowerNukkitOnly
+
 public class BlockCoralFanHang2 extends BlockCoralFanHang {
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
+
     public static final ArrayBlockProperty<CoralType> HANG2_TYPE = new ArrayBlockProperty<>("coral_hang_type_bit", true,
             new CoralType[]{CoralType.PURPLE, CoralType.RED}
     ).ordinal(true);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(HANG2_TYPE, PERMANENTLY_DEAD, HANG_DIRECTION);
 
-    @PowerNukkitOnly
+
     public BlockCoralFanHang2() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockCoralFanHang2(int meta) {
         super(meta);
     }
@@ -36,15 +35,14 @@ public class BlockCoralFanHang2 extends BlockCoralFanHang {
         return CORAL_FAN_HANG2;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getType() {
         if ((getDamage() & 0b1) == 0) {

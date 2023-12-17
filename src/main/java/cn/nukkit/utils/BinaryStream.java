@@ -610,7 +610,7 @@ public class BinaryStream {
     }
 
     @PowerNukkitXDifference(info = "Remove the name from the tag, this function will be removed in the future")
-    @Since("1.4.0.0-PN")
+
     public void putSlot(Item item, boolean instanceItem) {
         if (item == null || item.getId() == 0) {
             putByte((byte) 0);
@@ -749,8 +749,7 @@ public class BinaryStream {
         this.putVarInt(ingredient.getCount());
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r2")
+
     public void putRecipeIngredient(ItemDescriptor itemDescriptor) {
         ItemDescriptorType type = itemDescriptor.getType();
         this.putByte((byte) type.ordinal());
@@ -902,20 +901,17 @@ public class BinaryStream {
         this.putLFloat(z);
     }
 
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
+
     public Vector2f getVector2f() {
         return new Vector2f(this.getLFloat(4), this.getLFloat(4));
     }
 
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
+
     public void putVector2f(Vector2f v) {
         this.putVector2f(v.x, v.y);
     }
 
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
+
     public void putVector2f(float x, float y) {
         this.putLFloat(x);
         this.putLFloat(y);
@@ -989,8 +985,7 @@ public class BinaryStream {
         );
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
     public <T> void putArray(Collection<T> collection, Consumer<T> writer) {
         if (collection == null) {
             putUnsignedVarInt(0);
@@ -1000,8 +995,7 @@ public class BinaryStream {
         collection.forEach(writer);
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
     public <T> void putArray(T[] collection, Consumer<T> writer) {
         if (collection == null) {
             putUnsignedVarInt(0);
@@ -1013,8 +1007,7 @@ public class BinaryStream {
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
+
     public <T> void putArray(Collection<T> array, BiConsumer<BinaryStream, T> biConsumer) {
         this.putUnsignedVarInt(array.size());
         for (T val : array) {
@@ -1037,8 +1030,8 @@ public class BinaryStream {
     }
 
     @SneakyThrows(IOException.class)
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
+
     public CompoundTag getTag() {
         ByteArrayInputStream is = new ByteArrayInputStream(buffer, offset, buffer.length);
         int initial = is.available();
@@ -1050,8 +1043,8 @@ public class BinaryStream {
     }
 
     @SneakyThrows(IOException.class)
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
+
     public void putTag(CompoundTag tag) {
         put(NBTIO.write(tag));
     }

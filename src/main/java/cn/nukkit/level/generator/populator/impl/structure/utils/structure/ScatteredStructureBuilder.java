@@ -16,8 +16,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import java.util.Map;
 import java.util.Map.Entry;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public class ScatteredStructureBuilder {
 
     /**

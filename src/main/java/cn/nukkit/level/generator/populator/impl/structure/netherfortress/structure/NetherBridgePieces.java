@@ -25,8 +25,7 @@ import com.google.common.collect.Lists;
 import javax.annotation.Nullable;
 import java.util.List;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public class NetherBridgePieces {
 
     private static final BlockState NETHER_BRICKS = new BlockState(Block.NETHER_BRICKS);

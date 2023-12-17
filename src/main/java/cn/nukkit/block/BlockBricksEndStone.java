@@ -24,7 +24,7 @@ public class BlockBricksEndStone extends BlockSolid {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

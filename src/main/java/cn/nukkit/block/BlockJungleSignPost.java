@@ -4,13 +4,13 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemJungleSign;
 
-@PowerNukkitOnly
+
 public class BlockJungleSignPost extends BlockSignPost {
-    @PowerNukkitOnly
+
     public BlockJungleSignPost() {
     }
 
-    @PowerNukkitOnly
+
     public BlockJungleSignPost(int meta) {
         super(meta);
     }
@@ -20,7 +20,7 @@ public class BlockJungleSignPost extends BlockSignPost {
         return JUNGLE_STANDING_SIGN;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWallId() {
         return JUNGLE_WALL_SIGN;

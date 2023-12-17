@@ -23,7 +23,7 @@ public class BlockBedrockInvisible extends BlockSolid {
         return "Invisible Bedrock";
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 2;
@@ -55,7 +55,7 @@ public class BlockBedrockInvisible extends BlockSolid {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public  boolean canBePulled() {
         return false;
     }

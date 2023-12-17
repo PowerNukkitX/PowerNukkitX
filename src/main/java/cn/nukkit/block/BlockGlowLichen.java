@@ -13,7 +13,7 @@ import java.util.*;
  * @author Gabriel8579
  * @since 2021-06-13
  */
-@Since("FUTURE")
+
 public class BlockGlowLichen extends BlockLichen{
     @Override
     public String getName() {

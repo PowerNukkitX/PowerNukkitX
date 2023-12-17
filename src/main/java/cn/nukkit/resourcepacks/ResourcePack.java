@@ -9,8 +9,8 @@ import java.util.UUID;
  * 描述一个资源包的接口
  */
 public interface ResourcePack {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     ResourcePack[] EMPTY_ARRAY = new ResourcePack[0];
 
     /**

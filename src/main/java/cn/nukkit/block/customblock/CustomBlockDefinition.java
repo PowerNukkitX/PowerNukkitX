@@ -23,8 +23,8 @@ import java.util.function.Consumer;
  * <p>
  * CustomBlockDefinition is used to get the data of the block behavior_pack sent to the client. The methods provided in {@link CustomBlockDefinition.Builder} control the data sent to the client, if you need to control some of the server-side behavior, please override the methods in {@link cn.nukkit.block.Block Block}.
  */
-@PowerNukkitXOnly
-@Since("1.19.31-r1")
+
+
 public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
 
 
@@ -185,7 +185,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * Control the geometric model of the custom block, if not set the default is the unit cube.<br>
          * Geometry identifier from geo file in 'RP/models/blocks' folder
          */
-        @Since("1.19.80-r1")
+
         public Builder geometry(@NotNull Geometry geometry) {
             var components = this.nbt.getCompound("components");
             //默认单位立方体方块，如果定义几何模型需要移除
@@ -200,7 +200,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * Control custom block permutation features such as conditional rendering, partial rendering, etc.
          */
-        @Since("1.19.80-r2")
+
         public Builder permutation(Permutation permutation) {
             if (!this.nbt.contains("permutations")) {
                 this.nbt.putList(new ListTag<CompoundTag>("permutations"));
@@ -287,7 +287,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * the client friction, which is used to control the speed at which the player walks on the custom block.The larger the value, the faster the movement.
          */
-        @Since("1.20.0-r2")
+
         public Builder clientFriction(float friction) {
             this.nbt.getCompound("components")
                     .putCompound("minecraft:friction", new CompoundTag()

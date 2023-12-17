@@ -6,15 +6,14 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemMangroveSign;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class BlockMangroveWallSign extends BlockWallSign {
-    @PowerNukkitOnly
+
     public BlockMangroveWallSign() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockMangroveWallSign(int meta) {
         super(meta);
     }
@@ -24,7 +23,7 @@ public class BlockMangroveWallSign extends BlockWallSign {
         return MANGROVE_WALL_SIGN;
     }
 
-    @PowerNukkitOnly
+
     @Override
     protected int getPostId() {
         return MANGROVE_STANDING_SIGN;

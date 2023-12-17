@@ -22,8 +22,7 @@ public class BlockBookshelf extends BlockSolidMeta {
         this(0);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {

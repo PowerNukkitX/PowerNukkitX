@@ -7,22 +7,20 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
 public class BlockDoubleSlabCherry extends BlockDoubleSlabBase {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public BlockDoubleSlabCherry() {
         this(0);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected BlockDoubleSlabCherry(int meta) {
         super(meta);
     }
 
-    @PowerNukkitOnly
+
     @Override
     public String getSlabName() {
         return "Double Cherry Slab";

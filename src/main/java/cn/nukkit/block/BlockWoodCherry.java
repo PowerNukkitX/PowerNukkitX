@@ -10,8 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 
-@Since("1.20.0-r2")
-@PowerNukkitXOnly
+
 public class BlockWoodCherry extends BlockLog {
     public static final String STRIPPED_BIT = "stripped_bit";
 
@@ -33,8 +32,7 @@ public class BlockWoodCherry extends BlockLog {
         return CHERRY_WOOD;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -46,19 +44,17 @@ public class BlockWoodCherry extends BlockLog {
         return (isStripped() ? "Stripped " : "") + "Cherry Wood";
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isStripped() {
         return getBooleanValue(STRIPPED_BIT);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setStripped(boolean stripped) {
         setBooleanValue(STRIPPED_BIT, stripped);
     }
 
-    @PowerNukkitOnly
+
     @Override
     public BlockState getStrippedState() {
         return BlockState.of(STRIPPED_CHERRY_WOOD).withProperty(PILLAR_AXIS, getPillarAxis());

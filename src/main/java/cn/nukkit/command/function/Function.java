@@ -11,8 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 @Getter
 public class Function {
 

@@ -38,8 +38,7 @@ public class BlockOreEmerald extends BlockOre {
         return ItemTool.TIER_IRON;
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     @Nullable
     @Override
     protected MinecraftItemID getRawMaterial() {

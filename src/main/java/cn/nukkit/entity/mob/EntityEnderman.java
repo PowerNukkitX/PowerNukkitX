@@ -39,14 +39,13 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
         return 2.9f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Enderman";
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isPreventingSleep(Player player) {
         return this.getDataPropertyBoolean(DATA_FLAG_ANGRY);

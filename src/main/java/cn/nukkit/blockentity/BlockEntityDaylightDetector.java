@@ -7,10 +7,10 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-@PowerNukkitOnly
+
 public class BlockEntityDaylightDetector extends BlockEntity {
 
-    @PowerNukkitOnly
+
     public BlockEntityDaylightDetector(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }

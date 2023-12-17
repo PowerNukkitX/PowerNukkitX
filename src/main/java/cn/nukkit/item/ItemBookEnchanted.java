@@ -21,8 +21,7 @@ public class ItemBookEnchanted extends Item {
         super(ENCHANTED_BOOK, meta, count, "Enchanted Book");
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     public ItemBookEnchanted(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
@@ -32,8 +31,7 @@ public class ItemBookEnchanted extends Item {
         return 1;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+
     @Override
     public boolean applyEnchantments() {
         return false;

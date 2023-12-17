@@ -20,8 +20,7 @@ import com.google.common.collect.Sets;
 import java.util.Map;
 import java.util.Set;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public class PopulatorOceanMonument extends PopulatorStructure {
 
     protected static final int SPACING = 32;
@@ -203,7 +202,7 @@ public class PopulatorOceanMonument extends PopulatorStructure {
         }
     }
 
-    @Since("1.19.21-r2")
+
     @Override
     public boolean isAsync() {
         return true;

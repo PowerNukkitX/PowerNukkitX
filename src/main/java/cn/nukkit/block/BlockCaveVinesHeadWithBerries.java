@@ -9,8 +9,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class BlockCaveVinesHeadWithBerries extends BlockCaveVines {
     public static final IntBlockProperty AGE_PROPERTY = new IntBlockProperty("growing_plant_age", false, 25, 0);
     public static final BlockProperties PROPERTIES = new BlockProperties(AGE_PROPERTY);
@@ -25,8 +24,7 @@ public class BlockCaveVinesHeadWithBerries extends BlockCaveVines {
         return CAVE_VINES_HEAD_WITH_BERRIES;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {

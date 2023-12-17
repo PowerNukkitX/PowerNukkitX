@@ -21,8 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-@PowerNukkitXOnly
-@Since("1.19.30-r1")
+
 @Getter
 public class JSONScoreboardStorage implements IScoreboardStorage {
 

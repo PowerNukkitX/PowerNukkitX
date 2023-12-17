@@ -3,14 +3,14 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
 
-@PowerNukkitOnly
+
 public class BlockStairsSmoothQuartz extends BlockStairs {
-    @PowerNukkitOnly
+
     public BlockStairsSmoothQuartz() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockStairsSmoothQuartz(int meta) {
         super(meta);
     }
@@ -36,7 +36,7 @@ public class BlockStairsSmoothQuartz extends BlockStairs {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

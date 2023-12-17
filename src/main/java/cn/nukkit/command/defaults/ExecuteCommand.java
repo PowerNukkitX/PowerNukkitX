@@ -30,8 +30,7 @@ import java.util.stream.Collectors;
 
 import static cn.nukkit.utils.Utils.getLevelBlocks;
 
-@PowerNukkitXOnly
-@Since("1.19.20-r2")
+
 public class ExecuteCommand extends VanillaCommand {
 
     protected static final String SCORE_SCOPE_SEPARATOR = "..";

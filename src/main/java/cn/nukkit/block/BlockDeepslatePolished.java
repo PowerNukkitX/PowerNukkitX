@@ -8,11 +8,10 @@ import cn.nukkit.api.Since;
  * @since 08/06/2021
  */
 
-@PowerNukkitOnly
-@Since("FUTURE")
+
 public class BlockDeepslatePolished extends BlockDeepslateCobbled {
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
+
     public BlockDeepslatePolished() {
     }
 

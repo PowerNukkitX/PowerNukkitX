@@ -21,8 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class NPCCommandSender implements CommandSender {
 
     protected PermissibleBase perm = new PermissibleBase(this);
@@ -50,7 +49,7 @@ public class NPCCommandSender implements CommandSender {
     public void sendMessage(TextContainer message) {
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     public void sendCommandOutput(CommandOutputContainer container) {
     }
@@ -71,39 +70,34 @@ public class NPCCommandSender implements CommandSender {
         return false;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+
     @Override
     public boolean isEntity() {
         return true;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+
     @Nullable
     @Override
     public Entity asEntity() {
         return npc;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+
     @Nullable
     @Override
     public Player asPlayer() {
         return null;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Position getPosition() {
         return npc.getPosition();
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Location getLocation() {

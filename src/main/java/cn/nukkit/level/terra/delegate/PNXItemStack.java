@@ -7,8 +7,7 @@ import com.dfsek.terra.api.inventory.ItemStack;
 import com.dfsek.terra.api.inventory.item.Damageable;
 import com.dfsek.terra.api.inventory.item.ItemMeta;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public record PNXItemStack(cn.nukkit.item.Item innerItem) implements ItemStack, Damageable {
     @Override
     public int getAmount() {

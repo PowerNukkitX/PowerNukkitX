@@ -29,7 +29,7 @@ public class BlockMobSpawner extends BlockSolid {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -54,14 +54,14 @@ public class BlockMobSpawner extends BlockSolid {
         return false;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
-    @PowerNukkitOnly
+
     public  boolean canBePulled() {
         return false;
     }

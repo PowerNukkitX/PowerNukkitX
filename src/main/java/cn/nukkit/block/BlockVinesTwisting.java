@@ -13,29 +13,29 @@ import org.jetbrains.annotations.NotNull;
  * Properties and behaviour definitions of the {@link BlockID#TWISTING_VINES} block.
  * @author joserobjr
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class BlockVinesTwisting extends BlockVinesNether {
     /**
      * Increments for every block the twisting vine grows.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final IntBlockProperty TWISTING_VINES_AGE = new IntBlockProperty(
             "twisting_vines_age", false, 25);
 
     /**
      * Holds the {@code twisting_vines} block property definitions.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BlockProperties PROPERTIES = new BlockProperties(TWISTING_VINES_AGE);
 
     /**
      * Creates a {@code twisting_vine} with age {@code 0}.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public BlockVinesTwisting() {
         // Does nothing
     }
@@ -44,14 +44,13 @@ public class BlockVinesTwisting extends BlockVinesNether {
      * Creates a {@code twisting_vine} from a meta compatible with {@link #getProperties()}.
      * @throws InvalidBlockPropertyMetaException If the meta is incompatible
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public BlockVinesTwisting(int meta) throws InvalidBlockPropertyMetaException {
         super(meta);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -69,29 +68,26 @@ public class BlockVinesTwisting extends BlockVinesNether {
     }
 
     @NotNull
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
+
     @Override
     public BlockFace getGrowthDirection() {
         return BlockFace.UP;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getVineAge() {
         return getIntValue(TWISTING_VINES_AGE);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public void setVineAge(int vineAge) throws InvalidBlockPropertyValueException {
         setIntValue(TWISTING_VINES_AGE, vineAge);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getMaxVineAge() {
         return TWISTING_VINES_AGE.getMaxValue();

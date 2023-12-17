@@ -19,8 +19,8 @@ import org.jetbrains.annotations.NotNull;
  */
 @PowerNukkitDifference(info = "Extends BlockFallableMeta instead of BlockFallable")
 public class BlockConcretePowder extends BlockFallableMeta {
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
+
     public static final BlockProperties PROPERTIES = CommonBlockProperties.COLOR_BLOCK_PROPERTIES;
 
     public BlockConcretePowder() {
@@ -36,8 +36,7 @@ public class BlockConcretePowder extends BlockFallableMeta {
         return CONCRETE_POWDER;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -102,7 +101,7 @@ public class BlockConcretePowder extends BlockFallableMeta {
         return true;
     }
 
-    @PowerNukkitOnly
+
     public DyeColor getDyeColor() {
         return getPropertyValue(CommonBlockProperties.COLOR);
     }

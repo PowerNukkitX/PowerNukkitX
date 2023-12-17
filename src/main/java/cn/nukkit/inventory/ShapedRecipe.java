@@ -24,8 +24,8 @@ public class ShapedRecipe implements CraftingRecipe {
     private final Item primaryResult;
     private final List<Item> extraResults = new ArrayList<>();
     private final List<Item> ingredientsAggregate;
-    @PowerNukkitXOnly
-    @Since("1.19.50-r2")
+
+
     private final List<String> needTags;
     private long least, most;
     private final String[] shape;
@@ -33,8 +33,8 @@ public class ShapedRecipe implements CraftingRecipe {
     @Deprecated
     @DeprecationDetails(since = "1.19.50-r2", reason = "new ingredients format", replaceWith = "newIngredients")
     private final CharObjectHashMap<Item> ingredients = new CharObjectHashMap<>();
-    @PowerNukkitXOnly
-    @Since("1.19.50-r2")
+
+
     private final CharObjectHashMap<ItemDescriptor> newIngredients = new CharObjectHashMap<>();
 
     public ShapedRecipe(Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
@@ -170,8 +170,7 @@ public class ShapedRecipe implements CraftingRecipe {
         return this.setIngredient(key, new DefaultDescriptor(item));
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r2")
+
     public ShapedRecipe setIngredient(char key, ItemDescriptor item) {
         if (String.join("", this.shape).indexOf(key) < 0) {
             throw new RuntimeException("Symbol does not appear in the shape: " + key);
@@ -193,8 +192,7 @@ public class ShapedRecipe implements CraftingRecipe {
         return items;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r2")
+
     public List<ItemDescriptor> getNewIngredientList() {
         List<ItemDescriptor> items = new ArrayList<>();
         for (int y = 0, y2 = getHeight(); y < y2; ++y) {
@@ -232,8 +230,7 @@ public class ShapedRecipe implements CraftingRecipe {
         throw new UnsupportedOperationException("use getNewIngredient()");
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r2")
+
     public ItemDescriptor getNewIngredient(int x, int y) {
         try {
             var res = this.newIngredients.get(this.shape[y].charAt(x));

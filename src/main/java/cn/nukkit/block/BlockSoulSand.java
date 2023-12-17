@@ -52,7 +52,7 @@ public class BlockSoulSand extends BlockSolid {
         return true;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isSoulSpeedCompatible() {
         return true;

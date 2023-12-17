@@ -17,7 +17,7 @@ public class ResourcePacksInfoPacket extends DataPacket {
 
     public boolean mustAccept;
     public boolean scripting;
-    @Since("FUTURE")
+
     public boolean forceServerPacks;
     public ResourcePack[] behaviourPackEntries = ResourcePack.EMPTY_ARRAY;
     public ResourcePack[] resourcePackEntries = ResourcePack.EMPTY_ARRAY;
@@ -67,74 +67,62 @@ public class ResourcePacksInfoPacket extends DataPacket {
         return NETWORK_ID;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
     public boolean isForcedToAccept() {
         return mustAccept;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
     public void setForcedToAccept(boolean mustAccept) {
         this.mustAccept = mustAccept;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
     public boolean isScriptingEnabled() {
         return scripting;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
     public void setScriptingEnabled(boolean scripting) {
         this.scripting = scripting;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
     public ResourcePack[] getBehaviourPackEntries() {
         return behaviourPackEntries;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
     public void setBehaviourPackEntries(ResourcePack[] behaviourPackEntries) {
         this.behaviourPackEntries = behaviourPackEntries;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
     public ResourcePack[] getResourcePackEntries() {
         return resourcePackEntries;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
     public void setResourcePackEntries(ResourcePack[] resourcePackEntries) {
         this.resourcePackEntries = resourcePackEntries;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
     public boolean isForcingServerPacksEnabled() {
         return forceServerPacks;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
     public void setForcingServerPacksEnabled(boolean forcingServerPacksEnabled) {
         this.forceServerPacks = forcingServerPacksEnabled;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.30-r1")
+
     public void setCDNEntries(List<CDNEntry> CDNEntries) {
         this.CDNEntries = CDNEntries;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.30-r1")
+
     public List<CDNEntry> getCDNEntries() {
         return CDNEntries;
     }

@@ -7,20 +7,20 @@ import cn.nukkit.blockproperty.value.StoneSlab4Type;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitOnly
-public class BlockDoubleSlabStone4 extends BlockDoubleSlabBase {
-    @PowerNukkitOnly public static final int MOSSY_STONE_BRICKS = 0;
-    @PowerNukkitOnly public static final int SMOOTH_QUARTZ = 1;
-    @PowerNukkitOnly public static final int STONE = 2;
-    @PowerNukkitOnly public static final int CUT_SANDSTONE = 3;
-    @PowerNukkitOnly public static final int CUT_RED_SANDSTONE = 4;
 
-    @PowerNukkitOnly
+public class BlockDoubleSlabStone4 extends BlockDoubleSlabBase {
+    public static final int MOSSY_STONE_BRICKS = 0;
+    public static final int SMOOTH_QUARTZ = 1;
+    public static final int STONE = 2;
+    public static final int CUT_SANDSTONE = 3;
+    public static final int CUT_RED_SANDSTONE = 4;
+
+
     public BlockDoubleSlabStone4() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockDoubleSlabStone4(int meta) {
         super(meta);
     }
@@ -30,27 +30,24 @@ public class BlockDoubleSlabStone4 extends BlockDoubleSlabBase {
         return DOUBLE_STONE_SLAB4;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return BlockSlabStone4.PROPERTIES;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public StoneSlab4Type getSlabType() {
         return getPropertyValue(StoneSlab4Type.PROPERTY);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setSlabType(StoneSlab4Type type) {
         setPropertyValue(StoneSlab4Type.PROPERTY, type);
     }
 
-    @PowerNukkitOnly
+
     @Override
     public String getSlabName() {
         return getSlabType().getEnglishName();
@@ -71,14 +68,14 @@ public class BlockDoubleSlabStone4 extends BlockDoubleSlabBase {
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getSingleSlabId() {
         return STONE_SLAB4;
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

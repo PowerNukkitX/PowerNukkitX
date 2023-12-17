@@ -30,8 +30,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class ScoreboardCommand extends VanillaCommand {
     public ScoreboardCommand(String name) {
         super(name, "commands.scoreboard.description", "commands.scoreboard.usage");

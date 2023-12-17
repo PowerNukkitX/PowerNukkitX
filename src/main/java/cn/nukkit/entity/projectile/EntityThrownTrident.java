@@ -48,15 +48,15 @@ public class EntityThrownTrident extends SlenderProjectile {
     private static final String NAME_TRIDENT = "Trident";
     private static final Vector3 defaultCollisionPos = new Vector3(0, 0, 0);
     private static final BlockVector3 defaultStuckToBlockPos = new BlockVector3(0, 0, 0);
-    @Since("FUTURE")
+
     public boolean alreadyCollided;
     protected Item trident;
     // Default Values
-    @PowerNukkitOnly
+
     protected float gravity = 0.04f;
-    @PowerNukkitOnly
+
     protected float drag = 0.01f;
-    @Since("FUTURE")
+
     protected int pickupMode;
     private Vector3 collisionPos;
     private BlockVector3 stuckToBlockPos;
@@ -101,8 +101,7 @@ public class EntityThrownTrident extends SlenderProjectile {
         return 0.01f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return NAME_TRIDENT;
@@ -188,17 +187,17 @@ public class EntityThrownTrident extends SlenderProjectile {
         this.impalingLevel = this.trident.getEnchantmentLevel(Enchantment.ID_TRIDENT_IMPALING);
     }
 
-    @PowerNukkitOnly
+
     public void setCritical() {
         this.setCritical(true);
     }
 
-    @PowerNukkitOnly
+
     public boolean isCritical() {
         return this.getDataFlag(DATA_FLAGS, DATA_FLAG_CRITICAL);
     }
 
-    @PowerNukkitOnly
+
     public void setCritical(boolean value) {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_CRITICAL, value);
     }
@@ -321,7 +320,7 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
     }
 
-    @PowerNukkitOnly
+
     public Entity create(Object type, Position source, Object... args) {
         FullChunk chunk = source.getLevel().getChunk((int) source.x >> 4, (int) source.z >> 4);
         if (chunk == null) return null;
@@ -335,18 +334,17 @@ public class EntityThrownTrident extends SlenderProjectile {
         return Entity.createEntity(type.toString(), chunk, nbt, args);
     }
 
-    @Since("FUTURE")
+
     public int getPickupMode() {
         return this.pickupMode;
     }
 
-    @Since("FUTURE")
+
     public void setPickupMode(int pickupMode) {
         this.pickupMode = pickupMode;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Override
     protected void onCollideWithBlock(Position position, Vector3 motion) {
         if (this.noClip) {
@@ -365,50 +363,42 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public Vector3 getCollisionPos() {
         return collisionPos;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setCollisionPos(Vector3 collisionPos) {
         this.collisionPos = collisionPos;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public BlockVector3 getStuckToBlockPos() {
         return stuckToBlockPos;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setStuckToBlockPos(BlockVector3 stuckToBlockPos) {
         this.stuckToBlockPos = stuckToBlockPos;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public int getFavoredSlot() {
         return favoredSlot;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setFavoredSlot(int favoredSlot) {
         this.favoredSlot = favoredSlot;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isCreative() {
         return getPickupMode() == EntityProjectile.PICKUP_CREATIVE;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Deprecated
     @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", replaceWith = "setPickupMode(EntityProjectile.PICKUP_<MODE>)",
             reason = "Nukkit added this API in 3-states, NONE, ANY, and CREATIVE")
@@ -420,26 +410,22 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isPlayer() {
         return player;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setPlayer(boolean player) {
         this.player = player;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public int getLoyaltyLevel() {
         return loyaltyLevel;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setLoyaltyLevel(int loyaltyLevel) {
         this.loyaltyLevel = loyaltyLevel;
         if (loyaltyLevel > 0) {
@@ -449,14 +435,12 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean hasChanneling() {
         return hasChanneling;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setChanneling(boolean hasChanneling) {
         this.hasChanneling = hasChanneling;
         if (hasChanneling) {
@@ -466,14 +450,12 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public int getRiptideLevel() {
         return riptideLevel;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setRiptideLevel(int riptideLevel) {
         this.riptideLevel = riptideLevel;
         if (riptideLevel > 0) {
@@ -483,14 +465,12 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public int getImpalingLevel() {
         return impalingLevel;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setImpalingLevel(int impalingLevel) {
         this.impalingLevel = impalingLevel;
         if (impalingLevel > 0) {
@@ -500,14 +480,12 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean getTridentRope() {
         return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SHOW_TRIDENT_ROPE);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setTridentRope(boolean tridentRope) {
         if (tridentRope) {
             this.setDataProperty(new LongEntityData(DATA_OWNER_EID, this.shootingEntity.getId()));
@@ -517,8 +495,7 @@ public class EntityThrownTrident extends SlenderProjectile {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHOW_TRIDENT_ROPE, tridentRope);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean canReturnToShooter() {
         if (this.loyaltyLevel <= 0) {
             return false;

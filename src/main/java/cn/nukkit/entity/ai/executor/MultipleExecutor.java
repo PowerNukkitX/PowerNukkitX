@@ -11,8 +11,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 
-@PowerNukkitXOnly
-@Since("1.19.50-r1")
 public class MultipleExecutor implements IBehaviorExecutor {
 
     protected Set<IBehaviorExecutor> executors;

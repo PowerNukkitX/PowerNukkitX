@@ -18,28 +18,27 @@ import org.jetbrains.annotations.NotNull;
 import static cn.nukkit.block.BlockBell.ATTACHMENT_TYPE;
 import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
 
-@PowerNukkitOnly
+
 public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, ATTACHMENT_TYPE);
 
-    @PowerNukkitOnly
+
     public static final int TYPE_ATTACHMENT_STANDING = 0;
-    @PowerNukkitOnly
+
     public static final int TYPE_ATTACHMENT_HANGING = 1;
-    @PowerNukkitOnly
+
     public static final int TYPE_ATTACHMENT_SIDE = 2;
-    @PowerNukkitOnly
+
     public static final int TYPE_ATTACHMENT_MULTIPLE = 3;
 
-    @PowerNukkitOnly
+
     public BlockGrindstone() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockGrindstone(int meta) {
         super(meta);
     }
@@ -49,8 +48,7 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
         return GRINDSTONE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -68,7 +66,7 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -83,7 +81,7 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
         return new ItemBlock(new BlockGrindstone());
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -105,8 +103,8 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
+
+
     public void setBlockFace(BlockFace face) {
         if (face.getHorizontalIndex() == -1) {
             return;
@@ -114,12 +112,12 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
         setDamage(getDamage() & (DATA_MASK ^ 0b11) | face.getHorizontalIndex());
     }
 
-    @PowerNukkitOnly
+
     public int getAttachmentType() {
         return (getDamage() & 0b1100) >> 2 & 0b11;
     }
 
-    @PowerNukkitOnly
+
     public void setAttachmentType(int attachmentType) {
         attachmentType = attachmentType & 0b11;
         setDamage(getDamage() & (DATA_MASK ^ 0b1100) | (attachmentType << 2));

@@ -40,14 +40,13 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
         return 1.99f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Elder Guardian";
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

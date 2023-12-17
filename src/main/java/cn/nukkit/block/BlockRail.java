@@ -34,20 +34,18 @@ import static cn.nukkit.utils.Rail.Orientation.*;
  * @since 2016/1/11
  */
 public class BlockRail extends BlockFlowable implements Faceable {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BooleanBlockProperty ACTIVE = new BooleanBlockProperty("rail_data_bit", false);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperty<Rail.Orientation> UNCURVED_RAIL_DIRECTION = new ArrayBlockProperty<>("rail_direction", false, new Rail.Orientation[]{
             STRAIGHT_NORTH_SOUTH, STRAIGHT_EAST_WEST,
             ASCENDING_EAST, ASCENDING_WEST,
             ASCENDING_NORTH, ASCENDING_SOUTH
     }).ordinal(true);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperty<Rail.Orientation> CURVED_RAIL_DIRECTION = new ArrayBlockProperty<>("rail_direction", false, new Rail.Orientation[]{
             STRAIGHT_NORTH_SOUTH, STRAIGHT_EAST_WEST,
             ASCENDING_EAST, ASCENDING_WEST,
@@ -56,12 +54,10 @@ public class BlockRail extends BlockFlowable implements Faceable {
             CURVED_NORTH_WEST, CURVED_NORTH_EAST
     }).ordinal(true);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperties ACTIVABLE_PROPERTIES = new BlockProperties(UNCURVED_RAIL_DIRECTION, ACTIVE);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(CURVED_RAIL_DIRECTION);
 
     // 0x8: Set the block active
@@ -87,8 +83,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
         return RAIL;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -298,8 +293,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
         return this.canBePowered;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     public final Orientation getRailDirection() {
         return getOrientation();
@@ -310,8 +304,8 @@ public class BlockRail extends BlockFlowable implements Faceable {
      *
      * @param orientation The new orientation
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public void setRailDirection(Orientation orientation) {
         setPropertyValue(CURVED_RAIL_DIRECTION.getName(), orientation);
     }
@@ -372,8 +366,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
         level.setBlock(this, this, true, true);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public OptionalBoolean isRailActive() {
         return getProperties().contains(ACTIVE) ?
                 OptionalBoolean.of(getBooleanValue(ACTIVE)) :
@@ -383,8 +376,8 @@ public class BlockRail extends BlockFlowable implements Faceable {
     /**
      * @throws NoSuchElementException If attempt to set the rail to active but it don't have the {@link #ACTIVE} property.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public void setRailActive(boolean active) throws NoSuchElementException {
         if (!active && !getProperties().contains(ACTIVE)) {
             return;
@@ -408,12 +401,12 @@ public class BlockRail extends BlockFlowable implements Faceable {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean canBePulled() {
         return true;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean breaksWhenMoved() {
         return false;

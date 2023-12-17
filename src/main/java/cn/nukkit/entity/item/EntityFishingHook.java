@@ -163,8 +163,7 @@ public class EntityFishingHook extends SlenderProjectile {
         return hasUpdate;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     protected void updateMotion() {
         //正确的浮力
@@ -321,7 +320,7 @@ public class EntityFishingHook extends SlenderProjectile {
         }
     }
 
-    @Since("FUTURE")
+
     public void checkLure() {
         if (rod != null) {
             Enchantment ench = rod.getEnchantment(Enchantment.ID_LURE);
@@ -331,14 +330,13 @@ public class EntityFishingHook extends SlenderProjectile {
         }
     }
 
-    @Since("FUTURE")
+
     public void setTarget(long eid) {
         this.setDataProperty(new LongEntityData(DATA_TARGET_EID, eid));
         this.canCollide = eid == 0;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Fishing Hook";

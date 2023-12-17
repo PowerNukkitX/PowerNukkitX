@@ -32,17 +32,15 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
     public int getId() {
         return END_GATEWAY;
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     @NotNull
     @Override
     public Class<? extends BlockEntityEndGateway> getBlockEntityClass() {
         return BlockEntityEndGateway.class;
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     @NotNull
     @Override
     public String getBlockEntityType() {

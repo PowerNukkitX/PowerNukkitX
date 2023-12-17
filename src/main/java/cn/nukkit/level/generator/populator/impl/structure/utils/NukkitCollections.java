@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.RandomAccess;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public class NukkitCollections {
 
     private static final int SHUFFLE_THRESHOLD = 5;

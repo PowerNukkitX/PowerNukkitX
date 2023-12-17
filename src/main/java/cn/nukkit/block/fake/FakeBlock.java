@@ -13,8 +13,8 @@ import java.util.List;
  * <p>
  * Fake block API, which tricks the client into believing that a block and its BlockEntity exist at a specified location by sending packets
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public interface FakeBlock {
 
     /**

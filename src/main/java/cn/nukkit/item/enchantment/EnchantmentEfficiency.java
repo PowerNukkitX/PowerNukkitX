@@ -31,7 +31,7 @@ public class EnchantmentEfficiency extends Enchantment {
         return item.isShears() || super.canEnchant(item);
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isItemAcceptable(Item item) {
         if (item.isShears()) {

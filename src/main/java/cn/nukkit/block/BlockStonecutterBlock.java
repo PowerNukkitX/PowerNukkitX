@@ -17,19 +17,18 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-@PowerNukkitOnly
+
 public class BlockStonecutterBlock extends BlockTransparentMeta implements Faceable {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION);
 
-    @PowerNukkitOnly
+
     public BlockStonecutterBlock() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockStonecutterBlock(int meta) {
         super(meta);
     }
@@ -39,8 +38,7 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
         return STONECUTTER_BLOCK;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -53,8 +51,8 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
     }
 
     @Override
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
+
+
     public void setBlockFace(BlockFace face) {
         int horizontalIndex = face.getHorizontalIndex();
         if (horizontalIndex > -1) {
@@ -104,7 +102,7 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
         return false;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -115,7 +113,7 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;

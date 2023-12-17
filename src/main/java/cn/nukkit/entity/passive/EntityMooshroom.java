@@ -40,7 +40,7 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
         super(chunk, nbt);
     }
 
-    @PowerNukkitOnly
+
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(
@@ -86,8 +86,7 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
         return 1.3f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Mooshroom";

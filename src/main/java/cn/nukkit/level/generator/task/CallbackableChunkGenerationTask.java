@@ -10,8 +10,7 @@ import cn.nukkit.scheduler.AsyncTask;
 
 import java.util.function.Consumer;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public class CallbackableChunkGenerationTask<T> extends AsyncTask {
 
     private final Level level;

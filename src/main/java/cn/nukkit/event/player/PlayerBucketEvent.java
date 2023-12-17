@@ -19,7 +19,7 @@ abstract class PlayerBucketEvent extends PlayerEvent implements Cancellable {
 
     private Item item;
 
-    @PowerNukkitOnly
+
     public PlayerBucketEvent(Player who, Block blockClicked, BlockFace blockFace, Block liquid, Item bucket, Item itemInHand) {
         this.player = who;
         this.blockClicked = blockClicked;

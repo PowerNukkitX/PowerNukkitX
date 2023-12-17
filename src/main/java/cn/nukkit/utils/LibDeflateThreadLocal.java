@@ -15,14 +15,13 @@ import java.util.Arrays;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
-@PowerNukkitXOnly
-@Since("1.19.40-r3")
+
 public class LibDeflateThreadLocal implements ZlibProvider {
     private static final ThreadLocal<Inflater> INFLATER = ThreadLocal.withInitial(Inflater::new);
     private static final ThreadLocal<LibdeflateDecompressor> PNX_INFLATER = ThreadLocal.withInitial(PNXLibInflater::new);
     private static final ThreadLocal<LibdeflateCompressor> DEFLATER = ThreadLocal.withInitial(PNXLibDeflater::new);
     private static final ThreadLocal<byte[]> BUFFER = ThreadLocal.withInitial(() -> new byte[8192]);
-    @Since("1.20.0-r2")
+
     private static final ThreadLocal<ByteBuffer> DIRECT_BUFFER = ThreadLocal.withInitial(() -> {
         var maximumSizePerChunk = 1024 * 1024;
         if (Server.getInstance() != null) {

@@ -59,7 +59,7 @@ public enum EnumBiome {
     SWAMP(6, new SwampBiome()),
     RIVER(7, new RiverBiome()),//
     HELL(8, new WastelandsBiome()),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") THE_END(9, new TheEndBiome()),
+
     FROZEN_OCEAN(46, new FrozenOceanBiome()), //DOES NOT GENERATE NATUALLY
     FROZEN_RIVER(11, new FrozenRiverBiome()),
     ICE_PLAINS(12, new IcePlainsBiome()),

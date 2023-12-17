@@ -8,8 +8,7 @@ public interface Faceable {
 
     BlockFace getBlockFace();
 
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
+
     default void setBlockFace(BlockFace face) {
         // Does nothing by default
     }

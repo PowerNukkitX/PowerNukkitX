@@ -31,8 +31,8 @@ import java.lang.annotation.RetentionPolicy;
  * @author joserobjr
  * @since 2020-10-11
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 @TypeQualifier(applicableTo = Number.class)
 @Retention(RetentionPolicy.CLASS)
 @Documented

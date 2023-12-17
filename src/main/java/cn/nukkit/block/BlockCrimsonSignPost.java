@@ -5,17 +5,15 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 public class BlockCrimsonSignPost extends BlockSignPost {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public BlockCrimsonSignPost() {
         // Does nothing
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public BlockCrimsonSignPost(int meta) {
         super(meta);
     }
@@ -25,7 +23,7 @@ public class BlockCrimsonSignPost extends BlockSignPost {
         return CRIMSON_STANDING_SIGN;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWallId() {
         return CRIMSON_WALL_SIGN;

@@ -8,13 +8,11 @@ import cn.nukkit.math.NukkitRandom;
 
 import javax.annotation.Nullable;
 
-@Since("1.4.0.0-PN")
-@PowerNukkitOnly
+
 public class BlockFungusCrimson extends BlockFungus {
     private final ObjectCrimsonTree feature = new ObjectCrimsonTree();
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     public BlockFungusCrimson() {
         // Does nothing
     }
@@ -29,7 +27,7 @@ public class BlockFungusCrimson extends BlockFungus {
         return "Crimson Fungus";
     }
 
-    @PowerNukkitOnly
+
     @Override
     protected boolean canGrowOn(Block support) {
         if (support.getId() == CRIMSON_NYLIUM) {
@@ -43,7 +41,7 @@ public class BlockFungusCrimson extends BlockFungus {
         return false;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean grow(@Nullable Player cause) {
         NukkitRandom nukkitRandom = new NukkitRandom();

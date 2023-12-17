@@ -84,62 +84,62 @@ public enum TextFormat {
     /**
      * Represents material quartz.
      */
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
+
+
     MATERIAL_QUARTZ('h', 0x17),
     /**
      * Represents material iron.
      */
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
+
+
     MATERIAL_IRON('i', 0x18),
     /**
      * Represents material netherite.
      */
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
+
+
     MATERIAL_NETHERITE('j', 0x19),
     /**
      * Represents material redstone.
      */
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
+
+
     MATERIAL_REDSTONE('m', 0x20),
     /**
      * Represents material copper.
      */
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
+
+
     MATERIAL_COPPER('n', 0x21),
     /**
      * Represents material gold.
      */
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
+
+
     MATERIAL_GOLD('p', 0x22),
     /**
      * Represents material emerald.
      */
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
+
+
     MATERIAL_EMERALD('q', 0x23),
     /**
      * Represents material diamond.
      */
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
+
+
     MATERIAL_DIAMOND('s', 0x24),
     /**
      * Represents material lapis.
      */
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
+
+
     MATERIAL_LAPIS('t', 0x25),
     /**
      * Represents material amethyst.
      */
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
+
+
     MATERIAL_AMETHYST('u', 0x26),
     /**
      * Makes the text obfuscated.

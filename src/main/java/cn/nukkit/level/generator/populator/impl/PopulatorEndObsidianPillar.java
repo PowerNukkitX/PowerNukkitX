@@ -20,8 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r3")
+
 public class PopulatorEndObsidianPillar extends Populator {
 
     private final ObsidianPillar obsidianPillar;

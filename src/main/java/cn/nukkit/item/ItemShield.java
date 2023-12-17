@@ -32,22 +32,21 @@ public class ItemShield extends ItemTool {
      * @param count the count
      * @param name  the name
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
+
     public ItemShield(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    @Since("1.20.0-r2")
-    @PowerNukkitXOnly
+
+
     public boolean hasBannerPattern() {
         return this.hasCompoundTag() && (this.getNamedTag().containsInt("Base") ||
                 this.getNamedTag().containsInt("Type") || this.getNamedTag().containsList("Patterns"));
     }
 
-    @Since("1.20.0-r2")
-    @PowerNukkitXOnly
+
     public @Nullable ItemBanner getBannerPattern() {
         if (!this.hasBannerPattern()) {
             return null;
@@ -63,8 +62,7 @@ public class ItemShield extends ItemTool {
         return item;
     }
 
-    @Since("1.20.0-r2")
-    @PowerNukkitXOnly
+
     public void setBannerPattern(@Nullable ItemBanner banner) {
         if (banner == null) {
             this.clearNamedTag();

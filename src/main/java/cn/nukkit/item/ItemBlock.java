@@ -75,13 +75,13 @@ public class ItemBlock extends Item {
         return this.block.clone();
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isLavaResistant() {
         return block.isLavaResistant();
     }
 
-    @Since("1.6.0.0-PNX")
+
     @Override
     public String getNamespaceId() {
         if (this.id != Item.AIR)

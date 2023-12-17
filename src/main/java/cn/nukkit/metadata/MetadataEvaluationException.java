@@ -9,8 +9,8 @@ import cn.nukkit.api.Since;
  * originating exception will be included as this exception's cause.
  */
 @SuppressWarnings("serial")
-@PowerNukkitXOnly
-@Since("1.19.63-r2")
+
+
 public class MetadataEvaluationException extends RuntimeException {
     MetadataEvaluationException(Throwable cause) {
         super(cause);

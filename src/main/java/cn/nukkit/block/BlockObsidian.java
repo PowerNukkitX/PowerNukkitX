@@ -30,7 +30,7 @@ public class BlockObsidian extends BlockSolid {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_DIAMOND;
     }
@@ -61,8 +61,7 @@ public class BlockObsidian extends BlockSolid {
         return super.onBreak(item);
     }
 
-    @Since("1.2.1.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public void afterRemoval(Block newBlock, boolean update) {
         if (update) {
@@ -76,7 +75,7 @@ public class BlockObsidian extends BlockSolid {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public  boolean canBePulled() {
         return false;
     }

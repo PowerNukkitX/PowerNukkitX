@@ -26,12 +26,10 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final ArrayBlockProperty<TallGrassType> TALL_GRASS_TYPE = new ArrayBlockProperty<>("tall_grass_type", true, TallGrassType.class);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(TALL_GRASS_TYPE);
 
     public BlockTallGrass() {
@@ -47,8 +45,7 @@ public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.Flow
         return TALL_GRASS;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {

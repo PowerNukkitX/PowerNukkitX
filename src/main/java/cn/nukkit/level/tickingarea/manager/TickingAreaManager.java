@@ -8,8 +8,7 @@ import cn.nukkit.level.tickingarea.storage.TickingAreaStorage;
 
 import java.util.Set;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public abstract class TickingAreaManager {
 
     protected TickingAreaStorage storage;

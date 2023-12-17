@@ -10,11 +10,10 @@ import org.jetbrains.annotations.NotNull;
  * @since 11/06/2021
  */
 
-@PowerNukkitOnly
-@Since("FUTURE")
+
 public class BlockCopperCutOxidized extends BlockCopperCut {
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
+
     public BlockCopperCutOxidized() {
         // Does nothing
     }
@@ -29,8 +28,7 @@ public class BlockCopperCutOxidized extends BlockCopperCut {
         return OXIDIZED_CUT_COPPER;
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public OxidizationLevel getOxidizationLevel() {

@@ -96,10 +96,10 @@ public class StartGamePacket extends DataPacket {
     public boolean isTrial = false;
     @Deprecated
     public boolean isMovementServerAuthoritative;
-    @PowerNukkitXOnly
-    @Since("1.19.40-r3")
+
+
     public Integer serverAuthoritativeMovement;
-    @Since("1.3.0.0-PN")
+
     public boolean isInventoryServerAuthoritative;
 
     public long currentTick;

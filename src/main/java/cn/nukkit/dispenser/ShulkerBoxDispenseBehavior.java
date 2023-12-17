@@ -9,15 +9,15 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 
-@PowerNukkitOnly
+
 public class ShulkerBoxDispenseBehavior extends DefaultDispenseBehavior {
 
-    @PowerNukkitOnly
+
     public ShulkerBoxDispenseBehavior() {
         super();
     }
 
-    @PowerNukkitOnly
+
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);

@@ -4,11 +4,10 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemTool;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 public class BlockNetheriteBlock extends BlockSolid {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public BlockNetheriteBlock() {
     }
 
@@ -37,8 +36,7 @@ public class BlockNetheriteBlock extends BlockSolid {
         return 6000;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getToolTier() {
         return ItemTool.TIER_DIAMOND;
@@ -49,8 +47,7 @@ public class BlockNetheriteBlock extends BlockSolid {
         return false;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isLavaResistant() {
         return true;

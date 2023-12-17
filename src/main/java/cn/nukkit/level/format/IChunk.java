@@ -200,6 +200,13 @@ public interface IChunk {
 
     long getBlockChanges();
 
+    /**
+     * Used to handle with deny and allow blocks
+     *
+     * @return the boolean
+     */
+    boolean isBlockChangeAllowed(int chunkX, int chunkY, int chunkZ);
+
     default void reObfuscateChunk() {
     }
 

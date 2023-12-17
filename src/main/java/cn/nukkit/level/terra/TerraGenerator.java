@@ -37,8 +37,8 @@ import java.util.Map;
  * Each of its instances will hold an identical instance of {@link TerraGenerator}<br/>
  * The reason for this is because the bottom layer of nk will create a new generator instance for each thread to generate blocks in parallel, and Terra itself is parallel
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public class TerraGenerator implements GeneratorWrapper {
     private final BiomeProvider biomeProvider;
     @Getter

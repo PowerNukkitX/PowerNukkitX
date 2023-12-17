@@ -15,25 +15,23 @@ import java.nio.ByteOrder;
  * @author GoodLucky777
  */
 @ToString
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
-@NoArgsConstructor(onConstructor = @__(@PowerNukkitOnly))
+
+
+@NoArgsConstructor(onConstructor = @__())
 public class ItemComponentPacket extends DataPacket {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final byte NETWORK_ID = ProtocolInfo.ITEM_COMPONENT_PACKET;
     
-    @Since("1.4.0.0-PN")
+
     private Entry[] entries = Entry.EMPTY_ARRAY;
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public void setEntries(Entry[] entries) {
         this.entries = entries == null? null : entries.length == 0? Entry.EMPTY_ARRAY : entries.clone();
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public Entry[] getEntries() {
         return entries == null? null : entries.length == 0? Entry.EMPTY_ARRAY : entries.clone();
     }
@@ -63,31 +61,28 @@ public class ItemComponentPacket extends DataPacket {
     }
     
     @ToString
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static class Entry {
-        @PowerNukkitOnly
-        @Since("1.4.0.0-PN")
+
+
         public static final Entry[] EMPTY_ARRAY = new Entry[0];
         
         private final String name;
         private final CompoundTag data;
-        
-        @PowerNukkitOnly
-        @Since("1.4.0.0-PN")
+
+
         public Entry(String name, CompoundTag data) {
             this.name = name;
             this.data = data;
         }
-        
-        @PowerNukkitOnly
-        @Since("1.4.0.0-PN")
+
+
         public String getName() {
             return name;
         }
-        
-        @PowerNukkitOnly
-        @Since("1.4.0.0-PN")
+
+
         public CompoundTag getData() {
             return data;
         }

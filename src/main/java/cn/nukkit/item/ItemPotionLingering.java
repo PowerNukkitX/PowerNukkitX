@@ -44,20 +44,18 @@ public class ItemPotionLingering extends ProjectileItem {
         return true;
     }
 
-    @PowerNukkitOnly
 
     @Override
     public String getProjectileEntityType() {
         return "LingeringPotion";
     }
 
-    @PowerNukkitOnly
+
     @Override
     public float getThrowForce() {
         return 0.5f;
     }
 
-    @PowerNukkitOnly
 
     @Override
     protected void correctNBT(CompoundTag nbt) {

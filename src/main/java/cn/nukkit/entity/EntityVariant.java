@@ -8,8 +8,8 @@ import cn.nukkit.utils.Utils;
 /**
  * 实现这个接口的实体拥有变种属性
  */
-@PowerNukkitXOnly
-@Since("1.19.80-r3")
+
+
 public interface EntityVariant extends EntityComponent {
     default int getVariant() {
         return getMemoryStorage().get(CoreMemoryTypes.VARIANT);

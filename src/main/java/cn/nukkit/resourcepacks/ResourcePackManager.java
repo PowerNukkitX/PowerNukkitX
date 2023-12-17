@@ -21,15 +21,13 @@ public class ResourcePackManager {
     private final Set<ResourcePack> resourcePacks = new HashSet<>();
     private final Set<ResourcePackLoader> loaders;
 
-    @PowerNukkitXOnly
-    @Since("1.19.62-r1")
+
     public ResourcePackManager(Set<ResourcePackLoader> loaders) {
         this.loaders = loaders;
         reloadPacks();
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.62-r1")
+
     public ResourcePackManager(ResourcePackLoader... loaders) {
         this(Sets.newHashSet(loaders));
     }
@@ -49,27 +47,23 @@ public class ResourcePackManager {
     public ResourcePack getPackById(UUID id) {
         return this.resourcePacksById.get(id);
     }
-    
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
+
     public int getMaxChunkSize() {
         return this.maxChunkSize;
     }
-    
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
+
     public void setMaxChunkSize(int size) {
         this.maxChunkSize = size;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.62-r1")
+
     public void registerPackLoader(ResourcePackLoader loader) {
         this.loaders.add(loader);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.62-r1")
+
     public void reloadPacks() {
         this.resourcePacksById.clear();
         this.resourcePacks.clear();

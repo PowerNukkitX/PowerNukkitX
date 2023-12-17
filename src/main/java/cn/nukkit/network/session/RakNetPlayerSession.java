@@ -40,8 +40,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Since("1.19.30-r1")
-@PowerNukkitXOnly
+
 @Log4j2
 public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionListener {
 

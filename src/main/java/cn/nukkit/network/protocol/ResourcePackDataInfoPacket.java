@@ -63,28 +63,26 @@ public class ResourcePackDataInfoPacket extends AbstractResourcePackDataPacket {
     }
 
     @Override
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
+
     public Version getPackVersion() {
         return packVersion;
     }
 
     @Override
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
+
     public void setPackVersion(Version packVersion) {
         this.packVersion = packVersion;
     }
 
-    @Since("1.5.2.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public UUID getPackId() {
         return packId;
     }
 
-    @Since("1.5.2.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public void setPackId(UUID packId) {
         this.packId = packId;

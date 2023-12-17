@@ -4,8 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.math.BlockVector3;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public abstract class AbstractStructureTemplate implements StructureTemplate {
 
     protected BlockVector3 size = new BlockVector3();

@@ -16,8 +16,7 @@ import cn.nukkit.level.Position;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class TestForBlockCommand extends VanillaCommand {
 
     public TestForBlockCommand(String name) {
@@ -32,7 +31,7 @@ public class TestForBlockCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();

@@ -77,4 +77,14 @@ record BlockStateImpl(String identifier,
     public CompoundTagView getBlockStateTag() {
         return blockStateTag;
     }
+
+    @Override
+    public String toString() {
+        return "BlockStateImpl{" +
+                "identifier='" + identifier + '\'' +
+                ", blockhash=" + blockhash +
+                ", specialValue=" + specialValue +
+                ", blockPropertyValues=" + blockPropertyValues +
+                '}';
+    }
 }

@@ -19,8 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class Type extends CachedSimpleSelectorArgument {
 
     public static final Map<Integer, String> ENTITY_ID2TYPE = AddEntityPacket.LEGACY_IDS;

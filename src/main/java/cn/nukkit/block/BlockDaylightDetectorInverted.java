@@ -41,7 +41,7 @@ public class BlockDaylightDetectorInverted extends BlockDaylightDetector {
         return true;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isInverted() {
         return true;

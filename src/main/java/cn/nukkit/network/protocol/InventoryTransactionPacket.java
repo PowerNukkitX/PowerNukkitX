@@ -45,7 +45,7 @@ public class InventoryTransactionPacket extends DataPacket {
     public TransactionData transactionData;
     public final List<LegacySetItemSlotData> legacySlots = new ObjectArrayList<>();
 
-    @Since("1.3.0.0-PN")
+
     public int legacyRequestId;
 
     /**
@@ -53,11 +53,11 @@ public class InventoryTransactionPacket extends DataPacket {
      * determine whether we're doing a crafting or enchanting transaction.
      */
     public boolean isCraftingPart = false;
-    @Since("1.3.1.0-PN")
+
     public boolean isEnchantingPart = false;
-    @Since("1.4.0.0-PN")
+
     public boolean isRepairItemPart = false;
-    @Since("1.19.21-r1")
+
     public boolean isTradeItemPart = false;
 
     @Override

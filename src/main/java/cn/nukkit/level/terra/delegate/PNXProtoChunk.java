@@ -9,8 +9,7 @@ import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.world.chunk.generation.ProtoChunk;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public record PNXProtoChunk(BaseFullChunk chunk) implements ProtoChunk {
     @Override
     public int getMaxHeight() {

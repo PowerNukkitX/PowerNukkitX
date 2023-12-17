@@ -32,8 +32,7 @@ public class ProjectileLaunchEvent extends EntityEvent implements Cancellable {
         return (EntityProjectile) this.entity;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.31-r1")
+
     public Entity getShooter() {
         return this.shooter;
     }

@@ -26,8 +26,7 @@ import java.util.Set;
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
 public class BlockEnderChest extends BlockTransparentMeta implements Faceable, BlockEntityHolder<BlockEntityEnderChest> {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION);
 
     private final Set<Player> viewers = new HashSet<>();
@@ -50,24 +49,21 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
         return ENDER_CHEST;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.ENDER_CHEST;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntityEnderChest> getBlockEntityClass() {
@@ -79,7 +75,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
         return 7;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -175,7 +171,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -201,7 +197,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
     }
 
     @Override
-    @PowerNukkitOnly
+
     public  boolean canBePulled() {
         return false;
     }
@@ -226,7 +222,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
         return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
     }
 
-    @PowerNukkitOnly
+
     @Nullable
     @Override
     public BlockEntityEnderChest getBlockEntity() {

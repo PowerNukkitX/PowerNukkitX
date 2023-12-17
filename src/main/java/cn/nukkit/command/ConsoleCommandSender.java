@@ -101,7 +101,7 @@ public class ConsoleCommandSender implements CommandSender {
         this.sendMessage(this.getServer().getLanguage().tr(message));
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     public void sendCommandOutput(CommandOutputContainer container) {
         if (this.getLocation().getLevel().getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {

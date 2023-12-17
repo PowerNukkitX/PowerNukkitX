@@ -20,8 +20,8 @@ import java.util.function.Function;
  * 与{@link CachedSimpleSelectorArgument}类似，但是适用于过滤器模式。此处不做过多解释<p/>
  * @see CachedSimpleSelectorArgument
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public abstract class CachedFilterSelectorArgument implements ISelectorArgument {
 
     Cache<Set<String>, Function<List<Entity>, List<Entity>>> cache;

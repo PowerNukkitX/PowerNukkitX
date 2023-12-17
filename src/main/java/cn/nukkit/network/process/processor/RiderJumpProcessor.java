@@ -10,8 +10,7 @@ import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.RiderJumpPacket;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.19.80-r3")
+
 public class RiderJumpProcessor extends DataPacketProcessor<RiderJumpPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull RiderJumpPacket pk) {

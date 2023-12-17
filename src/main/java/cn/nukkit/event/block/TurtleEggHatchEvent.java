@@ -7,7 +7,7 @@ import cn.nukkit.block.BlockTurtleEgg;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 
-@PowerNukkitOnly
+
 public class TurtleEggHatchEvent extends BlockEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
@@ -16,14 +16,14 @@ public class TurtleEggHatchEvent extends BlockEvent implements Cancellable {
     private Block newState;
     private boolean recalculateOnFailure = true;
 
-    @PowerNukkitOnly
+
     public TurtleEggHatchEvent(BlockTurtleEgg turtleEgg, int eggsHatching, Block newState) {
         super(turtleEgg);
         this.eggsHatching = eggsHatching;
         this.newState = newState;
     }
 
-    @PowerNukkitOnly
+
     public void recalculateNewState() {
         BlockTurtleEgg turtleEgg = getBlock();
         int eggCount = turtleEgg.getEggCount();
@@ -37,12 +37,12 @@ public class TurtleEggHatchEvent extends BlockEvent implements Cancellable {
         }
     }
 
-    @PowerNukkitOnly
+
     public Block getNewState() {
         return newState;
     }
 
-    @PowerNukkitOnly
+
     public void setNewState(Block newState) {
         this.newState = newState;
     }
@@ -52,27 +52,27 @@ public class TurtleEggHatchEvent extends BlockEvent implements Cancellable {
         return (BlockTurtleEgg) super.getBlock();
     }
 
-    @PowerNukkitOnly
+
     public int getEggsHatching() {
         return eggsHatching;
     }
 
-    @PowerNukkitOnly
+
     public void setEggsHatching(int eggsHatching) {
         this.eggsHatching = eggsHatching;
     }
 
-    @PowerNukkitOnly
+
     public boolean isRecalculateOnFailure() {
         return recalculateOnFailure;
     }
 
-    @PowerNukkitOnly
+
     public void setRecalculateOnFailure(boolean recalculateOnFailure) {
         this.recalculateOnFailure = recalculateOnFailure;
     }
 
-    @PowerNukkitOnly
+
     public static HandlerList getHandlers() {
         return handlers;
     }

@@ -41,8 +41,7 @@ public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmi
         return 0.5f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Phantom";
@@ -53,13 +52,13 @@ public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmi
         return new Item[]{Item.get(470)};
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isUndead() {
         return true;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

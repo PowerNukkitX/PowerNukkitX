@@ -122,8 +122,7 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
         level.dropItem(this, new ItemMinecartTNT());
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return getType().getName();

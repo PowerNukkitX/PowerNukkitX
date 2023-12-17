@@ -19,8 +19,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class ParamTree {
     private final Map<String, ParamList> root;
     private final Command command;

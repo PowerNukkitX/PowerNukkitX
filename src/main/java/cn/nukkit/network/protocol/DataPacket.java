@@ -16,7 +16,7 @@ import javax.annotation.Nonnegative;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class DataPacket extends BinaryStream implements Cloneable {
-    @PowerNukkitOnly
+
     public static final DataPacket[] EMPTY_ARRAY = new DataPacket[0];
 
     public volatile boolean isEncoded = false;
@@ -32,8 +32,8 @@ public abstract class DataPacket extends BinaryStream implements Cloneable {
     /**
      * @return The id of the packet
      */
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
+
+
     public @Nonnegative int packetId() {
         return ProtocolInfo.toNewProtocolID(this.pid());
     }

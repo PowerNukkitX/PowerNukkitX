@@ -34,8 +34,8 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
     protected int burnDuration;
     protected int cookTime;
     protected int maxTime;
-    @Since("1.19.50-r3")
-    @PowerNukkitXOnly
+
+
     protected float storedXP;
 
     private int crackledTime;
@@ -44,7 +44,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         super(chunk, nbt);
     }
 
-    @PowerNukkitOnly
+
     protected InventoryType getInventoryType() {
         return InventoryType.FURNACE;
     }
@@ -57,7 +57,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         }
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -108,12 +108,12 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         }
     }
 
-    @PowerNukkitOnly
+
     protected String getFurnaceName() {
         return "Furnace";
     }
 
-    @PowerNukkitOnly
+
     protected String getClientName() {
         return FURNACE;
     }
@@ -231,17 +231,17 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         return inventory;
     }
 
-    @PowerNukkitOnly
+
     protected int getIdleBlockId() {
         return Block.FURNACE;
     }
 
-    @PowerNukkitOnly
+
     protected int getBurningBlockId() {
         return Block.LIT_FURNACE;
     }
 
-    @PowerNukkitOnly
+
     protected void setBurning(boolean burning) {
         if (burning) {
             if (this.getBlock().getId() == getIdleBlockId()) {
@@ -278,12 +278,12 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         }
     }
 
-    @PowerNukkitOnly
+
     protected SmeltingRecipe matchRecipe(Item raw) {
         return this.server.getCraftingManager().matchFurnaceRecipe(raw);
     }
 
-    @PowerNukkitOnly
+
     protected int getSpeedMultiplier() {
         return 1;
     }
@@ -430,20 +430,17 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         this.maxTime = maxTime;
     }
 
-    @Since("1.19.50-r3")
-    @PowerNukkitXOnly
+
     public float getStoredXP() {
         return storedXP;
     }
 
-    @Since("1.19.50-r3")
-    @PowerNukkitXOnly
+
     public void setStoredXP(float storedXP) {
         this.storedXP = storedXP;
     }
 
-    @Since("1.19.50-r3")
-    @PowerNukkitXOnly
+
     public short calculateXpDrop() {
         return (short) (Math.floor(this.storedXP) + (ThreadLocalRandom.current().nextFloat() < (this.storedXP % 1) ? 1 : 0));
     }

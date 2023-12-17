@@ -3,8 +3,7 @@ package cn.nukkit.lang;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public enum LangCode {
     en_US("English (United States)"),
     en_GB("English (United Kingdom)"),

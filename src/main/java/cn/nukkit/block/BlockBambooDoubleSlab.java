@@ -5,8 +5,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemTool;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
 public class BlockBambooDoubleSlab extends BlockDoubleSlabBase {
     public BlockBambooDoubleSlab() {
     }
@@ -15,7 +14,7 @@ public class BlockBambooDoubleSlab extends BlockDoubleSlabBase {
         return BAMBOO_DOUBLE_SLAB;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public String getSlabName() {
         return "Bamboo";

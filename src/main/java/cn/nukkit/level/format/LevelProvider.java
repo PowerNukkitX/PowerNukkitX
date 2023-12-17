@@ -117,7 +117,7 @@ public interface LevelProvider {
 
     void setGameRules(GameRules rules);
 
-    @PowerNukkitOnly
+
     default int getMaximumLayer() {
         return 1;//two layer 0,1
     }

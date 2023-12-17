@@ -30,7 +30,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         super(chunk, nbt);
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -130,7 +130,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         return this.getItem() == null || this.getItem().getId() == 0 ? 0 : this.getItemRotation() % 8 + 1;
     }
 
-    @Since("1.4.0.0-PN")
+
     public boolean dropItem(Player player) {
         Item before = this.getItem();
         if (before == null || before.isNull()) {
@@ -144,8 +144,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         return after == null || after.isNull();
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Nullable
     public EntityItem dropItemAndGetEntity(@Nullable Player player) {
         Level level = getValidLevel();

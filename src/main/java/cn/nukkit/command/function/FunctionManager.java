@@ -14,8 +14,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 @Getter
 public class FunctionManager {
 

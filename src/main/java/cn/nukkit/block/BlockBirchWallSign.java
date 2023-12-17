@@ -4,14 +4,14 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBirchSign;
 
-@PowerNukkitOnly
+
 public class BlockBirchWallSign extends BlockWallSign {
-    @PowerNukkitOnly
+
     public BlockBirchWallSign() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockBirchWallSign(int meta) {
         super(meta);
     }
@@ -21,7 +21,7 @@ public class BlockBirchWallSign extends BlockWallSign {
         return BIRCH_WALL_SIGN;
     }
 
-    @PowerNukkitOnly
+
     @Override
     protected int getPostId() {
         return BIRCH_STANDING_SIGN;

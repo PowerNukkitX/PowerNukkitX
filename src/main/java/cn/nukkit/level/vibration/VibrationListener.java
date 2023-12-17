@@ -9,8 +9,8 @@ import cn.nukkit.math.Vector3;
 /**
  * 振动监听器
  */
-@PowerNukkitXOnly
-@Since("1.19.21-r3")
+
+
 public interface VibrationListener {
 
     /**

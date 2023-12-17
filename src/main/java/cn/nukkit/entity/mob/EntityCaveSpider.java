@@ -40,14 +40,13 @@ public class EntityCaveSpider extends EntityMob implements EntityWalkable, Entit
         return 0.5f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Cave Spider";
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

@@ -18,8 +18,8 @@ public class SetSpawnPositionPacket extends DataPacket {
     public int y;
     public int z;
     public int x;
-    
-    @Since("1.3.0.0-PN")
+
+
     public int dimension = 0;
     
     @Override

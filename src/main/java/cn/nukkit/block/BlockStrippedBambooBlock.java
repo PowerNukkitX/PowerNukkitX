@@ -8,8 +8,7 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
 public class BlockStrippedBambooBlock extends BlockLog {
     public BlockStrippedBambooBlock() {
         super(0);

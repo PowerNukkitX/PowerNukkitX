@@ -11,8 +11,7 @@ import com.dfsek.terra.api.inventory.item.Enchantment;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class PNXItemHandle implements ItemHandle {
     @Override
     public Item createItem(String s) {

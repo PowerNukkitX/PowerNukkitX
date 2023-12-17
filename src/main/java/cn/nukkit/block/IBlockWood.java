@@ -9,8 +9,8 @@ import cn.nukkit.blockstate.BlockState;
  * Semantic interface, blocks that implement this interface are wood blocks,
  * which can make naturally generated leaves not decay.
  */
-@Since("1.20.0-r2")
-@PowerNukkitXOnly
+
+
 public interface IBlockWood {
     BlockState getStrippedState();
 }

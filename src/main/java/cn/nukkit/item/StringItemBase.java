@@ -8,8 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public abstract class StringItemBase extends Item implements StringItem {
     private final String id;
 
@@ -21,8 +20,7 @@ public abstract class StringItemBase extends Item implements StringItem {
         clearNamedTag();
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public String getNamespaceId() {
         return this.id;

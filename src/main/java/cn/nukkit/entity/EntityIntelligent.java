@@ -26,11 +26,11 @@ import java.util.Objects;
 /**
  * {@code EntityIntelligent}抽象了一个具有行为组{@link IBehaviorGroup}（也就是具有AI）的实体
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public abstract class EntityIntelligent extends EntityPhysical implements LogicalUtils, EntityControlUtils {
 
-    @Since("1.19.60-r1")
+
     protected IBehaviorGroup behaviorGroup;
 
     /**
@@ -76,7 +76,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
      *
      * @return 新创建的行为组
      */
-    @Since("1.19.60-r1")
+
     protected IBehaviorGroup requireBehaviorGroup() {
         return new EmptyBehaviorGroup(this);
     }

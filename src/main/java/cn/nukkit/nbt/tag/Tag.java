@@ -98,8 +98,8 @@ public abstract class Tag {
      * Only used for LevelEventGenericPacket
      * Which do not read tag id and name (It only can be a compound tag)
      */
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
+
     public static CompoundTag readCompoundValue(NBTInputStream dis) throws IOException {
         var compoundTag = new CompoundTag();
         compoundTag.load(dis);
@@ -122,8 +122,8 @@ public abstract class Tag {
      * Only used for LevelEventGenericPacket
      * Which do not write tag id and name
      */
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
+
     public static void writeValue(Tag tag, NBTOutputStream dos) throws IOException {
         if (tag.getId() == Tag.TAG_End) return;
 

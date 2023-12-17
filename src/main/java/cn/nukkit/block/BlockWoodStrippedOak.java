@@ -3,14 +3,14 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.blockproperty.value.WoodType;
 
-@PowerNukkitOnly
+
 public class BlockWoodStrippedOak extends BlockWoodStripped {
-    @PowerNukkitOnly
+
     public BlockWoodStrippedOak() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockWoodStrippedOak(int meta) {
         super(meta);
     }
@@ -20,7 +20,7 @@ public class BlockWoodStrippedOak extends BlockWoodStripped {
         return STRIPPED_OAK_LOG;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public WoodType getWoodType() {
         return WoodType.OAK;

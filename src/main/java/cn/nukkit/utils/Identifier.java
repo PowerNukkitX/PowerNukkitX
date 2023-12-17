@@ -13,8 +13,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * 命名空间标识符
  */
-@PowerNukkitXOnly
-@Since("1.19.50-r1")
+
+
 public class Identifier {
     public static final char NAMESPACE_SEPARATOR = ':';
     public static final String DEFAULT_NAMESPACE = "minecraft";
@@ -115,8 +115,7 @@ public class Identifier {
         return Identifier.isNamespaceValid(strings[0].isEmpty() ? DEFAULT_NAMESPACE : strings[0]) && Identifier.isPathValid(strings[1]);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     public static void assertValid(String id) {
         String[] strings = Identifier.split(id, ':');
         var namespace = strings[0].isEmpty() ? DEFAULT_NAMESPACE : strings[0];

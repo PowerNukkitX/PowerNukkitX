@@ -11,8 +11,8 @@ import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
  * <p>
  * This interface abstracts a behavior object as part of the behavior group {@link IBehaviorGroup}.
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public interface IBehavior extends IBehaviorExecutor, IBehaviorEvaluator {
 
     /**

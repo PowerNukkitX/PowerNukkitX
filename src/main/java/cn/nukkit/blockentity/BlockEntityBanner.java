@@ -16,7 +16,7 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
         super(chunk, nbt);
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     public void loadNBT() {
         super.loadNBT();

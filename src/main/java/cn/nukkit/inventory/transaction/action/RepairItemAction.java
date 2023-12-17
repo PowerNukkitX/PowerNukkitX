@@ -6,14 +6,14 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import lombok.ToString;
 
-@Since("1.4.0.0-PN")
+
 @ToString(callSuper = true)
 @PowerNukkitDifference(extendsOnlyInPowerNukkit = NoOpIventoryAction.class, insteadOf = InventoryAction.class)
 public class RepairItemAction extends NoOpIventoryAction {
 
     private int type;
 
-    @Since("1.4.0.0-PN")
+
     public RepairItemAction(Item sourceItem, Item targetItem, int type) {
         super(sourceItem, targetItem);
         this.type = type;
@@ -24,7 +24,7 @@ public class RepairItemAction extends NoOpIventoryAction {
         return source.getWindowById(Player.ANVIL_WINDOW_ID) != null;
     }
 
-    @Since("1.4.0.0-PN")
+
     public int getType() {
         return this.type;
     }

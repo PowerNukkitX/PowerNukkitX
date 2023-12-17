@@ -93,7 +93,7 @@ public class PopChunkManager extends SimpleChunkManager {
         chunks[index] = chunk;
     }
 
-    @Since("1.19.80-r3")
+
     @Override
     public boolean isOverWorld() {
         for (var c : chunks) {
@@ -104,7 +104,7 @@ public class PopChunkManager extends SimpleChunkManager {
         return false;
     }
 
-    @Since("1.19.80-r3")
+
     @Override
     public boolean isNether() {
         for (var c : chunks) {
@@ -115,7 +115,7 @@ public class PopChunkManager extends SimpleChunkManager {
         return false;
     }
 
-    @Since("1.19.80-r3")
+
     @Override
     public boolean isTheEnd() {
         for (var c : chunks) {

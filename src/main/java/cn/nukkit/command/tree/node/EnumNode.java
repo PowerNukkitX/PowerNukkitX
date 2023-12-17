@@ -15,8 +15,8 @@ import java.util.Set;
  * <p>
  * 所有命令枚举类型如果没有手动指定{@link IParamNode},则会默认使用这个解析
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public class EnumNode extends ParamNode<String> {
     protected CommandEnum commandEnum;
     protected Set<String> enums;

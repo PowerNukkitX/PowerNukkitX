@@ -8,8 +8,7 @@ import lombok.Getter;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r4")
+
 @Getter
 public class RandomTimeRangeEvaluator implements IBehaviorEvaluator {
 

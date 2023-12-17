@@ -11,8 +11,8 @@ import java.util.Map;
 /**
  * 计分板存储器接口
  */
-@PowerNukkitXOnly
-@Since("1.19.30-r1")
+
+
 public interface IScoreboardStorage {
     void saveScoreboard(IScoreboard scoreboard);
 

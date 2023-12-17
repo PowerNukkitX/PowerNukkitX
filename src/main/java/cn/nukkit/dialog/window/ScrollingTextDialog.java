@@ -6,8 +6,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.scheduler.Task;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class ScrollingTextDialog implements Dialog{
 
     private Player player;

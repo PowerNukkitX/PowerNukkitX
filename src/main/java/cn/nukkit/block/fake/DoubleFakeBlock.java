@@ -9,8 +9,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import java.util.Arrays;
 import java.util.List;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class DoubleFakeBlock extends SingleFakeBlock {
 
     public DoubleFakeBlock(int blockId, String tileId) {

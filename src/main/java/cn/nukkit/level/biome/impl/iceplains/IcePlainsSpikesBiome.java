@@ -19,8 +19,7 @@ public class IcePlainsSpikesBiome extends IcePlainsBiome {
         this.addPopulator(iceSpikes);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Override
     public int getSurfaceBlock(int y) {
         if (useNewRakNetSurface()) {

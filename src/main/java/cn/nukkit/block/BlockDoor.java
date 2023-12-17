@@ -48,18 +48,16 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
     // and gives the vanilla behavior; no idea how to make this better :d
     private static final List<Location> manualOverrides = new ArrayList<>();
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BooleanBlockProperty DOOR_HINGE = new BooleanBlockProperty("door_hinge_bit", false);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperty<BlockFace> DOOR_DIRECTION = new ArrayBlockProperty<>("direction", false, new BlockFace[]{
             BlockFace.EAST, BlockFace.SOUTH,
             BlockFace.WEST, BlockFace.NORTH
     }).ordinal(true);
 
-    @PowerNukkitOnly
+
     protected static final BlockProperties PROPERTIES = new BlockProperties(DOOR_DIRECTION, OPEN, UPPER_BLOCK, DOOR_HINGE);
 
     @Deprecated
@@ -82,8 +80,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         super(meta);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -95,7 +92,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         return true;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -106,8 +103,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         return false;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
@@ -204,8 +200,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setManualOverride(boolean val) {
         Location down;
         Location up;
@@ -226,8 +221,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean getManualOverride() {
         Location down;
         Location up;
@@ -243,8 +237,8 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
     }
 
     @Override
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public boolean isGettingPower() {
         Location down;
         Location up;
@@ -337,8 +331,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         return toggle(player);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void playOpenCloseSound() {
         if (this.isTop() && down() instanceof BlockDoor) {
             if (((BlockDoor) down()).isOpen()) {
@@ -355,14 +348,12 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void playOpenSound() {
         level.addSound(this, Sound.RANDOM_DOOR_OPEN);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void playCloseSound() {
         level.addSound(this, Sound.RANDOM_DOOR_CLOSE);
     }
@@ -376,7 +367,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
 
     @PowerNukkitDifference(info = "Using direct values, instead of toggling (fixes a redstone bug, that the door won't open). " +
             "Also adding possibility to detect, whether a player or redstone recently opened/closed the door.", since = "1.4.0.0-PN")
-    @PowerNukkitOnly
+
     public boolean setOpen(@Nullable Player player, boolean open) {
         if (open == this.isOpen()) {
             return false;
@@ -419,8 +410,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         return true;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setOpen(boolean open) {
         setBooleanValue(OPEN, open);
     }
@@ -433,8 +423,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         return getBooleanValue(UPPER_BLOCK);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setTop(boolean top) {
         setBooleanValue(UPPER_BLOCK, top);
     }
@@ -449,8 +438,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         return getBooleanValue(DOOR_HINGE);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setRightHinged(boolean rightHinged) {
         setBooleanValue(DOOR_HINGE, rightHinged);
     }
@@ -460,21 +448,20 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         return getPropertyValue(DOOR_DIRECTION);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(DOOR_DIRECTION, face);
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean sticksToPiston() {
         return false;
     }

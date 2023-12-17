@@ -13,27 +13,24 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 /**
  * @author GoodLucky777
  */
-@PowerNukkitOnly
-@Since("FUTURE")
+
+
 public class BlockInfestedDeepslate extends BlockSolidMeta {
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public static final BlockProperties PROPERTIES = new BlockProperties(PILLAR_AXIS);
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     public BlockInfestedDeepslate() {
         this(0);
     }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     public BlockInfestedDeepslate(int meta) {
         super(meta);
     }
 
-    @Since("1.6.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {

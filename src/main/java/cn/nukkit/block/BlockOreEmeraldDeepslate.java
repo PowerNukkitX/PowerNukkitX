@@ -7,12 +7,11 @@ import cn.nukkit.api.Since;
  * @author joserobjr
  * @since 2021-06-13
  */
-@PowerNukkitOnly
-@Since("FUTURE")
+
+
 public class BlockOreEmeraldDeepslate extends BlockOreEmerald {
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     public BlockOreEmeraldDeepslate() {
         // Does nothing
     }

@@ -13,8 +13,7 @@ import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
-@Since("1.20.0-r2")
-@PowerNukkitXOnly
+
 public class ObjectCherryTree extends TreeGenerator {
     protected BlockState LOG_Y_AXIS;
     protected BlockState LOG_X_AXIS;

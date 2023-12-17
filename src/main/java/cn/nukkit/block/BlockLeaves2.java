@@ -14,13 +14,13 @@ import org.jetbrains.annotations.NotNull;
  * @since 2015/12/1
  */
 public class BlockLeaves2 extends BlockLeaves {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final ArrayBlockProperty<WoodType> NEW_LEAF_TYPE = new ArrayBlockProperty<>("new_leaf_type", true, new WoodType[]{
             WoodType.ACACIA, WoodType.DARK_OAK
     }, 2);
 
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
+
     public static final BlockProperties NEW_LEAF_PROPERTIES = new BlockProperties(NEW_LEAF_TYPE, PERSISTENT, UPDATE);
 
     @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
@@ -37,21 +37,20 @@ public class BlockLeaves2 extends BlockLeaves {
         super(meta);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return NEW_LEAF_PROPERTIES;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public WoodType getType() {
         return getPropertyValue(NEW_LEAF_TYPE);
     }
 
-    @PowerNukkitOnly
+
     @Override
     public void setType(WoodType type) {
         setPropertyValue(NEW_LEAF_TYPE, type);

@@ -5,8 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDoorBamboo;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
 public class BlockBambooDoor extends BlockDoorWood {
     public BlockBambooDoor() {
         this(0);

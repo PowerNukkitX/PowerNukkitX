@@ -9,8 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class BlockSporeBlossom extends BlockTransparent {
     @Override
     public String getName() {

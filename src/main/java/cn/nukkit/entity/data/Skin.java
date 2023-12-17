@@ -35,7 +35,7 @@ public class Skin {
     private final List<PersonaPieceTint> tintColors = new ArrayList<>();
     private String skinId;
     private String fullSkinId;
-    @Since("1.4.0.0-PN")
+
     private String playFabId = "";
     private String skinResourcePatch = GEOMETRY_CUSTOM;
     private SerializedImage skinData;
@@ -263,22 +263,22 @@ public class Skin {
         this.capeOnClassic = capeOnClassic;
     }
 
-    @Since("1.5.2.0-PN")
+
     public boolean isPrimaryUser() {
         return primaryUser;
     }
 
-    @Since("1.5.2.0-PN")
+
     public void setPrimaryUser(boolean primaryUser) {
         this.primaryUser = primaryUser;
     }
 
-    @Since("1.5.2.0-PN")
+
     public String getGeometryDataEngineVersion() {
         return geometryDataEngineVersion;
     }
 
-    @Since("1.5.2.0-PN")
+
     public void setGeometryDataEngineVersion(String geometryDataEngineVersion) {
         this.geometryDataEngineVersion = geometryDataEngineVersion;
     }
@@ -316,7 +316,7 @@ public class Skin {
         this.fullSkinId = fullSkinId;
     }
 
-    @Since("1.4.0.0-PN")
+
     public String getPlayFabId() {
         if (this.persona && (this.playFabId == null || this.playFabId.isEmpty())) {
             try {
@@ -328,7 +328,7 @@ public class Skin {
         return this.playFabId;
     }
 
-    @Since("1.4.0.0-PN")
+
     public void setPlayFabId(String playFabId) {
         this.playFabId = playFabId;
     }

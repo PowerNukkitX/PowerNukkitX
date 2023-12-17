@@ -283,8 +283,7 @@ public class EntityItem extends Entity {
         }
     }
 
-    @Since("1.5.1.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public String getOriginalName() {
         return "Item";

@@ -11,13 +11,13 @@ public class HurtArmorPacket extends DataPacket {
 
     public static final byte NETWORK_ID = ProtocolInfo.HURT_ARMOR_PACKET;
 
-    @Since("1.3.0.0-PN")
+
     public int cause;
 
-    @Since("1.3.0.0-PN")
+
     public int damage;
 
-    @Since("1.5.2.0-PN")
+
     public long armorSlots;
 
     @Override

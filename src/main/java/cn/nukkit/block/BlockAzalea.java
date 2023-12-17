@@ -26,27 +26,24 @@ import java.util.concurrent.ThreadLocalRandom;
  * @since 13/06/2021
  */
 
-@PowerNukkitOnly
-@Since("FUTURE")
+
 public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
 
 
     public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
 
-    @PowerNukkitOnly
+
     public BlockAzalea() {
         this(0);
     }
 
 
-    @PowerNukkitOnly
+
     public BlockAzalea(int meta) {
         super(meta);
     }
 
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -63,7 +60,7 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
         return AZALEA;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -165,8 +162,7 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
         return true;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isSameType(Vector3 pos, WoodType type) {
         Block block = this.level.getBlock(pos);
         return block.getId() == this.getId() && ((BlockSapling) block).getWoodType() == type;

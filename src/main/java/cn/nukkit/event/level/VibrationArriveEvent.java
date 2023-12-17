@@ -5,8 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.vibration.VibrationListener;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r3")
+
 public class VibrationArriveEvent extends VibrationEvent{
 
     private static final HandlerList handlers = new HandlerList();

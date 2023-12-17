@@ -12,29 +12,24 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 public abstract class BlockEntityEjectable extends BlockEntitySpawnable implements BlockEntityContainer, BlockEntityNameable, InventoryHolder {
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected EjectableInventory inventory;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public BlockEntityEjectable(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected abstract EjectableInventory createInventory();
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected abstract String getBlockEntityName();
 
-    @Since("1.19.60-r1")
+
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -54,8 +49,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         return 9;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected int getSlotIndex(int index) {
         ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
         for (int i = 0; i < list.size(); i++) {

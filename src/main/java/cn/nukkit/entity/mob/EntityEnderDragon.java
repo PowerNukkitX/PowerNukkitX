@@ -46,22 +46,20 @@ public class EntityEnderDragon extends EntityMob implements EntityFlyable {
         return false;
     }
 
-    @PowerNukkitOnly
+
     @Deprecated
     @Override
     public boolean applyNameTag(Item item) {
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Ender Dragon";
     }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     @Override
     public boolean isBoss() {
         return true;

@@ -23,8 +23,8 @@ import java.util.TreeMap;
  *
  * @author daoge_cmd
  */
-@PowerNukkitXOnly
-@Since("1.20.0-r3")
+
+
 public class JeMapping {
     private static final Map<JeBlockState, Integer> JE_BLOCK_STATE_TO_BE_BLOCK_STATE_HASH_MAP = new Object2IntOpenHashMap<>();
     private static final Map<Integer, JeBlockState> BE_BLOCK_STATE_HASH_TO_JE_BLOCK_STATE_MAP = new Int2ObjectOpenHashMap<>();

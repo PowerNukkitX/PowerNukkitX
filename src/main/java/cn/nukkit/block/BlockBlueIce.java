@@ -2,10 +2,10 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 
-@PowerNukkitOnly
+
 public class BlockBlueIce extends BlockIcePacked {
 
-    @PowerNukkitOnly
+
     public BlockBlueIce() {
     }
     

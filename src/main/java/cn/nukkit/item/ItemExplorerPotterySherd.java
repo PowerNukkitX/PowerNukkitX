@@ -3,8 +3,7 @@ package cn.nukkit.item;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
-@PowerNukkitXOnly
-@Since("1.20.50-r1")
+
 public class ItemExplorerPotterySherd extends ItemPotterySherd {
     public ItemExplorerPotterySherd() {
         this(0, 1);

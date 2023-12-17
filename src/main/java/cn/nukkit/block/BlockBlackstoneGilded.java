@@ -9,11 +9,10 @@ import cn.nukkit.item.enchantment.Enchantment;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 public class BlockBlackstoneGilded extends BlockSolid {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public BlockBlackstoneGilded() {
         // Does nothing
     }

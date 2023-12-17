@@ -29,7 +29,7 @@ public class JavaPluginLoader implements PluginLoader {
 
     private final Map<String, Class> classes = new HashMap<>();
 
-    @PowerNukkitXOnly
+
     @Getter
     protected final Map<String, PluginClassLoader> classLoaders = new HashMap<>();
 

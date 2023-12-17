@@ -6,8 +6,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-@PowerNukkitXOnly
-@Since("1.20.50-r1")
+
 public class BlockEntityDecoratedPot extends BlockEntitySpawnable {
     public BlockEntityDecoratedPot(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

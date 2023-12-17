@@ -30,7 +30,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
         super(meta);
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 2;
@@ -73,7 +73,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
         return true;
     }
 
-    @PowerNukkitOnly
+
     protected boolean isSupportValid(Block support) {
         return BlockLever.isSupportValid(support, BlockFace.UP) || support instanceof BlockCauldron;
     }

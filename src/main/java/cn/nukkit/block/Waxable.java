@@ -17,16 +17,15 @@ import javax.annotation.Nullable;
  * @author joserobjr
  * @since 2021-06-14
  */
-@PowerNukkitOnly
-@Since("FUTURE")
+
+
 public interface Waxable {
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
+
     @NotNull
     Location getLocation();
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     default boolean onActivate(@NotNull Item item, @Nullable Player player) {
         boolean waxed = isWaxed();
         if ((item.getId() != ItemID.HONEYCOMB || waxed) && (!item.isAxe() || !waxed)) {
@@ -50,11 +49,9 @@ public interface Waxable {
         return true;
     }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     boolean isWaxed();
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     boolean setWaxed(boolean waxed);
 }

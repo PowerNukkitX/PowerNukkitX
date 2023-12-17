@@ -12,8 +12,8 @@ import com.google.gson.JsonSyntaxException;
  * <p>
  * 所有命令参数类型为{@link cn.nukkit.command.data.CommandParamType#RAWTEXT RAWTEXT}如果没有手动指定{@link IParamNode},则会默认使用这个解析
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public class RawTextNode extends ParamNode<RawText> {
 
     @Override

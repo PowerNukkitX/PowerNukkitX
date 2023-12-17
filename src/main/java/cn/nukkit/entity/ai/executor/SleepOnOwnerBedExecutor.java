@@ -12,8 +12,8 @@ import cn.nukkit.entity.EntityOwnable;
  * 只能在实现了接口 {@link EntityOwnable} 的实体上使用<br/>
  * 需要保证实体的getOwner()方法返回非空
  */
-@PowerNukkitXOnly
-@Since("1.19.50-r3")
+
+
 public class SleepOnOwnerBedExecutor implements IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {

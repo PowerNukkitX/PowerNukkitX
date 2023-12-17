@@ -19,8 +19,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@PowerNukkitXOnly
-@Since("1.19.63-r1")
+
 public interface IHuman extends InventoryHolder {
     default void initHumanEntity(Entity human) {
         boolean isIntelligentHuman = this instanceof EntityIntelligentHuman;

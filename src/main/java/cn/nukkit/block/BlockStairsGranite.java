@@ -3,14 +3,14 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
 
-@PowerNukkitOnly
+
 public class BlockStairsGranite extends BlockStairs {
-    @PowerNukkitOnly
+
     public BlockStairsGranite() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockStairsGranite(int meta) {
         super(meta);
     }
@@ -36,7 +36,7 @@ public class BlockStairsGranite extends BlockStairs {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

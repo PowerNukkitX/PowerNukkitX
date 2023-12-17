@@ -24,14 +24,13 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.UPPER_BLOCK;
  * @since 2015/11/23
  */
 public class BlockDoublePlant extends BlockFlowable {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final ArrayBlockProperty<DoublePlantType> DOUBLE_PLANT_TYPE = new ArrayBlockProperty<>(
             "double_plant_type", true, DoublePlantType.class
     );
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(DOUBLE_PLANT_TYPE, UPPER_BLOCK);
 
     @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "DoublePlantType.SUNFLOWER",
@@ -69,35 +68,30 @@ public class BlockDoublePlant extends BlockFlowable {
         return DOUBLE_PLANT;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     public DoublePlantType getDoublePlantType() {
         return getPropertyValue(DOUBLE_PLANT_TYPE);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setDoublePlantType(@NotNull DoublePlantType type) {
         setPropertyValue(DOUBLE_PLANT_TYPE, type);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isTopHalf() {
         return getBooleanValue(UPPER_BLOCK);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setTopHalf(boolean topHalf) {
         setBooleanValue(UPPER_BLOCK, topHalf);
     }

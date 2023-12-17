@@ -7,12 +7,11 @@ import cn.nukkit.item.ItemTool;
 /**
  * @author GoodLucky777
  */
-@PowerNukkitOnly
-@Since("FUTURE")
+
+
 public class BlockBricksDeepslate extends BlockSolid {
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     public BlockBricksDeepslate() {
         // Does Nothing
     }

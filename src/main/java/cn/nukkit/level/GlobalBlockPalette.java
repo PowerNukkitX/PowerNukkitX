@@ -13,7 +13,7 @@ import lombok.extern.log4j.Log4j2;
 public class GlobalBlockPalette {
     @Deprecated
     @DeprecationDetails(reason = "Public mutable array", replaceWith = "BlockStateRegistry.getBlockPaletteBytes() or BlockStateRegistry.copyBlockPaletteBytes()", since = "1.4.0.0-PN")
-    @PowerNukkitOnly
+
     public static final byte[] BLOCK_PALETTE = BlockStateRegistry.getBlockPaletteBytes();
 
     @Deprecated
@@ -30,12 +30,12 @@ public class GlobalBlockPalette {
 
     @Deprecated
     @DeprecationDetails(reason = "Moved to BlockStateRegistry", replaceWith = "BlockStateRegistry.getPersistenceName(int)", since = "1.3.0.0-PN")
-    @PowerNukkitOnly
+
     public static String getName(int blockId) {
         return BlockStateRegistry.getPersistenceName(blockId);
     }
 
-    @Since("FUTURE")
+
     public static int getLegacyFullId(int runtimeId) {
         //TODO Implement
         throw new UnsupportedOperationException();

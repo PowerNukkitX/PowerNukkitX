@@ -26,8 +26,7 @@ public class BlockAmethystCluster extends BlockAmethystBud {
         return 5;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;

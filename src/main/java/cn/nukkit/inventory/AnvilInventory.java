@@ -24,11 +24,8 @@ import java.util.stream.Stream;
  */
 public class AnvilInventory extends FakeBlockUIComponent {
 
-    @Since("1.4.0.0-PN") public static final int ANVIL_INPUT_UI_SLOT = 1;
-    @Since("1.4.0.0-PN") public static final int ANVIL_MATERIAL_UI_SLOT = 2;
-    @Since("1.4.0.0-PN") public static final int ANVIL_OUTPUT_UI_SLOT = CREATED_ITEM_OUTPUT_UI_SLOT;
 
-    @PowerNukkitOnly public static final int OFFSET = 1;
+    public static final int OFFSET = 1;
     public static final int TARGET = 0;
     public static final int SACRIFICE = 1;
     public static final int RESULT = ANVIL_OUTPUT_UI_SLOT - 1; //1: offset
@@ -58,7 +55,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
     
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Experimenting the new implementation by Nukkit")
-    @PowerNukkitOnly
+
     public void updateResult() {
         Item target = getFirstItem();
         Item sacrifice = getSecondItem();
@@ -297,7 +294,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
     }
      */
 
-    @PowerNukkitOnly
+
     @Deprecated @DeprecationDetails(
             reason = "NukkitX added the samething with other name.",
             by = "PowerNukkit", since = "1.4.0.0-PN",
@@ -307,12 +304,12 @@ public class AnvilInventory extends FakeBlockUIComponent {
         return getItem(TARGET);
     }
 
-    @Since("1.4.0.0-PN")
+
     public Item getInputSlot() {
         return this.getItem(TARGET);
     }
 
-    @PowerNukkitOnly
+
     @Deprecated @DeprecationDetails(
             reason = "NukkitX added the samething with other name.",
             by = "PowerNukkit", since = "1.4.0.0-PN",
@@ -322,12 +319,12 @@ public class AnvilInventory extends FakeBlockUIComponent {
         return getItem(SACRIFICE);
     }
 
-    @Since("1.4.0.0-PN")
+
     public Item getMaterialSlot() {
         return this.getItem(SACRIFICE);
     }
 
-    @PowerNukkitOnly
+
     @Deprecated @DeprecationDetails(
             reason = "NukkitX added the samething with other name.",
             by = "PowerNukkit", since = "1.4.0.0-PN",
@@ -338,7 +335,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
         return getOutputSlot();
     }
 
-    @Since("1.4.0.0-PN")
+
     public Item getOutputSlot() {
         return this.getItem(RESULT);
     }
@@ -354,22 +351,22 @@ public class AnvilInventory extends FakeBlockUIComponent {
     }
      */
 
-    @PowerNukkitOnly
+
     public boolean setFirstItem(Item item, boolean send) {
         return setItem(SACRIFICE, item, send);
     }
 
-    @PowerNukkitOnly
+
     public boolean setFirstItem(Item item) {
         return setFirstItem(item, true);
     }
 
-    @PowerNukkitOnly
+
     public boolean setSecondItem(Item item, boolean send) {
         return setItem(SACRIFICE, item, send);
     }
 
-    @PowerNukkitOnly
+
     public boolean setSecondItem(Item item) {
         return setSecondItem(item, true);
     }
@@ -391,7 +388,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
         return item.hasCompoundTag() && item.getNamedTag().contains("RepairCost") ? item.getNamedTag().getInt("RepairCost") : 0;
     }
 
-    @PowerNukkitOnly
+
     @Deprecated @DeprecationDetails(
             reason = "NukkitX added the samething with other name.",
             by = "PowerNukkit", since = "1.4.0.0-PN",
@@ -401,7 +398,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
         return getCost();
     }
 
-    @PowerNukkitOnly
+
     @Deprecated @DeprecationDetails(
             reason = "NukkitX added the samething with other name.",
             by = "PowerNukkit", since = "1.4.0.0-PN",
@@ -411,22 +408,22 @@ public class AnvilInventory extends FakeBlockUIComponent {
         setCost(levelCost);
     }
 
-    @Since("1.4.0.0-PN")
+
     public int getCost() {
         return this.cost;
     }
 
-    @Since("1.4.0.0-PN")
+
     public void setCost(int cost) {
         this.cost = cost;
     }
 
-    @PowerNukkitOnly
+
     public String getNewItemName() {
         return newItemName;
     }
 
-    @PowerNukkitOnly
+
     public void setNewItemName(String newItemName) {
         this.newItemName = newItemName;
     }

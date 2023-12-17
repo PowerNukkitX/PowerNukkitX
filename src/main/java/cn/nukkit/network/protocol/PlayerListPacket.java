@@ -75,8 +75,8 @@ public class PlayerListPacket extends DataPacket {
         public Skin skin;
         public boolean isTeacher;
         public boolean isHost;
-        @PowerNukkitXOnly
-        @Since("1.19.50-r3")
+
+
         public boolean trustedSkin;
 
         public Entry(UUID uuid) {

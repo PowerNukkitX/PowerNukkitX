@@ -22,8 +22,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 @Log4j2
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
+
 public abstract class BlockHangingSign extends BlockSignBase implements BlockEntityHolder<BlockEntityHangingSign> {
     @NotNull
     @Override
@@ -45,8 +45,7 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
         return BlockEntityHangingSign.class;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     @Override
     public String getBlockEntityType() {

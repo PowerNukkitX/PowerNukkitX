@@ -4,8 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.value.WoodType;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class BlockWoodStrippedMangrove extends BlockWoodStripped {
     public BlockWoodStrippedMangrove() {
     }

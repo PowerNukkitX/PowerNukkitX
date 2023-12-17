@@ -21,8 +21,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockLadder extends BlockTransparentMeta implements Faceable {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = CommonBlockProperties.FACING_DIRECTION_BLOCK_PROPERTIES;
 
     public BlockLadder() {
@@ -44,8 +43,7 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
         return LADDER;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -67,14 +65,13 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
         return false;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -237,13 +234,13 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean sticksToPiston() {
         return false;
     }

@@ -61,8 +61,8 @@ public interface Inventory {
      * @param index the index
      * @return the item
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
+
     @DoNotModify
     default Item getUnclonedItem(int index) {
         //你需要覆写它来实现
@@ -98,8 +98,8 @@ public interface Inventory {
      * @param item   item to set
      * @return true if the item was set
      */
-    @Since("1.19.50-r3")
-    @PowerNukkitXOnly
+
+
     default boolean setItemByPlayer(Player player, int index, Item item, boolean send) {
         return setItem(index, item, send);
     }
@@ -179,9 +179,9 @@ public interface Inventory {
      */
     void onSlotChange(int index, Item before, boolean send);
 
-    @PowerNukkitOnly
+
     void addListener(InventoryListener listener);
 
-    @PowerNukkitOnly
+
     void removeListener(InventoryListener listener);
 }

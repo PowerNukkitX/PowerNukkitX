@@ -21,8 +21,7 @@ public class MushroomIslandBiome extends GrassyBiome {
         return "Mushroom Island";
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Override
     public int getSurfaceBlock(int y) {
         if (useNewRakNetSurface()) {

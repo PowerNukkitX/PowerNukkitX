@@ -8,8 +8,8 @@ import cn.nukkit.api.Since;
  * <p>
  * Indicates the state of a behavior
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public enum BehaviorState {
     ACTIVE,
     STOP

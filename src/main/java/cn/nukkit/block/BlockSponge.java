@@ -25,12 +25,10 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockSponge extends BlockSolidMeta {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final ArrayBlockProperty<SpongeType> SPONGE_TYPE = new ArrayBlockProperty<>("sponge_type", true, SpongeType.class);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(SPONGE_TYPE);
 
     public static final int DRY = 0;
@@ -53,8 +51,7 @@ public class BlockSponge extends BlockSolidMeta {
         return SPONGE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {

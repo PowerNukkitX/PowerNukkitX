@@ -8,11 +8,10 @@ import cn.nukkit.api.Since;
  * @since 11/06/2021
  */
 
-@PowerNukkitOnly
-@Since("FUTURE")
+
 public class BlockCopperWaxed extends BlockCopper {
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
+
     public BlockCopperWaxed() {
         // Does nothing
     }
@@ -27,8 +26,7 @@ public class BlockCopperWaxed extends BlockCopper {
         return WAXED_COPPER;
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     @Override
     public boolean isWaxed() {
         return true;

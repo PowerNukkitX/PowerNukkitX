@@ -12,17 +12,16 @@ import java.util.Locale;
  * @author joserobjr
  * @since 2021-06-15
  */
-@PowerNukkitOnly
-@Since("FUTURE")
+
+
 public class BlockStairsCopperCut extends BlockStairsCopperBase {
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
+
     public BlockStairsCopperCut() {
         this(0);
     }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     public BlockStairsCopperCut(int meta) {
         super(meta);
     }
@@ -46,8 +45,7 @@ public class BlockStairsCopperCut extends BlockStairsCopperBase {
         return CUT_COPPER_STAIRS;
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     @Override
     protected int getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel) {
         if (oxidizationLevel == null) {
@@ -67,8 +65,7 @@ public class BlockStairsCopperCut extends BlockStairsCopperBase {
         }
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public OxidizationLevel getOxidizationLevel() {

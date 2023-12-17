@@ -75,12 +75,12 @@ public abstract class ProjectileItem extends Item {
         return true;
     }
 
-    @PowerNukkitOnly
+
     protected void addThrowSound(Player player) {
         player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacketV2.SOUND_THROW, -1, "minecraft:player", false, false);
     }
 
-    @PowerNukkitOnly
+
     protected Entity correctProjectile(Player player, Entity projectile) {
         return projectile;
     }

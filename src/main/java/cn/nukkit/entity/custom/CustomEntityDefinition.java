@@ -7,8 +7,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public record CustomEntityDefinition(CompoundTag nbt) {
     public static AtomicInteger RUNTIME_ID = new AtomicInteger(10000);
 

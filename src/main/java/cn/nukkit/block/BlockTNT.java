@@ -33,16 +33,13 @@ import javax.annotation.Nullable;
 @PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
 public class BlockTNT extends BlockSolid implements RedstoneComponent {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BooleanBlockProperty EXPLODE_ON_BREAK = new BooleanBlockProperty("explode_bit", false);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BooleanBlockProperty ALLOW_UNDERWATER = new BooleanBlockProperty("allow_underwater_bit", false);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(EXPLODE_ON_BREAK, ALLOW_UNDERWATER);
 
     public BlockTNT() {
@@ -58,8 +55,7 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
         return TNT;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -159,8 +155,7 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
         return false;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         if (projectile instanceof EntitySmallFireBall || (projectile.isOnFire() && projectile instanceof EntityArrow)) {

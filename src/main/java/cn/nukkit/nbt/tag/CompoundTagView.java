@@ -101,15 +101,13 @@ public class CompoundTagView extends CompoundTag {
         throw new UnsupportedOperationException();
     }
 
-    @Since("1.19.60-r1")
-    @PowerNukkitOnly
+
     @Override
     public CompoundTag putList(String name, ListTag<? extends Tag> listTag) {
         throw new UnsupportedOperationException();
     }
 
-    @Since("1.19.60-r1")
-    @PowerNukkitOnly
+
     @Override
     public CompoundTag putCompound(CompoundTag value) {
         throw new UnsupportedOperationException();
@@ -135,85 +133,73 @@ public class CompoundTagView extends CompoundTag {
         return delegate.contains(name);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean containsCompound(String name) {
         return delegate.containsCompound(name);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean containsString(String name) {
         return delegate.containsString(name);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean containsIntArray(String name) {
         return delegate.containsIntArray(name);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean containsByteArray(String name) {
         return delegate.containsByteArray(name);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean containsNumber(String name) {
         return delegate.containsNumber(name);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean containsList(String name) {
         return delegate.containsList(name);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean containsList(String name, byte type) {
         return delegate.containsList(name, type);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean containsByte(String name) {
         return delegate.containsByte(name);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean containsShort(String name) {
         return delegate.containsShort(name);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean containsInt(String name) {
         return delegate.containsInt(name);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean containsDouble(String name) {
         return delegate.containsDouble(name);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean containsFloat(String name) {
         return delegate.containsFloat(name);

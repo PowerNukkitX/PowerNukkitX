@@ -29,8 +29,8 @@ import java.util.function.Consumer;
  * <p>
  * CustomBlockDefinition is used to get the data of the item behavior_pack sent to the client. The methods provided in {@link CustomItemDefinition.SimpleBuilder} control the data sent to the client, if you need to control some of the server-side behavior, please override the methods in {@link cn.nukkit.item.Item Item}.
  */
-@PowerNukkitXOnly
-@Since("1.19.31-r1")
+
+
 public record CustomItemDefinition(String identifier, CompoundTag nbt) {
     private static final ConcurrentHashMap<String, Integer> INTERNAL_ALLOCATION_ID_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger nextRuntimeId = new AtomicInteger(10000);
@@ -44,8 +44,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
      * @param creativeCategory the creative category
      * @return the custom item definition . simple builder
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
+
     public static CustomItemDefinition.SimpleBuilder customBuilder(CustomItem item, ItemCreativeCategory creativeCategory) {
         return new CustomItemDefinition.SimpleBuilder(item, creativeCategory);
     }
@@ -300,7 +300,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * @param molang          the molang
          * @return the simple builder
          */
-        @Since("1.19.40-r1")
+
         protected SimpleBuilder addRepairs(@NotNull List<String> repairItemNames, String molang) {
             if (molang.isBlank()) {
                 System.out.println("repairAmount has an invalid value!");
@@ -398,25 +398,25 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                     .putBoolean("can_destroy_in_creative", true);
         }
 
-        @Since("1.19.60-r1")
+
         public ToolBuilder addRepairItemName(@NonNull String repairItemName, String molang) {
             super.addRepairs(List.of(repairItemName), molang);
             return this;
         }
 
-        @Since("1.19.60-r1")
+
         public ToolBuilder addRepairItemName(@NonNull String repairItemName, int repairAmount) {
             super.addRepairs(List.of(repairItemName), String.valueOf(repairAmount));
             return this;
         }
 
-        @Since("1.19.40-r1")
+
         public ToolBuilder addRepairItems(@NotNull List<Item> repairItems, String molang) {
             super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), molang);
             return this;
         }
 
-        @Since("1.19.40-r1")
+
         public ToolBuilder addRepairItems(@NotNull List<Item> repairItems, int repairAmount) {
             super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), String.valueOf(repairAmount));
             return this;
@@ -447,7 +447,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * @param speed     挖掘速度
          * @return the tool builder
          */
-        @Since("1.19.60-r1")
+
         public ToolBuilder addExtraBlock(@NotNull String blockName, int speed) {
             if (speed < 0) {
                 System.out.println("speed has an invalid value!");
@@ -471,7 +471,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * @param blocks the blocks
          * @return the tool builder
          */
-        @Since("1.19.60-r1")
+
         public ToolBuilder addExtraBlocks(@NotNull Map<String, Integer> blocks) {
             blocks.forEach((blockName, speed) -> {
                 if (speed < 0) {
@@ -498,7 +498,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * @param property  the property
          * @return the tool builder
          */
-        @Since("1.19.60-r1")
+
         public ToolBuilder addExtraBlocks(@NotNull String blockName, DigProperty property) {
             if (property.getSpeed() != null && property.getSpeed() < 0) {
                 System.out.println("speed has an invalid value!");
@@ -521,7 +521,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * The item's attack damage must be greater than 0<p>
          * define the item is a weapon or not, and if so, it will prompt {@code "+X attack damage"} in the item description
          */
-        @Since("1.19.80-r3")
+
         public ToolBuilder isWeapon() {
             if (this.item.getAttackDamage() > 0 && !this.nbt.getCompound("components").containsCompound("minecraft:weapon")) {
                 this.nbt.getCompound("components").putCompound(new CompoundTag("minecraft:weapon"));
@@ -537,7 +537,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * @param blockTags 挖掘速度
          * @return the tool builder
          */
-        @Since("1.19.60-r1")
+
         public ToolBuilder addExtraBlockTags(@NotNull List<String> blockTags) {
             if (!blockTags.isEmpty()) {
                 this.blockTags.addAll(blockTags);
@@ -660,25 +660,25 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                     .putBoolean("can_destroy_in_creative", true);
         }
 
-        @Since("1.19.60-r1")
+
         public ArmorBuilder addRepairItemName(@NonNull String repairItemName, String molang) {
             super.addRepairs(List.of(repairItemName), molang);
             return this;
         }
 
-        @Since("1.19.60-r1")
+
         public ArmorBuilder addRepairItemName(@NonNull String repairItemName, int repairAmount) {
             super.addRepairs(List.of(repairItemName), String.valueOf(repairAmount));
             return this;
         }
 
-        @Since("1.19.40-r1")
+
         public ArmorBuilder addRepairItems(@NotNull List<Item> repairItems, String molang) {
             super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), molang);
             return this;
         }
 
-        @Since("1.19.40-r1")
+
         public ArmorBuilder addRepairItems(@NotNull List<Item> repairItems, int repairAmount) {
             super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), String.valueOf(repairAmount));
             return this;

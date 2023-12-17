@@ -11,8 +11,7 @@ import edu.umd.cs.findbugs.annotations.Nullable;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehaviorExecutor {
 
     protected Class<T> entityClass;

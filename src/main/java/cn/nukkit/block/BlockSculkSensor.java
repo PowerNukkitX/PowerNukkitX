@@ -16,8 +16,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author LT_Name
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<BlockEntitySculkSensor>, RedstoneComponent {
 
     public static final IntBlockProperty SCULK_SENSOR_PHASE = new IntBlockProperty("sculk_sensor_phase", false, 2);
@@ -97,8 +97,7 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
         return false;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isSolid(BlockFace side) {
         return false;

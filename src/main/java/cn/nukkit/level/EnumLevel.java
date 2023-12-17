@@ -92,8 +92,7 @@ public enum EnumLevel {
         return Math.round((float) value / factor) * factor;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @PowerNukkitXDifference(since = "1.18.30", info = "Supporting World Dimension Judgment")
     public static Level getOtherTheEndPair(Level current) {
         if (current == OVERWORLD.level || current.getDimension() == Level.DIMENSION_OVERWORLD) {
@@ -105,8 +104,7 @@ public enum EnumLevel {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @PowerNukkitXDifference(since = "1.18.30", info = "Supporting World Dimension Judgment")
     public static Position moveToTheEnd(Position current) {
         if (THE_END.level == null) {

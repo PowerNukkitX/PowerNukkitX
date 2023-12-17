@@ -19,11 +19,10 @@ import java.util.Arrays;
 import static cn.nukkit.blockproperty.CommonBlockProperties.BLOCK_FACE;
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 
-@Since("1.6.0.0-PNX")
-@PowerNukkitOnly
+
 public abstract class BlockAmethystBud extends BlockTransparentMeta implements Faceable {
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public static final BlockProperties PROPERTIES = new BlockProperties(BLOCK_FACE);
 
     @Override
@@ -36,7 +35,7 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
     @Override
     public abstract int getId();
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -60,8 +59,7 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     @Override
     public int getToolTier() {
         return ItemTool.TIER_IRON;
@@ -77,8 +75,7 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
         return false;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -90,8 +87,7 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
         return getPropertyValue(BLOCK_FACE);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(BLOCK_FACE, face);

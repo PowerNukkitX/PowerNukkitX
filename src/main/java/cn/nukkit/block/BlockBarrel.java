@@ -23,19 +23,18 @@ import java.util.Map;
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
 
-@PowerNukkitOnly
+
 public class BlockBarrel extends BlockSolidMeta implements Faceable, BlockEntityHolder<BlockEntityBarrel> {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, OPEN);
 
-    @PowerNukkitOnly
+
     public BlockBarrel() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockBarrel(int meta) {
         super(meta);
     }
@@ -50,24 +49,21 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable, BlockEntity
         return BARREL;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.BARREL;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntityBarrel> getBlockEntityClass() {
@@ -154,19 +150,18 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable, BlockEntity
         return BlockFace.fromIndex(index);
     }
 
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
+
     @Override
     public void setBlockFace(BlockFace face) {
         setDamage((getDamage() & 0x8) | (face.getIndex() & 0x7));
     }
 
-    @PowerNukkitOnly
+
     public boolean isOpen() {
         return (getDamage() & 0x8) == 0x8;
     }
 
-    @PowerNukkitOnly
+
     public void setOpen(boolean open) {
         setDamage((getDamage() & 0x7) | (open? 0x8 : 0x0));
     }

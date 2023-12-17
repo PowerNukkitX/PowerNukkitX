@@ -26,14 +26,14 @@ import java.util.concurrent.ThreadLocalRandom;
  * Implements the main logic of all nether vines.
  * @author joserobjr
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public abstract class BlockVinesNether extends BlockTransparentMeta {
     /**
      * Creates a nether vine with age {@code 0}.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public BlockVinesNether() {
     }
 
@@ -41,8 +41,8 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      * Creates a nether vine from a meta compatible with {@link #getProperties()}.
      * @throws InvalidBlockPropertyMetaException If the meta is incompatible
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public BlockVinesNether(int meta) {
         super(meta);
     }
@@ -52,16 +52,16 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      * may also add horizontal directions.
      * @return Normally, up or down.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     @NotNull
     public abstract BlockFace getGrowthDirection();
 
     /**
      * The current age of this block.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public abstract int getVineAge();
 
     /**
@@ -69,16 +69,16 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      * @param vineAge The new age
      * @throws InvalidBlockPropertyValueException If the value is outside the accepted range from {@code 0} to {@link #getMaxVineAge()}, both inclusive.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public abstract void setVineAge(int vineAge) throws InvalidBlockPropertyValueException;
 
     /**
      * The maximum accepted age of this block.
      * @return Positive, inclusive value.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public abstract int getMaxVineAge();
 
     /**
@@ -86,8 +86,8 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      * 
      * @param pseudorandom If the the randomization should be pseudorandom.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public void randomizeVineAge(boolean pseudorandom) {
         if (pseudorandom) {
             setVineAge(ThreadLocalRandom.current().nextInt(getMaxVineAge()));
@@ -148,8 +148,8 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      * Grow a single vine if possible. Calls {@link BlockGrowEvent} passing the positioned new state and the source block.
      * @return If the vine grew successfully.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public boolean grow() {
         Block pos = getSide(getGrowthDirection());
         if (pos.getId() != AIR || pos.y < 0 || 255 < pos.y) {
@@ -182,8 +182,8 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      * to the world, if one of the events gets cancelled the growth gets interrupted.
      * @return How many vines grew 
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public int growMultiple() {
         BlockFace growthDirection = getGrowthDirection();
         int age = getVineAge() + 1;
@@ -230,8 +230,8 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      * @param base True to get the age of the base (oldest block), false to get the age of the head (newest block)
      * @return Empty if the target could not be reached. The age of the target if it was found.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     @NotNull
     public OptionalInt findVineAge(boolean base) {
         return findVineBlock(base)
@@ -245,8 +245,8 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      * @return Empty if the target could not be reached or the block there isn't an instance of {@link BlockVinesNether}.
      *          The positioned block of the target if it was found.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     @NotNull
     public Optional<BlockVinesNether> findVineBlock(boolean base) {
         return findVine(base)
@@ -260,8 +260,8 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      * @param base True to find the base (oldest block), false to find the head (newest block)
      * @return Empty if the target could not be reached. The position of the target if it was found.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     @NotNull
     public Optional<Position> findVine(boolean base) {
         BlockFace supportFace = getGrowthDirection();
@@ -291,8 +291,8 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      *     <li>{@code FALSE} if the base was already in the max age or the block change was refused 
      *     </ul>
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     @NotNull
     public OptionalBoolean increaseRootAge() {
         Block base = findVine(true).map(Position::getLevelBlock).orElse(null);
@@ -350,14 +350,12 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
         return Item.EMPTY_ARRAY;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected boolean isSupportValid(@NotNull Block support) {
         return support.getId() == getId() || !support.isTransparent();
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isSupportValid() {
         return isSupportValid(getSide(getGrowthDirection().getOpposite()));
     }
@@ -428,13 +426,13 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public  boolean sticksToPiston() {
         return false;
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean breaksWhenMoved() {
         return true;
     }

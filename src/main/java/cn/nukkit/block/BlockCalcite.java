@@ -13,17 +13,17 @@ import org.jetbrains.annotations.NotNull;
  * @since 08/06/2021
  */
 
-@PowerNukkitOnly
+
 @PowerNukkitXDifference(info = "not isLavaResistant")
 public class BlockCalcite extends BlockSolid {
-    @PowerNukkitOnly
+
     public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
 
-    @PowerNukkitOnly
+
     public BlockCalcite() {
     }
 
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -55,8 +55,7 @@ public class BlockCalcite extends BlockSolid {
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;

@@ -41,23 +41,22 @@ import java.util.Map;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
 
-@PowerNukkitOnly
+
 @Log4j2
 public class BlockCampfire extends BlockTransparentMeta implements Faceable, BlockEntityHolder<BlockEntityCampfire> {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BooleanBlockProperty EXTINGUISHED = new BooleanBlockProperty("extinguished", false);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(EXTINGUISHED, CommonBlockProperties.CARDINAL_DIRECTION);
 
-    @PowerNukkitOnly
+
     public BlockCampfire() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockCampfire(int meta) {
         super(meta);
     }
@@ -67,24 +66,21 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
         return CAMPFIRE_BLOCK;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.CAMPFIRE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntityCampfire> getBlockEntityClass() {
@@ -198,8 +194,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     protected EntityDamageEvent getDamageEvent(Entity entity) {
         return new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.FIRE, 1);
     }
@@ -265,8 +260,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
         return itemUsed;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         if ((projectile instanceof EntitySmallFireBall || (projectile.isOnFire() && projectile instanceof EntityArrow)) && isExtinguished()) {
@@ -282,7 +276,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
         return false;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -298,12 +292,12 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
         return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
     }
 
-    @PowerNukkitOnly
+
     public boolean isExtinguished() {
         return getBooleanValue(EXTINGUISHED);
     }
 
-    @PowerNukkitOnly
+
     public void setExtinguished(boolean extinguished) {
         setBooleanValue(EXTINGUISHED, extinguished);
     }
@@ -314,8 +308,8 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
     }
 
     @Override
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
+
+
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, face);
     }
@@ -347,13 +341,13 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean canBePulled() {
         return false;
     }

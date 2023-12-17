@@ -10,8 +10,6 @@ import cn.nukkit.level.generator.populator.impl.structure.utils.structure.Scatte
 import cn.nukkit.math.NukkitRandom;
 
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
 public class PopulatorDesertPyramid extends PopulatorScatteredStructure {
 
     @Override

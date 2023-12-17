@@ -27,12 +27,11 @@ import java.util.Collection;
  */
 @PowerNukkitDifference(info = "Extends BlockFallableMeta instead of BlockFallable", since = "1.4.0.0-PN")
 public class BlockAnvil extends BlockFallableMeta implements Faceable {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BlockProperty<AnvilDamage> DAMAGE = new ArrayBlockProperty<>("damage", false, AnvilDamage.class);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(
             CommonBlockProperties.CARDINAL_DIRECTION.exportingToItems(true), DAMAGE.exportingToItems(true)
     );
@@ -50,22 +49,19 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
         return ANVIL;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     public AnvilDamage getAnvilDamage() {
         return getPropertyValue(DAMAGE);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     public void setAnvilDamage(AnvilDamage anvilDamage) {
         setPropertyValue(DAMAGE, anvilDamage);
     }
@@ -75,7 +71,7 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
         return true;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -132,7 +128,7 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -142,8 +138,7 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
         return false;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, face);

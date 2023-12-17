@@ -30,8 +30,7 @@ public class ItemCoal extends Item {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected ItemCoal(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
@@ -47,9 +46,8 @@ public class ItemCoal extends Item {
     public int getDamage() {
         return super.getDamage();
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public boolean isCharcoal() {
         return getId() == COAL && super.getDamage() == 1; 
     }

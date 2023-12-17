@@ -16,8 +16,8 @@ import javax.annotation.Nullable;
  *
  * @author lt_name
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public abstract class ItemCustom extends StringItemBase implements CustomItem {
     private final String textureName;
 

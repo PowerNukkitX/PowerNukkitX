@@ -36,8 +36,8 @@ import java.util.stream.Collectors;
  */
 @Deprecated
 @DeprecationDetails(since = "1.19.60-r1", reason = "Using the new ParamTree instead", replaceWith = "ParamTree")
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 @Getter
 public class CommandParser {
 

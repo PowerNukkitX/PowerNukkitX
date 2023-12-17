@@ -8,8 +8,7 @@ import lombok.Setter;
 
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.19.40-r3")
+
 @Getter
 @Setter
 public class JeBlockState {

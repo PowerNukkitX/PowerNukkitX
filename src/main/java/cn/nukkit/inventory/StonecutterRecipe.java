@@ -6,7 +6,7 @@ import lombok.ToString;
 
 import java.util.UUID;
 
-@PowerNukkitOnly
+
 @ToString
 public class StonecutterRecipe implements Recipe {
 
@@ -20,12 +20,12 @@ public class StonecutterRecipe implements Recipe {
 
     private final int priority;
 
-    @PowerNukkitOnly
+
     public StonecutterRecipe(Item result, Item ingredient) {
         this(null, 10, result, ingredient);
     }
 
-    @PowerNukkitOnly
+
     public StonecutterRecipe(String recipeId, int priority, Item result, Item ingredient) {
         this.recipeId = recipeId;
         this.priority = priority;
@@ -41,17 +41,17 @@ public class StonecutterRecipe implements Recipe {
         return this.output.clone();
     }
 
-    @PowerNukkitOnly
+
     public String getRecipeId() {
         return this.recipeId;
     }
 
-    @PowerNukkitOnly
+
     public UUID getId() {
         return new UUID(least, most);
     }
 
-    @PowerNukkitOnly
+
     public void setId(UUID uuid) {
         this.least = uuid.getLeastSignificantBits();
         this.most = uuid.getMostSignificantBits();
@@ -61,7 +61,7 @@ public class StonecutterRecipe implements Recipe {
         }
     }
 
-    @PowerNukkitOnly
+
     public Item getIngredient() {
         return ingredient.clone();
     }
@@ -76,7 +76,7 @@ public class StonecutterRecipe implements Recipe {
         return RecipeType.STONECUTTER;
     }
 
-    @PowerNukkitOnly
+
     public int getPriority() {
         return this.priority;
     }

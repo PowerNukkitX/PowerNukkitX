@@ -13,8 +13,8 @@ import org.jetbrains.annotations.NotNull;
  * DataPacketManager is a static class to manage DataPacketProcessors and process DataPackets.
  */
 @SuppressWarnings("rawtypes")
-@Since("1.19.80-r2")
-@PowerNukkitXOnly
+
+
 public final class DataPacketManager {
     private static final Int2ObjectOpenHashMap<DataPacketProcessor> CURRENT_PROTOCOL_PROCESSORS = new Int2ObjectOpenHashMap<>(300);
 

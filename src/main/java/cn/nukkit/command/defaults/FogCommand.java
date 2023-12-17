@@ -18,8 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@PowerNukkitXOnly
-@Since("1.19.50-r3")
+
 public class FogCommand extends VanillaCommand {
     public FogCommand(String name) {
         super(name, "commands.fog.description", "commands.fog.usage");
@@ -39,7 +38,7 @@ public class FogCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();

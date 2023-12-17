@@ -41,8 +41,7 @@ public class ItemBucket extends Item {
         super(BUCKET, meta, count, getName(meta));
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected ItemBucket(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
@@ -94,31 +93,27 @@ public class ItemBucket extends Item {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isEmpty() {
         return getId() == BUCKET && getDamage() == 0;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isWater() {
         return getTargetBlock().getId() == BlockID.FLOWING_WATER;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isLava() {
         return getTargetBlock().getId() == BlockID.FLOWING_LAVA;
     }
 
-    @PowerNukkitOnly
+
     public boolean isPowderSnow() {
         return getTargetBlock().getId() == BlockID.POWDER_SNOW;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Nullable
     public String getFishEntityId() {
         if (getId() != BUCKET) {
@@ -152,8 +147,7 @@ public class ItemBucket extends Item {
         return true;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public Block getTargetBlock() {
         return getId() == BUCKET ? Block.get(getDamageByTarget(this.meta)) : Block.get(BlockID.AIR);
     }
@@ -330,8 +324,7 @@ public class ItemBucket extends Item {
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected boolean canBeUsedOnDimension(int dimension) {
         if (getId() != BUCKET) {
             return true;
@@ -340,8 +333,7 @@ public class ItemBucket extends Item {
         return dimension != Level.DIMENSION_NETHER || (getDamage() == 10 || getDamage() == 1);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected void afterUse(Level level, Block block) {
         if (getId() != BUCKET) {
             return;
@@ -356,8 +348,7 @@ public class ItemBucket extends Item {
         spawnFishEntity(block.add(0.5, 0.5, 0.5));
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     public void spawnFishEntity(Position spawnPos) {
         var fishEntityId = getFishEntityId();
         if (fishEntityId != null) {

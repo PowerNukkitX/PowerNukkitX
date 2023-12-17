@@ -8,8 +8,7 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 
-@PowerNukkitXOnly
-@Since("1.19.31-r1")
+
 public class PlayerChangeArmorStandEvent extends PlayerEvent implements Cancellable {
     private final Entity armorStand;
     private Item item;

@@ -10,8 +10,8 @@ import cn.nukkit.api.Since;
  * <p>
  * {@code defaultV = Integer.MIN_VALUE}
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public class WildcardIntNode extends ParamNode<Integer> {
     private final int defaultV;
 

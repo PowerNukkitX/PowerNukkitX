@@ -26,8 +26,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public record CommandLogger(Command command,
                             CommandSender sender,
                             String commandLabel,

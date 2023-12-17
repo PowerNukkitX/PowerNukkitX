@@ -71,8 +71,8 @@ import static cn.nukkit.utils.Utils.dynamic;
                 "these dynamic calls will avoid the need of plugin recompilations after Minecraft updates that " +
                 "shifts the data values")
 public abstract class Entity extends Location implements Metadatable {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final Entity[] EMPTY_ARRAY = new Entity[0];
 
     public static final int NETWORK_ID = -1;
@@ -105,17 +105,17 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_DISPLAY_ITEM = dynamic(16); //int (id | (data << 16))
     public static final int DATA_DISPLAY_OFFSET = dynamic(17); //int
     public static final int DATA_HAS_DISPLAY = dynamic(18); //byte (must be 1 for minecart to show block inside)
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_SWELL = dynamic(19);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_OLD_SWELL = dynamic(20);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_SWELL_DIR = dynamic(21);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_CHARGE_AMOUNT = dynamic(22);
     public static final int DATA_ENDERMAN_HELD_RUNTIME_ID = dynamic(23); //short
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final int DATA_CLIENT_EVENT = dynamic(24); //byte
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
@@ -123,12 +123,12 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_ENTITY_AGE = dynamic(DATA_CLIENT_EVENT); //short
     public static final int DATA_PLAYER_FLAG_SLEEP = 1;
     public static final int DATA_PLAYER_FLAG_DEAD = 2;
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final int DATA_USING_ITEM = dynamic(25); //byte
 
     public static final int DATA_PLAYER_FLAGS = dynamic(26); //byte
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_PLAYER_INDEX = dynamic(27);
     public static final int DATA_PLAYER_BED_POSITION = dynamic(28); //block coords
     public static final int DATA_PLAYER_BUTTON_TEXT = 40;
@@ -136,18 +136,18 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FIREBALL_POWER_X = dynamic(29); //float
     public static final int DATA_FIREBALL_POWER_Y = dynamic(30); //float
     public static final int DATA_FIREBALL_POWER_Z = dynamic(31); //float
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_AUX_POWER = dynamic(32); //???
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FISH_X = dynamic(33); //float
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FISH_Z = dynamic(34); //float
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FISH_ANGLE = dynamic(35); //float
     public static final int DATA_POTION_AUX_VALUE = dynamic(36); //short
     public static final int DATA_LEAD_HOLDER_EID = dynamic(37); //long
     public static final int DATA_SCALE = dynamic(38); //float
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_HAS_NPC_COMPONENT = dynamic(39); //byte
     public static final int DATA_NPC_SKIN_DATA = dynamic(40); //string
     public static final int DATA_NPC_ACTIONS = dynamic(41); //string
@@ -161,7 +161,7 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_WITHER_TARGET_1 = dynamic(49); //long
     public static final int DATA_WITHER_TARGET_2 = dynamic(50); //long
     public static final int DATA_WITHER_TARGET_3 = dynamic(51); //long
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_AERIAL_ATTACK = dynamic(52);
     public static final int DATA_BOUNDING_BOX_WIDTH = dynamic(53); //float
     public static final int DATA_BOUNDING_BOX_HEIGHT = dynamic(54); //float
@@ -170,131 +170,131 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_RIDER_ROTATION_LOCKED = dynamic(57); //byte
     public static final int DATA_RIDER_MAX_ROTATION = dynamic(58); //float
     public static final int DATA_RIDER_MIN_ROTATION = dynamic(59); //float
-    @Since("1.4.0.0-PN")
+
     public static final int DATA_RIDER_ROTATION_OFFSET = dynamic(60);
     public static final int DATA_AREA_EFFECT_CLOUD_RADIUS = dynamic(61); //float
     public static final int DATA_AREA_EFFECT_CLOUD_WAITING = dynamic(62); //int
     public static final int DATA_AREA_EFFECT_CLOUD_PARTICLE_ID = dynamic(63); //int
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_SHULKER_PEEK_ID = dynamic(64); //int
     public static final int DATA_SHULKER_ATTACH_FACE = dynamic(65); //byte
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_SHULKER_ATTACHED = dynamic(66); //short
     public static final int DATA_SHULKER_ATTACH_POS = dynamic(67); //block coords
     public static final int DATA_TRADING_PLAYER_EID = dynamic(68); //long
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_TRADING_CAREER = dynamic(69);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_HAS_COMMAND_BLOCK = dynamic(70); //byte
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_COMMAND_BLOCK_COMMAND = dynamic(71); //string
     public static final int DATA_COMMAND_BLOCK_LAST_OUTPUT = dynamic(72); //string
     public static final int DATA_COMMAND_BLOCK_TRACK_OUTPUT = dynamic(73); //byte
     public static final int DATA_CONTROLLING_RIDER_SEAT_NUMBER = dynamic(74); //byte
     public static final int DATA_STRENGTH = dynamic(75); //int
     public static final int DATA_MAX_STRENGTH = dynamic(76); //int
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_SPELL_CASTING_COLOR = dynamic(77); //int
     public static final int DATA_LIMITED_LIFE = dynamic(78); //int
     public static final int DATA_ARMOR_STAND_POSE_INDEX = dynamic(79); //int
     public static final int DATA_ENDER_CRYSTAL_TIME_OFFSET = dynamic(80); //int
     public static final int DATA_ALWAYS_SHOW_NAMETAG = dynamic(81); //byte
     public static final int DATA_COLOR_2 = dynamic(82); //byte
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_NAME_AUTHOR = dynamic(83);
     public static final int DATA_SCORE_TAG = dynamic(84); //String
     public static final int DATA_BALLOON_ATTACHED_ENTITY = dynamic(85); //long
     public static final int DATA_PUFFERFISH_SIZE = dynamic(86); //byte
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_BUBBLE_TIME = dynamic(87); //int
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_AGENT = dynamic(88); //long
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_SITTING_AMOUNT = dynamic(89); //??
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_SITTING_AMOUNT_PREVIOUS = dynamic(90); //??
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_EATING_COUNTER = dynamic(91); //int
     public static final int DATA_FLAGS_EXTENDED = dynamic(92); //flags
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_LAYING_AMOUNT = dynamic(93); //??
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_LAYING_AMOUNT_PREVIOUS = dynamic(94); //??
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_DURATION = dynamic(95); //int
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_SPAWN_TIME = dynamic(96); //int
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_CHANGE_RATE = dynamic(97); //float
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_CHANGE_ON_PICKUP = dynamic(98); //float
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_PICKUP_COUNT = dynamic(99); //int
-    @Since("1.4.0.0-PN")
+
     public static final int DATA_INTERACTIVE_TAG = dynamic(100); //string (button text)
-    @PowerNukkitOnly("Removed from Cloudburst Nukkit")
+    ("Removed from Cloudburst Nukkit")
     @Deprecated
     @DeprecationDetails(by = "Cloudburst Nukkit", reason = "Duplicated and removed", replaceWith = "DATA_INTERACTIVE_TAG", since = "FUTURE")
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_INTERACT_TEXT = dynamic(DATA_INTERACTIVE_TAG); //string
     public static final int DATA_TRADE_TIER = dynamic(101); //int 这个没啥用
     public static final int DATA_MAX_TRADE_TIER = dynamic(102); //int 这个控制村民最大等级
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_TRADE_EXPERIENCE = dynamic(103); //int这个控制当前经验
-    @Since("1.1.1.0-PN")
+
     public static final int DATA_SKIN_ID = dynamic(104); //int
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_SPAWNING_FRAMES = dynamic(105); //??
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_COMMAND_BLOCK_TICK_DELAY = dynamic(106); //int
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_COMMAND_BLOCK_EXECUTE_ON_FIRST_TICK = dynamic(107); //byte
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_AMBIENT_SOUND_INTERVAL = dynamic(108); //float
-    @Since("1.3.0.0-PN")
+
     public static final int DATA_AMBIENT_SOUND_INTERVAL_RANGE = dynamic(109); //float
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_AMBIENT_SOUND_EVENT_NAME = dynamic(110); //string
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FALL_DAMAGE_MULTIPLIER = dynamic(111); //float
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_NAME_RAW_TEXT = dynamic(112); //string
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_CAN_RIDE_TARGET = dynamic(113); //byte
-    @Since("1.3.0.0-PN")
+
     public static final int DATA_LOW_TIER_CURED_DISCOUNT = dynamic(114); //int
-    @Since("1.3.0.0-PN")
+
     public static final int DATA_HIGH_TIER_CURED_DISCOUNT = dynamic(115); //int
-    @Since("1.3.0.0-PN")
+
     public static final int DATA_NEARBY_CURED_DISCOUNT = dynamic(116); //int
-    @Since("1.3.0.0-PN")
+
     public static final int DATA_NEARBY_CURED_DISCOUNT_TIMESTAMP = dynamic(117); //int
-    @Since("1.3.0.0-PN")
+
     public static final int DATA_HITBOX = dynamic(118); //NBT
-    @Since("1.3.0.0-PN")
+
     public static final int DATA_IS_BUOYANT = dynamic(119); //byte
-    @Since("1.4.0.0-PN")
+
     public static final int DATA_FREEZING_EFFECT_STRENGTH = dynamic(120); //float
-    @Since("1.3.0.0-PN")
+
     public static final int DATA_BUOYANCY_DATA = dynamic(121); //string
-    @Since("1.4.0.0-PN")
+
     public static final int DATA_GOAT_HORN_COUNT = dynamic(122); // ???
-    @Since("1.5.0.0-PN")
+
     public static final int DATA_BASE_RUNTIME_ID = dynamic(123); // ???
     public static final int DATA_MOVEMENT_SOUND_DISTANCE_OFFSET = dynamic(124); // ???
     //Deprecated
-    //@Since("1.5.0.0-PN")
+    //
     //public static final int DATA_UPDATE_PROPERTIES = dynamic(124); // ???
     public static final int DATA_HEARTBEAT_INTERVAL_TICKS = dynamic(125); // ???
     public static final int DATA_HEARTBEAT_SOUND_EVENT = dynamic(126); // ???
-    @Since("1.19.40-r3")
+
     public static final int DATA_PLAYER_LAST_DEATH_POS = 127;// ???
-    @Since("1.19.40-r3")
+
     public static final int DATA_PLAYER_LAST_DEATH_DIMENSION = 128;// ???
-    @Since("1.19.40-r3")
+
     public static final int DATA_PLAYER_HAS_DIED = 129;// ???
 
-    @Since("1.20.10-r1")
+
     public static final int DATA_COLLISION_BOX = 130; //vector3f
 
     // Flags
@@ -356,17 +356,17 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FLAG_ENCHANTED = dynamic(52);
     public static final int DATA_FLAG_SHOW_TRIDENT_ROPE = dynamic(53); // tridents show an animated rope when enchanted with loyalty after they are thrown and return to their owner. To be combined with DATA_OWNER_EID
     public static final int DATA_FLAG_CONTAINER_PRIVATE = dynamic(54); //inventory is private, doesn't drop contents when killed if true
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_IS_TRANSFORMING = dynamic(55);
     public static final int DATA_FLAG_SPIN_ATTACK = dynamic(56);
     public static final int DATA_FLAG_SWIMMING = dynamic(57);
     public static final int DATA_FLAG_BRIBED = dynamic(58); //dolphins have this set when they go to find treasure for the player
     public static final int DATA_FLAG_PREGNANT = dynamic(59);
     public static final int DATA_FLAG_LAYING_EGG = dynamic(60);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_RIDER_CAN_PICK = dynamic(61);
-    @PowerNukkitOnly
-    @Since("1.2.0.0-PN")
+
+
     public static final int DATA_FLAG_TRANSITION_SITTING = dynamic(62); // PowerNukkit but without typo
     /**
      * @see #DATA_FLAG_TRANSITION_SITTING
@@ -377,7 +377,7 @@ public abstract class Entity extends Location implements Metadatable {
             reason = "This is from NukkitX but it has a typo which we can't remove unless NukkitX removes from their side.",
             since = "1.2.0.0-PN",
             replaceWith = "DATA_FLAG_TRANSITION_SITTING")
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_TRANSITION_SETTING = DATA_FLAG_TRANSITION_SITTING; // NukkitX with the same typo
     public static final int DATA_FLAG_EATING = dynamic(63);
     public static final int DATA_FLAG_LAYING_DOWN = dynamic(64);
@@ -389,87 +389,87 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FLAG_OVER_SCAFFOLDING = dynamic(70);
     public static final int DATA_FLAG_FALL_THROUGH_SCAFFOLDING = dynamic(71);
     public static final int DATA_FLAG_BLOCKING = dynamic(72); //shield
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_TRANSITION_BLOCKING = dynamic(73);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_BLOCKED_USING_SHIELD = dynamic(74);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_BLOCKED_USING_DAMAGED_SHIELD = dynamic(75);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_SLEEPING = dynamic(76);
-    @Since("FUTURE")
+
     public static final int DATA_FLAG_ENTITY_GROW_UP = dynamic(77);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_TRADE_INTEREST = dynamic(78);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_DOOR_BREAKER = dynamic(79);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_BREAKING_OBSTRUCTION = dynamic(80);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_DOOR_OPENER = dynamic(81);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_IS_ILLAGER_CAPTAIN = dynamic(82);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_STUNNED = dynamic(83);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_ROARING = dynamic(84);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_DELAYED_ATTACK = dynamic(85);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_IS_AVOIDING_MOBS = dynamic(86);
-    @Since("1.3.0.0-PN")
+
     public static final int DATA_FLAG_IS_AVOIDING_BLOCKS = dynamic(87);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_FACING_TARGET_TO_RANGE_ATTACK = dynamic(88);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_HIDDEN_WHEN_INVISIBLE = dynamic(89);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_IS_IN_UI = dynamic(90);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_STALKING = dynamic(91);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_EMOTING = dynamic(92);
-    @Since("1.2.0.0-PN")
+
     public static final int DATA_FLAG_CELEBRATING = dynamic(93);
-    @Since("1.3.0.0-PN")
+
     public static final int DATA_FLAG_ADMIRING = dynamic(94);
-    @Since("1.3.0.0-PN")
+
     public static final int DATA_FLAG_CELEBRATING_SPECIAL = dynamic(95);
-    @Since("1.4.0.0-PN")
+
     public static final int DATA_FLAG_RAM_ATTACK = dynamic(97);
-    @Since("1.5.0.0-PN")
+
     public static final int DATA_FLAG_PLAYING_DEAD = dynamic(98);
-    @Since("FUTURE")
+
     public static final int DATA_FLAG_IN_ASCENDABLE_BLOCK = dynamic(99);
-    @Since("FUTURE")
+
     public static final int DATA_FLAG_OVER_DESCENDABLE_BLOCK = dynamic(100);
-    @Since("1.6.0.0-PNX")
+
     public static final int DATA_FLAG_CROAKING = dynamic(101);
-    @Since("1.6.0.0-PNX")
+
     public static final int DATA_FLAG_EAT_MOB = dynamic(102);
-    @Since("1.6.0.0-PNX")
+
     public static final int DATA_FLAG_JUMP_GOAL_JUMP = dynamic(103);
-    @Since("1.6.0.0-PNX")
+
     public static final int DATA_FLAG_EMERGING = dynamic(104);
-    @Since("1.6.0.0-PNX")
+
     public static final int DATA_FLAG_SNIFFING = dynamic(105);
-    @Since("1.6.0.0-PNX")
+
     public static final int DATA_FLAG_DIGGING = dynamic(106);
-    @Since("1.19.21-r4")
+
     public static final int DATA_FLAG_SONIC_BOOM = dynamic(107);
-    @Since("1.19.50-r1")
+
     public static final int DATA_FLAG_HAS_DASH_COOLDOWN = dynamic(108);
-    @Since("1.19.50-r1")
+
     public static final int DATA_FLAG_PUSH_TOWARDS_CLOSEST_SPACE = dynamic(109);
-    @Since("1.19.70-r1")
+
     public static final int DATA_FLAG_SCENTING = dynamic(110);
-    @Since("1.19.70-r1")
+
     public static final int DATA_FLAG_RISING = dynamic(111);
-    @Since("1.19.70-r1")
+
     public static final int DATA_FLAG_FEELING_HAPPY = dynamic(112);
-    @Since("1.19.70-r1")
+
     public static final int DATA_FLAG_SEARCHING = dynamic(113);
-    @Since("1.20.10-r1")
+
     public static final int DATA_FLAG_CRAWLING = dynamic(114);
 
     private static final Set<CustomEntityDefinition> entityDefinitions = new HashSet<>();
@@ -512,14 +512,14 @@ public abstract class Entity extends Location implements Metadatable {
     public double lastMotionY;
     public double lastMotionZ;
     public double lastPitch;
-    @Since("FUTURE")
+
     public double lastYaw;
-    @Since("FUTURE")
+
     public double lastHeadYaw;
     public double pitchDelta;
-    @Since("FUTURE")
+
     public double yawDelta;
-    @Since("FUTURE")
+
     public double headYawDelta;
     public double entityCollisionReduction = 0; // Higher than 0.9 will result a fast collisions
     public AxisAlignedBB boundingBox;
@@ -538,8 +538,8 @@ public abstract class Entity extends Location implements Metadatable {
     public int maxFireTicks;
     public int fireTicks = 0;
     public int inPortalTicks = 0;
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public int freezingTicks = 0;//0 - 140
     public float scale = 1;
     public CompoundTag namedTag;
@@ -552,11 +552,11 @@ public abstract class Entity extends Location implements Metadatable {
     public boolean invulnerable;
     public double highestPosition;
     public boolean closed = false;
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public boolean noClip = false;
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     //spawned by server
     //player's UUID is sent by client,so this value cannot be used in Player
     protected UUID entityUniqueId;
@@ -570,8 +570,8 @@ public abstract class Entity extends Location implements Metadatable {
      * Player do not use
      */
     protected float ySize = 0;
-    @PowerNukkitOnly
-    @Since("1.2.1.0-PN")
+
+
     protected boolean inEndPortal;
     protected boolean isStatic = false;
     protected Server server;
@@ -579,16 +579,13 @@ public abstract class Entity extends Location implements Metadatable {
     private int maxHealth = 20;
     private volatile boolean initialized;
 
-    @PowerNukkitXOnly
-    @Since("1.20.10-r1")
+
     protected volatile boolean saveWithChunk = true;
 
-    @PowerNukkitXOnly
-    @Since("1.20.10-r2")
+
     private Map<String, Integer> intProperties = new LinkedHashMap<>();
 
-    @PowerNukkitXOnly
-    @Since("1.20.10-r2")
+
     private Map<String, Float> floatProperties = new LinkedHashMap<>();
 
     public Entity(FullChunk chunk, CompoundTag nbt) {
@@ -613,8 +610,8 @@ public abstract class Entity extends Location implements Metadatable {
      * @param args       the args
      * @return the entity
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
+
     @Nullable
     public static Entity createEntity(Identifier identifier, @NotNull Position pos, @Nullable Object... args) {
         Integer id = EntityIds.IDENTIFIER_2_IDS.get(identifier.toString());
@@ -726,8 +723,8 @@ public abstract class Entity extends Location implements Metadatable {
     /**
      * @see #registerEntity(EntityProvider, boolean)
      */
-    @PowerNukkitXOnly
-    @Since("1.19.21-r2")
+
+
     public static boolean registerEntity(EntityProvider<? extends Entity> provider) {
         return registerEntity(provider, false);
     }
@@ -741,8 +738,8 @@ public abstract class Entity extends Location implements Metadatable {
      * @param force    the force
      * @return the boolean
      */
-    @PowerNukkitXOnly
-    @Since("1.19.21-r2")
+
+
     public static boolean registerEntity(EntityProvider<? extends Entity> provider, boolean force) {
         if (provider == null) {
             return false;
@@ -768,7 +765,7 @@ public abstract class Entity extends Location implements Metadatable {
      *
      * @return the entity definitions
      */
-    @PowerNukkitXOnly
+
     public static Set<CustomEntityDefinition> getEntityDefinitions() {
         return new HashSet<>(entityDefinitions);
     }
@@ -781,8 +778,8 @@ public abstract class Entity extends Location implements Metadatable {
      * @param customEntityProvider the custom entity provider
      * @return the ok
      */
-    @PowerNukkitXOnly
-    @Since("1.19.21-r2")
+
+
     public static OK<?> registerCustomEntity(CustomEntityProvider customEntityProvider) {
         if (!Server.getInstance().isEnableExperimentMode()) {
             return new OK<>(false, "The server does not have the experiment mode feature enabled.Unable to register custom entity!");
@@ -799,8 +796,8 @@ public abstract class Entity extends Location implements Metadatable {
      * @return the known entity ids
      */
     @NotNull
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
+
     public static IntCollection getKnownEntityIds() {
         return knownEntities.keySet().stream()
                 .filter(Utils::isInteger)
@@ -816,8 +813,8 @@ public abstract class Entity extends Location implements Metadatable {
      * @return the known entities
      */
     @NotNull
-    @PowerNukkitXOnly
-    @Since("1.19.20-r4")
+
+
     @Deprecated
     public static Map<String, Class<? extends Entity>> getKnownEntities() {
         return knownEntities.entrySet().stream()
@@ -827,8 +824,8 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     @NotNull
-    @PowerNukkitXOnly
-    @Since("1.19.20-r4")
+
+
     @Deprecated
     public static Map<String, EntityProvider<? extends Entity>> getKnownEntityProviders() {
         return Collections.unmodifiableMap(knownEntities);
@@ -842,8 +839,8 @@ public abstract class Entity extends Location implements Metadatable {
      * @return the known entity providers
      */
     @NotNull
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
+
     public static List<String> getSaveIds() {
         return new ArrayList<>(shortNames.values());
     }
@@ -857,8 +854,8 @@ public abstract class Entity extends Location implements Metadatable {
      * @return the save id
      */
     @NotNull
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
+
     public static OptionalInt getSaveId(String id) {
         var entityProvider = knownEntities.get(id);
         if (entityProvider == null) {
@@ -881,8 +878,8 @@ public abstract class Entity extends Location implements Metadatable {
      * @return the save id
      */
     @Nullable
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
+
     public static String getSaveId(int id) {
         var entityProvider = knownEntities.get(Integer.toString(id));
         if (entityProvider == null) {
@@ -962,8 +959,8 @@ public abstract class Entity extends Location implements Metadatable {
      * @param entities  需要播放动画的实体群 Group of entities that need to play animations
      * @param players   可视玩家 Visible Player
      */
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
+
+
     public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities, Collection<Player> players) {
         var pk = new AnimateEntityPacket();
         pk.parseFromAnimation(animation);
@@ -975,8 +972,8 @@ public abstract class Entity extends Location implements Metadatable {
     /**
      * @see #playAnimationOnEntities(AnimateEntityPacket.Animation, Collection, Collection)
      */
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
+
+
     public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities) {
         var viewers = new HashSet<Player>();
         entities.forEach(entity -> {
@@ -1133,8 +1130,7 @@ public abstract class Entity extends Location implements Metadatable {
         return 0;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     public float getCurrentHeight() {
         if (isSwimming()) {
             return getSwimmingHeight();
@@ -1175,8 +1171,7 @@ public abstract class Entity extends Location implements Metadatable {
         return 0;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r2")
+
     public int getFrostbiteInjury() {
         return 1;
     }
@@ -1400,8 +1395,7 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     public float getSwimmingHeight() {
         return getHeight();
     }
@@ -1673,8 +1667,8 @@ public abstract class Entity extends Location implements Metadatable {
     /**
      * The name that English name of the type of this entity.
      */
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
+
     public String getOriginalName() {
         return this.getSaveId();
     }
@@ -1682,8 +1676,8 @@ public abstract class Entity extends Location implements Metadatable {
     /**
      * Similar to {@link #getName()}, but if the name is blank or empty it returns the static name instead.
      */
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
+
     public final String getVisibleName() {
         String name = getName();
         if (!TextFormat.clean(name).trim().isEmpty()) {
@@ -1932,8 +1926,7 @@ public abstract class Entity extends Location implements Metadatable {
         return this.attack(new EntityDamageEvent(this, DamageCause.CUSTOM, damage));
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public int getAge() {
         return this.age;
     }
@@ -2000,12 +1993,10 @@ public abstract class Entity extends Location implements Metadatable {
         return !this.justCreated && this != entity && !this.noClip;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.10-r1")
+
     public boolean canBeSavedWithChunk() { return saveWithChunk; }
 
-    @PowerNukkitXOnly
-    @Since("1.20.10-r1")
+
     public void setCanBeSavedWithChunk(boolean saveWithChunk) { this.saveWithChunk = saveWithChunk; }
 
     protected boolean checkObstruction(double x, double y, double z) {
@@ -2295,8 +2286,7 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public boolean enableHeadYaw() {
         return false;
     }
@@ -2335,8 +2325,7 @@ public abstract class Entity extends Location implements Metadatable {
         Server.broadcastPacket(this.hasSpawned.values(), pk);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.31-r1")
+
     protected void broadcastMovement() {
         var pk = new MoveEntityAbsolutePacket();
         pk.eid = this.getId();
@@ -2554,7 +2543,7 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
-    @PowerNukkitOnly
+
     public boolean canBePushed() {
         return true;
     }
@@ -2750,7 +2739,7 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
-    @PowerNukkitOnly
+
     public void onPushByPiston(BlockEntityPistonArm piston) {
 
     }
@@ -2800,7 +2789,7 @@ public abstract class Entity extends Location implements Metadatable {
         return new Location(this.x, this.y, this.z, this.yaw, this.pitch, this.headYaw, this.level);
     }
 
-    @PowerNukkitOnly
+
     public boolean isTouchingWater() {
         return hasWaterAt(0) || hasWaterAt(this.getEyeHeight());
     }
@@ -2809,7 +2798,7 @@ public abstract class Entity extends Location implements Metadatable {
         return hasWaterAt(this.getEyeHeight());
     }
 
-    @PowerNukkitXOnly
+
     public boolean isUnderBlock() {
         int x = this.getFloorX();
         int y = this.getFloorY();
@@ -2819,15 +2808,13 @@ public abstract class Entity extends Location implements Metadatable {
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @PowerNukkitXDifference(info = "Make as public method", since = "1.19.60-r1")
     public boolean hasWaterAt(float height) {
         return hasWaterAt(height, false);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     protected boolean hasWaterAt(float height, boolean tickCached) {
         double y = this.y + height;
         Block block = tickCached ?
@@ -2872,8 +2859,7 @@ public abstract class Entity extends Location implements Metadatable {
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public <T extends Block> boolean collideWithBlock(Class<T> classType) {
         for (Block block : this.getCollisionBlocks()) {
             if (classType.isInstance(block)) {
@@ -2883,8 +2869,7 @@ public abstract class Entity extends Location implements Metadatable {
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isInsideOfLava() {
         for (Block block : this.getCollisionBlocks()) {
             if (block instanceof BlockLava) {
@@ -3085,8 +3070,7 @@ public abstract class Entity extends Location implements Metadatable {
         return this.blocksAround;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r2")
+
     public List<Block> getTickCachedBlocksAround() {
         if (this.blocksAround == null) {
             int minX = NukkitMath.floorDouble(this.boundingBox.getMinX());
@@ -3124,8 +3108,7 @@ public abstract class Entity extends Location implements Metadatable {
         return this.collisionBlocks;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r2")
+
     public List<Block> getTickCachedCollisionBlocks() {
         if (this.collisionBlocks == null) {
             this.collisionBlocks = new ArrayList<>();
@@ -3296,7 +3279,7 @@ public abstract class Entity extends Location implements Metadatable {
         this.scheduleUpdate();
     }
 
-    @Since("FUTURE")
+
     public void setRotation(double yaw, double pitch, double headYaw) {
         this.yaw = yaw;
         this.pitch = pitch;
@@ -3475,8 +3458,7 @@ public abstract class Entity extends Location implements Metadatable {
         return this.id;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public UUID getUniqueId() {
         return this.entityUniqueId;
     }
@@ -3668,19 +3650,17 @@ public abstract class Entity extends Location implements Metadatable {
         return server;
     }
 
-    @PowerNukkitOnly
+
     public boolean isUndead() {
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.2.1.0-PN")
+
     public boolean isInEndPortal() {
         return inEndPortal;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isPreventingSleep(Player player) {
         return false;
     }
@@ -3704,91 +3684,77 @@ public abstract class Entity extends Location implements Metadatable {
         return hash;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isSpinAttacking() {
         return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SPIN_ATTACK);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setSpinAttacking(boolean value) {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_SPIN_ATTACK, value);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setSpinAttacking() {
         this.setSpinAttacking(true);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isNoClip() {
         return noClip;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setNoClip(boolean noClip) {
         this.noClip = noClip;
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, noClip);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isBoss() {
         return false;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public void addTag(String tag) {
         this.namedTag.putList(this.namedTag.getList("Tags", StringTag.class).add(new StringTag("", tag)));
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public void removeTag(String tag) {
         ListTag<StringTag> tags = this.namedTag.getList("Tags", StringTag.class);
         tags.remove(new StringTag("", tag));
         this.namedTag.putList(tags);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public boolean containTag(String tag) {
         return this.namedTag.getList("Tags", StringTag.class).getAll().stream().anyMatch(t -> t.data.equals(tag));
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public List<StringTag> getAllTags() {
         return this.namedTag.getList("Tags", StringTag.class).getAll();
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public float getFreezingEffectStrength() {
         return ((FloatEntityData) this.getDataProperty(DATA_FREEZING_EFFECT_STRENGTH)).getData();
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public void setFreezingEffectStrength(float strength) {
         if (strength < 0 || strength > 1)
             throw new IllegalArgumentException("Freezing Effect Strength must be between 0 and 1");
         this.setDataProperty(new FloatEntityData(DATA_FREEZING_EFFECT_STRENGTH, strength));
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public int getFreezingTicks() {
         return this.freezingTicks;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public void setFreezingTicks(int ticks) {
         if (ticks < 0) this.freezingTicks = 0;
         else if (ticks > 140) this.freezingTicks = 140;
@@ -3796,8 +3762,7 @@ public abstract class Entity extends Location implements Metadatable {
         setFreezingEffectStrength(ticks / 140f);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public void addFreezingTicks(int increments) {
         if (freezingTicks + increments < 0) this.freezingTicks = 0;
         else if (freezingTicks + increments > 140) this.freezingTicks = 140;
@@ -3805,32 +3770,27 @@ public abstract class Entity extends Location implements Metadatable {
         setFreezingEffectStrength(this.freezingTicks / 140f);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r4")
+
     public void setAmbientSoundInterval(float interval) {
         this.setDataProperty(new FloatEntityData(Entity.DATA_AMBIENT_SOUND_INTERVAL, interval));
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r4")
+
     public void setAmbientSoundIntervalRange(float range) {
         this.setDataProperty(new FloatEntityData(Entity.DATA_AMBIENT_SOUND_INTERVAL_RANGE, range));
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r4")
+
     public void setAmbientSoundEvent(Sound sound) {
         this.setAmbientSoundEventName(sound.getSound());
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r4")
+
     public void setAmbientSoundEventName(String eventName) {
         this.setDataProperty(new StringEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, eventName));
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
+
     public void playAnimation(AnimateEntityPacket.Animation animation) {
         var viewers = new HashSet<>(this.getViewers().values());
         if (this.isPlayer) viewers.add((Player) this);
@@ -3845,8 +3805,8 @@ public abstract class Entity extends Location implements Metadatable {
      * @param animation 动画对象 Animation objects
      * @param players   可视玩家 Visible Player
      */
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
+
+
     public void playAnimation(AnimateEntityPacket.Animation animation, Collection<Player> players) {
         var pk = new AnimateEntityPacket();
         pk.parseFromAnimation(animation);
@@ -3855,8 +3815,7 @@ public abstract class Entity extends Location implements Metadatable {
         Server.broadcastPacket(players, pk);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     public void playActionAnimation(AnimatePacket.Action action, float rowingTime) {
         var viewers = new HashSet<>(this.getViewers().values());
         if (this.isPlayer) viewers.add((Player) this);
@@ -3872,8 +3831,8 @@ public abstract class Entity extends Location implements Metadatable {
      * @param rowingTime the rowing time
      * @param players    可视玩家 Visible Player
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
+
     public void playActionAnimation(AnimatePacket.Action action, float rowingTime, Collection<Player> players) {
         var pk = new AnimatePacket();
         pk.action = action;
@@ -3886,36 +3845,31 @@ public abstract class Entity extends Location implements Metadatable {
     private record OldStringClass(String key, Class<? extends Entity> value) {
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.10-r2")
+
     private boolean validateAndSetIntProperty(String identifier, int value) {
         if(!intProperties.containsKey(identifier)) return false;
         intProperties.put(identifier, value);
         return true;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.10-r2")
+
     public final boolean setIntEntityProperty(String identifier, int value) {
         return validateAndSetIntProperty(identifier, value);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.10-r2")
+
     public final boolean setBooleanEntityProperty(String identifier, boolean value) {
         return validateAndSetIntProperty(identifier, value ? 1 : 0);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.10-r2")
+
     public final boolean setFloatEntityProperty(String identifier, float value) {
         if(!floatProperties.containsKey(identifier)) return false;
         floatProperties.put(identifier, value);
         return true;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.10-r2")
+
     public final boolean setEnumEntityProperty(String identifier, String value) {
         if(!intProperties.containsKey(identifier)) return false;
         List<EntityProperty> entityPropertyList = EntityProperty.getEntityProperty(this.getIdentifier().toString());
@@ -3934,16 +3888,14 @@ public abstract class Entity extends Location implements Metadatable {
         return false;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.10-r2")
+
     private void initEntityProperties() {
         if(this.getIdentifier() != null) {
             initEntityProperties(this.getIdentifier().toString());
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.10-r2")
+
     private void initEntityProperties(String entityIdentifier) {
         List<EntityProperty> entityPropertyList = EntityProperty.getEntityProperty(entityIdentifier);
         if (entityPropertyList.isEmpty()) return;
@@ -3967,8 +3919,7 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.10-r2")
+
     private PropertySyncData propertySyncData() {
         Collection<Integer> intValues = intProperties.values();
         int[] intArray = new int[intValues.size()];

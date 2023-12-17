@@ -33,8 +33,7 @@ public abstract class GrassyBiome extends CoveredBiome {
         this.addPopulator(pumpkin);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Override
     public int getSurfaceBlock(int y) {
         if (useNewRakNetSurface()) {
@@ -43,8 +42,7 @@ public abstract class GrassyBiome extends CoveredBiome {
         return GRASS;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Override
     public int getGroundBlock(int y) {
         if (useNewRakNetGround()) {

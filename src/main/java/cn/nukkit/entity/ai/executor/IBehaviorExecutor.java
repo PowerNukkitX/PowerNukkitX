@@ -13,8 +13,8 @@ import cn.nukkit.entity.EntityIntelligent;
  * Executes specific behavior on the entity<br>
  * For each instantiated entity, this object should only be instantiated once, and the entity will not change all the time
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public interface IBehaviorExecutor {
 
     /**

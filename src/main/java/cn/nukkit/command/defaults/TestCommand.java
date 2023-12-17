@@ -8,8 +8,8 @@ import cn.nukkit.command.data.CommandData;
 /**
  * 测试命令基类
  */
-@PowerNukkitXOnly
-@Since("1.19.50-r1")
+
+
 public abstract class TestCommand extends Command {
 
     public TestCommand(String name) {

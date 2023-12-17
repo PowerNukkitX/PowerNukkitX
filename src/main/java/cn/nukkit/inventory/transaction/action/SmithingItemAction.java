@@ -27,14 +27,13 @@ import cn.nukkit.item.Item;
  * @author joserobjr
  * @since 2021-05-16
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class SmithingItemAction extends InventoryAction {
 
     private final int type;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public SmithingItemAction(Item sourceItem, Item targetItem, int type) {
         super(sourceItem, targetItem);
         this.type = type;
@@ -60,8 +59,7 @@ public class SmithingItemAction extends InventoryAction {
         // Does nothing
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public int getType() {
         return type;
     }

@@ -10,8 +10,8 @@ import cn.nukkit.api.Since;
  * @return 自定义物品的在创造栏的大分类
  * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-tabs">bedrock wiki</a>
  */
-@PowerNukkitXOnly
-@Since("1.19.31-r1")
+
+
 public enum ItemCreativeCategory {
     CONSTRUCTOR,
     NATURE,

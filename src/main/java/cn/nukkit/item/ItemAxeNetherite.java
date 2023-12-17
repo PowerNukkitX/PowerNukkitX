@@ -3,20 +3,20 @@ package cn.nukkit.item;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 
-@Since("1.4.0.0-PN")
+
 public class ItemAxeNetherite extends ItemTool {
 
-    @Since("1.4.0.0-PN")
+
     public ItemAxeNetherite() {
         this(0, 1);
     }
 
-    @Since("1.4.0.0-PN")
+
     public ItemAxeNetherite(Integer meta) {
         this(meta, 1);
     }
 
-    @Since("1.4.0.0-PN")
+
     public ItemAxeNetherite(Integer meta, int count) {
         super(NETHERITE_AXE, meta, count, "Netherite Axe");
     }
@@ -41,13 +41,13 @@ public class ItemAxeNetherite extends ItemTool {
         return 8;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isLavaResistant() {
         return true;
     }
 
-    @Since("1.19.21-r4")
+
     @Override
     public boolean canBreakShield() {
         return true;

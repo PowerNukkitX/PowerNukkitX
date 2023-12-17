@@ -21,12 +21,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockSugarcane extends BlockFlowable {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final IntBlockProperty AGE = CommonBlockProperties.AGE_15;
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(AGE);
 
     public BlockSugarcane() {
@@ -47,8 +45,7 @@ public class BlockSugarcane extends BlockFlowable {
         return REEDS;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {

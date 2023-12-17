@@ -51,8 +51,8 @@ public interface CommandSender extends Permissible {
      *
      * @param container the container
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
+
     void sendCommandOutput(CommandOutputContainer container);
 
     /**
@@ -100,8 +100,8 @@ public interface CommandSender extends Permissible {
      *
      * @return 发送者是否为实体<br>whether the sender is an entity
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     default boolean isEntity() {
         return false;
     }
@@ -113,8 +113,8 @@ public interface CommandSender extends Permissible {
      *
      * @return 实体对象<br>Entity instance
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     default Entity asEntity() {
         return null;
     }
@@ -126,8 +126,8 @@ public interface CommandSender extends Permissible {
      *
      * @return 玩家对象<br>Player instance
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     default Player asPlayer() {
         return null;
     }
@@ -136,8 +136,8 @@ public interface CommandSender extends Permissible {
     /**
      * @return 返回发送者的Position<br>return the sender's position.
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     @NotNull
     default Position getPosition() {
         return new Position(0, 0, 0, Server.getInstance().getDefaultLevel());
@@ -147,8 +147,8 @@ public interface CommandSender extends Permissible {
     /**
      * @return 返回发送者克隆过的Location<br>return the sender's location.
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     @NotNull
     default Location getLocation() {
         return new Location(0, 0, 0, Server.getInstance().getDefaultLevel());

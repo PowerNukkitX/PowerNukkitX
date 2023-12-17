@@ -9,8 +9,7 @@ import cn.nukkit.item.ItemChestBoatBase;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class ChestBoatDispenseBehavior extends BoatDispenseBehavior{
     @Override
     protected void spawnBoatEntity(Level level, Vector3 pos, Item item) {

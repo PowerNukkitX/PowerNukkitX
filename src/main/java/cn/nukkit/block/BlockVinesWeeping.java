@@ -12,29 +12,29 @@ import org.jetbrains.annotations.NotNull;
  * Properties and behaviour definitions of the {@link BlockID#WEEPING_VINES} block.
  * @author joserobjr
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class BlockVinesWeeping extends BlockVinesNether {
     /**
      * Increments for every block the weeping vine grows.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final IntBlockProperty WEEPING_VINES_AGE = new IntBlockProperty(
             "weeping_vines_age", false, 25);
 
     /**
      * Holds the {@code weeping_vines} block property definitions.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BlockProperties PROPERTIES = new BlockProperties(WEEPING_VINES_AGE);
 
     /**
      * Creates a {@code weeping_vine} with age {@code 0}.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public BlockVinesWeeping() {
     }
 
@@ -42,14 +42,13 @@ public class BlockVinesWeeping extends BlockVinesNether {
      * Creates a {@code weeping_vine} from a meta compatible with {@link #getProperties()}.
      * @throws InvalidBlockPropertyMetaException If the meta is incompatible
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public BlockVinesWeeping(int meta) throws InvalidBlockPropertyMetaException {
         super(meta);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -67,29 +66,26 @@ public class BlockVinesWeeping extends BlockVinesNether {
     }
 
     @NotNull
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
+
     @Override
     public BlockFace getGrowthDirection() {
         return BlockFace.DOWN;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getVineAge() {
         return getIntValue(WEEPING_VINES_AGE);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public void setVineAge(int vineAge) {
         setIntValue(WEEPING_VINES_AGE, vineAge);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getMaxVineAge() {
         return WEEPING_VINES_AGE.getMaxValue();

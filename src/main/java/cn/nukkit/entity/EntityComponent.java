@@ -11,8 +11,8 @@ import cn.nukkit.entity.ai.memory.IMemoryStorage;
  * The interface that inherits this interface is an entity component<br>
  * The implementation of the entity component uses the default method to carry the logic, and the related values are stored in memory
  */
-@PowerNukkitXOnly
-@Since("1.19.63-r1")
+
+
 public interface EntityComponent {
     IMemoryStorage getMemoryStorage();
 

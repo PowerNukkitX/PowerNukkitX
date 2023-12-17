@@ -21,8 +21,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import java.util.Comparator;
 import java.util.function.Consumer;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemplate implements ReadableStructureTemplate {
 
     @Override

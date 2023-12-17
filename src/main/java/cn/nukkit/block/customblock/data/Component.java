@@ -10,8 +10,7 @@ import lombok.Getter;
 
 import javax.annotation.Nullable;
 
-@Since("1.19.60-r1")
-@PowerNukkitXOnly
+
 @Builder
 @Getter
 public class Component implements NBTData {
@@ -44,7 +43,7 @@ public class Component implements NBTData {
     Boolean unitCube;
     @Nullable
     Vector3f rotation;
-    @Since("1.20.0-r2")
+
     @Nullable
     Float clientFriction;
 

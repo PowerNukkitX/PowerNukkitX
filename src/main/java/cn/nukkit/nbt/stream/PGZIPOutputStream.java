@@ -214,9 +214,8 @@ public class PGZIPOutputStream extends FilterOutputStream {
         emitUntil(0);
         super.flush();
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public void finish() throws IOException {
         if (bytesWritten >= 0) {
             flush();

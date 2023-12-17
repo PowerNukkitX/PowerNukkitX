@@ -18,8 +18,8 @@ import java.util.function.Function;
  * <p>
  * The constructor accepts a Set of Integer to target function {@code Function<T, Boolean> target} to search for the nearest target entity, and the final result is saved to {@code List<MemoryType<Entity>> memories}.
  */
-@PowerNukkitXOnly
-@Since("1.19.30-r1")
+
+
 public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
 
     protected double minRange;

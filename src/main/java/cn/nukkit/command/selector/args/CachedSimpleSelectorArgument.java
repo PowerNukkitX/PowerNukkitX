@@ -19,8 +19,8 @@ import java.util.function.Predicate;
  * 可缓存的目标选择器参数基类<p/>
  * 若一个选择器的参数返回的{@code List<Predicate<Entity>>}不具有时效性，则可继承此类实现对解析结果的缓存，提高性能
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public abstract class CachedSimpleSelectorArgument implements ISelectorArgument {
 
     Cache<Set<String>, Predicate<Entity>> cache;

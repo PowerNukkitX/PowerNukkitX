@@ -9,9 +9,9 @@ import cn.nukkit.network.protocol.LevelEventPacket;
  * @author joserobjr
  * @since 2021-06-14
  */
-@PowerNukkitOnly
+
 public class WaxOffParticle extends GenericParticle {
-    @PowerNukkitOnly
+
     public WaxOffParticle(Vector3 pos) {
         super(pos, Particle.TYPE_WAX);
     }

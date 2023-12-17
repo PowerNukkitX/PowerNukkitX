@@ -32,8 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public class PopulatorShipwreck extends PopulatorStructure implements CallbackableTemplateStructurePopulator {
 
     public static final boolean[] FILTER = new boolean[2048];
@@ -287,7 +286,7 @@ public class PopulatorShipwreck extends PopulatorStructure implements Callbackab
         }
     }
 
-    @Since("1.19.21-r2")
+
     @Override
     public boolean isAsync() {
         return true;

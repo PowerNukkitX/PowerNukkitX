@@ -12,10 +12,10 @@ public class SkinAnimation {
     public final SerializedImage image;
     public final int type;
     public final float frames;
-    @Since("1.4.0.0-PN")
+
     public final int expression;
 
-    @PowerNukkitOnly("Re-added for backward-compatibility")
+    ("Re-added for backward-compatibility")
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN",
             reason = "The expression field was added and the constructor's signature was changed",
@@ -24,7 +24,7 @@ public class SkinAnimation {
         this(image, type, frames, 0);
     }
 
-    @Since("1.4.0.0-PN")
+
     public SkinAnimation(SerializedImage image, int type, float frames, int expression) {
         this.image = image;
         this.type = type;

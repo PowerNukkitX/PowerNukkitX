@@ -8,13 +8,13 @@ import lombok.ToString;
 /**
  * @author joserobjr
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 @ToString
-@NoArgsConstructor(onConstructor = @__(@PowerNukkitOnly))
+@NoArgsConstructor(onConstructor = @__())
 public class ItemStackResponsePacket extends DataPacket {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final byte NETWORK_ID = ProtocolInfo.ITEM_STACK_RESPONSE_PACKET;
 
     @Override

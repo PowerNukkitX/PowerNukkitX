@@ -17,8 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.20.10-r2")
+
 public class BlockDecoratedPot extends BlockTransparentMeta implements Faceable, BlockEntityHolder<BlockEntityDecoratedPot>{
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.DIRECTION);
 

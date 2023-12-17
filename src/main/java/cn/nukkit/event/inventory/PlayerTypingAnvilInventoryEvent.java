@@ -34,13 +34,13 @@ import javax.annotation.Nullable;
  * @author joserobjr
  * @since 2021-02-14
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 @ToString
 public class PlayerTypingAnvilInventoryEvent extends InventoryEvent {
     private static final HandlerList handlers = new HandlerList();
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static HandlerList getHandlers() {
         return handlers;
     }
@@ -49,8 +49,7 @@ public class PlayerTypingAnvilInventoryEvent extends InventoryEvent {
     private final String previousName;
     private final String typedName;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public PlayerTypingAnvilInventoryEvent(@NotNull Player player, @NotNull AnvilInventory inventory, @Nullable String previousName, @NotNull String typedName) {
         super(inventory);
         this.player = player;
@@ -64,22 +63,19 @@ public class PlayerTypingAnvilInventoryEvent extends InventoryEvent {
         return (AnvilInventory) super.getInventory();
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     public Player getPlayer() {
         return player;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     public String getTypedName() {
         return typedName;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Nullable
     public String getPreviousName() {
         return previousName;

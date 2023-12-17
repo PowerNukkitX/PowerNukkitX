@@ -10,8 +10,8 @@ public abstract class BlockMeta extends Block {
     /**
      * Creates the block in the default state.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     protected BlockMeta(){
         // Does nothing
     }
@@ -29,8 +29,7 @@ public abstract class BlockMeta extends Block {
         }
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public abstract BlockProperties getProperties();

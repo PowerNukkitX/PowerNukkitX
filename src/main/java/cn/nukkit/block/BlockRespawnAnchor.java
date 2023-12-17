@@ -43,15 +43,14 @@ import java.util.Objects;
  * @author joserobjr
  * @since 2020-10-06
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class BlockRespawnAnchor extends BlockMeta {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final IntBlockProperty RESPAWN_ANCHOR_CHARGE = new IntBlockProperty("respawn_anchor_charge", true, 4);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(RESPAWN_ANCHOR_CHARGE);
 
     @Override
@@ -59,19 +58,17 @@ public class BlockRespawnAnchor extends BlockMeta {
         return RESPAWN_ANCHOR;
     }
 
-    @PowerNukkitOnly
+
     public BlockRespawnAnchor() {
         this(0);
     }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     public BlockRespawnAnchor(int meta) throws InvalidBlockPropertyMetaException {
         super(meta);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -108,8 +105,7 @@ public class BlockRespawnAnchor extends BlockMeta {
         }
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     protected boolean attemptToSetSpawn(@NotNull Player player) {
         if (this.level.getDimension() != Level.DIMENSION_NETHER) {
             if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
@@ -128,14 +124,13 @@ public class BlockRespawnAnchor extends BlockMeta {
     }
 
     @Deprecated
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
+
     public void explode() {
         explode(null);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     public void explode(Player player) {
         BlockExplosionPrimeEvent event = new BlockExplosionPrimeEvent(this, player, 5);
         event.setIncendiary(true);
@@ -152,14 +147,12 @@ public class BlockRespawnAnchor extends BlockMeta {
         explosion.explodeB();
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     public int getCharge() {
         return getIntValue(RESPAWN_ANCHOR_CHARGE);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     public void setCharge(int charge) {
         setIntValue(RESPAWN_ANCHOR_CHARGE, charge);
     }
@@ -169,8 +162,7 @@ public class BlockRespawnAnchor extends BlockMeta {
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getToolTier() {
         return ItemTool.TIER_DIAMOND;
@@ -230,7 +222,7 @@ public class BlockRespawnAnchor extends BlockMeta {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean canBePulled() {
         return false;
     }

@@ -15,8 +15,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockHugeMushroomRed extends BlockSolidMeta {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = BlockHugeMushroomBrown.PROPERTIES;
 
     public BlockHugeMushroomRed() {
@@ -37,8 +36,7 @@ public class BlockHugeMushroomRed extends BlockSolidMeta {
         return RED_MUSHROOM_BLOCK;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {

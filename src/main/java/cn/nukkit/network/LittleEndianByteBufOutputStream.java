@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-@Since("1.4.0.0-PN")
+
 public class LittleEndianByteBufOutputStream extends ByteBufOutputStream {
 
     private final ByteBuf buffer;
 
-    @Since("1.4.0.0-PN")
+
     public LittleEndianByteBufOutputStream(@NotNull ByteBuf buffer) {
         super(buffer);
         this.buffer = buffer;

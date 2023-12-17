@@ -24,8 +24,8 @@ import java.util.*;
 /**
  * 标准A*寻路实现
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 @Getter
 @Setter
 public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {

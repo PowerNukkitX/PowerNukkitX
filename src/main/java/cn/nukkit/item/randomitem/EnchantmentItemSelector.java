@@ -14,8 +14,8 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author LT_Name
  */
-@PowerNukkitXOnly
-@Since("1.19.40-r3")
+
+
 public class EnchantmentItemSelector extends ConstantItemSelector {
     public EnchantmentItemSelector(int id, Selector parent) {
         this(id, 0, parent);

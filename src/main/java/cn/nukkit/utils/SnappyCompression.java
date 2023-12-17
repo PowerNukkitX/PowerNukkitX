@@ -6,8 +6,7 @@ import org.xerial.snappy.Snappy;
 
 import java.io.IOException;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
 public class SnappyCompression {
 
     public static byte[] compress(byte[] data) throws IOException {

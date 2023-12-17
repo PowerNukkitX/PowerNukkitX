@@ -4,10 +4,10 @@ import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemTool;
 
-@Since("1.4.0.0-PN")
+
 public class BlockNetherWartBlock extends BlockSolid {
 
-    @Since("1.4.0.0-PN")
+
     public BlockNetherWartBlock() {
         // Does nothing
     }

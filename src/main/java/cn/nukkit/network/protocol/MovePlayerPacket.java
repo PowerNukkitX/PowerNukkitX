@@ -29,7 +29,7 @@ public class MovePlayerPacket extends DataPacket {
     public long ridingEid;
     public int int1 = 0;//teleportationCause
     public int int2 = 0;//entityType
-    @Since("1.4.0.0-PN")
+
     public long frame;//tick
 
     @Override

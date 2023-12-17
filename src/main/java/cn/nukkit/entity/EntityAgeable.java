@@ -11,8 +11,7 @@ public interface EntityAgeable {
         return ((Entity) this).getDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_BABY);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
+
     default void setBaby(boolean flag) {
         var entity = (Entity) this;
         entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_BABY, flag);

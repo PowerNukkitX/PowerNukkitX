@@ -13,11 +13,10 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 public abstract class BlockNylium extends BlockSolid {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public BlockNylium() {
         // Does nothing
     }
@@ -59,8 +58,7 @@ public abstract class BlockNylium extends BlockSolid {
         return true;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean grow() {
         ObjectNyliumVegetation.growVegetation(level, this, new NukkitRandom());
         return true;

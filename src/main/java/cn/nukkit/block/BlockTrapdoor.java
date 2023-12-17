@@ -47,16 +47,14 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
     // and gives the vanilla behavior; no idea how to make this better :d
     private static final List<Location> manualOverrides = new ArrayList<>();
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperty<BlockFace> TRAPDOOR_DIRECTION = new ArrayBlockProperty<>("direction", false, new BlockFace[]{
             // It's basically weirdo_direction but renamed
             BlockFace.EAST, BlockFace.WEST,
             BlockFace.SOUTH, BlockFace.NORTH
     }).ordinal(true);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(TRAPDOOR_DIRECTION, UPSIDE_DOWN, OPEN);
 
     private static final AxisAlignedBB[] boundingBoxDamage = new AxisAlignedBB[0x1 << PROPERTIES.getBitSize()];
@@ -82,8 +80,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         return TRAPDOOR;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -115,7 +112,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         return ItemTool.TYPE_AXE;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -228,8 +225,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         return 0;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setManualOverride(boolean val) {
         if (val) {
             manualOverrides.add(this.getLocation());
@@ -238,8 +234,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean getManualOverride() {
         return manualOverrides.contains(this.getLocation());
     }
@@ -287,7 +282,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
     @PowerNukkitDifference(info = "Returns false if setBlock fails", since = "1.4.0.0-PN")
     @PowerNukkitDifference(info = "Using direct values, instead of toggling (fixes a redstone bug, that the door won't open). " +
             "Also adding possibility to detect, whether a player or redstone recently opened/closed the door.", since = "1.4.0.0-PN")
-    @PowerNukkitOnly
+
     public boolean setOpen(Player player, boolean open) {
         if (open == this.isOpen()) {
             return false;
@@ -318,8 +313,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         return true;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void playOpenCloseSound() {
         if (isOpen()) {
             playOpenSound();
@@ -328,14 +322,12 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void playOpenSound() {
         this.level.addSound(this, Sound.RANDOM_DOOR_OPEN);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void playCloseSound() {
         this.level.addSound(this, Sound.RANDOM_DOOR_CLOSE);
     }
@@ -344,8 +336,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         return getBooleanValue(OPEN);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setOpen(boolean open) {
         setBooleanValue(OPEN, open);
     }
@@ -354,8 +345,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         return getBooleanValue(UPSIDE_DOWN);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setTop(boolean top) {
         setBooleanValue(UPSIDE_DOWN, top);
     }
@@ -366,8 +356,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         return getPropertyValue(TRAPDOOR_DIRECTION);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(TRAPDOOR_DIRECTION, face);

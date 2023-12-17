@@ -18,8 +18,7 @@ public class BlockPlanks extends BlockSolidMeta {
     public static final int ACACIA = 4;
     public static final int DARK_OAK = 5;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(WoodType.PROPERTY);
 
 
@@ -36,8 +35,7 @@ public class BlockPlanks extends BlockSolidMeta {
         return PLANKS;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -68,15 +66,13 @@ public class BlockPlanks extends BlockSolidMeta {
     public String getName() {
         return getWoodType().getEnglishName()+" Wood Planks";
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public WoodType getWoodType() {
         return getPropertyValue(WoodType.PROPERTY);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setWoodType(WoodType type) {
         setPropertyValue(WoodType.PROPERTY, type);
     }

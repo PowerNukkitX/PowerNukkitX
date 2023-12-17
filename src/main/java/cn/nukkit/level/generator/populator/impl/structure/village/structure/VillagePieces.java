@@ -35,8 +35,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
 
     private static final BlockState PLANKS = new BlockState(Block.PLANKS, BlockPlanks.OAK);

@@ -22,8 +22,7 @@ import javax.annotation.Nullable;
  */
 public class BlockEndRod extends BlockTransparentMeta implements Faceable {
 
-    @Since("1.5.0.0-PN")
-    @PowerNukkitOnly
+
     public static final BlockProperties PROPERTIES = CommonBlockProperties.FACING_DIRECTION_BLOCK_PROPERTIES;
 
     public BlockEndRod() {
@@ -44,8 +43,7 @@ public class BlockEndRod extends BlockTransparentMeta implements Faceable {
         return END_ROD;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -92,7 +90,7 @@ public class BlockEndRod extends BlockTransparentMeta implements Faceable {
         return this.z + 0.6;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 2;

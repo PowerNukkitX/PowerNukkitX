@@ -9,8 +9,8 @@ import java.util.Set;
 /**
  * 存放一些AI框架的全局参数
  */
-@PowerNukkitXOnly
-@Since("1.19.50-r1")
+
+
 public final class EntityAI {
     private static long routeParticleSpawnInterval = 500;//ms
 

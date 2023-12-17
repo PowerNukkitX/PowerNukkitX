@@ -129,14 +129,12 @@ public class ItemMap extends Item {
         return true;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
+
     public void renderMap(Level level, int startX, int startZ) {
         renderMap(level, startX, startZ, 1);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
+
     public void renderMap(Level level, int startX, int startZ, int zoom) {
         if (zoom < 1)
             throw new IllegalArgumentException("Zoom must be greater than 0");

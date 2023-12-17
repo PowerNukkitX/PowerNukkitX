@@ -41,8 +41,7 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         return 0.9f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Spider";
@@ -53,7 +52,7 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         return new Item[]{Item.get(Item.STRING, Item.SPIDER_EYE)};
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

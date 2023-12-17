@@ -9,8 +9,8 @@ import cn.nukkit.math.Vector3;
  * @author MagicDroidX (Nukkit Project)
  */
 public interface ChunkLoader {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     ChunkLoader[] EMPTY_ARRAY = new ChunkLoader[0];
 
     int getLoaderId();

@@ -6,7 +6,7 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.potion.Effect;
 
-@PowerNukkitXOnly
+
 public class EntityEffectRemoveEvent extends EntityEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
 

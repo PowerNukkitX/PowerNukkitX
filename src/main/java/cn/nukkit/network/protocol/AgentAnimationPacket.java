@@ -5,8 +5,7 @@ import cn.nukkit.api.Since;
 
 import javax.annotation.Nonnegative;
 
-@Since("1.20.10-r1")
-@PowerNukkitXOnly
+
 public class AgentAnimationPacket extends DataPacket {
     public byte animation;
     public long runtimeEntityId;
@@ -17,7 +16,7 @@ public class AgentAnimationPacket extends DataPacket {
     }
 
     @Nonnegative
-    @Since("1.19.70-r1")
+
     @Override
     public int packetId() {
         return ProtocolInfo.AGENT_ANIMATION;

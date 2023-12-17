@@ -20,8 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-@PowerNukkitXOnly
-@Since("1.19.30-r1")
+
 @Getter
 public class ScoreboardManager implements IScoreboardManager{
 

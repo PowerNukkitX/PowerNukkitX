@@ -15,7 +15,7 @@ import cn.nukkit.math.BlockFace;
  */
 public class BucketDispenseBehavior extends DefaultDispenseBehavior {
 
-    @PowerNukkitOnly
+
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         if (!(item instanceof ItemBucket)) {

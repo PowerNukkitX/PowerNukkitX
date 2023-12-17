@@ -23,18 +23,18 @@ import javax.annotation.Nullable;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.*;
 
-@PowerNukkitOnly
+
 public class BlockLectern extends BlockTransparentMeta implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityLectern> {
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
+
     public static final BlockProperties PROPERTIES = new BlockProperties(CARDINAL_DIRECTION, POWERED);
 
-    @PowerNukkitOnly
+
     public BlockLectern() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     public BlockLectern(int meta) {
         super(meta);
     }
@@ -49,31 +49,28 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
         return LECTERN;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntityLectern> getBlockEntityClass() {
         return BlockEntityLectern.class;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.LECTERN;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -129,8 +126,8 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
     }
 
     @Override
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
+
+
     public void setBlockFace(BlockFace face) {
         int horizontalIndex = face.getHorizontalIndex();
         if (horizontalIndex >= 0) {
@@ -173,12 +170,12 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
         return true;
     }
 
-    @PowerNukkitOnly
+
     public boolean isActivated() {
         return (this.getDamage() & 0x04) == 0x04;
     }
 
-    @PowerNukkitOnly
+
     public void setActivated(boolean activated) {
         if (activated) {
             setDamage(getDamage() | 0x04);
@@ -187,7 +184,7 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
         }
     }
 
-    @PowerNukkitOnly
+
     public void executeRedstonePulse() {
         if (isActivated()) {
             level.cancelSheduledUpdate(this, this);
@@ -234,7 +231,7 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
         return 0;
     }
 
-    @PowerNukkitOnly
+
     public void dropBook(Player player) {
         BlockEntityLectern lectern = getBlockEntity();
         if (lectern == null) {

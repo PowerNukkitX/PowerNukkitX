@@ -91,8 +91,7 @@ public class BlockRedstoneTorchUnlit extends BlockTorch implements RedstoneCompo
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected boolean isPoweredFromSide() {
         BlockFace face = getBlockFace().getOpposite();
         if (this.getSide(face) instanceof BlockPistonBase && this.getSide(face).isGettingPower()) {

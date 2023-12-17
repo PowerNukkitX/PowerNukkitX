@@ -19,8 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public abstract class EntityPhysical extends EntityCreature implements EntityAsyncPrepare {
     /**
      * 移动精度阈值，绝对值小于此阈值的移动被视为没有移动
@@ -128,8 +127,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         this.move(this.motionX, this.motionY, this.motionZ);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     public boolean isFalling() {
         return !this.onGround && this.y < this.highestPosition;
     }
@@ -157,7 +155,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     /**
      * 计算地面摩擦力
      */
-    @Since("1.19.60-r1")
+
     protected void handleGroundFrictionMovement() {
         //未在地面就没有地面阻力
         if (!this.onGround) return;
@@ -174,7 +172,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     /**
      * 计算流体阻力（空气/液体）
      */
-    @Since("1.19.60-r1")
+
     protected void handlePassableBlockFrictionMovement() {
         //小于精度
         if (Math.abs(this.motionZ) < PRECISION && Math.abs(this.motionX) < PRECISION && Math.abs(this.motionY) < PRECISION)
@@ -193,7 +191,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      *
      * @return 当前位置的地面摩擦因子
      */
-    @Since("1.19.60-r1")
+
     public double getGroundFrictionFactor() {
         if (!this.onGround) return 1.0;
         return this.getLevel().getTickCachedBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z))).getFrictionFactor();
@@ -204,7 +202,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      *
      * @return 当前位置的流体阻力因子
      */
-    @Since("1.19.60-r1")
+
     public double getPassableBlockFrictionFactor() {
         var block = this.getTickCachedLevelBlock();
         if (block.collidesWithBB(this.getBoundingBox(), true)) return block.getPassableBlockFrictionFactor();
@@ -260,7 +258,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      *
      * @return the floating force factor
      */
-    @Since("1.19.60-r1")
+
     public double getFloatingForceFactor() {
         if (hasWaterAt(this.getFloatingHeight())) {
             return 1.3;
@@ -274,8 +272,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      *
      * @return the float
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
+
     public float getFloatingHeight() {
         return this.getEyeHeight();
     }

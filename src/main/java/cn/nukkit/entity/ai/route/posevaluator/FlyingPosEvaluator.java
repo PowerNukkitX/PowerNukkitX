@@ -9,8 +9,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class FlyingPosEvaluator implements IPosEvaluator {
     @Override
     public boolean evalPos(@NotNull EntityIntelligent entity, @NotNull Vector3 vec) {

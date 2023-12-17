@@ -7,8 +7,7 @@ import cn.nukkit.network.protocol.types.LabTableReactionType;
 import cn.nukkit.network.protocol.types.LabTableType;
 import lombok.ToString;
 
-@Since("1.19.30-r1")
-@PowerNukkitXOnly
+
 @ToString
 public class LabTablePacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.LAB_TABLE_PACKET;

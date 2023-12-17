@@ -155,14 +155,13 @@ public class ItemPotion extends Item {
         return true;
     }
 
-    @PowerNukkitOnly
+
     @Nullable
     public Potion getPotion() {
         return getPotion(getDamage());
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.0-r2")
+
     public static ItemPotion fromPotion(Potion potion) {
         return new ItemPotion(potion.getId());
     }

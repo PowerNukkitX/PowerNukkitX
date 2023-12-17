@@ -30,8 +30,8 @@ import java.util.Objects;
 import java.util.zip.ZipFile;
 
 @Log4j2
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public class PNXPlatform extends AbstractPlatform {
     public static final File DATA_PATH;
     private static final PNXWorldHandle pnxWorldHandle = new PNXWorldHandle();

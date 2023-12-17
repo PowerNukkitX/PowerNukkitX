@@ -27,8 +27,7 @@ public class BlockOreIron extends BlockOre {
         return "Iron Ore";
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     @Nullable
     @Override
     protected MinecraftItemID getRawMaterial() {

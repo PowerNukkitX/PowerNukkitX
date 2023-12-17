@@ -32,8 +32,7 @@ public class ItemBoat extends Item {
         this(BOAT, meta, count, "Boat");
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     protected ItemBoat(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);
         adjustName();

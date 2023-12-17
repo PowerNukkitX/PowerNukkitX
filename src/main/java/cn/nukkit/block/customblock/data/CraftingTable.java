@@ -10,8 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public record CraftingTable(@NotNull String tableName, @Nullable List<String> craftingTags) implements NBTData {
     public CompoundTag toCompoundTag() {
         var listTag = new ListTag<StringTag>("crafting_tags");

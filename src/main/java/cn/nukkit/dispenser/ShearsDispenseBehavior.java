@@ -9,10 +9,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class ShearsDispenseBehavior extends DefaultDispenseBehavior {
-    @PowerNukkitOnly
+
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         item = item.clone();

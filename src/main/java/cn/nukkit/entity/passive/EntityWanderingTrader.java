@@ -24,8 +24,7 @@ public class EntityWanderingTrader extends EntityCreature implements EntityNPC {
         return 1.9f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Wandering Trader";

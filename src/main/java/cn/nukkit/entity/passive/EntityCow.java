@@ -83,8 +83,7 @@ public class EntityCow extends EntityAnimal implements EntityWalkable {
         return 1.3f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Cow";

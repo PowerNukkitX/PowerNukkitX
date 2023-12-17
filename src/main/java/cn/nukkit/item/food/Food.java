@@ -86,53 +86,52 @@ public abstract class Food {
     public static final Food dried_kelp = registerDefaultFood(new FoodNormal(1, 0.6F).addRelative(Item.DRIED_KELP).setEatingTick(16));
     public static final Food sweet_berries = registerDefaultFood(new FoodNormal(2, 0.4F).addRelative(Item.SWEET_BERRIES));
 
-    @PowerNukkitOnly
+
     public static final Food suspicious_stew_night_vision = registerDefaultFood(new FoodEffectiveInBow(6, 7.2F)
             .addEffect(Effect.getEffect(Effect.NIGHT_VISION).setAmplifier(1).setDuration(4 * 20)).addRelative(Item.SUSPICIOUS_STEW, 0));
 
-    @PowerNukkitOnly
+
     public static final Food suspicious_stew_jump = registerDefaultFood(new FoodEffectiveInBow(6, 7.2F)
             .addEffect(Effect.getEffect(Effect.JUMP).setAmplifier(1).setDuration(4 * 20)).addRelative(Item.SUSPICIOUS_STEW, 1));
 
-    @PowerNukkitOnly
+
     public static final Food suspicious_stew_weakness = registerDefaultFood(new FoodEffectiveInBow(6, 7.2F)
             .addEffect(Effect.getEffect(Effect.WEAKNESS).setAmplifier(1).setDuration(7 * 20)).addRelative(Item.SUSPICIOUS_STEW, 2));
 
-    @PowerNukkitOnly
+
     public static final Food suspicious_stew_blindness = registerDefaultFood(new FoodEffectiveInBow(6, 7.2F)
             .addEffect(Effect.getEffect(Effect.BLINDNESS).setAmplifier(1).setDuration(6 * 20)).addRelative(Item.SUSPICIOUS_STEW, 3));
 
-    @PowerNukkitOnly
+
     public static final Food suspicious_stew_poison = registerDefaultFood(new FoodEffectiveInBow(6, 7.2F)
             .addEffect(Effect.getEffect(Effect.POISON).setAmplifier(1).setDuration(11 * 20)).addRelative(Item.SUSPICIOUS_STEW, 4));
 
-    @PowerNukkitOnly
+
     public static final Food suspicious_stew_saturation = registerDefaultFood(new FoodEffectiveInBow(6, 7.2F)
             .addEffect(Effect.getEffect(Effect.SATURATION).setAmplifier(1).setDuration(7)).addRelative(Item.SUSPICIOUS_STEW, 6));
 
-    @PowerNukkitOnly
+
     public static final Food suspicious_stew_fire_resistance = registerDefaultFood(new FoodEffectiveInBow(6, 7.2F)
             .addEffect(Effect.getEffect(Effect.FIRE_RESISTANCE).setAmplifier(1).setDuration(2 * 20)).addRelative(Item.SUSPICIOUS_STEW, 7));
 
-    @PowerNukkitOnly
+
     public static final Food suspicious_stew_regeneration = registerDefaultFood(new FoodEffectiveInBow(6, 7.2F)
             .addEffect(Effect.getEffect(Effect.REGENERATION).setAmplifier(1).setDuration(6 * 20)).addRelative(Item.SUSPICIOUS_STEW, 8));
 
-    @PowerNukkitOnly
+
     public static final Food suspicious_stew_wither = registerDefaultFood(new FoodEffectiveInBow(6, 7.2F)
             .addEffect(Effect.getEffect(Effect.WITHER).setAmplifier(1).setDuration(6 * 20)).addRelative(Item.SUSPICIOUS_STEW, 9));
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Was added in Cloudburst Nukkit with another name", replaceWith = "honey_bottle")
-    @PowerNukkitOnly
+
     public static final Food honey = registerDefaultFood(new FoodHoney(6, 1.2F).addRelative(Item.HONEY_BOTTLE));
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "PowerNukkit uses FoodHoney instead of FoodNormal")
-    @Since("1.4.0.0-PN")
+
     public static final Food honey_bottle = honey;
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public static final Food glow_berries = registerDefaultFood(new FoodNormal(2, 0.4F).addRelative(Item.GLOW_BERRIES));
 
     @PowerNukkitXDifference
@@ -206,8 +205,7 @@ public abstract class Food {
         return addRelative(node);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public Food addRelative(String stringID, int meta, Plugin plugin) {
         var node = new NodeStringIDMeta(stringID, meta, plugin);
         return addRelative(node);
@@ -236,36 +234,31 @@ public abstract class Food {
         return this;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     protected int eatingTick = 31;
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     protected IntSupplier eatingTickSupplier;
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     public int getEatingTick() {
         return eatingTick;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     public Food setEatingTick(int eatingTick) {
         this.eatingTick = eatingTick;
         return this;
     }
 
     @Nullable
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
+
     public IntSupplier getEatingTickSupplier() {
         return eatingTickSupplier;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     public Food setEatingTickSupplier(IntSupplier eatingTickSupplier) {
         this.eatingTickSupplier = eatingTickSupplier;
         return this;

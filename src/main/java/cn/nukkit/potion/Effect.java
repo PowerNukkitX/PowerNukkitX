@@ -28,14 +28,14 @@ public class Effect implements Cloneable {
     public static final int MINING_FATIGUE = 4;
     public static final int STRENGTH = 5;
 
-    @Since("1.4.0.0-PN") public static final int INSTANT_HEALTH = 6;
+
     @Deprecated @DeprecationDetails(
             by = "PowerNukkit", since = "1.4.0.0-PN", 
             reason = "Was renamed to INSTANT_HEALTH in game, can be removed anytime by Cloudburst Nukkit",
             replaceWith = "INSTANT_HEALTH")
     public static final int HEALING = INSTANT_HEALTH;
 
-    @Since("1.4.0.0-PN") public static final int INSTANT_DAMAGE = 7;
+
     @Deprecated @DeprecationDetails(
             by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Was renamed to INSTANT_DAMAGE in game, can be removed anytime by Cloudburst Nukkit",
@@ -43,7 +43,6 @@ public class Effect implements Cloneable {
     public static final int HARMING = INSTANT_DAMAGE;
 
 
-    @Since("1.4.0.0-PN") public static final int JUMP_BOOST = 8;
     @Deprecated @DeprecationDetails(
             by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Was renamed to JUMP_BOOST in game, can be removed anytime by Cloudburst Nukkit",
@@ -59,7 +58,7 @@ public class Effect implements Cloneable {
     public static final int CONFUSION = 9;
     
     public static final int REGENERATION = 10;
-    @Since("1.4.0.0-PN") public static final int RESISTANCE = 11;
+
     @Deprecated @DeprecationDetails(
             by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Was renamed to JUMP_BOOST in game, can be removed anytime by Cloudburst Nukkit",
@@ -86,11 +85,11 @@ public class Effect implements Cloneable {
     @Deprecated
     @DeprecationDetails(by = "PowerNukkit and removed by Cloudburst", since = "TBD",
             reason = "Typo", replaceWith = "CONDUIT_POWER")
-    @PowerNukkitOnly("Was removed from Cloudburst Nukkit, kept on PowerNukkit for backward compatibility")
+    ("Was removed from Cloudburst Nukkit, kept on PowerNukkit for backward compatibility")
     public static final int COUNDIT_POWER = CONDUIT_POWER;
     public static final int SLOW_FALLING = 27;
-    @Since("1.4.0.0-PN") public static final int BAD_OMEN = 28;
-    @Since("1.4.0.0-PN") public static final int VILLAGE_HERO = 29;
+
+
     public static final int DARKNESS = 30;
 
     protected static Effect[] effects;

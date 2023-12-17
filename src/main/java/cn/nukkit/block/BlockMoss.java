@@ -20,8 +20,8 @@ import java.util.Random;
  * @author CoolLoong
  * @since 02.12.2022
  */
-@PowerNukkitOnly
-@Since("FUTURE")
+
+
 public class BlockMoss extends BlockSolid {
 
     public BlockMoss() {

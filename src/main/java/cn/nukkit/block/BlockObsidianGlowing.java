@@ -50,8 +50,7 @@ public class BlockObsidianGlowing extends BlockSolid {
         return new ItemBlock(Block.get(BlockID.OBSIDIAN));
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getToolTier() {
         return ItemTool.TIER_DIAMOND;
@@ -74,7 +73,7 @@ public class BlockObsidianGlowing extends BlockSolid {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public  boolean canBePulled() {
         return false;
     }

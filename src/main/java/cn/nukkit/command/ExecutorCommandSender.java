@@ -20,8 +20,8 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 //used for executing commands in place of an entity
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public class ExecutorCommandSender implements CommandSender {
 
     private final CommandSender executor;
@@ -48,8 +48,7 @@ public class ExecutorCommandSender implements CommandSender {
         executor.sendMessage(message);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     public void sendCommandOutput(CommandOutputContainer container) {
         executor.sendCommandOutput(container);
     }
@@ -91,8 +90,7 @@ public class ExecutorCommandSender implements CommandSender {
         return (executeLocation == null ? entity : executeLocation).clone();
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Location getLocation() {

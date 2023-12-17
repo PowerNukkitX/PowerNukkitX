@@ -4,8 +4,7 @@ import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
-@PowerNukkitXOnly
-@Since("1.19.50-r1")
+
 public interface ByteArrayWrapper extends ArrayWrapper<Byte> {
     byte[] getRawBytes();
 

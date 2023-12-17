@@ -21,8 +21,8 @@ import java.util.Map;
  * Terra generator wrapper class for nk bottom layer<br/>
  * The specific reasons for this are detailed in {@link cn.nukkit.level.terra.TerraGenerator}
  */
-@Since("1.19.50-r2")
-@PowerNukkitXOnly
+
+
 public class TerraGeneratorWrapper extends Generator {
 
     //所有terra实例

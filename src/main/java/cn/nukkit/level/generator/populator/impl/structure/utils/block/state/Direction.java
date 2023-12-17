@@ -4,8 +4,8 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
 //\\ VanillaStates::Direction
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
+
 public final class Direction {
 
     public static final int SOUTH = 0b00;

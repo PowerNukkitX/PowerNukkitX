@@ -14,7 +14,7 @@ public class Location extends Position {
 
     public double yaw;
     public double pitch;
-    @Since("1.6.0.0-PNX")
+
     public double headYaw;
 
     public Location() {
@@ -49,12 +49,12 @@ public class Location extends Position {
         this(x, y, z, yaw, pitch, 0, level);
     }
 
-    @Since("FUTURE")
+
     public Location(double x, double y, double z, double yaw, double pitch, double headYaw) {
         this(x, y, z, yaw, pitch, headYaw, null);
     }
 
-    @Since("FUTURE")
+
     public Location(double x, double y, double z, double yaw, double pitch, double headYaw, Level level) {
         this.x = x;
         this.y = y;
@@ -81,7 +81,7 @@ public class Location extends Position {
         return new Location(pos.x, pos.y, pos.z, yaw, pitch, (level == null) ? ((pos instanceof Position) ? ((Position) pos).level : null) : level);
     }
 
-    @Since("FUTURE")
+
     public static Location fromObject(Vector3 pos, Level level, double yaw, double pitch, double headYaw) {
         if (level == null && pos instanceof Position) {
             level = ((Position) pos).level;
@@ -93,7 +93,7 @@ public class Location extends Position {
         return this.yaw;
     }
 
-    @PowerNukkitOnly
+
     public Location setYaw(double yaw) {
         this.yaw = yaw;
         return this;
@@ -103,39 +103,38 @@ public class Location extends Position {
         return this.pitch;
     }
 
-    @PowerNukkitOnly
+
     public Location setPitch(double pitch) {
         this.pitch = pitch;
         return this;
     }
 
-    @Since("1.6.0.0-PNX")
+
     public double getHeadYaw() {
         return this.headYaw;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public Location setHeadYaw(double headYaw) {
         this.headYaw = headYaw;
         return this;
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     public Location setX(double x) {
         super.setX(x);
         return this;
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     public Location setY(double y) {
         super.setY(y);
         return this;
     }
 
-    @Since("1.19.60-r1")
+
     @Override
     public Location setZ(double z) {
         super.setZ(z);

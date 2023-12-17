@@ -31,8 +31,8 @@ public class EntityFallingBlock extends Entity {
     public static final int NETWORK_ID = 66;
     protected int blockId;
     protected int damage;
-    protected @PowerNukkitOnly boolean breakOnLava;
-    protected @PowerNukkitOnly boolean breakOnGround;
+    protected boolean breakOnLava;
+    protected boolean breakOnGround;
 
     public EntityFallingBlock(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -263,8 +263,6 @@ public class EntityFallingBlock extends Entity {
     }
 
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Falling Block";

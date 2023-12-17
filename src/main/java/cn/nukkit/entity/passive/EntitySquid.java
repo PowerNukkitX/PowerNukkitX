@@ -46,8 +46,6 @@ public class EntitySquid extends EntityAnimal implements EntitySwimmable {
     }
 
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Squid";

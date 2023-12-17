@@ -9,8 +9,7 @@ import cn.nukkit.network.protocol.DataPacket;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 
-@Since("1.19.30-r1")
-@PowerNukkitXOnly
+
 public interface NetworkPlayerSession {
     void sendPacket(DataPacket packet);
 

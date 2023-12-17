@@ -25,8 +25,8 @@ public class Attribute implements Cloneable {
      * <p>
      * Convenient execution of {@link Collection#toArray()}
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final Attribute[] EMPTY_ARRAY = new Attribute[0];
 
     /**

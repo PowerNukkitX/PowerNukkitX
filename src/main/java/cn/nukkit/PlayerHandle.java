@@ -36,8 +36,8 @@ import java.util.UUID;
  * A PlayerHandle is used to access a player's protected data.
  */
 @SuppressWarnings("ClassCanBeRecord")
-@Since("1.19.80-r2")
-@PowerNukkitXOnly
+
+
 public final class PlayerHandle {
     public final @NotNull Player player;
 
@@ -62,7 +62,7 @@ public final class PlayerHandle {
         player.forceSendEmptyChunks();
     }
 
-    @Since("1.4.0.0-PN")
+
     public void removeWindow(Inventory inventory, boolean isResponse) {
         player.removeWindow(inventory, isResponse);
     }
@@ -71,7 +71,7 @@ public final class PlayerHandle {
         player.addDefaultWindows();
     }
 
-    @PowerNukkitOnly
+
     public void onBlock(Entity entity, EntityDamageEvent e, boolean animate) {
         player.onBlock(entity, e, animate);
     }
@@ -485,14 +485,12 @@ public final class PlayerHandle {
         player.completeLoginSequence();
     }
 
-    @Since("1.19.50-r3")
-    @PowerNukkitXOnly
+
     public void onPlayerLocallyInitialized() {
         player.onPlayerLocallyInitialized();
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     public boolean isValidRespawnBlock(Block block) {
         return player.isValidRespawnBlock(block);
     }

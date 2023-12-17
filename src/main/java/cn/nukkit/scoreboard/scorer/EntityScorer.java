@@ -11,8 +11,7 @@ import lombok.Getter;
 
 import java.util.UUID;
 
-@PowerNukkitXOnly
-@Since("1.19.30-r1")
+
 @Getter
 public class EntityScorer implements IScorer {
 

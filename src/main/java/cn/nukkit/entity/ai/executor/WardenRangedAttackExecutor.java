@@ -19,8 +19,7 @@ import cn.nukkit.network.protocol.LevelEventPacket;
 import java.util.EnumMap;
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r4")
+
 public class WardenRangedAttackExecutor implements IBehaviorExecutor {
 
     protected int chargingTime;

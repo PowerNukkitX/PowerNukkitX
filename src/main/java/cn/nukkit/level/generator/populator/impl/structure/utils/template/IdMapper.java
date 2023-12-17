@@ -11,8 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public class IdMapper<T> implements Iterable<T> {
 
     private final HashMap<T, Integer> tToId;

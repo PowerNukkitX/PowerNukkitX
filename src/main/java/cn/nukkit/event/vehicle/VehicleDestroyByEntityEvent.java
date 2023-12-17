@@ -11,7 +11,7 @@ import cn.nukkit.event.HandlerList;
  * @author TrainmasterHD
  * @since 09.09.2019
  */
-@PowerNukkitOnly
+
 public final class VehicleDestroyByEntityEvent extends VehicleDestroyEvent implements Cancellable {
 
     private static final HandlerList HANDLER_LIST = new HandlerList();
@@ -24,14 +24,14 @@ public final class VehicleDestroyByEntityEvent extends VehicleDestroyEvent imple
      * @param vehicle   the destroyed vehicle
      * @param destroyer the destroying entity
      */
-    @PowerNukkitOnly
+
     public VehicleDestroyByEntityEvent(final Entity vehicle, final Entity destroyer) {
         super(vehicle);
 
         this.destroyer = destroyer;
     }
 
-    @PowerNukkitOnly
+
     public static HandlerList getHandlers() {
         return HANDLER_LIST;
     }
@@ -41,7 +41,7 @@ public final class VehicleDestroyByEntityEvent extends VehicleDestroyEvent imple
      *
      * @return destroying entity
      */
-    @PowerNukkitOnly
+
     public Entity getDestroyer() {
         return destroyer;
     }

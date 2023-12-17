@@ -10,8 +10,7 @@ import java.io.IOException;
 public class FloatTag extends NumberTag<Float> {
     public float data;
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     public FloatTag(float data) {
         super("");
         this.data = data;

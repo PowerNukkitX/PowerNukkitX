@@ -25,8 +25,7 @@ public class BlockFrogSpawn extends BlockFlowable{
         return FROG_SPAWN;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {

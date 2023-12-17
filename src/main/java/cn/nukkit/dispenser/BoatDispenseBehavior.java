@@ -12,15 +12,15 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 
-@PowerNukkitOnly
+
 public class BoatDispenseBehavior extends DefaultDispenseBehavior {
 
-    @PowerNukkitOnly
+
     public BoatDispenseBehavior() {
         super();
     }
 
-    @PowerNukkitOnly
+
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Vector3 pos = block.getSide(face).multiply(1.125);

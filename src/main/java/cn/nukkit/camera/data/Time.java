@@ -9,8 +9,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @date 2023/6/11
  * PowerNukkitX Project
  */
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
+
 public record Time(float fadeIn, float hold, float fadeOut) implements SerializableData {
     public CompoundTag serialize() {
         return new CompoundTag("time")

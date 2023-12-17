@@ -23,8 +23,7 @@ public class ColdTaigaBiome extends TaigaBiome {
         return "Cold Taiga";
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getCoverBlock() {
         if (useNewRakNetCover()) {

@@ -17,8 +17,7 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 import java.util.EnumMap;
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r4")
+
 public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
 
     protected int attackTick;

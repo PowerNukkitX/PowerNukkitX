@@ -21,10 +21,10 @@ public class SetEntityDataPacket extends DataPacket {
 
     public long eid;
     public EntityMetadata metadata;
-    @PowerNukkitXOnly
-    @Since("1.19.40-r1")
+
+
     public PropertySyncData syncedProperties = new PropertySyncData(new int[]{}, new float[]{});
-    @Since("1.4.0.0-PN")
+
     public long frame;
 
     @Override

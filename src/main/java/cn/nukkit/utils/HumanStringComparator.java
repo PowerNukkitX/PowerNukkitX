@@ -10,9 +10,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
-@NoArgsConstructor(onConstructor = @__(@PowerNukkitOnly))
+
+@NoArgsConstructor(onConstructor = @__())
 public class HumanStringComparator implements Comparator<String> {
     private static final HumanStringComparator INSTANCE = new HumanStringComparator();
     private static final int LEFT = -1;
@@ -222,8 +221,7 @@ public class HumanStringComparator implements Comparator<String> {
         return list;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static HumanStringComparator getInstance() {
         return INSTANCE;
     }

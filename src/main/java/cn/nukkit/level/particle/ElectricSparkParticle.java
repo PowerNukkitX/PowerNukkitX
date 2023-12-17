@@ -10,11 +10,11 @@ import cn.nukkit.network.protocol.LevelEventPacket;
  * @author joserobjr
  * @since 2021-06-15
  */
-@PowerNukkitOnly
-@Since("FUTURE")
+
+
 public class ElectricSparkParticle extends GenericParticle {
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
+
     public ElectricSparkParticle(Vector3 pos) {
         super(pos, Particle.TYPE_WAX);
     }

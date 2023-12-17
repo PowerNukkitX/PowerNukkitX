@@ -16,15 +16,13 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class BlockCandleCake extends BlockTransparentMeta {
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
+
     private static final BooleanBlockProperty LIT = new BooleanBlockProperty("lit", false);
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(LIT);
 
     public BlockCandleCake(int meta) {
@@ -49,8 +47,7 @@ public class BlockCandleCake extends BlockTransparentMeta {
         return CANDLE_CAKE;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -72,7 +69,7 @@ public class BlockCandleCake extends BlockTransparentMeta {
         return 0.5;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -176,13 +173,13 @@ public class BlockCandleCake extends BlockTransparentMeta {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean sticksToPiston() {
         return false;
     }

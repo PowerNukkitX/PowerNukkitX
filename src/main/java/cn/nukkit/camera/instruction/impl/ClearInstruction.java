@@ -9,8 +9,8 @@ import cn.nukkit.camera.instruction.CameraInstruction;
  * @date 2023/6/11
  * PowerNukkitX Project
  */
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
+
 public class ClearInstruction implements CameraInstruction {
     private static final ClearInstruction INSTANCE = new ClearInstruction();
 

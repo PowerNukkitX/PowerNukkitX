@@ -9,15 +9,15 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 
-@PowerNukkitOnly
+
 public class DropperDispenseBehavior extends DefaultDispenseBehavior {
 
-    @PowerNukkitOnly
+
     public DropperDispenseBehavior() {
         super();
     }
 
-    @PowerNukkitOnly
+
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);

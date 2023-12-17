@@ -7,7 +7,7 @@ import cn.nukkit.item.Item;
 import java.util.Collection;
 import java.util.List;
 
-@PowerNukkitOnly
+
 public class CartographyRecipe extends ShapelessRecipe {
 
     public CartographyRecipe(Item result, Collection<Item> ingredients) {

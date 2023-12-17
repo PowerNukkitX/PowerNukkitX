@@ -9,8 +9,7 @@ import cn.nukkit.level.generator.populator.impl.structure.utils.populator.Popula
 import cn.nukkit.level.generator.populator.impl.structure.utils.structure.ScatteredStructurePiece;
 import cn.nukkit.math.NukkitRandom;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
 public class PopulatorSwampHut extends PopulatorScatteredStructure {
 
     @Override

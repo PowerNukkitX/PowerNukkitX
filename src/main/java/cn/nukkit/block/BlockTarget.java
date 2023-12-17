@@ -26,12 +26,11 @@ import java.util.List;
 /**
  * @author joserobjr
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class BlockTarget extends BlockTransparent implements RedstoneComponent, BlockEntityHolder<BlockEntityTarget> {
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public BlockTarget() {
         // Does nothing
     }
@@ -46,16 +45,14 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
         return "Target";
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntityTarget> getBlockEntityClass() {
         return BlockEntityTarget.class;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public String getBlockEntityType() {
@@ -73,14 +70,12 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
         return target == null? 0 : target.getActivePower();
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean activatePower(int power) {
         return activatePower(power, 4 * 2);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean activatePower(int power, int ticks) {
         Level level = getLevel();
         if (power <= 0 || ticks <= 0) {
@@ -102,8 +97,7 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
         return true;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean deactivatePower() {
         BlockEntityTarget target = getBlockEntity();
         if (target != null) {
@@ -127,8 +121,7 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
         return 0;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         int ticks = 8;

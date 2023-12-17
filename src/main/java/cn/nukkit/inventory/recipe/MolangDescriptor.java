@@ -6,8 +6,7 @@ import cn.nukkit.item.Item;
 
 import java.util.Objects;
 
-@PowerNukkitXOnly
-@Since("Future")
+
 public class MolangDescriptor implements ItemDescriptor {
     private final String tagExpression;
     private final int molangVersion;

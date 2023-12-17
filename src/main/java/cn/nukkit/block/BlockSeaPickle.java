@@ -21,26 +21,24 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitOnly
+
 public class BlockSeaPickle extends BlockFlowable {
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
+
     public static final BooleanBlockProperty DEAD = new BooleanBlockProperty("dead_bit", false);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final IntBlockProperty CLUSTER_COUNT = new IntBlockProperty("cluster_count", false, 3);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public static final BlockProperties PROPERTIES = new BlockProperties(CLUSTER_COUNT, DEAD);
 
-    @PowerNukkitOnly
+
     public BlockSeaPickle() {
         this(0);
     }
 
-    @PowerNukkitOnly
+
     protected BlockSeaPickle(int meta) {
         super(meta);
     }
@@ -50,8 +48,7 @@ public class BlockSeaPickle extends BlockFlowable {
         return SEA_PICKLE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -63,12 +60,12 @@ public class BlockSeaPickle extends BlockFlowable {
         return "Sea Pickle";
     }
 
-    @PowerNukkitOnly
+
     public boolean isDead() {
         return (getDamage() & 0x4) == 0x4;
     }
 
-    @PowerNukkitOnly
+
     public void setDead(boolean dead) {
         if (dead) {
             setDamage(getDamage() | 0x4);
@@ -188,7 +185,7 @@ public class BlockSeaPickle extends BlockFlowable {
         return super.onActivate(item, player);
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;

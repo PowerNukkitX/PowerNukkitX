@@ -14,8 +14,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * 用于游泳实体的坐标评估器
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public class SwimmingPosEvaluator implements IPosEvaluator {
     @Override
     public boolean evalPos(@NotNull EntityIntelligent entity, @NotNull Vector3 pos) {

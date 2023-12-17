@@ -9,18 +9,16 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @autor GoodLucky777
  */
-@PowerNukkitOnly
-@Since("FUTURE")
+
+
 public class BlockDoubleSlabBrickDeepslate extends BlockDoubleSlabBase {
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
     public BlockDoubleSlabBrickDeepslate() {
         this(0);
     }
-    
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
+
     protected BlockDoubleSlabBrickDeepslate(int meta) {
         super(meta);
     }

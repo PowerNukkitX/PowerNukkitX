@@ -29,7 +29,7 @@ public class BlockOreDiamond extends BlockOre {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_IRON;
     }
@@ -39,8 +39,7 @@ public class BlockOreDiamond extends BlockOre {
         return "Diamond Ore";
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
+
     @Nullable
     @Override
     protected MinecraftItemID getRawMaterial() {

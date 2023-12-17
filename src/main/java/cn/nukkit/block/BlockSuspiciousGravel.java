@@ -12,8 +12,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
 //todo complete
-@PowerNukkitXOnly
-@Since("1.20.10-r2")
+
+
 public class BlockSuspiciousGravel extends BlockFallableMeta {
     public static final IntBlockProperty BRUSHED_PROGRESS = new IntBlockProperty("brushed_progress", false, 3);
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.HANGING, BRUSHED_PROGRESS);
@@ -49,7 +49,7 @@ public class BlockSuspiciousGravel extends BlockFallableMeta {
         return 1.25;
     }
 
-    @PowerNukkitOnly
+
     @Override
     protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {
         customNbt.putBoolean("BreakOnGround", true);

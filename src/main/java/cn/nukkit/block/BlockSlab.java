@@ -19,16 +19,14 @@ import javax.annotation.Nullable;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockSlab extends BlockTransparentMeta {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final BooleanBlockProperty TOP_SLOT_PROPERTY = new BooleanBlockProperty("top_slot_bit", false);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final BlockProperties SIMPLE_SLAB_PROPERTIES = CommonBlockProperties.VERTICAL_HALF_PROPERTIES;
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
@@ -42,14 +40,12 @@ public abstract class BlockSlab extends BlockTransparentMeta {
         this.doubleSlab = doubleSlab;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public BlockSlab(int doubleSlab) {
         this.doubleSlab = doubleSlab;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public abstract String getSlabName();
 
     @Override
@@ -77,30 +73,26 @@ public abstract class BlockSlab extends BlockTransparentMeta {
         return getToolType() < ItemTool.TYPE_AXE ? 30 : 15;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public boolean isOnTop() {
         return getPropertyValue(CommonBlockProperties.VERTICAL_HALF) == VerticalHalf.TOP;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setOnTop(boolean top) {
         setPropertyValue(CommonBlockProperties.VERTICAL_HALF, top ? VerticalHalf.TOP : VerticalHalf.BOTTOM);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public abstract boolean isSameType(BlockSlab slab);
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean isSolid(BlockFace side) {
         return side == BlockFace.UP && isOnTop() || side == BlockFace.DOWN && !isOnTop();

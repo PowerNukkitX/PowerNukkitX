@@ -12,11 +12,10 @@ import org.jetbrains.annotations.NotNull;
  * @since 13/06/2021
  */
 
-@PowerNukkitOnly
-@Since("FUTURE")
+
 public class BlockRootsHanging extends BlockRoots {
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
+
     public BlockRootsHanging() {
     }
 

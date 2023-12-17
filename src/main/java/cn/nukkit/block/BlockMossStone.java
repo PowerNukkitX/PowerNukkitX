@@ -38,7 +38,7 @@ public class BlockMossStone extends BlockSolid {
     }
 
     @Override
-    @PowerNukkitOnly
+
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

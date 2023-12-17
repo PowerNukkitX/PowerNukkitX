@@ -9,8 +9,7 @@ import com.dfsek.terra.api.world.ServerWorld;
 import com.dfsek.terra.api.world.chunk.Chunk;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public record PNXChunkDelegate(ServerWorld world, BaseFullChunk chunk) implements Chunk {
     @Override
     public void setBlock(int i, int i1, int i2, BlockState blockState, boolean b) {

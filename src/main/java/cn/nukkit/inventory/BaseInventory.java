@@ -114,8 +114,7 @@ public abstract class BaseInventory implements Inventory {
         return this.slots.containsKey(index) ? this.slots.get(index).clone() : AIR_ITEM.clone();
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     @Override
     public Item getUnclonedItem(int index) {
         return this.slots.getOrDefault(index, AIR_ITEM);
@@ -615,7 +614,7 @@ public abstract class BaseInventory implements Inventory {
         this.sendSlot(index, players.toArray(Player.EMPTY_ARRAY));
     }
 
-    @PowerNukkitOnly
+
     @Override
     public void addListener(InventoryListener listener) {
         if (this.listeners == null) {
@@ -625,7 +624,7 @@ public abstract class BaseInventory implements Inventory {
         this.listeners.add(listener);
     }
 
-    @PowerNukkitOnly
+
     @Override
     public void removeListener(InventoryListener listener) {
         if (this.listeners != null) {

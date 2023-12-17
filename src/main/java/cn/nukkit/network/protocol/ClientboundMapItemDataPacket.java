@@ -140,8 +140,8 @@ public class ClientboundMapItemDataPacket extends DataPacket {
     }
 
     public static class MapDecorator {
-        @PowerNukkitOnly
-        @Since("1.4.0.0-PN")
+
+
         public static final MapDecorator[] EMPTY_ARRAY = new MapDecorator[0];
         
         public byte rotation;

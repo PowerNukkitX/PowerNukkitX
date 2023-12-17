@@ -184,8 +184,6 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
     }
 
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Block of TNT";

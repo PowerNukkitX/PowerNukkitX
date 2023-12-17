@@ -7,8 +7,8 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 /**
  * 可生气实体<p>
  */
-@PowerNukkitXOnly
-@Since("1.19.50-r3")
+
+
 public interface EntityAngryable extends EntityComponent {
     default boolean isAngry() {
         return getMemoryStorage().get(CoreMemoryTypes.IS_ANGRY);

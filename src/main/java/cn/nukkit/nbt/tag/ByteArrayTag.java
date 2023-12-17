@@ -12,8 +12,7 @@ import java.util.Arrays;
 public class ByteArrayTag extends Tag {
     public byte[] data;
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     public ByteArrayTag(byte[] data) {
         super("");
         this.data = data;

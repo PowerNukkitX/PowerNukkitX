@@ -41,8 +41,7 @@ public class EntityStray extends EntityMob implements EntityWalkable, EntitySmit
         return 1.9f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Stray";
@@ -53,13 +52,13 @@ public class EntityStray extends EntityMob implements EntityWalkable, EntitySmit
         return new Item[]{Item.get(Item.BONE, Item.ARROW)};
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isUndead() {
         return true;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

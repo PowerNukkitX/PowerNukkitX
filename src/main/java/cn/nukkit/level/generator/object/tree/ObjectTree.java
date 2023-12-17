@@ -46,8 +46,7 @@ public abstract class ObjectTree {
         growTree(level, x, y, z, random, woodType, tall);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static void growTree(ChunkManager level, int x, int y, int z, NukkitRandom random, WoodType type, boolean tall) {
         ObjectTree tree;
         switch (type) {

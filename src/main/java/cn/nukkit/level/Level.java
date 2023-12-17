@@ -98,8 +98,6 @@ import static cn.nukkit.utils.Utils.dynamic;
  */
 @Log4j2
 public class Level implements ChunkManager, Metadatable {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public static final Level[] EMPTY_ARRAY = new Level[0];
     public static final int BLOCK_UPDATE_NORMAL = 1;
     public static final int BLOCK_UPDATE_RANDOM = 2;
@@ -108,8 +106,6 @@ public class Level implements ChunkManager, Metadatable {
     public static final int BLOCK_UPDATE_TOUCH = 5;
     public static final int BLOCK_UPDATE_REDSTONE = 6;
     public static final int BLOCK_UPDATE_TICK = 7;
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public static final int BLOCK_UPDATE_MOVED = dynamic(1_000_000);
     public static final int TIME_DAY = 0;
     public static final int TIME_NOON = 6000;
@@ -126,8 +122,8 @@ public class Level implements ChunkManager, Metadatable {
     // The blocks that can randomly tick
     private static final IntOpenHashSet randomTickBlocks = new IntOpenHashSet(64);
     private static final int LCG_CONSTANT = 1013904223;
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
+
     private static final IntSet transparentBlockRuntimeIds = new IntOpenHashSet(256);
     private static final Entity[] ENTITY_BUFFER = new Entity[512];
     @SuppressWarnings({"java:S1444", "java:S3008"})
@@ -228,11 +224,11 @@ public class Level implements ChunkManager, Metadatable {
     private final ConcurrentHashMap<Long, Deque<DataPacket>> chunkPackets = new ConcurrentHashMap<>();
     @NonComputationAtomic
     private final Long2ObjectNonBlockingMap<Long> unloadQueue = new Long2ObjectNonBlockingMap<>();
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     private final ConcurrentHashMap<Long, TickCachedBlockStore> tickCachedBlocks = new ConcurrentHashMap<>();
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     private final LongSet highLightChunks = new LongOpenHashSet();
     // Avoid OOM, gc'd references result in whole chunk being sent (possibly higher cpu)
     private final Long2ObjectOpenHashMap<SoftReference<Int2ObjectOpenHashMap<Object>>> changedBlocks = new Long2ObjectOpenHashMap<>();
@@ -253,17 +249,17 @@ public class Level implements ChunkManager, Metadatable {
     private final Long2ObjectOpenHashMap<Boolean> chunkPopulationLock = new Long2ObjectOpenHashMap<>();
     private final Long2ObjectOpenHashMap<Boolean> chunkGenerationQueue = new Long2ObjectOpenHashMap<>();
     private final Long2IntMap chunkTickList = new Long2IntOpenHashMap();
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
+
     private final Int2IntMap realOreToReplacedRuntimeIds = new Int2IntOpenHashMap(24);
     //    private final TreeSet<BlockUpdateEntry> updateQueue = new TreeSet<>();
 //    private final List<BlockUpdateEntry> nextTickUpdates = Lists.newArrayList();
     //private final Map<BlockVector3, Integer> updateQueueIndex = new HashMap<>();
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
+
     private final Int2ObjectOpenHashMap<IntList> fakeOreToPutRuntimeIds = new Int2ObjectOpenHashMap<>(4);
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
+
     private final VibrationManager vibrationManager = new SimpleVibrationManager(this);
     public boolean stopTime;
     public float skyLightSubtracted;
@@ -302,14 +298,14 @@ public class Level implements ChunkManager, Metadatable {
     private long levelCurrentTick = 0;
     private DimensionData dimensionData;
     /* Anti-xray related. 反矿透相关 */
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
+
     private boolean antiXrayEnabled = false;
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
+
     private int fakeOreDenominator = 16;
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
+
     private boolean preDeObfuscate = true;
     private final Map<Long, Map<Integer, Object>> lightQueue = new ConcurrentHashMap<>(8, 0.9f, 1);
     private Iterator<cn.nukkit.utils.collection.nb.LongObjectEntry<Long>> lastUsingUnloadingIter;
@@ -397,14 +393,11 @@ public class Level implements ChunkManager, Metadatable {
     }
 
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static boolean canRandomTick(int blockId) {
+    public static boolean canRandomTick(String blockId) {
         return blockId < randomTickBlocks.size() && randomTickBlocks.contains(blockId);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static void setCanRandomTick(int blockId, boolean newValue) {
         if (newValue) {
             randomTickBlocks.add(blockId);
@@ -418,7 +411,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     @Deprecated(since = "1.6.0.0-PNX")
-    @Since("1.6.0.0-PNX")
+
     public static long blockHash(int x, int y, int z) {
         if (y < 0 || y >= 256) {
             throw new IllegalArgumentException("Y coordinate y is out of range!");
@@ -426,8 +419,7 @@ public class Level implements ChunkManager, Metadatable {
         return (((long) x & (long) 0xFFFFFFF) << 36) | (((long) y & (long) 0xFF) << 28) | ((long) z & (long) 0xFFFFFFF);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public static long blockHash(int x, int y, int z, Level level) {
         if (!level.isYInRange(y)) {
             throw new IllegalArgumentException("Y coordinate y is out of range!");
@@ -441,8 +433,7 @@ public class Level implements ChunkManager, Metadatable {
         return (hi & 0xFF) << 16 | lo;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public static int localBlockHash(int x, int y, int z, int layer, Level level) {
         byte hi = (byte) ((x & 15) + ((z & 15) << 4));
         short lo = (short) (level.ensureY(y) + 64);
@@ -458,8 +449,7 @@ public class Level implements ChunkManager, Metadatable {
         return new Vector3(x, y, z);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public static int chunkBlockHash(int x, int y, int z) {
         return (x << 13) | (z << 9) | (y + 64); // 为适配384世界，y需要额外的1bit来存储
     }
@@ -500,14 +490,12 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
     public synchronized static void addAntiXrayTransparentBlock(@NotNull Block block) {
         transparentBlockRuntimeIds.add(block.getRuntimeId());
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
     public static IntSet getRawTransparentBlockRuntimeIds() {
         return transparentBlockRuntimeIds;
     }
@@ -534,63 +522,54 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
     public boolean isAntiXrayEnabled() {
         return antiXrayEnabled;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
     public void setAntiXrayEnabled(boolean antiXrayEnabled) {
         this.antiXrayEnabled = antiXrayEnabled;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
     public int getFakeOreDenominator() {
         return fakeOreDenominator;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
     public void setFakeOreDenominator(int fakeOreDenominator) {
         this.fakeOreDenominator = fakeOreDenominator;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
     public boolean isPreDeObfuscate() {
         return preDeObfuscate;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
     public void setPreDeObfuscate(boolean preDeObfuscate) {
         this.preDeObfuscate = preDeObfuscate;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
     public void addAntiXrayOreBlock(@NotNull Block oreBlock, @NotNull Block replaceWith) {
         this.realOreToReplacedRuntimeIds.put(oreBlock.getRuntimeId(), replaceWith.getRuntimeId());
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
     public void removeAntiXrayOreBlock(@NotNull Block oreBlock, @NotNull Block replaceWith) {
         this.realOreToReplacedRuntimeIds.remove(oreBlock.getRuntimeId(), replaceWith.getRuntimeId());
     }
 
     @PowerNukkitXInternal
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
+
     public Int2IntMap getRawRealOreToReplacedRuntimeIdMap() {
         return this.realOreToReplacedRuntimeIds;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
     public void addAntiXrayFakeBlock(@NotNull Block originBlock, @NotNull Collection<Block> fakeBlocks) {
         var rid = originBlock.getRuntimeId();
         var list = this.fakeOreToPutRuntimeIds.get(rid);
@@ -602,8 +581,7 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
     public void removeAntiXrayFakeBlock(@NotNull Block originBlock, @NotNull Collection<Block> fakeBlocks) {
         var rid = originBlock.getRuntimeId();
         var list = this.fakeOreToPutRuntimeIds.get(rid);
@@ -616,14 +594,13 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     @PowerNukkitXInternal
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
+
     public Int2ObjectMap<IntList> getRawFakeOreToPutRuntimeIdMap() {
         return this.fakeOreToPutRuntimeIds;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
+
     public void reinitAntiXray(boolean global) {
         var stone = new BlockStone();
         var netherRack = new BlockNetherrack();
@@ -672,14 +649,12 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public boolean isHighLightChunk(int chunkX, int chunkZ) {
         return highLightChunks.contains(Level.chunkHash(chunkX, chunkZ));
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.20-r3")
+
     public void initLevel() {
         this.initLevel(null);
     }
@@ -721,8 +696,8 @@ public class Level implements ChunkManager, Metadatable {
      *
      * @throws LevelException If the level is already closed
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     @NotNull
     public final LevelProvider requireProvider() {
         LevelProvider levelProvider = getProvider();
@@ -789,12 +764,12 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
-    @PowerNukkitOnly
+
     public void addLevelEvent(int type, int data) {
         addLevelEvent(type, data, null);
     }
 
-    @PowerNukkitOnly
+
     public void addLevelEvent(int type, int data, Vector3 pos) {
         if (pos == null) {
             addLevelEvent(type, data, 0, 0, 0);
@@ -803,7 +778,7 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
-    @PowerNukkitOnly
+
     public void addLevelEvent(int type, int data, float x, float y, float z) {
         LevelEventPacket packet = new LevelEventPacket();
         packet.evid = type;
@@ -819,7 +794,7 @@ public class Level implements ChunkManager, Metadatable {
         this.addLevelEvent(pos, event, 0);
     }
 
-    @Since("1.4.0.0-PN")
+
     public void addLevelEvent(Vector3 pos, int event, int data) {
         LevelEventPacket pk = new LevelEventPacket();
         pk.evid = event;
@@ -831,8 +806,7 @@ public class Level implements ChunkManager, Metadatable {
         addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     public void addLevelEvent(Vector3 pos, int event, CompoundTag data) {
         LevelEventGenericPacket pk = new LevelEventGenericPacket();
         pk.eventId = event;
@@ -1107,8 +1081,7 @@ public class Level implements ChunkManager, Metadatable {
         return gameRules;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public void releaseTickCachedBlocks() {
         synchronized (this.tickCachedBlocks) {
             for (var each : tickCachedBlocks.values()) {
@@ -1706,8 +1679,7 @@ public class Level implements ChunkManager, Metadatable {
         updateComparatorOutputLevelSelective(v, true);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void updateComparatorOutputLevelSelective(Vector3 v, boolean observer) {
         for (BlockFace face : Plane.HORIZONTAL) {
             temporalVector.setComponentsAdding(v, face);
@@ -1753,8 +1725,7 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     public void neighborChangeAroundImmediately(int x, int y, int z) {
         neighborChangeAroundImmediately(new Vector3(x, y, z));
     }
@@ -1764,8 +1735,8 @@ public class Level implements ChunkManager, Metadatable {
      *
      * @param pos 指定位置
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
+
     public void neighborChangeAroundImmediately(Vector3 pos) {
         for (var face : BlockFace.values()) {
             var neighborBlock = getBlock(pos.getSide(face));
@@ -1773,8 +1744,7 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     public void updateAroundObserver(Vector3 pos) {
         for (var face : BlockFace.values()) {
             var neighborBlock = getBlock(pos.getSide(face));
@@ -1791,8 +1761,7 @@ public class Level implements ChunkManager, Metadatable {
         this.scheduleUpdate(pos, pos, delay, 0, true);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public void scheduleUpdate(Block pos, int delay, boolean checkBlockWhenUpdate) {
         this.scheduleUpdate(pos, pos, delay, 0, true, checkBlockWhenUpdate);
     }
@@ -1809,8 +1778,7 @@ public class Level implements ChunkManager, Metadatable {
         this.scheduleUpdate(block, pos, delay, priority, checkArea, true);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public void scheduleUpdate(Block block, Vector3 pos, int delay, int priority, boolean checkArea, boolean checkBlockWhenUpdate) {
         if (block.getId() == 0 || (checkArea && !this.isChunkLoaded(block.getFloorX() >> 4, block.getFloorZ() >> 4))) {
             return;
@@ -1848,8 +1816,7 @@ public class Level implements ChunkManager, Metadatable {
         return updateQueue.getPendingBlockUpdates(boundingBox);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public List<Block> scanBlocks(@NotNull AxisAlignedBB bb, @NotNull BiPredicate<BlockVector3, BlockState> condition) {
         BlockVector3 min = new BlockVector3(NukkitMath.floorDouble(bb.getMinX()), NukkitMath.floorDouble(bb.getMinY()), NukkitMath.floorDouble(bb.getMinZ()));
         BlockVector3 max = new BlockVector3(NukkitMath.floorDouble(bb.getMaxX()), NukkitMath.floorDouble(bb.getMaxY()), NukkitMath.floorDouble(bb.getMaxZ()));
@@ -1871,12 +1838,12 @@ public class Level implements ChunkManager, Metadatable {
         return getCollisionBlocks(bb, targetFirst, false);
     }
 
-    @PowerNukkitOnly
+
     public Block[] getCollisionBlocks(AxisAlignedBB bb, boolean targetFirst, boolean ignoreCollidesCheck) {
         return getCollisionBlocks(bb, targetFirst, ignoreCollidesCheck, block -> block.getId() != 0);
     }
 
-    @PowerNukkitOnly
+
     public Block[] getCollisionBlocks(AxisAlignedBB bb, boolean targetFirst, boolean ignoreCollidesCheck, Predicate<Block> condition) {
         int minX = NukkitMath.floorDouble(bb.getMinX());
         int minY = NukkitMath.floorDouble(bb.getMinY());
@@ -1928,26 +1895,22 @@ public class Level implements ChunkManager, Metadatable {
         return bb != null && bb.getAverageEdgeLength() >= 1;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
     public Block[] getTickCachedCollisionBlocks(AxisAlignedBB bb) {
         return this.getTickCachedCollisionBlocks(bb, false);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
     public Block[] getTickCachedCollisionBlocks(AxisAlignedBB bb, boolean targetFirst) {
         return getTickCachedCollisionBlocks(bb, targetFirst, false);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
     public Block[] getTickCachedCollisionBlocks(AxisAlignedBB bb, boolean targetFirst, boolean ignoreCollidesCheck) {
         return getTickCachedCollisionBlocks(bb, targetFirst, ignoreCollidesCheck, block -> block.getId() != 0);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
     public Block[] getTickCachedCollisionBlocks(AxisAlignedBB bb, boolean targetFirst, boolean ignoreCollidesCheck, Predicate<Block> condition) {
         int minX = NukkitMath.floorDouble(bb.getMinX());
         int minY = NukkitMath.floorDouble(bb.getMinY());
@@ -2123,17 +2086,17 @@ public class Level implements ChunkManager, Metadatable {
          */
     }
 
-    @PowerNukkitOnly
+
     public float getRainStrength(float tickDiff) {
         return isRaining() ? 1 : 0; // TODO: real implementation
     }
 
-    @PowerNukkitOnly
+
     public float getThunderStrength(float tickDiff) {
         return isThundering() ? 1 : 0; // TODO: real implementation
     }
 
-    @PowerNukkitOnly
+
     public float getCelestialAngle(float tickDiff) {
         return calculateCelestialAngle(getTime(), tickDiff);
     }
@@ -2167,19 +2130,17 @@ public class Level implements ChunkManager, Metadatable {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN")
-    @PowerNukkitOnly
+
     public int getFullBlock(int x, int y, int z, int layer) {
         return this.getChunk(x >> 4, z >> 4, false).getFullBlock(x & 0x0f, ensureY(y), z & 0x0f, layer);
     }
 
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
+
     public int getBlockRuntimeId(int x, int y, int z) {
         return getBlockRuntimeId(x, y, z, 0);
     }
 
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
+
     public int getBlockRuntimeId(int x, int y, int z, int layer) {
         final var tmp = this.getChunk(x >> 4, z >> 4, false);
         if (tmp == null) {
@@ -2199,50 +2160,42 @@ public class Level implements ChunkManager, Metadatable {
         return around;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public Block getTickCachedBlock(Vector3 pos) {
         return getTickCachedBlock(pos, 0);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public Block getTickCachedBlock(Vector3 pos, int layer) {
         return this.getTickCachedBlock(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), layer);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public Block getTickCachedBlock(Vector3 pos, boolean load) {
         return getTickCachedBlock(pos, 0, load);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public Block getTickCachedBlock(Vector3 pos, int layer, boolean load) {
         return this.getTickCachedBlock(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), layer, load);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public Block getTickCachedBlock(int x, int y, int z) {
         return getTickCachedBlock(x, y, z, 0);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public Block getTickCachedBlock(int x, int y, int z, int layer) {
         return getTickCachedBlock(x, y, z, layer, true);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public Block getTickCachedBlock(int x, int y, int z, boolean load) {
         return getTickCachedBlock(x, y, z, 0, load);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public Block getTickCachedBlock(int x, int y, int z, int layer, boolean load) {
         return tickCachedBlocks.computeIfAbsent(Level.chunkHash(x >> 4, z >> 4), key -> new SimpleTickCachedBlockStore(this))
                 .computeFromCachedStore(x, y, z, layer, () -> getBlock(x, y, z, layer, load));
@@ -2252,7 +2205,7 @@ public class Level implements ChunkManager, Metadatable {
         return getBlock(pos, 0);
     }
 
-    @PowerNukkitOnly
+
     public Block getBlock(Vector3 pos, int layer) {
         return this.getBlock(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), layer);
     }
@@ -2261,7 +2214,7 @@ public class Level implements ChunkManager, Metadatable {
         return getBlock(pos, 0, load);
     }
 
-    @PowerNukkitOnly
+
     public Block getBlock(Vector3 pos, int layer, boolean load) {
         return this.getBlock(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), layer, load);
     }
@@ -2270,7 +2223,7 @@ public class Level implements ChunkManager, Metadatable {
         return getBlock(x, y, z, 0);
     }
 
-    @PowerNukkitOnly
+
     public Block getBlock(int x, int y, int z, int layer) {
         return getBlock(x, y, z, layer, true);
     }
@@ -2279,7 +2232,7 @@ public class Level implements ChunkManager, Metadatable {
         return getBlock(x, y, z, 0, load);
     }
 
-    @PowerNukkitOnly
+
     public Block getBlock(int x, int y, int z, int layer, boolean load) {
         BlockState fullState;
         if (isYInRange(y)) {
@@ -2359,7 +2312,7 @@ public class Level implements ChunkManager, Metadatable {
     /**
      * Returns the highest block skylight level available in the positions adjacent to the specified block coordinates.
      */
-    @PowerNukkitOnly
+
     public int getHighestAdjacentBlockSkyLight(int x, int y, int z) {
         int[] lightLevels = new int[]{
                 getBlockSkyLightAt(x + 1, y, z),
@@ -2526,7 +2479,7 @@ public class Level implements ChunkManager, Metadatable {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public void setBlockFullIdAt(int x, int y, int z, int layer, int fullId) {
         setBlock(x, y, z, layer, Block.fullList[fullId], false, false);
@@ -2536,7 +2489,7 @@ public class Level implements ChunkManager, Metadatable {
         return setBlock(pos, 0, block);
     }
 
-    @PowerNukkitOnly
+
     public boolean setBlock(Vector3 pos, int layer, Block block) {
         return this.setBlock(pos, layer, block, false);
     }
@@ -2545,7 +2498,7 @@ public class Level implements ChunkManager, Metadatable {
         return this.setBlock(pos, 0, block, direct);
     }
 
-    @PowerNukkitOnly
+
     public boolean setBlock(Vector3 pos, int layer, Block block, boolean direct) {
         return this.setBlock(pos, layer, block, direct, true);
     }
@@ -2554,7 +2507,7 @@ public class Level implements ChunkManager, Metadatable {
         return setBlock(pos, 0, block, direct, update);
     }
 
-    @PowerNukkitOnly
+
     public boolean setBlock(Vector3 pos, int layer, Block block, boolean direct, boolean update) {
         return setBlock(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), layer, block, direct, update);
     }
@@ -2575,7 +2528,7 @@ public class Level implements ChunkManager, Metadatable {
      * @param update 是否进行方块更新
      * @return 是否设置成功
      */
-    @PowerNukkitOnly
+
     public boolean setBlock(int x, int y, int z, int layer, Block block, boolean direct, boolean update) {
         if (!isYInRange(y) || layer < 0 || layer > this.requireProvider().getMaximumLayer()) {
             return false;
@@ -2695,25 +2648,25 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
-    @Since("1.4.0.0-PN")
+
     @Nullable
     public EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item) {
         return this.dropAndGetItem(source, item, null);
     }
 
-    @Since("1.4.0.0-PN")
+
     @Nullable
     public EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion) {
         return this.dropAndGetItem(source, item, motion, 10);
     }
 
-    @Since("1.4.0.0-PN")
+
     @Nullable
     public EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion, int delay) {
         return this.dropAndGetItem(source, item, motion, false, delay);
     }
 
-    @Since("1.4.0.0-PN")
+
     @Nullable
     public EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion, boolean dropAround, int delay) {
         EntityItem itemEntity = null;
@@ -2776,7 +2729,7 @@ public class Level implements ChunkManager, Metadatable {
         return useBreakOn(vector, face, item, player, createParticles, false);
     }
 
-    @PowerNukkitOnly
+
     public Item useBreakOn(Vector3 vector, BlockFace face, Item item, Player player, boolean createParticles, boolean setBlockDestroy) {
         if (vector instanceof Block) {
             return useBreakOn(vector, ((Block) vector).layer, face, item, player, createParticles, setBlockDestroy);
@@ -2785,7 +2738,7 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
-    @PowerNukkitOnly
+
     public Item useBreakOn(Vector3 vector, int layer, BlockFace face, Item item, Player player, boolean createParticles, boolean setBlockDestroy) {
         if (player != null && player.getGamemode() > 2) {
             return null;
@@ -2964,20 +2917,17 @@ public class Level implements ChunkManager, Metadatable {
         dropExpOrbAndGetEntities(source, exp, motion, delay);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public List<EntityXPOrb> dropExpOrbAndGetEntities(Vector3 source, int exp) {
         return dropExpOrbAndGetEntities(source, exp, null);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public List<EntityXPOrb> dropExpOrbAndGetEntities(Vector3 source, int exp, Vector3 motion) {
         return dropExpOrbAndGetEntities(source, exp, motion, 10);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public List<EntityXPOrb> dropExpOrbAndGetEntities(Vector3 source, int exp, Vector3 motion, int delay) {
         Random rand = ThreadLocalRandom.current();
         List<Integer> drops = EntityXPOrb.splitIntoOrbSizes(exp);
@@ -3410,7 +3360,7 @@ public class Level implements ChunkManager, Metadatable {
         return getBlockEntity(pos.asBlockVector3());
     }
 
-    @PowerNukkitOnly
+
     public BlockEntity getBlockEntity(BlockVector3 pos) {
         FullChunk chunk = this.getChunk(pos.x >> 4, pos.z >> 4, false);
 
@@ -3445,7 +3395,7 @@ public class Level implements ChunkManager, Metadatable {
         return (chunk = this.getChunk(X, Z)) != null ? chunk.getBlockEntities() : Collections.emptyMap();
     }
 
-    @PowerNukkitOnly
+
     @Override
     public BlockState getBlockStateAt(int x, int y, int z, int layer) {
         return getChunk(x >> 4, z >> 4, true).getBlockStateAt(x & 0x0f, ensureY(y), z & 0x0f, layer);
@@ -3456,7 +3406,7 @@ public class Level implements ChunkManager, Metadatable {
         return getBlockIdAt(x, y, z, 0);
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getBlockIdAt(int x, int y, int z, int layer) {
         return this.getChunk(x >> 4, z >> 4, true).getBlockId(x & 0x0f, ensureY(y), z & 0x0f, layer);
@@ -3467,7 +3417,7 @@ public class Level implements ChunkManager, Metadatable {
         setBlockIdAt(x, y, z, 0, id);
     }
 
-    @PowerNukkitOnly
+
     @Override
     public void setBlockIdAt(int x, int y, int z, int layer, int id) {
         this.getChunk(x >> 4, z >> 4, true).setBlockId(x & 0x0f, ensureY(y), z & 0x0f, layer, id & 0xfff);
@@ -3487,15 +3437,15 @@ public class Level implements ChunkManager, Metadatable {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public boolean setBlockAtLayer(int x, int y, int z, int layer, int id, int data) {
         return setBlockStateAt(x, y, z, layer, BlockState.of(id, data));
     }
 
     @Override
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public boolean setBlockStateAt(int x, int y, int z, int layer, BlockState state) {
         BaseFullChunk chunk = this.getChunk(x >> 4, z >> 4, true);
         boolean changed = chunk.setBlockStateAtLayer(x & 0x0f, ensureY(y), z & 0x0f, layer, state);
@@ -3526,7 +3476,7 @@ public class Level implements ChunkManager, Metadatable {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getBlockDataAt(int x, int y, int z, int layer) {
         return this.getChunk(x >> 4, z >> 4, true).getBlockData(x & 0x0f, ensureY(y), z & 0x0f, layer);
@@ -3541,7 +3491,7 @@ public class Level implements ChunkManager, Metadatable {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public void setBlockDataAt(int x, int y, int z, int layer, int data) {
         this.getChunk(x >> 4, z >> 4, true).setBlockData(x & 0x0f, ensureY(y), z & 0x0f, layer, data);
@@ -3576,14 +3526,12 @@ public class Level implements ChunkManager, Metadatable {
         this.getChunk(x >> 4, z >> 4, true).setBiomeId(x & 0x0f, z & 0x0f, biomeId);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.20-r3")
+
     public int getBiomeId(int x, int y, int z) {
         return this.getChunk(x >> 4, z >> 4, true).getBiomeId(x & 0x0f, y, z & 0x0f);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.20-r3")
+
     public void setBiomeId(int x, int y, int z, byte biomeId) {
         this.getChunk(x >> 4, z >> 4, true).setBiomeId(x & 0x0f, y, z & 0x0f, biomeId);
     }
@@ -3876,7 +3824,7 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
-    @PowerNukkitOnly
+
     public Position getFuzzySpawnLocation() {
         Position spawn = getSpawnLocation();
         int radius = gameRules.getInteger(GameRule.SPAWN_RADIUS);
@@ -3916,8 +3864,7 @@ public class Level implements ChunkManager, Metadatable {
         this.chunkSendQueue.remove(index);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.70-r2")
+
     private final ArrayList<CompletableFuture<?>> allChunkRequestTask = new ArrayList<>(
             Server.getInstance().getConfig("chunk-sending.per-tick", 8) * Server.getInstance().getMaxPlayers()
     );
@@ -4235,14 +4182,12 @@ public class Level implements ChunkManager, Metadatable {
         return Position.fromObject(spawn, this);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public boolean standable(Vector3 vec) {
         return standable(vec, false);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public boolean standable(Vector3 vec, boolean allowWaterUnder) {
         Position pos = Position.fromObject(vec, this);
         Block blockUnder = pos.add(0, -1, 0).getLevelBlock(0, true);
@@ -4444,7 +4389,7 @@ public class Level implements ChunkManager, Metadatable {
      *
      * @param force the force
      */
-    @PowerNukkitXOnly
+
     @PowerNukkitXInternal
     public void doChunkGarbageCollection(boolean force) {
         // remove all invaild block entities.
@@ -4806,26 +4751,22 @@ public class Level implements ChunkManager, Metadatable {
         } else return dimensionData.getDimensionId();
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public final boolean isOverWorld() {
         return getDimension() == 0;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public final boolean isNether() {
         return getDimension() == 1;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public final boolean isTheEnd() {
         return getDimension() == 2;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public final boolean isYInRange(int y) {
         return y >= getMinHeight() && y < getMaxHeight();
     }
@@ -4837,8 +4778,8 @@ public class Level implements ChunkManager, Metadatable {
     /**
      * @return 最低高度
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public int getMinHeight() {
         if (dimensionData != null)
             return dimensionData.getMinHeight();
@@ -4850,8 +4791,8 @@ public class Level implements ChunkManager, Metadatable {
      *
      * @return 最大高度
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public int getMaxHeight() {
         if (dimensionData != null)
             return dimensionData.getMaxHeight() + 1;
@@ -5202,8 +5143,7 @@ public class Level implements ChunkManager, Metadatable {
         return false;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.10-r1")
+
     public boolean isRayCollidingWithBlocks(double srcX, double srcY, double srcZ, double dstX, double dstY, double dstZ, double stepSize) {
         Vector3 direction = new Vector3(dstX - srcX, dstY - srcY, dstZ - srcZ);
         double length = direction.length();
@@ -5226,8 +5166,7 @@ public class Level implements ChunkManager, Metadatable {
         return false; // No collision with any blocks
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.10-r1")
+
     public float getBlockDensity(Vector3 source, AxisAlignedBB boundingBox) {
         double xInterval = 1 / ((boundingBox.getMaxX() - boundingBox.getMinX()) * 2 + 1);
         double yInterval = 1 / ((boundingBox.getMaxY() - boundingBox.getMinY()) * 2 + 1);
@@ -5261,14 +5200,12 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
+
     public VibrationManager getVibrationManager() {
         return this.vibrationManager;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     private int ensureY(final int y) {
         if (getDimension() == DIMENSION_OVERWORLD) {
             return Math.max(Math.min(y, 319), -64);

@@ -5,17 +5,15 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemTool;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class BlockSlabMangrove extends BlockSlab {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public BlockSlabMangrove() {
         this(0);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public BlockSlabMangrove(int meta) {
         super(meta, DOUBLE_MANGROVE_SLAB);
     }
@@ -30,13 +28,13 @@ public class BlockSlabMangrove extends BlockSlab {
         return MANGROVE_SLAB;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public String getSlabName() {
         return "Mangrove";
     }
 
-    @PowerNukkitOnly
+
     @Override
     public boolean isSameType(BlockSlab slab) {
         return slab.getId() == getId();

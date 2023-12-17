@@ -46,19 +46,19 @@ public class Vector3f implements Cloneable {
         return this.z;
     }
 
-    @Since("FUTURE")
+
     public Vector3f setX(float x) {
         this.x = x;
         return this;
     }
 
-    @Since("FUTURE")
+
     public Vector3f setY(float y) {
         this.y = y;
         return this;
     }
 
-    @Since("FUTURE")
+
     public Vector3f setZ(float z) {
         this.z = z;
         return this;
@@ -356,9 +356,8 @@ public class Vector3f implements Cloneable {
         this.z = z;
         return this;
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public float getAxis(BlockFace.Axis axis) {
         switch (axis) {
             case X:

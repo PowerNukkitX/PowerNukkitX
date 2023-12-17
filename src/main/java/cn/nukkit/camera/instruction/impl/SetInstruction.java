@@ -19,8 +19,8 @@ import javax.annotation.Nullable;
  * @date 2023/6/11
  * PowerNukkitX Project
  */
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
+
 @Builder
 @Getter
 public class SetInstruction implements CameraInstruction {

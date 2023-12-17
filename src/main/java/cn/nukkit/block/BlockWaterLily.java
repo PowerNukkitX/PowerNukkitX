@@ -27,8 +27,7 @@ public class BlockWaterLily extends BlockFlowable {
         super(0);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {

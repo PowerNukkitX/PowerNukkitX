@@ -46,24 +46,21 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
         return STANDING_BANNER;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public BlockProperties getProperties() {
         return BlockSignPost.PROPERTIES;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.BANNER;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @NotNull
     @Override
     public Class<? extends BlockEntityBanner> getBlockEntityClass() {
@@ -100,7 +97,7 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
         return true;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -187,14 +184,12 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
         return item;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public CompassRoseDirection getDirection() {
         return getPropertyValue(GROUND_SIGN_DIRECTION);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void setDirection(CompassRoseDirection direction) {
         setPropertyValue(GROUND_SIGN_DIRECTION, direction);
     }
@@ -205,15 +200,14 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
         return getDirection().getClosestBlockFace();
     }
 
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
+
     @Override
     public void setBlockFace(BlockFace face) {
         setDirection(face.getCompassRoseDirection());
     }
 
     @Override
-    @PowerNukkitOnly
+
     public boolean breaksWhenMoved() {
         return true;
     }

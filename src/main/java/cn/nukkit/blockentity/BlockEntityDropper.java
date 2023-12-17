@@ -6,22 +6,22 @@ import cn.nukkit.inventory.DropperInventory;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-@PowerNukkitOnly
+
 public class BlockEntityDropper extends BlockEntityEjectable {
 
-    @PowerNukkitOnly
+
     public BlockEntityDropper(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @PowerNukkitOnly
+
     @Override
     protected DropperInventory createInventory() {
         inventory = new DropperInventory(this);
         return getInventory();
     }
 
-    @PowerNukkitOnly
+
     @Override
     protected String getBlockEntityName() {
         return BlockEntity.DROPPER;

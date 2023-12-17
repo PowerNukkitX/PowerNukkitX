@@ -10,8 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-@PowerNukkitXOnly
-@Since("1.19.50-r3")
+
 public interface ModProcessRecipe extends Recipe {
     String getCategory();
 

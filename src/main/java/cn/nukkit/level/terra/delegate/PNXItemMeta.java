@@ -9,8 +9,7 @@ import com.dfsek.terra.api.inventory.item.ItemMeta;
 import java.util.HashMap;
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public record PNXItemMeta(cn.nukkit.item.Item innerItem) implements ItemMeta {
     @Override
     public void addEnchantment(Enchantment enchantment, int i) {

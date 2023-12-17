@@ -7,11 +7,11 @@ import cn.nukkit.item.ItemTool;
 /**
  * @author joserobjr
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class BlockBricksQuartz extends BlockSolid {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public BlockBricksQuartz() {
         // Does nothing
     }
@@ -36,8 +36,7 @@ public class BlockBricksQuartz extends BlockSolid {
         return 4;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
+
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;

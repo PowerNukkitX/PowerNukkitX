@@ -31,13 +31,12 @@ import org.jetbrains.annotations.NotNull;
  * @author joserobjr
  * @since 2021-05-16
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class SmithingTableEvent extends InventoryEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static HandlerList getHandlers() {
         return handlers;
     }
@@ -47,8 +46,7 @@ public class SmithingTableEvent extends InventoryEvent implements Cancellable {
     private final @NotNull Item ingredientItem;
     private final @NotNull Player player;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public SmithingTableEvent(SmithingInventory inventory, @NotNull Item equipmentItem, @NotNull Item resultItem, @NotNull Item ingredientItem, @NotNull Player player) {
         super(inventory);
         this.equipmentItem = equipmentItem;
@@ -57,29 +55,25 @@ public class SmithingTableEvent extends InventoryEvent implements Cancellable {
         this.player = player;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     public Item getEquipmentItem() {
         return this.equipmentItem;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     public Item getResultItem() {
         return this.resultItem;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     public Item getIngredientItem() {
         return this.ingredientItem;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     @NotNull
     public Player getPlayer() {
         return this.player;

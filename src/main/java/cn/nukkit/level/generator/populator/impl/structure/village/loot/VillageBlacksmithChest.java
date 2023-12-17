@@ -8,8 +8,8 @@ import cn.nukkit.level.generator.populator.impl.structure.utils.loot.Randomizabl
 import com.google.common.collect.Maps;
 
 //\\ ./data/behavior_packs/vanilla/loot_tables/chests/village_blacksmith.json (1.9.0.15)
-@PowerNukkitXOnly
-@Since("1.19.21-r2")
+
+
 public class VillageBlacksmithChest extends RandomizableContainer {
 
     private static final VillageBlacksmithChest INSTANCE = new VillageBlacksmithChest();

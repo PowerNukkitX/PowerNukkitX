@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.CONSTRUCTOR, ElementType.METHOD})
 @Documented
-@PowerNukkitXOnly
-@Since("1.19.50-r1")
+
+
 public @interface ShouldThaw {
 }

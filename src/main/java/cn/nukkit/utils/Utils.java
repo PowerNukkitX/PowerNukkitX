@@ -33,16 +33,14 @@ import java.util.zip.ZipOutputStream;
  */
 @Log4j2
 public class Utils {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final Integer[] EMPTY_INTEGERS = new Integer[0];
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final SplittableRandom random = new SplittableRandom();
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static void safeWrite(File currentFile, Consumer<File> operation) throws IOException {
         File parent = currentFile.getParentFile();
         File newFile = new File(parent, currentFile.getName() + "_new");
@@ -367,8 +365,8 @@ public class Utils {
      * @param max the max
      * @return the int
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static int rand(int min, int max) {
         if (min == max) {
             return max;
@@ -376,8 +374,7 @@ public class Utils {
         return random.nextInt(max + 1 - min) + min;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static double rand(double min, double max) {
         if (min == max) {
             return max;
@@ -385,8 +382,7 @@ public class Utils {
         return min + random.nextDouble() * (max - min);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static boolean rand() {
         return random.nextBoolean();
     }
@@ -399,8 +395,8 @@ public class Utils {
      * @param value The value to be assigned to the field.
      * @return The same value that was passed as parameter
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static int dynamic(int value) {
         return value;
     }
@@ -413,14 +409,13 @@ public class Utils {
      * @param value The value to be assigned to the field.
      * @return The same value that was passed as parameter
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static <T> T dynamic(T value) {
         return value;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static void zipFolder(Path sourceFolderPath, Path zipPath) throws IOException {
         try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipPath.toFile()))) {
             Files.walkFileTree(sourceFolderPath, new SimpleFileVisitor<Path>() {
@@ -435,8 +430,7 @@ public class Utils {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     public static boolean isInteger(String str) {
         if (str == null) {
             return false;
@@ -463,8 +457,8 @@ public class Utils {
 
     //used for commands /fill , /clone and so on
     //todo: using other methods instead of this one
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public static Block[] getLevelBlocks(Level level, AxisAlignedBB bb) {
         int minX = NukkitMath.floorDouble(Math.min(bb.getMinX(), bb.getMaxX()));
         int minY = NukkitMath.floorDouble(Math.min(bb.getMinY(), bb.getMaxY()));
@@ -487,15 +481,13 @@ public class Utils {
         return blocks.toArray(Block.EMPTY_ARRAY);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public static final int ACCORDING_X_OBTAIN_Y = 0;
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public static final int ACCORDING_Y_OBTAIN_X = 1;
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public static double calLinearFunction(Vector3 pos1, Vector3 pos2, double element, int type) {
         if (pos1.getFloorY() != pos2.getFloorY()) return Double.MAX_VALUE;
         if (pos1.getX() == pos2.getX()) {
@@ -513,8 +505,7 @@ public class Utils {
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public static boolean hasCollisionBlocks(Level level, AxisAlignedBB bb) {
         int minX = NukkitMath.floorDouble(bb.getMinX());
         int minY = NukkitMath.floorDouble(bb.getMinY());
@@ -538,8 +529,7 @@ public class Utils {
         return false;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public static boolean hasCollisionTickCachedBlocks(Level level, AxisAlignedBB bb) {
         int minX = NukkitMath.floorDouble(bb.getMinX());
         int minY = NukkitMath.floorDouble(bb.getMinY());
@@ -575,8 +565,8 @@ public class Utils {
      * if zz is 11, then the block at the maxZ side of the bb has collision <br>
      * if zz is 00, then zz is not used <br>
      */
-    @PowerNukkitXOnly
-    @Since("1.20.0-r2")
+
+
     public static byte hasCollisionTickCachedBlocksWithInfo(Level level, @NotNull AxisAlignedBB bb) {
         int minX = NukkitMath.floorDouble(bb.getMinX());
         int minY = NukkitMath.floorDouble(bb.getMinY());

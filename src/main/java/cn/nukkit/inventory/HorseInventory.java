@@ -19,8 +19,7 @@ import cn.nukkit.network.protocol.UpdateEquipmentPacket;
 import java.io.IOException;
 import java.util.List;
 
-@PowerNukkitXOnly
-@Since("1.19.80-r3")
+
 public class HorseInventory extends BaseInventory {
     private static final CompoundTag slot0;
     private static final CompoundTag slot1;

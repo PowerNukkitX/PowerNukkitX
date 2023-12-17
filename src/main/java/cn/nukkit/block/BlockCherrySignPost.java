@@ -6,8 +6,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemCherrySign;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
 public class BlockCherrySignPost extends BlockSignPost {
     public BlockCherrySignPost() {
     }
@@ -21,7 +20,7 @@ public class BlockCherrySignPost extends BlockSignPost {
         return CHERRY_STANDING_SIGN;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWallId() {
         return CHERRY_WALL_SIGN;
