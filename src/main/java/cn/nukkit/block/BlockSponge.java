@@ -7,7 +7,6 @@ import cn.nukkit.blockproperty.value.SpongeType;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.CloudParticle;
 import cn.nukkit.math.BlockFace;

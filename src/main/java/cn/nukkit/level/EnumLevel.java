@@ -90,7 +90,6 @@ public enum EnumLevel {
     }
 
 
-    @
     public static Level getOtherTheEndPair(Level current) {
         if (current == OVERWORLD.level || current.getDimension() == Level.DIMENSION_OVERWORLD) {
             return THE_END.level;
@@ -102,7 +101,6 @@ public enum EnumLevel {
     }
 
 
-    @
     public static Position moveToTheEnd(Position current) {
         if (THE_END.level == null) {
             return null;

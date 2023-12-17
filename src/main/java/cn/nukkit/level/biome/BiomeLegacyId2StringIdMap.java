@@ -13,8 +13,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 
-("Map between legacy integer biome id and new string id")
 
+/**
+ * Map between legacy integer biome id and new string id
+ */
 @Log4j2
 public final class BiomeLegacyId2StringIdMap {
     public static final BiomeLegacyId2StringIdMap INSTANCE = new BiomeLegacyId2StringIdMap();

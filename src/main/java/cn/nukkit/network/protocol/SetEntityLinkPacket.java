@@ -18,7 +18,7 @@ public class SetEntityLinkPacket extends DataPacket {
     public long riderUniqueId; //to
     public byte type;
     public byte immediate;
-
+    public boolean riderInitiated = false;
 
     @Override
     public void decode() {

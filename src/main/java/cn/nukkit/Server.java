@@ -794,7 +794,6 @@ public class Server {
         Effect.init();
         Attribute.init();
         DispenseBehaviorRegister.init();
-        GlobalBlockPalette.getOrCreateRuntimeId(0, 0); //Force it to load
 
         freezableArrayManager = new FreezableArrayManager(
                 this.getConfig("memory-compression.enable", true),
@@ -2757,7 +2756,7 @@ public class Server {
             level = new Level(this, name, path, provider);
             this.levels.put(level.getId(), level);
 
-            level.initLevel(givenDimensionData);
+            level.initLevel();
             level.setTickRate(this.baseTickRate);
         } catch (Exception e) {
             log.error(this.getLanguage().tr("nukkit.level.generationError", name, Utils.getExceptionMessage(e)), e);

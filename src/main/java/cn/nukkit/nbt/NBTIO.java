@@ -35,8 +35,6 @@ import java.util.zip.GZIPInputStream;
  */
 
 
-
-
 @Log4j2
 public class NBTIO {
 
@@ -66,6 +64,7 @@ public class NBTIO {
     }
 
     @
+
     public static Item getItemHelper(CompoundTag tag) {
         if (!tag.containsByte("Count")) {
             return Item.get(0);
@@ -391,6 +390,14 @@ public class NBTIO {
 
     public static void write(CompoundTag tag, OutputStream outputStream, ByteOrder endianness, boolean network) throws IOException {
         Tag.writeNamedTag(tag, new NBTOutputStream(outputStream, endianness, network));
+    }
+
+    public static void write(Collection<CompoundTag> tags, OutputStream outputStream, ByteOrder endianness, boolean network) throws IOException {
+        try (NBTOutputStream stream = new NBTOutputStream(outputStream, endianness, network)) {
+            for (CompoundTag tag : tags) {
+                Tag.writeNamedTag(tag, stream);
+            }
+        }
     }
 
     public static byte[] writeNetwork(Tag tag) throws IOException {

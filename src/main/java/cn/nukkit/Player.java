@@ -1,7 +1,7 @@
 package cn.nukkit;
 
 import cn.nukkit.AdventureSettings.Type;
-import cn.nukkit.api.*;
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.blockentity.BlockEntity;
@@ -44,7 +44,7 @@ import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.*;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.particle.PunchBlockParticle;
 import cn.nukkit.level.vibration.VibrationEvent;
@@ -5349,22 +5349,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Override
-    public void onChunkChanged(FullChunk chunk) {
+    public void onChunkChanged(IChunk chunk) {
         this.usedChunks.remove(Level.chunkHash(chunk.getX(), chunk.getZ()));
     }
 
     @Override
-    public void onChunkLoaded(FullChunk chunk) {
+    public void onChunkLoaded(IChunk chunk) {
 
     }
 
     @Override
-    public void onChunkPopulated(FullChunk chunk) {
+    public void onChunkPopulated(IChunk chunk) {
 
     }
 
     @Override
-    public void onChunkUnloaded(FullChunk chunk) {
+    public void onChunkUnloaded(IChunk chunk) {
 
     }
 

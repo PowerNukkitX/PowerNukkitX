@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.state.BlockProperties;
 import cn.nukkit.block.state.BlockRegistry;
@@ -41,7 +40,6 @@ import java.util.*;
 import java.util.function.Predicate;
 
 import static cn.nukkit.block.state.BlockProperties.computeSpecialValue;
-import static cn.nukkit.block.BlockID.*;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -52,7 +50,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static final double DEFAULT_FRICTION_FACTOR = 0.6;
     public static final double DEFAULT_AIR_FLUID_FRICTION = 0.95;
     //todo fix getcolor
-    protected static final Map<Long, BlockColor> VANILLA_BLOCK_COLOR_MAP = new Long2ObjectOpenHashMap<>();
+    protected static final Long2ObjectOpenHashMap<BlockColor> VANILLA_BLOCK_COLOR_MAP = new Long2ObjectOpenHashMap<>();
     private BlockState blockstate;
     protected BlockColor color;
     public int layer;
@@ -444,6 +442,14 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 LinkedHashMap<BlockPropertyType<?>, BlockPropertyType.BlockPropertyValue<?, ?, ?>>::new,
                 (hashMap, blockPropertyValue) -> hashMap.put(blockPropertyValue.getPropertyType(), blockPropertyValue),
                 LinkedHashMap::putAll));
+    }
+
+    public boolean isAir() {
+        return this.blockstate == BlockAir.STATE;
+    }
+
+    public BlockState getCurrentState() {
+        return this.blockstate;
     }
 
     @SuppressWarnings("unchecked")
@@ -1367,7 +1373,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      *
      * @return if the gets powered.
      */
-
 
 
     public boolean isGettingPower() {

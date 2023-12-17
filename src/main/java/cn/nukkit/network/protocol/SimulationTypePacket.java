@@ -30,9 +30,9 @@ public class SimulationTypePacket extends DataPacket {
 
 
     public static final byte NETWORK_ID = ProtocolInfo.NPC_DIALOGUE_PACKET;
-    
+
     private static final SimulationType[] TYPES = SimulationType.values();
-    
+
     private SimulationType type;
 
 
@@ -69,7 +69,8 @@ public class SimulationTypePacket extends DataPacket {
 
 
     public enum SimulationType {
-
-
+        GAME,
+        EDITOR,
+        TEST
     }
 }

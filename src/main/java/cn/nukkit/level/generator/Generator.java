@@ -99,7 +99,7 @@ public abstract class Generator implements BlockID {
      *
      * @return {@link ChunkManager}
      */
-    @
+
 
     public ChunkManager getChunkManager() {
         return chunkManager;

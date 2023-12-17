@@ -1,20 +1,28 @@
 package cn.nukkit.level.format;
 
 import cn.nukkit.api.UsedByReflection;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.format.palette.Palette;
+import cn.nukkit.level.generator.Generator;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.GameType;
 import cn.nukkit.scheduler.AsyncTask;
+import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
-import cn.nukkit.utils.LevelException;
 import cn.nukkit.utils.SemVersion;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
+import com.nukkitx.network.VarInts;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.ByteBufOutputStream;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
@@ -28,10 +36,9 @@ import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.locks.StampedLock;
+import java.util.function.BiConsumer;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -57,10 +64,6 @@ public class LevelDBProvider implements LevelProvider {
     public LevelDBProvider(Level level, String path, Options options) throws IOException {
         this.level = level;
         this.path = Path.of(path);
-        File filePath = this.path.toFile();
-        if (!filePath.exists() && !filePath.mkdirs()) {
-            throw new LevelException("Could not create the directory " + filePath);
-        }
 
         var levelDat = readLevelDat();
         if (levelDat == null) {
@@ -75,6 +78,37 @@ public class LevelDBProvider implements LevelProvider {
         try {
             if (!dbFolder.exists()) dbFolder.mkdirs();
             db = net.daporkchop.ldbjni.LevelDB.PROVIDER.open(dbFolder, options);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @UsedByReflection
+    public static void generate(String path, String name, long seed, Class<? extends Generator> generator, Map<String, String> options) throws IOException {
+        File dataDir = new File(path + "/db");
+        if (!dataDir.exists() && !dataDir.mkdirs()) {
+            throw new IOException("Could not create the directory " + dataDir);
+        }
+        LevelDat levelData = LevelDat.builder()
+                .generatorName(Generator.getGeneratorName(generator))
+                .randomSeed(seed)
+                .name(name)
+                .lastPlayed(System.currentTimeMillis() / 1000)
+                .generatorOptions(options.getOrDefault("preset", ""))
+                .build();
+        writeLevelDat(Path.of(path), levelData);
+    }
+
+    public static void writeLevelDat(Path path, LevelDat levelDat) {
+        var levelDatNow = path.resolve("level.dat").toFile();
+        try (var output = new FileOutputStream(levelDatNow)) {
+            if (levelDatNow.exists()) {
+                Files.copy(path.resolve("level.dat"), path.resolve("level.dat_old"), StandardCopyOption.REPLACE_EXISTING);
+            } else {
+                levelDatNow.createNewFile();
+            }
+            output.write(levelDatMagic);//magic number
+            NBTIO.write(createWorldDataNBT(levelDat), output, ByteOrder.LITTLE_ENDIAN);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -207,7 +241,72 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public AsyncTask requestChunkTask(int X, int Z) {
-        return null;
+        Chunk chunk = (Chunk) this.getChunk(X, Z, false);
+        if (chunk == null) {
+            throw new ChunkException("Invalid Chunk Set");
+        }
+        long timestamp = chunk.getBlockChanges();
+        BiConsumer<BinaryStream, Integer> callback = (stream, subchunks) ->
+                this.getLevel().chunkRequestCallback(timestamp, X, Z, subchunks, stream.getBuffer());
+        return new AsyncTask() {
+            @Override
+            public void onRun() {
+                serialize(chunk, callback);
+            }
+        };
+    }
+
+    public final void serialize(Chunk chunk, BiConsumer<BinaryStream, Integer> callback) {
+        final var byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
+        try {
+            chunk.sectionLock.writeLock().lock();
+            final ChunkSection[] sections = chunk.getSections();
+
+            int subChunkCount = chunk.getDimensionData().getChunkSectionCount() - 1; // index
+            while (subChunkCount >= 0 && (sections[subChunkCount] == null || sections[subChunkCount].isEmpty())) {
+                subChunkCount--;
+            }
+            subChunkCount++; // length
+
+            //write block
+            for (int i = 0; i < subChunkCount; i++) {
+                StampedLock lock = sections[i].lock();
+                long l = lock.writeLock();
+                try {
+                    sections[i].writeToNetwork(byteBuf);
+                } finally {
+                    lock.unlock(l);
+                }
+            }
+            // Write biomes
+            Palette<Integer> lastBiomes = null;
+            for (int i = 0; i < subChunkCount; i++) {
+                sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue, lastBiomes);
+                lastBiomes = sections[i].biomes();
+            }
+            byteBuf.writeByte(0); // edu- border blocks
+            // Extra Data length. Replaced by second block layer.
+            VarInts.writeUnsignedInt(byteBuf, 0);
+
+            // Block entities
+            final Collection<BlockEntity> tiles = chunk.getBlockEntities().values();
+            final List<CompoundTag> tagList = new ObjectArrayList<>();
+            for (BlockEntity blockEntity : tiles) {
+                if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
+                    tagList.add(blockEntitySpawnable.getSpawnCompound());
+                }
+            }
+            try (ByteBufOutputStream stream = new ByteBufOutputStream(byteBuf)) {
+                NBTIO.write(tagList, stream, ByteOrder.LITTLE_ENDIAN, true);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            byte[] data = new byte[byteBuf.readableBytes()];
+            byteBuf.getBytes(byteBuf.readableBytes(), data);
+            callback.accept(new BinaryStream(data), subChunkCount);
+        } finally {
+            chunk.sectionLock.writeLock().unlock();
+        }
     }
 
     @Override
@@ -343,29 +442,14 @@ public class LevelDBProvider implements LevelProvider {
         }
     }
 
-    public LevelDat getLevelDat() {
+    @Override
+    public LevelDat getLevelData() {
         return this.levelDat;
     }
 
     @Override
     public void saveLevelData() {
-        File levelDat = path.resolve("level.dat").toFile();
-        if (!levelDat.exists()) {
-            try {
-                levelDat.createNewFile();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        try (var output = new FileOutputStream(levelDat)) {
-            if (levelDat.exists()) {
-                Files.copy(path.resolve("level.dat"), path.resolve("level.dat_old"), StandardCopyOption.REPLACE_EXISTING);
-            }
-            output.write(levelDatMagic);//magic number
-            NBTIO.write(createWorldDataNBT(this.levelDat), output, ByteOrder.LITTLE_ENDIAN);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        writeLevelDat(path, this.levelDat);
     }
 
     @Override
@@ -626,7 +710,7 @@ public class LevelDBProvider implements LevelProvider {
         throw new RuntimeException("level.dat is null!");
     }
 
-    private CompoundTag createWorldDataNBT(LevelDat worldData) {
+    private static CompoundTag createWorldDataNBT(LevelDat worldData) {
         CompoundTag levelDat = new CompoundTag();
 
         levelDat.putString("BiomeOverride", worldData.getBiomeOverride());

@@ -7,9 +7,12 @@ import cn.nukkit.utils.OK;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.sunlan.fastreflection.FastConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Allay Project 12/15/2023
@@ -72,6 +75,23 @@ public final class BlockRegistry {
     }
 
     @NotNull
+    public static Block get(String identifier, int x, int y, int z, int layer, Level level) {
+        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
+        if (constructor == null) return new BlockAir();
+        try {
+            var b = (Block) constructor.invoke();
+            b.x = x;
+            b.y = y;
+            b.z = z;
+            b.level = level;
+            b.layer = layer;
+            return b;
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @NotNull
     public static Block get(BlockState blockState) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
         if (constructor == null) return new BlockAir();
@@ -111,6 +131,28 @@ public final class BlockRegistry {
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @NotNull
+    public static Block get(BlockState blockState, int x, int y, int z, int layer, Level level) {
+        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
+        if (constructor == null) return new BlockAir();
+        try {
+            var b = (Block) constructor.invoke(blockState);
+            b.x = x;
+            b.y = y;
+            b.z = z;
+            b.level = level;
+            b.layer = layer;
+            return b;
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @UnmodifiableView
+    public static Set<String> getPersistenceNames() {
+        return Collections.unmodifiableSet(REGISTRY.keySet());
     }
 
 

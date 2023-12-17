@@ -202,8 +202,8 @@ public class Explosion {
      *
      * @return {@code false} if explosion was canceled, otherwise {@code true}
      */
-    
-    @
+
+
     public boolean explodeB() {
 
         LongArraySet updateBlocks = new LongArraySet();

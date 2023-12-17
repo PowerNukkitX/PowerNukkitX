@@ -3,8 +3,9 @@ package cn.nukkit.entity;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.*;
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.*;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.custom.CustomEntityDefinition;
@@ -494,7 +495,7 @@ public abstract class Entity extends Location implements Metadatable {
      * Who is this entity riding on
      */
     public Entity riding = null;
-    public FullChunk chunk;
+    public IChunk chunk;
     public List<Block> blocksAround = new ArrayList<>();
     public List<Block> collisionBlocks = new ArrayList<>();
     public double lastX;
@@ -588,7 +589,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     private Map<String, Float> floatProperties = new LinkedHashMap<>();
 
-    public Entity(FullChunk chunk, CompoundTag nbt) {
+    public Entity(IChunk chunk, CompoundTag nbt) {
         if (this instanceof Player) {
             initEntityProperties("minecraft:player");
             return;

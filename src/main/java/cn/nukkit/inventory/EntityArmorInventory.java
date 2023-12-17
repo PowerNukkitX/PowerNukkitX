@@ -12,7 +12,10 @@ import java.util.Set;
 
 
 public class EntityArmorInventory extends BaseInventory {
-
+    public static final int SLOT_HEAD = 0;
+    public static final int SLOT_CHEST = 1;
+    public static final int SLOT_LEGS = 2;
+    public static final int SLOT_FEET = 3;
     private final Entity entity;
 
 

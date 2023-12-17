@@ -1,14 +1,18 @@
 package cn.nukkit.level.format;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.block.state.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.biome.Biome;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.function.BiPredicate;
+import java.util.stream.Stream;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -104,13 +108,17 @@ public interface IChunk {
         setBlockState(x, y, z, blockstate, 0);
     }
 
-    int getSkyLight(int x, int y, int z);
+    int getBlockSkyLight(int x, int y, int z);
 
     void setBlockSkyLight(int x, int y, int z, int level);
 
     int getBlockLight(int x, int y, int z);
 
     void setBlockLight(int x, int y, int z, int level);
+
+    default int getHighestBlockAt(int x, int z) {
+        return getHighestBlockAt(x, z, true);
+    }
 
     int getHighestBlockAt(int x, int z, boolean cache);
 
@@ -207,6 +215,8 @@ public interface IChunk {
      */
     boolean isBlockChangeAllowed(int chunkX, int chunkY, int chunkZ);
 
+    Stream<Block> scanBlocks(BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition);
+
     default void reObfuscateChunk() {
     }
 
@@ -220,5 +230,21 @@ public interface IChunk {
 
     default boolean isTheEnd() {
         return getProvider().isTheEnd();
+    }
+
+    default boolean isGenerated() {
+        return this.getChunkState() == ChunkState.GENERATED;
+    }
+
+    default boolean isPopulated() {
+        return this.getChunkState() == ChunkState.POPULATED;
+    }
+
+    default void setGenerated() {
+        setChunkState(ChunkState.GENERATED);
+    }
+
+    default void setPopulated() {
+        setChunkState(ChunkState.POPULATED);
     }
 }

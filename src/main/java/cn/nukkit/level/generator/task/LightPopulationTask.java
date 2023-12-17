@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.task;
 
 import cn.nukkit.Server;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.format.generic.BaseFullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.scheduler.AsyncTask;
 
 /**
@@ -11,16 +11,16 @@ import cn.nukkit.scheduler.AsyncTask;
 public class LightPopulationTask extends AsyncTask {
 
     public final int levelId;
-    public BaseFullChunk chunk;
+    public IChunk chunk;
 
-    public LightPopulationTask(Level level, BaseFullChunk chunk) {
+    public LightPopulationTask(Level level, IChunk chunk) {
         this.levelId = level.getId();
         this.chunk = chunk;
     }
 
     @Override
     public void onRun() {
-        BaseFullChunk chunk = this.chunk.clone();
+        final IChunk chunk = this.chunk;
         if (chunk == null) {
             return;
         }
@@ -28,15 +28,13 @@ public class LightPopulationTask extends AsyncTask {
         chunk.recalculateHeightMap();
         chunk.populateSkyLight();
         chunk.setLightPopulated();
-
-        this.chunk = chunk.clone();
     }
 
     @Override
     public void onCompletion(Server server) {
         Level level = server.getLevel(this.levelId);
 
-        BaseFullChunk chunk = this.chunk.clone();
+        IChunk chunk = this.chunk;
         if (level != null) {
             if (chunk == null) {
                 return;

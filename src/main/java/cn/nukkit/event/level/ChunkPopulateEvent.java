@@ -1,7 +1,7 @@
 package cn.nukkit.event.level;
 
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -14,7 +14,7 @@ public class ChunkPopulateEvent extends ChunkEvent {
         return handlers;
     }
 
-    public ChunkPopulateEvent(FullChunk chunk) {
+    public ChunkPopulateEvent(IChunk chunk) {
         super(chunk);
     }
 

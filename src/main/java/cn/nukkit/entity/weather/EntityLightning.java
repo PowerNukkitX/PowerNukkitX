@@ -9,7 +9,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.ElectricSparkParticle;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
@@ -36,7 +36,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
     protected boolean isEffect = true;
 
 
-    public EntityLightning(FullChunk chunk, CompoundTag nbt) {
+    public EntityLightning(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

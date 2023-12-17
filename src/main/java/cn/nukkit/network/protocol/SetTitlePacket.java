@@ -18,14 +18,17 @@ public class SetTitlePacket extends DataPacket {
     public static final int TYPE_SUBTITLE = 3;
     public static final int TYPE_ACTION_BAR = 4;
     public static final int TYPE_ANIMATION_TIMES = 5;
-
+    public static final int TYPE_TITLE_JSON = 6;
+    public static final int TYPE_SUBTITLE_JSON = 7;
+    public static final int TYPE_ACTIONBAR_JSON = 8;
 
     public int type;
     public String text = "";
     public int fadeInTime = 0;
     public int stayTime = 0;
     public int fadeOutTime = 0;
-
+    public String xuid = "";
+    public String platformOnlineId = "";
 
     @Override
     public byte pid() {
@@ -133,7 +136,14 @@ public class SetTitlePacket extends DataPacket {
 
 
     public enum TitleAction {
-
-
+        CLEAR,
+        RESET,
+        SET_TITLE_MESSAGE,
+        SET_SUBTITLE_MESSAGE,
+        SET_ACTION_BAR_MESSAGE,
+        SET_ANIMATION_TIMES,
+        SET_TITLE_JSON,
+        SET_SUBTITLE_JSON,
+        SET_ACTIONBAR_JSON,
     }
 }

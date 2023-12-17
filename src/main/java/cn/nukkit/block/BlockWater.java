@@ -1,6 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.state.BlockProperties;
+import cn.nukkit.block.state.property.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
@@ -11,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockWater extends BlockLiquid {
-
+    public static final BlockProperties PROPERTIES = new BlockProperties(TALLGRASS, CommonBlockProperties.LIQUID_DEPTH);
 
     public BlockWater() {
         this(0);
@@ -45,12 +47,12 @@ public class BlockWater extends BlockLiquid {
         if (!update) {
             return;
         }
-        
+
         int newId = newBlock.getId();
         if (newId == FLOWING_WATER || newId == STILL_WATER) {
             return;
         }
-        
+
         Block up = up(1, 0);
         for (BlockFace diagonalFace : BlockFace.Plane.HORIZONTAL) {
             Block diagonal = up.getSide(diagonalFace);

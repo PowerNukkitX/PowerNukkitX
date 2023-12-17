@@ -1,20 +1,20 @@
 package cn.nukkit.event.level;
 
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class ChunkEvent extends LevelEvent {
 
-    private final FullChunk chunk;
+    private final IChunk chunk;
 
-    public ChunkEvent(FullChunk chunk) {
+    public ChunkEvent(IChunk chunk) {
         super(chunk.getProvider().getLevel());
         this.chunk = chunk;
     }
 
-    public FullChunk getChunk() {
+    public IChunk getChunk() {
         return chunk;
     }
 }

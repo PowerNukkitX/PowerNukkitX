@@ -26,7 +26,8 @@ public class TextPacket extends DataPacket {
     public static final byte TYPE_SYSTEM = 6;
     public static final byte TYPE_WHISPER = 7;
     public static final byte TYPE_ANNOUNCEMENT = 8;
-
+    public static final byte TYPE_OBJECT = 9;
+    public static final byte TYPE_OBJECT_WHISPER = 10;
 
     public byte type;
     public String source = "";

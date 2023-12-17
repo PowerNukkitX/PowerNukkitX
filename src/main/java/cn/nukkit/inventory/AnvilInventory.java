@@ -21,8 +21,9 @@ import java.util.stream.Stream;
  * @author MagicDroidX (Nukkit Project)
  */
 public class AnvilInventory extends FakeBlockUIComponent {
-
-
+    public static final int ANVIL_INPUT_UI_SLOT = 1;
+    public static final int ANVIL_MATERIAL_UI_SLOT = 2;
+    public static final int ANVIL_OUTPUT_UI_SLOT = CREATED_ITEM_OUTPUT_UI_SLOT;
     public static final int OFFSET = 1;
     public static final int TARGET = 0;
     public static final int SACRIFICE = 1;

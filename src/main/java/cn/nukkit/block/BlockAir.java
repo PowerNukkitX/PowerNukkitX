@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.state.BlockProperties;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockAir extends BlockTransparent {
 
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:air");
+    public static final BlockState STATE = PROPERTIES.getDefaultState();
 
     @Override
     public String getName() {

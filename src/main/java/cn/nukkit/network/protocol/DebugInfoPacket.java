@@ -6,7 +6,8 @@ import lombok.ToString;
 @ToString
 public class DebugInfoPacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.DEBUG_INFO_PACKET;
-
+    public long entityId;
+    public String data;
 
     @Override
     public byte pid() {

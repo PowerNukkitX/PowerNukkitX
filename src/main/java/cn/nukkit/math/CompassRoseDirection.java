@@ -11,7 +11,22 @@ import org.jetbrains.annotations.NotNull;
 
 
 public enum CompassRoseDirection {
-
+    NORTH(0, -1, BlockFace.NORTH, 0),
+    EAST(1, 0, BlockFace.EAST, 90),
+    SOUTH(0, 1, BlockFace.SOUTH, 180),
+    WEST(-1, 0, BlockFace.WEST, 270),
+    NORTH_EAST(NORTH, EAST, BlockFace.NORTH, 45),
+    NORTH_WEST(NORTH, WEST, BlockFace.WEST, 315),
+    SOUTH_EAST(SOUTH, EAST, BlockFace.EAST, 135),
+    SOUTH_WEST(SOUTH, WEST, BlockFace.SOUTH, 225),
+    WEST_NORTH_WEST(WEST, NORTH_WEST, BlockFace.WEST, 292.5),
+    NORTH_NORTH_WEST(NORTH, NORTH_WEST, BlockFace.NORTH, 337.5),
+    NORTH_NORTH_EAST(NORTH, NORTH_EAST, BlockFace.NORTH, 22.5),
+    EAST_NORTH_EAST(EAST, NORTH_EAST, BlockFace.EAST, 67.5),
+    EAST_SOUTH_EAST(EAST, SOUTH_EAST, BlockFace.EAST, 112.5),
+    SOUTH_SOUTH_EAST(SOUTH, SOUTH_EAST, BlockFace.SOUTH, 157.5),
+    SOUTH_SOUTH_WEST(SOUTH, SOUTH_WEST, BlockFace.SOUTH, 202.5),
+    WEST_SOUTH_WEST(WEST, SOUTH_WEST, BlockFace.WEST, 247.5);
 
     private final int modX;
     private final int modZ;
@@ -164,17 +179,17 @@ public enum CompassRoseDirection {
         /**
          * North, South, East, West.
          */
-
+        CARDINAL(4),
 
         /**
          * N, E, S, W, NE, NW, SE, SW.
          */
-
+        PRIMARY_INTER_CARDINAL(8),
 
         /**
          * N, E, S, W, NE, NW, SE, SW, WNW, NNW, NNE, ENE, ESE, SSE, SSW, WSW.
          */
-
+        SECONDARY_INTER_CARDINAL(16);
         protected final int directions;
     }
 }

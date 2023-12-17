@@ -3,7 +3,7 @@ package cn.nukkit.level.generator.task;
 import cn.nukkit.Server;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.format.generic.BaseFullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.generator.SimpleChunkManager;
 import cn.nukkit.scheduler.AsyncTask;
@@ -12,14 +12,14 @@ import cn.nukkit.scheduler.AsyncTask;
  * @author MagicDroidX (Nukkit Project)
  */
 public class PopulationTask extends AsyncTask {
-    public final BaseFullChunk[] chunks = new BaseFullChunk[9];
+    public final IChunk[] chunks = new IChunk[9];
     private final long seed;
     private final Level level;
     private boolean state;
-    private BaseFullChunk centerChunk;
+    private IChunk centerChunk;
     private boolean isPopulated;
 
-    public PopulationTask(Level level, BaseFullChunk chunk) {
+    public PopulationTask(Level level, IChunk chunk) {
         this.state = true;
         this.level = level;
         this.centerChunk = chunk;
@@ -31,7 +31,7 @@ public class PopulationTask extends AsyncTask {
         for (int z = -1; z <= 1; z++) {
             for (int x = -1; x <= 1; x++, i++) {
                 if (i == 4) continue;
-                BaseFullChunk ck = level.getChunk(chunk.getX() + x, chunk.getZ() + z, true);
+                IChunk ck = level.getChunk(chunk.getX() + x, chunk.getZ() + z, true);
                 this.chunks[i] = ck;
             }
         }
@@ -47,7 +47,7 @@ public class PopulationTask extends AsyncTask {
         if (i == chunks.length) {
             generationTask();
         } else {
-            BaseFullChunk chunk = chunks[i];
+            IChunk chunk = chunks[i];
             if (chunk != null) {
                 synchronized (chunk) {
                     syncGen(i + 1);
@@ -73,7 +73,7 @@ public class PopulationTask extends AsyncTask {
         synchronized (manager) {
             try {
                 manager.cleanChunks(this.seed);
-                BaseFullChunk centerChunk = this.centerChunk;
+                IChunk centerChunk = this.centerChunk;
 
                 if (centerChunk == null) {
                     return;
@@ -82,11 +82,11 @@ public class PopulationTask extends AsyncTask {
                 int index = 0;
                 for (int x = -1; x < 2; x++) {
                     for (int z = -1; z < 2; z++, index++) {
-                        BaseFullChunk ck = this.chunks[index];
+                        IChunk ck = this.chunks[index];
                         if (ck == centerChunk) continue;
                         if (ck == null) {
                             try {
-                                this.chunks[index] = (BaseFullChunk) centerChunk.getClass().getMethod("getEmptyChunk", int.class, int.class, DimensionData.class).invoke(null, centerChunk.getX() + x, centerChunk.getZ() + z, level.getDimensionData());
+                                this.chunks[index] = (IChunk) centerChunk.getClass().getMethod("getEmptyChunk", int.class, int.class, DimensionData.class).invoke(null, centerChunk.getX() + x, centerChunk.getZ() + z, level.getDimensionData());
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
@@ -97,11 +97,11 @@ public class PopulationTask extends AsyncTask {
                     }
                 }
 
-                for (BaseFullChunk chunk : this.chunks) {
+                for (IChunk chunk : this.chunks) {
                     manager.setChunk(chunk.getX(), chunk.getZ(), chunk);
                     if (!chunk.isGenerated()) {
                         generator.generateChunk(chunk.getX(), chunk.getZ());
-                        BaseFullChunk newChunk = manager.getChunk(chunk.getX(), chunk.getZ());
+                        IChunk newChunk = manager.getChunk(chunk.getX(), chunk.getZ());
                         newChunk.setGenerated();
                         if (newChunk != chunk) manager.setChunk(chunk.getX(), chunk.getZ(), newChunk);
                     }
@@ -124,7 +124,7 @@ public class PopulationTask extends AsyncTask {
                 for (int x = -1; x < 2; x++) {
                     for (int z = -1; z < 2; z++, index++) {
                         chunks[index] = null;
-                        BaseFullChunk newChunk = manager.getChunk(centerChunk.getX() + x, centerChunk.getZ() + z);
+                        IChunk newChunk = manager.getChunk(centerChunk.getX() + x, centerChunk.getZ() + z);
                         if (newChunk != null) {
                             if (newChunk.hasChanged()) {
                                 chunks[index] = newChunk;
@@ -147,13 +147,13 @@ public class PopulationTask extends AsyncTask {
                 return;
             }
 
-            BaseFullChunk centerChunk = this.centerChunk;
+            IChunk centerChunk = this.centerChunk;
 
             if (centerChunk == null) {
                 return;
             }
 
-            for (BaseFullChunk chunk : this.chunks) {
+            for (IChunk chunk : this.chunks) {
                 if (chunk != null) {
                     level.generateChunkCallback(chunk.getX(), chunk.getZ(), chunk);
                 }
@@ -169,7 +169,7 @@ public class PopulationTask extends AsyncTask {
             }
 
             // 如果区块有修改就重新计算高度图
-            for (BaseFullChunk chunk : this.chunks) {
+            for (IChunk chunk : this.chunks) {
                 if (chunk != null && chunk.hasChanged()) {
                     chunk.recalculateHeightMap();
                 }

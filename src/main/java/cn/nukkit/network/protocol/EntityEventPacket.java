@@ -9,12 +9,12 @@ import lombok.ToString;
 @ToString
 public class EntityEventPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.ENTITY_EVENT_PACKET;
-
-
+    public static final int NONE = 0;
+    public static final int JUMP = 1;
     public static final int HURT_ANIMATION = 2;
     public static final int DEATH_ANIMATION = 3;
     public static final int ARM_SWING = 4;
-
+    public static final int ATTACK_STOP = 5;
     public static final int TAME_FAIL = 6;
     public static final int TAME_SUCCESS = 7;
     public static final int SHAKE_WET = 8;
@@ -31,18 +31,19 @@ public class EntityEventPacket extends DataPacket {
     public static final int IRON_GOLEM_OFFER_FLOWER = 19;
     public static final int IRON_GOLEM_WITHDRAW_FLOWER = 20;
     public static final int LOVE_PARTICLES = 21;
-
+    public static final int VILLAGER_ANGRY = 22;
+    public static final int VILLAGER_HAPPY = 23;
 
     public static final int WITCH_SPELL_PARTICLES = 24;
     public static final int FIREWORK_EXPLOSION = 25;
-
+    public static final int IN_LOVE_HEARTS = 26;
     public static final int SILVERFISH_SPAWN_ANIMATION = 27;
-
+    public static final int GUARDIAN_ATTACK_ANIMATION = 28;
     public static final int WITCH_DRINK_POTION = 29;
     public static final int WITCH_THROW_POTION = 30;
     public static final int MINECART_TNT_PRIME_FUSE = 31;
-
-
+    public static final int PRIME_CREEPER = 32;
+    public static final int AIR_SUPPLY = 33;
     public static final int ENCHANT = 34;
     public static final int ELDER_GUARDIAN_CURSE = 35;
     public static final int AGENT_ARM_SWING = 36;

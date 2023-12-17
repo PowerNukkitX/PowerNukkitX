@@ -12,7 +12,10 @@ public enum ParticleEffect {
     BLEACH("minecraft:bleach"),
     BLOCK_DESTRUCT("minecraft:block_destruct"),
     BLOCK_SLIDE("minecraft:block_slide"),
-
+    BLUE_FLAME("minecraft:blue_flame_particle"),
+    CROP_GROWTH("minecraft:crop_growth_emitter"),
+    CANDLE_FLAME("minecraft:candle_flame_particle"),
+    CROP_GROWTH_AREA("minecraft:crop_growth_area_emitter"),
     BREAKING_ITEM_ICON("minecraft:breaking_item_icon"),
     BREAKING_ITEM_TERRAIN("minecraft:breaking_item_terrain"),
     BUBBLE_COLUMN_BUBBLE("minecraft:bubble_column_bubble"),
@@ -30,8 +33,6 @@ public enum ParticleEffect {
     CONDUIT_ABSORB("minecraft:conduit_absorb_particle"),
     CONDUIT_ATTACK("minecraft:conduit_attack_emitter"),
     CRITICAL_HIT("minecraft:critical_hit_emitter"),
-
-
     DOLPHIN_MOVE("minecraft:dolphin_move_particle"),
     DRAGON_BREATH_FIRE("minecraft:dragon_breath_fire"),
     DRAGON_BREATH_LINGERING("minecraft:dragon_breath_lingering"),
@@ -39,8 +40,9 @@ public enum ParticleEffect {
     DRAGON_DEATH_EXPLOSION("minecraft:dragon_death_explosion_emitter"),
     DRAGON_DESTROY_BLOCK("minecraft:dragon_destroy_block"),
     DRAGON_DYING_EXPLOSION("minecraft:dragon_dying_explosion"),
-
-
+    DRIPSTONE_LAVA_DRIP("minecraft:stalactite_lava_drip_particle"),
+    DRIPSTONE_WATER_DRIP("minecraft:stalactite_water_drip_particle"),
+    ELECTRIC_SPARK("minecraft:electric_spark_particle"),
     ENCHANTING_TABLE_PARTICLE("minecraft:enchanting_table_particle"),
     ENDROD("minecraft:endrod"),
     END_CHEST("minecraft:end_chest"),
@@ -66,7 +68,7 @@ public enum ParticleEffect {
     FALLING_DUST_TOP_SNOW("minecraft:falling_dust_top_snow_particle"),
     FISH_HOOK("minecraft:fish_hook_particle"),
     FISH_POS("minecraft:fish_pos_particle"),
-
+    GLOW("minecraft:glow_particle"),
     GUARDIAN_ATTACK("minecraft:guardian_attack_particle"),
     GUARDIAN_WATER_MOVE("minecraft:guardian_water_move_particle"),
     HEART("minecraft:heart_particle"),
@@ -93,12 +95,12 @@ public enum ParticleEffect {
     NECTAR_DRIP("minecraft:nectar_drip_particle"),
     NOTE("minecraft:note_particle"),
     OBSIDIAN_GLOW_DUST("minecraft:obsidian_glow_dust_particle"),
-
+    OBSIDIAN_TEAR("minecraft:obsidian_tear_particle"),
     PHANTOM_TRAIL("minecraft:phantom_trail_particle"),
     PORTAL_DIRECTIONAL("minecraft:portal_directional"),
     PORTAL_EAST_WEST("minecraft:portal_east_west"),
     PORTAL_NORTH_SOUTH("minecraft:portal_north_south"),
-
+    PORTAL_REVERSE("minecraft:portal_reverse_particle"),
     RAIN_SPLASH("minecraft:rain_splash_particle"),
     REDSTONE_ORE_DUST("minecraft:redstone_ore_dust_particle"),
     REDSTONE_REPEATER_DUST("minecraft:redstone_repeater_dust_particle"),
@@ -112,14 +114,14 @@ public enum ParticleEffect {
     SHRIEK("minecraft:shriek_particle"),
     SHULKER_BULLET("minecraft:shulker_bullet"),
     SILVERFISH_GRIEF("minecraft:silverfish_grief_emitter"),
-
-
+    SNOWFLAKE("minecraft:snowflake_particle"),
+    SOUL("minecraft:soul_particle"),
     SONIC_EXPLOSION("minecraft:sonic_explosion"),
     SPARKLER("minecraft:sparkler_emitter"),
     SPLASHPOTIONSPELL("minecraft:splash_spell_emitter"),
     SPONGE_ABSORB_BUBBLE("minecraft:sponge_absorb_water_particle"),
-
-
+    SPORE_BLOSSOM_AMBIENT_BLOCK_ACTOR("minecraft:spore_blossom_ambient_particle"),
+    SPORE_BLOSSOM_SHOWER("minecraft:spore_blossom_shower_particle"),
     SQUID_FLEE("minecraft:squid_flee_particle"),
     SQUID_INK_BUBBLE("minecraft:squid_ink_bubble"),
     SQUID_MOVE("minecraft:squid_move_particle"),
@@ -138,7 +140,7 @@ public enum ParticleEffect {
     WATER_SPASH_MANUAL("minecraft:water_splash_particle_manual"),
     WATER_SPLASH("minecraft:water_splash_particle"),
     WATER_WAKE("minecraft:water_wake_particle"),
-
+    WAX("minecraft:wax_particle"),
     WITHER_BOSS_INVULNERABLE("minecraft:wither_boss_invulnerable");
 
     private final String identifier;

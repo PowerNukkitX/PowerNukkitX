@@ -14,7 +14,7 @@ import java.util.List;
  *
  * @author daoge_cmd
  */
-public interface VanillaBlockPropertyTypes {
+public interface CommonBlockProperties {
     BooleanPropertyType ACTIVE = BooleanPropertyType.of("active", false);
 
     IntPropertyType AGE_16 = IntPropertyType.of("age", 0, 15, 0);

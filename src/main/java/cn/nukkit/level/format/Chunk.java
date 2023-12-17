@@ -3,13 +3,13 @@ package cn.nukkit.level.format;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.block.state.BlockRegistry;
 import cn.nukkit.block.state.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.biome.Biome;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.NumberTag;
@@ -19,10 +19,14 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.BiPredicate;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Allay Project 12/16/2023
@@ -47,6 +51,7 @@ public class Chunk implements IChunk {
     //delay load block entity and entity
     protected List<CompoundTag> blockEntityNBT;
     protected List<CompoundTag> entityNBT;
+    protected final ReentrantReadWriteLock sectionLock = new ReentrantReadWriteLock();
 
     private Chunk(
             final int chunkX,
@@ -99,19 +104,34 @@ public class Chunk implements IChunk {
 
     @Override
     public ChunkSection getSection(int fY) {
-        return this.sections[fY - getDimensionData().getMinSectionY()];
+        try {
+            sectionLock.readLock().lock();
+            return this.sections[fY - getDimensionData().getMinSectionY()];
+        } finally {
+            sectionLock.readLock().unlock();
+        }
     }
 
     @Override
     public boolean setSection(int fY, ChunkSection section) {
-        this.sections[fY - getDimensionData().getMinSectionY()] = section;
-        setChanged();
-        return true;
+        try {
+            sectionLock.writeLock().lock();
+            this.sections[fY - getDimensionData().getMinSectionY()] = section;
+            setChanged();
+            return true;
+        } finally {
+            sectionLock.writeLock().unlock();
+        }
     }
 
     @Override
     public ChunkSection[] getSections() {
-        return this.sections;
+        try {
+            sectionLock.readLock().lock();
+            return this.sections;
+        } finally {
+            sectionLock.readLock().unlock();
+        }
     }
 
     @Override
@@ -170,14 +190,14 @@ public class Chunk implements IChunk {
     }
 
     @Override
-    public int getSkyLight(int x, int y, int z) {
-        return getSection(y).getSkyLight(x, y & 0x0f, z);
+    public int getBlockSkyLight(int x, int y, int z) {
+        return getSection(y).getBlockSkyLight(x, y & 0x0f, z);
     }
 
     @Override
     public void setBlockSkyLight(int x, int y, int z, int level) {
         setChanged();
-        getOrCreateSection(y >> 4).setSkyLight(x, y & 0x0f, z, (byte) level);
+        getOrCreateSection(y >> 4).setBlockSkyLight(x, y & 0x0f, z, (byte) level);
     }
 
     @Override
@@ -560,6 +580,17 @@ public class Chunk implements IChunk {
     public boolean isBlockChangeAllowed(int chunkX, int chunkY, int chunkZ) {
         //todo complete
         return true;
+    }
+
+    @Override
+    public Stream<Block> scanBlocks(BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition) {
+        int offsetX = getX() << 4;
+        int offsetZ = getZ() << 4;
+        return IntStream.rangeClosed(0, getDimensionData().getChunkSectionCount() - 1)
+                .mapToObj(sectionY -> sections[sectionY])
+                .filter(section -> !section.isEmpty()).parallel()
+                .map(section -> section.scanBlocks(getProvider(), offsetX, offsetZ, min, max, condition))
+                .flatMap(Collection::stream);
     }
 
     /**

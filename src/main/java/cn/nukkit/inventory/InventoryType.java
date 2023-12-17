@@ -46,12 +46,13 @@ public enum InventoryType {
     CHEST_BOAT(27, "Chest Boat", 0),// 34
     BARREL(27, "Barrel", 0),
     CAMPFIRE(4, "Campfire", -9), // -9 = NONE
-
-
+    ENTITY_EQUIPMENT(36, "Entity Equipment", -1), //36 CONTAINER
+    ENTITY_ARMOR(4, "Entity Armor", -1), //4 ARMOR
     MINECART_CHEST(27, "Minecart with Chest", 0), // Should be 10
     MINECART_HOPPER(5, "Minecart with Hopper", 8), // Should be 11
     OFFHAND(1, "Offhand", -1),
-
+    TRADING(3, "Villager Trade", 15),
+    SMITHING_TABLE(2, "Smithing Table", 33);
 
     private final int size;
     private final String title;

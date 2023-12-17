@@ -1,7 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.*;
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.Position;
@@ -88,7 +88,7 @@ public abstract class BlockEntity extends Position {
 
     private static final BiMap<String, Class<? extends BlockEntity>> knownBlockEntities = HashBiMap.create(35);
 
-    public FullChunk chunk;
+    public IChunk chunk;
     public String name;
     public long id;
 
