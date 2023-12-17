@@ -3,7 +3,7 @@ package cn.nukkit.entity.provider;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.newformat.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +39,7 @@ public class ClassEntityProvider implements EntityProvider<Entity>, EntityProvid
     }
 
     @Override
-    public Entity provideEntity(@NotNull FullChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
+    public Entity provideEntity(@NotNull IChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
         Entity entity = null;
         List<Exception> exceptions = null;
 

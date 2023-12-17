@@ -197,6 +197,16 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>24.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.daniellansun</groupId>
+            <artifactId>fast-reflection</artifactId>
+            <version>08ec134a5c</version>
+        </dependency>
+        <dependency>
             <groupId>net.daporkchop</groupId>
             <artifactId>leveldb-mcpe-jni</artifactId>
             <version>0.0.10-SNAPSHOT</version>
@@ -457,17 +467,6 @@
             <artifactId>commons-io</artifactId>
             <version>2.11.0</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.spotbugs</groupId>
-            <artifactId>spotbugs-annotations</artifactId>
-            <version>4.5.2</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.intellij</groupId>
-            <artifactId>annotations</artifactId>
-            <version>12.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-to-slf4j -->
         <dependency>

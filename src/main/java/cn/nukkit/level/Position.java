@@ -7,7 +7,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.newformat.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.positiontracking.NamedPosition;
@@ -294,7 +294,7 @@ public class Position extends NamedPosition {
     }
 
     @Nullable
-    public FullChunk getChunk() {
+    public IChunk getChunk() {
         return isValid() ? level.getChunk(getChunkX(), getChunkZ()) : null;
     }
 }

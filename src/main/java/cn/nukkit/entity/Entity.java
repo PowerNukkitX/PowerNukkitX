@@ -33,6 +33,7 @@ import cn.nukkit.item.ItemTotem;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.*;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.newformat.IChunk;
 import cn.nukkit.level.particle.ExplodeParticle;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
@@ -668,7 +669,7 @@ public abstract class Entity extends Location implements Metadatable {
      * @return the entity
      */
     @Nullable
-    public static Entity createEntity(int type, @NotNull FullChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
+    public static Entity createEntity(int type, @NotNull IChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
         return createEntity(String.valueOf(type), chunk, nbt, args);
     }
 
@@ -676,7 +677,7 @@ public abstract class Entity extends Location implements Metadatable {
      * @see #registerEntity(String, Class, boolean)
      */
     @Nullable
-    public static Entity createEntity(@NotNull String name, @NotNull FullChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
+    public static Entity createEntity(@NotNull String name, @NotNull IChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
         var provider = knownEntities.get(name);
         if (provider != null) {
             return provider.provideEntity(chunk, nbt, args);

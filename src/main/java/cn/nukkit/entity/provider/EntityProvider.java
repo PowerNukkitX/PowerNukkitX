@@ -3,7 +3,7 @@ package cn.nukkit.entity.provider;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.newformat.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 @PowerNukkitXOnly
 @Since("1.19.21-r2")
 public interface EntityProvider<T extends Entity> {
-    T provideEntity(@NotNull FullChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args);
+    T provideEntity(@NotNull IChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args);
 
     int getNetworkId();
 

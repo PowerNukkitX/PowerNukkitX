@@ -4,7 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.custom.CustomEntityDefinition;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.newformat.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -62,7 +62,7 @@ public class CustomClassEntityProvider extends CustomEntityProvider implements E
 
     //TODO 直接Copy普通实体的提供者,或许这里可以实现一些自定义实体相关的高级功能?
     @Override
-    public Entity provideEntity(@NotNull FullChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
+    public Entity provideEntity(@NotNull IChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
         Entity entity = null;
         List<Exception> exceptions = null;
 

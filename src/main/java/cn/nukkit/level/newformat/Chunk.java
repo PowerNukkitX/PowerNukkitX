@@ -1,13 +1,19 @@
 package cn.nukkit.level.newformat;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.NumberTag;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,22 +25,24 @@ import java.util.Map;
  *
  * @author Cool_Loong
  */
+@Slf4j
 public class Chunk implements IChunk {
-    protected final Map<Long, Entity> entities;
-    protected final Map<Long, BlockEntity> blockEntities;
-    //delay load block entity and entity
-    protected final List<CompoundTag> blockEntityNBT;
-    protected final List<CompoundTag> entityNBT;
-    protected final LevelProvider provider;
+    protected final Long2ObjectNonBlockingMap<Entity> entities;
+    protected final Long2ObjectNonBlockingMap<BlockEntity> tiles;//block entity id -> block entity
+    protected final Long2ObjectNonBlockingMap<BlockEntity> tileList;//block entity position hash index -> block entity
     protected final ChunkSection[] sections;
-    protected final short[] heightMap;//256 size
+    protected final short[] heightMap;//256 size Values start at 0 and are 0-384 for the Overworld range
     protected final CompoundTag extraData;
     protected volatile ChunkState chunkState;
     protected volatile long changes;
     private int x;
     private int z;
     private long hash;
-
+    protected boolean isInit;
+    protected LevelProvider provider;
+    //delay load block entity and entity
+    protected List<CompoundTag> blockEntityNBT;
+    protected List<CompoundTag> entityNBT;
     private Chunk(
             final int chunkX,
             final int chunkZ,
@@ -47,7 +55,8 @@ public class Chunk implements IChunk {
         this.sections = new ChunkSection[levelProvider.getDimensionData().getChunkSectionCount()];
         this.heightMap = new short[256];
         this.entities = new Long2ObjectNonBlockingMap<>();
-        this.blockEntities = new Long2ObjectNonBlockingMap<>();
+        this.tiles = new Long2ObjectNonBlockingMap<>();
+        this.tileList = new Long2ObjectNonBlockingMap<>();
         this.entityNBT = new ArrayList<>();
         this.blockEntityNBT = new ArrayList<>();
         this.extraData = new CompoundTag();
@@ -60,8 +69,6 @@ public class Chunk implements IChunk {
             final cn.nukkit.level.newformat.LevelProvider levelProvider,
             final ChunkSection[] sections,
             final short[] heightMap,
-            final Map<Long, Entity> entities,
-            final Map<Long, BlockEntity> blockEntities,
             final List<CompoundTag> entityNBT,
             final List<CompoundTag> blockEntityNBT,
             final CompoundTag extraData
@@ -72,8 +79,9 @@ public class Chunk implements IChunk {
         this.provider = levelProvider;
         this.sections = sections;
         this.heightMap = heightMap;
-        this.entities = entities;
-        this.blockEntities = blockEntities;
+        this.entities = new Long2ObjectNonBlockingMap<>();
+        this.tiles = new Long2ObjectNonBlockingMap<>();
+        this.tileList = new Long2ObjectNonBlockingMap<>();
         this.entityNBT = entityNBT;
         this.blockEntityNBT = blockEntityNBT;
         this.extraData = extraData;
@@ -91,11 +99,7 @@ public class Chunk implements IChunk {
 
     @Override
     public boolean setSection(int fY, ChunkSection section) {
-        if (section.isEmpty()) {
-            this.sections[fY - getDimensionData().getMinSectionY()] = ChunkSection.EMPTY[fY - getDimensionData().getMinSectionY()];
-        } else {
-            this.sections[fY - getDimensionData().getMinSectionY()] = section;
-        }
+        this.sections[fY - getDimensionData().getMinSectionY()] = section;
         setChanged();
         return true;
     }
@@ -136,73 +140,100 @@ public class Chunk implements IChunk {
     }
 
     @Override
-    public Block getBlock(int x, int y, int z, int layer) {
-        getSection(y >> 4).getBlockState(x, y & 0x0f, z, layer);
+    public BlockState getBlockState(int x, int y, int z, int layer) {
+        return getSection(y >> 4).getBlockState(x, y & 0x0f, z, layer);
     }
 
     @Override
-    public Block getAndSetBlock(Block block, int layer) {
-        return null;
+    public BlockState getAndSetBlockState(int x, int y, int z, BlockState blockstate, int layer) {
+        try {
+            setChanged();
+            return getOrCreateSection(y >> 4).getAndSetBlockState(x, y & 0x0f, z, blockstate, layer);
+        } finally {
+            removeInvalidTile(x, y, z);
+        }
     }
 
     @Override
-    public boolean setBlock(Block block) {
-        return false;
+    public void setBlockState(int x, int y, int z, BlockState blockstate, int layer) {
+        try {
+            setChanged();
+            getOrCreateSection(y >> 4).setBlockState(x, y & 0x0f, z, blockstate, layer);
+        } finally {
+            removeInvalidTile(x, y, z);
+        }
     }
 
     @Override
-    public boolean setBlock(Block block, int layer) {
-        return false;
-    }
-
-    @Override
-    public int getBlockSkyLight(int x, int y, int z) {
-        return 0;
+    public int getSkyLight(int x, int y, int z) {
+        return getSection(y).getSkyLight(x, y & 0x0f, z);
     }
 
     @Override
     public void setBlockSkyLight(int x, int y, int z, int level) {
-
+        setChanged();
+        getOrCreateSection(y >> 4).setSkyLight(x, y & 0x0f, z, (byte) level);
     }
 
     @Override
     public int getBlockLight(int x, int y, int z) {
-        return 0;
+        return getSection(y).getBlockLight(x, y & 0x0f, z);
     }
 
     @Override
     public void setBlockLight(int x, int y, int z, int level) {
-
-    }
-
-    @Override
-    public int getHighestBlockAt(int x, int z) {
-        return 0;
+        setChanged();
+        getOrCreateSection(y >> 4).setBlockLight(x, y & 0x0f, z, (byte) level);
     }
 
     @Override
     public int getHighestBlockAt(int x, int z, boolean cache) {
-        return 0;
+        if (cache) {
+            return this.getHeightMap(x, z);
+        }
+        for (int y = getDimensionData().getMaxHeight(); y >= getDimensionData().getMinHeight(); --y) {
+            if (getBlockState(x, y, z) != BlockAir.PROPERTIES.getBlockState()) {
+                this.setHeightMap(x, z, y);
+                return y;
+            }
+        }
+        return getDimensionData().getMinHeight();
     }
 
     @Override
     public int getHeightMap(int x, int z) {
-        return 0;
+        return this.heightMap[(z << 4) | x];
     }
 
     @Override
     public void setHeightMap(int x, int z, int value) {
-
+        //基岩版3d-data保存heightMap是以0为索引保存的，所以这里需要减去世界最小值，详情查看
+        //Bedrock Edition 3d-data saves the height map start from index of 0, so need to subtract the world minimum height here, see for details:
+        //https://github.com/bedrock-dev/bedrock-level/blob/main/src/include/data_3d.h#L115
+        this.heightMap[(z << 4) | x] = (short) (value - getDimensionData().getMinHeight());
     }
 
     @Override
     public void recalculateHeightMap() {
-
+        for (int z = 0; z < 16; ++z) {
+            for (int x = 0; x < 16; ++x) {
+                recalculateHeightMapColumn(x, z);
+            }
+        }
     }
 
     @Override
     public int recalculateHeightMapColumn(int chunkX, int chunkZ) {
-        return 0;
+        int max = getHighestBlockAt(x, z, false);
+        int y;
+        for (y = max; y >= 0; --y) {
+            if (Block.getLightFilter(getBlockIdAt(x, y, z)) > 1 || Block.diffusesSkyLight(getBlockIdAt(x, y, z))) {
+                break;
+            }
+        }
+
+        setHeightMap(x, z, y + 1);
+        return y + 1;
     }
 
     @Override
@@ -212,137 +243,228 @@ public class Chunk implements IChunk {
 
     @Override
     public int getBiomeId(int x, int y, int z) {
-        return 0;
+        return getSection(y >> 4).getBiomeId(x, y & 0x0f, z);
     }
 
     @Override
     public void setBiomeId(int x, int y, int z, int biomeId) {
-
+        try {
+            setChanged();
+            getOrCreateSection(y >> 4).setBiomeId(x, y & 0x0f, z, biomeId);
+        } finally {
+            removeInvalidTile(x, y, z);
+        }
     }
 
     @Override
     public Biome getBiome(int x, int y, int z) {
-        return null;
+        return Biome.getBiome(getSection(y >> 4).getBiomeId(x, y & 0x0f, z));
     }
 
     @Override
     public void setBiome(int x, int y, int z, Biome biome) {
-
+        try {
+            setChanged();
+            getOrCreateSection(y >> 4).setBiomeId(x, y & 0x0f, z, biome.getId());
+        } finally {
+            removeInvalidTile(x, y, z);
+        }
     }
 
     @Override
     public boolean isLightPopulated() {
-        return false;
+        return extraData.getBoolean("LightPopulated");
     }
 
     @Override
     public void setLightPopulated(boolean value) {
-
+        extraData.putBoolean("LightPopulated", value);
     }
 
     @Override
     public void setLightPopulated() {
-
+        extraData.putBoolean("LightPopulated", true);
     }
 
     @Override
     public ChunkState getChunkState() {
-        return null;
+        return this.chunkState;
     }
 
     @Override
     public void setChunkState(ChunkState chunkState) {
-
+        this.chunkState = chunkState;
     }
 
     @Override
     public void addEntity(Entity entity) {
-
+        this.entities.put(entity.getId(), entity);
+        if (!(entity instanceof Player) && this.isInit) {
+            this.setChanged();
+        }
     }
 
     @Override
     public void removeEntity(Entity entity) {
-
+        if (this.entities != null) {
+            this.entities.remove(entity.getId());
+            if (!(entity instanceof Player) && this.isInit) {
+                this.setChanged();
+            }
+        }
     }
 
     @Override
     public void addBlockEntity(BlockEntity blockEntity) {
-
+        this.tiles.put(blockEntity.getId(), blockEntity);
+        int index = ((blockEntity.getFloorZ() & 0x0f) << 16) | ((blockEntity.getFloorX() & 0x0f) << 12) | (ensureY(blockEntity.getFloorY()) + 64);
+        BlockEntity entity = this.tileList.get(index);
+        if (this.tileList.containsKey(index) && !entity.equals(blockEntity)) {
+            this.tiles.remove(entity.getId());
+            entity.close();
+        }
+        this.tileList.put(index, blockEntity);
+        if (this.isInit) {
+            this.setChanged();
+        }
     }
 
     @Override
     public void removeBlockEntity(BlockEntity blockEntity) {
-
+        if (this.tiles != null) {
+            this.tiles.remove(blockEntity.getId());
+            int index = ((blockEntity.getFloorZ() & 0x0f) << 16) | ((blockEntity.getFloorX() & 0x0f) << 12) | (ensureY(blockEntity.getFloorY()) + 64);
+            this.tileList.remove(index);
+            if (this.isInit) {
+                this.setChanged();
+            }
+        }
     }
 
     @Override
     public Map<Long, Entity> getEntities() {
-        return null;
+        return entities;
     }
 
     @Override
     public Map<Long, BlockEntity> getBlockEntities() {
-        return null;
+        return tiles;
     }
 
     @Override
     public BlockEntity getTile(int x, int y, int z) {
-        return null;
+        return this.tileList.get(((long) z << 16) | ((long) x << 12) | (y + 64));
     }
 
     @Override
     public boolean isLoaded() {
-        return false;
+        return this.getProvider() != null && this.getProvider().isChunkLoaded(this.getX(), this.getZ());
     }
 
     @Override
     public boolean load() throws IOException {
-        return false;
+        return this.load(true);
     }
 
     @Override
     public boolean load(boolean generate) throws IOException {
-        return false;
+        return this.getProvider() != null && this.getProvider().getChunk(this.getX(), this.getZ(), true) != null;
     }
 
     @Override
     public boolean unload() {
-        return false;
+        return this.unload(true, true);
     }
 
     @Override
     public boolean unload(boolean save) {
-        return false;
+        return this.unload(save, true);
     }
 
     @Override
     public boolean unload(boolean save, boolean safe) {
-        return false;
+        LevelProvider provider = this.getProvider();
+        if (provider == null) {
+            return true;
+        }
+        if (save && this.changes != 0) {
+            provider.saveChunk(this.getX(), this.getZ());
+        }
+        if (safe) {
+            for (Entity entity : this.getEntities().values()) {
+                if (entity instanceof Player) {
+                    return false;
+                }
+            }
+        }
+        for (Entity entity : new ArrayList<>(this.getEntities().values())) {
+            if (entity instanceof Player) {
+                continue;
+            }
+            entity.close();
+        }
+
+        for (BlockEntity blockEntity : new ArrayList<>(this.getBlockEntities().values())) {
+            blockEntity.close();
+        }
+        this.provider = null;
+        return true;
     }
 
     @Override
     public void initChunk() {
+        if (this.getProvider() != null && !this.isInit) {
+            boolean changed = false;
+            if (this.entityNBT != null) {
+                for (CompoundTag nbt : entityNBT) {
+                    if (!nbt.contains("id")) {
+                        this.setChanged();
+                        continue;
+                    }
+                    ListTag pos = nbt.getList("Pos");
+                    if ((((NumberTag) pos.get(0)).getData().intValue() >> 4) != this.getX() || ((((NumberTag) pos.get(2)).getData().intValue() >> 4) != this.getZ())) {
+                        changed = true;
+                        continue;
+                    }
+                    Entity entity = Entity.createEntity(nbt.getString("id"), this, nbt);
+                    if (entity != null) {
+                        changed = true;
+                    }
+                }
+                this.entityNBT = null;
+            }
 
-    }
+            if (this.blockEntityNBT != null) {
+                for (CompoundTag nbt : blockEntityNBT) {
+                    if (nbt != null) {
+                        if (!nbt.contains("id")) {
+                            changed = true;
+                            continue;
+                        }
+                        if ((nbt.getInt("x") >> 4) != this.getX() || ((nbt.getInt("z") >> 4) != this.getZ())) {
+                            changed = true;
+                            continue;
+                        }
+                        BlockEntity blockEntity = BlockEntity.createBlockEntity(nbt.getString("id"), this, nbt);
+                        if (blockEntity == null) {
+                            changed = true;
+                        }
+                    }
+                }
+                this.blockEntityNBT = null;
+            }
 
-    @Override
-    public byte[] getBiomeIdArray() {
-        return new byte[0];
+            if (changed) {
+                this.setChanged();
+            }
+
+            this.isInit = true;
+        }
     }
 
     @Override
     public short[] getHeightMapArray() {
-        return new short[0];
-    }
-
-    @Override
-    public byte[] getBlockSkyLightArray() {
-        return new byte[0];
-    }
-
-    @Override
-    public byte[] getBlockLightArray() {
-        return new byte[0];
+        return heightMap;
     }
 
     @Override
@@ -352,27 +474,75 @@ public class Chunk implements IChunk {
 
     @Override
     public boolean hasChanged() {
-        return false;
+        return this.changes != 0;
     }
 
     @Override
     public void setChanged() {
-
+        this.changes++;
     }
 
     @Override
     public void setChanged(boolean changed) {
-
+        if (changed) {
+            setChanged();
+        } else {
+            changes = 0;
+        }
     }
 
     @Override
     public long getBlockChanges() {
-        return 0;
+        return changes;
     }
 
-    @Override
-    public boolean isBlockChangeAllowed(int x, int y, int z) {
-        return false;
+    /**
+     * Gets or create section.
+     *
+     * @param sectionY the section y range -4 ~ 19
+     * @return the or create section
+     */
+    protected ChunkSection getOrCreateSection(int sectionY) {
+        int minSectionY = this.getDimensionData().getMinSectionY();
+        int offsetY = sectionY - minSectionY;
+        for (int i = 0; i <= offsetY; i++) {
+            if (sections[i] == null) {
+                sections[i] = new ChunkSection((byte) (i + minSectionY));
+            }
+        }
+        return sections[offsetY];
+    }
+
+    private void removeInvalidTile(int x, int y, int z) {
+        BlockEntity entity = getTile(x, y, z);
+        if (entity != null) {
+            try {
+                if (!entity.closed && entity.isBlockEntityValid()) {
+                    return;
+                }
+            } catch (Exception e) {
+                try {
+                    log.warn("Block entity validation of {} at {}, {} {} {} failed, removing as invalid.",
+                            entity.getClass().getName(),
+                            getProvider().getLevel().getName(),
+                            entity.x,
+                            entity.y,
+                            entity.z,
+                            e
+                    );
+                } catch (Exception e2) {
+                    e.addSuppressed(e2);
+                    log.warn("Block entity validation failed", e);
+                }
+            }
+            entity.close();
+        }
+    }
+
+    private int ensureY(final int y) {
+        final int minHeight = getDimensionData().getMinHeight();
+        final int maxHeight = getDimensionData().getMaxHeight();
+        return Math.max(Math.min(y, maxHeight), minHeight);
     }
 
     public static Builder builder() {
@@ -388,8 +558,6 @@ public class Chunk implements IChunk {
         short[] heightMap;
         List<CompoundTag> entities;
         List<CompoundTag> blockEntities;
-        List<CompoundTag> blockEntityNBT;
-        List<CompoundTag> entityNBT;
         CompoundTag extraData;
 
         private Builder() {
@@ -476,8 +644,6 @@ public class Chunk implements IChunk {
                     levelProvider,
                     sections,
                     heightMap,
-                    new Long2ObjectNonBlockingMap<>(),
-                    new Long2ObjectNonBlockingMap<>(),
                     entities,
                     blockEntities,
                     extraData

@@ -1,6 +1,6 @@
 package cn.nukkit.level.newformat;
 
-import cn.nukkit.block.Block;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
@@ -77,8 +77,8 @@ public interface IChunk {
         return getProvider().getDimensionData();
     }
 
-    default Block getBlock(int x, int y, int z) {
-        return getBlock(x, y, z, 0);
+    default BlockState getBlockState(int x, int y, int z) {
+        return getBlockState(x, y, z, 0);
     }
 
     /**
@@ -90,27 +90,27 @@ public interface IChunk {
      * @param layer the layer
      * @return the block
      */
-    Block getBlock(int x, int y, int z, int layer);
+    BlockState getBlockState(int x, int y, int z, int layer);
 
-    Block getAndSetBlock(Block block, int layer);
+    BlockState getAndSetBlockState(int x, int y, int z, BlockState blockstate, int layer);
 
-    default Block getAndSetBlock(Block block) {
-        return getAndSetBlock(block, 0);
+    default BlockState getAndSetBlockState(int x, int y, int z, BlockState blockstate) {
+        return getAndSetBlockState(x, y, z, blockstate, 0);
     }
 
-    boolean setBlock(Block block);
+    void setBlockState(int x, int y, int z, BlockState blockstate, int layer);
 
-    boolean setBlock(Block block, int layer);
+    default void setBlockState(int x, int y, int z, BlockState blockstate) {
+        setBlockState(x, y, z, blockstate, 0);
+    }
 
-    int getBlockSkyLight(int x, int y, int z);
+    int getSkyLight(int x, int y, int z);
 
     void setBlockSkyLight(int x, int y, int z, int level);
 
     int getBlockLight(int x, int y, int z);
 
     void setBlockLight(int x, int y, int z, int level);
-
-    int getHighestBlockAt(int x, int z);
 
     int getHighestBlockAt(int x, int z, boolean cache);
 
@@ -188,13 +188,7 @@ public interface IChunk {
      */
     void initChunk();
 
-    byte[] getBiomeIdArray();
-
     short[] getHeightMapArray();
-
-    byte[] getBlockSkyLightArray();
-
-    byte[] getBlockLightArray();
 
     CompoundTag getExtraData();
 
@@ -205,8 +199,6 @@ public interface IChunk {
     void setChanged(boolean changed);
 
     long getBlockChanges();
-
-    boolean isBlockChangeAllowed(int x, int y, int z);
 
     default void reObfuscateChunk() {
     }

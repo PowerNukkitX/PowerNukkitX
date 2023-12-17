@@ -6,6 +6,7 @@ import cn.nukkit.block.state.BlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -14,17 +15,15 @@ public class BlockAir extends BlockTransparent {
 
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:air");
 
-    public BlockAir() {
-    }
-
-    @Override
-    public int getId() {
-        return AIR;
-    }
-
     @Override
     public String getName() {
         return "Air";
+    }
+
+    @NotNull
+    @Override
+    public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override

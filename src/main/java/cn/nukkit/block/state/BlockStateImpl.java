@@ -2,10 +2,12 @@ package cn.nukkit.block.state;
 
 import cn.nukkit.block.state.property.type.BlockPropertyType;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.CompoundTagView;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.HashUtils;
+import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.TreeMap;
 
 import static cn.nukkit.block.state.BlockProperties.computeSpecialValue;
@@ -18,10 +20,10 @@ import static cn.nukkit.block.state.BlockProperties.computeSpecialValue;
 record BlockStateImpl(String identifier,
                       int blockhash,
                       short specialValue,
-                      BlockPropertyType.BlockPropertyValue<?, ?, ?>[] blockPropertyValues,
-                      CompoundTag blockStateTag
+                      List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> blockPropertyValues,
+                      CompoundTagView blockStateTag
 ) implements BlockState {
-    private static CompoundTag buildBlockStateTag(String identifier, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
+    private static CompoundTagView buildBlockStateTag(String identifier, List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> propertyValues) {
         //build block state tag
         var states = new CompoundTag("", new TreeMap<>());
         for (var value : propertyValues) {
@@ -31,13 +33,13 @@ record BlockStateImpl(String identifier,
                 case BOOLEAN -> states.putByte(value.getPropertyType().getName(), (byte) value.getSerializedValue());
             }
         }
-        return new CompoundTag()
+        return new CompoundTagView(new CompoundTag()
                 .putString("name", identifier)
                 .putCompound("states", states)
-                .putInt("version", ProtocolInfo.BLOCK_STATE_VERSION_NO_REVISION);
+                .putInt("version", ProtocolInfo.BLOCK_STATE_VERSION_NO_REVISION));
     }
 
-    public BlockStateImpl(String identifier, int blockStateHash, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
+    public BlockStateImpl(String identifier, int blockStateHash, List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> propertyValues) {
         this(identifier,
                 blockStateHash,
                 computeSpecialValue(propertyValues),
@@ -46,22 +48,19 @@ record BlockStateImpl(String identifier,
         );
     }
 
-    public BlockStateImpl(String identifier, int blockStateHash, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues, short specialValue) {
-        this(identifier,
-                blockStateHash,
-                specialValue,
-                propertyValues,
-                buildBlockStateTag(identifier, propertyValues)
-        );
-    }
-
-    public BlockStateImpl(String identifier, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
-        this(identifier, HashUtils.computeBlockStateHash(identifier, Arrays.stream(propertyValues).toList()), propertyValues);
+    public BlockStateImpl(String identifier, List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> propertyValues) {
+        this(identifier, HashUtils.computeBlockStateHash(identifier, propertyValues), propertyValues);
     }
 
     @Override
     public String getIdentifier() {
         return identifier;
+    }
+
+    @Override
+    @UnmodifiableView
+    public List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> getBlockPropertyValues() {
+        return blockPropertyValues;
     }
 
     @Override
@@ -75,12 +74,7 @@ record BlockStateImpl(String identifier,
     }
 
     @Override
-    public CompoundTag getBlockStateTag() {
-        return this.blockStateTag;
-    }
-
-    @Override
-    public BlockPropertyType.BlockPropertyValue<?, ?, ?>[] getBlockPropertyValues() {
-        return blockPropertyValues;
+    public CompoundTagView getBlockStateTag() {
+        return blockStateTag;
     }
 }

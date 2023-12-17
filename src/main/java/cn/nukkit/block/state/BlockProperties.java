@@ -20,21 +20,22 @@ import java.util.stream.Collectors;
  * @author Cool_Loong
  */
 public final class BlockProperties {
+    @Getter
     private final String identifier;
     private final BlockPropertyType<?>[] properties;
-    private final Map<Short, BlockStateImpl> specialValueMap;
+    private final Map<Short, BlockState> specialValueMap;
     @Getter
     private final BlockState defaultState;
     private final byte bitSize;
 
-    public static short computeSpecialValue(BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
+    public static short computeSpecialValue(List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> propertyValues) {
         byte specialValueBits = 0;
         for (var value : propertyValues) specialValueBits += value.getPropertyType().getBitSize();
         return computeSpecialValue(specialValueBits, propertyValues);
     }
 
     //todo match vanilla
-    public static short computeSpecialValue(byte specialValueBits, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
+    public static short computeSpecialValue(byte specialValueBits, List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> propertyValues) {
         short specialValue = 0;
         for (var value : propertyValues) {
             specialValue |= ((short) value.getIndex()) << (specialValueBits - value.getPropertyType().getBitSize());
@@ -69,7 +70,7 @@ public final class BlockProperties {
         List<BlockPropertyType<?>> propertyTypeList = Arrays.stream(this.properties).toList();
         int size = propertyTypeList.size();
         if (size == 0) {
-            BlockStateImpl blockState = new BlockStateImpl(identifier, new BlockPropertyType.BlockPropertyValue[]{});
+            BlockStateImpl blockState = new BlockStateImpl(identifier, List.of());
             return Pair.of(new Int2ObjectArrayMap<>(new int[]{blockState.blockStateHash()}, new BlockStateImpl[]{blockState}), blockState);
         }
         Int2ObjectOpenHashMap<BlockStateImpl> blockStates = new Int2ObjectOpenHashMap<>();
@@ -88,7 +89,7 @@ public final class BlockProperties {
                 BlockPropertyType<?> type = propertyTypeList.get(i);
                 values.add(type.tryCreateValue(type.getValidValues().get(indices[i])));
             }
-            BlockStateImpl state = new BlockStateImpl(identifier, values.build().toArray(BlockPropertyType.BlockPropertyValue[]::new));
+            BlockStateImpl state = new BlockStateImpl(identifier, values.build());
             blockStates.put(state.blockStateHash(), state);
 
             // find the rightmost array that has more
@@ -127,11 +128,19 @@ public final class BlockProperties {
         return Pair.of(blockStates, defaultState);
     }
 
+    public BlockState getBlockState() {
+        return specialValueMap.get((short) 0);
+    }
+
     public BlockState getBlockState(short specialValue) {
         return specialValueMap.get(specialValue);
     }
 
     public byte getSpecialValueBits() {
         return bitSize;
+    }
+
+    public boolean containBlockState(BlockState blockState) {
+        return this.specialValueMap.containsValue(blockState);
     }
 }

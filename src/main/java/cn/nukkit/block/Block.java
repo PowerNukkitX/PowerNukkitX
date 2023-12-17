@@ -73,7 +73,18 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
     }
 
-    protected Block() {
+    public Block() {
+        super(0, 0, 0, null);
+        this.blockstate = this.getProperties().getDefaultState();
+    }
+
+    public Block(BlockState blockState) {
+        super(0, 0, 0, null);
+        if (getProperties().containBlockState(blockState)) {
+            this.blockstate = blockState;
+        } else {
+            this.blockstate = this.getProperties().getDefaultState();
+        }
     }
 
     /**
@@ -407,12 +418,13 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public abstract BlockProperties getProperties();
 
     public Map<BlockPropertyType<?>, BlockPropertyType.BlockPropertyValue<?, ?, ?>> getPropertyValues() {
-        return Collections.unmodifiableMap(Arrays.stream(this.blockstate.getBlockPropertyValues()).collect(
+        return Collections.unmodifiableMap(this.blockstate.getBlockPropertyValues().stream().collect(
                 LinkedHashMap<BlockPropertyType<?>, BlockPropertyType.BlockPropertyValue<?, ?, ?>>::new,
                 (hashMap, blockPropertyValue) -> hashMap.put(blockPropertyValue.getPropertyType(), blockPropertyValue),
                 LinkedHashMap::putAll));
     }
 
+    @SuppressWarnings("unchecked")
     public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> DATATYPE getPropertyValue(PROPERTY p) {
         for (var property : this.blockstate.getBlockPropertyValues()) {
             if (property.getPropertyType() == p) {
@@ -427,14 +439,14 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public void setPropertyValue(BlockPropertyType.BlockPropertyValue<?, ?, ?> propertyValue) {
-        final BlockPropertyType.BlockPropertyValue<?, ?, ?>[] blockPropertyValues = this.blockstate.getBlockPropertyValues();
-        final var newPropertyValues = new BlockPropertyType.BlockPropertyValue<?, ?, ?>[blockPropertyValues.length];
+        final var blockPropertyValues = this.blockstate.getBlockPropertyValues();
+        final var newPropertyValues = new ArrayList<BlockPropertyType.BlockPropertyValue<?, ?, ?>>(blockPropertyValues.size());
         var succeed = false;
-        for (int i = 0; i < blockPropertyValues.length; i++) {
-            if (blockPropertyValues[i].getPropertyType() == propertyValue.getPropertyType()) {
+        for (var v : blockPropertyValues) {
+            if (v.getPropertyType() == propertyValue.getPropertyType()) {
                 succeed = true;
-                newPropertyValues[i] = propertyValue;
-            } else newPropertyValues[i] = blockPropertyValues[i];
+                newPropertyValues.add(propertyValue);
+            } else newPropertyValues.add(v);
         }
         if (!succeed) {
             throw new IllegalArgumentException("Property " + propertyValue.getPropertyType() + " is not supported by this block");
@@ -443,18 +455,18 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public void setPropertyValues(BlockPropertyType.BlockPropertyValue<?, ?, ?>... values) {
-        final BlockPropertyType.BlockPropertyValue<?, ?, ?>[] blockPropertyValues = this.blockstate.getBlockPropertyValues();
-        final var newPropertyValues = new BlockPropertyType.BlockPropertyValue<?, ?, ?>[blockPropertyValues.length];
+        final var blockPropertyValues = this.blockstate.getBlockPropertyValues();
+        final var newPropertyValues = new ArrayList<BlockPropertyType.BlockPropertyValue<?, ?, ?>>(blockPropertyValues.size());
         final var propertyValues = List.of(values);
         final var succeed = new boolean[propertyValues.size()];
         var succeedCount = 0;
-        for (int i = 0; i < blockPropertyValues.length; i++) {
+        for (var v : blockPropertyValues) {
             int index;
-            if ((index = propertyValues.indexOf(blockPropertyValues[i])) != -1) {
+            if ((index = propertyValues.indexOf(v)) != -1) {
                 succeedCount++;
                 succeed[index] = true;
-                newPropertyValues[i] = propertyValues.get(index);
-            } else newPropertyValues[i] = blockPropertyValues[i];
+                newPropertyValues.add(propertyValues.get(index));
+            } else newPropertyValues.add(v);
         }
         if (succeedCount != propertyValues.size()) {
             var errorMsgBuilder = new StringBuilder("Properties ");
@@ -471,7 +483,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         this.blockstate = getNewBlockState(newPropertyValues);
     }
 
-    private BlockState getNewBlockState(BlockPropertyType.BlockPropertyValue<?, ?, ?>[] values) {
+    private BlockState getNewBlockState(ArrayList<BlockPropertyType.BlockPropertyValue<?, ?, ?>> values) {
         Preconditions.checkNotNull(getProperties());
         byte bits = getProperties().getSpecialValueBits();
         if (bits <= 16) {
@@ -1193,9 +1205,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @Override
     public Block clone() {
-        Block clone = (Block) super.clone();
-        clone.mutableState = mutableState != null ? mutableState.copy() : null;
-        return clone;
+        return (Block) super.clone();
     }
 
     public int getWeakPower(BlockFace face) {
