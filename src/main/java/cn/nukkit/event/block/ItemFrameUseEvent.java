@@ -1,8 +1,6 @@
 package cn.nukkit.event.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.event.Cancellable;

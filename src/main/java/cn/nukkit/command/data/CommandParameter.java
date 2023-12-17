@@ -1,9 +1,6 @@
 package cn.nukkit.command.data;
 
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.tree.node.IParamNode;
 import cn.nukkit.item.Item;
 import com.google.common.collect.Lists;

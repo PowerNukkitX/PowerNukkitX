@@ -1,13 +1,10 @@
 package cn.nukkit.item;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
 import org.jetbrains.annotations.Nullable;
 
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Extends ItemTool instead of Item only in PowerNukkit")
+
 public class ItemShield extends ItemTool {
 
     public ItemShield() {

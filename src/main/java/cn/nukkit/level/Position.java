@@ -1,9 +1,5 @@
 package cn.nukkit.level;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockstate.BlockState;
@@ -20,7 +16,7 @@ import java.util.Set;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Overrides NamedPosition instead of Vector3")
+
 public class Position extends NamedPosition {
     public Level level;
 

@@ -1,9 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-
 
 public class ItemLeggingsNetherite extends ItemArmor {
 
@@ -42,7 +38,7 @@ public class ItemLeggingsNetherite extends ItemArmor {
         return 555;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed toughness value")
+
     @Override
     public int getToughness() {
         return 3;

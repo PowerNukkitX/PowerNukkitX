@@ -1,8 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.event.block.FarmLandDecayEvent;
@@ -156,7 +153,7 @@ public class BlockFarmland extends BlockTransparentMeta {
         return true;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will return true")
+    
     @Override
     public boolean isTransparent() {
         return true;

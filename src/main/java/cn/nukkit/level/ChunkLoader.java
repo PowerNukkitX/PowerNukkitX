@@ -1,7 +1,5 @@
 package cn.nukkit.level;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 

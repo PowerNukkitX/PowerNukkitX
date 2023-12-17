@@ -1,10 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
@@ -159,7 +155,7 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
         setPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION, direction);
     }
 
-    @PowerNukkitDifference(info = "Was returning the wrong face, it now return the closest face, or the left face if even", since = "1.4.0.0-PN")
+    
     @Override
     public BlockFace getBlockFace() {
         return getSignDirection().getClosestBlockFace();

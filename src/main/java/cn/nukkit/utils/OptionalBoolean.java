@@ -1,7 +1,5 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.utils.functional.BooleanConsumer;
 
 import javax.annotation.Nullable;

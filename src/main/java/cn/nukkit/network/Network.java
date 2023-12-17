@@ -78,7 +78,7 @@ public class Network {
 
     private final List<NetworkIF> hardWareNetworkInterfaces;
 
-    @PowerNukkitXDifference(since = "1.19.80-r2", info = "DataPacketManager.registerDefaultProcessors()")
+    @
     public Network(Server server) {
         this.registerPackets();
         DataPacketManager.registerDefaultProcessors();
@@ -121,7 +121,7 @@ public class Network {
     }
 
 
-    @PowerNukkitXDifference(info = "Uses the LibDeflate deflater", since = "1.19.40-r3")
+    @
     public static byte[] deflateRaw(byte[] data, int level) throws IOException {
         if (libDeflateAvailable) {
             var deflater = level == 7 ? PNX_DEFLATER_RAW.get() : new LibdeflateCompressor(level);
@@ -155,7 +155,7 @@ public class Network {
     }
 
 
-    @PowerNukkitXDifference(info = "Uses the LibDeflate deflater", since = "1.19.40-r3")
+    @
     public static byte[] deflateRaw(byte[][] datas, int level) throws IOException {
         if (libDeflateAvailable) {
             var deflater = level == 7 ? PNX_DEFLATER_RAW.get() : new LibdeflateCompressor(level);
@@ -382,7 +382,7 @@ public class Network {
      *
      * @param packets
      */
-    @PowerNukkitDifference(info = "Handles exception if on of the packets in the list fails")
+    
     public void processPackets(Player player, List<DataPacket> packets) {
         if (packets.isEmpty()) return;
         packets.forEach(p -> {

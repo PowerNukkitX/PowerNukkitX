@@ -1,7 +1,5 @@
 package cn.nukkit.level.generator.populator.impl.structure.fossil;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.FullChunk;

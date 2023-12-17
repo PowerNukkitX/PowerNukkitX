@@ -1,8 +1,5 @@
 package cn.nukkit.level.generator.populator.impl.structure.utils.block.state;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 //\\ VanillaStates::WeirdoDirection
 
 

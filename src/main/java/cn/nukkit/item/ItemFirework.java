@@ -1,7 +1,6 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityElytraFirework;
@@ -32,7 +31,7 @@ public class ItemFirework extends Item {
         this(meta, 1);
     }
     
-    @PowerNukkitDifference(info = "Will not add compound tag automatically")
+
     public ItemFirework(Integer meta, int count) {
         super(FIREWORKS, meta, count, "Firework Rocket");
     }

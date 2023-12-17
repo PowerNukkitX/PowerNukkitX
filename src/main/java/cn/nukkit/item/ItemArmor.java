@@ -1,8 +1,6 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.Since;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.ByteTag;
@@ -50,7 +48,7 @@ abstract public class ItemArmor extends Item implements ItemDurable {
         return true;
     }
 
-    @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
+    
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         boolean equip = false;

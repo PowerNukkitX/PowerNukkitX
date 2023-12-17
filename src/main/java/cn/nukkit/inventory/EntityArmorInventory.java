@@ -1,9 +1,6 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventoryContentPacket;
@@ -71,25 +68,25 @@ public class EntityArmorInventory extends BaseInventory {
     }
 
 
-    @PowerNukkitDifference(info = "now this method will return an Boolean",since = "1.6.0.0-PNX")
+
     public boolean setHelmet(Item item) {
         return this.setItem(SLOT_HEAD, item);
     }
 
 
-    @PowerNukkitDifference(info = "now this method will return an Boolean",since = "1.6.0.0-PNX")
+
     public boolean setChestplate(Item item) {
         return this.setItem(SLOT_CHEST, item);
     }
 
 
-    @PowerNukkitDifference(info = "now this method will return an Boolean",since = "1.6.0.0-PNX")
+
     public boolean setLeggings(Item item) {
         return this.setItem(SLOT_LEGS, item);
     }
 
 
-    @PowerNukkitDifference(info = "now this method will return an Boolean",since = "1.6.0.0-PNX")
+
     public boolean setBoots(Item item) {
         return  this.setItem(SLOT_FEET, item);
     }

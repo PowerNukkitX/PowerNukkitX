@@ -1,8 +1,6 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.Identifier;
 import org.jetbrains.annotations.NotNull;

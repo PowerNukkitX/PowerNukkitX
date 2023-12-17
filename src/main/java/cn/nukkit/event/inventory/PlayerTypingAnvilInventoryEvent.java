@@ -19,8 +19,6 @@
 package cn.nukkit.event.inventory;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.AnvilInventory;
 import lombok.ToString;

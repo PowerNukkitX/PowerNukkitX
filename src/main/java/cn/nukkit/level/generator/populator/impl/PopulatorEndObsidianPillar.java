@@ -1,7 +1,5 @@
 package cn.nukkit.level.generator.populator.impl;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityEndCrystal;
 import cn.nukkit.level.ChunkManager;

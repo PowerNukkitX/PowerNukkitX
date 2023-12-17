@@ -1,7 +1,5 @@
 package cn.nukkit.item.customitem;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.StringItem;
 

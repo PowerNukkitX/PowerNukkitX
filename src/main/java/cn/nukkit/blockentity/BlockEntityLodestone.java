@@ -1,8 +1,6 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;

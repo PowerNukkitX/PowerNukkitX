@@ -410,7 +410,7 @@ public class BinaryStream {
         return new SerializedImage(width, height, data);
     }
 
-    @PowerNukkitXDifference(info = "Remove the name from the tag, this function will be removed in the future")
+    @
     public Item getSlot() {
         int networkId = getVarInt();
         if (networkId == 0) {
@@ -609,7 +609,7 @@ public class BinaryStream {
         this.putSlot(item, false);
     }
 
-    @PowerNukkitXDifference(info = "Remove the name from the tag, this function will be removed in the future")
+    @
 
     public void putSlot(Item item, boolean instanceItem) {
         if (item == null || item.getId() == 0) {

@@ -1,7 +1,5 @@
 package cn.nukkit.camera.instruction.impl;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.camera.data.CameraPreset;
 import cn.nukkit.camera.data.Ease;
 import cn.nukkit.camera.instruction.CameraInstruction;

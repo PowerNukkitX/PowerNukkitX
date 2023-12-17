@@ -66,7 +66,7 @@ import static cn.nukkit.utils.Utils.dynamic;
  * @author MagicDroidX
  */
 @Log4j2
-@PowerNukkitDifference(since = "1.4.0.0-PN",
+
         info = "All DATA constants were made dynamic because they have tendency to change on Minecraft updates, " +
                 "these dynamic calls will avoid the need of plugin recompilations after Minecraft updates that " +
                 "shifts the data values")
@@ -697,7 +697,7 @@ public abstract class Entity extends Location implements Metadatable {
      * @param force the force
      * @return the boolean
      */
-    @PowerNukkitXDifference(since = "1.19.21-r1", info = "Use internal provider instead.")
+    @
     public static boolean registerEntity(String name, Class<? extends Entity> clazz, boolean force) {
         if (clazz == null) {
             return false;
@@ -983,7 +983,7 @@ public abstract class Entity extends Location implements Metadatable {
         playAnimationOnEntities(animation, entities, viewers);
     }
 
-    @PowerNukkitXInternal
+    
     public static void init() {
         registerEntity("Lightning", EntityLightning.class);
         registerEntity("Arrow", EntityArrow.class);
@@ -2242,7 +2242,7 @@ public abstract class Entity extends Location implements Metadatable {
         return nearestPortal;
     }
 
-    @PowerNukkitDifference(since = "1.6.0.0-PNX", info = "add support for the new movement packet MoveEntityDeltaPacket")
+
     public void updateMovement() {
         //这样做是为了向后兼容旧插件
         if (!enableHeadYaw()) {
@@ -2342,7 +2342,7 @@ public abstract class Entity extends Location implements Metadatable {
         Server.broadcastPacket(hasSpawned.values(), pk);
     }
 
-    @PowerNukkitXDifference(info = "There is no need to set the temporalVector, because the result is prone to change in an asynchronous environment.")
+    @
     @Override
     public Vector3 getDirectionVector() {
         return super.getDirectionVector();
@@ -2575,7 +2575,7 @@ public abstract class Entity extends Location implements Metadatable {
         return true;
     }
 
-    @PowerNukkitXDifference(since = "1.19.20-r5")
+    @
     public void resetFallDistance() {
         if (this.level != null) {
             this.highestPosition = this.level.getMinHeight();
@@ -2659,7 +2659,7 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
-    @PowerNukkitXDifference(info = "change to protected")
+    @
     protected boolean onPhysicalInteraction(Block block, boolean cancelled) {
         Event ev;
 
@@ -2809,7 +2809,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
 
-    @PowerNukkitXDifference(info = "Make as public method", since = "1.19.60-r1")
+    @
     public boolean hasWaterAt(float height) {
         return hasWaterAt(height, false);
     }
@@ -2917,7 +2917,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     //Player do not use
-    @PowerNukkitXDifference(since = "1.19.60-r1", info = "The onGround is updated when the entity motion is 0")
+    @
     public boolean move(double dx, double dy, double dz) {
         if (dx == 0 && dz == 0 && dy == 0) {
             this.onGround = !this.getPosition().setComponents(this.down()).getTickCachedLevelBlock().canPassThrough();

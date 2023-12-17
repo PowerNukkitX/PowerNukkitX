@@ -1,10 +1,6 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.*;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.player.PlayerBucketEmptyEvent;
@@ -154,7 +150,7 @@ public class ItemBucket extends Item {
 
 
     @SuppressWarnings("DuplicatedCode")
-    @PowerNukkitDifference(info = "You can't use bucket in adventure mode.", since = "1.4.0.0-PN")
+
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) {
@@ -365,7 +361,7 @@ public class ItemBucket extends Item {
         return getId() == BUCKET && this.getDamage() == 1; // Milk
     }
 
-    @PowerNukkitDifference(info = "You can't use milk in spectator mode and milk is now 'drinked' in adventure mode", since = "1.4.0.0-PN")
+
     @Override
     public boolean onUse(Player player, int ticksUsed) {
         if (player.isSpectator() || this.getDamage() != 1) {

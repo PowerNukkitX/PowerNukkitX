@@ -1,8 +1,6 @@
 package cn.nukkit.utils.collection.nb;
 
 import cn.nukkit.api.NonComputationAtomic;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 

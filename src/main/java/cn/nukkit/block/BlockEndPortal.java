@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityEndPortal;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -97,7 +94,7 @@ public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<B
         return true;
     }
 
-    @PowerNukkitDifference(since = "1.2.1.0-PN", info = "NukkitX returns null")
+
     @Override
     public AxisAlignedBB getCollisionBoundingBox() {
         return this;

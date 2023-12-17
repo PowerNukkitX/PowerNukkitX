@@ -1,9 +1,6 @@
 package cn.nukkit.math;
 
 import cn.nukkit.api.DoNotModify;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.level.Location;
 
 import static java.lang.StrictMath.*;
@@ -15,7 +12,7 @@ import static java.lang.StrictMath.*;
  */
 
 
-@PowerNukkitXDifference(info = "update Angle algorithm", since = "1.19.60-r1")
+@
 public final class BVector3 {
     /**
      * 向量的单位向量

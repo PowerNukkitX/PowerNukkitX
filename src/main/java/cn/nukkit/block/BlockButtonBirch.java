@@ -1,7 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-
 
 public class BlockButtonBirch extends BlockButtonWooden {
 

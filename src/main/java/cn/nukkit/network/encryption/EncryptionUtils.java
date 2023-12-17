@@ -1,6 +1,5 @@
 package cn.nukkit.network.encryption;
 
-import cn.nukkit.api.PowerNukkitXOnly;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;

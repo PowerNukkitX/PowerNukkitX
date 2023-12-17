@@ -1,9 +1,6 @@
 package cn.nukkit.item;
 
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 
 import static cn.nukkit.utils.Utils.dynamic;
 

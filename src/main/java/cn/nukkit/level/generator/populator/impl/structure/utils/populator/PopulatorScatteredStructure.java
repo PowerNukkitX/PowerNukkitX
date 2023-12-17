@@ -1,8 +1,6 @@
 package cn.nukkit.level.generator.populator.impl.structure.utils.populator;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;

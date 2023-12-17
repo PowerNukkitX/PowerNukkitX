@@ -1,8 +1,6 @@
 package cn.nukkit.level.generator.populator.impl.structure.pillageroutpost;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.mob.EntityIronGolem;

@@ -1,7 +1,5 @@
 package cn.nukkit.dispenser;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;

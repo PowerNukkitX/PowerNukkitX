@@ -1,8 +1,6 @@
 package cn.nukkit.resourcepacks;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import com.google.gson.JsonParser;
 import lombok.extern.log4j.Log4j2;
 

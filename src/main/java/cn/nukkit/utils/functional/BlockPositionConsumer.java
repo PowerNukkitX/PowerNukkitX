@@ -1,7 +1,5 @@
 package cn.nukkit.utils.functional;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.math.IntIncrementSupplier;
 import cn.nukkit.math.NukkitMath;
 import com.google.common.base.Preconditions;

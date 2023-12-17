@@ -18,9 +18,6 @@
 
 package cn.nukkit.utils.collection;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Objects;

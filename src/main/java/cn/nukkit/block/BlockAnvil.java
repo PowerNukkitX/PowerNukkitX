@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BlockProperty;
@@ -25,7 +22,7 @@ import java.util.Collection;
  * @author Pub4Game
  * @since 27.12.2015
  */
-@PowerNukkitDifference(info = "Extends BlockFallableMeta instead of BlockFallable", since = "1.4.0.0-PN")
+
 public class BlockAnvil extends BlockFallableMeta implements Faceable {
 
 
@@ -102,7 +99,7 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
         return getAnvilDamage().getEnglishName();
     }
 
-    @PowerNukkitDifference(info = "Just like sand, it can now be placed anywhere and removed the sound for the player who placed, was duplicated", since = "1.3.0.0-PN")
+
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         setBlockFace(player != null ? player.getDirection().rotateY() : BlockFace.SOUTH);
@@ -149,7 +146,7 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
         return getPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION);
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed the returned bounding box")
+
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         BlockFace face = getBlockFace().rotateY();

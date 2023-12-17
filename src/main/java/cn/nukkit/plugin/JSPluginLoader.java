@@ -1,8 +1,6 @@
 package cn.nukkit.plugin;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.event.plugin.PluginDisableEvent;
 import cn.nukkit.event.plugin.PluginEnableEvent;
 import lombok.extern.log4j.Log4j2;

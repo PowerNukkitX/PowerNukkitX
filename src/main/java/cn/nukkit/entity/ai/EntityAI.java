@@ -1,8 +1,5 @@
 package cn.nukkit.entity.ai;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 import java.util.EnumSet;
 import java.util.Set;
 

@@ -276,7 +276,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected Position spawnPosition;
 
 
-    @PowerNukkitXDifference(info = "change as Position")
+    @
     protected Position spawnBlockPosition;
 
     /**
@@ -353,15 +353,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private BlockEnderChest viewingEnderChest = null;
     private TaskHandler delayedPosTrackingUpdate;
     private int noShieldTicks;
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    @
 
 
     protected boolean showingCredits;
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    @
     protected static final int NO_SHIELD_DELAY = 10;
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    @
     protected boolean inventoryOpen;
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    @
     protected PlayerBlockActionData lastBlockAction;
     protected AsyncTask preLoginEventTask = null;
     protected boolean verified = false;
@@ -492,8 +492,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.server.getNetwork().unpackBatchedPackets(packet, this.server.isEnableSnappy() ? CompressionProvider.SNAPPY : CompressionProvider.ZLIB);
     }
 
-    @PowerNukkitXDifference(since = "1.19.60-r1", info = "Auto-break custom blocks if client doesn't send the break data-pack.")
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    @
+    @
     protected void onBlockBreakContinue(Vector3 pos, BlockFace face) {
         if (this.isBreakingBlock()) {
             var time = System.currentTimeMillis();
@@ -528,7 +528,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    @
     protected void onBlockBreakStart(Vector3 pos, BlockFace face) {
         BlockVector3 blockPos = pos.asBlockVector3();
         long currentBreak = System.currentTimeMillis();
@@ -619,7 +619,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.lastBreakPosition = blockPos;
     }
 
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    @
     protected void onBlockBreakAbort(Vector3 pos, BlockFace face) {
         if (pos.distanceSquared(this) < 100) {// same as with ACTION_START_BREAK
             LevelEventPacket pk = new LevelEventPacket();
@@ -635,7 +635,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.breakingBlockFace = null;
     }
 
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    @
     protected void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
         if (!this.spawned || !this.isAlive()) {
             return;
@@ -2631,7 +2631,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @param pos 出生点位置
      */
-    @PowerNukkitDifference(info = "pos can be null now and if it is null,the player's spawn will use the level's default spawn")
+    
     public void setSpawn(@Nullable Vector3 pos) {
         if (pos != null) {
             Level level;
@@ -2776,7 +2776,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @DeprecationDetails(by = "Cloudburst Nukkit", since = "2019-05-08", replaceWith = "dataPacket(DataPacket)",
             reason = "ACKs are handled by the RakNet layer only")
-    @PowerNukkitDifference(since = "1.4.0.0-PN",
+    
             info = "Cloudburst changed the return values from 0/-1 to 1/0, breaking backward compatibility for no reason, " +
                     "we reversed that.")
     @Deprecated
@@ -2801,7 +2801,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @DeprecationDetails(by = "Cloudburst Nukkit", since = "2019-05-08", replaceWith = "dataPacket(DataPacket)",
             reason = "ACK are handled by the RakNet layer and direct packets are no longer allowed")
-    @PowerNukkitDifference(since = "1.4.0.0-PN",
+    
             info = "Cloudburst changed the return values from 0/-1 to 1/0, breaking backward compatibility for no reason, " +
                     "we reversed that.")
     @Deprecated
@@ -3161,7 +3161,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Override
-    @PowerNukkitXDifference(info = "Calculate fall distance when wearing elytra", since = "1.19.60-r1")
+    @
     public boolean onUpdate(int currentTick) {
         if (!this.loggedIn) {
             return false;
@@ -3445,7 +3445,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return (dot1 - dot) >= -maxDiff;
     }
 
-    @PowerNukkitXDifference(since = "1.19.70-r1", info = "Use new packet id system.")
+    @
     public void handleDataPacket(DataPacket packet) {
         if (!connected) {
             return;

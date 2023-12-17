@@ -99,7 +99,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         ent.applyEntityCollision(this);
     }
 
-    @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
+    
     @Override
     public boolean attack(EntityDamageEvent source) {
         if (this.noDamageTicks > 0 && source.getCause() != DamageCause.SUICIDE) {//ignore it if the cause is SUICIDE
@@ -453,7 +453,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
 
-    @PowerNukkitXDifference(since = "1.19.21-r4", info = "add EntityDamageEvent param to help cal the armor damage")
+    @
     protected void onBlock(Entity entity, EntityDamageEvent event, boolean animate) {
         if (animate) {
             getLevel().addSound(this, Sound.ITEM_SHIELD_BLOCK);

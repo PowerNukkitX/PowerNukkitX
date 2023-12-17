@@ -1,7 +1,5 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,9 +1,6 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
@@ -78,7 +75,7 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
         return super.onUpdate(currentTick);
     }
 
-    @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
+    
     @Override
     public void activate(int x, int y, int z, boolean flag) {
         level.addSound(this, Sound.FIRE_IGNITE);
@@ -145,7 +142,7 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
         super.namedTag.putInt("TNTFuse", this.fuse);
     }
 
-    @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
+    
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         boolean interact = super.onInteract(player, item, clickedPos);

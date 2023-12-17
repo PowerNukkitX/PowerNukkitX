@@ -1,8 +1,5 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 /**
  * 标注此物品栏拥有者的物品栏作为合成用途，常见于机器，如熔炉等。
  * <br>

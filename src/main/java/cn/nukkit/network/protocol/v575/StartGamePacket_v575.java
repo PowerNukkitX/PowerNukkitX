@@ -1,8 +1,6 @@
 package cn.nukkit.network.protocol.v575;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.GameRules;

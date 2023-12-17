@@ -1,8 +1,6 @@
 package cn.nukkit.entity.ai.behaviorgroup;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.BehaviorState;
 import cn.nukkit.entity.ai.behavior.IBehavior;

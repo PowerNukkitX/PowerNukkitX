@@ -1,8 +1,5 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 /**
  * 实体可剪切<p/>
  * 例如羊就可被剪羊毛<p/>

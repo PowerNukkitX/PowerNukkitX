@@ -1,7 +1,5 @@
 package cn.nukkit.level.generator.populator.impl.structure.utils.loot;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.nbt.NBTIO;

@@ -1,10 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BlockProperty;
@@ -165,7 +161,7 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
         return getBooleanValue(UPSIDE_DOWN);
     }
 
-    @PowerNukkitDifference(info = "Was returning the wrong face", since = "1.3.0.0-PN")
+    
     @Override
     public BlockFace getBlockFace() {
         return getPropertyValue(STAIRS_DIRECTION);

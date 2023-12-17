@@ -1,8 +1,6 @@
 package cn.nukkit.scoreboard.manager;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.displayer.IScoreboardViewer;

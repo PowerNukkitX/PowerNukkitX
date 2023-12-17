@@ -25,7 +25,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
  * @author CreeperFace
  * @since 27. 11. 2016
  */
-@PowerNukkitDifference(info = "Implements RedstoneComponent and uses methods from it.", since = "1.4.0.0-PN")
+
 public abstract class BlockButton extends BlockFlowable implements RedstoneComponent, Faceable {
 
 
@@ -75,8 +75,8 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         return false;
     }
 
-    @PowerNukkitDifference(info = "Allow to be placed on top of the walls", since = "1.3.0.0-PN")
-    @PowerNukkitDifference(info = "Now, can be placed on solid blocks", since = "1.4.0.0-PN")
+    
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!BlockLever.isSupportValid(target, face)) {
@@ -116,7 +116,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         return true;
     }
 
-    @PowerNukkitDifference(info = "Now, can be placed on solid blocks", since = "1.4.0.0-PN")
+    
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -205,7 +205,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         return Item.get(this.getItemId());
     }
 
-    @PowerNukkitDifference(info = "Was returning the wrong face", since = "1.3.0.0-PN")
+    
     @Override
     public BlockFace getBlockFace() {
         return getFacing();

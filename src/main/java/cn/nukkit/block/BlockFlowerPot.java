@@ -1,10 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityFlowerPot;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -25,7 +21,7 @@ import static cn.nukkit.block.BlockLeaves.UPDATE;
 /**
  * @author Nukkit Project Team
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
+
 public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<BlockEntityFlowerPot> {
 
 
@@ -86,7 +82,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         return 0;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -98,7 +94,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         return 0;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
+
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!BlockLever.isSupportValid(down(), BlockFace.UP)) {

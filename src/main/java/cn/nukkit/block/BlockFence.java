@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.item.ItemTool;
@@ -20,7 +17,7 @@ import static cn.nukkit.math.VectorMath.calculateFace;
  * @author xtypr
  * @since 2015/12/7
  */
-@PowerNukkitDifference(info = "Implements BlockConnectable only on PowerNukkit", since = "1.3.0.0-PN")
+
 public class BlockFence extends BlockTransparentMeta implements BlockConnectable {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(WoodType.PROPERTY);

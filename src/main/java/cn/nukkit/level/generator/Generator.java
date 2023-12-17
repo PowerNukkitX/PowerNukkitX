@@ -1,9 +1,6 @@
 package cn.nukkit.level.generator;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.DimensionData;
@@ -102,7 +99,7 @@ public abstract class Generator implements BlockID {
      *
      * @return {@link ChunkManager}
      */
-    @PowerNukkitXDifference
+    @
 
     public ChunkManager getChunkManager() {
         return chunkManager;

@@ -1,8 +1,5 @@
 package cn.nukkit.scoreboard.data;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 /**
  * 追踪对象类型 <br>
  * 除了INVALID，其他枚举都有对应{@link cn.nukkit.scoreboard.scorer.IScorer}的实现类 <br>

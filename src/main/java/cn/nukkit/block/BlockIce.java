@@ -1,8 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
@@ -47,7 +44,7 @@ public class BlockIce extends BlockTransparent {
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will not create water when it is above air")
+
     @Override
     public boolean onBreak(Item item) {
         if (level.getDimension() == Level.DIMENSION_NETHER 

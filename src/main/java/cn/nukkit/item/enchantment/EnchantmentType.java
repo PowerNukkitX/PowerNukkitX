@@ -1,6 +1,5 @@
 package cn.nukkit.item.enchantment;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockCarvedPumpkin;
 import cn.nukkit.item.*;
 import org.jetbrains.annotations.NotNull;

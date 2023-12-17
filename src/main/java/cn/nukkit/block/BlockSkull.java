@@ -5,9 +5,6 @@ package cn.nukkit.block;
  */
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySkull;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -30,8 +27,8 @@ import javax.annotation.Nullable;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
-@PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
+
+
 public class BlockSkull extends BlockTransparentMeta implements RedstoneComponent, BlockEntityHolder<BlockEntitySkull>, Faceable {
 
     @Deprecated
@@ -148,7 +145,7 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
     }
 
     @Override
-    @PowerNukkitDifference(info = "Using new method for checking if powered", since = "1.4.0.0-PN")
+    
     public int onUpdate(int type) {
         if ((type != Level.BLOCK_UPDATE_REDSTONE && type != Level.BLOCK_UPDATE_NORMAL) || !level.getServer().isRedstoneEnabled()) {
             return 0;

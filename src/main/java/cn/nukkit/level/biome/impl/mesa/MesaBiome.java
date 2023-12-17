@@ -1,7 +1,5 @@
 package cn.nukkit.level.biome.impl.mesa;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockSand;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.biome.type.CoveredBiome;

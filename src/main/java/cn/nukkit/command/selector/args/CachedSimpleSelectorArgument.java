@@ -1,7 +1,5 @@
 package cn.nukkit.command.selector.args;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.SelectorType;

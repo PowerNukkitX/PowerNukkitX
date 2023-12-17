@@ -2,9 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
@@ -26,12 +23,11 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
-import static cn.nukkit.math.CompassRoseDirection.*;
 
 /**
  * @author Nukkit Project Team
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
+
 @Log4j2
 public class BlockSignPost extends BlockSignBase implements BlockEntityHolder<BlockEntitySign> {
     @Deprecated(since = "1.20.0-r2", forRemoval = true)

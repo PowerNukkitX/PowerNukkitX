@@ -2,8 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;

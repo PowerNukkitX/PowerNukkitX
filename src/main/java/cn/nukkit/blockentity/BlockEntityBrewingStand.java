@@ -2,9 +2,6 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBrewingStand;
 import cn.nukkit.block.BlockID;
@@ -189,8 +186,8 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         return ingredients.contains(ingredient.getId());
     }
 
-    @PowerNukkitDifference(info = "Fixed a lot of issues involving the brewing processes", since = "1.3.1.2-PN")
-    @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
+    
+    
     @Override
     public boolean onUpdate() {
         if (closed) {
@@ -351,7 +348,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         }
     }
 
-    @PowerNukkitDifference(info = "Will stop the processing if there are no other matching recipe", since = "1.3.1.2-PN")
+    
     public void updateBlock() {
         Block block = this.getLevelBlock();
 

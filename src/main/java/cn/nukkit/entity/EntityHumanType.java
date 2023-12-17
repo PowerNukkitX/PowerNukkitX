@@ -1,9 +1,6 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -161,7 +158,7 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
     }
 
 
-    @PowerNukkitXDifference(since = "1.19.21-r4", info = "add EntityDamageEvent param to help cal the armor damage")
+    @
     protected Item damageArmor(Item armor, Entity damager, EntityDamageEvent event) {
         if (armor.hasEnchantments()) {
             if (damager != null) {

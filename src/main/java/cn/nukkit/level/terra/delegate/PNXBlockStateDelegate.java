@@ -1,9 +1,6 @@
 package cn.nukkit.level.terra.delegate;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.jemapping.JeMapping;
 import com.dfsek.terra.api.block.BlockType;
 import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.block.state.properties.Property;

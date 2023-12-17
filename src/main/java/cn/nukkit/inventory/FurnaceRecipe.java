@@ -1,6 +1,5 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.item.Item;
 
 import javax.annotation.Nullable;

@@ -1,7 +1,5 @@
 package cn.nukkit.plugin;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

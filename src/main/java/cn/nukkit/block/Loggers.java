@@ -18,8 +18,6 @@
 
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

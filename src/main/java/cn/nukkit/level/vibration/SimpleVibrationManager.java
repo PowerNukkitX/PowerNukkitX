@@ -1,8 +1,6 @@
 package cn.nukkit.level.vibration;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.level.VibrationArriveEvent;

@@ -1,8 +1,5 @@
 package cn.nukkit.entity.weather;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.*;
 import cn.nukkit.blockproperty.value.OxidizationLevel;
 import cn.nukkit.entity.Entity;
@@ -102,7 +99,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
         return super.attack(source);
     }
 
-    @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
+
     @Override
     public boolean onUpdate(int currentTick) {
         if (this.closed) {

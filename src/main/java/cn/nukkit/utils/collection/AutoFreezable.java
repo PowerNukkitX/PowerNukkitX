@@ -1,8 +1,5 @@
 package cn.nukkit.utils.collection;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 
 public interface AutoFreezable {
     FreezeStatus getFreezeStatus();

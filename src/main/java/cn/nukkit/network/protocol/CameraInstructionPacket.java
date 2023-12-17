@@ -1,7 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.camera.data.Ease;
 import cn.nukkit.camera.data.Time;
 import cn.nukkit.camera.instruction.CameraInstruction;

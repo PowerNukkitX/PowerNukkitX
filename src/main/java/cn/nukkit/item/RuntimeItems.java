@@ -1,8 +1,6 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.experimental.UtilityClass;

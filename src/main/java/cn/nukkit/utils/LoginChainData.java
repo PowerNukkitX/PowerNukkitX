@@ -1,6 +1,5 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.api.Since;
 import com.google.gson.JsonObject;
 
 import java.util.UUID;

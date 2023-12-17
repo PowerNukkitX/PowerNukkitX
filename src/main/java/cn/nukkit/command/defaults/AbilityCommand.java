@@ -2,8 +2,6 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;

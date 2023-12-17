@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityDispenser;
 import cn.nukkit.blockentity.BlockEntityEjectable;
@@ -42,8 +39,8 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
  * @author CreeperFace
  * @since 15.4.2017
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
-@PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
+
+
 public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityEjectable> {
 
 
@@ -158,7 +155,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
         return true;
     }
 
-    @PowerNukkitDifference(info = "BlockData is implemented.", since = "1.4.0.0-PN")
+
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (player != null) {
@@ -193,7 +190,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 
-    @PowerNukkitDifference(info = "Disables the triggered state, when the block is no longer powered + use #isGettingPower() method.", since = "1.4.0.0-PN")
+
     @Override
     public int onUpdate(int type) {
         if (!this.level.getServer().isRedstoneEnabled()) {

@@ -1,7 +1,5 @@
 package cn.nukkit.level.generator.populator.impl.structure.village.loot;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.generator.populator.impl.structure.utils.loot.RandomizableContainer;

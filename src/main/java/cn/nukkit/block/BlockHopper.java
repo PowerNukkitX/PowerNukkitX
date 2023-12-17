@@ -35,8 +35,8 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.TOGGLE;
 /**
  * @author CreeperFace
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
-@PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
+
+
 public class BlockHopper extends BlockTransparentMeta implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityHopper> {
 
 
@@ -97,7 +97,7 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
         return 1;
     }
 
-    @PowerNukkitDifference(info = "Using new method for checking if powered", since = "1.4.0.0-PN")
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         BlockFace facing = face.getOpposite();

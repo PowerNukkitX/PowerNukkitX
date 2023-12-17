@@ -1,7 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.types.AbilityType;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import lombok.ToString;

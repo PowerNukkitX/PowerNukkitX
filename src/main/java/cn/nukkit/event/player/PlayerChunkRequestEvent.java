@@ -1,10 +1,10 @@
 package cn.nukkit.event.player;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXDifference;
+import cn.nukkit.api.
 import cn.nukkit.event.HandlerList;
 
-@PowerNukkitXDifference(info = "PlayerChunkRequestEvent can't be cancelled")
+@
 public class PlayerChunkRequestEvent extends PlayerEvent {
     private static final HandlerList handlers = new HandlerList();
 

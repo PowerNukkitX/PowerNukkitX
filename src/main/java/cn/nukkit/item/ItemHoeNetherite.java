@@ -1,8 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-
 
 public class ItemHoeNetherite extends ItemTool {
 

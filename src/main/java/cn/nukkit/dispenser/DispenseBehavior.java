@@ -1,6 +1,5 @@
 package cn.nukkit.dispenser;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;

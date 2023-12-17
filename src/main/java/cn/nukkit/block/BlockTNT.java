@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.entity.Entity;
@@ -30,7 +27,7 @@ import javax.annotation.Nullable;
  * @author xtypr
  * @since 2015/12/8
  */
-@PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
+
 public class BlockTNT extends BlockSolid implements RedstoneComponent {
 
 
@@ -95,7 +92,7 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
         prime(fuse, null);
     }
 
-    @PowerNukkitDifference(info = "TNT Sound handled by EntityPrimedTNT", since = "1.4.0.0-PN")
+
     public void prime(int fuse, Entity source) {
         this.getLevel().setBlock(this, Block.get(BlockID.AIR), true);
         double mot = (new NukkitRandom()).nextSignedFloat() * Math.PI * 2;
@@ -124,7 +121,7 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
     }
 
     @Override
-    @PowerNukkitDifference(info = "Using new method for checking if powered", since = "1.4.0.0-PN")
+
     public int onUpdate(int type) {
         if (!this.level.getServer().isRedstoneEnabled()) {
             return 0;

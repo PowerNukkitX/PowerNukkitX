@@ -1,8 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.StoneSlab2Type;
 import cn.nukkit.item.ItemTool;
@@ -12,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
  * @author CreeperFace
  * @since 26. 11. 2016
  */
-@PowerNukkitDifference(info = "Extends BlockDoubleSlabBase only in PowerNukkit")
+
 public class BlockDoubleSlabRedSandstone extends BlockDoubleSlabBase {
 
     public BlockDoubleSlabRedSandstone() {

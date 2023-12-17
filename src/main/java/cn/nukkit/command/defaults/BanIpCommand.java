@@ -1,7 +1,6 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
@@ -43,7 +42,7 @@ public class BanIpCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed resource leak")
+    
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         String reason = "";

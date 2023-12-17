@@ -1,10 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
@@ -30,7 +26,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.REDSTONE_SIGNAL;
  * @author Snake1999
  * @since 2016/1/11
  */
-@PowerNukkitDifference(info = "Implements RedstoneComponent and uses methods from it.", since = "1.4.0.0-PN")
+
 public abstract class BlockPressurePlateBase extends BlockFlowable implements RedstoneComponent {
 
 
@@ -114,8 +110,8 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
         return BlockLever.isSupportValid(block, blockFace) || block instanceof BlockFence;
     }
 
-    @PowerNukkitDifference(info = "Allow to be placed on top of the walls", since = "1.3.0.0-PN")
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
+    
+    
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -133,8 +129,8 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
         return 0;
     }
 
-    @PowerNukkitDifference(info = "Allow to be placed on top of the walls", since = "1.3.0.0-PN")
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
+    
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!isSupportValid(down(), BlockFace.UP)) {

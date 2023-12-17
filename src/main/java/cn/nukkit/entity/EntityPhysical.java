@@ -1,8 +1,6 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockLava;
 import cn.nukkit.block.BlockLiquid;

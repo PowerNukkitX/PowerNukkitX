@@ -1,7 +1,5 @@
 package cn.nukkit.level.biome.impl.plains;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.level.biome.type.GrassyBiome;
 
 /**

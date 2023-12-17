@@ -1,6 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.block.BlockMangroveSignPost;
 
 public class ItemMangroveSign extends ItemSign {

@@ -1,8 +1,5 @@
 package cn.nukkit.level.generator.populator.impl.structure.utils.template;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 //todo: 替换为核心内部实现
 
 

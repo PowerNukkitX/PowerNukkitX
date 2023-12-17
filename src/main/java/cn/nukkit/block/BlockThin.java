@@ -1,8 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -15,7 +12,7 @@ import static cn.nukkit.math.VectorMath.calculateFace;
  * @since 2015/12/6
  * @apiNote Implements BlockConnectable only in PowerNukkit
  */
-@PowerNukkitDifference(info = "Made it implement BlockConnectable")
+
 public abstract class BlockThin extends BlockTransparent implements BlockConnectable {
 
     protected BlockThin() {
@@ -64,7 +61,7 @@ public abstract class BlockThin extends BlockTransparent implements BlockConnect
         );
     }
 
-    @PowerNukkitDifference(info = "Fixed connection logic for BE 1.16.0", since = "1.3.0.0-PN")
+    
     @Override
     public boolean canConnect(Block block) {
         switch (block.getId()) {

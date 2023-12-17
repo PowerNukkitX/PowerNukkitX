@@ -1,7 +1,5 @@
 package cn.nukkit.command.data;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.tree.node.ChainedCommandNode;
 import cn.nukkit.command.tree.node.ItemNode;
 

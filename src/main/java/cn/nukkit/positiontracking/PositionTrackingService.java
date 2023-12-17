@@ -2,8 +2,6 @@ package cn.nukkit.positiontracking;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemCompassLodestone;

@@ -630,7 +630,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 1.0 + (0.2 * hasteLoreLevel);
     }
 
-    @PowerNukkitDifference(info = "Special condition for the leaves", since = "1.4.0.0-PN")
+
     private static int toolType0(Item item, String blockId) {
         if ((blockId.equals(LEAVES) && item.isHoe()) || (blockId.equals(LEAVES2) && item.isHoe()))
             return ItemTool.TYPE_SHEARS;
@@ -643,7 +643,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return ItemTool.TYPE_NONE;
     }
 
-    @PowerNukkitDifference(info = "Special condition for the leaves and cobweb", since = "1.4.0.0-PN")
+
     private static boolean correctTool0(int blockToolType, Item item, String blockId) {
         if ((blockId.equals(LEAVES) && item.isHoe()) || (blockId.equals(LEAVES2) && item.isHoe())) {
             return (blockToolType == ItemTool.TYPE_SHEARS && item.isHoe());
@@ -1369,7 +1369,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      */
 
 
-    @PowerNukkitDifference(info = "Used so often, why not create own method here?", since = "1.4.0.0-PN")
+
     public boolean isGettingPower() {
         if (!this.level.getServer().isRedstoneEnabled()) return false;
 

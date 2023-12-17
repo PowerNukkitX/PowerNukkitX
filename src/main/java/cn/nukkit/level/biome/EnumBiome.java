@@ -1,8 +1,5 @@
 package cn.nukkit.level.biome;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.Since;
 import cn.nukkit.level.biome.impl.beach.BeachBiome;
 import cn.nukkit.level.biome.impl.beach.ColdBeachBiome;
 import cn.nukkit.level.biome.impl.cave.DeepDarkBiome;
@@ -11,7 +8,6 @@ import cn.nukkit.level.biome.impl.cave.LushCavesBiome;
 import cn.nukkit.level.biome.impl.desert.DesertBiome;
 import cn.nukkit.level.biome.impl.desert.DesertHillsBiome;
 import cn.nukkit.level.biome.impl.desert.DesertMBiome;
-import cn.nukkit.level.biome.impl.end.TheEndBiome;
 import cn.nukkit.level.biome.impl.extremehills.*;
 import cn.nukkit.level.biome.impl.forest.FlowerForestBiome;
 import cn.nukkit.level.biome.impl.forest.ForestBiome;
@@ -48,7 +44,7 @@ import cn.nukkit.level.biome.impl.taiga.*;
  * Also just looks cleaner than listing everything as static final in {@link Biome}
  * </p>
  */
-@PowerNukkitXDifference(since = "1.19.21-r2", info = "update biomes id")
+@
 public enum EnumBiome {
     OCEAN(0, new OceanBiome()),
     PLAINS(1, new PlainsBiome()),

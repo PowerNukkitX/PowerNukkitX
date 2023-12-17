@@ -1,7 +1,5 @@
 package cn.nukkit.lang;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.plugin.PluginBase;
 import lombok.extern.log4j.Log4j2;
 

@@ -1,8 +1,5 @@
 package cn.nukkit.network.protocol.types;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 import java.util.Arrays;
 import java.util.List;
 

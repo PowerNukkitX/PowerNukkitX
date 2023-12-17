@@ -1,7 +1,5 @@
 package cn.nukkit.level.biome.impl.desert;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.level.biome.type.SandyBiome;
 import cn.nukkit.level.generator.populator.impl.PopulatorCactus;
 import cn.nukkit.level.generator.populator.impl.PopulatorDeadBush;

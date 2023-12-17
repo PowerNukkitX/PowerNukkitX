@@ -1,8 +1,6 @@
 package cn.nukkit.item.enchantment.protection;
 
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemElytra;
 import cn.nukkit.item.enchantment.Enchantment;

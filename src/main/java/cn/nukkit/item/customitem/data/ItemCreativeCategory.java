@@ -1,8 +1,5 @@
 package cn.nukkit.item.customitem.data;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 /**
  * 控制自定义物品在创造栏的大分类,例如建材栏,材料栏
  * <br>可选值:1 CONSTRUCTOR 2 NATURE 3 EQUIPMENT 4 ITEMS 5 NONE

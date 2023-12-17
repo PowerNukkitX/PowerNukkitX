@@ -2,10 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCauldron;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
@@ -38,7 +34,7 @@ import java.util.Map;
 /**
  * @author CreeperFace (Nukkit Project)
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
+
 public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<BlockEntityCauldron> {
 
 
@@ -599,7 +595,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
         return false;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will return true")
+    
     @Override
     public boolean isTransparent() {
         return true;

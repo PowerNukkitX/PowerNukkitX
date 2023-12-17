@@ -1,7 +1,5 @@
 package cn.nukkit.item.customitem.data;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3f;
 
 

@@ -1,8 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.level.Level;
@@ -16,7 +13,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
  * @author Pub4Game
  * @since 26.12.2015
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
+
 public class BlockWallSign extends BlockSignPost {
 
 

@@ -1,8 +1,5 @@
 package cn.nukkit.level.biome.type;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-
 /**
  * @author DaPorkchop_ (Nukkit Project)
  */

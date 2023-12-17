@@ -1,8 +1,5 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
@@ -135,7 +132,7 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
         return totalPages;
     }
 
-    @PowerNukkitDifference(info = "Use RedstoneComponent for redstone update.", since = "1.4.0.0-PN")
+    
     private void updateTotalPages() {
         Item book = getBook();
         if (book.getId() == Item.AIR || !book.hasCompoundTag()) {

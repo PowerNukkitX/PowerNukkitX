@@ -1,8 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.math.BlockVector3;
 import lombok.ToString;
 
@@ -34,7 +31,7 @@ public class CommandBlockUpdatePacket extends DataPacket {
     }
 
     @Override
-    @PowerNukkitDifference
+
     public void decode() {
         this.isBlock = this.getBoolean();
         if (this.isBlock) {
@@ -57,7 +54,7 @@ public class CommandBlockUpdatePacket extends DataPacket {
     }
 
     @Override
-    @PowerNukkitDifference
+
     public void encode() {
         this.reset();
         this.putBoolean(this.isBlock);

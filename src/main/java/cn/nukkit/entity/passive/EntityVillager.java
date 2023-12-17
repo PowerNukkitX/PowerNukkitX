@@ -1,10 +1,6 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityAgeable;
 import cn.nukkit.entity.EntityIntelligent;
@@ -391,7 +387,7 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
         }
     }
 
-    @PowerNukkitXDifference
+    @
     @Override
     public boolean onUpdate(int tick) {
         if (tick % 100 == 0) {

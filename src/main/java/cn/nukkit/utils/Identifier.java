@@ -6,8 +6,6 @@
  */
 package cn.nukkit.utils;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import org.jetbrains.annotations.Nullable;
 
 /**

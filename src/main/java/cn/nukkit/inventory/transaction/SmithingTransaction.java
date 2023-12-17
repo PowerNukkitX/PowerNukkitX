@@ -19,8 +19,6 @@
 package cn.nukkit.inventory.transaction;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.event.inventory.SmithingTableEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.SmithingInventory;

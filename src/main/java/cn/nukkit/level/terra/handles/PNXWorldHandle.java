@@ -1,7 +1,5 @@
 package cn.nukkit.level.terra.handles;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.jemapping.JeBlockState;
 import cn.nukkit.jemapping.JeMapping;

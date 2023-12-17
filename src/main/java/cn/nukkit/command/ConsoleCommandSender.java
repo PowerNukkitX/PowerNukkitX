@@ -1,7 +1,6 @@
 package cn.nukkit.command;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.Since;
 import cn.nukkit.event.server.ConsoleCommandOutputEvent;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TextContainer;

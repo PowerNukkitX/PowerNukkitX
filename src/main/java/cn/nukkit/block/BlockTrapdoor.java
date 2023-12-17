@@ -3,9 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BlockProperty;
@@ -37,7 +34,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
  * @author Pub4Game
  * @since 26.12.2015
  */
-@PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
+
 public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneComponent, Faceable {
     private static final double THICKNESS = 0.1875;
 
@@ -169,7 +166,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
     }
     //</editor-fold>
 
-    @PowerNukkitDifference(info = "The bounding box was fixed", since = "1.3.0.0-PN")
+
     private AxisAlignedBB getRelativeBoundingBox() {
         @SuppressWarnings("deprecation")
         int bigDamage = getSignedBigDamage();
@@ -206,7 +203,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         return this.z + getRelativeBoundingBox().getMaxZ();
     }
 
-    @PowerNukkitDifference(info = "Checking if the door was opened/closed manually and using new powered checks.", since = "1.4.0.0-PN")
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.getServer().isRedstoneEnabled()) {
@@ -245,7 +242,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         return super.onBreak(item);
     }
 
-    @PowerNukkitDifference(info = "Will return false if setBlock fails and the direction is relative to where the player is facing", since = "1.4.0.0-PN")
+
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (face.getAxis().isHorizontal()) {
@@ -272,15 +269,15 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         return toggle(player);
     }
 
-    @PowerNukkitDifference(info = "Just call the #setOpen() method.", since = "1.4.0.0-PN")
+
     public boolean toggle(Player player) {
         if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
             return false;
         return this.setOpen(player, !this.isOpen());
     }
 
-    @PowerNukkitDifference(info = "Returns false if setBlock fails", since = "1.4.0.0-PN")
-    @PowerNukkitDifference(info = "Using direct values, instead of toggling (fixes a redstone bug, that the door won't open). " +
+
+
             "Also adding possibility to detect, whether a player or redstone recently opened/closed the door.", since = "1.4.0.0-PN")
 
     public boolean setOpen(Player player, boolean open) {
@@ -350,7 +347,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         setBooleanValue(UPSIDE_DOWN, top);
     }
 
-    @PowerNukkitDifference(info = "Was returning the wrong face", since = "1.3.0.0-PN")
+
     @Override
     public BlockFace getBlockFace() {
         return getPropertyValue(TRAPDOOR_DIRECTION);

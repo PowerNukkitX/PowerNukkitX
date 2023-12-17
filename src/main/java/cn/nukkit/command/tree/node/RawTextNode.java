@@ -1,7 +1,5 @@
 package cn.nukkit.command.tree.node;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.utils.RawText;
 import cn.nukkit.network.protocol.types.CommandOutputMessage;
 import com.google.gson.JsonSyntaxException;

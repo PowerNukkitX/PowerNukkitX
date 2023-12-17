@@ -1,8 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-
 /**
  * BlockFenceWarped.java was made by using BlockFence.java and BlockFenceNetherBrick.java
  */

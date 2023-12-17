@@ -1,7 +1,5 @@
 package cn.nukkit.level.generator.populator.impl.structure.utils.math;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 
 //todo: 更改为基于BlockProperty的实现

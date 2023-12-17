@@ -1,6 +1,5 @@
 package cn.nukkit.command;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;

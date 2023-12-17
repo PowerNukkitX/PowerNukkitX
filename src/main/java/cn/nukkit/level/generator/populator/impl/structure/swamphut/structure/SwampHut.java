@@ -1,7 +1,5 @@
 package cn.nukkit.level.generator.populator.impl.structure.swamphut.structure;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.level.ChunkManager;

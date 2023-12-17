@@ -127,14 +127,14 @@ public abstract class Food {
 
     public static final Food honey = registerDefaultFood(new FoodHoney(6, 1.2F).addRelative(Item.HONEY_BOTTLE));
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "PowerNukkit uses FoodHoney instead of FoodNormal")
+
 
     public static final Food honey_bottle = honey;
 
 
     public static final Food glow_berries = registerDefaultFood(new FoodNormal(2, 0.4F).addRelative(Item.GLOW_BERRIES));
 
-    @PowerNukkitXDifference
+    @
     //Opened API for plugins
     public static Food registerFood(Food food, Plugin plugin) {
         Objects.requireNonNull(food);

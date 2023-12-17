@@ -1,8 +1,6 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.network.Network;
 import cn.powernukkitx.libdeflate.Libdeflate;
@@ -22,7 +20,7 @@ public abstract class Zlib {
         provider = providers[2];
     }
 
-    @PowerNukkitXDifference(info = "Add the LibDeflate Provider", since = "1.19.40-r3")
+    @
     public static void setProvider(int providerIndex) {
         var lang = Server.getInstance() == null ? new BaseLang("eng") : Server.getInstance().getLanguage();
         switch (providerIndex) {
@@ -65,17 +63,17 @@ public abstract class Zlib {
         log.info(lang.tr("nukkit.zlib.selected") + ": {} ({})", providerIndex, provider.getClass().getCanonicalName());
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Throws IOException instead of Exception")
+    
     public static byte[] deflate(byte[] data) throws IOException {
         return deflate(data, Deflater.DEFAULT_COMPRESSION);
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Throws IOException instead of Exception")
+    
     public static byte[] deflate(byte[] data, int level) throws IOException {
         return provider.deflate(data, level);
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Throws IOException instead of Exception")
+    
     public static byte[] deflate(byte[][] data, int level) throws IOException {
         return provider.deflate(data, level);
     }

@@ -1,8 +1,6 @@
 package cn.nukkit.inventory.transaction.action;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.passive.EntityVillager;
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;

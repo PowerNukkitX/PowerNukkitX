@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
@@ -17,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author CreeperFace
  */
-@PowerNukkitDifference(info = "Implements RedstoneComponent and uses methods from it.", since = "1.4.0.0-PN")
+
 public abstract class BlockRedstoneDiode extends BlockFlowable implements RedstoneComponent, Faceable {
 
     protected boolean isPowered = false;
@@ -52,8 +50,8 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
         return true;
     }
 
-    @PowerNukkitDifference(info = "Allow to be placed on top of the walls", since = "1.3.0.0-PN")
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
+    
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!isSupportValid(down())) {
@@ -78,8 +76,8 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
         return BlockLever.isSupportValid(support, BlockFace.UP) || support instanceof BlockCauldron;
     }
 
-    @PowerNukkitDifference(info = "Allow to be placed on top of the walls", since = "1.3.0.0-PN")
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
+    
+    
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {

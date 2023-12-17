@@ -1,9 +1,6 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.InventoryHolder;

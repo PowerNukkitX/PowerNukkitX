@@ -1,9 +1,5 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.function.Consumer;

@@ -547,7 +547,7 @@ public class EntityBoat extends EntityVehicle {
         return false;
     }
 
-    @PowerNukkitDifference(info = "Fixes a dupe issue when attacking too quickly", since = "1.3.1.2-PN")
+    
     @Override
     public void kill() {
         if (!isAlive()) {

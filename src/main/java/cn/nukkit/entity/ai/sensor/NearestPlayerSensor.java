@@ -1,8 +1,6 @@
 package cn.nukkit.entity.ai.sensor;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import lombok.Getter;

@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
@@ -18,7 +15,7 @@ import javax.annotation.Nullable;
  * @author Pub4Game
  * @since 2015/12/11
  */
-@PowerNukkitDifference(info = "Implements RedstoneComponent and uses methods from it.", since = "1.4.0.0-PN")
+
 public class BlockRedstone extends BlockSolidMeta implements RedstoneComponent {
 
     public BlockRedstone() {
@@ -68,7 +65,7 @@ public class BlockRedstone extends BlockSolidMeta implements RedstoneComponent {
     }
 
     @Override
-    @PowerNukkitDifference(info = "Update around redstone", since = "1.4.0.0-PN")
+    
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (super.place(item, block, target, face, fx, fy, fz, player)) {
             updateAroundRedstone();
@@ -79,7 +76,7 @@ public class BlockRedstone extends BlockSolidMeta implements RedstoneComponent {
     }
 
     @Override
-    @PowerNukkitDifference(info = "Update around redstone", since = "1.4.0.0-PN")
+    
     public boolean onBreak(Item item) {
         if (!super.onBreak(item)) {
             return false;

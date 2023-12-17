@@ -1,8 +1,6 @@
 package cn.nukkit.utils.collection;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;

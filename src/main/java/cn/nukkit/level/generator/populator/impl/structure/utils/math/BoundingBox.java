@@ -1,7 +1,5 @@
 package cn.nukkit.level.generator.populator.impl.structure.utils.math;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.IntArrayTag;

@@ -1,7 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.utils.StringUtils;
 
 /**
@@ -9,7 +7,7 @@ import cn.nukkit.utils.StringUtils;
  * @since 2021-06-12
  */
 
-@PowerNukkitXDifference(info = "Change to interface,Remove CustomCompound from StringItem")
+@
 public interface StringItem {
     String getNamespaceId();
 

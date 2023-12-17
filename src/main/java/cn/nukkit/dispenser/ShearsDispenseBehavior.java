@@ -1,8 +1,5 @@
 package cn.nukkit.dispenser;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.entity.EntityShearable;
 import cn.nukkit.item.Item;

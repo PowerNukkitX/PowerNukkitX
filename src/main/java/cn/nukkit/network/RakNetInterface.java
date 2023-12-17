@@ -2,9 +2,6 @@ package cn.nukkit.network;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.Since;
 import cn.nukkit.event.player.PlayerCreationEvent;
 import cn.nukkit.event.server.QueryRegenerateEvent;
 import cn.nukkit.network.protocol.DataPacket;
@@ -156,7 +153,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
         this.raknet.send(socketAddress, payload);
     }
 
-    @PowerNukkitXDifference(since = "1.20.50-r1", info = "now Minecraft version in query same as in the query information")
+    @
     @Override
     public void setName(String name) {
         QueryRegenerateEvent info = this.server.getQueryInformation();

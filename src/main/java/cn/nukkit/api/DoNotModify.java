@@ -7,8 +7,6 @@ import java.lang.annotation.*;
  * <p/>
  * DoNotModify注解用于标明方法的返回值，变量等不应该被修改
  */
-
-
 @Documented
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})

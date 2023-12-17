@@ -1,6 +1,5 @@
 package cn.nukkit.level.format;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.Level;

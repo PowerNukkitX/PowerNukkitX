@@ -1,10 +1,6 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.event.inventory.FurnaceBurnEvent;
@@ -148,7 +144,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         }
     }
 
-    @PowerNukkitXDifference(info = "Drop xp when break.", since = "1.19.50-r3")
+    @
     @Override
     public void onBreak() {
         for (Item content : inventory.getContents().values()) {

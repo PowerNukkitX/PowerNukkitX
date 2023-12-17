@@ -1,9 +1,6 @@
 package cn.nukkit.item.enchantment.bow;
 
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.item.ItemBow;

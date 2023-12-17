@@ -1,7 +1,5 @@
 package cn.nukkit.scoreboard.storage;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;
 

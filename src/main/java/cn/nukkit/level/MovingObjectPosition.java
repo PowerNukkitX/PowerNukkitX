@@ -1,9 +1,6 @@
 package cn.nukkit.level;
 
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -48,7 +45,7 @@ public class MovingObjectPosition {
         return objectPosition;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed: sideHit not being filled")
+    
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic number in side param", replaceWith = "fromBlock(int,int,int,BlockFace,Vector3)")
     public static MovingObjectPosition fromBlock(int x, int y, int z, int side, Vector3 hitVector) {

@@ -2,7 +2,6 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.event.entity.EntityShootBowEvent;
@@ -47,7 +46,7 @@ public class ItemTrident extends ItemTool {
         return true;
     }
 
-    @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
+
     @Override
     @SuppressWarnings("java:S3516")
     public boolean onRelease(Player player, int ticksUsed) {

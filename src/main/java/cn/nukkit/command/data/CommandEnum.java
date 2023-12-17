@@ -1,8 +1,6 @@
 package cn.nukkit.command.data;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.camera.data.CameraPreset;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.network.protocol.UpdateSoftEnumPacket;

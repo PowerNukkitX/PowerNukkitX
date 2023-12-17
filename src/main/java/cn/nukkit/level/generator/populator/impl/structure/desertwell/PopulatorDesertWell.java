@@ -1,7 +1,5 @@
 package cn.nukkit.level.generator.populator.impl.structure.desertwell;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockSlabStone;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.EnumBiome;

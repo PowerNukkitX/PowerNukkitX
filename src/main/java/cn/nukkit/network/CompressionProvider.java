@@ -1,7 +1,5 @@
 package cn.nukkit.network;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.SnappyCompression;

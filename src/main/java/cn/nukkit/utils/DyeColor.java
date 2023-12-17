@@ -1,8 +1,5 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.math.MathHelper;
 
 import java.util.Arrays;
@@ -125,7 +122,7 @@ public enum DyeColor {
         }
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "When overflowed, instead of wrapping, the meta will be clamped, accepts the new dye metas")
+    
     public static DyeColor getByDyeData(int dyeColorMeta) {
         return BY_DYE_ITEM_DATA[MathHelper.clamp(dyeColorMeta, 0, BY_DYE_ITEM_DATA.length - 1)];
     }

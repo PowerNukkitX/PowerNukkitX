@@ -1,7 +1,5 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.item.Item;

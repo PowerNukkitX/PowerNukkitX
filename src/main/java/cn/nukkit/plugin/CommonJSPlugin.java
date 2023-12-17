@@ -2,7 +2,6 @@ package cn.nukkit.plugin;
 
 import cn.nukkit.Nukkit;
 import cn.nukkit.Server;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.event.Listener;

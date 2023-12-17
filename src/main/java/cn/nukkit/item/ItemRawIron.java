@@ -1,7 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.api.PowerNukkitOnly;
-
 /**
  * @author joserobjr
  * @since 2021-06-12

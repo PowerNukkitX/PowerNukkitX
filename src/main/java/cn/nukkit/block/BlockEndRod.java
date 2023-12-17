@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
@@ -115,7 +112,7 @@ public class BlockEndRod extends BlockTransparentMeta implements Faceable {
         return new ItemBlock(this, 0);
     }
 
-    @PowerNukkitDifference(info = "Fixed the direction", since = "1.3.0.0-PN")
+
     @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromIndex(this.getDamage() & 0x07);

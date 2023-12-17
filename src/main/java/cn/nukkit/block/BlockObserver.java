@@ -2,10 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BlockProperty;
@@ -28,7 +24,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
  * @author Leonidius20, joserobjr
  * @since 18.08.18
  */
-@PowerNukkitDifference(info = "Implements RedstoneComponent and uses methods from it.", since = "1.4.0.0-PN")
+
 public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, Faceable {
 
 
@@ -88,25 +84,25 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
         return true;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implemented")
+
     @Override
     public boolean isPowerSource() {
         return true;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implemented")
+
     @Override
     public int getStrongPower(BlockFace side) {
         return isPowered() && side == getBlockFace() ? 15 : 0;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implemented")
+
     @Override
     public int getWeakPower(BlockFace face) {
         return getStrongPower(face);
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implemented")
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED || type == Level.BLOCK_UPDATE_MOVED) {

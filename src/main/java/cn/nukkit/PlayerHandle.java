@@ -573,22 +573,22 @@ public final class PlayerHandle {
         player.lastBlockAction = actionData;
     }
 
-    @PowerNukkitXDifference(since = "1.19.60-r1", info = "Auto-break custom blocks if client doesn't send the break data-pack.")
+    @
     public void onBlockBreakContinue(Vector3 pos, BlockFace face) {
         player.onBlockBreakContinue(pos, face);
     }
 
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    @
     public void onBlockBreakStart(Vector3 pos, BlockFace face) {
         player.onBlockBreakStart(pos, face);
     }
 
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    @
     public void onBlockBreakAbort(Vector3 pos, BlockFace face) {
         player.onBlockBreakAbort(pos, face);
     }
 
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    @
     public void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
         player.onBlockBreakComplete(blockPos, face);
     }

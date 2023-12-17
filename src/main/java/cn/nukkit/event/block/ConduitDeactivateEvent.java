@@ -1,6 +1,5 @@
 package cn.nukkit.event.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.HandlerList;
 

@@ -1,7 +1,5 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.BarrelInventory;
 import cn.nukkit.inventory.ContainerInventory;

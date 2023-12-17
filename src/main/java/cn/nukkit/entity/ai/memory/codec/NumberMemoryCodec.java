@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.memory.codec;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.*;
 
 

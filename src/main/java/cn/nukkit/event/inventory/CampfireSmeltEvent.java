@@ -1,6 +1,5 @@
 package cn.nukkit.event.inventory;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.blockentity.BlockEntityCampfire;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;

@@ -1,8 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 
 public class BlockFenceGateMangrove extends BlockFenceGate{
     public BlockFenceGateMangrove() {

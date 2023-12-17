@@ -1,8 +1,5 @@
 package cn.nukkit.lang;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 
 public enum LangCode {
     en_US("English (United States)"),

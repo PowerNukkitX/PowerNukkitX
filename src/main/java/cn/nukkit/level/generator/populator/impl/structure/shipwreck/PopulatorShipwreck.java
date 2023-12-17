@@ -1,8 +1,6 @@
 package cn.nukkit.level.generator.populator.impl.structure.shipwreck;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;

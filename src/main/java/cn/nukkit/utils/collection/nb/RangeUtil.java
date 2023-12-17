@@ -1,8 +1,5 @@
 package cn.nukkit.utils.collection.nb;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 
 public final class RangeUtil {
     public static int checkPositiveOrZero(int n, String name) {

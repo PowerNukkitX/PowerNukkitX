@@ -1,8 +1,5 @@
 package cn.nukkit.math;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-
 import java.util.function.IntSupplier;
 import java.util.stream.IntStream;
 

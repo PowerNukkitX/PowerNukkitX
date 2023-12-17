@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.level.generator.object.tree.ObjectCrimsonTree;
 import cn.nukkit.math.NukkitRandom;
 

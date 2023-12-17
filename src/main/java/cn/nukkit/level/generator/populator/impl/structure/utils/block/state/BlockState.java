@@ -1,7 +1,5 @@
 package cn.nukkit.level.generator.populator.impl.structure.utils.block.state;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.generator.populator.impl.structure.utils.math.Rotation;

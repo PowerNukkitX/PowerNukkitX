@@ -1,8 +1,6 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.powernukkitx.libdeflate.CompressionType;
 import cn.powernukkitx.libdeflate.LibdeflateCompressor;

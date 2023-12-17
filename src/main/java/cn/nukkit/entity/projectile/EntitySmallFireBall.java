@@ -1,8 +1,5 @@
 package cn.nukkit.entity.projectile;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFire;
 import cn.nukkit.block.BlockID;

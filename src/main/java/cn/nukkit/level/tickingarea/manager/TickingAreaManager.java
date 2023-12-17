@@ -1,7 +1,5 @@
 package cn.nukkit.level.tickingarea.manager;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.tickingarea.TickingArea;
 import cn.nukkit.level.tickingarea.storage.TickingAreaStorage;

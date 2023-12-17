@@ -2,9 +2,6 @@ package cn.nukkit.potion;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -23,7 +20,7 @@ import java.util.Map;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@PowerNukkitDifference(since = "FUTURE", info = "Implements equals() and hashcode() only in PowerNukkit")
+
 @EqualsAndHashCode
 public class Potion implements Cloneable {
     private static final Map<Identifier, Potion> potionsMap = new LinkedHashMap<>();

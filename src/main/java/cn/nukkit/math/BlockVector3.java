@@ -1,8 +1,5 @@
 package cn.nukkit.math;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import lombok.SneakyThrows;
 
 public class BlockVector3 implements Cloneable {

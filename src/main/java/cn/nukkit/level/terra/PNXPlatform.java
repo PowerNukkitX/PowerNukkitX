@@ -1,14 +1,11 @@
 package cn.nukkit.level.terra;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.jemapping.JeMapping;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.terra.delegate.PNXBiomeDelegate;
 import cn.nukkit.level.terra.handles.PNXItemHandle;
 import cn.nukkit.level.terra.handles.PNXWorldHandle;
-import cn.nukkit.utils.Config;
 import com.dfsek.tectonic.api.TypeRegistry;
 import com.dfsek.terra.AbstractPlatform;
 import com.dfsek.terra.api.block.state.BlockState;
@@ -24,8 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.zip.ZipFile;
 

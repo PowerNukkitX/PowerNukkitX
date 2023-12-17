@@ -1,6 +1,5 @@
 package cn.nukkit.event.inventory;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;

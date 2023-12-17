@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Attribute;
 import lombok.ToString;
 

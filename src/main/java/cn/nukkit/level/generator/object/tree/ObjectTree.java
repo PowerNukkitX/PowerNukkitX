@@ -1,8 +1,6 @@
 package cn.nukkit.level.generator.object.tree;
 
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockSapling;
 import cn.nukkit.blockproperty.value.WoodType;

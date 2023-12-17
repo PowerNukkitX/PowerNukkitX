@@ -97,7 +97,7 @@ public abstract class BlockEntity extends Position {
     public boolean closed = false;
     public CompoundTag namedTag;
     @Deprecated @DeprecationDetails(since = "1.3.1.2-PN", reason = "Not necessary and causes slowdown")
-    @PowerNukkitDifference(info = "Not updated anymore", since = "1.3.1.2-PN")
+    
     protected long lastUpdate;
     protected Server server;
 
@@ -133,7 +133,7 @@ public abstract class BlockEntity extends Position {
         this.getLevel().addBlockEntity(this);
     }
 
-    @PowerNukkitXInternal
+    
     public static void init() {
         registerBlockEntity(FURNACE, BlockEntityFurnace.class);
         registerBlockEntity(CHEST, BlockEntityChest.class);

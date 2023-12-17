@@ -1,8 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemRedstone;
@@ -18,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@PowerNukkitDifference(since = "FUTURE", info = "Extends BlockOre instead of BlockSolid only in PowerNukkit")
+
 public class BlockOreRedstone extends BlockOre {
 
     public BlockOreRedstone() {

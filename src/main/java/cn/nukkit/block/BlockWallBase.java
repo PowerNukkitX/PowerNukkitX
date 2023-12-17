@@ -1,10 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockWall.WallConnectionType;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -182,7 +178,7 @@ public abstract class BlockWallBase extends BlockTransparentMeta implements Bloc
         return !getDataStorage().equals(previousMeta);
     }
 
-    @PowerNukkitDifference(info = "Will connect as expected", since = "1.4.0.0-PN")
+    
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -194,7 +190,7 @@ public abstract class BlockWallBase extends BlockTransparentMeta implements Bloc
         return 0;
     }
 
-    @PowerNukkitDifference(info = "Will be placed on the right state", since = "1.4.0.0-PN")
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         autoConfigureState();

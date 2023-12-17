@@ -76,7 +76,7 @@ public class PluginManager {
     }
 
 
-    @PowerNukkitXDifference(info = "rename")
+    @
     public void loadInternalPlugin() {
         PluginLoader pluginLoader = fileAssociations.get(JavaPluginLoader.class.getName());
         InternalPlugin plugin = InternalPlugin.INSTANCE;
@@ -519,8 +519,8 @@ public class PluginManager {
         return pluginCmds;
     }
 
-    @PowerNukkitDifference(info = "Makes sure the PowerNukkitPlugin is never disabled", since = "1.3.0.0-PN")
-    @PowerNukkitXDifference(info = "Makes sure the PowerNukkitX Internal Plugin is never disabled", since = "1.19.60-r1")
+
+    @
     public void disablePlugins() {
         ListIterator<Plugin> plugins = new ArrayList<>(this.getPlugins().values()).listIterator(this.getPlugins().size());
 

@@ -1,9 +1,6 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -112,7 +109,7 @@ public class EntityItem extends Entity {
         this.server.getPluginManager().callEvent(new ItemSpawnEvent(this));
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Netherite stuff is immune to fire and lava damage")
+    
     @Override
     public boolean attack(EntityDamageEvent source) {
         if (item != null && item.isLavaResistant() && (

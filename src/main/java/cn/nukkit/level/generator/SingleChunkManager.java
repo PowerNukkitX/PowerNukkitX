@@ -1,6 +1,5 @@
 package cn.nukkit.level.generator;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 
 public class SingleChunkManager extends SimpleChunkManager {

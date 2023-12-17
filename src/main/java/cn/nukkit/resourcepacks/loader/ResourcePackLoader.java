@@ -1,7 +1,5 @@
 package cn.nukkit.resourcepacks.loader;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.resourcepacks.ResourcePack;
 
 import java.util.List;

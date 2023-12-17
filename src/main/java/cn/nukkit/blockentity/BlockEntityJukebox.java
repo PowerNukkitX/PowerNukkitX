@@ -1,7 +1,5 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemRecord;
@@ -49,7 +47,7 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
         return recordItem;
     }
 
-    @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
+    
     public void play() {
         if (this.recordItem instanceof ItemRecord itemRecord) {
             PlaySoundPacket packet = new PlaySoundPacket();

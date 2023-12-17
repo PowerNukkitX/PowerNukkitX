@@ -1,6 +1,5 @@
 package cn.nukkit.entity.data;
 
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
@@ -25,7 +24,7 @@ public class EntityMetadata {
         return this.getOrDefault(id, null);
     }
 
-    @PowerNukkitDifference(info = "Reduce a lot of hidden NullPointerExceptions", since = "1.3.1.2-PN")
+
     public EntityData<?> getOrDefault(int id, EntityData<?> defaultValue) {
         var data = this.map.getOrDefault(id, defaultValue);
         if (data == null) {

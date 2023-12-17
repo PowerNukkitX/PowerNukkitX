@@ -1,7 +1,5 @@
 package cn.nukkit.command.tree;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.tree.node.IParamNode;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.network.protocol.types.CommandOutputMessage;

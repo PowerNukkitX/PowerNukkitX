@@ -1,7 +1,5 @@
 package cn.nukkit.event.level;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.Event;
 

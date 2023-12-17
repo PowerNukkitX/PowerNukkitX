@@ -3,9 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BlockProperty;
@@ -38,7 +35,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.UPPER_BLOCK;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
+
 public abstract class BlockDoor extends BlockTransparentMeta implements RedstoneComponent, Faceable {
     private static final double THICKNESS = 3.0 / 16;
 
@@ -150,7 +147,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         }
     }
 
-    @PowerNukkitDifference(info = "Will drop the iron door item if the support is broken", since = "1.3.1.2-PN")
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -187,7 +184,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         }
     }
 
-    @PowerNukkitDifference(info = "Checking if the door was opened/closed manually.")
+
     private void onRedstoneUpdate() {
         if ((this.isOpen() != this.isGettingPower()) && !this.getManualOverride()) {
             if (this.isOpen() != this.isGettingPower()) {
@@ -263,7 +260,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         return this.level.isBlockPowered(down) || this.level.isBlockPowered(up);
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
+
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (this.y > this.level.getMaxHeight() - 2 || face != BlockFace.UP) {
@@ -358,14 +355,14 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         level.addSound(this, Sound.RANDOM_DOOR_CLOSE);
     }
 
-    @PowerNukkitDifference(info = "Just call the #setOpen() method.", since = "1.4.0.0-PN")
+
     public boolean toggle(Player player) {
         if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
             return false;
         return this.setOpen(player, !this.isOpen());
     }
 
-    @PowerNukkitDifference(info = "Using direct values, instead of toggling (fixes a redstone bug, that the door won't open). " +
+
             "Also adding possibility to detect, whether a player or redstone recently opened/closed the door.", since = "1.4.0.0-PN")
 
     public boolean setOpen(@Nullable Player player, boolean open) {

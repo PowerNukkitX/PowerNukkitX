@@ -1,6 +1,5 @@
 package cn.nukkit.nbt.tag;
 
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 import com.google.common.base.Preconditions;
@@ -16,7 +15,7 @@ public class StringTag extends Tag {
         super(name);
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Throws NullPointerException instead of IllegalArgumentException if data is null")
+    
     public StringTag(String name, @NotNull String data) {
         super(name);
         this.data = Preconditions.checkNotNull(data, "Empty string not allowed");

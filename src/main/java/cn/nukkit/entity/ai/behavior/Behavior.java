@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.behavior;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.evaluator.IBehaviorEvaluator;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;

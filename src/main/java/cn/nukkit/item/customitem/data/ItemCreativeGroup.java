@@ -1,9 +1,6 @@
 package cn.nukkit.item.customitem.data;
 
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 /**
  * Controls the major group of custom items in the creative inventory.
  * <br>Possible values:

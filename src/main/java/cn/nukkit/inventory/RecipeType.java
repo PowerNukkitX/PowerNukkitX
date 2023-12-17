@@ -1,9 +1,6 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 
 public enum RecipeType {
     SHAPELESS(0),

@@ -2,8 +2,6 @@ package cn.nukkit.network.process.processor;
 
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.entity.data.StringEntityData;

@@ -1,7 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
 
 /**
@@ -44,7 +42,7 @@ public class BlockBricksNether extends BlockSolid {
         return 6;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will return false as expected")
+
     @Override
     public boolean canHarvestWithHand() {
         return false;

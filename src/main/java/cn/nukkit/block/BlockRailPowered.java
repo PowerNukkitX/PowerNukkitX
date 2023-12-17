@@ -1,8 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
@@ -15,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Snake1999, larryTheCoder (Nukkit Project, Minecart and Riding Project)
  * @since 2016/1/11
  */
-@PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
+
 public class BlockRailPowered extends BlockRail implements RedstoneComponent {
 
     public BlockRailPowered() {
@@ -45,7 +42,7 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
     }
 
     @Override
-    @PowerNukkitDifference(info = "Using new method for checking if powered", since = "1.4.0.0-PN")
+
     public int onUpdate(int type) {
         // Warning: I din't recommended this on slow networks server or slow client
         //          Network below 86Kb/s. This will became unresponsive to clients 
@@ -180,7 +177,7 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
                 || onStraight && canPowered(new Vector3(dx, dy - 1.0D, dz), base, power, relative);
     }
 
-    @PowerNukkitDifference(info = "Using new method for checking if powered", since = "1.4.0.0-PN")
+
     protected boolean canPowered(Vector3 pos, Rail.Orientation state, int power, boolean relative) {
         Block block = level.getBlock(pos);
         // What! My block is air??!! Impossible! XD

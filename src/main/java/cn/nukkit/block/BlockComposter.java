@@ -1,10 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.event.block.ComposterEmptyEvent;
@@ -126,7 +122,7 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
         return getPropertyValue(COMPOSTER_FILL_LEVEL) == 0;
     }
 
-    @PowerNukkitDifference(info = "Player is null when is called from BlockEntityHopper")
+
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         if (item.getCount() <= 0 || item.getId() == Item.AIR) {
@@ -181,7 +177,7 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
     }
 
 
-    @PowerNukkitDifference
+
     public Item empty(@Nullable Item item, @Nullable Player player) {
         ComposterEmptyEvent event = new ComposterEmptyEvent(this, player, item, new ItemDye(DyeColor.BONE_MEAL), 0);
         this.level.getServer().getPluginManager().callEvent(event);

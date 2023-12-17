@@ -1,8 +1,6 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntityBeehive;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.level.format.FullChunk;

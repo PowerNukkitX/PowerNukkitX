@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBanner;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -30,7 +27,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.GROUND_SIGN_DIRECTIO
 /**
  * @author PetteriM1
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
+
 @Log4j2
 public class BlockBanner extends BlockTransparentMeta implements Faceable, BlockEntityHolder<BlockEntityBanner> {
     public BlockBanner() {
@@ -194,7 +191,7 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
         setPropertyValue(GROUND_SIGN_DIRECTION, direction);
     }
 
-    @PowerNukkitDifference(info = "Was returning the wrong face, it now return the closest face, or the left face if even", since = "1.4.0.0-PN")
+    
     @Override
     public BlockFace getBlockFace() {
         return getDirection().getClosestBlockFace();

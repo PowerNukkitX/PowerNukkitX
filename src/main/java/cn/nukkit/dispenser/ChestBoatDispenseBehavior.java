@@ -1,7 +1,5 @@
 package cn.nukkit.dispenser;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityChestBoat;
 import cn.nukkit.item.Item;

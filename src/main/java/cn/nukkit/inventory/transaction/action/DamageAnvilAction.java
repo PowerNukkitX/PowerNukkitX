@@ -1,7 +1,6 @@
 package cn.nukkit.inventory.transaction.action;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAnvil;
 import cn.nukkit.block.BlockID;

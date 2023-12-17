@@ -1,7 +1,5 @@
 package cn.nukkit.metadata;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.plugin.Plugin;
 import com.dfsek.terra.lib.commons.lang3.Validate;
 

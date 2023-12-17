@@ -1,7 +1,5 @@
 package cn.nukkit.entity.provider;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.level.format.IChunk;

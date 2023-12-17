@@ -1,7 +1,5 @@
 package cn.nukkit.plugin.js;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.plugin.CommonJSPlugin;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;

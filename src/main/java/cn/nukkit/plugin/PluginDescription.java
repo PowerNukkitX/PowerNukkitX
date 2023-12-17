@@ -1,7 +1,5 @@
 package cn.nukkit.plugin;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.utils.PluginException;
 import org.yaml.snakeyaml.DumperOptions;

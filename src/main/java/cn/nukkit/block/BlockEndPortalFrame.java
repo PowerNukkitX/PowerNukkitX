@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.blockproperty.CommonBlockProperties;
@@ -115,7 +112,7 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
         return true;
     }
 
-    @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         if (!this.isEndPortalEye() && player != null && item.getId() == Item.ENDER_EYE) {

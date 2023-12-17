@@ -1,7 +1,5 @@
 package cn.nukkit.level.biome.type;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.level.biome.Biome;
 
 /**

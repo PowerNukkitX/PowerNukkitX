@@ -1,7 +1,5 @@
 package cn.nukkit.level.biome.impl.extremehills;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.level.biome.type.CoveredBiome;
 
 /**

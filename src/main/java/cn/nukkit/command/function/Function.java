@@ -1,8 +1,6 @@
 package cn.nukkit.command.function;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import lombok.Getter;
 

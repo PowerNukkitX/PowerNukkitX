@@ -18,8 +18,6 @@
 
 package cn.nukkit.utils;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import lombok.experimental.UtilityClass;
 
 import javax.annotation.Nullable;

@@ -1,6 +1,5 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 
 

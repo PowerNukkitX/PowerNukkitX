@@ -1,8 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.SandType;
@@ -12,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@PowerNukkitDifference(info = "Extends BlockFallableMeta instead of BlockFallable")
+
 public class BlockSand extends BlockFallableMeta {
 
 

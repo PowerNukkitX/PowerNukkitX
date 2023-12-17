@@ -123,7 +123,6 @@ public class Level implements ChunkManager, Metadatable {
     private static final IntOpenHashSet randomTickBlocks = new IntOpenHashSet(64);
     private static final int LCG_CONSTANT = 1013904223;
 
-
     private static final IntSet transparentBlockRuntimeIds = new IntOpenHashSet(256);
     private static final Entity[] ENTITY_BUFFER = new Entity[512];
     @SuppressWarnings({"java:S1444", "java:S3008"})
@@ -562,7 +561,7 @@ public class Level implements ChunkManager, Metadatable {
         this.realOreToReplacedRuntimeIds.remove(oreBlock.getRuntimeId(), replaceWith.getRuntimeId());
     }
 
-    @PowerNukkitXInternal
+    
 
 
     public Int2IntMap getRawRealOreToReplacedRuntimeIdMap() {
@@ -593,9 +592,7 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
-    @PowerNukkitXInternal
-
-
+    
     public Int2ObjectMap<IntList> getRawFakeOreToPutRuntimeIdMap() {
         return this.fakeOreToPutRuntimeIds;
     }
@@ -659,7 +656,7 @@ public class Level implements ChunkManager, Metadatable {
         this.initLevel(null);
     }
 
-    @PowerNukkitXDifference(since = "1.19.20-r3")
+    @
     public void initLevel(@Nullable DimensionData givenDimensionData) {
         Generator generator = generators.get();
         if (dimensionData == null || givenDimensionData != null) {
@@ -993,7 +990,7 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
-    @PowerNukkitXDifference(since = "1.20.10-r1", info = "Use concurrency-safe collections")
+    @
     public void addChunkPacket(int chunkX, int chunkZ, DataPacket packet) {
         long index = Level.chunkHash(chunkX, chunkZ);
         Deque<DataPacket> packets = chunkPackets.computeIfAbsent(index, i -> new ConcurrentLinkedDeque<>());
@@ -2026,7 +2023,7 @@ public class Level implements ChunkManager, Metadatable {
         return collides;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Rounds the AABB to have precision 4 before checking for collision, fix PowerNukkit#506")
+    
     public boolean hasCollision(Entity entity, AxisAlignedBB bb, boolean entities) {
         int minX = NukkitMath.floorDouble(NukkitMath.round(bb.getMinX(), 4));
         int minY = NukkitMath.floorDouble(NukkitMath.round(bb.getMinY(), 4));
@@ -2068,7 +2065,7 @@ public class Level implements ChunkManager, Metadatable {
         return level;
     }
 
-    @PowerNukkitXDifference(since = "1.19.20-r3")
+    @
     public int calculateSkylightSubtracted(float tickDiff) {
         float d = 1.0F - (this.getRainStrength(tickDiff) * 5.0F) / 16.0F;
         float e = 1.0F - (this.getThunderStrength(tickDiff) * 5.0F) / 16.0F;
@@ -2149,7 +2146,7 @@ public class Level implements ChunkManager, Metadatable {
         return tmp.getBlockRuntimeId(x & 0x0f, ensureY(y), z & 0x0f, layer);
     }
 
-    @PowerNukkitXDifference(since = "1.19.20-r3", info = "Allow parallel gets.")
+    @
     public Set<Block> getBlockAround(Vector3 pos) {
         Set<Block> around = new HashSet<>();
         Block block = getBlock(pos);
@@ -2959,9 +2956,9 @@ public class Level implements ChunkManager, Metadatable {
         return this.useItemOn(vector, item, face, fx, fy, fz, player, true);
     }
 
-    @PowerNukkitXDifference(info = "Fixed issue#790", since = "1.19.50-r1")
-    @PowerNukkitDifference(info = "PowerNukkit#403", since = "1.3.1.2-PN")
-    @PowerNukkitDifference(info = "Fixed PowerNukkit#716, block stops placing when towering up", since = "1.4.0.0-PN")
+    @
+    
+    
     public Item useItemOn(Vector3 vector, Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound) {
         Block target = this.getBlock(vector);
         Block block = target.getSide(face);
@@ -3682,7 +3679,7 @@ public class Level implements ChunkManager, Metadatable {
     protected static final BlockColor VOID_BLOCK_COLOR = BlockColor.VOID_BLOCK_COLOR;
     protected static final BlockColor WATER_BLOCK_COLOR = BlockColor.WATER_BLOCK_COLOR;
 
-    @PowerNukkitXDifference(info = "使用新的颜色算法", since = "1.19.80-r3")
+    @
     public BlockColor getMapColorAt(int x, int z) {
         var color = VOID_BLOCK_COLOR.toAwtColor();
 
@@ -4337,7 +4334,7 @@ public class Level implements ChunkManager, Metadatable {
      *
      * @return the list
      */
-    @PowerNukkitXInternal
+    
     public List<CompletableFuture<Void>> asyncChunkGarbageCollection() {
         var gcBlockEntities = CompletableFuture.runAsync(() -> {
             // remove all invaild block entities.
@@ -4377,7 +4374,7 @@ public class Level implements ChunkManager, Metadatable {
      * <p>
      * Run server memory garbage collection synchronously
      */
-    @PowerNukkitXInternal
+    
     public void doChunkGarbageCollection() {
         doChunkGarbageCollection(false);
     }
@@ -4390,7 +4387,7 @@ public class Level implements ChunkManager, Metadatable {
      * @param force the force
      */
 
-    @PowerNukkitXInternal
+    
     public void doChunkGarbageCollection(boolean force) {
         // remove all invaild block entities.
         if (!blockEntities.isEmpty()) {
@@ -4429,7 +4426,7 @@ public class Level implements ChunkManager, Metadatable {
      *
      * @param allocatedTime free time slices
      */
-    @PowerNukkitXInternal
+    
     public void doGarbageCollection(long allocatedTime) {
         long start = System.currentTimeMillis();
         if (unloadChunks(start, allocatedTime, false)) {
@@ -4493,7 +4490,7 @@ public class Level implements ChunkManager, Metadatable {
      * @param force
      * @return true if there is allocated time remaining
      */
-    @PowerNukkitXDifference(since = "1.20.10-r1", info = "rewrite the method to improve performance")
+    @
     private boolean unloadChunks(long now, long allocatedTime, boolean force) {
         if (!this.unloadQueue.isEmpty()) {
             boolean result = true;
@@ -4576,7 +4573,7 @@ public class Level implements ChunkManager, Metadatable {
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 
-    @PowerNukkitDifference(since = "1.6.0.0-PNX", info = "use MoveEntityDeltaPacket instead of MoveEntityAbsolutePacket to implement headYaw")
+    
     public void addEntityMovement(Entity entity, double x, double y, double z, double yaw, double pitch, double headYaw) {
 //        MoveEntityAbsolutePacket pk = new MoveEntityAbsolutePacket();
 //        pk.eid = entity.getId();
@@ -4803,7 +4800,7 @@ public class Level implements ChunkManager, Metadatable {
         return this.getBlock(pos).getStrongPower(direction);
     }
 
-    @PowerNukkitDifference(info = "Check if the block to check is a piston, then return 0.", since = "1.4.0.0-PN")
+    
     public int getStrongPower(Vector3 pos) {
         if (pos instanceof BlockPistonBase || this.getBlock(pos) instanceof BlockPistonBase) return 0;
 
@@ -4920,7 +4917,7 @@ public class Level implements ChunkManager, Metadatable {
         return (this.updateLCG = (this.updateLCG * 3) ^ LCG_CONSTANT);
     }
 
-    @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
+    
     public boolean createPortal(Block target) {
         if (this.getDimension() == DIMENSION_THE_END) return false;
         int maxPortalSize = 23;

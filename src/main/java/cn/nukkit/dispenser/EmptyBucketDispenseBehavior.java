@@ -1,7 +1,6 @@
 package cn.nukkit.dispenser;
 
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.MinecraftItemID;

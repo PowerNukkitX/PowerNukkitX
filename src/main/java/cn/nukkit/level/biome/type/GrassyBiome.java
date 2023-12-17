@@ -1,7 +1,5 @@
 package cn.nukkit.level.biome.type;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.value.DoublePlantType;
 import cn.nukkit.level.generator.populator.impl.PopulatorDoublePlant;
 import cn.nukkit.level.generator.populator.impl.PopulatorGrass;

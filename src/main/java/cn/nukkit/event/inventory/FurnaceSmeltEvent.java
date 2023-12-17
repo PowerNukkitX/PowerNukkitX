@@ -1,7 +1,5 @@
 package cn.nukkit.event.inventory;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntityFurnace;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;

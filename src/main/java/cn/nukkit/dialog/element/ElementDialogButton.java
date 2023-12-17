@@ -1,7 +1,5 @@
 package cn.nukkit.dialog.element;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.dialog.window.Dialog;
 
 import java.util.ArrayList;

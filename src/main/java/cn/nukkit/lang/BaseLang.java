@@ -1,8 +1,6 @@
 package cn.nukkit.lang;
 
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import io.netty.util.internal.EmptyArrays;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;

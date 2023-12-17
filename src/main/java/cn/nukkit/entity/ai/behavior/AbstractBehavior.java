@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.behavior;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import lombok.Getter;
 import lombok.Setter;
 

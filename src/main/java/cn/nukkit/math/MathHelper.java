@@ -1,7 +1,5 @@
 package cn.nukkit.math;
 
-import cn.nukkit.api.PowerNukkitOnly;
-
 import java.util.Random;
 
 public class MathHelper {

@@ -1,8 +1,6 @@
 package cn.nukkit.plugin;
 
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import lombok.NoArgsConstructor;
 
 

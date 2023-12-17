@@ -1,7 +1,5 @@
 package cn.nukkit.level.generator.task;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
 import cn.nukkit.nbt.tag.CompoundTag;

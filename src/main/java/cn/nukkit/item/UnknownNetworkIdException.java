@@ -19,9 +19,6 @@
 
 package cn.nukkit.item;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-
 import javax.annotation.Nullable;
 
 /**

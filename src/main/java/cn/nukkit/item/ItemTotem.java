@@ -1,7 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.api.PowerNukkitOnly;
-
 public class ItemTotem extends Item {
 
 

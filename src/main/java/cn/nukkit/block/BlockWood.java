@@ -1,9 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BlockProperty;
@@ -18,7 +14,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@PowerNukkitDifference(info = "Extends BlockLog instead of BlockSolidMeta only in PowerNukkit", since = "1.4.0.0-PN")
+
 public class BlockWood extends BlockLog {
 
 
@@ -110,7 +106,7 @@ public class BlockWood extends BlockLog {
 
 
     @Override
-    @PowerNukkitXDifference(since = "1.20.0-r2", info = "make public")
+    @
     public BlockState getStrippedState() {
         int strippedId = switch (getWoodType()) {
             case OAK -> STRIPPED_OAK_LOG;

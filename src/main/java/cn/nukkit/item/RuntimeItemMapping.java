@@ -2,9 +2,6 @@ package cn.nukkit.item;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.DoNotModify;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.item.RuntimeItems.MappingEntry;
 import cn.nukkit.item.customitem.CustomItem;

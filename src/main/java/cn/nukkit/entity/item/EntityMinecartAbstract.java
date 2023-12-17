@@ -4,9 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.api.API;
 import cn.nukkit.api.API.Definition;
 import cn.nukkit.api.API.Usage;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntityHopper;
 import cn.nukkit.entity.Entity;
@@ -109,7 +106,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         prepareDataProperty();
     }
 
-    @PowerNukkitDifference(since = "1.3.1.2-PN", info = "Will despawn instantly after being 'killed'")
+
     @Override
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
@@ -265,7 +262,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         level.dropItem(this, new ItemMinecart());
     }
 
-    @PowerNukkitDifference(info = "Fixes a dupe issue when attacking too quickly", since = "1.3.1.2-PN")
+
     @Override
     public void kill() {
         if (!isAlive()) {
@@ -278,7 +275,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         }
     }
 
-    @PowerNukkitDifference(info = "Will not make a smoke particle and will do a proper dismount on the entities", since = "1.3.1.2-PN")
+
     @Override
     public void close() {
         super.close();

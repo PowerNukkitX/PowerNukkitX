@@ -3,8 +3,6 @@ package cn.nukkit.event.player;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.utils.ClientChainData;

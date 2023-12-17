@@ -2,9 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.blockproperty.IntBlockProperty;
@@ -33,7 +30,7 @@ import java.util.stream.Stream;
  * @author xtypr, joserobjr
  * @since 2015/12/6
  */
-@PowerNukkitDifference(info = "Extends BlockFallableMeta instead of BlockFallable")
+
 public class BlockSnowLayer extends BlockFallableMeta {
 
 
@@ -90,13 +87,13 @@ public class BlockSnowLayer extends BlockFallableMeta {
         setBooleanValue(COVERED, covered);
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Returns the max Y based on the snow height")
+    
     @Override
     public double getMaxY() {
         return y + (Math.min(16, getSnowHeight() + 1) * 2) / 16.0;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Renders a bounding box that the entities stands on top")
+    
     @Override
     @Nullable
     protected AxisAlignedBB recalculateBoundingBox() {
@@ -110,7 +107,7 @@ public class BlockSnowLayer extends BlockFallableMeta {
         return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 8 / 16.0, z + 1);
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Renders a bounding box with the actual snow_layer height")
+    
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return this;
@@ -121,7 +118,7 @@ public class BlockSnowLayer extends BlockFallableMeta {
         return 0.2;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "0.1 instead of 0.5")
+    
     @Override
     public double getResistance() {
         return 0.1;
@@ -132,13 +129,13 @@ public class BlockSnowLayer extends BlockFallableMeta {
         return ItemTool.TYPE_SHOVEL;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Returns false if it has all the 8 layers")
+    
     @Override
     public boolean canBeReplaced() {
         return getSnowHeight() < SNOW_HEIGHT.getMaxValue();
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will increase the layers and behave as expected in vanilla and will cover grass blocks")
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         Optional<BlockSnowLayer> increment = Stream.of(target, block)
@@ -182,7 +179,7 @@ public class BlockSnowLayer extends BlockFallableMeta {
         return this.getLevel().setBlock(block, this, true);
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will move the block in layer 1 to layer 0 when breaking in layer 0")
+    
     @Override
     public boolean onBreak(Item item) {
         if (layer != 0) {
@@ -221,7 +218,7 @@ public class BlockSnowLayer extends BlockFallableMeta {
         level.sendBlocks(target, blocks, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1, false);
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will melt on dry biomes and will melt gradually and will cover grass blocks")
+    
     @Override
     public int onUpdate(int type) {
         super.onUpdate(type);
@@ -271,13 +268,13 @@ public class BlockSnowLayer extends BlockFallableMeta {
         return level.setBlock(toMelt, event.getNewState(), true);
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Returns the snow_layer but with 0 height")
+    
     @Override
     public Item toItem() {
         return BlockState.of(this.getPersistenceName()).asItemBlock();
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed the amount of snowballs that are dropped")
+    
     @Override
     public Item[] getDrops(Item item) {
         if (!item.isShovel() || item.getTier() < ItemTool.TIER_WOODEN) {
@@ -321,7 +318,7 @@ public class BlockSnowLayer extends BlockFallableMeta {
         return true;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Returns false when the height is 3+")
+    
     @Override
     public boolean canPassThrough() {
         return getSnowHeight() < 3;

@@ -1,7 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySculkCatalyst;
 import cn.nukkit.blockproperty.BlockProperties;

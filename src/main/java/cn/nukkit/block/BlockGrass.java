@@ -2,9 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
@@ -118,7 +115,7 @@ public class BlockGrass extends BlockDirt {
         return false;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed grass spread and decay logic to match vanilla behaviour")
+    
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {

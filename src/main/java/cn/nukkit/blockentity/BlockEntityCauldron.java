@@ -3,9 +3,6 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCauldron;
 import cn.nukkit.level.Location;
@@ -24,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockEntityCauldron extends BlockEntitySpawnable {
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Using -1 instead of the overflown 0xFFFF")
+    
     @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Magic value", replaceWith = "PotionType")
 

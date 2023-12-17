@@ -1,7 +1,6 @@
 package cn.nukkit.level.generator;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.event.level.ChunkPrePopulateEvent;
 import cn.nukkit.level.ChunkManager;

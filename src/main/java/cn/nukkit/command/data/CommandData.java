@@ -1,12 +1,8 @@
 package cn.nukkit.command.data;
 
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 import java.util.*;
 
-@PowerNukkitXDifference(since = "1.19.50-r1", info = "Use List<Flag> instead")
+@
 public class CommandData implements Cloneable {
 
     public String description = "description";

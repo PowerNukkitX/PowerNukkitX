@@ -755,7 +755,7 @@ public abstract class Enchantment implements Cloneable {
      * @param attacker the attacker
      * @param entity   the entity
      */
-    @PowerNukkitXDifference(info = "移除在InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_ATTACK中的切入点，因为这会与#doAttack混淆，他们是一样的作用")
+    @
     public void doPostAttack(Entity attacker, Entity entity) {
     }
 
@@ -790,7 +790,7 @@ public abstract class Enchantment implements Cloneable {
      * The right way to implement compatibility now is to override {@link #checkCompatibility(Enchantment)}
      * and also make sure to keep it protected! Some overrides was incorrectly made public, let's avoid this mistake
      */
-    @PowerNukkitDifference(since = "1.4.0.0-PN",
+    
             info = "Cloudburst Nukkit added the final modifier, we removed it to maintain backward compatibility. " +
                     "The right way to implement compatibility now is to override checkCompatibility(Enchantment enchantment) " +
                     "and also make sure to keep it protected! Some overrides was incorrectly made public, let's avoid this mistake."

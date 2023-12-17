@@ -2,9 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.DoublePlantType;
@@ -106,7 +103,7 @@ public class BlockDoublePlant extends BlockFlowable {
         return getDoublePlantType().getEnglishName();
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Bottom part will break if the supporting block is invalid on normal update")
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {

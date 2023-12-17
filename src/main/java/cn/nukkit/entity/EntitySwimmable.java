@@ -1,8 +1,5 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 /**
  * 实现了此接口的生物可游泳
  */

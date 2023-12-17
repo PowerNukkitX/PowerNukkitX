@@ -1,6 +1,5 @@
 package cn.nukkit.entity.data;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.utils.*;
 import com.google.common.base.Preconditions;

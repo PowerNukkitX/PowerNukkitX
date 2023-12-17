@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.command.data.*;
 import cn.nukkit.network.protocol.types.CommandEnumConstraintData;
 import cn.nukkit.utils.BinaryStream;
@@ -19,7 +18,7 @@ import static com.nukkitx.network.util.Preconditions.checkArgument;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Made the arg type constants dynamic because they can change in Minecraft updates")
+
 @ToString
 public class AvailableCommandsPacket extends DataPacket {
 

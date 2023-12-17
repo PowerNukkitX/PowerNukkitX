@@ -1,8 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 
 public class BlockTrapdoorCherry extends BlockTrapdoor {
     public BlockTrapdoorCherry() {

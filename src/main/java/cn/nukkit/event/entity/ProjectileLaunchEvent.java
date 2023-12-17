@@ -1,8 +1,5 @@
 package cn.nukkit.event.entity;
 
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.Cancellable;
@@ -21,7 +18,7 @@ public class ProjectileLaunchEvent extends EntityEvent implements Cancellable {
         this(entity, entity.shootingEntity);
     }
 
-    @PowerNukkitXDifference(info = "事件增强 | ProjectileLaunchEvent improve")
+    @
     public ProjectileLaunchEvent(EntityProjectile entity, Entity shooter) {
         this.shooter = shooter;
         this.entity = entity;

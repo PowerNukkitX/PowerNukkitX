@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.utils.BinaryStream;
 import io.netty.util.internal.EmptyArrays;
 import lombok.ToString;

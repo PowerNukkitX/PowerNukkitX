@@ -1,6 +1,6 @@
 package cn.nukkit.scheduler;
 
-import cn.nukkit.api.PowerNukkitXDifference;
+import cn.nukkit.api.
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
@@ -12,7 +12,7 @@ import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-@PowerNukkitXDifference(since = "1.20.10-r1", info = "Use concurrency-safe collections")
+@
 public class BlockUpdateScheduler {
     private final Level level;
     private long lastTick;

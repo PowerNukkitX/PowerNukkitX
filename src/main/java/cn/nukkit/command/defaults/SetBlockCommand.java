@@ -1,7 +1,5 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.command.CommandSender;

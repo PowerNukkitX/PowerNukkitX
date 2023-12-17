@@ -1,8 +1,5 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 /**
  * 该方法将被异步并行调用，用于实体进行tick无关的操作
  */

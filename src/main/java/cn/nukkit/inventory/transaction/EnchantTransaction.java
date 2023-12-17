@@ -1,8 +1,6 @@
 package cn.nukkit.inventory.transaction;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.Since;
 import cn.nukkit.event.inventory.EnchantItemEvent;
 import cn.nukkit.inventory.EnchantInventory;
 import cn.nukkit.inventory.Inventory;
@@ -53,7 +51,7 @@ public class EnchantTransaction extends InventoryTransaction {
     }
 
     @Override
-    @PowerNukkitXDifference(info = "Use setItemByPlayer", since = "1.19.50-r3")
+    @
     public boolean execute() {
         // This will validate the enchant conditions
         if (this.hasExecuted || !this.canExecute()) {

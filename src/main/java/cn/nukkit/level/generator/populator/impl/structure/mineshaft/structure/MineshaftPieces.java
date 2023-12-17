@@ -1,8 +1,6 @@
 package cn.nukkit.level.generator.populator.impl.structure.mineshaft.structure;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFence;
 import cn.nukkit.block.BlockPlanks;

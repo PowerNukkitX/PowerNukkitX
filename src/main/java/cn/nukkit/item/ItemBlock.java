@@ -1,7 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockstate.BlockState;

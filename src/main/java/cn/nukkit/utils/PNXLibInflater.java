@@ -1,7 +1,5 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.powernukkitx.libdeflate.LibdeflateDecompressor;
 
 import java.io.Closeable;

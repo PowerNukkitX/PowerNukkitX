@@ -1,7 +1,5 @@
 package cn.nukkit.level.generator.populator.type;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.level.generator.populator.impl.structure.desertpyramid.PopulatorDesertPyramid;
 import cn.nukkit.level.generator.populator.impl.structure.desertwell.PopulatorDesertWell;
 import cn.nukkit.level.generator.populator.impl.structure.dungeon.PopulatorDungeon;

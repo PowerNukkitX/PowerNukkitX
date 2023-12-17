@@ -1,6 +1,5 @@
 package cn.nukkit.level.generator.populator.impl;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;

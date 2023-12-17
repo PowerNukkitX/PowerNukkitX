@@ -1,7 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemTool;
 
 
@@ -32,7 +30,7 @@ public class BlockNetherWartBlock extends BlockSolid {
         return 1;
     }
 
-    @PowerNukkitDifference(info = "It's now hoe instead of none", since = "1.4.0.0-PN")
+
     @Override
     public int getToolType() {
         return ItemTool.TYPE_HOE;

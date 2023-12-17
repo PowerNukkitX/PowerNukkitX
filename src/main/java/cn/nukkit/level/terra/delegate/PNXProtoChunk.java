@@ -1,7 +1,5 @@
 package cn.nukkit.level.terra.delegate;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.terra.PNXAdapter;

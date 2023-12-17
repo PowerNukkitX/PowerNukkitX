@@ -1,9 +1,6 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.LongEntityData;
@@ -39,7 +36,7 @@ public class EntityFirework extends Entity {
     private Item firework;
     private boolean hadCollision;
 
-    @PowerNukkitDifference(info = "Will default to a black-creeper-face if the firework data is missing", since = "1.3.1.2-PN")
+    
     public EntityFirework(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
 

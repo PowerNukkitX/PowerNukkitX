@@ -2,9 +2,6 @@ package cn.nukkit.inventory.transaction;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.event.inventory.CraftItemEvent;
 import cn.nukkit.inventory.*;
 import cn.nukkit.inventory.transaction.action.DamageAnvilAction;
@@ -207,7 +204,7 @@ public class CraftingTransaction extends InventoryTransaction {
     }
 
     @Override
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "No longer closes the inventory")
+
     protected void sendInventories() {
         super.sendInventories();
     }

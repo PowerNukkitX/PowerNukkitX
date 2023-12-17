@@ -1,8 +1,6 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import com.google.common.collect.Maps;
 
 import java.util.HashMap;

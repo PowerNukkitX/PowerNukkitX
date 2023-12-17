@@ -1,8 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.item.Item;
@@ -13,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  * @author xtypr
  * @since 2015/12/2
  */
-@PowerNukkitDifference(info = "Extends BlockDoubleSlabBase only in PowerNukkit")
+
 public class BlockDoubleSlabWood extends BlockDoubleSlabBase {
 
     public BlockDoubleSlabWood() {

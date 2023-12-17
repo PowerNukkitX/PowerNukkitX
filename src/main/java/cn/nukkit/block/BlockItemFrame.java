@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -34,7 +31,7 @@ import static cn.nukkit.math.BlockFace.AxisDirection.POSITIVE;
  * @author Pub4Game
  * @since 03.07.2016
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder and Faceable only in PowerNukkit")
+
 public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityHolder<BlockEntityItemFrame>, Faceable {
 
 
@@ -118,7 +115,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
         return "Item Frame";
     }
 
-    @PowerNukkitDifference(info = "Allow to stay in walls", since = "1.3.0.0-PN")
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -186,7 +183,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
         return true;
     }
 
-    @PowerNukkitDifference(info = "Allow to place on walls", since = "1.3.0.0-PN")
+
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if ((!(target.isSolid() || target instanceof BlockWall) && !target.equals(block) || (block.isSolid() && !block.canBeReplaced()))) {
@@ -288,7 +285,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
         return false;
     }
 
-    @PowerNukkitDifference(since = "1.3.0.0-PN", info = "Will calculate the correct AABB")
+
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         double[][] aabb = {

@@ -2,7 +2,6 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
@@ -56,7 +55,7 @@ public class ItemBow extends ItemTool {
                         .anyMatch(inv -> inv.contains(Item.get(ItemID.ARROW)));
     }
 
-    @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
+
     @Override
     public boolean onRelease(Player player, int ticksUsed) {
         Item itemArrow = Item.get(Item.ARROW, 0, 1);

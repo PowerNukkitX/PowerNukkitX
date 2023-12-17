@@ -1,8 +1,5 @@
 package cn.nukkit.resourcepacks;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-
 import java.util.UUID;
 
 /**

@@ -1,6 +1,5 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import lombok.ToString;
 

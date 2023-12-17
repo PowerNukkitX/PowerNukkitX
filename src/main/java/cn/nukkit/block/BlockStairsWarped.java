@@ -1,10 +1,6 @@
 package cn.nukkit.block;
 
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-
-
 public class BlockStairsWarped extends BlockStairsWood {
 
 

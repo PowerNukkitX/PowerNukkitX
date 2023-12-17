@@ -1,7 +1,5 @@
 package cn.nukkit.level.terra.delegate;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.terra.PNXAdapter;

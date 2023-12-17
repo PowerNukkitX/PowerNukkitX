@@ -1,7 +1,5 @@
 package cn.nukkit.level;
 
-import cn.nukkit.api.Since;
-
 public enum ParticleEffect {
     ARROWSPELL("minecraft:arrow_spell_emitter"),
     BALLOON_GAS("minecraft:balloon_gas_particle"),

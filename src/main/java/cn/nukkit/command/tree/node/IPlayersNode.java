@@ -2,8 +2,6 @@ package cn.nukkit.command.tree.node;
 
 import cn.nukkit.IPlayer;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.entity.Entity;

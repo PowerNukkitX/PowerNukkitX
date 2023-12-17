@@ -1,6 +1,5 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.DropperInventory;
 import cn.nukkit.level.format.FullChunk;

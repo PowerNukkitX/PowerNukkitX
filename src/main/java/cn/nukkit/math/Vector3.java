@@ -1,9 +1,6 @@
 package cn.nukkit.math;
 
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 

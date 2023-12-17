@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.controller;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.math.Vector3;

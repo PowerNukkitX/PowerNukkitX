@@ -1,7 +1,5 @@
 package cn.nukkit.level.terra.handles;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.level.terra.PNXAdapter;
 import cn.nukkit.level.terra.delegate.PNXEnchantmentDelegate;
 import com.dfsek.terra.api.handle.ItemHandle;

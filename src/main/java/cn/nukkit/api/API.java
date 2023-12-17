@@ -15,7 +15,7 @@ import static cn.nukkit.api.API.Usage.BLEEDING;
  * @see Usage
  * @see Definition
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Applicable to fields only in PowerNukkit")
+
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.FIELD})
 @API(usage = BLEEDING, definition = UNIVERSAL)

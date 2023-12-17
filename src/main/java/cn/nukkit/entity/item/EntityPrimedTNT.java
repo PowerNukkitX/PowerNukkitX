@@ -1,8 +1,5 @@
 package cn.nukkit.entity.item;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
 import cn.nukkit.entity.data.IntEntityData;
@@ -81,7 +78,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
     }
 
     @Override
-    @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
+    
     protected void initEntity() {
         super.initEntity();
 

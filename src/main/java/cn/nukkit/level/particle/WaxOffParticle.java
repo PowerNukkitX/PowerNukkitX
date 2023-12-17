@@ -1,6 +1,5 @@
 package cn.nukkit.level.particle;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.LevelEventPacket;

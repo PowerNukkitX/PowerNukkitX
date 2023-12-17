@@ -1,8 +1,5 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 /**
  * 代表可以攻击其他实体的实体.
  * <p>

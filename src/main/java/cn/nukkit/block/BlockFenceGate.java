@@ -2,9 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.event.block.BlockRedstoneEvent;
@@ -32,7 +29,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
  * @author xtypr
  * @since 2015/11/23
  */
-@PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
+
 public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComponent, Faceable {
     // Contains a list of positions of fence gates, which have been opened by hand (by a player).
     // It is used to detect on redstone update, if the gate should be closed if redstone is off on the update,
@@ -144,8 +141,8 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         return this.z + offMaxZ[getOffsetIndex()];
     }
 
-    @PowerNukkitDifference(info = "InWall property is now properly set, returns false if setBlock fails", since = "1.4.0.0-PN")
-    @PowerNukkitDifference(info = "Open door if redstone signal is detected.", since = "1.4.0.0-PN")
+
+
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         BlockFace direction = player.getDirection();
@@ -172,7 +169,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         return toggle(player);
     }
 
-    @PowerNukkitDifference(info = "Just call the #setOpen() method.", since = "1.4.0.0-PN")
+
     public boolean toggle(Player player) {
         if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
             return false;
@@ -272,7 +269,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         setBooleanValue(OPEN, open);
     }
 
-    @PowerNukkitDifference(info = "Will connect to walls correctly", since = "1.4.0.0-PN")
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -291,7 +288,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         return 0;
     }
 
-    @PowerNukkitDifference(info = "Checking if the door was opened/closed manually.", since = "1.4.0.0-PN")
+
     private void onRedstoneUpdate() {
         if ((this.isOpen() != this.isGettingPower()) && !this.getManualOverride()) {
             if (this.isOpen() != this.isGettingPower()) {

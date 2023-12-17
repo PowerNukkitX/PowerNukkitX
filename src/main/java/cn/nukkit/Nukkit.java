@@ -1,6 +1,5 @@
 package cn.nukkit;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.nbt.stream.PGZIPOutputStream;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.plugin.js.JSIInitiator;

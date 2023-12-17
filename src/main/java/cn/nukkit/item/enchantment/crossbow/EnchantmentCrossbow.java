@@ -1,6 +1,5 @@
 package cn.nukkit.item.enchantment.crossbow;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.EnchantmentType;
 

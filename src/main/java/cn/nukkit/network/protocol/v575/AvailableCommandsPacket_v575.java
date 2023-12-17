@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol.v575;
 
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.command.data.*;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -19,7 +18,7 @@ import static cn.nukkit.utils.Utils.dynamic;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Made the arg type constants dynamic because they can change in Minecraft updates")
+
 @ToString
 @Deprecated(since = "1.19.80-r1")
 public class AvailableCommandsPacket_v575 extends DataPacket {

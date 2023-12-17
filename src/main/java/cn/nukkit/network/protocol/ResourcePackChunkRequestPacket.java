@@ -1,15 +1,12 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import lombok.ToString;
 import org.powernukkit.version.Version;
 
 import java.util.UUID;
 
 @ToString
-@PowerNukkitDifference(extendsOnlyInPowerNukkit = AbstractResourcePackDataPacket.class, insteadOf = DataPacket.class, since = "1.5.2.0-PN")
+
 public class ResourcePackChunkRequestPacket extends AbstractResourcePackDataPacket {
 
     public static final byte NETWORK_ID = ProtocolInfo.RESOURCE_PACK_CHUNK_REQUEST_PACKET;

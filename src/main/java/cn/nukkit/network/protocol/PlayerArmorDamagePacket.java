@@ -1,10 +1,6 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.Since;
 import lombok.ToString;
-
-import java.util.EnumSet;
-import java.util.Set;
 
 
 @ToString

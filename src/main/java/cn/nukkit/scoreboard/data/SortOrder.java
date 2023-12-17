@@ -1,8 +1,5 @@
 package cn.nukkit.scoreboard.data;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 /**
  * 追踪目标显示顺序排序准则，客户端会依照准则根据分数排序所有追踪对象
  */

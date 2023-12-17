@@ -1,6 +1,5 @@
 package cn.nukkit.level.generator.object;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.math.NukkitRandom;

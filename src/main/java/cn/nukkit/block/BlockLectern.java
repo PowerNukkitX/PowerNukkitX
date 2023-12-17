@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityLectern;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -207,13 +204,13 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
     }
 
     @Override
-    @PowerNukkitDifference(info = "Down side is strongly powered.", since = "1.4.0.0-PN")
+
     public int getStrongPower(BlockFace face) {
         return face == BlockFace.DOWN ? this.getWeakPower(face) : 0;
     }
 
     @Override
-    @PowerNukkitDifference(info = "Down side is strongly powered.", since = "1.4.0.0-PN")
+
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (isActivated()) {

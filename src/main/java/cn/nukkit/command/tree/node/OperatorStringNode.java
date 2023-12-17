@@ -1,7 +1,5 @@
 package cn.nukkit.command.tree.node;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import com.google.common.collect.Sets;
 
 import java.util.HashSet;

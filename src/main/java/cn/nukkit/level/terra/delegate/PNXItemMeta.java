@@ -1,7 +1,5 @@
 package cn.nukkit.level.terra.delegate;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import com.dfsek.terra.api.inventory.item.Enchantment;
 import com.dfsek.terra.api.inventory.item.ItemMeta;

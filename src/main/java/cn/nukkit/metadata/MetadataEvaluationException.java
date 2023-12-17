@@ -1,8 +1,5 @@
 package cn.nukkit.metadata;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 /**
  * A MetadataEvaluationException is thrown any time a {@link
  * LazyMetadataValue} fails to evaluate its value due to an exception. The

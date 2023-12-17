@@ -1,8 +1,5 @@
 package cn.nukkit.block.customblock.data;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 /**
  * 方块创造栏分类.
  * <p>

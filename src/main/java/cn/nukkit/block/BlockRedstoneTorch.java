@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
@@ -12,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author Angelic47 (Nukkit Project)
  */
-@PowerNukkitDifference(info = "Implements RedstoneComponent and uses methods from it.", since = "1.4.0.0-PN")
+
 public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent {
 
     public BlockRedstoneTorch() {
@@ -114,7 +113,7 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
         return false;
     }
 
-    @PowerNukkitDifference(info = "Check if the side block is piston and if piston is getting power.",
+
             since = "1.4.0.0-PN")
     protected boolean isPoweredFromSide() {
         BlockFace face = getBlockFace().getOpposite();

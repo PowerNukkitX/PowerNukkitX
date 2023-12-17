@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.inventory.StonecutterInventory;
@@ -129,7 +126,7 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
         return new ItemBlock(new BlockStonecutterBlock());
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed the returned value")
+    
     @Override
     public double getMaxY() {
         return y + 9/16.0;

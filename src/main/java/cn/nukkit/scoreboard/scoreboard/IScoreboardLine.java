@@ -1,7 +1,5 @@
 package cn.nukkit.scoreboard.scoreboard;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.SetScorePacket;
 import cn.nukkit.scoreboard.scorer.IScorer;
 

@@ -1,6 +1,5 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;

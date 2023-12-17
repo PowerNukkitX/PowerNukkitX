@@ -1,7 +1,5 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.energy.EnergyType;
 import cn.nukkit.inventory.recipe.ItemDescriptor;
 import cn.nukkit.item.Item;

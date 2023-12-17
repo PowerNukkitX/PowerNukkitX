@@ -1,7 +1,5 @@
 package cn.nukkit.nbt.tag;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 import org.jetbrains.annotations.NotNull;

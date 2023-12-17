@@ -1,7 +1,5 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.inventory.EjectableInventory;
 import cn.nukkit.inventory.InventoryHolder;

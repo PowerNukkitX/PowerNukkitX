@@ -1,9 +1,5 @@
 package cn.nukkit.math;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-
 import java.math.BigInteger;
 
 /**
@@ -29,7 +25,7 @@ public class NukkitMath {
         return n >= i ? i : i - 1;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed math problem")
+
     public static int ceilDouble(double n) {
         int i = (int) n;
         return n > i ? i + 1 : i;
@@ -40,7 +36,7 @@ public class NukkitMath {
         return n >= i ? i : i - 1;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed math problem")
+
     public static int ceilFloat(float n) {
         int i = (int) n;
         return n > i ? i + 1 : i;
@@ -62,7 +58,7 @@ public class NukkitMath {
         return round(d, 0);
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Optimized")
+
     public static double round(double d, int precision) {
         double pow = Math.pow(10, precision);
         return ((double) Math.round(d * pow)) / pow;

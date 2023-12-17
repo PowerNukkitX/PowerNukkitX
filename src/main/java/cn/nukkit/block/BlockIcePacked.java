@@ -1,8 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 
@@ -50,7 +47,7 @@ public class BlockIcePacked extends BlockIce {
         return true;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Returns false ")
+
     @Override
     public boolean isTransparent() {
         return false;

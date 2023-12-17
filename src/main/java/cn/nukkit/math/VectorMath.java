@@ -1,9 +1,5 @@
 package cn.nukkit.math;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;

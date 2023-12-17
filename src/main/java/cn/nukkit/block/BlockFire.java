@@ -1,10 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
@@ -106,7 +102,7 @@ public class BlockFire extends BlockFlowable {
         return Item.EMPTY_ARRAY;
     }
 
-    @PowerNukkitDifference(info = "Soul Fire Implementation", since = "1.4.0.0-PN")
+
     @Override
     public int onUpdate(int type) {
 

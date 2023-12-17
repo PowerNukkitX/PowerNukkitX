@@ -67,7 +67,7 @@ public class CraftingManager {
     @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.", replaceWith = "getPacket()")
 
     public static DataPacket packet = null;
-    @PowerNukkitXDifference(info = "Now it is the count of all recipes", since = "1.19.50-r3")
+    @
     private static int RECIPE_COUNT = 0;
     private final VanillaRecipeParser vanillaRecipeParser;
     private final Int2ObjectMap<Map<UUID, ShapedRecipe>> shapedRecipeMap = new Int2ObjectOpenHashMap<>();
@@ -130,7 +130,7 @@ public class CraftingManager {
     private final Map<String, Recipe> recipeList = new Object2ObjectOpenHashMap<>();
     @Deprecated
     @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
-    @PowerNukkitXDifference(info = "Now it is contain all type recipes", since = "1.19.50-r3")
+    @
     public final Collection<Recipe> recipes = recipeList.values();
     //</editor-fold>
 
@@ -1012,7 +1012,7 @@ public class CraftingManager {
         return new ShapedRecipe(id.toString(), priority, primaryResult, shape, ingredients, extraResults);
     }
 
-    @PowerNukkitXDifference(info = "Recipe formats exported from proxypass before 1.19.40 are no longer supported", since = "1.19.50-r1")
+    @
     private Item parseRecipeItem(Map<String, Object> data) {
         Item item;
 

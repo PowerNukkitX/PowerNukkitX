@@ -1,9 +1,5 @@
 package cn.nukkit;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.Tag;
@@ -132,8 +128,8 @@ public class AdventureSettings implements Cloneable {
         return value == null ? type.getDefaultValue() : value;
     }
 
-    @PowerNukkitDifference(info = "Players in spectator mode will be flagged as member even if they are OP due to a client-side limitation", since = "1.3.1.2-PN")
-    @PowerNukkitXDifference(info = "updateAdventureSettingsPacket now will be sent to all players")
+
+    @
     public void update() {
         //向所有玩家发送以使他们能看到彼此的权限
         //Permission to send to all players so they can see each other

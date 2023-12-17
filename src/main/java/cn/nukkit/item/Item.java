@@ -864,7 +864,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         return get(id, meta, count, EmptyArrays.EMPTY_BYTES);
     }
 
-    @PowerNukkitDifference(
+    
             info = "Prevents players from getting invalid items by limiting the return to the maximum damage defined in Block.getMaxItemDamage()",
             since = "1.4.0.0-PN")
     public static Item get(int id, Integer meta, int count, byte[] tags) {
@@ -931,7 +931,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Improve namespaced name handling and allows to get custom blocks by name")
+    
     @NotNull
     public static Item fromString(String str) {
         String normalized = str.trim().replace(' ', '_').toLowerCase();

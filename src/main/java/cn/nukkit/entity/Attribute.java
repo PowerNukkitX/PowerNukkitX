@@ -1,8 +1,6 @@
 package cn.nukkit.entity;
 
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ServerException;
 

@@ -1,7 +1,5 @@
 package cn.nukkit.level.generator.populator.impl.structure.utils.template;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

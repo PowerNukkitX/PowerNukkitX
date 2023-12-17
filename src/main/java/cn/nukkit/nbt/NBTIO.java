@@ -1,9 +1,5 @@
 package cn.nukkit.nbt;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.block.customblock.CustomBlock;
@@ -37,10 +33,10 @@ import java.util.zip.GZIPInputStream;
 /**
  * A Named Binary Tag library for Nukkit Project
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed resource leaks")
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "It's the caller responsibility to close the provided streams")
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed output streams not being finished correctly")
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Added defensive close invocations to byte array streams")
+
+
+
+
 @Log4j2
 public class NBTIO {
 
@@ -69,7 +65,7 @@ public class NBTIO {
         return tag;
     }
 
-    @PowerNukkitXDifference(info = "not limit name and id because the return value of fromString not null")
+    @
     public static Item getItemHelper(CompoundTag tag) {
         if (!tag.containsByte("Count")) {
             return Item.get(0);
