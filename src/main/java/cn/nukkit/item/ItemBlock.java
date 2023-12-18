@@ -1,9 +1,6 @@
 package cn.nukkit.item;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockUnknown;
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  * @author MagicDroidX (Nukkit Project)
  */
 @Log4j2
-public class ItemBlock extends Item {
+public class ItemBlock extends StringItemBase {
     public ItemBlock(Block block) {
         this(block, 0, 1);
     }
@@ -21,13 +18,14 @@ public class ItemBlock extends Item {
     }
 
     public ItemBlock(Block block, Integer meta, int count) {
-        super(block.getItemId(), meta, count, block.getName());
+        super(block.getId(), meta, count, block.getName());
         this.block = block;
     }
 
     @Override
     public void setDamage(Integer meta) {
-        int blockMeta;
+        //todo fix itemblock setdamage
+        /*int blockMeta;
         if (meta != null) {
             this.meta = meta;
             blockMeta = meta;
@@ -57,7 +55,7 @@ public class ItemBlock extends Item {
             log.warn("An invalid ItemBlock for {} was set to an valid meta {} for item blocks, " +
                     "it was expected to have meta {} the stack is now unsafe.\nProperties: {}",
                     block.getPersistenceName(), meta, expected, block.getProperties());
-        }
+        }*/
     }
 
     @Override
@@ -78,15 +76,4 @@ public class ItemBlock extends Item {
     public boolean isLavaResistant() {
         return block.isLavaResistant();
     }
-
-
-    @Override
-    public String getNamespaceId() {
-        if (this.id != Item.AIR)
-            return super.getNamespaceId();
-        else
-            return "minecraft:air";
-    }
-
-
 }

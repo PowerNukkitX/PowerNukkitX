@@ -2,16 +2,11 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.*;
+import cn.nukkit.api.API;
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockUnknown;
-import cn.nukkit.blockproperty.UnknownRuntimeIdException;
-import cn.nukkit.blockproperty.exception.BlockPropertyNotFoundException;
-import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.blockstate.BlockStateRegistry;
-import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.Fuel;
 import cn.nukkit.inventory.ItemTag;
@@ -41,7 +36,6 @@ import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.nio.ByteOrder;
 import java.util.*;
 import java.util.function.Function;
@@ -56,11 +50,7 @@ import java.util.stream.Stream;
  */
 @Log4j2
 public class Item implements Cloneable, BlockID, ItemID {
-
-
     public static final Item AIR_ITEM = new Item(0);
-
-
     public static final Item[] EMPTY_ARRAY = new Item[0];
 
     /**
@@ -69,55 +59,16 @@ public class Item implements Cloneable, BlockID, ItemID {
      *     <li>namespace (optional)</li>
      *     <li>item name (choice)</li>
      *     <li>damage (optional, for item name)</li>
-     *     <li>numeric id (choice)</li>
-     *     <li>damage (optional, for numeric id)</li>
      * </ol>
      */
     private static final Pattern ITEM_STRING_PATTERN = Pattern.compile(
-            //       1:namespace    2:name           3:damage   4:num-id    5:damage
-            "^(?:(?:([a-z_]\\w*):)?([a-z._]\\w*)(?::(-?\\d+))?|(-?\\d+)(?::(-?\\d+))?)$");
+            //       1:namespace    2:name           3:damage
+            "^(?:(?:([a-z_]\\w*):)?([a-z._]\\w*)(?::(-?\\d+))?)$"
+    );
 
     public static String UNKNOWN_STR = "Unknown";
     public static Class[] list = null;
-
-    private static Map<String, Integer> itemIds = Arrays.stream(ItemID.class.getDeclaredFields())
-            .filter(field -> field.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL))
-            .filter(field -> field.getType().equals(int.class))
-            .collect(Collectors.toMap(
-                    field -> field.getName().toLowerCase(),
-                    field -> {
-                        try {
-                            return field.getInt(null);
-                        } catch (IllegalAccessException e) {
-                            throw new InternalError(e);
-                        }
-                    },
-                    (e1, e2) -> e1, LinkedHashMap::new
-            ));
-
-    private static Map<String, Integer> blockIds = Arrays.stream(BlockID.class.getDeclaredFields())
-            .filter(field -> field.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL))
-            .filter(field -> field.getType().equals(int.class))
-            .collect(Collectors.toMap(
-                    field -> field.getName().toLowerCase(),
-                    field -> {
-                        try {
-                            int blockId = field.getInt(null);
-                            if (blockId > 255) {
-                                return 255 - blockId;
-                            }
-                            return blockId;
-                        } catch (IllegalAccessException e) {
-                            throw new InternalError(e);
-                        }
-                    },
-                    (e1, e2) -> e1, LinkedHashMap::new
-            ));
-
-
     private static final HashMap<String, Supplier<Item>> CUSTOM_ITEMS = new HashMap<>();
-
-
     private static final HashMap<String, CustomItemDefinition> CUSTOM_ITEM_DEFINITIONS = new HashMap<>();
 
     protected Block block = null;
@@ -209,7 +160,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             list[DIAMOND_HOE] = ItemHoeDiamond.class; //293
             list[GOLD_HOE] = ItemHoeGold.class; //294
             list[WHEAT_SEEDS] = ItemSeedsWheat.class; //295
-            list[WHEAT] = ItemWheat.class; //296
+            list[ItemID.WHEAT] = ItemWheat.class; //296
             list[BREAD] = ItemBread.class; //297
             list[LEATHER_CAP] = ItemHelmetLeather.class; //298
             list[LEATHER_TUNIC] = ItemChestplateLeather.class; //299
@@ -864,9 +815,10 @@ public class Item implements Cloneable, BlockID, ItemID {
         return get(id, meta, count, EmptyArrays.EMPTY_BYTES);
     }
 
-    
-            info = "Prevents players from getting invalid items by limiting the return to the maximum damage defined in Block.getMaxItemDamage()",
-            since = "1.4.0.0-PN")
+
+    info ="Prevents players from getting invalid items by limiting the return to the maximum damage defined in Block.getMaxItemDamage()",
+    since ="1.4.0.0-PN")
+
     public static Item get(int id, Integer meta, int count, byte[] tags) {
         try {
             Class<?> c;
@@ -931,7 +883,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
     }
 
-    
+
     @NotNull
     public static Item fromString(String str) {
         String normalized = str.trim().replace(' ', '_').toLowerCase();

@@ -6,8 +6,6 @@ import cn.nukkit.utils.StringUtils;
  * @author joserobjr
  * @since 2021-06-12
  */
-
-@
 public interface StringItem {
     String getNamespaceId();
 
@@ -15,6 +13,7 @@ public interface StringItem {
         if (value != null && value.trim().isEmpty()) throw new IllegalArgumentException("The name cannot be empty");
         return value;
     }
+
     static String createItemName(String namespaceId) {
         StringBuilder name = new StringBuilder();
         String[] split = StringUtils.fastSplit(":", namespaceId).get(1).split("_");

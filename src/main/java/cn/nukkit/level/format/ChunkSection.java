@@ -2,11 +2,11 @@ package cn.nukkit.level.format;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
-import cn.nukkit.block.state.BlockRegistry;
 import cn.nukkit.block.state.BlockState;
 import cn.nukkit.level.format.palette.Palette;
 import cn.nukkit.level.util.NibbleArray;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.registry.BlockRegistry;
 import io.netty.buffer.ByteBuf;
 
 import javax.annotation.concurrent.NotThreadSafe;

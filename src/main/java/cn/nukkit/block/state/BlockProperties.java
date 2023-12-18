@@ -1,6 +1,7 @@
 package cn.nukkit.block.state;
 
 import cn.nukkit.block.state.property.type.BlockPropertyType;
+import cn.nukkit.registry.BlockStateRegistry;
 import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.Identifier;
 import com.google.common.collect.ImmutableList;

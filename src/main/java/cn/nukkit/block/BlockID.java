@@ -1,9 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.state.BlockRegistry;
-import cn.nukkit.utils.Identifier;
-import lombok.Getter;
-
 /**
  * @author Cool_Loong
  */

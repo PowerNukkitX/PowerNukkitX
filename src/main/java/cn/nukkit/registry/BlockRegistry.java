@@ -1,7 +1,9 @@
-package cn.nukkit.block.state;
+package cn.nukkit.registry;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.state.BlockProperties;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.level.Level;
 import cn.nukkit.utils.OK;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -12,28 +14,61 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Allay Project 12/15/2023
  *
  * @author Cool_Loong
  */
-public final class BlockRegistry {
-    private static final Object2ObjectOpenHashMap<String, BlockProperties> REGISTRY = new Object2ObjectOpenHashMap<>();
+public final class BlockRegistry implements IRegistry<String, Block, Class<Block>> {
+    private static final Set<String> KEYSET = new HashSet<>();
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Block>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
 
-    public static void init() {
-        //todo more block register
-    }
-
-    public static void trim() {
-        REGISTRY.trim();
+    public void trim() {
         CACHE_CONSTRUCTORS.trim();
     }
 
+    @UnmodifiableView
+    public Set<String> getPersistenceNames() {
+        return Collections.unmodifiableSet(KEYSET);
+    }
+
+    @Override
+    public OK<?> register(String key, Class<Block> value) {
+        if (Modifier.isAbstract(value.getModifiers())) {
+            return new OK<>(false, new IllegalArgumentException("you cant register a abstract block class!"));
+        }
+        try {
+            Field properties = value.getDeclaredField("PROPERTIES");
+            properties.setAccessible(true);
+            int modifiers = properties.getModifiers();
+            if (Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers) && properties.getType() == BlockProperties.class) {
+                BlockProperties blockProperties = (BlockProperties) properties.get(value);
+                FastConstructor<Block> c = FastConstructor.create(value.getConstructor(BlockState.class));
+                if (CACHE_CONSTRUCTORS.putIfAbsent(blockProperties.getIdentifier(), c) == null) {
+                    KEYSET.add(blockProperties.getIdentifier());
+                    return OK.TRUE;
+                }
+                return new OK<>(false, new IllegalArgumentException("This block has already been registered with the identifier: " + blockProperties.getIdentifier()));
+            } else {
+                return new OK<>(false, new IllegalArgumentException("There must define a field `public static final BlockProperties PROPERTIES` in this class!"));
+            }
+        } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException e) {
+            return new OK<>(false, e);
+        }
+    }
+
+    @Override
+    public void populate(Consumer<IRegistry<String, Block, Class<Block>>> iRegistryConsumer) {
+
+    }
+
     @NotNull
-    public static Block get(String identifier) {
+    @Override
+    public Block get(String identifier) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
         if (constructor == null) return new BlockAir();
         try {
@@ -44,7 +79,7 @@ public final class BlockRegistry {
     }
 
     @NotNull
-    public static Block get(String identifier, int x, int y, int z) {
+    public Block get(String identifier, int x, int y, int z) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
         if (constructor == null) return new BlockAir();
         try {
@@ -59,7 +94,7 @@ public final class BlockRegistry {
     }
 
     @NotNull
-    public static Block get(String identifier, int x, int y, int z, Level level) {
+    public Block get(String identifier, int x, int y, int z, Level level) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
         if (constructor == null) return new BlockAir();
         try {
@@ -75,7 +110,7 @@ public final class BlockRegistry {
     }
 
     @NotNull
-    public static Block get(String identifier, int x, int y, int z, int layer, Level level) {
+    public Block get(String identifier, int x, int y, int z, int layer, Level level) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
         if (constructor == null) return new BlockAir();
         try {
@@ -92,7 +127,7 @@ public final class BlockRegistry {
     }
 
     @NotNull
-    public static Block get(BlockState blockState) {
+    public Block get(BlockState blockState) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
         if (constructor == null) return new BlockAir();
         try {
@@ -103,7 +138,7 @@ public final class BlockRegistry {
     }
 
     @NotNull
-    public static Block get(BlockState blockState, int x, int y, int z) {
+    public Block get(BlockState blockState, int x, int y, int z) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
         if (constructor == null) return new BlockAir();
         try {
@@ -118,7 +153,7 @@ public final class BlockRegistry {
     }
 
     @NotNull
-    public static Block get(BlockState blockState, int x, int y, int z, Level level) {
+    public Block get(BlockState blockState, int x, int y, int z, Level level) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
         if (constructor == null) return new BlockAir();
         try {
@@ -134,7 +169,7 @@ public final class BlockRegistry {
     }
 
     @NotNull
-    public static Block get(BlockState blockState, int x, int y, int z, int layer, Level level) {
+    public Block get(BlockState blockState, int x, int y, int z, int layer, Level level) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
         if (constructor == null) return new BlockAir();
         try {
@@ -147,36 +182,6 @@ public final class BlockRegistry {
             return b;
         } catch (Throwable e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    @UnmodifiableView
-    public static Set<String> getPersistenceNames() {
-        return Collections.unmodifiableSet(REGISTRY.keySet());
-    }
-
-
-    public static OK<?> register(Class<? extends Block> block) {
-        if (Modifier.isAbstract(block.getModifiers())) {
-            return new OK<>(false, new IllegalArgumentException("you cant register a abstract block class!"));
-        }
-        try {
-            Field properties = block.getDeclaredField("PROPERTIES");
-            properties.setAccessible(true);
-            int modifiers = properties.getModifiers();
-            if (Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers) && properties.getType() == BlockProperties.class) {
-                BlockProperties blockProperties = (BlockProperties) properties.get(block);
-                if (REGISTRY.putIfAbsent(blockProperties.getIdentifier(), blockProperties) == null) {
-                    FastConstructor<? extends Block> c = FastConstructor.create(block.getConstructor(BlockState.class));
-                    CACHE_CONSTRUCTORS.put(blockProperties.getIdentifier(), c);
-                    return OK.TRUE;
-                }
-                return new OK<>(false, new IllegalArgumentException("This block has already been registered with the identifier: " + blockProperties.getIdentifier()));
-            } else {
-                return new OK<>(false, new IllegalArgumentException("There must define a field `public static final BlockProperties PROPERTIES` in this class!"));
-            }
-        } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException e) {
-            return new OK<>(false, e);
         }
     }
 }
