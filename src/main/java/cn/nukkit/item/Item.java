@@ -3,7 +3,6 @@ package cn.nukkit.item;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.API;
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockUnknown;
@@ -72,32 +71,27 @@ public class Item implements Cloneable, BlockID, ItemID {
     private static final HashMap<String, CustomItemDefinition> CUSTOM_ITEM_DEFINITIONS = new HashMap<>();
 
     protected Block block = null;
-    protected final int id;
+    protected final String id;
     protected int meta;
     protected boolean hasMeta = true;
     private byte[] tags = EmptyArrays.EMPTY_BYTES;
     private transient CompoundTag cachedNBT = null;
     public int count;
-
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Unused", replaceWith = "meta or getDamage()")
-    protected int durability = 0;
-
     protected String name;
 
-    public Item(int id) {
+    public Item(String id) {
         this(id, 0, 1, UNKNOWN_STR);
     }
 
-    public Item(int id, Integer meta) {
+    public Item(String id, Integer meta) {
         this(id, meta, 1, UNKNOWN_STR);
     }
 
-    public Item(int id, Integer meta, int count) {
+    public Item(String id, Integer meta, int count) {
         this(id, meta, count, UNKNOWN_STR);
     }
 
-    public Item(int id, Integer meta, int count, String name) {
+    public Item(String id, Integer meta, int count, String name) {
         //this.id = id & 0xffff;
         this.id = id;
         if (meta != null && meta >= 0) {
@@ -815,9 +809,6 @@ public class Item implements Cloneable, BlockID, ItemID {
         return get(id, meta, count, EmptyArrays.EMPTY_BYTES);
     }
 
-
-    info ="Prevents players from getting invalid items by limiting the return to the maximum damage defined in Block.getMaxItemDamage()",
-    since ="1.4.0.0-PN")
 
     public static Item get(int id, Integer meta, int count, byte[] tags) {
         try {
