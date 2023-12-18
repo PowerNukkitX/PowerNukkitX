@@ -2913,7 +2913,9 @@ public class Level implements ChunkManager, Metadatable {
                 breakTime -= 0.15;
                 //thisBreak-lastBreak < breakTime-1000ms = the player is hacker (fastBreak)
                 boolean fastBreak = Long.sum(player.lastBreak, (long) breakTime * 1000) > Long.sum(System.currentTimeMillis(), 1000);
+                fastBreak = !player.getInventory().getItemInHand().hasEnchantment(Enchantment.ID_EFFICIENCY) && fastBreak;
                 BlockBreakEvent ev = new BlockBreakEvent(player, target, face, item, eventDrops, player.isCreative(), fastBreak);
+                
                 if (player.isSurvival() && !target.isBreakable(item)) {
                     ev.setCancelled();
                 } else if (!player.isOp() && isInSpawnRadius(target)) {
