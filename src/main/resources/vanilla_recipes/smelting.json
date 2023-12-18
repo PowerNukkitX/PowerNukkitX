@@ -540,16 +540,6 @@
     {
         "block": "furnace",
         "input": {
-            "block_states": "CgAACAoAc3RvbmVfdHlwZQUAc3RvbmUA",
-            "name": "minecraft:stone"
-        },
-        "output": {
-            "name": "minecraft:smooth_stone"
-        }
-    },
-    {
-        "block": "furnace",
-        "input": {
             "block_states": "CgAACAsAY2hpc2VsX3R5cGUHAGRlZmF1bHQICwBwaWxsYXJfYXhpcwEAeQA=",
             "name": "minecraft:quartz_block"
         },
@@ -908,7 +898,6 @@
             "name": "minecraft:cobblestone"
         },
         "output": {
-            "block_states": "CgAACAoAc3RvbmVfdHlwZQUAc3RvbmUA",
             "name": "minecraft:stone"
         }
     },
@@ -1810,6 +1799,15 @@
         "output": {
             "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA",
             "name": "minecraft:red_glazed_terracotta"
+        }
+    },
+    {
+        "block": "furnace",
+        "input": {
+            "name": "minecraft:stone"
+        },
+        "output": {
+            "name": "minecraft:smooth_stone"
         }
     },
     {
