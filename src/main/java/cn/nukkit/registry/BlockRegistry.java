@@ -16,16 +16,20 @@ import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * Allay Project 12/15/2023
  *
  * @author Cool_Loong
  */
-public final class BlockRegistry implements IRegistry<String, Block, Class<Block>> {
+public final class BlockRegistry extends BaseRegistry<String, Block, Class<Block>> {
     private static final Set<String> KEYSET = new HashSet<>();
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Block>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
+
+    @Override
+    public void init() {
+
+    }
 
     public void trim() {
         CACHE_CONSTRUCTORS.trim();
@@ -59,11 +63,6 @@ public final class BlockRegistry implements IRegistry<String, Block, Class<Block
         } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException e) {
             return new OK<>(false, e);
         }
-    }
-
-    @Override
-    public void populate(Consumer<IRegistry<String, Block, Class<Block>>> iRegistryConsumer) {
-
     }
 
     @NotNull

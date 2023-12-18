@@ -49,7 +49,7 @@ import java.util.stream.Stream;
  */
 @Log4j2
 public class Item implements Cloneable, BlockID, ItemID {
-    public static final Item AIR_ITEM = new Item(0);
+    public static final Item AIR_ITEM = new Item(AIR);
     public static final Item[] EMPTY_ARRAY = new Item[0];
 
     /**

@@ -14,8 +14,6 @@ import javax.annotation.Nullable;
  *
  * @author lt_name
  */
-
-
 public abstract class ItemCustom extends StringItemBase implements CustomItem {
     private final String textureName;
 

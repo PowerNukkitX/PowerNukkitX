@@ -12,13 +12,12 @@ import static cn.nukkit.utils.Utils.dynamic;
  * @author MagicDroidX (Nukkit Project)
  */
 abstract public class ItemArmor extends Item implements ItemDurable {
-
     public static final int TIER_LEATHER = 1;
     public static final int TIER_IRON = 2;
     public static final int TIER_CHAIN = 3;
     public static final int TIER_GOLD = 4;
     public static final int TIER_DIAMOND = 5;
-
+    public static final int TIER_NETHERITE = 6;
 
     public static final int TIER_OTHER = dynamic(1000);
 
