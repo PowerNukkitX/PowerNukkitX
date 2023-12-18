@@ -323,28 +323,31 @@ public class NetworkInventoryAction {
                 if (id >= SOURCE_TYPE_ANVIL_OUTPUT && id <= SOURCE_TYPE_ANVIL_INPUT) {
                     Inventory inv = player.getWindowById(Player.ANVIL_WINDOW_ID);
                     if (inv instanceof AnvilInventory anvil) {
-                        return switch (id) {
-                            case SOURCE_TYPE_ANVIL_INPUT, SOURCE_TYPE_ANVIL_MATERIAL, SOURCE_TYPE_ANVIL_RESULT ->
-                                    new RepairItemAction(this.oldItem, this.newItem, id);
-                            default -> new SlotChangeAction(anvil, this.inventorySlot, this.oldItem, this.newItem);
-                        };
-                    } else if ((inv = player.getWindowById(Player.GRINDSTONE_WINDOW_ID)) instanceof GrindstoneInventory) {
-                        return switch (id) {
-                            case SOURCE_TYPE_ANVIL_INPUT, SOURCE_TYPE_ANVIL_MATERIAL, SOURCE_TYPE_ANVIL_RESULT ->
-                                    new GrindstoneItemAction(this.oldItem, this.newItem, id,
-                                            id != SOURCE_TYPE_ANVIL_RESULT ? 0 : ((GrindstoneInventory) inv).getResultExperience()
-                                    );
-                            default -> new SlotChangeAction(inv, this.inventorySlot, this.oldItem, this.newItem);
-                        };
-                    } else if (player.getWindowById(Player.SMITHING_WINDOW_ID) instanceof SmithingInventory) {
-                        switch (id) {
-                            case SOURCE_TYPE_ANVIL_INPUT, SOURCE_TYPE_ANVIL_MATERIAL, SOURCE_TYPE_ANVIL_OUTPUT, SOURCE_TYPE_ANVIL_RESULT -> {
-                                return new SmithingItemAction(this.oldItem, this.newItem, this.inventorySlot);
-                            }
+                        if (id == SOURCE_TYPE_ANVIL_INPUT || id == SOURCE_TYPE_ANVIL_MATERIAL || id == SOURCE_TYPE_ANVIL_RESULT) {
+                            return new RepairItemAction(this.oldItem, this.newItem, id);
+                        } else {
+                            return new SlotChangeAction(anvil, this.inventorySlot, this.oldItem, this.newItem);
                         }
                     } else {
-                        log.debug("Player {} has no open anvil or grindstone inventory", player.getName());
-                        return null;
+                        inv = player.getWindowById(Player.GRINDSTONE_WINDOW_ID);
+                        if (inv instanceof GrindstoneInventory grindstoneInventory) {
+                            if (id == SOURCE_TYPE_ANVIL_INPUT || id == SOURCE_TYPE_ANVIL_MATERIAL || id == SOURCE_TYPE_ANVIL_RESULT) {
+                                int experience = (id != SOURCE_TYPE_ANVIL_RESULT) ? 0 : grindstoneInventory.getResultExperience();
+                                return new GrindstoneItemAction(this.oldItem, this.newItem, id, experience);
+                            } else {
+                                return new SlotChangeAction(inv, this.inventorySlot, this.oldItem, this.newItem);
+                            }
+                        } else  {
+                            inv = player.getWindowById(Player.SMITHING_WINDOW_ID);
+                            if (inv instanceof SmithingInventory) {
+                                if (id == SOURCE_TYPE_ANVIL_INPUT || id == SOURCE_TYPE_ANVIL_MATERIAL || id == SOURCE_TYPE_ANVIL_OUTPUT || id == SOURCE_TYPE_ANVIL_RESULT) {
+                                    return new SmithingItemAction(this.oldItem, this.newItem, this.inventorySlot);
+                                }
+                            } else {
+                                log.debug("Player {} has no open anvil or grindstone inventory", player.getName());
+                                return null;
+                            }
+                        }
                     }
                 }
                 //-17 -15

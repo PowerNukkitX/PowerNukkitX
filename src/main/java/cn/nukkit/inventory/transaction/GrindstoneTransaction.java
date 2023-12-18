@@ -52,17 +52,11 @@ public class GrindstoneTransaction extends InventoryTransaction {
     @Override
     public void addAction(InventoryAction action) {
         super.addAction(action);
-        if (action instanceof GrindstoneItemAction) {
-            switch (((GrindstoneItemAction) action).getType()) {
-                case NetworkInventoryAction.SOURCE_TYPE_ANVIL_INPUT:
-                    this.firstItem = action.getTargetItem();
-                    break;
-                case NetworkInventoryAction.SOURCE_TYPE_ANVIL_RESULT:
-                    this.outputItem = action.getSourceItem();
-                    break;
-                case NetworkInventoryAction.SOURCE_TYPE_ANVIL_MATERIAL:
-                    this.secondItem = action.getTargetItem();
-                    break;
+        if (action instanceof GrindstoneItemAction grindstoneItemAction) {
+            switch (grindstoneItemAction.getType()) {
+                case NetworkInventoryAction.SOURCE_TYPE_ANVIL_INPUT -> this.firstItem = action.getTargetItem();
+                case NetworkInventoryAction.SOURCE_TYPE_ANVIL_RESULT -> this.outputItem = action.getSourceItem();
+                case NetworkInventoryAction.SOURCE_TYPE_ANVIL_MATERIAL -> this.secondItem = action.getTargetItem();
             }
         }
     }
@@ -79,15 +73,17 @@ public class GrindstoneTransaction extends InventoryTransaction {
             return false;
         }
 
-        Item air = Item.get(0);
-        Item first = firstItem != null ? firstItem : air;
-        Item second = secondItem != null ? secondItem : air;
+        Item first = firstItem != null ? firstItem : Item.AIR_ITEM;
+        Item second = secondItem != null ? secondItem : Item.AIR_ITEM;
 
-        // GrindstoneTransaction从数据包接受到的物品竟然和RepairItemTransaction接受到的物品在NBT "RepairCost"上存在区别,实际上也没必要检测这个,这里放宽检查
-        return first.equals(grindstoneInventory.getFirstItem(), true, true)
-                && second.equals(grindstoneInventory.getSecondItem(), true, true)
-                && outputItem.equals(grindstoneInventory.getResult(), true, false)
-                && !outputItem.hasEnchantments();
+        boolean firstEquals = first.equals(grindstoneInventory.getFirstItem(), true, true);
+        boolean secondEquals = second.equals(grindstoneInventory.getSecondItem(), true, true);
+        boolean outputItemEquals = outputItem.equals(grindstoneInventory.getResult(), true, false);
+        boolean isNotEnchanted = outputItemEquals ? !grindstoneInventory.getResult().hasEnchantments() : !outputItem.hasEnchantments();
+
+        // The GrindstoneTransaction and RepairItemTransaction receive items with a difference in the NBT "RepairCost".
+        // However, it is not necessary to check this difference. So, we relax the check here.
+        return firstEquals && secondEquals && outputItemEquals && isNotEnchanted;
     }
 
     @Override
@@ -99,9 +95,8 @@ public class GrindstoneTransaction extends InventoryTransaction {
         }
         GrindstoneInventory inventory = (GrindstoneInventory) getSource().getWindowById(Player.GRINDSTONE_WINDOW_ID);
         int exp = inventory.getResultExperience();
-        Item air = Item.get(0);
-        Item first = firstItem != null? firstItem : air;
-        Item second = secondItem != null? secondItem : air;
+        Item first = firstItem != null ? firstItem : Item.AIR_ITEM;
+        Item second = secondItem != null ? secondItem : Item.AIR_ITEM;
         GrindstoneEvent event = new GrindstoneEvent(inventory, first, outputItem, second, exp, source);
         this.source.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
@@ -138,9 +133,15 @@ public class GrindstoneTransaction extends InventoryTransaction {
         return outputItem == null? null : outputItem.clone();
     }
 
+    /**
+     * Checks if any action in the given list is of type `GrindstoneItemAction`.
+     *
+     * @param  actions   the list of inventory actions to check
+     * @return           true if any action is of type `GrindstoneItemAction`, false otherwise
+     */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static boolean checkForItemPart(List<InventoryAction> actions) {
-        return actions.stream().anyMatch(it-> it instanceof GrindstoneItemAction);
+        return actions.stream().anyMatch(action -> action instanceof GrindstoneItemAction);
     }
 }
