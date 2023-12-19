@@ -66,7 +66,7 @@ public class GiveCommand extends VanillaCommand {
         }
         if (list.hasResult(3)) {
             int damage = list.getResult(3);
-            item.setDamage(damage);
+            item.setMeta(damage);
         }
         if (list.hasResult(4)) {
             String json = list.getResult(4);
@@ -98,10 +98,10 @@ public class GiveCommand extends VanillaCommand {
             for (Item drop : drops) {
                 player.dropItem(drop);
             }
-            log.outputObjectWhisper(player, "commands.give.successRecipient", item.getDisplayName() + " (" + item.getNamespaceId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
+            log.outputObjectWhisper(player, "commands.give.successRecipient", item.getDisplayName() + " (" + item.getNamespaceId() + (item.getMeta() != 0 ? ":" + item.getMeta() : "") + ")",
                     String.valueOf(item.getCount()));
         }
-        log.addSuccess("commands.give.success", item.getDisplayName() + " (" + item.getNamespaceId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
+        log.addSuccess("commands.give.success", item.getDisplayName() + " (" + item.getNamespaceId() + (item.getMeta() != 0 ? ":" + item.getMeta() : "") + ")",
                 String.valueOf(item.getCount()),
                 players.stream().map(Player::getName).collect(Collectors.joining(","))).successCount(players.size()).output(true);
         return players.size();

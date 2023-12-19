@@ -86,7 +86,7 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
             case SOUTH_WEST, SOUTH_SOUTH_WEST, WEST_SOUTH_WEST -> face == BlockFace.WEST || face == BlockFace.SOUTH;
         };
         if (item.getId() == Item.DYE) {
-            BlockColor color = DyeColor.getByDyeData(item.getDamage()).getSignColor();
+            BlockColor color = DyeColor.getByDyeData(item.getMeta()).getSignColor();
             if (color.equals(sign.getColor(front)) || sign.isEmpty(front)) {
                 player.openSignEditor(this, front);
                 return;

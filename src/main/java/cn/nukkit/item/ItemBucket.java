@@ -91,7 +91,7 @@ public class ItemBucket extends Item {
 
 
     public boolean isEmpty() {
-        return getId() == BUCKET && getDamage() == 0;
+        return getId() == BUCKET && getMeta() == 0;
     }
 
 
@@ -115,7 +115,7 @@ public class ItemBucket extends Item {
         if (getId() != BUCKET) {
             return null;
         }
-        switch (this.getDamage()) {
+        switch (this.getMeta()) {
             case 2:
                 return "Cod";
             case 3:
@@ -248,7 +248,7 @@ public class ItemBucket extends Item {
             boolean nether = false;
             if (!canBeUsedOnDimension(player.getLevel().getDimension())) {
                 ev.setCancelled(true);
-                nether = this.getDamage() != 10;
+                nether = this.getMeta() != 10;
             }
 
             player.getServer().getPluginManager().callEvent(ev);
@@ -276,7 +276,7 @@ public class ItemBucket extends Item {
                 return true;
             } else if (nether) {
                 if (!player.isCreative()) {
-                    this.setDamage(0); // Empty bucket
+                    this.setMeta(0); // Empty bucket
                     player.getInventory().setItemInHand(this);
                 }
                 player.getLevel().addLevelSoundEvent(target, LevelSoundEventPacket.SOUND_FIZZ);
@@ -326,7 +326,7 @@ public class ItemBucket extends Item {
             return true;
         }
 
-        return dimension != Level.DIMENSION_NETHER || (getDamage() == 10 || getDamage() == 1);
+        return dimension != Level.DIMENSION_NETHER || (getMeta() == 10 || getMeta() == 1);
     }
 
 
@@ -335,7 +335,7 @@ public class ItemBucket extends Item {
             return;
         }
 
-        if (this.getDamage() == 10) {
+        if (this.getMeta() == 10) {
             level.addSound(block, Sound.BUCKET_EMPTY_LAVA);
         } else {
             level.addSound(block, Sound.BUCKET_EMPTY_WATER);
@@ -358,13 +358,13 @@ public class ItemBucket extends Item {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        return getId() == BUCKET && this.getDamage() == 1; // Milk
+        return getId() == BUCKET && this.getMeta() == 1; // Milk
     }
 
 
     @Override
     public boolean onUse(Player player, int ticksUsed) {
-        if (player.isSpectator() || this.getDamage() != 1) {
+        if (player.isSpectator() || this.getMeta() != 1) {
             return false;
         }
 

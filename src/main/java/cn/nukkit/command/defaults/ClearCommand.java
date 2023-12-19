@@ -48,7 +48,7 @@ public class ClearCommand extends VanillaCommand {
                             maxCount = list.getResult(3);
                         }
                     }
-                    item.setDamage(data);
+                    item.setMeta(data);
                 }
             }
 

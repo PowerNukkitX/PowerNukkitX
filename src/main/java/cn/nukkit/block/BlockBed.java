@@ -246,9 +246,9 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
         
         BlockEntityBed thisBed = null;
         try {
-            thisBed = createBlockEntity(new CompoundTag().putByte("color", item.getDamage()));
+            thisBed = createBlockEntity(new CompoundTag().putByte("color", item.getMeta()));
             BlockEntityHolder<?> nextBlock = (BlockEntityHolder<?>) next.getLevelBlock();
-            nextBlock.createBlockEntity(new CompoundTag().putByte("color", item.getDamage()));
+            nextBlock.createBlockEntity(new CompoundTag().putByte("color", item.getMeta()));
         } catch (Exception e) {
             log.warn("Failed to create the block entity {} at {} and {}", getBlockEntityType(), getLocation(), next.getLocation(), e);
             if (thisBed != null) {

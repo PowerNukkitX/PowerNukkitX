@@ -179,7 +179,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                         this.getLevel().addLevelEvent(this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_TAKE_WATER);
                     }
                 } else if (bucket.isWater() || bucket.isLava() || bucket.isPowderSnow()) {
-                    if (isFull() && !cauldron.isCustomColor() && !cauldron.hasPotion() && item.getDamage() == 8) {
+                    if (isFull() && !cauldron.isCustomColor() && !cauldron.hasPotion() && item.getMeta() == 8) {
                         break;
                     }
 
@@ -229,7 +229,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                     player.getInventory().setItemInHand(item);
                 }
 
-                BlockColor color = new ItemDye(item.getDamage()).getDyeColor().getLeatherColor();
+                BlockColor color = new ItemDye(item.getMeta()).getDyeColor().getLeatherColor();
                 if (!cauldron.isCustomColor()) {
                     cauldron.setCustomColor(color);
                 } else {
@@ -286,7 +286,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
             case ItemID.POTION:
             case ItemID.SPLASH_POTION:
             case ItemID.LINGERING_POTION:
-                if (!isEmpty() && (cauldron.hasPotion() ? cauldron.getPotionId() != item.getDamage() : item.getDamage() != 0)) {
+                if (!isEmpty() && (cauldron.hasPotion() ? cauldron.getPotionId() != item.getMeta() : item.getMeta() != 0)) {
                     clearWithFizz(cauldron, player);
                     consumePotion(item, player);
                     break;
@@ -295,8 +295,8 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                     break;
                 }
 
-                if (item.getDamage() != 0 && isEmpty()) {
-                    cauldron.setPotionId(item.getDamage());
+                if (item.getMeta() != 0 && isEmpty()) {
+                    cauldron.setPotionId(item.getMeta());
                 }
 
                 cauldron.setType(
@@ -434,7 +434,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                 if (bucket.getFishEntityId() != null) {
                     break;
                 }
-                if (item.getDamage() == 0) { //empty
+                if (item.getMeta() == 0) { //empty
                     if (!isFull() || cauldron.isCustomColor() || cauldron.hasPotion()) {
                         break;
                     }
@@ -449,7 +449,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                         this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.BUCKET_FILL_LAVA);
                     }
                 } else if (bucket.isWater() || bucket.isLava()) { //water or lava bucket
-                    if (isFull() && !cauldron.isCustomColor() && !cauldron.hasPotion() && item.getDamage() == 10) {
+                    if (isFull() && !cauldron.isCustomColor() && !cauldron.hasPotion() && item.getMeta() == 10) {
                         break;
                     }
 
@@ -480,7 +480,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
             case Item.POTION:
             case Item.SPLASH_POTION:
             case Item.LINGERING_POTION:
-                if (!isEmpty() && (cauldron.hasPotion() ? cauldron.getPotionId() != item.getDamage() : item.getDamage() != 0)) {
+                if (!isEmpty() && (cauldron.hasPotion() ? cauldron.getPotionId() != item.getMeta() : item.getMeta() != 0)) {
                     clearWithFizz(cauldron);
                     break;
                 }

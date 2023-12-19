@@ -81,7 +81,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
             int repair2;
             int repair3;
             if (result.getMaxDurability() != -1 && sacrifice.getId() == repairMaterial) {
-                repair = Math.min(result.getDamage(), result.getMaxDurability() / 4);
+                repair = Math.min(result.getMeta(), result.getMaxDurability() / 4);
                 if (repair <= 0) {
                     setResult(Item.get(0));
                     setLevelCost(0);
@@ -89,10 +89,10 @@ public class AnvilInventory extends FakeBlockUIComponent {
                 }
         
                 for(repair2 = 0; repair > 0 && repair2 < sacrifice.getCount(); ++repair2) {
-                    repair3 = result.getDamage() - repair;
-                    result.setDamage(repair3);
+                    repair3 = result.getMeta() - repair;
+                    result.setMeta(repair3);
                     ++extraCost;
-                    repair = Math.min(result.getDamage(), result.getMaxDurability() / 4);
+                    repair = Math.min(result.getMeta(), result.getMaxDurability() / 4);
                 }
     
             } else {
@@ -103,17 +103,17 @@ public class AnvilInventory extends FakeBlockUIComponent {
                 }
         
                 if ((result.getMaxDurability() != -1) && !enchantedBook) {
-                    repair = target.getMaxDurability() - target.getDamage();
-                    repair2 = sacrifice.getMaxDurability() - sacrifice.getDamage();
+                    repair = target.getMaxDurability() - target.getMeta();
+                    repair2 = sacrifice.getMaxDurability() - sacrifice.getMeta();
                     repair3 = repair2 + result.getMaxDurability() * 12 / 100;
                     int totalRepair = repair + repair3;
                     int finalDamage = result.getMaxDurability() - totalRepair + 1;
                     if (finalDamage < 0) {
                         finalDamage = 0;
                     }
-            
-                    if (finalDamage < result.getDamage()) {
-                        result.setDamage(finalDamage);
+
+                    if (finalDamage < result.getMeta()) {
+                        result.setMeta(finalDamage);
                         extraCost += 2;
                     }
                 }

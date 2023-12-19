@@ -23,7 +23,7 @@ public class ItemBlock extends StringItemBase {
     }
 
     @Override
-    public void setDamage(Integer meta) {
+    public void setMeta(Integer meta) {
         //todo fix itemblock setdamage
         /*int blockMeta;
         if (meta != null) {

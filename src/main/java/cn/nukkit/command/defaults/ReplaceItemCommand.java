@@ -126,7 +126,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                 }
                 if (list.hasResult(notOldItemHandling ? 6 : 7)) {
                     int data = list.getResult(notOldItemHandling ? 6 : 7);
-                    item.setDamage(data);
+                    item.setMeta(data);
                 }
                 if (list.hasResult(notOldItemHandling ? 7 : 8)) {
                     String components = list.getResult(notOldItemHandling ? 7 : 8);
@@ -165,7 +165,7 @@ public class ReplaceItemCommand extends VanillaCommand {
         }
         if (list.hasResult(notOldItemHandling ? 6 : 7)) {
             int data = list.getResult(notOldItemHandling ? 6 : 7);
-            item.setDamage(data);
+            item.setMeta(data);
         }
         if (list.hasResult(notOldItemHandling ? 7 : 8)) {
             String components = list.getResult(notOldItemHandling ? 7 : 8);

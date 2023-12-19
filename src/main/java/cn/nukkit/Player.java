@@ -3292,9 +3292,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         if ((chestplate == null || chestplate.getId() != ItemID.ELYTRA)) {
                             this.setGliding(false);
                         } else if (this.age % (20 * (chestplate.getEnchantmentLevel(Enchantment.ID_DURABILITY) + 1)) == 0) {
-                            int newDamage = chestplate.getDamage() + 1;
+                            int newDamage = chestplate.getMeta() + 1;
                             if (newDamage < chestplate.getMaxDurability()) {
-                                chestplate.setDamage(newDamage);
+                                chestplate.setMeta(newDamage);
                                 playerInventory.setChestplate(chestplate);
                             } else {
                                 this.setGliding(false);
@@ -5695,12 +5695,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     Integer itemToRepair = itemsWithMending.get(rand.nextInt(itemsWithMending.size()));
                     Item toRepair = inventory.getItem(itemToRepair);
                     if (toRepair instanceof ItemTool || toRepair instanceof ItemArmor) {
-                        if (toRepair.getDamage() > 0) {
-                            int dmg = toRepair.getDamage() - 2;
+                        if (toRepair.getMeta() > 0) {
+                            int dmg = toRepair.getMeta() - 2;
                             if (dmg < 0) {
                                 dmg = 0;
                             }
-                            toRepair.setDamage(dmg);
+                            toRepair.setMeta(dmg);
                             inventory.setItem(itemToRepair, toRepair);
                             return true;
                         }

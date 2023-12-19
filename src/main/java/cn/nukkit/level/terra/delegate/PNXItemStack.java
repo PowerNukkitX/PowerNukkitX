@@ -46,16 +46,16 @@ public record PNXItemStack(cn.nukkit.item.Item innerItem) implements ItemStack, 
 
     @Override
     public int getDamage() {
-        return innerItem.getDamage();
+        return innerItem.getMeta();
     }
 
     @Override
     public void setDamage(int i) {
-        innerItem.setDamage(i);
+        innerItem.setMeta(i);
     }
 
     @Override
     public boolean hasDamage() {
-        return innerItem.getDamage() != 0;
+        return innerItem.getMeta() != 0;
     }
 }

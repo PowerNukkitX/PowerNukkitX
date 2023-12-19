@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,7 +18,7 @@ import java.util.Map;
  */
 public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer> {
     private static final Object2IntOpenHashMap<String> REGISTRY = new Object2IntOpenHashMap<>();
-
+    private static final Object2ObjectOpenHashMap<String, String> FALLBACK_BLOCK_ITEM_ID = new Object2ObjectOpenHashMap<>();
     @Override
     public void init() {
         try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("runtime_item_states.json")) {

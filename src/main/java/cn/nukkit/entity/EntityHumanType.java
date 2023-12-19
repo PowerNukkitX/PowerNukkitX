@@ -191,11 +191,11 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
             }
 
             if (armor instanceof ItemShield)
-                armor.setDamage(armor.getDamage() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
+                armor.setMeta(armor.getMeta() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
             else
-                armor.setDamage(armor.getDamage() + Math.max(1, (int) (event.getDamage() / 4.0f)));
+                armor.setMeta(armor.getMeta() + Math.max(1, (int) (event.getDamage() / 4.0f)));
 
-            if (armor.getDamage() >= armor.getMaxDurability()) {
+            if (armor.getMeta() >= armor.getMaxDurability()) {
                 getLevel().addSound(this, Sound.RANDOM_BREAK);
                 return Item.get(BlockID.AIR, 0, 0);
             }

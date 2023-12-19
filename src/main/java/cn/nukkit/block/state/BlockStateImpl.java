@@ -40,7 +40,7 @@ record BlockStateImpl(String identifier,
     }
 
     public BlockStateImpl(String identifier, int blockStateHash, List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> propertyValues) {
-        this(identifier,
+        this(identifier.intern(),
                 blockStateHash,
                 computeSpecialValue(propertyValues),
                 propertyValues,

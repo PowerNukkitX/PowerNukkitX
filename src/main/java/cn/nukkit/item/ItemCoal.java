@@ -41,12 +41,12 @@ public class ItemCoal extends Item {
             replaceWith = "isCharcoal()"
     )
     @Override
-    public int getDamage() {
-        return super.getDamage();
+    public int getMeta() {
+        return super.getMeta();
     }
 
 
     public boolean isCharcoal() {
-        return getId() == COAL && super.getDamage() == 1; 
+        return getId() == COAL && super.getMeta() == 1;
     }
 }

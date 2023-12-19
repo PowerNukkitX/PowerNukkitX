@@ -26,13 +26,13 @@ public class ItemArrow extends Item {
     }
 
     @Override
-    public void setDamage(Integer meta) {
-        super.setDamage(meta);
+    public void setMeta(Integer meta) {
+        super.setMeta(meta);
         updateName();
     }
 
     private void updateName() {
-        final int type = getDamage();
+        final int type = getMeta();
         if (type <= 0) {
             name = GENERIC_NAME;
             return;
@@ -57,7 +57,7 @@ public class ItemArrow extends Item {
 
     @Nullable
     public Potion getTippedArrowPotion() {
-        final int damage = getDamage();
+        final int damage = getMeta();
         if (damage > 0) {
             try {
                 return Potion.getPotion(damage - 1);

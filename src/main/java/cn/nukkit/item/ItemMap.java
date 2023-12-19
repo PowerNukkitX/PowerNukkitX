@@ -47,8 +47,8 @@ public class ItemMap extends Item {
     }
 
     @Override
-    public void setDamage(Integer meta) {
-        super.setDamage(meta);
+    public void setMeta(Integer meta) {
+        super.setMeta(meta);
         updateName();
     }
 

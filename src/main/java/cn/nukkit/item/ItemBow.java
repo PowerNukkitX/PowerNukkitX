@@ -140,8 +140,8 @@ public class ItemBow extends ItemTool {
                 if (!this.isUnbreakable()) {
                     Enchantment durability = this.getEnchantment(Enchantment.ID_DURABILITY);
                     if (!(durability != null && durability.getLevel() > 0 && (100 / (durability.getLevel() + 1)) <= new Random().nextInt(100))) {
-                        this.setDamage(this.getDamage() + 1);
-                        if (this.getDamage() >= getMaxDurability()) {
+                        this.setMeta(this.getMeta() + 1);
+                        if (this.getMeta() >= getMaxDurability()) {
                             player.getLevel().addSound(player, Sound.RANDOM_BREAK);
                             this.count--;
                         }

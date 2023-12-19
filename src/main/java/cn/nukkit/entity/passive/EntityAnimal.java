@@ -46,7 +46,7 @@ public abstract class EntityAnimal extends EntityIntelligent {
         EntityEventPacket pk = new EntityEventPacket();
         pk.event = EntityEventPacket.EATING_ITEM;
         pk.eid = this.getId();
-        pk.data = RuntimeItems.getFullId(item.getNetworkId(), item.getDamage());
+        pk.data = RuntimeItems.getFullId(item.getNetworkId(), item.getMeta());
         Server.broadcastPacket(this.getViewers().values(), pk);
     }
 

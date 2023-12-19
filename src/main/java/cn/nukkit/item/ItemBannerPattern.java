@@ -52,8 +52,8 @@ public class ItemBannerPattern extends Item {
     }
 
     @Override
-    public void setDamage(Integer meta) {
-        super.setDamage(meta);
+    public void setMeta(Integer meta) {
+        super.setMeta(meta);
         updateName();
     }
 
@@ -62,7 +62,7 @@ public class ItemBannerPattern extends Item {
         if (getId() != BANNER_PATTERN) {
             return BannerPattern.Type.PATTERN_CREEPER;
         }
-        return switch (getDamage()) {
+        return switch (getMeta()) {
             default -> BannerPattern.Type.PATTERN_CREEPER;
             case PATTERN_SKULL_CHARGE -> BannerPattern.Type.PATTERN_SKULL;
             case PATTERN_FLOWER_CHARGE -> BannerPattern.Type.PATTERN_FLOWER;

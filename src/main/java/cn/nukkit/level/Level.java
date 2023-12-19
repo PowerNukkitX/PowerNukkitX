@@ -2772,7 +2772,7 @@ public class Level implements ChunkManager, Metadatable {
         this.getVibrationManager().callVibrationEvent(new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.BLOCK_DESTROY));
 
         item.useOn(target);
-        if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
+        if (item.isTool() && item.getMeta() >= item.getMaxDurability()) {
             if (player != null) {
                 addSound(player, Sound.RANDOM_BREAK);
             }
@@ -2890,7 +2890,7 @@ public class Level implements ChunkManager, Metadatable {
                     target.onPlayerRightClick(player, item, face, new Vector3(fx, fy, fz));
                 }
                 if (((!player.isSneaking() && !player.isFlySneaking()) || player.getInventory().getItemInHand().isNull()) && target.canBeActivated() && target.onActivate(item, player)) {
-                    if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
+                    if (item.isTool() && item.getMeta() >= item.getMaxDurability()) {
                         addSound(player, Sound.RANDOM_BREAK);
                         item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
                     }
@@ -2914,7 +2914,7 @@ public class Level implements ChunkManager, Metadatable {
                 player.getLevel().sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
             }
         } else if (target.canBeActivated() && target.onActivate(item, player)) {
-            if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
+            if (item.isTool() && item.getMeta() >= item.getMaxDurability()) {
                 item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
             }
             return item;

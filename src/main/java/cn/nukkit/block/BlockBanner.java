@@ -126,7 +126,7 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
         }
 
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.BANNER)
-                .putInt("Base", item.getDamage() & 0xf);
+                .putInt("Base", item.getMeta() & 0xf);
 
         Tag type = item.getNamedTagEntry("Type");
         if (type instanceof IntTag) {
@@ -166,7 +166,7 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
         BlockEntityBanner banner = getBlockEntity();
         Item item = Item.get(ItemID.BANNER);
         if (banner != null) {
-            item.setDamage(banner.getBaseColor() & 0xf);
+            item.setMeta(banner.getBaseColor() & 0xf);
             int type = banner.namedTag.getInt("Type");
             if (type > 0) {
                 item.setNamedTag((item.hasCompoundTag() ? item.getNamedTag() : new CompoundTag())

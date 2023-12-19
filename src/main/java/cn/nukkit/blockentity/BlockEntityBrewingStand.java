@@ -243,7 +243,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
                 Item result = recipe.getResult();
                 result.setCount(previous.getCount());
                 if (recipe instanceof ContainerRecipe) {
-                    result.setDamage(previous.getDamage());
+                    result.setMeta(previous.getMeta());
                 }
                 inventory.setItem(i + 1, result);
                 mixed = true;

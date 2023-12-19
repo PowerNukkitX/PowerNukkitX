@@ -1,7 +1,7 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.*;
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.inventory.recipe.DefaultDescriptor;
 import cn.nukkit.inventory.recipe.ItemDescriptor;
 import cn.nukkit.inventory.recipe.ItemTagDescriptor;
@@ -52,9 +52,9 @@ public class CraftingManager {
         } else {
             int i = MinecraftNamespaceComparator.compareFNV(i1.getNamespaceId(), i2.getNamespaceId());
             if (i == 0) {
-                if (i1.getDamage() > i2.getDamage()) {
+                if (i1.getMeta() > i2.getMeta()) {
                     return 1;
-                } else if (i1.getDamage() < i2.getDamage()) {
+                } else if (i1.getMeta() < i2.getMeta()) {
                     return -1;
                 } else return Integer.compare(i1.getCount(), i2.getCount());
             } else return i;
@@ -205,7 +205,7 @@ public class CraftingManager {
 
     ("Public only in PowerNukkit")
     public static int getItemHash(Item item) {
-        return getItemHash(item, item.getDamage());
+        return getItemHash(item, item.getMeta());
     }
 
 
@@ -225,10 +225,10 @@ public class CraftingManager {
         int hash = 17;
         hash *= 31 + ingredientId;
         hash *= 31 + (ingredientId == ItemID.STRING_IDENTIFIED_ITEM ? ingredient.getNamespaceId().hashCode() : 0);
-        hash *= 31 + potion.getDamage();
+        hash *= 31 + potion.getMeta();
         hash *= 31 + potionId;
         hash *= 31 + (potionId == ItemID.STRING_IDENTIFIED_ITEM ? potion.getNamespaceId().hashCode() : 0);
-        hash *= 31 + potion.getDamage();
+        hash *= 31 + potion.getMeta();
         return hash;
     }
 
@@ -715,7 +715,7 @@ public class CraftingManager {
     private void addRecipe(Recipe recipe) {
         ++RECIPE_COUNT;
         if (recipe instanceof CraftingRecipe || recipe instanceof StonecutterRecipe) {
-            UUID id = Utils.dataToUUID(String.valueOf(RECIPE_COUNT), String.valueOf(recipe.getResult().getId()), String.valueOf(recipe.getResult().getDamage()), String.valueOf(recipe.getResult().getCount()), Arrays.toString(recipe.getResult().getCompoundTag()));
+            UUID id = Utils.dataToUUID(String.valueOf(RECIPE_COUNT), String.valueOf(recipe.getResult().getId()), String.valueOf(recipe.getResult().getMeta()), String.valueOf(recipe.getResult().getCount()), Arrays.toString(recipe.getResult().getCompoundTag()));
             if (recipe instanceof CraftingRecipe) {
                 ((CraftingRecipe) recipe).setId(id);
             } else {
@@ -858,7 +858,7 @@ public class CraftingManager {
                     case "smoker" -> this.registerRecipe(furnaceRecipe = new SmokerRecipe(resultItem, inputItem));
                     case "campfire" -> this.registerRecipe(furnaceRecipe = new CampfireRecipe(resultItem, inputItem));
                 }
-                var xp = furnaceXpConfig.getDouble(inputItem.getNamespaceId() + ":" + inputItem.getDamage());
+                var xp = furnaceXpConfig.getDouble(inputItem.getNamespaceId() + ":" + inputItem.getMeta());
                 if (xp != 0) {
                     this.setRecipeXp(furnaceRecipe, xp);
                 }
@@ -950,10 +950,10 @@ public class CraftingManager {
                     return null;
                 }
                 itemDescriptors.add(new DefaultDescriptor(recipeItem));
-                id.append(StringUtils.fastSplit(":", recipeItem.getNamespaceId()).get(1).toLowerCase()).append(recipeItem.getDamage()).append('_');
+                id.append(StringUtils.fastSplit(":", recipeItem.getNamespaceId()).get(1).toLowerCase()).append(recipeItem.getMeta()).append('_');
             }
         }
-        id.append(StringUtils.fastSplit(":", result.getNamespaceId()).get(1).toLowerCase()).append(result.getDamage());
+        id.append(StringUtils.fastSplit(":", result.getNamespaceId()).get(1).toLowerCase()).append(result.getMeta());
         return switch (craftingBlock) {
             case "crafting_table" -> new ShapelessRecipe(id.toString(), priority, result, itemDescriptors);
             case "shulker_box" -> new ShulkerBoxRecipe(id.toString(), priority, result, itemDescriptors);
@@ -1005,10 +1005,10 @@ public class CraftingManager {
                     return null;
                 }
                 ingredients.put(ingredientChar, new DefaultDescriptor(recipeItem));
-                id.append(StringUtils.fastSplit(":", recipeItem.getNamespaceId()).get(1).toLowerCase()).append(recipeItem.getDamage()).append('_');
+                id.append(StringUtils.fastSplit(":", recipeItem.getNamespaceId()).get(1).toLowerCase()).append(recipeItem.getMeta()).append('_');
             }
         }
-        id.append(StringUtils.fastSplit(":", primaryResult.getNamespaceId()).get(1).toLowerCase()).append(primaryResult.getDamage());
+        id.append(StringUtils.fastSplit(":", primaryResult.getNamespaceId()).get(1).toLowerCase()).append(primaryResult.getMeta());
         return new ShapedRecipe(id.toString(), priority, primaryResult, shape, ingredients, extraResults);
     }
 
@@ -1267,7 +1267,7 @@ public class CraftingManager {
                 if (data == 32767) {
                     i = i.createFuzzyCraftingRecipe();
                 } else {
-                    i.setDamage(data);
+                    i.setMeta(data);
                 }
             }
             i.setCount(count);

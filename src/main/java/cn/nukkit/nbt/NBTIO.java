@@ -45,7 +45,7 @@ public class NBTIO {
     public static CompoundTag putItemHelper(Item item, Integer slot) {
         CompoundTag tag = new CompoundTag((String) null)
                 .putByte("Count", item.getCount())
-                .putShort("Damage", item.getDamage());
+                .putShort("Damage", item.getMeta());
         int id = item.getId();
         if (id == ItemID.STRING_IDENTIFIED_ITEM || Block.ID_TO_CUSTOM_BLOCK.containsKey(255 - id)) {
             tag.putString("Name", item.getNamespaceId());
@@ -81,16 +81,16 @@ public class NBTIO {
                     item = Item.get(id, damage, amount);
                 } catch (Exception e) {
                     item = Item.fromString(tag.getString("id"));
-                    if (item.getDamage() == 0) {
-                        item.setDamage(damage);
+                    if (item.getMeta() == 0) {
+                        item.setMeta(damage);
                     }
                     item.setCount(amount);
                 }
             }
         } else {
             item = Item.fromString(tag.getString("Name"));
-            if (item.getDamage() == 0) {
-                item.setDamage(damage);
+            if (item.getMeta() == 0) {
+                item.setMeta(damage);
             }
             item.setCount(amount);
         }

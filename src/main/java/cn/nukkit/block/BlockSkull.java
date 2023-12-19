@@ -133,7 +133,7 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
                 return false;
         }
         CompoundTag nbt = new CompoundTag()
-                .putByte("SkullType", item.getDamage())
+                .putByte("SkullType", item.getMeta())
                 .putByte("Rot", (int) Math.floor((player.yaw * 16 / 360) + 0.5) & 0x0f);
         if (item.hasCustomBlockData()) {
             for (Tag aTag : item.getCustomBlockData().getAllTags()) {

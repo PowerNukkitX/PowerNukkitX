@@ -86,7 +86,7 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
     protected void correctNBT(CompoundTag nbt, Item item) {
         if (item != null) {
             if (item.getId() == Item.SPLASH_POTION || item.getId() == Item.LINGERING_POTION) {
-                nbt.putInt("PotionId", item.getDamage());
+                nbt.putInt("PotionId", item.getMeta());
             }
         }
     }

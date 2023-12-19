@@ -165,11 +165,11 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
         
         result.setCompoundTag(tag);
         if (!secondItem.isNull() && firstItem.getMaxDurability() > 0) {
-            int first = firstItem.getMaxDurability() - firstItem.getDamage();
-            int second = secondItem.getMaxDurability() - secondItem.getDamage();
+            int first = firstItem.getMaxDurability() - firstItem.getMeta();
+            int second = secondItem.getMaxDurability() - secondItem.getMeta();
             int reduction = first + second + firstItem.getMaxDurability() * 5 / 100;
             int resultingDamage = Math.max(firstItem.getMaxDurability() - reduction + 1, 0);
-            result.setDamage(resultingDamage);
+            result.setMeta(resultingDamage);
         }
         setResult(result, send);
         recalculateResultExperience();

@@ -47,7 +47,7 @@ public final class BlockProperties {
 
     public BlockProperties(String identifier, BlockPropertyType<?>... properties) {
         Identifier.assertValid(identifier);
-        this.identifier = identifier;
+        this.identifier = identifier.intern();
         this.properties = properties;
 
         byte specialValueBits = 0;

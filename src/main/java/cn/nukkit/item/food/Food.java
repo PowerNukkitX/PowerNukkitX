@@ -1,7 +1,7 @@
 package cn.nukkit.item.food;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.*;
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.player.PlayerEatFoodEvent;
 import cn.nukkit.item.Item;
@@ -158,7 +158,7 @@ public abstract class Food {
 
     public static Food getByRelative(Item item) {
         Objects.requireNonNull(item);
-        return getByRelative(item.getId(), item.getNamespaceId(), item.getDamage());
+        return getByRelative(item.getId(), item.getNamespaceId(), item.getMeta());
     }
 
     public static Food getByRelative(Block block) {

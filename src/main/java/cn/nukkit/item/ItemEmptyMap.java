@@ -22,13 +22,13 @@ public class ItemEmptyMap extends Item {
     }
 
     @Override
-    public void setDamage(Integer meta) {
-        super.setDamage(meta);
+    public void setMeta(Integer meta) {
+        super.setMeta(meta);
         updateName();
     }
 
     private void updateName() {
-        if (getDamage() == 2) {
+        if (getMeta() == 2) {
             name = "Empty Locator Map";
         } else {
             name = "Empty Map";

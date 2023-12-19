@@ -274,7 +274,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
         inv.setItem(slot, target);
 
         if (result != null) {
-            if (result.getId() != origin.getId() || result.getDamage() != origin.getDamage()) {
+            if (result.getId() != origin.getId() || result.getMeta() != origin.getMeta()) {
                 Item[] fit = inv.addItem(result);
 
                 if (fit.length > 0) {

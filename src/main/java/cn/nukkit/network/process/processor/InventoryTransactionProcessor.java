@@ -3,7 +3,6 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntity;
@@ -442,7 +441,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 }
                 if (target.onInteract(player, item, useItemOnEntityData.clickPos) && (player.isSurvival() || player.isAdventure())) {
                     if (item.isTool()) {
-                        if (item.useOn(target) && item.getDamage() >= item.getMaxDurability()) {
+                        if (item.useOn(target) && item.getMeta() >= item.getMaxDurability()) {
                             player.getLevel().addSound(player, Sound.RANDOM_BREAK);
                             item = new ItemBlock(Block.get(BlockID.AIR));
                         }
@@ -522,7 +521,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     }
                 }
                 if (item.isTool() && (player.isSurvival() || player.isAdventure())) {
-                    if (item.useOn(target) && item.getDamage() >= item.getMaxDurability()) {
+                    if (item.useOn(target) && item.getMeta() >= item.getMaxDurability()) {
                         player.getLevel().addSound(player, Sound.RANDOM_BREAK);
                         player.getInventory().setItemInHand(Item.get(0));
                     } else {

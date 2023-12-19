@@ -52,7 +52,7 @@ public class ItemGoatHorn extends StringItemBase {
     }
 
     public void playSound(Player player) {
-        switch (this.getDamage()) {
+        switch (this.getMeta()) {
             case 0 -> player.getLevel().addSound(player, Sound.HORN_CALL_0);
             case 1 -> player.getLevel().addSound(player, Sound.HORN_CALL_1);
             case 2 -> player.getLevel().addSound(player, Sound.HORN_CALL_2);

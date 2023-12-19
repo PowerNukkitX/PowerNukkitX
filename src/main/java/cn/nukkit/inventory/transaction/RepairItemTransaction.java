@@ -155,17 +155,17 @@ public class RepairItemTransaction extends InventoryTransaction {
 
             if (this.inputItem.getMaxDurability() != -1 && this.matchRepairItem()) {
                 int maxRepairDamage = this.inputItem.getMaxDurability() / 4;
-                int repairDamage = Math.min(this.inputItem.getDamage(), maxRepairDamage);
+                int repairDamage = Math.min(this.inputItem.getMeta(), maxRepairDamage);
                 if (repairDamage <= 0) {
                     return false;
                 }
 
-                int damage = this.inputItem.getDamage();
+                int damage = this.inputItem.getMeta();
                 for (; repairDamage > 0 && cost < this.materialItem.getCount(); cost++) {
                     damage = damage - repairDamage;
                     repairDamage = Math.min(damage, maxRepairDamage);
                 }
-                if (this.outputItem.getDamage() != damage) {
+                if (this.outputItem.getMeta() != damage) {
                     return false;
                 }
             } else {
@@ -175,13 +175,13 @@ public class RepairItemTransaction extends InventoryTransaction {
                 }
 
                 if (!consumeEnchantedBook && this.inputItem.getMaxDurability() != -1) {
-                    int damage = this.inputItem.getDamage() - this.inputItem.getMaxDurability() + this.materialItem.getDamage() - this.inputItem.getMaxDurability() * 12 / 100 + 1;
+                    int damage = this.inputItem.getMeta() - this.inputItem.getMaxDurability() + this.materialItem.getMeta() - this.inputItem.getMaxDurability() * 12 / 100 + 1;
                     if (damage < 0) {
                         damage = 0;
                     }
 
-                    if (damage < this.inputItem.getDamage()) {
-                        if (this.outputItem.getDamage() != damage) {
+                    if (damage < this.inputItem.getMeta()) {
+                        if (this.outputItem.getMeta() != damage) {
                             return false;
                         }
                         cost += 2;
@@ -305,15 +305,15 @@ public class RepairItemTransaction extends InventoryTransaction {
 
     private boolean matchMapRecipe() {
         if (this.inputItem.getId() == Item.EMPTY_MAP) {
-            return this.inputItem.getDamage() != 2 && this.materialItem.getId() == Item.COMPASS // locator
-                    && this.outputItem.getId() == Item.EMPTY_MAP && this.outputItem.getDamage() == 2 && this.outputItem.getCount() == 1;
-        } else if (this.inputItem.getId() == Item.MAP && this.outputItem.getDamage() == this.inputItem.getDamage()) {
+            return this.inputItem.getMeta() != 2 && this.materialItem.getId() == Item.COMPASS // locator
+                    && this.outputItem.getId() == Item.EMPTY_MAP && this.outputItem.getMeta() == 2 && this.outputItem.getCount() == 1;
+        } else if (this.inputItem.getId() == Item.MAP && this.outputItem.getMeta() == this.inputItem.getMeta()) {
             if (this.materialItem.getId() == Item.COMPASS) { // locator
-                return this.inputItem.getDamage() != 2 && this.outputItem.getId() == Item.MAP && this.outputItem.getCount() == 1;
+                return this.inputItem.getMeta() != 2 && this.outputItem.getId() == Item.MAP && this.outputItem.getCount() == 1;
             } else if (this.materialItem.getId() == Item.EMPTY_MAP) { // clone
                 return this.outputItem.getId() == Item.MAP && this.outputItem.getCount() == 2;
             } else if (this.materialItem.getId() == Item.PAPER && this.materialItem.getCount() >= 8) { // zoom out
-                return this.inputItem.getDamage() < 3 && this.outputItem.getId() == Item.MAP && this.outputItem.getCount() == 1;
+                return this.inputItem.getMeta() < 3 && this.outputItem.getId() == Item.MAP && this.outputItem.getCount() == 1;
             }
         }
         return false;
