@@ -100,11 +100,11 @@ public abstract class BlockSlab extends BlockTransparentMeta {
         setOnTop(false);
         if (face == BlockFace.DOWN) {
             if (target instanceof BlockSlab slab && slab.isOnTop() && isSameType((BlockSlab) target)) {
-                this.getLevel().setBlock(target, getCurrentState().withBlockId(doubleSlab).getBlock(target), true);
+                this.getLevel().setBlock(target, getBlockState().withBlockId(doubleSlab).getBlock(target), true);
 
                 return true;
             } else if (block instanceof BlockSlab && isSameType((BlockSlab) block)) {
-                this.getLevel().setBlock(block, getCurrentState().withBlockId(doubleSlab).getBlock(target), true);
+                this.getLevel().setBlock(block, getBlockState().withBlockId(doubleSlab).getBlock(target), true);
 
                 return true;
             } else {
@@ -112,11 +112,11 @@ public abstract class BlockSlab extends BlockTransparentMeta {
             }
         } else if (face == BlockFace.UP) {
             if (target instanceof BlockSlab slab && !slab.isOnTop() && isSameType((BlockSlab) target)) {
-                this.getLevel().setBlock(target, getCurrentState().withBlockId(doubleSlab).getBlock(target), true);
+                this.getLevel().setBlock(target, getBlockState().withBlockId(doubleSlab).getBlock(target), true);
 
                 return true;
             } else if (block instanceof BlockSlab && isSameType((BlockSlab) block)) {
-                this.getLevel().setBlock(block, getCurrentState().withBlockId(doubleSlab).getBlock(target), true);
+                this.getLevel().setBlock(block, getBlockState().withBlockId(doubleSlab).getBlock(target), true);
 
                 return true;
             }
@@ -124,7 +124,7 @@ public abstract class BlockSlab extends BlockTransparentMeta {
         } else {
             if (block instanceof BlockSlab) {
                 if (isSameType((BlockSlab) block)) {
-                    this.getLevel().setBlock(block, getCurrentState().withBlockId(doubleSlab).getBlock(block), true);
+                    this.getLevel().setBlock(block, getBlockState().withBlockId(doubleSlab).getBlock(block), true);
 
                     return true;
                 }

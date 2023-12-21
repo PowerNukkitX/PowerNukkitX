@@ -53,7 +53,7 @@ public class BlockCherryLog extends BlockLog {
 
     @Override
     public BlockState getStrippedState() {
-        return getCurrentState().withBlockId(STRIPPED_CHERRY_LOG);
+        return getBlockState().withBlockId(STRIPPED_CHERRY_LOG);
     }
 }
 

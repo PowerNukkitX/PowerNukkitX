@@ -2,7 +2,6 @@ package cn.nukkit.item.customitem;
 
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.item.StringItem;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

@@ -67,7 +67,7 @@ public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, 
 
     @Override
     public BlockState getStateWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
-        return getCurrentState().withBlockId(getCopperId(isWaxed(), oxidizationLevel));
+        return getBlockState().withBlockId(getCopperId(isWaxed(), oxidizationLevel));
     }
 
 

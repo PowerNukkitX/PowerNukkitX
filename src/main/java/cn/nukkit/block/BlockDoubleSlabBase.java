@@ -35,7 +35,7 @@ public abstract class BlockDoubleSlabBase extends BlockSolidMeta {
 
     @Override
     public Item toItem() {
-        return getCurrentState().forItem().withBlockId(getSingleSlabId()).asItemBlock();
+        return getBlockState().forItem().withBlockId(getSingleSlabId()).asItemBlock();
     }
 
 

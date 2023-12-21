@@ -258,7 +258,7 @@ public class BlockSnowLayer extends BlockFallableMeta {
         }
 
         int snowHeight = toMelt.getIntValue(SNOW_HEIGHT) - layers;
-        Block newState = snowHeight < 0 ? get(AIR) : getCurrentState().withProperty(SNOW_HEIGHT, snowHeight).getBlock(toMelt);
+        Block newState = snowHeight < 0 ? get(AIR) : getBlockState().withProperty(SNOW_HEIGHT, snowHeight).getBlock(toMelt);
         BlockFadeEvent event = new BlockFadeEvent(toMelt, newState);
         level.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {

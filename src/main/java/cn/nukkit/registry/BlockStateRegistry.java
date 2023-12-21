@@ -14,7 +14,6 @@ public final class BlockStateRegistry extends BaseRegistry<Integer, BlockState, 
 
     @Override
     public void init() {
-
     }
 
     @Override
@@ -23,7 +22,10 @@ public final class BlockStateRegistry extends BaseRegistry<Integer, BlockState, 
     }
 
     public BlockState get(int blockHash) {
-        return REGISTRY.get(blockHash);
+        BlockState blockState = REGISTRY.get(blockHash);
+        if (blockState == null) {
+            throw new IllegalArgumentException("Get the Block State from a unknown blockhash: " + blockHash);
+        } else return blockState;
     }
 
     @Override

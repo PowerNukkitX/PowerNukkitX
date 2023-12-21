@@ -24,6 +24,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.registry.BlockRegistry;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.BlockColor;
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonParser;
@@ -56,11 +57,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public int layer;
 
     public static Block get(String id) {
-        return BlockRegistry.get(id);
+        return Registries.BLOCK.get(id);
     }
 
     public static Block get(String id, Position pos) {
-        return BlockRegistry.get(id, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), pos.level);
+        return Registries.BLOCK.get(id, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), pos.level);
     }
 
     public static Block get(String id, Position pos, int layer) {
@@ -70,7 +71,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public static Block get(String id, Level level, int x, int y, int z) {
-        return BlockRegistry.get(id, x, y, z, level);
+        return Registries.BLOCK.get(id, x, y, z, level);
     }
 
     public static Block get(String id, Level level, int x, int y, int z, int layer) {
@@ -95,13 +96,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public Block() {
-        super(0, 0, 0, null);
-        this.blockstate = this.getProperties().getDefaultState();
+        this(null);
     }
 
-    public Block(BlockState blockState) {
+    public Block(@Nullable BlockState blockState) {
         super(0, 0, 0, null);
-        if (getProperties().containBlockState(blockState)) {
+        if (blockState != null || getProperties().containBlockState(blockState)) {
             this.blockstate = blockState;
         } else {
             this.blockstate = this.getProperties().getDefaultState();
@@ -140,7 +140,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public boolean onBreak(Item item) {
-        return this.getLevel().setBlock(this, layer, BlockRegistry.get(AIR), true, true);
+        return this.getLevel().setBlock(this, layer, Block.get(AIR), true, true);
     }
 
     public int onUpdate(int type) {
@@ -424,7 +424,17 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return color;
     }
 
-    public abstract String getName();
+    public String getName() {
+        var path = this.blockstate.getIdentifier().split(":")[1];
+        StringBuilder result = new StringBuilder();
+        String[] parts = path.split("_");
+        for (String part : parts) {
+            if (!part.isEmpty()) {
+                result.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1)).append(" ");
+            }
+        }
+        return result.toString().trim().intern();
+    }
 
     /**
      * The properties that fully describe all possible and valid states that this block can have.
@@ -433,8 +443,13 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public abstract BlockProperties getProperties();
 
     @NotNull
-    public String getId() {
+    public final String getId() {
         return this.getProperties().getIdentifier();
+    }
+
+    @NotNull
+    public String getItemId() {
+        return getId();
     }
 
     public Map<BlockPropertyType<?>, BlockPropertyType.BlockPropertyValue<?, ?, ?>> getPropertyValues() {
@@ -448,7 +463,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return this.blockstate == BlockAir.STATE;
     }
 
-    public BlockState getCurrentState() {
+    public BlockState getBlockState() {
         return this.blockstate;
     }
 
@@ -800,7 +815,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 return this.getLevel().getTickCachedBlock((int) x + face.getXOffset() * step, (int) y + face.getYOffset() * step, (int) z + face.getZOffset() * step, layer);
             }
         }
-        Block block = Block.get(Item.AIR);
+        Block block = Block.get(AIR);
         block.x = (int) x + face.getXOffset() * step;
         block.y = (int) y + face.getYOffset() * step;
         block.z = (int) z + face.getZOffset() * step;
@@ -1282,7 +1297,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public Item toItem() {
-        //todo fix
         return null;
     }
 

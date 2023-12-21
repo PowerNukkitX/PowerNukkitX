@@ -56,7 +56,7 @@ public class BlockWoodStrippedCherry extends BlockLog {
 
     @Override
     public BlockState getStrippedState() {
-        return getCurrentState();
+        return getBlockState();
     }
 
     @Override

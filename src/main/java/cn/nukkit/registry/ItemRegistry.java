@@ -5,6 +5,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.OK;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.sunlan.fastreflection.FastConstructor;
+import org.jetbrains.annotations.UnmodifiableView;
+
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Allay Project 12/15/2023
@@ -13,7 +17,7 @@ import me.sunlan.fastreflection.FastConstructor;
  */
 public final class ItemRegistry extends BaseRegistry<String, Item, Class<? extends Item>> implements ItemID {
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Item>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
-    private static final FastConstructor<ItemBlock> ITEM_BLOCK_CONSTRUCTOR = FastConstructor.create(ItemBlock.class.getConstructor());
+    //private static final FastConstructor<ItemBlock> ITEM_BLOCK_CONSTRUCTOR = FastConstructor.create(ItemBlock.class.getConstructor());
 
     @Override
     public void init() {

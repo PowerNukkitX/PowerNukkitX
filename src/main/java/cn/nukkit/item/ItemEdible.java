@@ -61,7 +61,7 @@ public abstract class ItemEdible extends Item {
         }
 
         if (food.eatenBy(player)) {
-            player.completeUsingItem(this.getNetworkId(), CompletedUsingItemPacket.ACTION_EAT);
+            player.completeUsingItem(this.getRuntimeId(), CompletedUsingItemPacket.ACTION_EAT);
 
             if (player.isAdventure() || player.isSurvival()) {
                 --this.count;

@@ -609,8 +609,6 @@ public class BinaryStream {
         this.putSlot(item, false);
     }
 
-    @
-
     public void putSlot(Item item, boolean instanceItem) {
         if (item == null || item.getId() == 0) {
             putByte((byte) 0);
@@ -625,7 +623,7 @@ public class BinaryStream {
             item = createFakeUnknownItem(item);
             networkId = RuntimeItems.getRuntimeMapping().getNetworkId(item);
         }
-        putVarInt(networkId);//write runtimeId
+        putVarInt(networkId);//write item runtimeId
         putLShort(item.getCount());//write item count
 
         int legacyData = 0;
@@ -640,6 +638,12 @@ public class BinaryStream {
 
         putUnsignedVarInt(legacyData);//write damage value
 
+        /*
+        cloudbrust protocol use this,maybe server auth inventory need this
+        if (item.isUsingNetId()) {
+            VarInts.writeInt(buffer, item.getNetId());
+        }
+        */
         if (!instanceItem) {
             putBoolean(true); // hasNetId
             putVarInt(0); // netId

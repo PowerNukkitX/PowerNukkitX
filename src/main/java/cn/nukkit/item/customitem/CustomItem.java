@@ -1,7 +1,6 @@
 package cn.nukkit.item.customitem;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.StringItem;
 
 /**
  * 继承这个类实现自定义物品,重写{@link Item}中的方法控制方块属性

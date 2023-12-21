@@ -28,7 +28,6 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<Block
 
     @Override
     public void init() {
-
     }
 
     public void trim() {
@@ -36,7 +35,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<Block
     }
 
     @UnmodifiableView
-    public Set<String> getPersistenceNames() {
+    public Set<String> getKeySet() {
         return Collections.unmodifiableSet(KEYSET);
     }
 
@@ -71,7 +70,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<Block
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
         if (constructor == null) return new BlockAir();
         try {
-            return (Block) constructor.invoke();
+            return (Block) constructor.invoke((Object) null);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -82,7 +81,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<Block
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
         if (constructor == null) return new BlockAir();
         try {
-            var b = (Block) constructor.invoke();
+            var b = (Block) constructor.invoke((Object) null);
             b.x = x;
             b.y = y;
             b.z = z;
@@ -97,7 +96,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<Block
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
         if (constructor == null) return new BlockAir();
         try {
-            var b = (Block) constructor.invoke();
+            var b = (Block) constructor.invoke((Object) null);
             b.x = x;
             b.y = y;
             b.z = z;
@@ -113,7 +112,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<Block
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
         if (constructor == null) return new BlockAir();
         try {
-            var b = (Block) constructor.invoke();
+            var b = (Block) constructor.invoke((Object) null);
             b.x = x;
             b.y = y;
             b.z = z;

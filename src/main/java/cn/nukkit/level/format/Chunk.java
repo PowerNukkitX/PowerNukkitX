@@ -29,8 +29,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
- * Allay Project 12/16/2023
- *
  * @author Cool_Loong
  */
 @Slf4j

@@ -33,7 +33,7 @@ public abstract class BlockWoodStripped extends BlockWood {
 
     @Override
     public BlockState getStrippedState() {
-        return getCurrentState();
+        return getBlockState();
     }
 
     @Override

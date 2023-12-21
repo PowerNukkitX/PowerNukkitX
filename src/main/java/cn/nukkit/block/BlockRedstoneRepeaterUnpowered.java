@@ -26,7 +26,7 @@ public class BlockRedstoneRepeaterUnpowered extends BlockRedstoneRepeater {
 
     @Override
     protected Block getPowered() {
-        return BlockState.of(BlockID.POWERED_REPEATER, getCurrentState().getDataStorage()).getBlock();
+        return BlockState.of(BlockID.POWERED_REPEATER, getBlockState().getDataStorage()).getBlock();
     }
 
     @Override

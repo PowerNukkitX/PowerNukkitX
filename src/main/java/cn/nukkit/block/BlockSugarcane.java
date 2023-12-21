@@ -7,7 +7,7 @@ import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemSugarcane;
+import cn.nukkit.item.ItemSugarCane;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
@@ -52,7 +52,7 @@ public class BlockSugarcane extends BlockFlowable {
 
     @Override
     public Item toItem() {
-        return new ItemSugarcane();
+        return new ItemSugarCane();
     }
 
     @Override

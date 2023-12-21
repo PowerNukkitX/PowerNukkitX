@@ -15,7 +15,7 @@ import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
 /**
- * @author MagicDroidX (Nukkit Project)
+ * @author Cool_Loong
  */
 public interface IChunk {
     int VERSION = 40;

@@ -33,7 +33,7 @@ public class BlockStrippedBambooBlock extends BlockLog {
 
     @Override
     public BlockState getStrippedState() {
-        return getCurrentState();
+        return getBlockState();
     }
 
     @Override

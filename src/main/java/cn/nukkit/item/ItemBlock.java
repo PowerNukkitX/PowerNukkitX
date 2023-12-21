@@ -1,6 +1,8 @@
 package cn.nukkit.item;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.state.BlockState;
+import cn.nukkit.registry.Registries;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  * @author MagicDroidX (Nukkit Project)
  */
 @Log4j2
-public class ItemBlock extends StringItemBase {
+public class ItemBlock extends Item {
     public ItemBlock(Block block) {
         this(block, 0, 1);
     }
@@ -18,44 +20,18 @@ public class ItemBlock extends StringItemBase {
     }
 
     public ItemBlock(Block block, Integer meta, int count) {
-        super(block.getId(), meta, count, block.getName());
+        super(block.getItemId(), meta, count, block.getName());
         this.block = block;
     }
 
     @Override
     public void setMeta(Integer meta) {
-        //todo fix itemblock setdamage
-        /*int blockMeta;
-        if (meta != null) {
-            this.meta = meta;
-            blockMeta = meta;
-        } else {
-            this.hasMeta = false;
-            blockMeta = 0;
+        int i = Registries.BLOCKSTATE_ITEMMETA.get(block.getId(), meta);
+        if (i == 0) {
+            throw new IllegalArgumentException("Unknown meta mapping in block: " + block.getId());
         }
-        int blockId = block.getId();
-        try {
-            if (block instanceof BlockUnknown) {
-                block = BlockState.of(blockId, blockMeta).getBlock();
-                log.info("An invalid ItemBlock for {} was set to a valid meta {} and it is now safe again", block.getPersistenceName(), meta);
-            } else {
-                block.setDataStorageFromItemBlockMeta(blockMeta);
-                name = block.getName();
-            }
-        } catch (InvalidBlockStateException e) {
-            log.warn("An ItemBlock for {} was set to have meta {}"+
-                    " but this value is not valid. The item stack is now unsafe.", block.getPersistenceName(), meta, e);
-            block = new BlockUnknown(blockId, blockMeta);
-            name = block.getName();
-            return;
-        }
-
-        int expected = block.asItemBlock().getDamage();
-        if (expected != blockMeta) {
-            log.warn("An invalid ItemBlock for {} was set to an valid meta {} for item blocks, " +
-                    "it was expected to have meta {} the stack is now unsafe.\nProperties: {}",
-                    block.getPersistenceName(), meta, expected, block.getProperties());
-        }*/
+        BlockState blockState = Registries.BLOCKSTATE.get(i);
+        this.block = Registries.BLOCK.get(blockState);
     }
 
     @Override

@@ -6,6 +6,7 @@ import cn.nukkit.api.API;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockUnknown;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.Fuel;
 import cn.nukkit.inventory.ItemTag;
@@ -17,6 +18,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -33,23 +35,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteOrder;
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 @Slf4j
-public abstract class Item implements Cloneable, BlockID, ItemID {
-    public static final Item AIR_ITEM = new Item(AIR);
+public abstract class Item implements Cloneable, ItemID {
+    public static final Item AIR_ITEM = Item.getBlock(BlockID.AIR);
     public static final Item[] EMPTY_ARRAY = new Item[0];
 
     /**
@@ -66,7 +64,6 @@ public abstract class Item implements Cloneable, BlockID, ItemID {
     );
 
     public static String UNKNOWN_STR = "Unknown";
-    public static Class[] list = null;
     private static final HashMap<String, Supplier<Item>> CUSTOM_ITEMS = new HashMap<>();
     private static final HashMap<String, CustomItemDefinition> CUSTOM_ITEM_DEFINITIONS = new HashMap<>();
 
@@ -79,18 +76,20 @@ public abstract class Item implements Cloneable, BlockID, ItemID {
     public int count;
     protected String name;
 
-    private static String idConvertToName(String id) {
-        id = id.split(":")[1];
-        StringBuilder result = new StringBuilder();
-
-        String[] parts = id.split("_");
-        for (String part : parts) {
-            if (!part.isEmpty()) {
-                result.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1)).append(" ");
+    private String idConvertToName() {
+        if (this.name != null) {
+            return this.name;
+        } else {
+            var path = this.id.split(":")[1];
+            StringBuilder result = new StringBuilder();
+            String[] parts = path.split("_");
+            for (String part : parts) {
+                if (!part.isEmpty()) {
+                    result.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1)).append(" ");
+                }
             }
+            return result.toString().trim().intern();
         }
-
-        return result.toString().trim();
     }
 
     public Item(@NotNull String id) {
@@ -109,7 +108,17 @@ public abstract class Item implements Cloneable, BlockID, ItemID {
             this.hasMeta = false;
         }
         this.count = count;
-        this.name = idConvertToName(id).intern();
+    }
+
+    public Item(@NotNull String id, @Nullable Integer meta, int count, @Nullable String name) {
+        this.id = id.intern();
+        if (meta != null && meta >= 0) {
+            this.meta = meta & 0xffff;
+        } else {
+            this.hasMeta = false;
+        }
+        this.count = count;
+        this.name = name.intern();
     }
 
     public boolean hasMeta() {
@@ -120,611 +129,72 @@ public abstract class Item implements Cloneable, BlockID, ItemID {
         return false;
     }
 
-    public static void init() {
-        if (list == null) {
-            list = new Class[65535];
-
-            for (int i = 0; i < 256; ++i) {
-                if (Block.list[i] != null) {
-                    list[i] = Block.list[i];
-                }
-            }
-
-            RuntimeItemMapping runtimeMapping = RuntimeItems.getRuntimeMapping();
-            for (@SuppressWarnings("unchecked") Class<Item> aClass : list) {
-                if (!Item.class.equals(aClass)) {
-                    continue;
-                }
-                try {
-                    Constructor<Item> constructor = aClass.getConstructor();
-                    Item item = constructor.newInstance();
-                    runtimeMapping.registerNamespacedIdItem(item.getNamespaceId(), constructor);
-                } catch (Exception e) {
-                    log.warn("Failed to cache the namespaced id resolution of the item {}", aClass, e);
-                }
-            }
-            registerInternalStringItem(runtimeMapping);
-        }
-
-        initCreativeItems();
-    }
-
-    private static void registerInternalStringItem(RuntimeItemMapping runtimeMapping) {
-        runtimeMapping.registerNamespacedIdItem(ItemRawIron.class);
-        runtimeMapping.registerNamespacedIdItem(ItemRawGold.class);
-        runtimeMapping.registerNamespacedIdItem(ItemRawCopper.class);
-        runtimeMapping.registerNamespacedIdItem(ItemGlowInkSac.class);
-        runtimeMapping.registerNamespacedIdItem(ItemIngotCopper.class);
-        runtimeMapping.registerNamespacedIdItem(ItemGoatHorn.class);
-        runtimeMapping.registerNamespacedIdItem(ItemCherrySign.class);
-        runtimeMapping.registerNamespacedIdItem(ItemDoorCherry.class);
-    }
-
-    private static List<String> itemList;
-
-    /**
-     * 重构项目物品列表
-     * <p>
-     * rebuild ItemList
-     */
-
-
-    public static List<String> rebuildItemList() {
-        return itemList = Collections.unmodifiableList(Stream.of(
-                BlockStateRegistry.getPersistenceNames().stream()
-                        .map(name -> name.substring(name.indexOf(':') + 1)),
-                itemIds.keySet().stream()
-        ).flatMap(Function.identity()).distinct().collect(Collectors.toList()));
-    }
-
-    /**
-     * 获取项目物品列表也可以获取重构物品列表
-     * <p>
-     * Get the list of item items and also get the list of reconstructed items
-     */
-
-
-    public static List<String> getItemList() {
-        List<String> itemList = Item.itemList;
-        if (itemList == null) {
-            return rebuildItemList();
-        }
-        return itemList;
-    }
-
-    private static final ArrayList<Item> creative = new ArrayList<>();
-
-    @SneakyThrows(IOException.class)
-    @SuppressWarnings("unchecked")
-    private static void initCreativeItems() {
-        clearCreativeItems();
-
-        Gson gson = new GsonBuilder().create();
-        List<Map<String, Object>> list;
-        try (InputStream resourceAsStream = Server.class.getModule().getResourceAsStream("creativeitems.json")) {
-            list = gson.fromJson(new InputStreamReader(resourceAsStream), List.class);
-        }
-
-        for (Map<String, Object> map : list) {
-            try {
-                Item item = loadCreativeItemEntry(map);
-                if (!item.isNull()) {
-                    addCreativeItem(item);
-                }
-            } catch (Exception e) {
-                log.error("Error while registering a creative item {}", map, e);
-            }
-        }
-    }
-
-    private static Item loadCreativeItemEntry(Map<String, Object> data) {
-        String name = data.get("name").toString();
-        String nbt = (String) data.get("nbt");
-        byte[] nbtBytes = nbt != null ? Base64.getDecoder().decode(nbt) : EmptyArrays.EMPTY_BYTES;
-        if (data.containsKey("block_states")) {
-            StringBuilder strState = new StringBuilder(name);
-            String block_states = (String) data.get("block_states");
-            CompoundTag states;
-            try {
-                states = NBTIO.read(Base64.getDecoder().decode(block_states), ByteOrder.LITTLE_ENDIAN);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            states.getTags().forEach((k, v) -> strState.append(';').append(k).append('=').append(v.parseValue()));
-            String blockStateId = strState.toString();
-            try {
-                Integer blockId = BlockStateRegistry.getBlockId(name);
-                if (blockId != null && blockId > Block.MAX_BLOCK_ID) {
-                    return Item.getBlock(BlockID.AIR);
-                }
-
-                BlockState state = BlockState.of(blockStateId);
-                Item item = state.asItemBlock();
-                item.setCompoundTag(nbtBytes);
-                return item;
-            } catch (BlockPropertyNotFoundException | UnknownRuntimeIdException e) {
-                int runtimeId = BlockStateRegistry.getKnownRuntimeIdByBlockStateId(blockStateId);
-                if (runtimeId == -1) {
-                    log.debug("Unsupported block found in creativeitems.json: {}", blockStateId);
-                    return Item.AIR_ITEM;
-                }
-                int blockId = BlockStateRegistry.getBlockIdByRuntimeId(runtimeId);
-                BlockState defaultBlockState = BlockState.of(blockId);
-                if (defaultBlockState.getProperties().equals(BlockUnknown.PROPERTIES)) {
-                    log.debug("Unsupported block found in creativeitems.json: {}", blockStateId);
-                    return Item.AIR_ITEM;
-                }
-                log.error("Failed to load the creative item with {}", blockStateId, e);
-                return Item.AIR_ITEM;
-            } catch (NoSuchElementException e) {
-                log.debug("No Such Element in creativeitems.json: {}", blockStateId, e);
-            } catch (Exception e) {
-                log.error("Failed to load the creative item {}", blockStateId, e);
-                return Item.AIR_ITEM;
-            }
-        }
-        Item item = null;
-        if (data.containsKey("meta")) {
-            int meta = Utils.toInt(data.get("meta"));
-            item = fromString(name + ":" + meta);
-        }
-        if (item == null) {
-            item = fromString(name);
-        }
-        item.setCompoundTag(nbtBytes);
-        return item;
-    }
-
-    /**
-     * 注册自定义物品
-     * <p>
-     * Register custom item
-     *
-     * @param c 传入自定义物品类的实例
-     *          <p>
-     *          Import in an instance of a custom item class
-     */
-
-
-    public static OK<?> registerCustomItem(Class<? extends CustomItem> c) {
-        return registerCustomItem(List.of(c));
-    }
-
-    /**
-     * 注册自定义物品
-     * <p>
-     * Register custom item
-     *
-     * @param itemClassList 传入自定义物品class List<br>Import custom items class List
-     */
-
-
-    public static OK<?> registerCustomItem(@NotNull List<Class<? extends CustomItem>> itemClassList) {
-        if (!Server.getInstance().isEnableExperimentMode()) {
-            return new OK<>(false, "The server does not have the custom item feature enabled. Unable to register the customItemList!");
-        }
-        for (var clazz : itemClassList) {
-            CustomItem customItem;
-            Supplier<Item> supplier;
-
-            try {
-                var method = clazz.getDeclaredConstructor();
-                method.setAccessible(true);
-                customItem = method.newInstance();
-                supplier = () -> {
-                    try {
-                        return (Item) method.newInstance();
-                    } catch (ReflectiveOperationException e) {
-                        throw new UnsupportedOperationException(e);
-                    }
-                };
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                     NoSuchMethodException e) {
-                return new OK<>(false, e);
-            }
-
-            try {
-                Identifier.assertValid(customItem.getNamespaceId());
-            } catch (InvalidIdentifierException e) {
-                return new OK<>(false, e);
-            }
-
-            if (CUSTOM_ITEMS.containsKey(customItem.getNamespaceId())) continue;
-            CUSTOM_ITEMS.put(customItem.getNamespaceId(), supplier);
-            var customDef = customItem.getDefinition();
-            CUSTOM_ITEM_DEFINITIONS.put(customItem.getNamespaceId(), customDef);
-
-            // 在服务端注册自定义物品的tag
-            if (customDef.nbt().get("components") instanceof CompoundTag componentTag) {
-                var tagList = componentTag.getList("item_tags", StringTag.class);
-                if (tagList.size() != 0) {
-                    ItemTag.registerItemTag(customItem.getNamespaceId(), tagList.getAll().stream().map(tag -> tag.data).collect(Collectors.toSet()));
-                }
-            }
-            RuntimeItems.getRuntimeMapping().registerCustomItem(customItem, supplier);
-            addCreativeItem((Item) customItem);
-        }
-        return new OK<Void>(true);
-    }
-
-    /**
-     * 卸载自定义物品
-     * <p>
-     * Remove custom items
-     *
-     * @param namespaceId 传入自定义物品的namespaceId
-     */
-
-
-    public static void deleteCustomItem(String namespaceId) {
-        if (CUSTOM_ITEMS.containsKey(namespaceId)) {
-            Item customItem = fromString(namespaceId);
-            removeCreativeItem(customItem);
-            CUSTOM_ITEMS.remove(namespaceId);
-            CUSTOM_ITEM_DEFINITIONS.remove(namespaceId);
-            RuntimeItems.getRuntimeMapping().deleteCustomItem((CustomItem) customItem);
-        }
-    }
-
-    /**
-     * 卸载全部的自定义物品
-     * <p>
-     * Remove all custom items
-     */
-
-
-    public static void deleteAllCustomItem() {
-        for (String name : CUSTOM_ITEMS.keySet()) {
-            Item customItem = fromString(name);
-            removeCreativeItem(customItem);
-            CUSTOM_ITEMS.remove(name);
-            CUSTOM_ITEM_DEFINITIONS.remove(name);
-            RuntimeItems.getRuntimeMapping().deleteCustomItem((CustomItem) customItem);
-        }
-    }
-
-    /**
-     * 用于获取发送给客户端的自定义物品数据
-     * <p>
-     * Used to get the custom item data sent to the client
-     */
-
-
-    public static HashMap<String, Supplier<? extends Item>> getCustomItems() {
-        return new HashMap<>(CUSTOM_ITEMS);
-    }
-
-
-    public static HashMap<String, CustomItemDefinition> getCustomItemDefinition() {
-        return new HashMap<>(CUSTOM_ITEM_DEFINITIONS);
-    }
-
-    /**
-     * 取消创造模式下创造背包中的物品
-     * <p>
-     * Cancel the Creative of items in the backpack in Creative mode
-     */
-
-    public static void clearCreativeItems() {
-        Item.creative.clear();
-    }
-
-    /**
-     * 获取{@link Item#creative}
-     * <p>
-     * Get the {@link Item#creative}
-     */
-    public static ArrayList<Item> getCreativeItems() {
-        return new ArrayList<>(Item.creative);
-    }
-
-    /**
-     * 添加一个物品到{@link Item#creative}
-     * <p>
-     * Add a item to {@link Item#creative}
-     */
-    public static void addCreativeItem(Item item) {
-        Item.creative.add(item.clone());
-    }
-
-    /**
-     * 移除一个指定的创造物品
-     * <p>
-     * Remove a specified created item
-     */
-    public static void removeCreativeItem(Item item) {
-        int index = getCreativeItemIndex(item);
-        if (index != -1) {
-            Item.creative.remove(index);
-        }
-    }
-
-    /**
-     * 检测这个物品是否存在于创造背包
-     * <p>
-     * Detect if the item exists in the Creative backpack
-     */
-
-    public static boolean isCreativeItem(Item item) {
-        for (Item aCreative : Item.creative) {
-            if (item.equals(aCreative, !item.isTool())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static Item getCreativeItem(int index) {
-        return (index >= 0 && index < Item.creative.size()) ? Item.creative.get(index) : null;
-    }
-
-    /**
-     * 获取指定物品在{@link Item#creative}中的索引
-     * <p>
-     * Get the index of the specified item in {@link Item#creative}
-     *
-     * @param item 指定物品 <br>specified item
-     */
-    public static int getCreativeItemIndex(Item item) {
-        for (int i = 0; i < Item.creative.size(); i++) {
-            if (item.equals(Item.creative.get(i), !item.isTool())) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-
-    public static Item getBlock(int id) {
+    public static Item getBlock(String id) {
         return getBlock(id, 0);
     }
 
 
-    public static Item getBlock(int id, Integer meta) {
+    public static Item getBlock(String id, Integer meta) {
         return getBlock(id, meta, 1);
     }
 
 
-    public static Item getBlock(int id, Integer meta, int count) {
+    public static Item getBlock(String id, Integer meta, int count) {
         return getBlock(id, meta, count, EmptyArrays.EMPTY_BYTES);
     }
 
 
-    public static Item getBlock(int id, Integer meta, int count, byte[] tags) {
-        var result = Block.get(id, meta).toItem();
-        result.setCount(count);
-        result.setCompoundTag(tags);
-        return result;
+    /**
+     * Gets ItemBlock.
+     *
+     * @param id    the BlockID id
+     * @param meta  the Item Meta
+     * @param count the Item count
+     * @param tags  the Item tags
+     * @return the ItemBlock
+     */
+    public static Item getBlock(String id, Integer meta, int count, byte[] tags) {
+        int i = Registries.BLOCKSTATE_ITEMMETA.get(id, meta);
+        if (i == 0) {
+            throw new IllegalArgumentException("Unknown meta mapping in block: " + id);
+        }
+        BlockState blockState = Registries.BLOCKSTATE.get(i);
+        ItemBlock itemBlock = new ItemBlock(Registries.BLOCK.get(blockState));
+        itemBlock.setCount(count);
+        itemBlock.setCompoundTag(tags);
+        return itemBlock;
     }
 
-    public static Item get(int id) {
+    public static Item get(String id) {
         return get(id, 0);
     }
 
-    public static Item get(int id, Integer meta) {
+    public static Item get(String id, Integer meta) {
         return get(id, meta, 1);
     }
 
-    public static Item get(int id, Integer meta, int count) {
+    public static Item get(String id, Integer meta, int count) {
         return get(id, meta, count, EmptyArrays.EMPTY_BYTES);
     }
 
 
-    public static Item get(int id, Integer meta, int count, byte[] tags) {
-        try {
-            Class<?> c;
-            if (id < 255 - Block.MAX_BLOCK_ID) {
-                var customBlockItem = Block.get(255 - id).toItem();
-                customBlockItem.setCount(count);
-                customBlockItem.setMeta(meta);
-                customBlockItem.setCompoundTag(tags);
-                return customBlockItem;
-            } else if (id < 0) {
-                int blockId = 255 - id;
-                c = Block.list[blockId];
-            } else {
-                c = list[id];
-            }
-            Item item;
-
-            if (id < 256) {
-                int blockId = id < 0 ? 255 - id : id;
-                if (meta == 0) {
-                    item = new ItemBlock(Block.get(blockId), 0, count);
-                } else if (meta == -1) {
-                    // Special case for item instances used in fuzzy recipes
-                    item = new ItemBlock(Block.get(blockId), -1);
-                } else {
-                    BlockState state = BlockState.of(blockId, meta);
-                    try {
-                        state.validate();
-                        item = state.asItemBlock(count);
-                    } catch (InvalidBlockPropertyMetaException | InvalidBlockStateException e) {
-                        log.warn("Attempted to get an ItemBlock with invalid block state in memory: {}, trying to repair the block state...", state);
-                        log.catching(org.apache.logging.log4j.Level.DEBUG, e);
-                        Block repaired = state.getBlockRepairing(null, 0, 0, 0);
-                        item = repaired.asItemBlock(count);
-                        log.error("Attempted to get an illegal item block {}:{} ({}), the meta was changed to {}",
-                                id, meta, blockId, item.getMeta(), e);
-                    } catch (UnknownRuntimeIdException e) {
-                        log.warn("Attempted to get an illegal item block {}:{} ({}), the runtime id was unknown and the meta was changed to 0",
-                                id, meta, blockId, e);
-                        item = BlockState.of(blockId).asItemBlock(count);
-                    }
-                }
-            } else if (c == null) {
-                item = new Item(id, meta, count);
-            } else {
-                if (meta == -1) {
-                    item = ((Item) c.getConstructor(Integer.class, int.class).newInstance(0, count)).createFuzzyCraftingRecipe();
-                } else {
-                    item = ((Item) c.getConstructor(Integer.class, int.class).newInstance(meta, count));
-                }
-            }
-
-            if (tags.length != 0) {
-                item.setCompoundTag(tags);
-            }
-
-            return item;
-        } catch (Exception e) {
-            log.error("Error getting the item {}:{}{}! Returning an unsafe item stack!",
-                    id, meta, id < 0 ? " (" + (255 - id) + ")" : "", e);
-            return new Item(id, meta, count).setCompoundTag(tags);
-        }
+    public static Item get(String id, Integer meta, int count, byte[] tags) {
+        return Registries.ITEM.get(id, meta, count, tags);
     }
 
-
-    @NotNull
-    public static Item fromString(String str) {
-        String normalized = str.trim().replace(' ', '_').toLowerCase();
-        Matcher matcher = ITEM_STRING_PATTERN.matcher(normalized);
-        if (!matcher.matches()) {
-            return Item.AIR_ITEM;
-        }
-        String name = matcher.group(2);
-        OptionalInt meta = OptionalInt.empty();
-        String metaGroup;
-        if (name != null) {
-            metaGroup = matcher.group(3);
-        } else {
-            metaGroup = matcher.group(5);
-        }
-        if (metaGroup != null) {
-            meta = OptionalInt.of(Short.parseShort(metaGroup));
-        }
-        String numericIdGroup = matcher.group(4);
-
-        Item result = null;
-        if (name != null) {
-            String namespaceGroup = matcher.group(1);
-            String namespacedId;
-            if (namespaceGroup != null) {
-                namespacedId = namespaceGroup + ":" + name;
-            } else {
-                namespacedId = "minecraft:" + name;
-            }
-            if (namespacedId.equals("minecraft:air")) {
-                return Item.AIR_ITEM;
-            }
-            if (CUSTOM_ITEMS.containsKey(namespacedId)) {
-                result = RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
-                /*
-                 * 因为getDefinition中如果需要使用Item.fromString()获取自定义物品,此时RuntimeItems中还没注册自定义物品,留一个备用构造。
-                 * 主要用于getDefinition中addRepairItems
-                 */
-                if (result.getDisplayName().equals(Item.UNKNOWN_STR)) {
-                    result = CUSTOM_ITEMS.get(namespacedId).get();
-                }
-            } else {
-                result = RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
-            }
-
-            if (result == null) {
-                int id;
-                try {
-                    id = ItemID.class.getField(name.toUpperCase()).getInt(null);
-                    result = get(id, meta.orElse(0));
-                } catch (Exception ignore1) {
-                    try {
-                        id = BlockID.class.getField(name.toUpperCase()).getInt(null);
-                        result = getBlock(id, meta.orElse(0));
-                    } catch (Exception ignore2) {
-                    }
-                }
-            }
-        } else if (numericIdGroup != null) {
-            int id = Integer.parseInt(numericIdGroup);
-            result = get(id, meta.orElse(0));
-        }
-        if (result != null) {
-            if (result.isNull() || (result.getBlock() != null && result.getDisplayName().equals(Item.UNKNOWN_STR)) || result instanceof StringItemUnknown) {
-                log.debug("Get `" + str + "` item from string error!");
-                return Item.AIR_ITEM;
-            }
-            if (meta.isPresent()) {
-                int damage = meta.getAsInt();
-                if (damage < 0) {
-                    result = result.createFuzzyCraftingRecipe();
-                } else {
-                    result.setMeta(damage);
-                }
-            }
-            return result;
-        } else {
-            log.debug("Get `" + str + "` item from string error!");
-            return Item.AIR_ITEM;
-        }
-    }
-
-    public static Item fromJson(Map<String, Object> data) {
-        return fromJson(data, false);
-    }
-
-    private static Item fromJson(Map<String, Object> data, boolean ignoreNegativeItemId) {
-        String nbt = (String) data.get("nbt_b64");
-        byte[] nbtBytes;
-        if (nbt != null) {
-            nbtBytes = Base64.getDecoder().decode(nbt);
-        } else { // Support old format for backwards compat
-            nbt = (String) data.getOrDefault("nbt_hex", null);
-            if (nbt == null) {
-                nbtBytes = EmptyArrays.EMPTY_BYTES;
-            } else {
-                nbtBytes = Utils.parseHexBinary(nbt);
-            }
-        }
-
-        int id = Utils.toInt(data.get("id"));
-        if (ignoreNegativeItemId && id < 0) return null;
-
-        return get(id, Utils.toInt(data.getOrDefault("damage", 0)), Utils.toInt(data.getOrDefault("count", 1)), nbtBytes);
-    }
-
-
-    public static Item fromJsonNetworkId(Map<String, Object> data) {
-        String nbt = (String) data.get("nbt_b64");
-        byte[] nbtBytes;
-        if (nbt != null) {
-            nbtBytes = Base64.getDecoder().decode(nbt);
-        } else { // Support old format for backwards compat
-            nbt = (String) data.getOrDefault("nbt_hex", null);
-            if (nbt == null) {
-                nbtBytes = EmptyArrays.EMPTY_BYTES;
-            } else {
-                nbtBytes = Utils.parseHexBinary(nbt);
-            }
-        }
-
-        int networkId = Utils.toInt(data.get("id"));
-        RuntimeItemMapping mapping = RuntimeItems.getRuntimeMapping();
-        int legacyFullId = mapping.getLegacyFullId(networkId);
-        int id = RuntimeItems.getId(legacyFullId);
-        OptionalInt meta = RuntimeItems.hasData(legacyFullId) ? OptionalInt.of(RuntimeItems.getData(legacyFullId)) : OptionalInt.empty();
-        if (data.containsKey("damage")) {
-            int jsonMeta = Utils.toInt(data.get("damage"));
-            if (jsonMeta != Short.MAX_VALUE) {
-                if (meta.isPresent() && jsonMeta != meta.getAsInt()) {
-                    throw new IllegalArgumentException(
-                            "Conflicting damage value for " + mapping.getNamespacedIdByNetworkId(networkId) + ". " +
-                                    "From json: " + jsonMeta + ", from mapping: " + meta.getAsInt()
-                    );
-                }
-                meta = OptionalInt.of(jsonMeta);
-            } else if (!meta.isPresent()) {
-                meta = OptionalInt.of(-1);
-            }
-        }
-        return get(id, meta.orElse(0), Utils.toInt(data.getOrDefault("count", 1)), nbtBytes);
-    }
-
-    public static Item[] fromStringMultiple(String str) {
-        String[] b = str.split(",");
-        Item[] items = new Item[b.length - 1];
-        for (int i = 0; i < b.length; i++) {
-            items[i] = fromString(b[i]);
-        }
-        return items;
+    public void readItemJsonComponents(ItemJsonComponents components) {
+        if (components.canPlaceOn != null)
+            this.setCanPlaceOn(Arrays.stream(components.canPlaceOn.blocks).map(str -> Block.get(str.startsWith("minecraft:") ? str : "minecraft:" + str)).toArray(Block[]::new));
+        if (components.canDestroy != null)
+            this.setCanDestroy(Arrays.stream(components.canDestroy.blocks).map(str -> Block.get(str.startsWith("minecraft:") ? str : "minecraft:" + str)).toArray(Block[]::new));
+        if (components.itemLock != null)
+            this.setItemLockMode(switch (components.itemLock.mode) {
+                case ItemJsonComponents.ItemLock.LOCK_IN_SLOT -> Item.ItemLockMode.LOCK_IN_SLOT;
+                case ItemJsonComponents.ItemLock.LOCK_IN_INVENTORY -> Item.ItemLockMode.LOCK_IN_INVENTORY;
+                default -> Item.ItemLockMode.NONE;
+            });
+        if (components.keepOnDeath != null)
+            this.setKeepOnDeath(true);
     }
 
     public Item setCompoundTag(CompoundTag tag) {
@@ -1046,7 +516,7 @@ public abstract class Item implements Cloneable, BlockID, ItemID {
     }
 
     private String setCustomEnchantDisplay(ListTag<CompoundTag> custom_ench) {
-        StringJoiner joiner = new StringJoiner("\n", String.valueOf(TextFormat.RESET) + TextFormat.AQUA + this.name + "\n", "");
+        StringJoiner joiner = new StringJoiner("\n", String.valueOf(TextFormat.RESET) + TextFormat.AQUA + idConvertToName() + "\n", "");
         for (var ench : custom_ench.getAll()) {
             var enchantment = Enchantment.getEnchantment(ench.getString("id"));
             joiner.add(enchantment.getLore());
@@ -1347,18 +817,17 @@ public abstract class Item implements Cloneable, BlockID, ItemID {
     }
 
     public boolean isNull() {
-        return this.count <= 0 || this.id == AIR || this.id == STRING_IDENTIFIED_ITEM && !(this instanceof StringItem);
+        return this.count <= 0 || Objects.equals(this.id, Block.AIR);
     }
 
     @Nullable
     public final String getName() {
-        return this.hasCustomName() ? this.getCustomName() : this.name;
+        return this.hasCustomName() ? this.getCustomName() : idConvertToName();
     }
-
 
     @NotNull
     public final String getDisplayName() {
-        return this.hasCustomName() ? this.getCustomName() : this.name == null ? StringItem.createItemName(getNamespaceId()) : name;
+        return this.hasCustomName() ? this.getCustomName() : idConvertToName();
     }
 
     public final boolean canBePlaced() {
@@ -1380,31 +849,24 @@ public abstract class Item implements Cloneable, BlockID, ItemID {
         return this.block;
     }
 
-    public int getId() {
+    public final String getId() {
         return id;
     }
 
 
-    public final int getNetworkId() throws UnknownNetworkIdException {
+    public final int getRuntimeId() {
         try {
             return RuntimeItems.getRuntimeMapping().getNetworkId(this);
         } catch (IllegalArgumentException e) {
-            throw new UnknownNetworkIdException(this, e);
+            throw e;
         }
     }
 
-
-    public String getNamespaceId() {
-        RuntimeItemMapping runtimeMapping = RuntimeItems.getRuntimeMapping();
-        return runtimeMapping.getNamespacedIdByNetworkId(this.getNetworkId());
-    }
-
-
-    public int getBlockId() {
+    public String getBlockId() {
         if (block != null) {
             return block.getId();
         } else {
-            return -1;
+            return UNKNOWN_STR;
         }
     }
 
@@ -1700,8 +1162,8 @@ public abstract class Item implements Cloneable, BlockID, ItemID {
 
     @Override
     final public String toString() {
-        return "Item " + this.name +
-                " (" + (this instanceof StringItem ? this.getNamespaceId() : this.id)
+        return "Item " + idConvertToName() +
+                " (" + this.id
                 + ":" + (!this.hasMeta ? "?" : this.meta)
                 + ")x" + this.count
                 + (this.hasCompoundTag() ? " tags:0x" + Binary.bytesToHexString(this.getCompoundTag()) : "");
@@ -1790,9 +1252,7 @@ public abstract class Item implements Cloneable, BlockID, ItemID {
      * @return the boolean
      */
     public final boolean equals(Item item, boolean checkDamage, boolean checkCompound) {
-        if (this.getId() == 255 && item.getId() == 255) {
-            if (!this.getNamespaceId().equals(item.getNamespaceId())) return false;
-        } else if (this.getId() != item.getId()) return false;
+        if (!Objects.equals(this.getId(), item.getId())) return false;
         if (!checkDamage || this.getMeta() == item.getMeta()) {
             if (checkCompound) {
                 if (Arrays.equals(this.getCompoundTag(), item.getCompoundTag())) {
@@ -1910,7 +1370,7 @@ public abstract class Item implements Cloneable, BlockID, ItemID {
     public void addCanPlaceOn(Block block) {
         CompoundTag tag = getOrCreateNamedTag();
         ListTag<StringTag> canPlaceOn = tag.getList("CanPlaceOn", StringTag.class);
-        tag.putList(canPlaceOn.add(new StringTag("", block.toItem().getNamespaceId())));
+        tag.putList(canPlaceOn.add(new StringTag("", block.toItem().getId())));
         this.setCompoundTag(tag);
     }
 
@@ -1926,7 +1386,7 @@ public abstract class Item implements Cloneable, BlockID, ItemID {
         CompoundTag tag = getOrCreateNamedTag();
         ListTag<StringTag> canPlaceOn = new ListTag<>("CanPlaceOn");
         for (Block block : blocks) {
-            canPlaceOn.add(new StringTag("", block.toItem().getNamespaceId()));
+            canPlaceOn.add(new StringTag("", block.toItem().getId()));
         }
         tag.putList(canPlaceOn);
         this.setCompoundTag(tag);
@@ -1948,7 +1408,7 @@ public abstract class Item implements Cloneable, BlockID, ItemID {
     public void addCanDestroy(Block block) {
         CompoundTag tag = getOrCreateNamedTag();
         ListTag<StringTag> canDestroy = tag.getList("CanDestroy", StringTag.class);
-        tag.putList(canDestroy.add(new StringTag("", block.toItem().getNamespaceId())));
+        tag.putList(canDestroy.add(new StringTag("", block.toItem().getId())));
         this.setCompoundTag(tag);
     }
 
@@ -1964,7 +1424,7 @@ public abstract class Item implements Cloneable, BlockID, ItemID {
         CompoundTag tag = getOrCreateNamedTag();
         ListTag<StringTag> canDestroy = new ListTag<>("CanDestroy");
         for (Block block : blocks) {
-            canDestroy.add(new StringTag("", block.toItem().getNamespaceId()));
+            canDestroy.add(new StringTag("", block.toItem().getId()));
         }
         tag.putList(canDestroy);
         this.setCompoundTag(tag);
@@ -2082,21 +1542,5 @@ public abstract class Item implements Cloneable, BlockID, ItemID {
         public ItemLock itemLock;
         @SerializedName(value = "minecraft:keep_on_death", alternate = {"keep_on_death"})
         public KeepOnDeath keepOnDeath;
-    }
-
-
-    public void readItemJsonComponents(ItemJsonComponents components) {
-        if (components.canPlaceOn != null)
-            this.setCanPlaceOn(Arrays.stream(components.canPlaceOn.blocks).map(str -> Block.get(BlockStateRegistry.getBlockId(str.startsWith("minecraft:") ? str : "minecraft:" + str))).collect(Collectors.toList()).toArray(new Block[0]));
-        if (components.canDestroy != null)
-            this.setCanDestroy(Arrays.stream(components.canDestroy.blocks).map(str -> Block.get(BlockStateRegistry.getBlockId(str.startsWith("minecraft:") ? str : "minecraft:" + str))).collect(Collectors.toList()).toArray(new Block[0]));
-        if (components.itemLock != null)
-            this.setItemLockMode(switch (components.itemLock.mode) {
-                case ItemJsonComponents.ItemLock.LOCK_IN_SLOT -> Item.ItemLockMode.LOCK_IN_SLOT;
-                case ItemJsonComponents.ItemLock.LOCK_IN_INVENTORY -> Item.ItemLockMode.LOCK_IN_INVENTORY;
-                default -> Item.ItemLockMode.NONE;
-            });
-        if (components.keepOnDeath != null)
-            this.setKeepOnDeath(components.keepOnDeath != null);
     }
 }

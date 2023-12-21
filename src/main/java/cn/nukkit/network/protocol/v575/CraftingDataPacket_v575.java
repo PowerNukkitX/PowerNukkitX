@@ -192,19 +192,19 @@ public class CraftingDataPacket_v575 extends DataPacket {
 
         this.putUnsignedVarInt(this.brewingEntries.size());
         for (BrewingRecipe recipe : brewingEntries) {
-            this.putVarInt(recipe.getInput().getNetworkId());
+            this.putVarInt(recipe.getInput().getRuntimeId());
             this.putVarInt(recipe.getInput().getMeta());
-            this.putVarInt(recipe.getIngredient().getNetworkId());
+            this.putVarInt(recipe.getIngredient().getRuntimeId());
             this.putVarInt(recipe.getIngredient().getMeta());
-            this.putVarInt(recipe.getResult().getNetworkId());
+            this.putVarInt(recipe.getResult().getRuntimeId());
             this.putVarInt(recipe.getResult().getMeta());
         }
 
         this.putUnsignedVarInt(this.containerEntries.size());
         for (ContainerRecipe recipe : containerEntries) {
-            this.putVarInt(recipe.getInput().getNetworkId());
-            this.putVarInt(recipe.getIngredient().getNetworkId());
-            this.putVarInt(recipe.getResult().getNetworkId());
+            this.putVarInt(recipe.getInput().getRuntimeId());
+            this.putVarInt(recipe.getIngredient().getRuntimeId());
+            this.putVarInt(recipe.getResult().getRuntimeId());
         }
 
         this.putUnsignedVarInt(0); // Material reducers size

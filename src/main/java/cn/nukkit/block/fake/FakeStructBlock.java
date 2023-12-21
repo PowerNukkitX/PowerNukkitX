@@ -60,7 +60,7 @@ public class FakeStructBlock extends SingleFakeBlock {
     public void remove(Player player) {
         this.lastPositions.forEach(position -> {
             UpdateBlockPacket packet = new UpdateBlockPacket();
-            BlockStateRegistry.getRuntimeId(player.getLevel().getBlock(position).getCurrentState());
+            BlockStateRegistry.getRuntimeId(player.getLevel().getBlock(position).getBlockState());
             packet.flags = UpdateBlockPacket.FLAG_NETWORK;
             packet.x = position.getFloorX();
             packet.y = position.getFloorY();

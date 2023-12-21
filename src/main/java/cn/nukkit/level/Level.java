@@ -58,6 +58,7 @@ import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.BlockRegistry;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.BlockUpdateScheduler;
 import cn.nukkit.utils.*;
@@ -603,9 +604,9 @@ public class Level implements ChunkManager, Metadatable {
         }
         if (global || transparentBlockRuntimeIds.isEmpty()) {
             transparentBlockRuntimeIds.clear();
-            for (var each : BlockRegistry.getPersistenceNames()) {
+            for (var each : Registries.BLOCK.getKeySet()) {
                 try {
-                    var block = BlockRegistry.get(each);
+                    var block = Registries.BLOCK.get(each);
                     if (block.isTransparent()) {
                         transparentBlockRuntimeIds.add(block.getRuntimeId());
                     }
@@ -2435,7 +2436,7 @@ public class Level implements ChunkManager, Metadatable {
         if (!isYInRange(y) || layer < 0 || layer > this.requireProvider().getMaximumLayer()) {
             return false;
         }
-        BlockState state = block.getCurrentState();
+        BlockState state = block.getBlockState();
         IChunk chunk = this.getChunk(x >> 4, z >> 4, true);
         BlockState statePrevious = chunk.getAndSetBlockState(x & 0xF, y, z & 0xF, state, layer);
         if (state == statePrevious) {

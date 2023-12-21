@@ -28,7 +28,7 @@ public class BlockStemWarped extends BlockStem {
 
     @Override
     public BlockState getStrippedState() {
-        return getCurrentState().withBlockId(STRIPPED_WARPED_STEM);
+        return getBlockState().withBlockId(STRIPPED_WARPED_STEM);
     }
 
 }

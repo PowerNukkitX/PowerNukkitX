@@ -28,7 +28,7 @@ public class BlockHyphaeCrimson extends BlockStem {
 
     @Override
     public BlockState getStrippedState() {
-        return getCurrentState().withBlockId(STRIPPED_CRIMSON_HYPHAE);
+        return getBlockState().withBlockId(STRIPPED_CRIMSON_HYPHAE);
     }
 
     @Override

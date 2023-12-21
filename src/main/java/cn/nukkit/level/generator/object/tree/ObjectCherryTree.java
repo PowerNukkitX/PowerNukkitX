@@ -21,14 +21,14 @@ public class ObjectCherryTree extends TreeGenerator {
     public ObjectCherryTree() {
         var logY = new BlockCherryLog();
         logY.setPillarAxis(BlockFace.Axis.Y);
-        this.LOG_Y_AXIS = logY.getCurrentState();
+        this.LOG_Y_AXIS = logY.getBlockState();
         var logX = new BlockCherryLog();
         logX.setPillarAxis(BlockFace.Axis.X);
-        this.LOG_X_AXIS = logX.getCurrentState();
+        this.LOG_X_AXIS = logX.getBlockState();
         var logZ = new BlockCherryLog();
         logZ.setPillarAxis(BlockFace.Axis.Z);
-        this.LOG_Z_AXIS = logZ.getCurrentState();
-        this.LEAVES = new BlockCherryLeaves().getCurrentState();
+        this.LOG_Z_AXIS = logZ.getBlockState();
+        this.LEAVES = new BlockCherryLeaves().getBlockState();
     }
 
     @Override

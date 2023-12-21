@@ -91,7 +91,7 @@ public class ListChunkManager implements ChunkManager {
 
     @Override
     public BlockState getBlockStateAt(int x, int y, int z, int layer) {
-        return findBlockAt(x, y, z, layer).map(Block::getCurrentState).orElseGet(() -> parent.getBlockStateAt(x, y, z, layer));
+        return findBlockAt(x, y, z, layer).map(Block::getBlockState).orElseGet(() -> parent.getBlockStateAt(x, y, z, layer));
     }
 
     @Override

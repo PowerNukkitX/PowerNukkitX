@@ -318,7 +318,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         BlockState blockState;
         this.setPropertyValue(DRIPSTONE_THICKNESS, thickness);
         this.setPropertyValue(HANGING, hanging);
-        blockState = this.getCurrentState();
+        blockState = this.getBlockState();
         level.setBlockStateAt(x, y, z, blockState);
     }
 

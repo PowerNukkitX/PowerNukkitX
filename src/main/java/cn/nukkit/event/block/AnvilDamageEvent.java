@@ -41,18 +41,18 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
 
 
     public AnvilDamageEvent(@NotNull Block block, int oldDamage, int newDamage, @NotNull DamageCause cause, @Nullable Player player) {
-        this(adjustBlock(block, oldDamage), block.getCurrentState().withData(newDamage), player, null, cause);
+        this(adjustBlock(block, oldDamage), block.getBlockState().withData(newDamage), player, null, cause);
     }
 
 
     public AnvilDamageEvent(@NotNull Block block, @NotNull Block newState, @Nullable Player player, @Nullable CraftingTransaction transaction, @NotNull DamageCause cause) {
-        this(block, newState.getCurrentState(), player, transaction, cause);
+        this(block, newState.getBlockState(), player, transaction, cause);
     }
 
 
     public AnvilDamageEvent(@NotNull Block block, @NotNull BlockState newState, @Nullable Player player, @Nullable CraftingTransaction transaction, @NotNull DamageCause cause) {
         super(Preconditions.checkNotNull(block, "block").clone());
-        this.oldState = block.getCurrentState();
+        this.oldState = block.getBlockState();
         this.player = player;
         this.transaction = transaction;
         this.cause = Preconditions.checkNotNull(cause, "cause");
@@ -135,7 +135,7 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
 
 
     public void setNewState(@NotNull Block block) {
-        this.newState = block.getCurrentState();
+        this.newState = block.getBlockState();
     }
 
 

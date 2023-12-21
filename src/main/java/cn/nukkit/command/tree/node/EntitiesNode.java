@@ -14,8 +14,6 @@ import java.util.List;
  * <p>
  * 所有命令参数类型为{@link cn.nukkit.command.data.CommandParamType#TARGET TARGET}如果没有手动指定{@link IParamNode},则会默认使用这个解析
  */
-
-
 public class EntitiesNode extends TargetNode<Entity> {
 
     //todo 支持uuid 或者 xuid

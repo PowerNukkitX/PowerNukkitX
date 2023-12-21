@@ -114,22 +114,22 @@ public class NBTIO {
         var nbt = new CompoundTag("", new TreeMap<>());
         if (block instanceof CustomBlock) {
             for (var str : block.getProperties().getNames()) {
-                BlockProperty<?> property = block.getCurrentState().getProperty(str);
+                BlockProperty<?> property = block.getBlockState().getProperty(str);
                 if (property instanceof BooleanBlockProperty) {
-                    nbt.putBoolean(str, block.getCurrentState().getBooleanValue(str));
+                    nbt.putBoolean(str, block.getBlockState().getBooleanValue(str));
                 } else if (property instanceof IntBlockProperty) {
-                    nbt.putInt(str, block.getCurrentState().getIntValue(str));
+                    nbt.putInt(str, block.getBlockState().getIntValue(str));
                 } else if (property instanceof UnsignedIntBlockProperty) {
-                    nbt.putInt(str, block.getCurrentState().getIntValue(str));
+                    nbt.putInt(str, block.getBlockState().getIntValue(str));
                 } else if (property instanceof ArrayBlockProperty<?> arrayBlockProperty) {
                     if (arrayBlockProperty.isOrdinal()) {
                         if (property.getBitSize() > 1) {
-                            nbt.putInt(str, Integer.parseInt(block.getCurrentState().getPersistenceValue(str)));
+                            nbt.putInt(str, Integer.parseInt(block.getBlockState().getPersistenceValue(str)));
                         } else {
-                            nbt.putBoolean(str, !block.getCurrentState().getPersistenceValue(str).equals("0"));
+                            nbt.putBoolean(str, !block.getBlockState().getPersistenceValue(str).equals("0"));
                         }
                     } else {
-                        nbt.putString(str, block.getCurrentState().getPersistenceValue(str));
+                        nbt.putString(str, block.getBlockState().getPersistenceValue(str));
                     }
                 }
             }

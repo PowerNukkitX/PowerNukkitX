@@ -73,7 +73,7 @@ public abstract class BlockSlabCopperBase extends BlockSlab implements Waxable, 
 
     @Override
     public BlockState getStateWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
-        return getCurrentState().withBlockId(getCopperId(isWaxed(), oxidizationLevel));
+        return getBlockState().withBlockId(getCopperId(isWaxed(), oxidizationLevel));
     }
 
 
@@ -82,7 +82,7 @@ public abstract class BlockSlabCopperBase extends BlockSlab implements Waxable, 
         if (getOxidizationLevel().equals(oxidizationLevel)) {
             return true;
         }
-        return getValidLevel().setBlock(this, getCurrentState().withBlockId(getCopperId(isWaxed(), oxidizationLevel)).getBlock());
+        return getValidLevel().setBlock(this, getBlockState().withBlockId(getCopperId(isWaxed(), oxidizationLevel)).getBlock());
     }
 
 
@@ -91,7 +91,7 @@ public abstract class BlockSlabCopperBase extends BlockSlab implements Waxable, 
         if (isWaxed() == waxed) {
             return true;
         }
-        return getValidLevel().setBlock(this, getCurrentState().withBlockId(getCopperId(waxed, getOxidizationLevel())).getBlock());
+        return getValidLevel().setBlock(this, getBlockState().withBlockId(getCopperId(waxed, getOxidizationLevel())).getBlock());
     }
 
 

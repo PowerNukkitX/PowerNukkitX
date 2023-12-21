@@ -28,7 +28,7 @@ public class BlockStemCrimson extends BlockStem {
 
     @Override
     public BlockState getStrippedState() {
-        return getCurrentState().withBlockId(STRIPPED_CRIMSON_STEM);
+        return getBlockState().withBlockId(STRIPPED_CRIMSON_STEM);
     }
 
 }

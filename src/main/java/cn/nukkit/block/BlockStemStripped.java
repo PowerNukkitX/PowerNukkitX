@@ -16,7 +16,7 @@ public abstract class BlockStemStripped extends BlockStem {
 
     @Override
     public BlockState getStrippedState() {
-        return getCurrentState();
+        return getBlockState();
     }
 
     @Override

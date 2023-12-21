@@ -3,7 +3,6 @@ package cn.nukkit.item.customitem;
 import cn.nukkit.Player;
 import cn.nukkit.item.ItemEdible;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.item.StringItem;
 import cn.nukkit.item.food.Food;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.plugin.Plugin;

@@ -58,6 +58,6 @@ public class BlockBambooBlock extends BlockLog {
 
     @Override
     public BlockState getStrippedState() {
-        return getCurrentState().withBlockId(STRIPPED_BAMBOO_BLOCK);
+        return getBlockState().withBlockId(STRIPPED_BAMBOO_BLOCK);
     }
 }
