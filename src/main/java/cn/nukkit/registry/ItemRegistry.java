@@ -5,10 +5,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.OK;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.sunlan.fastreflection.FastConstructor;
-import org.jetbrains.annotations.UnmodifiableView;
-
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * Allay Project 12/15/2023
@@ -26,7 +22,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
         register(ACACIA_DOOR, ItemAcaciaDoor.class);
         register(ACACIA_HANGING_SIGN, ItemAcaciaHangingSign.class);
         register(ACACIA_SIGN, ItemAcaciaSign.class);
-        register(AGENT_SPAWN_EGG, ItemAgentSpawnEgg.class);
+        register(AGENT_SPAWN_EGG, ItemAgentSpawnEgg.class);//next work start
         register(ALLAY_SPAWN_EGG, ItemAllaySpawnEgg.class);
         register(AMETHYST_SHARD, ItemAmethystShard.class);
         register(ANGLER_POTTERY_SHERD, ItemAnglerPotterySherd.class);
@@ -519,7 +515,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
     public Item get(String id, Integer meta) {
         try {
             Item item = (Item) CACHE_CONSTRUCTORS.get(id).invoke();
-            item.setMeta(meta);
+            item.setAux(meta);
             return item;
         } catch (Throwable e) {
             throw new RuntimeException(e);
@@ -529,7 +525,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
     public Item get(String id, Integer meta, int count) {
         try {
             Item item = (Item) CACHE_CONSTRUCTORS.get(id).invoke();
-            item.setMeta(meta);
+            item.setAux(meta);
             item.setCount(count);
             return item;
         } catch (Throwable e) {
@@ -540,7 +536,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
     public Item get(String id, Integer meta, int count, CompoundTag tags) {
         try {
             Item item = (Item) CACHE_CONSTRUCTORS.get(id).invoke();
-            item.setMeta(meta);
+            item.setAux(meta);
             item.setCount(count);
             item.setCompoundTag(tags);
             return item;
@@ -552,7 +548,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
     public Item get(String id, Integer meta, int count, byte[] tags) {
         try {
             Item item = (Item) CACHE_CONSTRUCTORS.get(id).invoke();
-            item.setMeta(meta);
+            item.setAux(meta);
             item.setCount(count);
             item.setCompoundTag(tags);
             return item;

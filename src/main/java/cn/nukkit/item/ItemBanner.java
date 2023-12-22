@@ -33,8 +33,8 @@ public class ItemBanner extends Item {
     }
 
     @Override
-    public void setMeta(Integer meta) {
-        super.setMeta(meta);
+    public void setAux(Integer aux) {
+        super.setAux(aux);
         updateName();
     }
 
@@ -48,11 +48,11 @@ public class ItemBanner extends Item {
     }
 
     public int getBaseColor() {
-        return this.getMeta() & 0x0f;
+        return this.getAux() & 0x0f;
     }
 
     public void setBaseColor(@NotNull DyeColor color) {
-        this.setMeta(color.getDyeData() & 0x0f);
+        this.setAux(color.getDyeData() & 0x0f);
     }
 
 

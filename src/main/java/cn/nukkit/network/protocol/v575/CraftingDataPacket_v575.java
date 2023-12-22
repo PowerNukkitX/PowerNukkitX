@@ -173,7 +173,7 @@ public class CraftingDataPacket_v575 extends DataPacket {
                     Item input = smelting.getInput();
                     this.putVarInt(input.getId());
                     if (recipe.getType().name().endsWith("_DATA")) {
-                        this.putVarInt(input.getMeta());
+                        this.putVarInt(input.getAux());
                     }
                     this.putSlot(smelting.getResult(), true);
                     switch (recipe.getType()) {
@@ -193,11 +193,11 @@ public class CraftingDataPacket_v575 extends DataPacket {
         this.putUnsignedVarInt(this.brewingEntries.size());
         for (BrewingRecipe recipe : brewingEntries) {
             this.putVarInt(recipe.getInput().getRuntimeId());
-            this.putVarInt(recipe.getInput().getMeta());
+            this.putVarInt(recipe.getInput().getAux());
             this.putVarInt(recipe.getIngredient().getRuntimeId());
-            this.putVarInt(recipe.getIngredient().getMeta());
+            this.putVarInt(recipe.getIngredient().getAux());
             this.putVarInt(recipe.getResult().getRuntimeId());
-            this.putVarInt(recipe.getResult().getMeta());
+            this.putVarInt(recipe.getResult().getAux());
         }
 
         this.putUnsignedVarInt(this.containerEntries.size());

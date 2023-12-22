@@ -1,8 +1,8 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
+import cn.nukkit.item.type.HangingSignItem;
 
-public class ItemCrimsonHangingSign extends Item {
+public class ItemCrimsonHangingSign extends Item implements HangingSignItem {
     public ItemCrimsonHangingSign() {
         super(CRIMSON_HANGING_SIGN);
     }

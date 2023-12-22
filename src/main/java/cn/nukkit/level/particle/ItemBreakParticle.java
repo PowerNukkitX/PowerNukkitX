@@ -15,7 +15,7 @@ public class ItemBreakParticle extends Particle {
 
     public ItemBreakParticle(Vector3 pos, Item item) {
         super(pos.x, pos.y, pos.z);
-        this.data = (item.getRuntimeId() << 16 | item.getMeta());
+        this.data = (item.getRuntimeId() << 16 | item.getAux());
     }
 
     @Override

@@ -419,7 +419,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                                 item.count--;
                                 pushedItem = true;
                             }
-                        } else if (inventory.getSmelting().getId() == itemToAdd.getId() && inventory.getSmelting().getMeta() == itemToAdd.getMeta() && inventory.getSmelting().getNamespaceId().equals(itemToAdd.getNamespaceId()) && smelting.count < smelting.getMaxStackSize()) {
+                        } else if (inventory.getSmelting().getId() == itemToAdd.getId() && inventory.getSmelting().getAux() == itemToAdd.getAux() && inventory.getSmelting().getNamespaceId().equals(itemToAdd.getNamespaceId()) && smelting.count < smelting.getMaxStackSize()) {
                             event = new InventoryMoveItemEvent(this.inventory, inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
                             this.server.getPluginManager().callEvent(event);
 
@@ -441,7 +441,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                                 item.count--;
                                 pushedItem = true;
                             }
-                        } else if (fuel.getId() == itemToAdd.getId() && fuel.getMeta() == itemToAdd.getMeta() && fuel.getNamespaceId().equals(itemToAdd.getNamespaceId()) && fuel.count < fuel.getMaxStackSize()) {
+                        } else if (fuel.getId() == itemToAdd.getId() && fuel.getAux() == itemToAdd.getAux() && fuel.getNamespaceId().equals(itemToAdd.getNamespaceId()) && fuel.count < fuel.getMaxStackSize()) {
                             event = new InventoryMoveItemEvent(this.inventory, inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
                             this.server.getPluginManager().callEvent(event);
 
@@ -488,7 +488,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                                 item.count--;
                                 pushedItem = true;
                             }
-                        } else if (ingredient.getId() == itemToAdd.getId() && ingredient.getMeta() == itemToAdd.getMeta() && ingredient.getNamespaceId().equals(itemToAdd.getNamespaceId()) && ingredient.count < ingredient.getMaxStackSize()) {
+                        } else if (ingredient.getId() == itemToAdd.getId() && ingredient.getAux() == itemToAdd.getAux() && ingredient.getNamespaceId().equals(itemToAdd.getNamespaceId()) && ingredient.count < ingredient.getMaxStackSize()) {
                             event = new InventoryMoveItemEvent(this.inventory, inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
                             this.server.getPluginManager().callEvent(event);
 

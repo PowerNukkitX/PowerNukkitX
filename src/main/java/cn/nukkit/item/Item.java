@@ -1,16 +1,12 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.api.API;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.block.state.BlockState;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.Fuel;
-import cn.nukkit.inventory.ItemTag;
-import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
@@ -19,28 +15,24 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
 import cn.nukkit.registry.Registries;
-import cn.nukkit.utils.*;
+import cn.nukkit.utils.Binary;
+import cn.nukkit.utils.Identifier;
+import cn.nukkit.utils.TextFormat;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteOrder;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -69,7 +61,7 @@ public abstract class Item implements Cloneable, ItemID {
 
     protected Block block = null;
     protected final String id;
-    protected int meta;
+    protected int aux;
     protected boolean hasMeta = true;
     private byte[] tags = EmptyArrays.EMPTY_BYTES;
     private transient CompoundTag cachedNBT = null;
@@ -96,24 +88,24 @@ public abstract class Item implements Cloneable, ItemID {
         this(id, 0);
     }
 
-    public Item(@NotNull String id, @Nullable Integer meta) {
-        this(id, meta, 1);
+    public Item(@NotNull String id, @Nullable Integer aux) {
+        this(id, aux, 1);
     }
 
-    public Item(@NotNull String id, @Nullable Integer meta, int count) {
+    public Item(@NotNull String id, @Nullable Integer aux, int count) {
         this.id = id.intern();
-        if (meta != null && meta >= 0) {
-            this.meta = meta & 0xffff;
+        if (aux != null && aux >= 0) {
+            this.aux = aux & 0xffff;
         } else {
             this.hasMeta = false;
         }
         this.count = count;
     }
 
-    public Item(@NotNull String id, @Nullable Integer meta, int count, @Nullable String name) {
+    public Item(@NotNull String id, @Nullable Integer aux, int count, @Nullable String name) {
         this.id = id.intern();
-        if (meta != null && meta >= 0) {
-            this.meta = meta & 0xffff;
+        if (aux != null && aux >= 0) {
+            this.aux = aux & 0xffff;
         } else {
             this.hasMeta = false;
         }
@@ -870,13 +862,13 @@ public abstract class Item implements Cloneable, ItemID {
         }
     }
 
-    public int getMeta() {
-        return meta;
+    public int getAux() {
+        return aux;
     }
 
-    public void setMeta(Integer meta) {
-        if (meta != null) {
-            this.meta = meta & 0xffff;
+    public void setAux(Integer aux) {
+        if (aux != null) {
+            this.aux = aux & 0xffff;
             this.hasMeta = true;
         } else {
             this.hasMeta = false;
@@ -916,7 +908,7 @@ public abstract class Item implements Cloneable, ItemID {
         if (!Fuel.isFuel(this)) {
             return null;
         }
-        if (this.id != BUCKET || this.meta == 10) {
+        if (this.id != BUCKET || this.aux == 10) {
             return Fuel.getFuelDuration(this);
         }
         return null;
@@ -1164,7 +1156,7 @@ public abstract class Item implements Cloneable, ItemID {
     final public String toString() {
         return "Item " + idConvertToName() +
                 " (" + this.id
-                + ":" + (!this.hasMeta ? "?" : this.meta)
+                + ":" + (!this.hasMeta ? "?" : this.aux)
                 + ")x" + this.count
                 + (this.hasCompoundTag() ? " tags:0x" + Binary.bytesToHexString(this.getCompoundTag()) : "");
     }
@@ -1253,7 +1245,7 @@ public abstract class Item implements Cloneable, ItemID {
      */
     public final boolean equals(Item item, boolean checkDamage, boolean checkCompound) {
         if (!Objects.equals(this.getId(), item.getId())) return false;
-        if (!checkDamage || this.getMeta() == item.getMeta()) {
+        if (!checkDamage || this.getAux() == item.getAux()) {
             if (checkCompound) {
                 if (Arrays.equals(this.getCompoundTag(), item.getCompoundTag())) {
                     return true;

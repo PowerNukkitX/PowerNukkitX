@@ -98,7 +98,7 @@ public class BlockCauldronLava extends BlockCauldron {
                 if (bucket.getFishEntityId() != null) {
                     break;
                 }
-                if (item.getMeta() == 0) { //empty
+                if (item.getAux() == 0) { //empty
                     if (!isFull() || cauldron.isCustomColor() || cauldron.hasPotion()) {
                         break;
                     }
@@ -113,7 +113,7 @@ public class BlockCauldronLava extends BlockCauldron {
                         this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.BUCKET_FILL_LAVA);
                     }
                 } else if (bucket.isWater() || bucket.isLava()) { //water or lava bucket
-                    if (isFull() && !cauldron.isCustomColor() && !cauldron.hasPotion() && item.getMeta() == 10) {
+                    if (isFull() && !cauldron.isCustomColor() && !cauldron.hasPotion() && item.getAux() == 10) {
                         break;
                     }
     
@@ -144,7 +144,7 @@ public class BlockCauldronLava extends BlockCauldron {
             case Item.POTION:
             case Item.SPLASH_POTION:
             case Item.LINGERING_POTION:
-                if (!isEmpty() && (cauldron.hasPotion() ? cauldron.getPotionId() != item.getMeta() : item.getMeta() != 0)) {
+                if (!isEmpty() && (cauldron.hasPotion() ? cauldron.getPotionId() != item.getAux() : item.getAux() != 0)) {
                     clearWithFizz(cauldron);
                     break;
                 }

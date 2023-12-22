@@ -24,7 +24,7 @@ public class RecipeBuildUtils {
         var cmp = new CompoundTag()
                 .putCompound("buyA", new CompoundTag()
                         .putByte("Count", buyA.getCount())
-                        .putShort("Damage", buyA.getMeta())
+                        .putShort("Damage", buyA.getAux())
                         .putString("Name", buyA.getNamespaceId())
                         .putBoolean("WasPickedUp", false))//是否是掉落物？？
                 .putInt("buyCountA", buyA.getCount())
@@ -34,7 +34,7 @@ public class RecipeBuildUtils {
                 .putFloat("priceMultiplierB", 0)
                 .putCompound("sell", new CompoundTag()
                         .putByte("Count", output.getCount())
-                        .putShort("Damage", output.getMeta())
+                        .putShort("Damage", output.getAux())
                         .putString("Name", output.getNamespaceId())
                         .putBoolean("WasPickedUp", false))
                 .putInt("uses", 0);//未知
@@ -57,12 +57,12 @@ public class RecipeBuildUtils {
         var cmp = new CompoundTag()
                 .putCompound("buyA", new CompoundTag()
                         .putByte("Count", buyA.getCount())
-                        .putShort("Damage", buyA.getMeta())
+                        .putShort("Damage", buyA.getAux())
                         .putString("Name", buyA.getNamespaceId())
                         .putBoolean("WasPickedUp", false))//是否是掉落物？？
                 .putCompound("buyB", new CompoundTag()
                         .putByte("Count", buyB.getCount())
-                        .putShort("Damage", buyB.getMeta())
+                        .putShort("Damage", buyB.getAux())
                         .putString("Name", buyB.getNamespaceId())
                         .putBoolean("WasPickedUp", false))
                 .putInt("buyCountA", buyA.getCount())
@@ -71,7 +71,7 @@ public class RecipeBuildUtils {
                 .putInt("netId", netId++)
                 .putCompound("sell", new CompoundTag()
                         .putByte("Count", output.getCount())
-                        .putShort("Damage", output.getMeta())
+                        .putShort("Damage", output.getAux())
                         .putString("Name", output.getNamespaceId())
                         .putBoolean("WasPickedUp", false))
                 .putInt("uses", 0);//未知

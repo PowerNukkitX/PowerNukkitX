@@ -509,7 +509,7 @@ public class BinaryStream {
             item = readUnknownItem(Item.get(id, damage, count, nbt));
         } else if (stringId != null) {
             final Item tmp = Item.fromString(stringId);
-            tmp.setMeta(damage);
+            tmp.setAux(damage);
             tmp.setCount(count);
             tmp.setCompoundTag(nbt);
             item = readUnknownItem(tmp);
@@ -588,7 +588,7 @@ public class BinaryStream {
         }
         tag.putCompound("PowerNukkitUnknown", new CompoundTag()
                 .putInt("OriginalItemId", item.getId())
-                .putInt("OriginalMeta", item.getMeta())
+                .putInt("OriginalMeta", item.getAux())
                 .putBoolean("HasCustomName", item.hasCustomName())
                 .putBoolean("HasDisplayTag", tag.contains("display"))
                 .putBoolean("HasCompound", hasCompound)
@@ -596,7 +596,7 @@ public class BinaryStream {
 
         fallback.setNamedTag(tag);
         String suffix = "" + TextFormat.RESET + TextFormat.GRAY + TextFormat.ITALIC +
-                " (" + item.getId() + ":" + item.getMeta() + ")";
+                " (" + item.getId() + ":" + item.getAux() + ")";
         if (fallback.hasCustomName()) {
             fallback.setCustomName(fallback.getCustomName() + suffix);
         } else {
@@ -629,11 +629,11 @@ public class BinaryStream {
         int legacyData = 0;
         if (item.getId() > 256) { // Not a block
             //不是item_mappings.json中的物品才会写入damage值，因为item_mappings.json的作用是将旧的物品id:damage转换到最新的无damage值的物品
-            if (item instanceof ItemDurable || !RuntimeItems.getRuntimeMapping().toRuntime(item.getId(), item.getMeta()).hasDamage()) {
-                legacyData = item.getMeta();
+            if (item instanceof ItemDurable || !RuntimeItems.getRuntimeMapping().toRuntime(item.getId(), item.getAux()).hasDamage()) {
+                legacyData = item.getAux();
             }
         } else if (item instanceof StringItem) {
-            legacyData = item.getMeta();
+            legacyData = item.getAux();
         }
 
         putUnsignedVarInt(legacyData);//write damage value
@@ -655,7 +655,7 @@ public class BinaryStream {
 
         int data = 0;
         if (item instanceof ItemDurable || item.getId() < 256) {
-            data = item.getMeta();
+            data = item.getAux();
         }
 
         ByteBuf userDataBuf = ByteBufAllocator.DEFAULT.ioBuffer();
@@ -743,8 +743,8 @@ public class BinaryStream {
         this.putBoolean(true); // isValid? - true
 
         int networkId = RuntimeItems.getRuntimeMapping().getNetworkId(ingredient);
-        int damage = ingredient.hasMeta() ? ingredient.getMeta() : 0x7fff;
-        if (RuntimeItems.getRuntimeMapping().toRuntime(ingredient.getId(), ingredient.getMeta()).hasDamage()) {
+        int damage = ingredient.hasMeta() ? ingredient.getAux() : 0x7fff;
+        if (RuntimeItems.getRuntimeMapping().toRuntime(ingredient.getId(), ingredient.getAux()).hasDamage()) {
             damage = 0;
         }
 
@@ -766,8 +766,8 @@ public class BinaryStream {
                     return;
                 }
                 int networkId = RuntimeItems.getRuntimeMapping().getNetworkId(ingredient);
-                int damage = ingredient.hasMeta() ? ingredient.getMeta() : 0x7fff;
-                if (RuntimeItems.getRuntimeMapping().toRuntime(ingredient.getId(), ingredient.getMeta()).hasDamage()) {
+                int damage = ingredient.hasMeta() ? ingredient.getAux() : 0x7fff;
+                if (RuntimeItems.getRuntimeMapping().toRuntime(ingredient.getId(), ingredient.getAux()).hasDamage()) {
                     damage = 0;
                 }
                 this.putLShort(networkId);

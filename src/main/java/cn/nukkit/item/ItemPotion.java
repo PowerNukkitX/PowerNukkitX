@@ -65,13 +65,13 @@ public class ItemPotion extends Item {
     }
 
     @Override
-    public void setMeta(Integer meta) {
-        super.setMeta(meta);
+    public void setAux(Integer aux) {
+        super.setAux(aux);
         updateName();
     }
 
     private void updateName() {
-        int potionId = getMeta();
+        int potionId = getAux();
         if (potionId == Potion.WATER) {
             name = buildName(potionId, "Bottle", true);
         } else {
@@ -136,7 +136,7 @@ public class ItemPotion extends Item {
         if (consumeEvent.isCancelled()) {
             return false;
         }
-        Potion potion = Potion.getPotion(this.getMeta()).setSplash(false);
+        Potion potion = Potion.getPotion(this.getAux()).setSplash(false);
 
         player.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, player.clone(), VibrationType.DRINKING));
 
@@ -155,7 +155,7 @@ public class ItemPotion extends Item {
 
     @Nullable
     public Potion getPotion() {
-        return getPotion(getMeta());
+        return getPotion(getAux());
     }
 
 

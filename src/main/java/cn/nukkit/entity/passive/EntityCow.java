@@ -112,7 +112,7 @@ public class EntityCow extends EntityAnimal implements EntityWalkable {
             return true;
         }
 
-        if (item.getId() == Item.BUCKET && item.getMeta() == 0) {
+        if (item.getId() == Item.BUCKET && item.getAux() == 0) {
             item.count--;
             player.getInventory().addItem(Item.get(Item.BUCKET, 1));
             return true;

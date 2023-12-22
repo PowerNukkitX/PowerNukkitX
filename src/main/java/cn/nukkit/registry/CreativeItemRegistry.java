@@ -10,11 +10,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.OK;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import me.sunlan.fastreflection.FastConstructor;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -24,6 +21,32 @@ import java.util.Map;
  */
 public class CreativeItemRegistry extends BaseRegistry<Integer, Item, Item> implements ItemID {
     private static final Int2ObjectLinkedOpenHashMap<Item> MAP = new Int2ObjectLinkedOpenHashMap<>();
+
+    @Override
+    public void init() {
+        try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("creative_items.nbt")) {
+            CompoundTag compoundTag = NBTIO.readCompressed(input);
+            Map<String, Tag> tags = compoundTag.getTags();
+            for (var entry : tags.entrySet()) {
+                String index = entry.getKey();
+                CompoundTag tag = (CompoundTag) entry.getValue();
+                int damage = tag.getInt("damage");
+                if (tag.containsInt("blockStateHash")) {
+                    int blockStateHash = tag.getInt("blockStateHash");
+                    BlockState blockState = Registries.BLOCKSTATE.get(blockStateHash);
+                    Block block = Registries.BLOCK.get(blockState);
+                    register(Integer.parseInt(index), new ItemBlock(block, damage));
+                } else {
+                    String name = tag.getString("name");
+                    Item item = Item.get(name, damage);
+                    register(Integer.parseInt(index), item);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     /**
      * 获取指定物品在{@link CreativeItemRegistry}中的索引
@@ -99,31 +122,6 @@ public class CreativeItemRegistry extends BaseRegistry<Integer, Item, Item> impl
             }
         }
         return false;
-    }
-
-    @Override
-    public void init() {
-        try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("creative_items.nbt")) {
-            CompoundTag compoundTag = NBTIO.readCompressed(input);
-            Map<String, Tag> tags = compoundTag.getTags();
-            for (var entry : tags.entrySet()) {
-                String index = entry.getKey();
-                CompoundTag tag = (CompoundTag) entry.getValue();
-                int damage = tag.getInt("damage");
-                if (tag.containsInt("blockStateHash")) {
-                    int blockStateHash = tag.getInt("blockStateHash");
-                    BlockState blockState = Registries.BLOCKSTATE.get(blockStateHash);
-                    Block block = Registries.BLOCK.get(blockState);
-                    register(Integer.parseInt(index), new ItemBlock(block, damage));
-                } else {
-                    String name = tag.getString("name");
-                    Item item = Item.get(name, damage);
-                    register(Integer.parseInt(index), item);
-                }
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

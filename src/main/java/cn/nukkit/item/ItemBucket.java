@@ -91,7 +91,7 @@ public class ItemBucket extends Item {
 
 
     public boolean isEmpty() {
-        return getId() == BUCKET && getMeta() == 0;
+        return getId() == BUCKET && getAux() == 0;
     }
 
 
@@ -115,7 +115,7 @@ public class ItemBucket extends Item {
         if (getId() != BUCKET) {
             return null;
         }
-        switch (this.getMeta()) {
+        switch (this.getAux()) {
             case 2:
                 return "Cod";
             case 3:
@@ -135,7 +135,7 @@ public class ItemBucket extends Item {
 
     @Override
     public int getMaxStackSize() {
-        return this.meta == 0 && getId() == BUCKET ? 16 : 1;
+        return this.aux == 0 && getId() == BUCKET ? 16 : 1;
     }
 
     @Override
@@ -145,7 +145,7 @@ public class ItemBucket extends Item {
 
 
     public Block getTargetBlock() {
-        return getId() == BUCKET ? Block.get(getDamageByTarget(this.meta)) : Block.get(BlockID.AIR);
+        return getId() == BUCKET ? Block.get(getDamageByTarget(this.aux)) : Block.get(BlockID.AIR);
     }
 
 
@@ -248,7 +248,7 @@ public class ItemBucket extends Item {
             boolean nether = false;
             if (!canBeUsedOnDimension(player.getLevel().getDimension())) {
                 ev.setCancelled(true);
-                nether = this.getMeta() != 10;
+                nether = this.getAux() != 10;
             }
 
             player.getServer().getPluginManager().callEvent(ev);
@@ -276,7 +276,7 @@ public class ItemBucket extends Item {
                 return true;
             } else if (nether) {
                 if (!player.isCreative()) {
-                    this.setMeta(0); // Empty bucket
+                    this.setAux(0); // Empty bucket
                     player.getInventory().setItemInHand(this);
                 }
                 player.getLevel().addLevelSoundEvent(target, LevelSoundEventPacket.SOUND_FIZZ);
@@ -326,7 +326,7 @@ public class ItemBucket extends Item {
             return true;
         }
 
-        return dimension != Level.DIMENSION_NETHER || (getMeta() == 10 || getMeta() == 1);
+        return dimension != Level.DIMENSION_NETHER || (getAux() == 10 || getAux() == 1);
     }
 
 
@@ -335,7 +335,7 @@ public class ItemBucket extends Item {
             return;
         }
 
-        if (this.getMeta() == 10) {
+        if (this.getAux() == 10) {
             level.addSound(block, Sound.BUCKET_EMPTY_LAVA);
         } else {
             level.addSound(block, Sound.BUCKET_EMPTY_WATER);
@@ -358,13 +358,13 @@ public class ItemBucket extends Item {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        return getId() == BUCKET && this.getMeta() == 1; // Milk
+        return getId() == BUCKET && this.getAux() == 1; // Milk
     }
 
 
     @Override
     public boolean onUse(Player player, int ticksUsed) {
-        if (player.isSpectator() || this.getMeta() != 1) {
+        if (player.isSpectator() || this.getAux() != 1) {
             return false;
         }
 

@@ -76,8 +76,8 @@ public class ItemCrossbow extends ItemTool {
                     if (!this.isUnbreakable()) {
                         Enchantment durability = this.getEnchantment(Enchantment.ID_DURABILITY);
                         if (durability == null || durability.getLevel() <= 0 || 100 / (durability.getLevel() + 1) > Utils.random.nextInt(100)) {
-                            this.setMeta(this.getMeta() + 2);
-                            if (this.getMeta() >= 385) {
+                            this.setAux(this.getAux() + 2);
+                            if (this.getAux() >= 385) {
                                 --this.count;
                             }
 
@@ -117,7 +117,7 @@ public class ItemCrossbow extends ItemTool {
     public void loadArrow(Player player, Item arrow) {
         if (arrow != null) {
             CompoundTag tag = this.getNamedTag() == null ? new CompoundTag() : this.getNamedTag();
-            tag.putBoolean("Charged", true).putCompound("chargedItem", (new CompoundTag("chargedItem")).putByte("Count", arrow.getCount()).putShort("Damage", arrow.getMeta()).putString("Name", "minecraft:" + arrow.getDisplayName()));
+            tag.putBoolean("Charged", true).putCompound("chargedItem", (new CompoundTag("chargedItem")).putByte("Count", arrow.getCount()).putShort("Damage", arrow.getAux()).putString("Name", "minecraft:" + arrow.getDisplayName()));
             this.setCompoundTag(tag);
             this.loadTick = Server.getInstance().getTick();
             player.getInventory().setItemInHand(this);

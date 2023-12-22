@@ -35,7 +35,7 @@ public class ItemFishingRod extends ItemTool {
             player.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, player.clone(), VibrationType.ITEM_INTERACT_FINISH));
         } else {
             player.startFishing(this);
-            this.meta++;
+            this.aux++;
         }
         return true;
     }

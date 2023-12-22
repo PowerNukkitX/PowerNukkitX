@@ -25,8 +25,8 @@ public class ItemBlock extends Item {
     }
 
     @Override
-    public void setMeta(Integer meta) {
-        int i = Registries.BLOCKSTATE_ITEMMETA.get(block.getId(), meta);
+    public void setAux(Integer aux) {
+        int i = Registries.BLOCKSTATE_ITEMMETA.get(block.getId(), aux);
         if (i == 0) {
             throw new IllegalArgumentException("Unknown meta mapping in block: " + block.getId());
         }

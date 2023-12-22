@@ -23,7 +23,7 @@ public class ItemCoal extends Item {
             replaceWith = "ItemCoal() or ItemCharcoal()")
     public ItemCoal(Integer meta, int count) {
         super(COAL, meta, count, "Coal");
-        if (this.meta == 1) {
+        if (this.aux == 1) {
             this.name = "Charcoal";
         }
     }
@@ -41,12 +41,12 @@ public class ItemCoal extends Item {
             replaceWith = "isCharcoal()"
     )
     @Override
-    public int getMeta() {
-        return super.getMeta();
+    public int getAux() {
+        return super.getAux();
     }
 
 
     public boolean isCharcoal() {
-        return getId() == COAL && super.getMeta() == 1;
+        return getId() == COAL && super.getAux() == 1;
     }
 }

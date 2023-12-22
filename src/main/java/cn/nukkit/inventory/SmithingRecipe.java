@@ -98,12 +98,12 @@ public class SmithingRecipe extends ShapelessRecipe {
             return finalResult;
         }
 
-        int damage = equip.getMeta();
+        int damage = equip.getAux();
         if (damage <= 0) {
             return finalResult;
         }
 
-        finalResult.setMeta(Math.min(maxDurability, damage));
+        finalResult.setAux(Math.min(maxDurability, damage));
         return finalResult;
     }
 

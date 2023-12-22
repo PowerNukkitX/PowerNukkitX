@@ -1,6 +1,6 @@
 package cn.nukkit.item;
 
-public class ItemChestRaftBamboo extends ItemChestBoatBase {
+public class ItemChestRaftBamboo extends ItemChestBoat {
     public ItemChestRaftBamboo() {
         this(0, 1);
     }

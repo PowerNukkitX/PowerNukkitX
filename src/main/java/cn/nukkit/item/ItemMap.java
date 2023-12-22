@@ -47,13 +47,13 @@ public class ItemMap extends Item {
     }
 
     @Override
-    public void setMeta(Integer meta) {
-        super.setMeta(meta);
+    public void setAux(Integer aux) {
+        super.setAux(aux);
         updateName();
     }
 
     private void updateName() {
-        switch (meta) {
+        switch (aux) {
             case 3 -> this.name = "Ocean Explorer Map";
             case 4 -> this.name = "Woodland Explorer Map";
             case 5 -> this.name = "Treasure Map";

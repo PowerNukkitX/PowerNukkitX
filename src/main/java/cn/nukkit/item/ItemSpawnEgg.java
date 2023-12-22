@@ -42,8 +42,8 @@ public class ItemSpawnEgg extends Item {
     }
 
     @Override
-    public void setMeta(Integer meta) {
-        super.setMeta(meta);
+    public void setAux(Integer aux) {
+        super.setAux(aux);
         updateName();
     }
 
@@ -117,7 +117,7 @@ public class ItemSpawnEgg extends Item {
 
 
     public int getEntityNetworkId() {
-        return this.meta;
+        return this.aux;
     }
 
 

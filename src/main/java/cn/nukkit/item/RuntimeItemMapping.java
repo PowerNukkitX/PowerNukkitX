@@ -286,9 +286,9 @@ public class RuntimeItemMapping {
             return name2RuntimeId.getInt(item.getNamespaceId());
         }
 
-        int fullId = RuntimeItems.getFullId(item.getId(), item.getMeta());
-        if (!item.hasMeta() && item.getMeta() != 0) { // Fuzzy crafting recipe of a remapped item, like charcoal
-            fullId = RuntimeItems.getFullId(item.getId(), item.getMeta());
+        int fullId = RuntimeItems.getFullId(item.getId(), item.getAux());
+        if (!item.hasMeta() && item.getAux() != 0) { // Fuzzy crafting recipe of a remapped item, like charcoal
+            fullId = RuntimeItems.getFullId(item.getId(), item.getAux());
         }
         RuntimeEntry runtimeEntry = legacy2Runtime.get(fullId);
         if (runtimeEntry == null) {

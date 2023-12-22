@@ -300,7 +300,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
             var item = block.toItem();
             //only exist in PNX
             tag.putInt("itemId", item.getId());
-            tag.putInt("itemMeta", item.getMeta());
+            tag.putInt("itemMeta", item.getAux());
             return tag;
         }
 

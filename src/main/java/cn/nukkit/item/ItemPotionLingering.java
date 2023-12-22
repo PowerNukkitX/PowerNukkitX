@@ -19,13 +19,13 @@ public class ItemPotionLingering extends ProjectileItem {
     }
 
     @Override
-    public void setMeta(Integer meta) {
-        super.setMeta(meta);
+    public void setAux(Integer aux) {
+        super.setAux(aux);
         updateName();
     }
 
     private void updateName() {
-        int potionId = getMeta();
+        int potionId = getAux();
         if (potionId == Potion.WATER) {
             name = "Lingering Water Bottle";
         } else {
@@ -58,6 +58,6 @@ public class ItemPotionLingering extends ProjectileItem {
 
     @Override
     protected void correctNBT(CompoundTag nbt) {
-        nbt.putInt("PotionId", this.meta);
+        nbt.putInt("PotionId", this.aux);
     }
 }

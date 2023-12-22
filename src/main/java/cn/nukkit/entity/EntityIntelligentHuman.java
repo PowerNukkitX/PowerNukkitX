@@ -294,11 +294,11 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
             }
 
             if (armor instanceof ItemShield)
-                armor.setMeta(armor.getMeta() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
+                armor.setAux(armor.getAux() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
             else
-                armor.setMeta(armor.getMeta() + Math.max(1, (int) (event.getDamage() / 4.0f)));
+                armor.setAux(armor.getAux() + Math.max(1, (int) (event.getDamage() / 4.0f)));
 
-            if (armor.getMeta() >= armor.getMaxDurability()) {
+            if (armor.getAux() >= armor.getMaxDurability()) {
                 getLevel().addSound(this, Sound.RANDOM_BREAK);
                 return Item.get(BlockID.AIR, 0, 0);
             }

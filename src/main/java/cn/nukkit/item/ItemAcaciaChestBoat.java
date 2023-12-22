@@ -1,9 +1,7 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemAcaciaChestBoat extends Item {
+public class ItemAcaciaChestBoat extends ItemChestBoat {
     public ItemAcaciaChestBoat() {
-        super(ACACIA_CHEST_BOAT);
+        super(ACACIA_CHEST_BOAT, 4, 1);
     }
 }

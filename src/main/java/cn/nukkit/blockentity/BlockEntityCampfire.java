@@ -85,7 +85,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
 
                 int burnTimeLeft = burnTime[slot];
                 if (burnTimeLeft <= 0) {
-                    Item product = Item.get(recipe.getResult().getId(), recipe.getResult().getMeta(), item.getCount());
+                    Item product = Item.get(recipe.getResult().getId(), recipe.getResult().getAux(), item.getCount());
                     CampfireSmeltEvent event = new CampfireSmeltEvent(this, item, product);
                     if (!event.isCancelled()) {
                         inventory.setItem(slot, Item.get(0));

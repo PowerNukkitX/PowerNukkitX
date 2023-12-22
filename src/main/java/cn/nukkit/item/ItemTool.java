@@ -113,15 +113,15 @@ public abstract class ItemTool extends Item implements ItemDurable {
                 block.getToolType() == ItemTool.TYPE_SWORD && this.isSword() ||
                 block.getToolType() == ItemTool.TYPE_SHEARS && this.isShears()
                 ) {
-            this.meta++;
+            this.aux++;
         } else if (!this.isShears() && block.calculateBreakTime(this) > 0) {
-            this.meta += 2;
+            this.aux += 2;
         } else if (this.isHoe()) {
             if (block.getId() == GRASS || block.getId() == DIRT) {
-                this.meta++;
+                this.aux++;
             }
         } else {
-            this.meta++;
+            this.aux++;
         }
         return true;
     }
@@ -133,9 +133,9 @@ public abstract class ItemTool extends Item implements ItemDurable {
         }
 
         if ((entity != null) && !this.isSword()) {
-            this.meta += 2;
+            this.aux += 2;
         } else {
-            this.meta++;
+            this.aux++;
         }
 
         return true;

@@ -28,7 +28,7 @@ public class BucketDispenseBehavior extends DefaultDispenseBehavior {
             if (target.canBeFlowedInto() || target.getId() == BlockID.NETHER_PORTAL) {
                 Block replace = bucket.getTargetBlock();
                 var fishEntityId = bucket.getFishEntityId();
-                if (bucket.getMeta() == 10)
+                if (bucket.getAux() == 10)
                     target.level.addSound(block, Sound.BUCKET_EMPTY_LAVA);
                 else if (fishEntityId != null)
                     target.level.addSound(block, Sound.BUCKET_EMPTY_FISH);
@@ -53,7 +53,7 @@ public class BucketDispenseBehavior extends DefaultDispenseBehavior {
 
             }
         } else {
-            if (bucket.getMeta() == 10)
+            if (bucket.getAux() == 10)
                 target.level.addSound(block, Sound.BUCKET_FILL_LAVA);
             else
                 target.level.addSound(block, Sound.BUCKET_FILL_WATER);

@@ -1,8 +1,7 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
 
-public class ItemAcaciaHangingSign extends Item {
+public class ItemAcaciaHangingSign extends ItemHangingSign {
     public ItemAcaciaHangingSign() {
         super(ACACIA_HANGING_SIGN);
     }

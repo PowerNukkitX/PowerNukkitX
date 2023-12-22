@@ -29,13 +29,13 @@ public class ItemSkull extends Item {
     }
 
     @Override
-    public void setMeta(Integer meta) {
-        super.setMeta(meta);
+    public void setAux(Integer aux) {
+        super.setAux(aux);
         updateName();
     }
 
     private void updateName() {
-        name = getItemSkullName(getMeta());
+        name = getItemSkullName(getAux());
     }
 
     public static String getItemSkullName(int meta) {

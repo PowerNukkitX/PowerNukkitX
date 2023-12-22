@@ -252,13 +252,13 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
 
 
     public static void register(int chance, Item item) {
-        registerItem(chance, item.getId(), item.getMeta());
+        registerItem(chance, item.getId(), item.getAux());
     }
 
 
     public static int getChance(Item item) {
         if (item.getId() != ItemID.STRING_IDENTIFIED_ITEM) {
-            int chance = compostableItems.get(item.getId() << 6 | item.getMeta());
+            int chance = compostableItems.get(item.getId() << 6 | item.getAux());
             if (chance != 0) {
                 return chance;
             }

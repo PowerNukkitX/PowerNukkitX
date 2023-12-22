@@ -6,7 +6,7 @@ import cn.nukkit.blockentity.BlockEntityHangingSign;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlockHangingSign;
+import cn.nukkit.item.ItemHangingSign;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -19,8 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 @Log4j2
-
-
 public abstract class BlockHangingSign extends BlockSignBase implements BlockEntityHolder<BlockEntityHangingSign> {
     @NotNull
     @Override
@@ -82,7 +80,7 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
 
     @Override
     public Item toItem() {
-        return new ItemBlockHangingSign(this);
+        return new ItemHangingSign(this);
     }
 
     @Override

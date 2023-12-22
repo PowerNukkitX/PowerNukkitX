@@ -79,7 +79,7 @@ public class ItemFlintSteel extends ItemTool {
 
     private void damageItem(Player player, Block block) {
         if (!player.isCreative() && useOn(block)) {
-            if (this.getMeta() >= this.getMaxDurability()) {
+            if (this.getAux() >= this.getMaxDurability()) {
                 this.count = 0;
                 player.getInventory().setItemInHand(Item.getBlock(BlockID.AIR));
             } else {

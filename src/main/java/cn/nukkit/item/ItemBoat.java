@@ -27,23 +27,27 @@ public class ItemBoat extends Item {
     }
 
     public ItemBoat(Integer meta, int count) {
-        this(BOAT, meta, count, "Boat");
+        this(BOAT, meta, count);
     }
 
+    protected ItemBoat(String id, Integer meta, int count) {
+        super(id, meta, count);
+        adjustName();
+    }
 
-    protected ItemBoat(int id, Integer meta, int count, String name) {
+    protected ItemBoat(String id, Integer meta, int count, String name) {
         super(id, meta, count, name);
         adjustName();
     }
 
     @Override
-    public void setMeta(Integer meta) {
-        super.setMeta(meta);
+    public void setAux(Integer aux) {
+        super.setAux(aux);
         adjustName();
     }
 
     private void adjustName() {
-        switch (getMeta()) {
+        switch (getAux()) {
             case 0:
                 name = "Oak Boat";
                 return;
@@ -86,18 +90,18 @@ public class ItemBoat extends Item {
         if (face != BlockFace.UP || block instanceof BlockWater) return false;
         EntityBoat boat = (EntityBoat) Entity.createEntity("Boat",
                 level.getChunk(block.getFloorX() >> 4, block.getFloorZ() >> 4), new CompoundTag("")
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", block.getX() + 0.5))
-                        .add(new DoubleTag("", block.getY() - (target instanceof BlockWater ? 0.375 : 0)))
-                        .add(new DoubleTag("", block.getZ() + 0.5)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", 0))
-                        .add(new DoubleTag("", 0))
-                        .add(new DoubleTag("", 0)))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", (float) ((player.yaw + 90f) % 360)))
-                        .add(new FloatTag("", 0)))
-                        .putInt("Variant", getMeta())
+                        .putList(new ListTag<DoubleTag>("Pos")
+                                .add(new DoubleTag("", block.getX() + 0.5))
+                                .add(new DoubleTag("", block.getY() - (target instanceof BlockWater ? 0.375 : 0)))
+                                .add(new DoubleTag("", block.getZ() + 0.5)))
+                        .putList(new ListTag<DoubleTag>("Motion")
+                                .add(new DoubleTag("", 0))
+                                .add(new DoubleTag("", 0))
+                                .add(new DoubleTag("", 0)))
+                        .putList(new ListTag<FloatTag>("Rotation")
+                                .add(new FloatTag("", (float) ((player.yaw + 90f) % 360)))
+                                .add(new FloatTag("", 0)))
+                        .putInt("Variant", getAux())
         );
 
         if (boat == null) {
