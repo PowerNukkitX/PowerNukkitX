@@ -25,14 +25,11 @@ public class ItemHoneyBottle extends ItemEdible {
         return 16;
     }
     
-    
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         return true;
     }
 
-    
-            info = "Cancellable by PlayerItemConsumeEvent and uses the FoodHoney class to handle the food behaviour")
     @Override
     public boolean onUse(Player player, int ticksUsed) {
         return super.onUse(player, ticksUsed);

@@ -1,9 +1,30 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemGoldenHoe extends Item {
+public class ItemGoldenHoe extends ItemTool {
     public ItemGoldenHoe() {
-        super(GOLDEN_HOE);
+        this(0, 1);
+    }
+
+    public ItemGoldenHoe(Integer meta) {
+        this(meta, 1);
+    }
+
+    public ItemGoldenHoe(Integer meta, int count) {
+        super(GOLDEN_HOE, meta, count, "Golden Hoe");
+    }
+
+    @Override
+    public int getMaxDurability() {
+        return ItemTool.DURABILITY_GOLD;
+    }
+
+    @Override
+    public boolean isHoe() {
+        return true;
+    }
+
+    @Override
+    public int getTier() {
+        return ItemTool.TIER_GOLD;
     }
 }

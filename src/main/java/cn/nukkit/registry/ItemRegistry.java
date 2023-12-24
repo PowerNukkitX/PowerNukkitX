@@ -235,7 +235,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
         register(HOST_ARMOR_TRIM_SMITHING_TEMPLATE, ItemHostArmorTrimSmithingTemplate.class);
         register(HOWL_POTTERY_SHERD, ItemHowlPotterySherd.class);
         register(HUSK_SPAWN_EGG, ItemHuskSpawnEgg.class);
-        register(ICE_BOMB, ItemIceBomb.class);
+//        register(ICE_BOMB, ItemIceBomb.class); //EDU
         register(INK_SAC, ItemInkSac.class);
         register(IRON_AXE, ItemIronAxe.class);
         register(IRON_BOOTS, ItemIronBoots.class);
@@ -261,7 +261,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
         register(LAVA_BUCKET, ItemLavaBucket.class);
         register(LEAD, ItemLead.class);
         register(LEATHER, ItemLeather.class);
-        register(LEATHER_BOOTS, ItemLeatherBoots.class);
+        register(LEATHER_BOOTS, ItemLeatherBoots.class);//
         register(LEATHER_CHESTPLATE, ItemLeatherChestplate.class);
         register(LEATHER_HELMET, ItemLeatherHelmet.class);
         register(LEATHER_HORSE_ARMOR, ItemLeatherHorseArmor.class);

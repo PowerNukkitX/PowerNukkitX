@@ -1,8 +1,6 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemNetheriteBoots extends Item {
+public class ItemNetheriteBoots extends ItemArmor {
     public ItemNetheriteBoots() {
         super(NETHERITE_BOOTS);
     }

@@ -1,9 +1,19 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
+import cn.nukkit.utils.DyeColor;
 
-public class ItemLapisLazuli extends Item {
+public class ItemLapisLazuli extends ItemDye {
     public ItemLapisLazuli() {
         super(LAPIS_LAZULI);
+    }
+
+    @Override
+    public DyeColor getDyeColor() {
+        return DyeColor.BLUE;
+    }
+
+    @Override
+    public void setAux(Integer aux) {
+        throw new UnsupportedOperationException();
     }
 }

@@ -1,8 +1,6 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemNetheritePickaxe extends Item {
+public class ItemNetheritePickaxe extends ItemTool {
     public ItemNetheritePickaxe() {
         super(NETHERITE_PICKAXE);
     }

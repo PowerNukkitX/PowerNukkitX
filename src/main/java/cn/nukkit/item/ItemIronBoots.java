@@ -1,9 +1,35 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemIronBoots extends Item {
+public class ItemIronBoots extends ItemArmor {
     public ItemIronBoots() {
-        super(IRON_BOOTS);
+        this(0, 1);
+    }
+
+    public ItemIronBoots(Integer meta) {
+        this(meta, 1);
+    }
+
+    public ItemIronBoots(Integer meta, int count) {
+        super(IRON_BOOTS, meta, count, "Iron Boots");
+    }
+
+    @Override
+    public int getTier() {
+        return ItemArmor.TIER_IRON;
+    }
+
+    @Override
+    public boolean isBoots() {
+        return true;
+    }
+
+    @Override
+    public int getArmorPoints() {
+        return 2;
+    }
+
+    @Override
+    public int getMaxDurability() {
+        return 196;
     }
 }

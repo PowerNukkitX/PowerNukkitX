@@ -1,9 +1,17 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemLavaBucket extends Item {
+public class ItemLavaBucket extends ItemBucket {
     public ItemLavaBucket() {
         super(LAVA_BUCKET);
+    }
+
+    @Override
+    public int getBucketType() {
+        return 10;
+    }
+
+    @Override
+    public void setAux(Integer aux) {
+        throw new UnsupportedOperationException();
     }
 }

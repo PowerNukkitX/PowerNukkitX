@@ -4,8 +4,6 @@ import cn.nukkit.block.BlockKelp;
 
 
 public class ItemKelp extends Item {
-
-
     public ItemKelp() {
         this(0, 1);
     }
@@ -20,5 +18,4 @@ public class ItemKelp extends Item {
         super(KELP, meta, count, "Kelp");
         this.block = new BlockKelp();
     }
-    
 }
