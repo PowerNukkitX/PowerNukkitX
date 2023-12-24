@@ -245,7 +245,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             }
             return true;
         } else if (!item.isNull()) {
-            Item itemtoAddToArmorStand = Item.getBlock(BlockID.AIR);
+            Item itemtoAddToArmorStand = Item.getBlockItem(BlockID.AIR);
             if (!handItem.isNull()) {
                 if (handItem.equals(item, true, true)) {
                     // Attempted to replace with the same item type
@@ -266,7 +266,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
                     itemToSetToPlayerInv.count--;
                 } else {
                     itemtoAddToArmorStand = handItem.clone();
-                    itemToSetToPlayerInv = Item.getBlock(BlockID.AIR);
+                    itemToSetToPlayerInv = Item.getBlockItem(BlockID.AIR);
                 }
                 player.getInventory().setItem(player.getInventory().getHeldItemIndex(), itemToSetToPlayerInv);
             }

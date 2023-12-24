@@ -1,9 +1,19 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
+import cn.nukkit.utils.DyeColor;
 
-public class ItemBrownDye extends Item {
+public class ItemBrownDye extends ItemDye {
     public ItemBrownDye() {
         super(BROWN_DYE);
+    }
+
+    @Override
+    public DyeColor getDyeColor() {
+        return DyeColor.BROWN;
+    }
+
+    @Override
+    public void setAux(Integer aux) {
+        throw new UnsupportedOperationException();
     }
 }

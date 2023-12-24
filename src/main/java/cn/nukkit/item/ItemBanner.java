@@ -14,7 +14,6 @@ import java.util.Objects;
  * @author PetteriM1
  */
 public class ItemBanner extends Item {
-
     public static final int COMMON_BANNER_TYPE = 0;
     public static final int OMINOUS_BANNER_TYPE = 1;
 

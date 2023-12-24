@@ -27,17 +27,12 @@ public class ItemBoat extends Item {
     }
 
     public ItemBoat(Integer meta, int count) {
-        this(BOAT, meta, count);
-    }
-
-    protected ItemBoat(String id, Integer meta, int count) {
-        super(id, meta, count);
+        super(BOAT, meta, count);
         adjustName();
     }
 
-    protected ItemBoat(String id, Integer meta, int count, String name) {
-        super(id, meta, count, name);
-        adjustName();
+    public ItemBoat(String id) {
+        super(id);
     }
 
     @Override
@@ -85,6 +80,10 @@ public class ItemBoat extends Item {
         return true;
     }
 
+    public int getBoatId() {
+        return this.aux;
+    }
+
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (face != BlockFace.UP || block instanceof BlockWater) return false;
@@ -101,7 +100,7 @@ public class ItemBoat extends Item {
                         .putList(new ListTag<FloatTag>("Rotation")
                                 .add(new FloatTag("", (float) ((player.yaw + 90f) % 360)))
                                 .add(new FloatTag("", 0)))
-                        .putInt("Variant", getAux())
+                        .putInt("Variant", getBoatId())
         );
 
         if (boat == null) {

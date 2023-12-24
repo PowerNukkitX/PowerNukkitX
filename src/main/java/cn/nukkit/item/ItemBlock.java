@@ -43,7 +43,7 @@ public class ItemBlock extends Item {
 
     @NotNull
     @Override
-    public Block getBlock() {
+    public Block getBlockItem() {
         return this.block.clone();
     }
 

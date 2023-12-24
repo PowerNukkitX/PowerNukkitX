@@ -7,13 +7,10 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.sunlan.fastreflection.FastConstructor;
 
 /**
- * Allay Project 12/15/2023
- *
  * @author Cool_Loong
  */
 public final class ItemRegistry extends BaseRegistry<String, Item, Class<? extends Item>> implements ItemID {
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Item>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
-    //private static final FastConstructor<ItemBlock> ITEM_BLOCK_CONSTRUCTOR = FastConstructor.create(ItemBlock.class.getConstructor());
 
     @Override
     public void init() {
@@ -22,7 +19,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
         register(ACACIA_DOOR, ItemAcaciaDoor.class);
         register(ACACIA_HANGING_SIGN, ItemAcaciaHangingSign.class);
         register(ACACIA_SIGN, ItemAcaciaSign.class);
-        register(AGENT_SPAWN_EGG, ItemAgentSpawnEgg.class);//next work start
+        register(AGENT_SPAWN_EGG, ItemAgentSpawnEgg.class);
         register(ALLAY_SPAWN_EGG, ItemAllaySpawnEgg.class);
         register(AMETHYST_SHARD, ItemAmethystShard.class);
         register(ANGLER_POTTERY_SHERD, ItemAnglerPotterySherd.class);
@@ -34,7 +31,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
         register(AXOLOTL_BUCKET, ItemAxolotlBucket.class);
         register(AXOLOTL_SPAWN_EGG, ItemAxolotlSpawnEgg.class);
         register(BAKED_POTATO, ItemBakedPotato.class);
-        register(BALLOON, ItemBalloon.class);
+//        register(BALLOON, ItemBalloon.class);//edu
         register(BAMBOO_CHEST_RAFT, ItemBambooChestRaft.class);
         register(BAMBOO_DOOR, ItemBambooDoor.class);
         register(BAMBOO_HANGING_SIGN, ItemBambooHangingSign.class);
@@ -59,7 +56,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
         register(BLAZE_POWDER, ItemBlazePowder.class);
         register(BLAZE_ROD, ItemBlazeRod.class);
         register(BLAZE_SPAWN_EGG, ItemBlazeSpawnEgg.class);
-        register(BLEACH, ItemBleach.class);
+//        register(BLEACH, ItemBleach.class); //edu
         register(BLUE_DYE, ItemBlueDye.class);
         register(BOAT, ItemBoat.class);
         register(BONE, ItemBone.class);
@@ -83,7 +80,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
         register(CARROT, ItemCarrot.class);
         register(CARROT_ON_A_STICK, ItemCarrotOnAStick.class);
         register(CAT_SPAWN_EGG, ItemCatSpawnEgg.class);
-        register(CAULDRON, ItemCauldron.class);
+        register(CAULDRON, ItemCauldron.class);//start index
         register(CAVE_SPIDER_SPAWN_EGG, ItemCaveSpiderSpawnEgg.class);
         register(CHAIN, ItemChain.class);
         register(CHAINMAIL_BOOTS, ItemChainmailBoots.class);

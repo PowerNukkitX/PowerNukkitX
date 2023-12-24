@@ -131,7 +131,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
             return true;
         }
 
-        if (item.getBlock() instanceof FlowerPotBlock potBlock && potBlock.isPotBlockState()) {
+        if (item.getBlockItem() instanceof FlowerPotBlock potBlock && potBlock.isPotBlockState()) {
             BlockEntityFlowerPot blockEntity = getOrCreateBlockEntity();
             blockEntity.namedTag.putCompound("PlantBlock", potBlock.getPlantBlockTag());
 

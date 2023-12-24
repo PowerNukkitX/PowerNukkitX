@@ -1,9 +1,12 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemBordureIndentedBannerPattern extends Item {
+public class ItemBordureIndentedBannerPattern extends ItemBannerPattern {
     public ItemBordureIndentedBannerPattern() {
         super(BORDURE_INDENTED_BANNER_PATTERN);
+    }
+
+    @Override
+    public void setAux(Integer aux) {
+        throw new UnsupportedOperationException();
     }
 }

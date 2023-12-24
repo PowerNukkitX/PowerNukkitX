@@ -2666,7 +2666,7 @@ public class Level implements ChunkManager, Metadatable {
                     for (Tag v : ((ListTag<? extends Tag>) tag).getAll()) {
                         if (v instanceof StringTag) {
                             Item entry = Item.fromString(((StringTag) v).data);
-                            if (entry.getId() > 0 && entry.getBlock() != null && entry.getBlock().getId() == target.getId()) {
+                            if (entry.getId() > 0 && entry.getBlockItem() != null && entry.getBlockItem().getId() == target.getId()) {
                                 canBreak = true;
                                 break;
                             }
@@ -2856,7 +2856,7 @@ public class Level implements ChunkManager, Metadatable {
         Block target = this.getBlock(vector);
         Block block = target.getSide(face);
 
-        if (item.getBlock() instanceof BlockScaffolding && face == BlockFace.UP && block.getId() == BlockID.SCAFFOLDING) {
+        if (item.getBlockItem() instanceof BlockScaffolding && face == BlockFace.UP && block.getId() == BlockID.SCAFFOLDING) {
             while (block instanceof BlockScaffolding) {
                 block = block.up();
             }
@@ -2923,7 +2923,7 @@ public class Level implements ChunkManager, Metadatable {
 
         Block hand;
         if (item.canBePlaced()) {
-            hand = item.getBlock();
+            hand = item.getBlockItem();
             hand.position(block);
         } else {
             return null;
@@ -2982,7 +2982,7 @@ public class Level implements ChunkManager, Metadatable {
                     for (Tag v : ((ListTag<Tag>) tag).getAll()) {
                         if (v instanceof StringTag) {
                             Item entry = Item.fromString(((StringTag) v).data);
-                            if (entry.getId() > 0 && entry.getBlock() != null && entry.getBlock().getId() == target.getId()) {
+                            if (entry.getId() > 0 && entry.getBlockItem() != null && entry.getBlockItem().getId() == target.getId()) {
                                 canPlace = true;
                                 break;
                             }

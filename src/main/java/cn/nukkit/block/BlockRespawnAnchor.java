@@ -227,7 +227,7 @@ public class BlockRespawnAnchor extends BlockMeta {
     @Override
     public Item[] getDrops(Item item) {
         if (canHarvest(item)) {
-            return new Item[]{Item.getBlock(getId())};
+            return new Item[]{Item.getBlockItem(getId())};
         }
         return Item.EMPTY_ARRAY;
     }

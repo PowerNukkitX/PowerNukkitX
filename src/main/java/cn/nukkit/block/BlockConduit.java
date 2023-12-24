@@ -60,7 +60,7 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (item.getBlock() != null && item.getBlockId() == CONDUIT && target.getId() == CONDUIT) {
+        if (item.getBlockItem() != null && item.getBlockId() == CONDUIT && target.getId() == CONDUIT) {
             return false;
         }
 

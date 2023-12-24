@@ -109,7 +109,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 Item fromEquipment = smithingInventory.getEquipment().clone();
                 Item toEquipment = fromEquipment.decrement(1);
 
-                Item fromResult = Item.getBlock(BlockID.AIR);
+                Item fromResult = Item.getBlockItem(BlockID.AIR);
                 Item toResult = smithingInventory.getResult().clone();
 
                 NetworkInventoryAction action = new NetworkInventoryAction();
@@ -140,7 +140,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     action = new NetworkInventoryAction();
                     action.setInventorySource(InventorySource.fromContainerWindowId(ContainerIds.INVENTORY));
                     action.inventorySlot = emptyPlayerSlot; // Cursor
-                    action.oldItem = Item.getBlock(BlockID.AIR);
+                    action.oldItem = Item.getBlockItem(BlockID.AIR);
                     action.newItem = toResult.clone();
                     fixedPacket.actions[2] = action;
 
@@ -549,7 +549,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 boolean spamBug = (playerHandle.getLastRightClickPos() != null && System.currentTimeMillis() - playerHandle.getLastRightClickTime() < 100.0 && blockVector.distanceSquared(playerHandle.getLastRightClickPos()) < 0.00001);
                 playerHandle.setLastRightClickPos(blockVector.asVector3());
                 playerHandle.setLastRightClickTime(System.currentTimeMillis());
-                if (spamBug && player.getInventory().getItemInHand().getBlock().getId()==0) {
+                if (spamBug && player.getInventory().getItemInHand().getBlockItem().getId() == 0) {
                     return;
                 }
                 player.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_ACTION, false);

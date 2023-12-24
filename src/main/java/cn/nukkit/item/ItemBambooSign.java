@@ -1,16 +1,8 @@
 package cn.nukkit.item;
 
-import cn.nukkit.block.BlockCherrySignPost;
 
-
-public class ItemBambooSign extends StringItemBase {
+public class ItemBambooSign extends ItemSign {
     public ItemBambooSign() {
-        super("minecraft:bamboo_sign", "Bamboo Sign");
-        this.block = new BlockCherrySignPost();
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 16;
+        super(BAMBOO_SIGN);
     }
 }

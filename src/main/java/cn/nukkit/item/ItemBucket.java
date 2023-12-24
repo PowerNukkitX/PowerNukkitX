@@ -19,12 +19,12 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemBucket extends Item {
-
     public ItemBucket() {
         this(0, 1);
     }
@@ -37,105 +37,79 @@ public class ItemBucket extends Item {
         super(BUCKET, meta, count, getName(meta));
     }
 
+    public ItemBucket(String id, Integer meta, int count) {
+        super(id, meta, count);
+    }
 
-    protected ItemBucket(int id, Integer meta, int count, String name) {
+    public ItemBucket(String id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
 
     protected static String getName(int meta) {
-        switch (meta) {
-            case 1:
-                return "Milk";
-            case 2:
-                return "Bucket of Cod";
-            case 3:
-                return "Bucket of Salmon";
-            case 4:
-                return "Bucket of Tropical Fish";
-            case 5:
-                return "Bucket of Pufferfish";
-            case 8:
-                return "Water Bucket";
-            case 10:
-                return "Lava Bucket";
-            case 11:
-                return "Powder Snow Bucket";
-            case 12:
-                return "Bucket of Axolotl";
-            case 13:
-                return "Bucket of Tadpole";
-            default:
-                return "Bucket";
-        }
+        return switch (meta) {
+            case 1 -> "Milk";
+            case 2 -> "Bucket of Cod";
+            case 3 -> "Bucket of Salmon";
+            case 4 -> "Bucket of Tropical Fish";
+            case 5 -> "Bucket of Pufferfish";
+            case 8 -> "Water Bucket";
+            case 10 -> "Lava Bucket";
+            case 11 -> "Powder Snow Bucket";
+            case 12 -> "Bucket of Axolotl";
+            case 13 -> "Bucket of Tadpole";
+            default -> "Bucket";
+        };
     }
 
-    public static int getDamageByTarget(int target) {
-        switch (target) {
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 8:
-            case 9:
-            case 12:
-            case 13:
-                return BlockID.FLOWING_WATER;
-            case 10:
-                return BlockID.FLOWING_LAVA;
-            case 11:
-                return BlockID.POWDER_SNOW;
-            default:
-                return BlockID.AIR;
-        }
+    public static String getDamageByTarget(int target) {
+        return switch (target) {
+            case 2, 3, 4, 5, 8, 9, 12, 13 -> BlockID.FLOWING_WATER;
+            case 10 -> BlockID.FLOWING_LAVA;
+            case 11 -> BlockID.POWDER_SNOW;
+            default -> BlockID.AIR;
+        };
     }
 
 
     public boolean isEmpty() {
-        return getId() == BUCKET && getAux() == 0;
+        return Objects.equals(getId(), BUCKET) && getAux() == 0;
     }
 
 
     public boolean isWater() {
-        return getTargetBlock().getId() == BlockID.FLOWING_WATER;
+        return getTargetBlock().getId().equals(BlockID.FLOWING_WATER);
     }
 
 
     public boolean isLava() {
-        return getTargetBlock().getId() == BlockID.FLOWING_LAVA;
+        return getTargetBlock().getId().equals(BlockID.FLOWING_LAVA);
     }
 
 
     public boolean isPowderSnow() {
-        return getTargetBlock().getId() == BlockID.POWDER_SNOW;
+        return getTargetBlock().getId().equals(BlockID.POWDER_SNOW);
     }
 
 
     @Nullable
     public String getFishEntityId() {
-        if (getId() != BUCKET) {
+        if (!Objects.equals(getId(), BUCKET)) {
             return null;
         }
-        switch (this.getAux()) {
-            case 2:
-                return "Cod";
-            case 3:
-                return "Salmon";
-            case 4:
-                return "TropicalFish";
-            case 5:
-                return "Pufferfish";
-            case 12:
-                return "Axolotl";
-            case 13:
-                return "Tadpole";
-            default:
-                return null;
-        }
+        return switch (this.getAux()) {
+            case 2 -> "Cod";
+            case 3 -> "Salmon";
+            case 4 -> "TropicalFish";
+            case 5 -> "Pufferfish";
+            case 12 -> "Axolotl";
+            case 13 -> "Tadpole";
+            default -> null;
+        };
     }
 
     @Override
     public int getMaxStackSize() {
-        return this.aux == 0 && getId() == BUCKET ? 16 : 1;
+        return this.aux == 0 && Objects.equals(getId(), BUCKET) ? 16 : 1;
     }
 
     @Override
@@ -145,12 +119,11 @@ public class ItemBucket extends Item {
 
 
     public Block getTargetBlock() {
-        return getId() == BUCKET ? Block.get(getDamageByTarget(this.aux)) : Block.get(BlockID.AIR);
+        return Objects.equals(getId(), BUCKET) ? Block.get(getDamageByTarget(this.aux)) : Block.get(BlockID.AIR);
     }
 
 
     @SuppressWarnings("DuplicatedCode")
-
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) {
@@ -161,19 +134,26 @@ public class ItemBucket extends Item {
 
         if (targetBlock instanceof BlockAir) {
             if (!(target instanceof BlockPowderSnow)) {
-                if (!(target instanceof BlockLiquid) || target.getDamage() != 0) {
+                //                                       is liquid and state is
+                if (!(target instanceof BlockLiquid) || !target.isDefaultState()) {
                     target = target.getLevelBlockAtLayer(1);
                 }
-                if (!(target instanceof BlockLiquid) || target.getDamage() != 0) {
+                if (!(target instanceof BlockLiquid) || !target.isDefaultState()) {
                     target = block;
                 }
-                if (!(target instanceof BlockLiquid) || target.getDamage() != 0) {
+                if (!(target instanceof BlockLiquid) || !target.isDefaultState()) {
                     target = block.getLevelBlockAtLayer(1);
                 }
             }
-            if ((target instanceof BlockLiquid || target instanceof BlockPowderSnow) && target.getDamage() == 0) {
-                Item result = target instanceof BlockPowderSnow ? Item.get(BUCKET, 11, 1) :
-                        (target instanceof BlockLavaStill ? Item.get(BUCKET, 10, 1) : Item.get(BUCKET, getDamageByTarget(target.getId()), 1));
+            if ((target instanceof BlockLiquid || target instanceof BlockPowderSnow) && !target.isDefaultState()) {
+                Item result;
+                if (target instanceof BlockPowderSnow) {
+                    result = Item.get(BUCKET, 11, 1);
+                } else if (target instanceof BlockLavaStill) {
+                    result = Item.get(BUCKET, 10, 1);
+                } else {
+                    result = Item.get(BUCKET, 8, 1);
+                }
                 PlayerBucketFillEvent ev;
                 player.getServer().getPluginManager().callEvent(ev = new PlayerBucketFillEvent(player, block, face, target, this, result));
                 if (!ev.isCancelled()) {
@@ -185,9 +165,9 @@ public class ItemBucket extends Item {
                     // replaced with water that can flow.
                     for (BlockFace side : Plane.HORIZONTAL) {
                         Block b = target.getSideAtLayer(0, side);
-                        if (b.getId() == STILL_WATER) {
+                        if (b.getId().equals(BlockID.WATER)) {
                             level.setBlock(b, Block.get(BlockID.FLOWING_WATER));
-                        } else if (b.getId() == BlockID.STILL_LAVA) level.setBlock(b, Block.get(BlockID.FLOWING_LAVA));
+                        } else if (b.getId().equals(BlockID.LAVA)) level.setBlock(b, Block.get(BlockID.FLOWING_LAVA));
                     }
 
                     if (player.isSurvival()) {
@@ -224,7 +204,7 @@ public class ItemBucket extends Item {
             boolean usesWaterlogging = ((BlockLiquid) targetBlock).usesWaterLogging();
             Block placementBlock;
             if (usesWaterlogging) {
-                if (block.getId() == BlockID.BAMBOO) {
+                if (block.getId().equals(BlockID.BAMBOO)) {
                     placementBlock = block;
                 } else if (target.getWaterloggingLevel() > 0) {
                     placementBlock = target.getLevelBlockAtLayer(1);
@@ -238,7 +218,7 @@ public class ItemBucket extends Item {
             }
 
             PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, placementBlock, face, target, this, result);
-            boolean canBeFlowedInto = placementBlock.canBeFlowedInto() || placementBlock.getId() == BlockID.BAMBOO;
+            boolean canBeFlowedInto = placementBlock.canBeFlowedInto() || placementBlock.getId().equals(BlockID.BAMBOO);
             if (usesWaterlogging) {
                 ev.setCancelled(placementBlock.getWaterloggingLevel() <= 0 && !canBeFlowedInto);
             } else {
@@ -322,7 +302,7 @@ public class ItemBucket extends Item {
 
 
     protected boolean canBeUsedOnDimension(int dimension) {
-        if (getId() != BUCKET) {
+        if (!Objects.equals(getId(), BUCKET)) {
             return true;
         }
 
@@ -331,7 +311,7 @@ public class ItemBucket extends Item {
 
 
     protected void afterUse(Level level, Block block) {
-        if (getId() != BUCKET) {
+        if (!Objects.equals(getId(), BUCKET)) {
             return;
         }
 
@@ -355,10 +335,9 @@ public class ItemBucket extends Item {
     }
 
 
-
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        return getId() == BUCKET && this.getAux() == 1; // Milk
+        return Objects.equals(getId(), BUCKET) && this.getAux() == 1; // Milk
     }
 
 

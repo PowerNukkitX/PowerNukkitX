@@ -6,7 +6,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.CreatureSpawnEvent;
 import cn.nukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
@@ -22,7 +22,7 @@ import java.util.Random;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemSpawnEgg extends Item {
-    
+
     public ItemSpawnEgg() {
         this(0, 1);
     }
@@ -32,13 +32,12 @@ public class ItemSpawnEgg extends Item {
     }
 
     public ItemSpawnEgg(Integer meta, int count) {
-        this(SPAWN_EGG, meta, count, "Spawn Egg");
+        super(SPAWN_EGG, meta, count, "Spawn Egg");
         updateName();
     }
 
-
-    protected ItemSpawnEgg(int id, Integer meta, int count, String name) {
-        super(id, meta, count, name);
+    public ItemSpawnEgg(String id) {
+        super(id, 0, 1);
     }
 
     @Override
@@ -46,7 +45,6 @@ public class ItemSpawnEgg extends Item {
         super.setAux(aux);
         updateName();
     }
-
 
     protected void updateName() {
         String entityName = getEntityName();
@@ -68,7 +66,7 @@ public class ItemSpawnEgg extends Item {
             return false;
         }
 
-        FullChunk chunk = level.getChunk((int) block.getX() >> 4, (int) block.getZ() >> 4);
+        IChunk chunk = level.getChunk((int) block.getX() >> 4, (int) block.getZ() >> 4);
 
         if (chunk == null) {
             return false;

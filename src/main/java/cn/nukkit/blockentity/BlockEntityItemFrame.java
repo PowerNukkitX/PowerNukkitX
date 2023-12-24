@@ -116,7 +116,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
                 itemTag.putString("Name", namespacedId);
             }
             if (item instanceof ItemBlock itemBlock) {
-                itemTag.putCompound("Block", NBTIO.putBlockHelper(itemBlock.getBlock()));
+                itemTag.putCompound("Block", NBTIO.putBlockHelper(itemBlock.getBlockItem()));
             }
             tag.putCompound("Item", itemTag)
                     .putByte("ItemRotation", this.getItemRotation());

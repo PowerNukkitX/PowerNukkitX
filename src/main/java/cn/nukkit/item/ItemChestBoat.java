@@ -21,17 +21,21 @@ public class ItemChestBoat extends Item {
         this(meta, 1);
     }
 
+    //legacy chest boat , have aux
     public ItemChestBoat(Integer meta, int count) {
-        this(CHEST_BOAT, meta, count);
-    }
-
-    protected ItemChestBoat(String id, Integer meta, int count) {
-        super(id, meta, count);
+        super(CHEST_BOAT, meta, count);
         adjustName();
     }
 
-    public ItemChestBoat(String id, Integer meta, int count, String name) {
-        super(id, meta, count, name);
+    //chest boat item after split aux
+    public ItemChestBoat(String id) {
+        super(id);
+    }
+
+    @Override
+    public void setAux(Integer aux) {
+        super.setAux(aux);
+        adjustName();
     }
 
     private void adjustName() {
@@ -72,6 +76,10 @@ public class ItemChestBoat extends Item {
     @Override
     public boolean canBeActivated() {
         return true;
+    }
+
+    public int getBoatId() {
+        return this.aux;
     }
 
     @Override

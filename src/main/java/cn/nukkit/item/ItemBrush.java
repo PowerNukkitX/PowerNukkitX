@@ -1,7 +1,8 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
+/**
+ * todo feature
+ */
 public class ItemBrush extends Item {
     public ItemBrush() {
         super(BRUSH);

@@ -171,7 +171,7 @@ public class BlockCactus extends BlockTransparentMeta implements BlockFlowerPot.
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{
-                Item.getBlock(BlockID.CACTUS, 0, 1)
+                Item.getBlockItem(BlockID.CACTUS, 0, 1)
         };
     }
 

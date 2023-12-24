@@ -2,30 +2,17 @@ package cn.nukkit.item;
 
 import cn.nukkit.utils.BannerPattern;
 
+import java.util.Objects;
+
 
 public class ItemBannerPattern extends Item {
-
     public static final int PATTERN_CREEPER_CHARGE = 0;
-
-
     public static final int PATTERN_SKULL_CHARGE = 1;
-
-
     public static final int PATTERN_FLOWER_CHARGE = 2;
-
-
     public static final int PATTERN_THING = 3;
-
-
     public static final int PATTERN_FIELD_MASONED = 4;
-
-
     public static final int PATTERN_BORDURE_INDENTED = 5;
-
-
     public static final int PATTERN_SNOUT = 6;
-
-
     public static final int PATTERN_GLOBE = 7;
 
     public ItemBannerPattern() {
@@ -41,9 +28,8 @@ public class ItemBannerPattern extends Item {
         updateName();
     }
 
-
-    protected ItemBannerPattern(int id, Integer meta, int count, String name) {
-        super(id, meta, count, name);
+    public ItemBannerPattern(String id) {
+        super(id);
     }
 
     @Override
@@ -59,7 +45,7 @@ public class ItemBannerPattern extends Item {
 
 
     public BannerPattern.Type getPatternType() {
-        if (getId() != BANNER_PATTERN) {
+        if (!Objects.equals(getId(), BANNER_PATTERN)) {
             return BannerPattern.Type.PATTERN_CREEPER;
         }
         return switch (getAux()) {
@@ -76,7 +62,7 @@ public class ItemBannerPattern extends Item {
 
 
     protected void updateName() {
-        if (getId() != BANNER_PATTERN) {
+        if (!Objects.equals(getId(), BANNER_PATTERN)) {
             return;
         }
         switch (super.aux) {

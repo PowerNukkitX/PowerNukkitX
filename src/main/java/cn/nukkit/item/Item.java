@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 public abstract class Item implements Cloneable, ItemID {
-    public static final Item AIR_ITEM = Item.getBlock(BlockID.AIR);
+    public static final Item AIR_ITEM = Item.getBlockItem(BlockID.AIR);
     public static final Item[] EMPTY_ARRAY = new Item[0];
 
     /**
@@ -121,18 +121,18 @@ public abstract class Item implements Cloneable, ItemID {
         return false;
     }
 
-    public static Item getBlock(String id) {
-        return getBlock(id, 0);
+    public static Item getBlockItem(String id) {
+        return getBlockItem(id, 0);
     }
 
 
-    public static Item getBlock(String id, Integer meta) {
-        return getBlock(id, meta, 1);
+    public static Item getBlockItem(String id, Integer meta) {
+        return getBlockItem(id, meta, 1);
     }
 
 
-    public static Item getBlock(String id, Integer meta, int count) {
-        return getBlock(id, meta, count, EmptyArrays.EMPTY_BYTES);
+    public static Item getBlockItem(String id, Integer meta, int count) {
+        return getBlockItem(id, meta, count, EmptyArrays.EMPTY_BYTES);
     }
 
 
@@ -145,7 +145,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @param tags  the Item tags
      * @return the ItemBlock
      */
-    public static Item getBlock(String id, Integer meta, int count, byte[] tags) {
+    public static Item getBlockItem(String id, Integer meta, int count, byte[] tags) {
         int i = Registries.BLOCKSTATE_ITEMMETA.get(id, meta);
         if (i == 0) {
             throw new IllegalArgumentException("Unknown meta mapping in block: " + id);
@@ -168,7 +168,6 @@ public abstract class Item implements Cloneable, ItemID {
     public static Item get(String id, Integer meta, int count) {
         return get(id, meta, count, EmptyArrays.EMPTY_BYTES);
     }
-
 
     public static Item get(String id, Integer meta, int count, byte[] tags) {
         return Registries.ITEM.get(id, meta, count, tags);
@@ -827,7 +826,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     @NotNull
-    public Block getBlock() {
+    public Block getBlockItem() {
         if (this.block != null) {
             return this.block.clone();
         } else {
@@ -1192,7 +1191,7 @@ public abstract class Item implements Cloneable, ItemID {
 
     public final Item increment(int amount) {
         if (count + amount <= 0) {
-            return getBlock(BlockID.AIR);
+            return getBlockItem(BlockID.AIR);
         }
         Item cloned = clone();
         cloned.count += amount;

@@ -109,7 +109,7 @@ public class BlockStone extends BlockSolidMeta {
         if (item.isPickaxe() && item.getTier() >= getToolTier()) {
             return new Item[]{
                     StoneType.STONE.equals(getStoneType())
-                            ? Item.getBlock(BlockID.COBBLESTONE)
+                            ? Item.getBlockItem(BlockID.COBBLESTONE)
                             : toItem()
             };
         } else {

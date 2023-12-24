@@ -2,6 +2,16 @@ package cn.nukkit.item;
 
 public class ItemAcaciaChestBoat extends ItemChestBoat {
     public ItemAcaciaChestBoat() {
-        super(ACACIA_CHEST_BOAT, 4, 1);
+        super(ACACIA_CHEST_BOAT);
+    }
+
+    @Override
+    public int getBoatId() {
+        return 4;
+    }
+
+    @Override
+    public void setAux(Integer aux) {
+        throw new UnsupportedOperationException();
     }
 }

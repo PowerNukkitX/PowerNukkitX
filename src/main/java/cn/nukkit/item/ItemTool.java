@@ -8,6 +8,7 @@ import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.Tag;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.Random;
 
 import static cn.nukkit.utils.Utils.dynamic;
@@ -73,25 +74,25 @@ public abstract class ItemTool extends Item implements ItemDurable {
                     return Item.get(ItemID.NETHERITE_HOE);
                 }
                 if (toolType == TYPE_HANDS_ONLY) {
-                    return Item.getBlock(BlockID.AIR);
+                    return Item.getBlockItem(BlockID.AIR);
                 }
                 return Item.get(ItemID.NETHERITE_PICKAXE);
         }
     }
 
-    public ItemTool(int id) {
+    public ItemTool(String id) {
         this(id, 0, 1, UNKNOWN_STR);
     }
 
-    public ItemTool(int id, Integer meta) {
+    public ItemTool(String id, Integer meta) {
         this(id, meta, 1, UNKNOWN_STR);
     }
 
-    public ItemTool(int id, Integer meta, int count) {
+    public ItemTool(String id, Integer meta, int count) {
         this(id, meta, count, UNKNOWN_STR);
     }
 
-    public ItemTool(int id, Integer meta, int count, String name) {
+    public ItemTool(String id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
 
@@ -117,7 +118,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
         } else if (!this.isShears() && block.calculateBreakTime(this) > 0) {
             this.aux += 2;
         } else if (this.isHoe()) {
-            if (block.getId() == GRASS || block.getId() == DIRT) {
+            if (block.getId().equals(Block.GRASS) || block.getId().equals(Block.DIRT)) {
                 this.aux++;
             }
         } else {
@@ -183,7 +184,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
 
     @Override
     public boolean isShears() {
-        return (this.id == SHEARS);
+        return (Objects.equals(this.id, SHEARS));
     }
 
     @Override
