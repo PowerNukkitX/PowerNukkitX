@@ -3,7 +3,7 @@ package cn.nukkit.entity.projectile;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 
@@ -18,15 +18,15 @@ public class EntityArrow extends SlenderProjectile {
 
     protected int pickupMode;
 
-    public EntityArrow(FullChunk chunk, CompoundTag nbt) {
+    public EntityArrow(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityArrow(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntityArrow(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         this(chunk, nbt, shootingEntity, false);
     }
 
-    public EntityArrow(FullChunk chunk, CompoundTag nbt, Entity shootingEntity, boolean critical) {
+    public EntityArrow(IChunk chunk, CompoundTag nbt, Entity shootingEntity, boolean critical) {
         super(chunk, nbt, shootingEntity);
         this.setCritical(critical);
     }

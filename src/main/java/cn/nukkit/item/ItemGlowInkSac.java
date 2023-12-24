@@ -1,8 +1,8 @@
 package cn.nukkit.item;
 
 
-public class ItemGlowInkSac extends StringItemBase {
+public class ItemGlowInkSac extends Item {
     public ItemGlowInkSac() {
-        super(MinecraftItemID.GLOW_INK_SAC.getNamespacedId(), "Glow Ink Sac");
+        super(GLOW_INK_SAC);
     }
 }

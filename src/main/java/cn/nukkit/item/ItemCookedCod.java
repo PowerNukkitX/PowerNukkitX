@@ -1,9 +1,7 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemCookedCod extends Item {
+public class ItemCookedCod extends ItemCod {
     public ItemCookedCod() {
-        super(COOKED_COD);
+        super(COOKED_COD, 0, 1);
     }
 }

@@ -9,8 +9,6 @@ import org.jetbrains.annotations.NotNull;
  * @author LoboMetalurgico
  * @since 13/06/2021
  */
-
-
 public class BlockItemFrameGlow extends BlockItemFrame {
 
 

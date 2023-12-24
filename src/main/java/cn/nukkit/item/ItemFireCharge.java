@@ -39,8 +39,8 @@ public class ItemFireCharge extends Item {
             return false;
         }
 
-        if (block.getId() == AIR && target.getBurnChance() != -1 && (target.isSolid() || target.getBurnChance() > 0)) {
-            if (target.getId() == OBSIDIAN) {
+        if (block.getId().equals(BlockID.AIR) && target.getBurnChance() != -1 && (target.isSolid() || target.getBurnChance() > 0)) {
+            if (target.getId().equals(BlockID.OBSIDIAN)) {
                 if (level.createPortal(target)) {
                     return true;
                 }

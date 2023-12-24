@@ -1,8 +1,6 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemCookedPorkchop extends Item {
+public class ItemCookedPorkchop extends ItemEdible {
     public ItemCookedPorkchop() {
         super(COOKED_PORKCHOP);
     }

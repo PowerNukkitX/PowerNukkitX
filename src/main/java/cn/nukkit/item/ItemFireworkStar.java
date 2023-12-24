@@ -15,6 +15,6 @@ public class ItemFireworkStar extends Item {
 
 
     public ItemFireworkStar(Integer meta, int count) {
-        super(FIREWORKSCHARGE, meta, count, "Firework Star");
+        super(FIREWORK_STAR, meta, count, "Firework Star");
     }
 }

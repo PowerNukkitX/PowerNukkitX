@@ -17,7 +17,7 @@ import cn.nukkit.network.protocol.LevelSoundEventPacketV2;
  */
 public abstract class ProjectileItem extends Item {
 
-    public ProjectileItem(int id, Integer meta, int count, String name) {
+    public ProjectileItem(String id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
 

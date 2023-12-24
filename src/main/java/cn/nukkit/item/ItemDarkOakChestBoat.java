@@ -1,8 +1,6 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemDarkOakChestBoat extends Item {
+public class ItemDarkOakChestBoat extends ItemChestBoat {
     public ItemDarkOakChestBoat() {
         super(DARK_OAK_CHEST_BOAT);
     }

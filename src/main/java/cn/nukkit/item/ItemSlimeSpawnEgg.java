@@ -1,9 +1,17 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemSlimeSpawnEgg extends Item {
+public class ItemSlimeSpawnEgg extends ItemSpawnEgg {
     public ItemSlimeSpawnEgg() {
         super(SLIME_SPAWN_EGG);
+    }
+
+    @Override
+    public int getEntityNetworkId() {
+        return 37;
+    }
+
+    @Override
+    public void setAux(Integer aux) {
+        throw new UnsupportedOperationException();
     }
 }

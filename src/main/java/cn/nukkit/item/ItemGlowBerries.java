@@ -12,8 +12,6 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author Superice666
  */
-
-
 public class ItemGlowBerries extends ItemEdible {
 
     public ItemGlowBerries() {

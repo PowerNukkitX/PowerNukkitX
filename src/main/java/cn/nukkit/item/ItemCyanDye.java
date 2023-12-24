@@ -1,9 +1,14 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
+import cn.nukkit.utils.DyeColor;
 
-public class ItemCyanDye extends Item {
+public class ItemCyanDye extends ItemDye {
     public ItemCyanDye() {
         super(CYAN_DYE);
+    }
+
+    @Override
+    public DyeColor getDyeColor() {
+        return DyeColor.CYAN;
     }
 }

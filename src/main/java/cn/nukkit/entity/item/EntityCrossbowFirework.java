@@ -1,7 +1,7 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.Server;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 
@@ -12,7 +12,7 @@ public class EntityCrossbowFirework extends EntityFirework {
     private final int lifetime;
     private int fireworkAge = 0;
 
-    public EntityCrossbowFirework(FullChunk chunk, CompoundTag nbt) {
+    public EntityCrossbowFirework(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         this.lifetime = 10 + RANDOM.nextInt(13);
     }

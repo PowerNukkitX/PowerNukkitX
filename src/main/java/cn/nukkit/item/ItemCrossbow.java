@@ -14,28 +14,25 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.*;
 import cn.nukkit.utils.Utils;
 
+import java.util.Objects;
+
 
 public class ItemCrossbow extends ItemTool {
-
     private int loadTick;
-
 
     public ItemCrossbow() {
         this(0, 1);
     }
 
-
     public ItemCrossbow(Integer meta) {
         this(meta, 1);
     }
-
 
     public ItemCrossbow(Integer meta, int count) {
         super(CROSSBOW, meta, count, "Crossbow");
     }
 
     @Override
-
     public int getMaxDurability() {
         return ItemTool.DURABILITY_CROSSBOW;
     }
@@ -61,7 +58,7 @@ public class ItemCrossbow extends ItemTool {
 
                 if (!this.canLoad(itemArrow)) {
                     if (player.isCreative()) {
-                        this.loadArrow(player, Item.get(262));
+                        this.loadArrow(player, Item.get(ARROW));
                     }
 
                     return true;
@@ -98,7 +95,7 @@ public class ItemCrossbow extends ItemTool {
 
     protected boolean canLoad(Item item) {
         return switch (item.getId()) {
-            case Item.ARROW, Item.FIREWORKS -> true;
+            case Item.ARROW, Item.FIREWORK_ROCKET -> true;
             default -> false;
         };
     }
@@ -149,8 +146,8 @@ public class ItemCrossbow extends ItemTool {
             double mY;
             double mZ;
             CompoundTag nbt = (new CompoundTag()).putList((new ListTag<>("Pos")).add(new DoubleTag("", player.x)).add(new DoubleTag("", player.y + (double)player.getEyeHeight())).add(new DoubleTag("", player.z))).putList((new ListTag("Motion")).add(new DoubleTag("", mX = -Math.sin(player.yaw / 180.0D * 3.141592653589793D) * Math.cos(player.pitch / 180.0D * 3.141592653589793D))).add(new DoubleTag("", mY = -Math.sin(player.pitch / 180.0D * 3.141592653589793D))).add(new DoubleTag("", mZ = Math.cos(player.yaw / 180.0D * 3.141592653589793D) * Math.cos(player.pitch / 180.0D * 3.141592653589793D)))).putList((new ListTag("Rotation")).add(new FloatTag("", (float)(player.yaw > 180.0D ? 360 : 0) - (float)player.yaw)).add(new FloatTag("", (float)(-player.pitch))));
-            Item item = Item.fromString(this.getNamedTag().getCompound("chargedItem").getString("Name"));
-            if (item.getId() == Item.FIREWORKS) {
+            Item item = Item.get(this.getNamedTag().getCompound("chargedItem").getString("Name"));
+            if (Objects.equals(item.getId(), Item.FIREWORK_ROCKET)) {
                 EntityCrossbowFirework entity = new EntityCrossbowFirework(player.chunk, nbt);
                 entity.setMotion(new Vector3(mX, mY, mZ));
                 entity.spawnToAll();

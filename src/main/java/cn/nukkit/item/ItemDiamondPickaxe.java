@@ -1,9 +1,27 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemDiamondPickaxe extends Item {
+public class ItemDiamondPickaxe extends ItemTool {
     public ItemDiamondPickaxe() {
         super(DIAMOND_PICKAXE);
+    }
+
+    @Override
+    public int getMaxDurability() {
+        return ItemTool.DURABILITY_DIAMOND;
+    }
+
+    @Override
+    public boolean isPickaxe() {
+        return true;
+    }
+
+    @Override
+    public int getTier() {
+        return ItemTool.TIER_DIAMOND;
+    }
+
+    @Override
+    public int getAttackDamage() {
+        return 5;
     }
 }

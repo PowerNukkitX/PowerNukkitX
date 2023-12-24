@@ -1,9 +1,17 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemDarkOakBoat extends Item {
+public class ItemDarkOakBoat extends ItemBoat {
     public ItemDarkOakBoat() {
         super(DARK_OAK_BOAT);
+    }
+
+    @Override
+    public int getBoatId() {
+        return 5;
+    }
+
+    @Override
+    public void setAux(Integer aux) {
+        throw new UnsupportedOperationException();
     }
 }

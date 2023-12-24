@@ -8,8 +8,7 @@ import cn.nukkit.plugin.InternalPlugin;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-
-public class ItemGoatHorn extends StringItemBase {
+public class ItemGoatHorn extends Item {
     protected int coolDownTick = 140;
     private final AtomicBoolean banUse = new AtomicBoolean(false);
 
@@ -21,9 +20,9 @@ public class ItemGoatHorn extends StringItemBase {
         this(0, 1);
     }
 
-    public ItemGoatHorn(Integer meta, int count) {
-        super(MinecraftItemID.GOAT_HORN.getNamespacedId(), "Goat Horn");
-        this.meta = meta;
+    public ItemGoatHorn(Integer aux, int count) {
+        super(GOAT_HORN);
+        this.aux = aux;
         this.count = count;
     }
 
@@ -52,7 +51,7 @@ public class ItemGoatHorn extends StringItemBase {
     }
 
     public void playSound(Player player) {
-        switch (this.getMeta()) {
+        switch (this.aux) {
             case 0 -> player.getLevel().addSound(player, Sound.HORN_CALL_0);
             case 1 -> player.getLevel().addSound(player, Sound.HORN_CALL_1);
             case 2 -> player.getLevel().addSound(player, Sound.HORN_CALL_2);

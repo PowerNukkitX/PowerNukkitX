@@ -1,9 +1,12 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemCodBucket extends Item {
+public class ItemCodBucket extends ItemBucket {
     public ItemCodBucket() {
         super(COD_BUCKET);
+    }
+
+    @Override
+    public int getBucketType() {
+        return 2;
     }
 }

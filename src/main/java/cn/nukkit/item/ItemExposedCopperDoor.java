@@ -1,8 +1,6 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemExposedCopperDoor extends Item {
+public class ItemExposedCopperDoor extends ItemDoor {
     public ItemExposedCopperDoor() {
         super(EXPOSED_COPPER_DOOR);
     }

@@ -80,7 +80,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
         register(CARROT, ItemCarrot.class);
         register(CARROT_ON_A_STICK, ItemCarrotOnAStick.class);
         register(CAT_SPAWN_EGG, ItemCatSpawnEgg.class);
-        register(CAULDRON, ItemCauldron.class);//start index
+        register(CAULDRON, ItemCauldron.class);
         register(CAVE_SPIDER_SPAWN_EGG, ItemCaveSpiderSpawnEgg.class);
         register(CHAIN, ItemChain.class);
         register(CHAINMAIL_BOOTS, ItemChainmailBoots.class);
@@ -109,7 +109,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
         register(COMMAND_BLOCK_MINECART, ItemCommandBlockMinecart.class);
         register(COMPARATOR, ItemComparator.class);
         register(COMPASS, ItemCompass.class);
-        register(COMPOUND, ItemCompound.class);
+//        register(COMPOUND, ItemCompound.class);//edu
         register(CONCRETE, ItemConcrete.class);
         register(CONCRETE_POWDER, ItemConcretePowder.class);
         register(COOKED_BEEF, ItemCookedBeef.class);
@@ -201,7 +201,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
         register(GLOW_FRAME, ItemGlowFrame.class);
         register(GLOW_INK_SAC, ItemGlowInkSac.class);
         register(GLOW_SQUID_SPAWN_EGG, ItemGlowSquidSpawnEgg.class);
-        register(GLOW_STICK, ItemGlowStick.class);
+        //register(GLOW_STICK, ItemGlowStick.class); //edu
         register(GLOWSTONE_DUST, ItemGlowstoneDust.class);
         register(GOAT_HORN, ItemGoatHorn.class);
         register(GOAT_SPAWN_EGG, ItemGoatSpawnEgg.class);

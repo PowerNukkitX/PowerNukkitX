@@ -2,11 +2,11 @@ package cn.nukkit.item;
 
 public class ItemCarpet extends Item {
     public ItemCarpet() {
-        super(CARPET);
+        this(0);
     }
 
     public ItemCarpet(Integer meta) {
-        super(CARPET, meta);
+        this(meta, 1);
     }
 
     public ItemCarpet(Integer meta, int count) {

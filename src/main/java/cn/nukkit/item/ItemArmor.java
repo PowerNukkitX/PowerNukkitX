@@ -18,22 +18,21 @@ abstract public class ItemArmor extends Item implements ItemDurable {
     public static final int TIER_GOLD = 4;
     public static final int TIER_DIAMOND = 5;
     public static final int TIER_NETHERITE = 6;
-
     public static final int TIER_OTHER = dynamic(1000);
 
-    public ItemArmor(int id) {
+    public ItemArmor(String id) {
         super(id);
     }
 
-    public ItemArmor(int id, Integer meta) {
+    public ItemArmor(String id, Integer meta) {
         super(id, meta);
     }
 
-    public ItemArmor(int id, Integer meta, int count) {
+    public ItemArmor(String id, Integer meta, int count) {
         super(id, meta, count);
     }
 
-    public ItemArmor(int id, Integer meta, int count, String name) {
+    public ItemArmor(String id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
 
@@ -47,7 +46,6 @@ abstract public class ItemArmor extends Item implements ItemDurable {
         return true;
     }
 
-    
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         boolean equip = false;
@@ -105,21 +103,15 @@ abstract public class ItemArmor extends Item implements ItemDurable {
 
     @Override
     public int getEnchantAbility() {
-        switch (this.getTier()) {
-            case TIER_CHAIN:
-                return 12;
-            case TIER_LEATHER:
-            case TIER_NETHERITE:
-                return 15;
-            case TIER_DIAMOND:
-                return 10;
-            case TIER_GOLD:
-                return 25;
-            case TIER_IRON:
-                return 9;
-        }
+        return switch (this.getTier()) {
+            case TIER_CHAIN -> 12;
+            case TIER_LEATHER, TIER_NETHERITE -> 15;
+            case TIER_DIAMOND -> 10;
+            case TIER_GOLD -> 25;
+            case TIER_IRON -> 9;
+            default -> 0;
+        };
 
-        return 0;
     }
 
     @Override

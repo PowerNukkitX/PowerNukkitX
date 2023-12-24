@@ -1,9 +1,11 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemChicken extends Item {
+public class ItemChicken extends ItemEdible {
     public ItemChicken() {
-        super(CHICKEN);
+        super(CHICKEN, 0, 1, "Raw Chicken");
+    }
+
+    public ItemChicken(int count) {
+        super(CHICKEN, 0, count, "Raw Chicken");
     }
 }

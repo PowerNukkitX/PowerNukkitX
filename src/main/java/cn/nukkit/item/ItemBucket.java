@@ -37,12 +37,16 @@ public class ItemBucket extends Item {
         super(BUCKET, meta, count, getName(meta));
     }
 
-    public ItemBucket(String id, Integer meta, int count) {
-        super(id, meta, count);
+    public ItemBucket(String id) {
+        super(id);
     }
 
-    public ItemBucket(String id, Integer meta, int count, String name) {
-        super(id, meta, count, name);
+    public ItemBucket(String id, int count) {
+        super(id, 0, count);
+    }
+
+    public ItemBucket(String id, int count, String name) {
+        super(id, 0, count, name);
     }
 
     protected static String getName(int meta) {
@@ -61,6 +65,10 @@ public class ItemBucket extends Item {
         };
     }
 
+    public int getBucketType() {
+        return this.aux;
+    }
+
     public static String getDamageByTarget(int target) {
         return switch (target) {
             case 2, 3, 4, 5, 8, 9, 12, 13 -> BlockID.FLOWING_WATER;
@@ -72,7 +80,7 @@ public class ItemBucket extends Item {
 
 
     public boolean isEmpty() {
-        return Objects.equals(getId(), BUCKET) && getAux() == 0;
+        return Objects.equals(getId(), BUCKET) && getBucketType() == 0;
     }
 
 
@@ -96,7 +104,7 @@ public class ItemBucket extends Item {
         if (!Objects.equals(getId(), BUCKET)) {
             return null;
         }
-        return switch (this.getAux()) {
+        return switch (this.getBucketType()) {
             case 2 -> "Cod";
             case 3 -> "Salmon";
             case 4 -> "TropicalFish";
@@ -109,7 +117,7 @@ public class ItemBucket extends Item {
 
     @Override
     public int getMaxStackSize() {
-        return this.aux == 0 && Objects.equals(getId(), BUCKET) ? 16 : 1;
+        return getBucketType() == 0 && Objects.equals(getId(), BUCKET) ? 16 : 1;
     }
 
     @Override
@@ -119,7 +127,7 @@ public class ItemBucket extends Item {
 
 
     public Block getTargetBlock() {
-        return Objects.equals(getId(), BUCKET) ? Block.get(getDamageByTarget(this.aux)) : Block.get(BlockID.AIR);
+        return Objects.equals(getId(), BUCKET) ? Block.get(getDamageByTarget(getBucketType())) : Block.get(BlockID.AIR);
     }
 
 
@@ -228,7 +236,7 @@ public class ItemBucket extends Item {
             boolean nether = false;
             if (!canBeUsedOnDimension(player.getLevel().getDimension())) {
                 ev.setCancelled(true);
-                nether = this.getAux() != 10;
+                nether = getBucketType() != 10;
             }
 
             player.getServer().getPluginManager().callEvent(ev);
@@ -306,7 +314,7 @@ public class ItemBucket extends Item {
             return true;
         }
 
-        return dimension != Level.DIMENSION_NETHER || (getAux() == 10 || getAux() == 1);
+        return dimension != Level.DIMENSION_NETHER || (getBucketType() == 10 || getBucketType() == 1);
     }
 
 
@@ -315,7 +323,7 @@ public class ItemBucket extends Item {
             return;
         }
 
-        if (this.getAux() == 10) {
+        if (this.getBucketType() == 10) {
             level.addSound(block, Sound.BUCKET_EMPTY_LAVA);
         } else {
             level.addSound(block, Sound.BUCKET_EMPTY_WATER);
@@ -337,13 +345,13 @@ public class ItemBucket extends Item {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        return Objects.equals(getId(), BUCKET) && this.getAux() == 1; // Milk
+        return Objects.equals(getId(), BUCKET) && this.getBucketType() == 1; // Milk
     }
 
 
     @Override
     public boolean onUse(Player player, int ticksUsed) {
-        if (player.isSpectator() || this.getAux() != 1) {
+        if (player.isSpectator() || this.getBucketType() != 1) {
             return false;
         }
 

@@ -1,9 +1,12 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemCreeperBannerPattern extends Item {
+public class ItemCreeperBannerPattern extends ItemBannerPattern {
     public ItemCreeperBannerPattern() {
         super(CREEPER_BANNER_PATTERN);
+    }
+
+    @Override
+    public void setAux(Integer aux) {
+        throw new UnsupportedOperationException();
     }
 }
