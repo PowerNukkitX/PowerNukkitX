@@ -1,9 +1,35 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemLeatherLeggings extends Item {
+public class ItemLeatherLeggings extends ItemColorArmor {
     public ItemLeatherLeggings() {
-        super(LEATHER_LEGGINGS);
+        this(0, 1);
+    }
+
+    public ItemLeatherLeggings(Integer meta) {
+        this(meta, 1);
+    }
+
+    public ItemLeatherLeggings(Integer meta, int count) {
+        super(LEATHER_LEGGINGS, meta, count);
+    }
+
+    @Override
+    public int getTier() {
+        return ItemArmor.TIER_LEATHER;
+    }
+
+    @Override
+    public boolean isLeggings() {
+        return true;
+    }
+
+    @Override
+    public int getArmorPoints() {
+        return 2;
+    }
+
+    @Override
+    public int getMaxDurability() {
+        return 76;
     }
 }

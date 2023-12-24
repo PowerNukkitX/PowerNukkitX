@@ -261,12 +261,12 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
         register(LAVA_BUCKET, ItemLavaBucket.class);
         register(LEAD, ItemLead.class);
         register(LEATHER, ItemLeather.class);
-        register(LEATHER_BOOTS, ItemLeatherBoots.class);//
+        register(LEATHER_BOOTS, ItemLeatherBoots.class);
         register(LEATHER_CHESTPLATE, ItemLeatherChestplate.class);
         register(LEATHER_HELMET, ItemLeatherHelmet.class);
         register(LEATHER_HORSE_ARMOR, ItemLeatherHorseArmor.class);
         register(LEATHER_LEGGINGS, ItemLeatherLeggings.class);
-        register(LIGHT_BLUE_DYE, ItemLightBlueDye.class);
+        register(LIGHT_BLUE_DYE, ItemLightBlueDye.class);//next start
         register(LIGHT_GRAY_DYE, ItemLightGrayDye.class);
         register(LIME_DYE, ItemLimeDye.class);
         register(LINGERING_POTION, ItemLingeringPotion.class);
