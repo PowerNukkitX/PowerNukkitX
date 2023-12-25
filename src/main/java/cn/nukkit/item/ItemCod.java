@@ -3,17 +3,9 @@ package cn.nukkit.item;
 /**
  * ItemFish
  */
-public class ItemCod extends ItemEdible {
+public class ItemCod extends ItemFish {
     public ItemCod() {
-        super(COD);
-    }
-
-    public ItemCod(Integer meta) {
-        this(meta, 1);
-    }
-
-    public ItemCod(Integer meta, int count) {
-        super(COD, meta, count);
+        super(COD, 0, 1);
     }
 
     protected ItemCod(String id, Integer meta, int count) {

@@ -1,9 +1,15 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemPoisonousPotato extends Item {
+public class ItemPoisonousPotato extends ItemEdible {
     public ItemPoisonousPotato() {
-        super(POISONOUS_POTATO);
+        this(0, 1);
+    }
+
+    public ItemPoisonousPotato(Integer meta) {
+        this(meta, 1);
+    }
+
+    public ItemPoisonousPotato(Integer meta, int count) {
+        super(POISONOUS_POTATO, meta, count, "Poisonous Potato");
     }
 }

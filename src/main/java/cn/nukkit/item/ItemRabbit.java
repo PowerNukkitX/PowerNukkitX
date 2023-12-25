@@ -1,9 +1,15 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemRabbit extends Item {
+public class ItemRabbit extends ItemEdible {
     public ItemRabbit() {
-        super(RABBIT);
+        this(0, 1);
+    }
+
+    public ItemRabbit(Integer meta) {
+        this(meta, 1);
+    }
+
+    public ItemRabbit(Integer meta, int count) {
+        super(RABBIT, meta, count, "Raw Rabbit");
     }
 }

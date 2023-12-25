@@ -1,9 +1,48 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemNetheriteChestplate extends Item {
+public class ItemNetheriteChestplate extends ItemArmor {
     public ItemNetheriteChestplate() {
-        super(NETHERITE_CHESTPLATE);
+        this(0, 1);
+    }
+
+
+    public ItemNetheriteChestplate(Integer meta) {
+        this(meta, 1);
+    }
+
+
+    public ItemNetheriteChestplate(Integer meta, int count) {
+        super(NETHERITE_CHESTPLATE, meta, count, "Netherite Chestplate");
+    }
+
+    @Override
+    public int getTier() {
+        return ItemArmor.TIER_NETHERITE;
+    }
+
+    @Override
+    public boolean isChestplate() {
+        return true;
+    }
+
+    @Override
+    public int getArmorPoints() {
+        return 8;
+    }
+
+    @Override
+    public int getMaxDurability() {
+        return 592;
+    }
+
+    @Override
+    public int getToughness() {
+        return 3;
+    }
+
+
+    @Override
+    public boolean isLavaResistant() {
+        return true;
     }
 }

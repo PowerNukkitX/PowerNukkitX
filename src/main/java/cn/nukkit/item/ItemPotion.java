@@ -12,7 +12,6 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 
 public class ItemPotion extends Item {
-
     public static final int NO_EFFECTS = 0;
     public static final int MUNDANE = 1;
     public static final int MUNDANE_II = 2;

@@ -14,6 +14,6 @@ public class ItemQuartz extends Item {
     }
 
     public ItemQuartz(Integer meta, int count) {
-        super(NETHER_QUARTZ, 0, count, "Nether Quartz");
+        super(QUARTZ, 0, count, "Nether Quartz");
     }
 }

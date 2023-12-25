@@ -266,7 +266,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
         register(LEATHER_HELMET, ItemLeatherHelmet.class);
         register(LEATHER_HORSE_ARMOR, ItemLeatherHorseArmor.class);
         register(LEATHER_LEGGINGS, ItemLeatherLeggings.class);
-        register(LIGHT_BLUE_DYE, ItemLightBlueDye.class);//next start
+        register(LIGHT_BLUE_DYE, ItemLightBlueDye.class);
         register(LIGHT_GRAY_DYE, ItemLightGrayDye.class);
         register(LIME_DYE, ItemLimeDye.class);
         register(LINGERING_POTION, ItemLingeringPotion.class);
@@ -282,7 +282,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
         register(MANGROVE_DOOR, ItemMangroveDoor.class);
         register(MANGROVE_HANGING_SIGN, ItemMangroveHangingSign.class);
         register(MANGROVE_SIGN, ItemMangroveSign.class);
-        register(MEDICINE, ItemMedicine.class);
+//        register(MEDICINE, ItemMedicine.class);//edu
         register(MELON_SEEDS, ItemMelonSeeds.class);
         register(MELON_SLICE, ItemMelonSlice.class);
         register(MILK_BUCKET, ItemMilkBucket.class);
@@ -348,7 +348,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
         register(PIGLIN_SPAWN_EGG, ItemPiglinSpawnEgg.class);
         register(PILLAGER_SPAWN_EGG, ItemPillagerSpawnEgg.class);
         register(PINK_DYE, ItemPinkDye.class);
-        register(PITCHER_POD, ItemPitcherPod.class);
+        //register(PITCHER_POD, ItemPitcherPod.class); todo
         register(PLANKS, ItemPlanks.class);
         register(PLENTY_POTTERY_SHERD, ItemPlentyPotterySherd.class);
         register(POISONOUS_POTATO, ItemPoisonousPotato.class);
@@ -374,7 +374,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
         register(RABBIT_SPAWN_EGG, ItemRabbitSpawnEgg.class);
         register(RABBIT_STEW, ItemRabbitStew.class);
         register(RAISER_ARMOR_TRIM_SMITHING_TEMPLATE, ItemRaiserArmorTrimSmithingTemplate.class);
-        register(RAPID_FERTILIZER, ItemRapidFertilizer.class);
+        //register(RAPID_FERTILIZER, ItemRapidFertilizer.class); //edu
         register(RAVAGER_SPAWN_EGG, ItemRavagerSpawnEgg.class);
         register(RAW_COPPER, ItemRawCopper.class);
         register(RAW_GOLD, ItemRawGold.class);
@@ -415,7 +415,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
         register(SNOW_GOLEM_SPAWN_EGG, ItemSnowGolemSpawnEgg.class);
         register(SNOWBALL, ItemSnowball.class);
         register(SOUL_CAMPFIRE, ItemSoulCampfire.class);
-        register(SPARKLER, ItemSparkler.class);
+//        register(SPARKLER, ItemSparkler.class);//edu
         register(SPAWN_EGG, ItemSpawnEgg.class);
         register(SPIDER_EYE, ItemSpiderEye.class);
         register(SPIDER_SPAWN_EGG, ItemSpiderSpawnEgg.class);

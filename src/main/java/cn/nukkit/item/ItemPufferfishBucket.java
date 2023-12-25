@@ -1,9 +1,17 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemPufferfishBucket extends Item {
+public class ItemPufferfishBucket extends ItemBucket {
     public ItemPufferfishBucket() {
         super(PUFFERFISH_BUCKET);
+    }
+
+    @Override
+    public int getBucketType() {
+        return 5;
+    }
+
+    @Override
+    public void setAux(Integer aux) {
+        throw new UnsupportedOperationException();
     }
 }

@@ -1,9 +1,17 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemMilkBucket extends Item {
+public class ItemMilkBucket extends ItemBucket {
     public ItemMilkBucket() {
         super(MILK_BUCKET);
+    }
+
+    @Override
+    public int getBucketType() {
+        return 1;
+    }
+
+    @Override
+    public void setAux(Integer aux) {
+        throw new UnsupportedOperationException();
     }
 }

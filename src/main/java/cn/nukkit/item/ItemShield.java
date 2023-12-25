@@ -6,7 +6,6 @@ import org.jetbrains.annotations.Nullable;
 
 
 public class ItemShield extends ItemTool {
-
     public ItemShield() {
         this(0, 1);
     }
@@ -29,15 +28,11 @@ public class ItemShield extends ItemTool {
      * @param count the count
      * @param name  the name
      */
-
-
-    public ItemShield(int id, Integer meta, int count, String name) {
+    protected ItemShield(String id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-
-
     public boolean hasBannerPattern() {
         return this.hasCompoundTag() && (this.getNamedTag().containsInt("Base") ||
                 this.getNamedTag().containsInt("Type") || this.getNamedTag().containsList("Patterns"));

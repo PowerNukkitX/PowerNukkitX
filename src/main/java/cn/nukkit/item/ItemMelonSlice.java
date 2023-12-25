@@ -1,9 +1,15 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemMelonSlice extends Item {
+public class ItemMelonSlice extends ItemEdible {
     public ItemMelonSlice() {
-        super(MELON_SLICE);
+        this(0, 1);
+    }
+
+    public ItemMelonSlice(Integer meta) {
+        this(meta, 1);
+    }
+
+    public ItemMelonSlice(Integer meta, int count) {
+        super(MELON_SLICE, meta, count, "Melon Slice");
     }
 }

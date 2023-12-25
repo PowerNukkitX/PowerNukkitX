@@ -146,12 +146,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return the ItemBlock
      */
     public static Item getBlockItem(String id, Integer meta, int count, byte[] tags) {
-        int i = Registries.BLOCKSTATE_ITEMMETA.get(id, meta);
-        if (i == 0) {
-            throw new IllegalArgumentException("Unknown meta mapping in block: " + id);
-        }
-        BlockState blockState = Registries.BLOCKSTATE.get(i);
-        ItemBlock itemBlock = new ItemBlock(Registries.BLOCK.get(blockState));
+        ItemBlock itemBlock = new ItemBlock(Registries.BLOCK.get(getItemBlockState(id, meta)));
         itemBlock.setCount(count);
         itemBlock.setCompoundTag(tags);
         return itemBlock;
@@ -1495,6 +1490,14 @@ public abstract class Item implements Cloneable, ItemID {
     public boolean keepOnDeath() {
         CompoundTag tag = getOrCreateNamedTag();
         return tag.contains("minecraft:keep_on_death");
+    }
+
+    protected static BlockState getItemBlockState(final String id, final Integer aux) {
+        int i = Registries.BLOCKSTATE_ITEMMETA.get(id, aux);
+        if (i == 0) {
+            throw new IllegalArgumentException("Unknown meta mapping in block: " + id);
+        }
+        return Registries.BLOCKSTATE.get(i);
     }
 
 

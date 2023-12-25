@@ -18,6 +18,7 @@ import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
@@ -65,16 +66,16 @@ public class EntityThrownTrident extends SlenderProjectile {
     private int riptideLevel;
     private int impalingLevel;
 
-    public EntityThrownTrident(FullChunk chunk, CompoundTag nbt) {
+    public EntityThrownTrident(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityThrownTrident(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntityThrownTrident(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
     @Deprecated
-    public EntityThrownTrident(FullChunk chunk, CompoundTag nbt, Entity shootingEntity, boolean critical) {
+    public EntityThrownTrident(IChunk chunk, CompoundTag nbt, Entity shootingEntity, boolean critical) {
         this(chunk, nbt, shootingEntity);
     }
 

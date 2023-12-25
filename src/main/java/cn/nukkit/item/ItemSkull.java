@@ -24,7 +24,7 @@ public class ItemSkull extends Item {
 
     public ItemSkull(Integer meta, int count) {
         super(SKULL, meta, count, "Skull");
-        this.block = Block.get(Block.SKULL_BLOCK);
+        this.block = Block.get(Block.SKULL);
         updateName();
     }
 

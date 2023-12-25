@@ -1,9 +1,12 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemMusicDiscWait extends Item {
+public class ItemMusicDiscWait extends ItemMusicDisc {
     public ItemMusicDiscWait() {
         super(MUSIC_DISC_WAIT);
+    }
+
+    @Override
+    public String getSoundId() {
+        return "record.wait";
     }
 }

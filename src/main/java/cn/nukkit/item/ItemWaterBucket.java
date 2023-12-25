@@ -1,9 +1,12 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemWaterBucket extends Item {
+public class ItemWaterBucket extends ItemBucket {
     public ItemWaterBucket() {
         super(WATER_BUCKET);
+    }
+
+    @Override
+    public int getBucketType() {
+        return 8;
     }
 }

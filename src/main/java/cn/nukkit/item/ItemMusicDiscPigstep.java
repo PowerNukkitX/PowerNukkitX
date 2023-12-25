@@ -1,9 +1,12 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemMusicDiscPigstep extends Item {
+public class ItemMusicDiscPigstep extends ItemMusicDisc {
     public ItemMusicDiscPigstep() {
         super(MUSIC_DISC_PIGSTEP);
+    }
+
+    @Override
+    public String getSoundId() {
+        return "record.pigstep";
     }
 }

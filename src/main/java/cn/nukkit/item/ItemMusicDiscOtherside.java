@@ -1,9 +1,12 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemMusicDiscOtherside extends Item {
+public class ItemMusicDiscOtherside extends ItemMusicDisc {
     public ItemMusicDiscOtherside() {
         super(MUSIC_DISC_OTHERSIDE);
+    }
+
+    @Override
+    public String getSoundId() {
+        return "record.otherside";
     }
 }

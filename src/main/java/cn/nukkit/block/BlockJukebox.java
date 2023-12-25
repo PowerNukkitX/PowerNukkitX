@@ -5,7 +5,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityJukebox;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.item.ItemRecord;
+import cn.nukkit.item.ItemMusicDisc;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
@@ -69,7 +69,7 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
             return true;
         }
 
-        if (!item.isNull() && item instanceof ItemRecord) {
+        if (!item.isNull() && item instanceof ItemMusicDisc) {
             Item record = item.clone();
             record.count = 1;
             item.count--;

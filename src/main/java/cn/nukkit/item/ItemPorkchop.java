@@ -1,9 +1,15 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemPorkchop extends Item {
+public class ItemPorkchop extends ItemEdible {
     public ItemPorkchop() {
-        super(PORKCHOP);
+        this(0, 1);
+    }
+
+    public ItemPorkchop(Integer meta) {
+        this(meta, 1);
+    }
+
+    public ItemPorkchop(Integer meta, int count) {
+        super(PORKCHOP, meta, count, "Raw Porkchop");
     }
 }

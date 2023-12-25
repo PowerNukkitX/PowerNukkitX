@@ -1,9 +1,7 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemTropicalFish extends Item {
+public class ItemTropicalFish extends ItemFish {
     public ItemTropicalFish() {
-        super(TROPICAL_FISH);
+        super(TROPICAL_FISH, 0, 1);
     }
 }

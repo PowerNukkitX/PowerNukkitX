@@ -2,7 +2,7 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemRecord;
+import cn.nukkit.item.ItemMusicDisc;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -49,7 +49,7 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
 
     
     public void play() {
-        if (this.recordItem instanceof ItemRecord itemRecord) {
+        if (this.recordItem instanceof ItemMusicDisc itemRecord) {
             PlaySoundPacket packet = new PlaySoundPacket();
             packet.name = itemRecord.getSoundId();
             packet.volume = 1;
@@ -63,7 +63,7 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
 
     //TODO: Transfer the stop sound to the new sound method
     public void stop() {
-        if (this.recordItem instanceof ItemRecord itemRecord) {
+        if (this.recordItem instanceof ItemMusicDisc itemRecord) {
             StopSoundPacket packet = new StopSoundPacket();
             packet.name = itemRecord.getSoundId();
             packet.stopAll = false;

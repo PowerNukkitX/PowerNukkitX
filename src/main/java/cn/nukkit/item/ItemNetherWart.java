@@ -1,7 +1,6 @@
 package cn.nukkit.item;
 
-import cn.nukkit.block.BlockID;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.registry.Registries;
 
 /**
  * @author Leonidius20
@@ -19,12 +18,12 @@ public class ItemNetherWart extends Item {
 
     public ItemNetherWart(Integer meta, int count) {
         super(NETHER_WART, meta, count, "Nether Wart");
-        this.block = BlockState.of(BlockID.NETHER_WART_BLOCK, meta).getBlock();
+        this.block = Registries.BLOCK.get(getItemBlockState(NETHER_WART, meta));
     }
 
     @Override
     public void setAux(Integer aux) {
-        block.setDataStorageFromInt(aux != null ? aux : 0);
+        this.block = Registries.BLOCK.get(getItemBlockState(NETHER_WART, aux));
         super.setAux(aux);
     }
 }

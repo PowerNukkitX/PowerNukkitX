@@ -1,9 +1,15 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemWritableBook extends Item {
+/**
+ * alias BookAndQuill
+ */
+public class ItemWritableBook extends ItemBookWritable {
     public ItemWritableBook() {
         super(WRITABLE_BOOK);
+    }
+
+    @Override
+    public int getMaxStackSize() {
+        return 1;
     }
 }

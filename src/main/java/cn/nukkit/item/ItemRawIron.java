@@ -5,9 +5,9 @@ package cn.nukkit.item;
  * @since 2021-06-12
  */
 
-public class ItemRawIron extends ItemRawMaterial {
+public class ItemRawIron extends Item {
 
     public ItemRawIron() {
-        super(MinecraftItemID.RAW_IRON.getNamespacedId(), "Raw Iron");
+        super(RAW_IRON);
     }
 }

@@ -1,8 +1,6 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
-public class ItemOakSign extends Item {
+public class ItemOakSign extends ItemSign {
     public ItemOakSign() {
         super(OAK_SIGN);
     }
