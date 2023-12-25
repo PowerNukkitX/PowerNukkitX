@@ -80,7 +80,7 @@ public class NBTIO {
         Item item;
         if (tag.containsShort("id")) {
             int id = (short) tag.getShort("id");
-            item = fixWoolItem(id, damage, amount);
+            item = fixItem(id, damage, amount);
             if (item == null) {
                 try {
                     item = Item.get(id, damage, amount);
@@ -193,57 +193,90 @@ public class NBTIO {
     }
 
 
-    private static Item fixWoolItem(int id, int damage, int count) {
-        //TODO 回退之前的方块更新方案，现在有更好的解决方式，下个版本移除这段代码
-        if (damage == 0) {
-            switch (id) {
-                case -552 -> {
-                    return Item.get(35, 8, count);
-                }
-                case -553 -> {
-                    return Item.get(35, 7, count);
-                }
-                case -554 -> {
-                    return Item.get(35, 15, count);
-                }
-                case -555 -> {
-                    return Item.get(35, 12, count);
-                }
-                case -556 -> {
-                    return Item.get(35, 14, count);
-                }
-                case -557 -> {
-                    return Item.get(35, 1, count);
-                }
-                case -558 -> {
-                    return Item.get(35, 4, count);
-                }
-                case -559 -> {
-                    return Item.get(35, 5, count);
-                }
-                case -560 -> {
-                    return Item.get(35, 13, count);
-                }
-                case -561 -> {
-                    return Item.get(35, 9, count);
-                }
-                case -562 -> {
-                    return Item.get(35, 3, count);
-                }
-                case -563 -> {
-                    return Item.get(35, 11, count);
-                }
-                case -564 -> {
-                    return Item.get(35, 10, count);
-                }
-                case -565 -> {
-                    return Item.get(35, 2, count);
-                }
-                case -566 -> {
-                    return Item.get(35, 6, count);
-                }
+    private static Item fixItem(int id, int damage, int count) {
+        //TODO
+
+        switch (id) {
+            case -552 -> {
+                return Item.get(35, 8, count);
+            } 
+            case -553 -> {
+                return Item.get(35, 7, count);
+            }
+            case -554 -> {
+                return Item.get(35, 15, count);
+            }
+            case -555 -> {
+                return Item.get(35, 12, count);
+            }
+            case -556 -> {
+                return Item.get(35, 14, count);
+            }
+            case -557 -> {
+                return Item.get(35, 1, count);
+            }
+            case -558 -> {
+                return Item.get(35, 4, count);
+            }
+            case -559 -> {
+                return Item.get(35, 5, count);
+            }
+            case -560 -> {
+                return Item.get(35, 13, count);
+            }
+            case -561 -> {
+                return Item.get(35, 9, count);
+            }
+            case -562 -> {
+                return Item.get(35, 3, count);
+            }
+            case -563 -> {
+                return Item.get(35, 11, count);
+            }
+            case -564 -> {
+                return Item.get(35, 10, count);
+            }
+            case -565 -> {
+                return Item.get(35, 2, count);
+            }
+            case -566 -> {
+                return Item.get(35, 6, count);
+            } 
+            case -742 -> {
+                return Item.get(5, 4, count);
+            }
+            case -740 -> {
+                return Item.get(5, 2, count);
+            }
+            case -743 -> {
+                return Item.get(5, 5, count);
+            }
+            case -741 -> {
+                return Item.get(5, 3, count);
+            }
+            case -739 -> {
+                return Item.get(5, 1, count);
+            }
+            case -590 -> {
+                return Item.get(1, 1, count);
+            }
+            case -591 -> {
+                return Item.get(1, 2, count);
+            }
+            case -592 -> {
+                return Item.get(1, 3, count);
+            }
+            case -593 -> {
+                return Item.get(1, 4, count);
+            }
+            case -594 -> {
+                return Item.get(1, 5, count);
+            }
+            case -595 -> {
+                return Item.get(1, 6, count);
             }
         }
+
         return Item.get(id, damage, count);
     }
 

@@ -57,47 +57,6 @@
         "block": "crafting_table",
         "input": [
             {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQcAZGlvcml0ZQA=",
-                "name": "minecraft:stone"
-            },
-            {
-                "meta": 32767,
-                "name": "minecraft:cobblestone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQgAYW5kZXNpdGUA",
-                "count": 2,
-                "name": "minecraft:stone"
-            }
-        ],
-        "priority": 0
-    },
-    {
-        "block": "crafting_table",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQcAZGlvcml0ZQA=",
-                "name": "minecraft:stone"
-            },
-            {
-                "meta": 32767,
-                "name": "minecraft:quartz"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQcAZ3Jhbml0ZQA=",
-                "name": "minecraft:stone"
-            }
-        ],
-        "priority": 0
-    },
-    {
-        "block": "crafting_table",
-        "input": [
-            {
                 "block_states": "CgAACAsAZmxvd2VyX3R5cGUFAG94ZXllAA==",
                 "name": "minecraft:red_flower"
             }
@@ -6058,6 +6017,25 @@
         "input": [
             {
                 "meta": 32767,
+                "name": "minecraft:chiseled_copper"
+            },
+            {
+                "meta": 32767,
+                "name": "minecraft:honeycomb"
+            }
+        ],
+        "output": [
+            {
+                "name": "minecraft:waxed_chiseled_copper"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "crafting_table",
+        "input": [
+            {
+                "meta": 32767,
                 "name": "minecraft:cobblestone"
             },
             {
@@ -6376,6 +6354,84 @@
         "output": [
             {
                 "name": "minecraft:waxed_copper"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "crafting_table",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:copper_bulb"
+            },
+            {
+                "meta": 32767,
+                "name": "minecraft:honeycomb"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAQMAbGl0AAELAHBvd2VyZWRfYml0AAA=",
+                "name": "minecraft:waxed_copper_bulb"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "crafting_table",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:copper_door"
+            },
+            {
+                "meta": 32767,
+                "name": "minecraft:honeycomb"
+            }
+        ],
+        "output": [
+            {
+                "name": "minecraft:waxed_copper_door"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "crafting_table",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:copper_grate"
+            },
+            {
+                "meta": 32767,
+                "name": "minecraft:honeycomb"
+            }
+        ],
+        "output": [
+            {
+                "name": "minecraft:waxed_copper_grate"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "crafting_table",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:copper_trapdoor"
+            },
+            {
+                "meta": 32767,
+                "name": "minecraft:honeycomb"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAwkAZGlyZWN0aW9uAAAAAAEIAG9wZW5fYml0AAEPAHVwc2lkZV9kb3duX2JpdAAA",
+                "name": "minecraft:waxed_copper_trapdoor"
             }
         ],
         "priority": 1
@@ -6743,6 +6799,84 @@
         "output": [
             {
                 "name": "minecraft:waxed_exposed_copper"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "crafting_table",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:exposed_copper_bulb"
+            },
+            {
+                "meta": 32767,
+                "name": "minecraft:honeycomb"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAQMAbGl0AAELAHBvd2VyZWRfYml0AAA=",
+                "name": "minecraft:waxed_exposed_copper_bulb"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "crafting_table",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:exposed_copper_door"
+            },
+            {
+                "meta": 32767,
+                "name": "minecraft:honeycomb"
+            }
+        ],
+        "output": [
+            {
+                "name": "minecraft:waxed_exposed_copper_door"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "crafting_table",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:exposed_copper_grate"
+            },
+            {
+                "meta": 32767,
+                "name": "minecraft:honeycomb"
+            }
+        ],
+        "output": [
+            {
+                "name": "minecraft:waxed_exposed_copper_grate"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "crafting_table",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:exposed_copper_trapdoor"
+            },
+            {
+                "meta": 32767,
+                "name": "minecraft:honeycomb"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAwkAZGlyZWN0aW9uAAAAAAEIAG9wZW5fYml0AAEPAHVwc2lkZV9kb3duX2JpdAAA",
+                "name": "minecraft:waxed_exposed_copper_trapdoor"
             }
         ],
         "priority": 1
@@ -9849,6 +9983,84 @@
         "input": [
             {
                 "meta": 32767,
+                "name": "minecraft:oxidized_copper_bulb"
+            },
+            {
+                "meta": 32767,
+                "name": "minecraft:honeycomb"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAQMAbGl0AAELAHBvd2VyZWRfYml0AAA=",
+                "name": "minecraft:waxed_oxidized_copper_bulb"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "crafting_table",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:oxidized_copper_door"
+            },
+            {
+                "meta": 32767,
+                "name": "minecraft:honeycomb"
+            }
+        ],
+        "output": [
+            {
+                "name": "minecraft:waxed_oxidized_copper_door"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "crafting_table",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:oxidized_copper_grate"
+            },
+            {
+                "meta": 32767,
+                "name": "minecraft:honeycomb"
+            }
+        ],
+        "output": [
+            {
+                "name": "minecraft:waxed_oxidized_copper_grate"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "crafting_table",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:oxidized_copper_trapdoor"
+            },
+            {
+                "meta": 32767,
+                "name": "minecraft:honeycomb"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAwkAZGlyZWN0aW9uAAAAAAEIAG9wZW5fYml0AAEPAHVwc2lkZV9kb3duX2JpdAAA",
+                "name": "minecraft:waxed_oxidized_copper_trapdoor"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "crafting_table",
+        "input": [
+            {
+                "meta": 32767,
                 "name": "minecraft:oxidized_cut_copper"
             },
             {
@@ -11452,6 +11664,84 @@
         "output": [
             {
                 "name": "minecraft:waxed_weathered_copper"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "crafting_table",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:weathered_copper_bulb"
+            },
+            {
+                "meta": 32767,
+                "name": "minecraft:honeycomb"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAQMAbGl0AAELAHBvd2VyZWRfYml0AAA=",
+                "name": "minecraft:waxed_weathered_copper_bulb"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "crafting_table",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:weathered_copper_door"
+            },
+            {
+                "meta": 32767,
+                "name": "minecraft:honeycomb"
+            }
+        ],
+        "output": [
+            {
+                "name": "minecraft:waxed_weathered_copper_door"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "crafting_table",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:weathered_copper_grate"
+            },
+            {
+                "meta": 32767,
+                "name": "minecraft:honeycomb"
+            }
+        ],
+        "output": [
+            {
+                "name": "minecraft:waxed_weathered_copper_grate"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "crafting_table",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:weathered_copper_trapdoor"
+            },
+            {
+                "meta": 32767,
+                "name": "minecraft:honeycomb"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAwkAZGlyZWN0aW9uAAAAAAEIAG9wZW5fYml0AAEPAHVwc2lkZV9kb3duX2JpdAAA",
+                "name": "minecraft:waxed_weathered_copper_trapdoor"
             }
         ],
         "priority": 1
@@ -15213,6 +15503,43 @@
         "block": "crafting_table",
         "input": [
             {
+                "name": "minecraft:diorite"
+            },
+            {
+                "meta": 32767,
+                "name": "minecraft:cobblestone"
+            }
+        ],
+        "output": [
+            {
+                "count": 2,
+                "name": "minecraft:andesite"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "crafting_table",
+        "input": [
+            {
+                "name": "minecraft:diorite"
+            },
+            {
+                "meta": 32767,
+                "name": "minecraft:quartz"
+            }
+        ],
+        "output": [
+            {
+                "name": "minecraft:granite"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "crafting_table",
+        "input": [
+            {
                 "name": "minecraft:empty_map"
             },
             {
@@ -16561,513 +16888,6 @@
         "block": "stonecutter",
         "input": [
             {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQ4AZ3Jhbml0ZV9zbW9vdGgA",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
-                "name": "minecraft:polished_granite_stairs"
-            }
-        ],
-        "priority": 1
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQ4AZ3Jhbml0ZV9zbW9vdGgA",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV8zEABwb2xpc2hlZF9ncmFuaXRlAA==",
-                "count": 2,
-                "name": "minecraft:stone_block_slab3"
-            }
-        ],
-        "priority": 0
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQ4AZGlvcml0ZV9zbW9vdGgA",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
-                "name": "minecraft:polished_diorite_stairs"
-            }
-        ],
-        "priority": 1
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQ4AZGlvcml0ZV9zbW9vdGgA",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV8zEABwb2xpc2hlZF9kaW9yaXRlAA==",
-                "count": 2,
-                "name": "minecraft:stone_block_slab3"
-            }
-        ],
-        "priority": 0
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQ8AYW5kZXNpdGVfc21vb3RoAA==",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
-                "name": "minecraft:polished_andesite_stairs"
-            }
-        ],
-        "priority": 1
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQ8AYW5kZXNpdGVfc21vb3RoAA==",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV8zEQBwb2xpc2hlZF9hbmRlc2l0ZQA=",
-                "count": 2,
-                "name": "minecraft:stone_block_slab3"
-            }
-        ],
-        "priority": 0
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQUAc3RvbmUA",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
-                "name": "minecraft:normal_stone_stairs"
-            }
-        ],
-        "priority": 6
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQUAc3RvbmUA",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
-                "name": "minecraft:stone_brick_stairs"
-            }
-        ],
-        "priority": 2
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQUAc3RvbmUA",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACA8Ad2FsbF9ibG9ja190eXBlCwBzdG9uZV9icmljawgZAHdhbGxfY29ubmVjdGlvbl90eXBlX2Vhc3QEAG5vbmUIGgB3YWxsX2Nvbm5lY3Rpb25fdHlwZV9ub3J0aAQAbm9uZQgaAHdhbGxfY29ubmVjdGlvbl90eXBlX3NvdXRoBABub25lCBkAd2FsbF9jb25uZWN0aW9uX3R5cGVfd2VzdAQAbm9uZQENAHdhbGxfcG9zdF9iaXQAAA==",
-                "name": "minecraft:cobblestone_wall"
-            }
-        ],
-        "priority": 3
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQUAc3RvbmUA",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACBAAc3RvbmVfYnJpY2tfdHlwZQcAZGVmYXVsdAA=",
-                "name": "minecraft:stonebrick"
-            }
-        ],
-        "priority": 4
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQUAc3RvbmUA",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACBAAc3RvbmVfYnJpY2tfdHlwZQgAY2hpc2VsZWQA",
-                "name": "minecraft:stonebrick"
-            }
-        ],
-        "priority": 0
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQUAc3RvbmUA",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgPAHN0b25lX3NsYWJfdHlwZQsAc3RvbmVfYnJpY2sA",
-                "count": 2,
-                "name": "minecraft:stone_block_slab"
-            }
-        ],
-        "priority": 1
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQUAc3RvbmUA",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV80BQBzdG9uZQA=",
-                "count": 2,
-                "name": "minecraft:stone_block_slab4"
-            }
-        ],
-        "priority": 5
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQcAZ3Jhbml0ZQA=",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
-                "name": "minecraft:granite_stairs"
-            }
-        ],
-        "priority": 1
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQcAZ3Jhbml0ZQA=",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
-                "name": "minecraft:polished_granite_stairs"
-            }
-        ],
-        "priority": 5
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQcAZ3Jhbml0ZQA=",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACA8Ad2FsbF9ibG9ja190eXBlBwBncmFuaXRlCBkAd2FsbF9jb25uZWN0aW9uX3R5cGVfZWFzdAQAbm9uZQgaAHdhbGxfY29ubmVjdGlvbl90eXBlX25vcnRoBABub25lCBoAd2FsbF9jb25uZWN0aW9uX3R5cGVfc291dGgEAG5vbmUIGQB3YWxsX2Nvbm5lY3Rpb25fdHlwZV93ZXN0BABub25lAQ0Ad2FsbF9wb3N0X2JpdAAA",
-                "name": "minecraft:cobblestone_wall"
-            }
-        ],
-        "priority": 2
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQcAZ3Jhbml0ZQA=",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQ4AZ3Jhbml0ZV9zbW9vdGgA",
-                "name": "minecraft:stone"
-            }
-        ],
-        "priority": 3
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQcAZ3Jhbml0ZQA=",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV8zBwBncmFuaXRlAA==",
-                "count": 2,
-                "name": "minecraft:stone_block_slab3"
-            }
-        ],
-        "priority": 0
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQcAZ3Jhbml0ZQA=",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV8zEABwb2xpc2hlZF9ncmFuaXRlAA==",
-                "count": 2,
-                "name": "minecraft:stone_block_slab3"
-            }
-        ],
-        "priority": 4
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQcAZGlvcml0ZQA=",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
-                "name": "minecraft:diorite_stairs"
-            }
-        ],
-        "priority": 1
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQcAZGlvcml0ZQA=",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
-                "name": "minecraft:polished_diorite_stairs"
-            }
-        ],
-        "priority": 5
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQcAZGlvcml0ZQA=",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACA8Ad2FsbF9ibG9ja190eXBlBwBkaW9yaXRlCBkAd2FsbF9jb25uZWN0aW9uX3R5cGVfZWFzdAQAbm9uZQgaAHdhbGxfY29ubmVjdGlvbl90eXBlX25vcnRoBABub25lCBoAd2FsbF9jb25uZWN0aW9uX3R5cGVfc291dGgEAG5vbmUIGQB3YWxsX2Nvbm5lY3Rpb25fdHlwZV93ZXN0BABub25lAQ0Ad2FsbF9wb3N0X2JpdAAA",
-                "name": "minecraft:cobblestone_wall"
-            }
-        ],
-        "priority": 2
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQcAZGlvcml0ZQA=",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQ4AZGlvcml0ZV9zbW9vdGgA",
-                "name": "minecraft:stone"
-            }
-        ],
-        "priority": 3
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQcAZGlvcml0ZQA=",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV8zBwBkaW9yaXRlAA==",
-                "count": 2,
-                "name": "minecraft:stone_block_slab3"
-            }
-        ],
-        "priority": 0
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQcAZGlvcml0ZQA=",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV8zEABwb2xpc2hlZF9kaW9yaXRlAA==",
-                "count": 2,
-                "name": "minecraft:stone_block_slab3"
-            }
-        ],
-        "priority": 4
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQgAYW5kZXNpdGUA",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
-                "name": "minecraft:andesite_stairs"
-            }
-        ],
-        "priority": 1
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQgAYW5kZXNpdGUA",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
-                "name": "minecraft:polished_andesite_stairs"
-            }
-        ],
-        "priority": 5
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQgAYW5kZXNpdGUA",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACA8Ad2FsbF9ibG9ja190eXBlCABhbmRlc2l0ZQgZAHdhbGxfY29ubmVjdGlvbl90eXBlX2Vhc3QEAG5vbmUIGgB3YWxsX2Nvbm5lY3Rpb25fdHlwZV9ub3J0aAQAbm9uZQgaAHdhbGxfY29ubmVjdGlvbl90eXBlX3NvdXRoBABub25lCBkAd2FsbF9jb25uZWN0aW9uX3R5cGVfd2VzdAQAbm9uZQENAHdhbGxfcG9zdF9iaXQAAA==",
-                "name": "minecraft:cobblestone_wall"
-            }
-        ],
-        "priority": 2
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQgAYW5kZXNpdGUA",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQ8AYW5kZXNpdGVfc21vb3RoAA==",
-                "name": "minecraft:stone"
-            }
-        ],
-        "priority": 3
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQgAYW5kZXNpdGUA",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV8zCABhbmRlc2l0ZQA=",
-                "count": 2,
-                "name": "minecraft:stone_block_slab3"
-            }
-        ],
-        "priority": 0
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
-                "block_states": "CgAACAoAc3RvbmVfdHlwZQgAYW5kZXNpdGUA",
-                "name": "minecraft:stone"
-            }
-        ],
-        "output": [
-            {
-                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV8zEQBwb2xpc2hlZF9hbmRlc2l0ZQA=",
-                "count": 2,
-                "name": "minecraft:stone_block_slab3"
-            }
-        ],
-        "priority": 4
-    },
-    {
-        "block": "stonecutter",
-        "input": [
-            {
                 "block_states": "CgAACAsAY2hpc2VsX3R5cGUGAHNtb290aAgLAHBpbGxhcl9heGlzAQB5AA==",
                 "name": "minecraft:quartz_block"
             }
@@ -17692,6 +17512,38 @@
         "output": [
             {
                 "count": 4,
+                "name": "minecraft:chiseled_copper"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:copper_block"
+            }
+        ],
+        "output": [
+            {
+                "count": 4,
+                "name": "minecraft:copper_grate"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:copper_block"
+            }
+        ],
+        "output": [
+            {
+                "count": 4,
                 "name": "minecraft:cut_copper"
             }
         ],
@@ -17763,6 +17615,38 @@
             }
         ],
         "priority": 1
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:exposed_copper"
+            }
+        ],
+        "output": [
+            {
+                "count": 4,
+                "name": "minecraft:exposed_chiseled_copper"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:exposed_copper"
+            }
+        ],
+        "output": [
+            {
+                "count": 4,
+                "name": "minecraft:exposed_copper_grate"
+            }
+        ],
+        "priority": 0
     },
     {
         "block": "stonecutter",
@@ -17910,6 +17794,38 @@
             }
         ],
         "priority": 1
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:oxidized_copper"
+            }
+        ],
+        "output": [
+            {
+                "count": 4,
+                "name": "minecraft:oxidized_chiseled_copper"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:oxidized_copper"
+            }
+        ],
+        "output": [
+            {
+                "count": 4,
+                "name": "minecraft:oxidized_copper_grate"
+            }
+        ],
+        "priority": 0
     },
     {
         "block": "stonecutter",
@@ -18142,6 +18058,213 @@
         "input": [
             {
                 "meta": 32767,
+                "name": "minecraft:tuff"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
+                "name": "minecraft:polished_tuff_stairs"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:tuff"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
+                "name": "minecraft:tuff_brick_stairs"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:tuff"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
+                "name": "minecraft:tuff_stairs"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:tuff"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQA=",
+                "count": 2,
+                "name": "minecraft:polished_tuff_slab"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:tuff"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQA=",
+                "count": 2,
+                "name": "minecraft:tuff_brick_slab"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:tuff"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQA=",
+                "count": 2,
+                "name": "minecraft:tuff_slab"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:tuff"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACBkAd2FsbF9jb25uZWN0aW9uX3R5cGVfZWFzdAQAbm9uZQgaAHdhbGxfY29ubmVjdGlvbl90eXBlX25vcnRoBABub25lCBoAd2FsbF9jb25uZWN0aW9uX3R5cGVfc291dGgEAG5vbmUIGQB3YWxsX2Nvbm5lY3Rpb25fdHlwZV93ZXN0BABub25lAQ0Ad2FsbF9wb3N0X2JpdAAA",
+                "name": "minecraft:polished_tuff_wall"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:tuff"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACBkAd2FsbF9jb25uZWN0aW9uX3R5cGVfZWFzdAQAbm9uZQgaAHdhbGxfY29ubmVjdGlvbl90eXBlX25vcnRoBABub25lCBoAd2FsbF9jb25uZWN0aW9uX3R5cGVfc291dGgEAG5vbmUIGQB3YWxsX2Nvbm5lY3Rpb25fdHlwZV93ZXN0BABub25lAQ0Ad2FsbF9wb3N0X2JpdAAA",
+                "name": "minecraft:tuff_brick_wall"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:tuff"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACBkAd2FsbF9jb25uZWN0aW9uX3R5cGVfZWFzdAQAbm9uZQgaAHdhbGxfY29ubmVjdGlvbl90eXBlX25vcnRoBABub25lCBoAd2FsbF9jb25uZWN0aW9uX3R5cGVfc291dGgEAG5vbmUIGQB3YWxsX2Nvbm5lY3Rpb25fdHlwZV93ZXN0BABub25lAQ0Ad2FsbF9wb3N0X2JpdAAA",
+                "name": "minecraft:tuff_wall"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:tuff"
+            }
+        ],
+        "output": [
+            {
+                "name": "minecraft:chiseled_tuff"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:tuff"
+            }
+        ],
+        "output": [
+            {
+                "name": "minecraft:chiseled_tuff_bricks"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:tuff"
+            }
+        ],
+        "output": [
+            {
+                "name": "minecraft:polished_tuff"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:tuff"
+            }
+        ],
+        "output": [
+            {
+                "name": "minecraft:tuff_bricks"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
                 "name": "minecraft:waxed_copper"
             }
         ],
@@ -18170,6 +18293,38 @@
             }
         ],
         "priority": 1
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:waxed_copper"
+            }
+        ],
+        "output": [
+            {
+                "count": 4,
+                "name": "minecraft:waxed_chiseled_copper"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:waxed_copper"
+            }
+        ],
+        "output": [
+            {
+                "count": 4,
+                "name": "minecraft:waxed_copper_grate"
+            }
+        ],
+        "priority": 0
     },
     {
         "block": "stonecutter",
@@ -18265,6 +18420,38 @@
         "output": [
             {
                 "count": 4,
+                "name": "minecraft:waxed_exposed_chiseled_copper"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:waxed_exposed_copper"
+            }
+        ],
+        "output": [
+            {
+                "count": 4,
+                "name": "minecraft:waxed_exposed_copper_grate"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:waxed_exposed_copper"
+            }
+        ],
+        "output": [
+            {
+                "count": 4,
                 "name": "minecraft:waxed_exposed_cut_copper"
             }
         ],
@@ -18348,6 +18535,38 @@
         "output": [
             {
                 "count": 4,
+                "name": "minecraft:waxed_oxidized_chiseled_copper"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:waxed_oxidized_copper"
+            }
+        ],
+        "output": [
+            {
+                "count": 4,
+                "name": "minecraft:waxed_oxidized_copper_grate"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:waxed_oxidized_copper"
+            }
+        ],
+        "output": [
+            {
+                "count": 4,
                 "name": "minecraft:waxed_oxidized_cut_copper"
             }
         ],
@@ -18430,6 +18649,38 @@
         "output": [
             {
                 "count": 4,
+                "name": "minecraft:waxed_weathered_chiseled_copper"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:waxed_weathered_copper"
+            }
+        ],
+        "output": [
+            {
+                "count": 4,
+                "name": "minecraft:waxed_weathered_copper_grate"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:waxed_weathered_copper"
+            }
+        ],
+        "output": [
+            {
+                "count": 4,
                 "name": "minecraft:waxed_weathered_cut_copper"
             }
         ],
@@ -18513,6 +18764,38 @@
         "output": [
             {
                 "count": 4,
+                "name": "minecraft:weathered_chiseled_copper"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:weathered_copper"
+            }
+        ],
+        "output": [
+            {
+                "count": 4,
+                "name": "minecraft:weathered_copper_grate"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "meta": 32767,
+                "name": "minecraft:weathered_copper"
+            }
+        ],
+        "output": [
+            {
+                "count": 4,
                 "name": "minecraft:weathered_cut_copper"
             }
         ],
@@ -18550,6 +18833,97 @@
             }
         ],
         "priority": 1
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:andesite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
+                "name": "minecraft:andesite_stairs"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:andesite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
+                "name": "minecraft:polished_andesite_stairs"
+            }
+        ],
+        "priority": 5
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:andesite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACA8Ad2FsbF9ibG9ja190eXBlCABhbmRlc2l0ZQgZAHdhbGxfY29ubmVjdGlvbl90eXBlX2Vhc3QEAG5vbmUIGgB3YWxsX2Nvbm5lY3Rpb25fdHlwZV9ub3J0aAQAbm9uZQgaAHdhbGxfY29ubmVjdGlvbl90eXBlX3NvdXRoBABub25lCBkAd2FsbF9jb25uZWN0aW9uX3R5cGVfd2VzdAQAbm9uZQENAHdhbGxfcG9zdF9iaXQAAA==",
+                "name": "minecraft:cobblestone_wall"
+            }
+        ],
+        "priority": 2
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:andesite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV8zCABhbmRlc2l0ZQA=",
+                "count": 2,
+                "name": "minecraft:stone_block_slab3"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:andesite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV8zEQBwb2xpc2hlZF9hbmRlc2l0ZQA=",
+                "count": 2,
+                "name": "minecraft:stone_block_slab3"
+            }
+        ],
+        "priority": 4
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:andesite"
+            }
+        ],
+        "output": [
+            {
+                "name": "minecraft:polished_andesite"
+            }
+        ],
+        "priority": 3
     },
     {
         "block": "stonecutter",
@@ -19039,6 +19413,97 @@
         "block": "stonecutter",
         "input": [
             {
+                "name": "minecraft:diorite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
+                "name": "minecraft:diorite_stairs"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:diorite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
+                "name": "minecraft:polished_diorite_stairs"
+            }
+        ],
+        "priority": 5
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:diorite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACA8Ad2FsbF9ibG9ja190eXBlBwBkaW9yaXRlCBkAd2FsbF9jb25uZWN0aW9uX3R5cGVfZWFzdAQAbm9uZQgaAHdhbGxfY29ubmVjdGlvbl90eXBlX25vcnRoBABub25lCBoAd2FsbF9jb25uZWN0aW9uX3R5cGVfc291dGgEAG5vbmUIGQB3YWxsX2Nvbm5lY3Rpb25fdHlwZV93ZXN0BABub25lAQ0Ad2FsbF9wb3N0X2JpdAAA",
+                "name": "minecraft:cobblestone_wall"
+            }
+        ],
+        "priority": 2
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:diorite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV8zBwBkaW9yaXRlAA==",
+                "count": 2,
+                "name": "minecraft:stone_block_slab3"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:diorite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV8zEABwb2xpc2hlZF9kaW9yaXRlAA==",
+                "count": 2,
+                "name": "minecraft:stone_block_slab3"
+            }
+        ],
+        "priority": 4
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:diorite"
+            }
+        ],
+        "output": [
+            {
+                "name": "minecraft:polished_diorite"
+            }
+        ],
+        "priority": 3
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
                 "name": "minecraft:end_bricks"
             }
         ],
@@ -19145,6 +19610,97 @@
         "block": "stonecutter",
         "input": [
             {
+                "name": "minecraft:granite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
+                "name": "minecraft:granite_stairs"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:granite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
+                "name": "minecraft:polished_granite_stairs"
+            }
+        ],
+        "priority": 5
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:granite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACA8Ad2FsbF9ibG9ja190eXBlBwBncmFuaXRlCBkAd2FsbF9jb25uZWN0aW9uX3R5cGVfZWFzdAQAbm9uZQgaAHdhbGxfY29ubmVjdGlvbl90eXBlX25vcnRoBABub25lCBoAd2FsbF9jb25uZWN0aW9uX3R5cGVfc291dGgEAG5vbmUIGQB3YWxsX2Nvbm5lY3Rpb25fdHlwZV93ZXN0BABub25lAQ0Ad2FsbF9wb3N0X2JpdAAA",
+                "name": "minecraft:cobblestone_wall"
+            }
+        ],
+        "priority": 2
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:granite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV8zBwBncmFuaXRlAA==",
+                "count": 2,
+                "name": "minecraft:stone_block_slab3"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:granite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV8zEABwb2xpc2hlZF9ncmFuaXRlAA==",
+                "count": 2,
+                "name": "minecraft:stone_block_slab3"
+            }
+        ],
+        "priority": 4
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:granite"
+            }
+        ],
+        "output": [
+            {
+                "name": "minecraft:polished_granite"
+            }
+        ],
+        "priority": 3
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
                 "name": "minecraft:mossy_cobblestone"
             }
         ],
@@ -19229,6 +19785,37 @@
                 "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgPAHN0b25lX3NsYWJfdHlwZQwAbmV0aGVyX2JyaWNrAA==",
                 "count": 2,
                 "name": "minecraft:stone_block_slab"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:polished_andesite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
+                "name": "minecraft:polished_andesite_stairs"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:polished_andesite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV8zEQBwb2xpc2hlZF9hbmRlc2l0ZQA=",
+                "count": 2,
+                "name": "minecraft:stone_block_slab3"
             }
         ],
         "priority": 0
@@ -19403,6 +19990,68 @@
         "block": "stonecutter",
         "input": [
             {
+                "name": "minecraft:polished_diorite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
+                "name": "minecraft:polished_diorite_stairs"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:polished_diorite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV8zEABwb2xpc2hlZF9kaW9yaXRlAA==",
+                "count": 2,
+                "name": "minecraft:stone_block_slab3"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:polished_granite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
+                "name": "minecraft:polished_granite_stairs"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:polished_granite"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV8zEABwb2xpc2hlZF9ncmFuaXRlAA==",
+                "count": 2,
+                "name": "minecraft:stone_block_slab3"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
                 "name": "minecraft:red_nether_brick"
             }
         ],
@@ -19460,5 +20109,112 @@
             }
         ],
         "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:stone"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
+                "name": "minecraft:normal_stone_stairs"
+            }
+        ],
+        "priority": 6
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:stone"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAAAQ8AdXBzaWRlX2Rvd25fYml0AAMQAHdlaXJkb19kaXJlY3Rpb24AAAAAAA==",
+                "name": "minecraft:stone_brick_stairs"
+            }
+        ],
+        "priority": 2
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:stone"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACA8Ad2FsbF9ibG9ja190eXBlCwBzdG9uZV9icmljawgZAHdhbGxfY29ubmVjdGlvbl90eXBlX2Vhc3QEAG5vbmUIGgB3YWxsX2Nvbm5lY3Rpb25fdHlwZV9ub3J0aAQAbm9uZQgaAHdhbGxfY29ubmVjdGlvbl90eXBlX3NvdXRoBABub25lCBkAd2FsbF9jb25uZWN0aW9uX3R5cGVfd2VzdAQAbm9uZQENAHdhbGxfcG9zdF9iaXQAAA==",
+                "name": "minecraft:cobblestone_wall"
+            }
+        ],
+        "priority": 3
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:stone"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACBAAc3RvbmVfYnJpY2tfdHlwZQcAZGVmYXVsdAA=",
+                "name": "minecraft:stonebrick"
+            }
+        ],
+        "priority": 4
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:stone"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACBAAc3RvbmVfYnJpY2tfdHlwZQgAY2hpc2VsZWQA",
+                "name": "minecraft:stonebrick"
+            }
+        ],
+        "priority": 0
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:stone"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgPAHN0b25lX3NsYWJfdHlwZQsAc3RvbmVfYnJpY2sA",
+                "count": 2,
+                "name": "minecraft:stone_block_slab"
+            }
+        ],
+        "priority": 1
+    },
+    {
+        "block": "stonecutter",
+        "input": [
+            {
+                "name": "minecraft:stone"
+            }
+        ],
+        "output": [
+            {
+                "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQgRAHN0b25lX3NsYWJfdHlwZV80BQBzdG9uZQA=",
+                "count": 2,
+                "name": "minecraft:stone_block_slab4"
+            }
+        ],
+        "priority": 5
     }
 ]

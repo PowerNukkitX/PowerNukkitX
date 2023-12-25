@@ -18,11 +18,11 @@ public interface ProtocolInfo {
     /**
      * Actual Minecraft: PE protocol version
      */
-    int CURRENT_PROTOCOL = dynamic(622);
+    int CURRENT_PROTOCOL = dynamic(630);
 
     List<Integer> SUPPORTED_PROTOCOLS = Ints.asList(CURRENT_PROTOCOL);
 
-    String MINECRAFT_VERSION_NETWORK = dynamic("1.20.40");
+    String MINECRAFT_VERSION_NETWORK = dynamic("1.20.50");
 
     String MINECRAFT_VERSION = 'v' + MINECRAFT_VERSION_NETWORK;
 
@@ -35,6 +35,7 @@ public interface ProtocolInfo {
     byte RESOURCE_PACK_STACK_PACKET = 0x07;
     byte RESOURCE_PACK_CLIENT_RESPONSE_PACKET = 0x08;
     byte TEXT_PACKET = 0x09;
+    byte SERVER_POST_MOVE_POSITION = 0x10;
     byte SET_TIME_PACKET = 0x0a;
     byte START_GAME_PACKET = 0x0b;
     byte ADD_PLAYER_PACKET = 0x0c;
@@ -351,6 +352,12 @@ public interface ProtocolInfo {
     @Since("1.20.10-r1")
     @PowerNukkitXOnly
     int AGENT_ANIMATION = 304;
+    @Since("1.20.50-r1")
+    @PowerNukkitXOnly
+    int REFRESH_ENTITLEMENTS = 305;
+    @Since("1.20.50-r1")
+    @PowerNukkitXOnly
+    int TOGGLE_CRAFTER_SLOT_REQUEST = 306;
     byte BATCH_PACKET = (byte) 0xff;
 
     static int toNewProtocolID(byte oldProtocolID) {

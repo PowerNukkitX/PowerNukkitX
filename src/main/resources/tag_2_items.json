@@ -132,13 +132,21 @@
         "minecraft:bamboo_door",
         "minecraft:birch_door",
         "minecraft:cherry_door",
+        "minecraft:copper_door",
         "minecraft:crimson_door",
         "minecraft:dark_oak_door",
+        "minecraft:exposed_copper_door",
         "minecraft:iron_door",
         "minecraft:jungle_door",
         "minecraft:mangrove_door",
+        "minecraft:oxidized_copper_door",
         "minecraft:spruce_door",
         "minecraft:warped_door",
+        "minecraft:waxed_copper_door",
+        "minecraft:waxed_exposed_copper_door",
+        "minecraft:waxed_oxidized_copper_door",
+        "minecraft:waxed_weathered_copper_door",
+        "minecraft:weathered_copper_door",
         "minecraft:wooden_door"
     ],
     "minecraft:golden_tier": [
@@ -457,11 +465,16 @@
         "minecraft:netherite_sword"
     ],
     "minecraft:planks": [
+        "minecraft:acacia_planks",
         "minecraft:bamboo_planks",
+        "minecraft:birch_planks",
         "minecraft:cherry_planks",
         "minecraft:crimson_planks",
+        "minecraft:dark_oak_planks",
+        "minecraft:jungle_planks",
         "minecraft:mangrove_planks",
-        "minecraft:planks",
+        "minecraft:oak_planks",
+        "minecraft:spruce_planks",
         "minecraft:warped_planks"
     ],
     "minecraft:sand": [

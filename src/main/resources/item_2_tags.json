@@ -364,6 +364,24 @@
   "minecraft:planks": [
     "minecraft:planks"
   ],
+  "minecraft:oak_planks": [
+    "minecraft:planks"
+  ],
+  "minecraft:spruce_planks": [
+    "minecraft:planks"
+  ],
+  "minecraft:acacia_planks": [
+    "minecraft:planks"
+  ],
+  "minecraft:birch_planks": [
+    "minecraft:planks"
+  ],
+  "minecraft:dark_oak_planks": [
+    "minecraft:planks"
+  ],
+  "minecraft:jungle_planks": [
+    "minecraft:planks"
+  ],
   "minecraft:warped_planks": [
     "minecraft:planks"
   ],
