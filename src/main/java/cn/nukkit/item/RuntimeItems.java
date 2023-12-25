@@ -17,7 +17,7 @@ import java.util.Map;
 public class RuntimeItems {
 
     private static final Map<String, Integer> legacyString2LegacyInt = new HashMap<>();
-    private static RuntimeItemMapping itemPalette;
+    private static final RuntimeItemMapping itemPalette;
     private static boolean initialized;
 
     static {

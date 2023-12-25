@@ -34,7 +34,6 @@ public class ItemLog extends Item {
             case 3:
                 this.name = "Jungle Log";
                 this.block = Block.get(BlockID.JUNGLE_LOG);
-                return;
         }
     }
 }

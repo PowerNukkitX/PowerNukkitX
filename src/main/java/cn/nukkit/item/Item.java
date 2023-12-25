@@ -684,8 +684,7 @@ public abstract class Item implements Cloneable, ItemID {
         Tag tag = this.getNamedTagEntry("display");
         ArrayList<String> lines = new ArrayList<>();
 
-        if (tag instanceof CompoundTag) {
-            CompoundTag nbt = (CompoundTag) tag;
+        if (tag instanceof CompoundTag nbt) {
             ListTag<StringTag> lore = nbt.getList("Lore", StringTag.class);
 
             if (lore.size() > 0) {
@@ -1502,7 +1501,7 @@ public abstract class Item implements Cloneable, ItemID {
 
 
     public static class ItemJsonComponents {
-        private static Gson gson = new Gson();
+        private static final Gson gson = new Gson();
 
         public static class CanPlaceOn {
             public String[] blocks;

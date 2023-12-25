@@ -36,11 +36,9 @@ public class EnchantmentThorns extends Enchantment {
 
     @Override
     public void doPostAttack(Entity attacker, Entity entity) {
-        if (!(entity instanceof EntityHumanType)) {
+        if (!(entity instanceof EntityHumanType human)) {
             return;
         }
-
-        EntityHumanType human = (EntityHumanType) entity;
 
         int thornsLevel = 0;
 
