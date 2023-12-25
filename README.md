@@ -1,3 +1,1 @@
-This is PowerNukkitX2.0
-
-...
+Just a server software, fork from [PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)!
