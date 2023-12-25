@@ -23,7 +23,6 @@ import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
-import cn.nukkit.registry.BlockRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.BlockColor;
 import com.google.common.base.Preconditions;
@@ -95,11 +94,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
     }
 
-    public Block() {
+    protected Block() {
         this(null);
     }
 
-    public Block(@Nullable BlockState blockState) {
+    protected Block(@Nullable BlockState blockState) {
         super(0, 0, 0, null);
         if (blockState != null || getProperties().containBlockState(blockState)) {
             this.blockstate = blockState;
