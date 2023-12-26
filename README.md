@@ -1,5 +1,6 @@
 [<img alt="PowerNukkitX" width="838" src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/blob/images/PNX_BANNER.png" />](https://www.powernukkitx.com)
 
+<h2>Version 1.0 of PNX has been discontinued, please check out our version 2.0</h2>
 <h2>🌐Need to switch languages?&ensp;/&ensp;多语言文档</h2>
 
 [![Discord](https://img.shields.io/discord/944227466912870410?color=7289da&logo=discord&logoColor=white&style=flat-square)](https://discord.gg/BcPhZCVJHJ)
@@ -24,7 +25,7 @@ Join US:
 
 What's new in PowerNukkitX? Let's See：
 
-- Support for 1.20.40 protocol.
+- Support for 1.20.50 protocol.
 - Support for 384 world height.
 - Support for The Nether world, no need to install additional plugin.
 - Support 3D biomes.<!--Custom dimension interface TODO-->
@@ -202,3 +203,10 @@ Please read the [CONTRIBUTING](/CODE_OF_CONDUCT.md) guide before submitting any 
 [![Stargazers over time](https://starchart.cc/PowerNukkitX/PowerNukkitX.svg)](https://starchart.cc/PowerNukkitX/PowerNukkitX)
 
 2019 - 2023 © [BlocklyNukkit](https://wiki.blocklynukkit.com) | [PowerNukkitX](https://www.powernukkitx.com)
+
+<!--
+2022/2/2 - 2023/12/26
+这真的只是句留言，真的
+如果你看到了这句话，恭喜你也发现了个小彩蛋（雾）
+Message from chencu
+-->

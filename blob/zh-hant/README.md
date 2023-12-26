@@ -1,5 +1,6 @@
 [<img alt="PowerNukkitX" width="838" src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/blob/images/PNX_BANNER.png" />](https://www.powernukkitx.com)
 
+<h2>1.0版本PNX已停止更新，請查看我們的2.0版本</h2>
 <h2>🌐Need to switch languages?&ensp;/&ensp;多語言文檔</h2>
 
 [![Discord](https://img.shields.io/discord/944227466912870410?color=7289da&logo=discord&logoColor=white&style=flat-square)](https://discord.gg/BcPhZCVJHJ)
@@ -24,7 +25,7 @@
 
 PowerNukkitX的優勢：
 
-- 支持1.20.30協議。
+- 支持1.20.50協議。
 - 原生支持384限高（目前僅限主世界，其餘則為256格限高）。
 - 原生支持地獄世界，無需另外安裝插件補丁等。
 - 支持3D生物群系（完善中）。<!--自定義維度接口 TODO-->
@@ -191,3 +192,10 @@ dependencies {
 [![Stargazers over time](https://starchart.cc/PowerNukkitX/PowerNukkitX.svg)](https://starchart.cc/PowerNukkitX/PowerNukkitX)
 
 2019 - 2023 © [BlocklyNukkit](https://wiki.blocklynukkit.com) | [PowerNukkitX](https://www.powernukkitx.com)
+
+<!--
+2022/2/2 - 2023/12/26
+这真的只是句留言，真的
+如果你看到了这句话，恭喜你也发现了个小彩蛋（雾）
+Message from chencu
+-->
