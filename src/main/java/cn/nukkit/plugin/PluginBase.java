@@ -91,8 +91,7 @@ abstract public class PluginBase implements Plugin {
      * @param value {@code true}为加载，{@code false}为卸载。<br>{@code true} for enable, {@code false} for disable.
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
-    
-    @
+
     public final void setEnabled(boolean value) {
         if (isEnabled != value) {
             if (!value && InternalPlugin.INSTANCE == this) {

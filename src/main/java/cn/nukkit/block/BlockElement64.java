@@ -1,0 +1,22 @@
+package cn.nukkit.block;
+
+import cn.nukkit.block.state.BlockProperties;
+import cn.nukkit.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
+
+public class BlockElement64 extends Block {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:element_64");
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockElement64() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockElement64(BlockState blockstate) {
+        super(blockstate);
+    }
+}

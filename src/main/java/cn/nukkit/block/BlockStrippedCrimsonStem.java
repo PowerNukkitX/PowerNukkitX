@@ -1,0 +1,23 @@
+package cn.nukkit.block;
+
+import cn.nukkit.block.state.BlockProperties;
+import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.state.property.CommonBlockProperties;
+import org.jetbrains.annotations.NotNull;
+
+public class BlockStrippedCrimsonStem extends Block {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:stripped_crimson_stem", CommonBlockProperties.PILLAR_AXIS);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockStrippedCrimsonStem() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockStrippedCrimsonStem(BlockState blockstate) {
+        super(blockstate);
+    }
+}
