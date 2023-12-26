@@ -2,11 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BlockProperty;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
+import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.state.property.CommonBlockProperties;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.DoorToggleEvent;
 import cn.nukkit.item.Item;
@@ -29,14 +26,10 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
-import static cn.nukkit.blockproperty.CommonBlockProperties.UPPER_BLOCK;
-
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-
-public abstract class BlockDoor extends BlockTransparentMeta implements RedstoneComponent, Faceable {
+public abstract class BlockDoor extends BlockTransparent implements RedstoneComponent, Faceable {
     private static final double THICKNESS = 3.0 / 16;
 
     // Contains a list of positions of doors, which have been opened by hand (by a player).
@@ -45,43 +38,8 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
     // and gives the vanilla behavior; no idea how to make this better :d
     private static final List<Location> manualOverrides = new ArrayList<>();
 
-
-    public static final BooleanBlockProperty DOOR_HINGE = new BooleanBlockProperty("door_hinge_bit", false);
-
-
-    public static final BlockProperty<BlockFace> DOOR_DIRECTION = new ArrayBlockProperty<>("direction", false, new BlockFace[]{
-            BlockFace.EAST, BlockFace.SOUTH,
-            BlockFace.WEST, BlockFace.NORTH
-    }).ordinal(true);
-
-
-    protected static final BlockProperties PROPERTIES = new BlockProperties(DOOR_DIRECTION, OPEN, UPPER_BLOCK, DOOR_HINGE);
-
-    @Deprecated
-    @DeprecationDetails(reason = "Use the accessors or properties instead", since = "1.4.0.0-PN", replaceWith = "CommonBlockProperties.OPEN")
-    public static final int DOOR_OPEN_BIT = PROPERTIES.getOffset(OPEN.getName());
-
-    @Deprecated
-    @DeprecationDetails(reason = "Use the accessors or properties instead", since = "1.4.0.0-PN", replaceWith = "UPPER_BLOCK")
-    public static final int DOOR_TOP_BIT = PROPERTIES.getOffset(UPPER_BLOCK.getName());
-
-    @Deprecated
-    @DeprecationDetails(reason = "Use the accessors or properties instead", since = "1.4.0.0-PN", replaceWith = "DOOR_HINGE")
-    public static final int DOOR_HINGE_BIT = PROPERTIES.getOffset(DOOR_HINGE.getName());
-
-    @Deprecated
-    @DeprecationDetails(reason = "Was removed from the game", since = "1.4.0.0-PN", replaceWith = "#isGettingPower()")
-    public static final int DOOR_POWERED_BIT = PROPERTIES.getBitSize();
-
-    protected BlockDoor(int meta) {
-        super(meta);
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
+    protected BlockDoor(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -100,16 +58,9 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         return false;
     }
 
-
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
-    }
-
-    @Deprecated
-    @DeprecationDetails(reason = "Limited amount of state data", since = "1.4.0.0-PN", replaceWith = "getCurrentState()")
-    public int getFullDamage() {
-        return getSignedBigDamage();
     }
 
     @Override
@@ -166,7 +117,8 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
     private void onNormalUpdate() {
         Block down = this.down();
         if (isTop()) {
-            if (down.getId() != this.getId() || down.getBooleanValue(UPPER_BLOCK)) {
+
+            if (!down.getId().equals(this.getId()) || down.getPropertyValue(CommonBlockProperties.UPPER_BLOCK_BIT)) {
                 level.setBlock(this, Block.get(AIR), false);
             }
 
@@ -179,7 +131,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
             return;
         }
 
-        if (down.getId() == AIR) {
+        if (down.getId().equals(AIR)) {
             level.useBreakOn(this, getToolType() == ItemTool.TYPE_PICKAXE ? Item.get(ItemID.DIAMOND_PICKAXE) : null);
         }
     }
@@ -309,12 +261,12 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         this.setManualOverride(false);
         if (isTop()) {
             Block down = this.down();
-            if (down.getId() == this.getId() && !down.getBooleanValue(UPPER_BLOCK)) {
+            if (down.getId().equals(this.getId()) && !down.getPropertyValue(CommonBlockProperties.UPPER_BLOCK_BIT)) {
                 level.setBlock(down, Block.get(AIR), true);
             }
         } else {
             Block up = this.up();
-            if (up.getId() == this.getId() && up.getBooleanValue(UPPER_BLOCK)) {
+            if (up.getId().equals(this.getId()) && up.getPropertyValue(CommonBlockProperties.UPPER_BLOCK_BIT)) {
                 level.setBlock(up, Block.get(BlockID.AIR), true);
             }
         }
@@ -362,9 +314,6 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         return this.setOpen(player, !this.isOpen());
     }
 
-
-            "Also adding possibility to detect, whether a player or redstone recently opened/closed the door.", since = "1.4.0.0-PN")
-
     public boolean setOpen(@Nullable Player player, boolean open) {
         if (open == this.isOpen()) {
             return false;
@@ -389,10 +338,10 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
             up = up();
         }
 
-        up.setBooleanValue(OPEN, open);
+        up.setPropertyValue(CommonBlockProperties.OPEN_BIT, open);
         up.level.setBlock(up, up, true, true);
 
-        down.setBooleanValue(OPEN, open);
+        down.setPropertyValue(CommonBlockProperties.OPEN_BIT, open);
         down.level.setBlock(down, down, true, true);
 
         if (player != null) {
@@ -409,46 +358,40 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
 
 
     public void setOpen(boolean open) {
-        setBooleanValue(OPEN, open);
+        setPropertyValue(CommonBlockProperties.OPEN_BIT, open);
     }
 
     public boolean isOpen() {
-        return getBooleanValue(OPEN);
+        return getPropertyValue(CommonBlockProperties.OPEN_BIT);
     }
 
     public boolean isTop() {
-        return getBooleanValue(UPPER_BLOCK);
+        return getPropertyValue(CommonBlockProperties.UPPER_BLOCK_BIT);
     }
 
 
     public void setTop(boolean top) {
-        setBooleanValue(UPPER_BLOCK, top);
-    }
-
-    @Deprecated
-    @DeprecationDetails(reason = "Use the properties API instead", since = "1.4.0.0-PN")
-    public boolean isTop(int meta) {
-        return PROPERTIES.getBooleanValue(meta, UPPER_BLOCK.getName());
+        setPropertyValue(CommonBlockProperties.UPPER_BLOCK_BIT, top);
     }
 
     public boolean isRightHinged() {
-        return getBooleanValue(DOOR_HINGE);
+        return getPropertyValue(CommonBlockProperties.DOOR_HINGE_BIT);
     }
 
 
     public void setRightHinged(boolean rightHinged) {
-        setBooleanValue(DOOR_HINGE, rightHinged);
+        setPropertyValue(CommonBlockProperties.DOOR_HINGE_BIT, rightHinged);
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(DOOR_DIRECTION);
+        return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.DIRECTION));
     }
 
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(DOOR_DIRECTION, face);
+        setPropertyValue(CommonBlockProperties.DIRECTION, face.getIndex());
     }
 
     @Override
