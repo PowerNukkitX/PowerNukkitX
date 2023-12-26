@@ -11,7 +11,11 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
 ## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
-This work in progress version supports Minecraft:BE `1.20.40 (Protocol Version 622)`.
+
+- Version 1.0 of PNX has been discontinued, check out our version 2.0 and join the [Discord] / [QQ] for more information!
+
+## [1.20.50-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.50-r1) - 2023-12-25
+This work in progress version supports Minecraft:BE `1.20.50 (Protocol Version 630)`.
 
 ## Added
 
@@ -22,6 +26,8 @@ This work in progress version supports Minecraft:BE `1.20.40 (Protocol Version 6
 - [#1423] Added `ChunkUpdaters` for newest version: `LogUpdater` and `FacingToCardinalDirectionUpdater`.
 - [#1427] Feat: more `boats`.
 - [#1430] Add `playersSleepingPercentage` GameRule.
+- [#1441] Adapt Minecraft:BE `1.20.50  (Protocol Version 630)`.
+- [#1441] `PNX-1.20.50-r1` released.
 
 ## Changed
 
@@ -1977,6 +1983,13 @@ Fixes several anvil issues.
 
 </details>
 
+<details>
+  <summary>1.20.50-PNX</summary>
+
+   1. [#1.20.50-r1] PNX-1.20.50-r1 (Protocol Version 630)
+
+</details>
+
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
 ---
@@ -2861,7 +2874,8 @@ Need to switch languages?
 [#1432]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1432
 [#1433]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1433
 <!-- #1434 Master branch only -->
-[#1434]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1434 
+[#1434]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1434
+[#1441]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1441
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -2940,6 +2954,8 @@ Need to switch languages?
 [#1.20.30-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.30-r2
 <!--1.20.40-PNX Protocol Version 622-->
 [#1.20.40-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.40-r1
+<!--1.20.50-PNX Protocol Version 630-->
+[#1.20.50-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.50-r1
 <!--1.20.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
@@ -2952,3 +2968,11 @@ Need to switch languages?
 <!--Social Links-->
 [QQ]: https://jq.qq.com/?_wv=1027&k=6rm3gbUI
 [Discord]: https://discord.gg/BcPhZCVJHJ
+
+<!--
+2022/2/2 - 2023/12/26
+这应该是我最后一次维护这个文档了，留个言做个纪念
+终于可以不用见到这个3K行的痛苦文档了:D
+如果你看到了这句话，恭喜你也发现了个小彩蛋（雾）
+Message from chencu
+-->

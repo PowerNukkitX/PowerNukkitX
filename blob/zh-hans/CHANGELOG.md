@@ -12,7 +12,11 @@
 3. [🔖 Version history / 历史版本](#CataLogs-Version-history)
 
 ## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
-该版本目前支持了Minecraft:BE `1.20.40 (协议版本622)`.
+
+- 1.0版本PNX已停止更新，请查看我们的2.0版本，可加入我们的[Discord]/[QQ]了解更多信息!
+
+## [1.20.50-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.50-r1) - 2023-12-25
+该版本目前支持了Minecraft:BE `1.20.50 (协议版本630)`.
 
 ## 新增内容
 
@@ -23,6 +27,8 @@
 - [#1423] 为新版本添加了`ChunkUpdater`/`LogUpdater`/`FacingToCardinalDirectionUpdater` 。
 - [#1427] 添加更多的`船`。
 - [#1430] 添加`playersSleepingPercentage`游戏规则。
+- [#1441] 适配`Minecraft:BE 1.20.50`。
+- [#1441] `PNX-1.20.50-r1`正式发布。
 
 ## 修改记录
 
@@ -92,7 +98,7 @@
 - [#1358] 实现鞘翅耐久消耗。
 - [#1363] 支持通过`Ctrl + C`关闭服务器。
 - [#1376] Entity Prorperty System。
-- [#1381] 适配`Minecraft:BE 1.20.10`。
+- [#1381] 适配`Minecraft:BE 1.20.30`。
 - [#1381] `PNX-1.20.30-r1`正式发布。
 
 ## 修改记录
@@ -1981,6 +1987,13 @@ Fixes several anvil issues.
 
 </details>
 
+<details>
+  <summary>1.20.50-PNX</summary>
+
+   1. [#1.20.50-r1] PNX-1.20.50-r1 (协议版本630)
+
+</details>
+
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
 ---
@@ -2865,7 +2878,8 @@ Need to switch languages?
 [#1432]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1432
 [#1433]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1433
 <!-- #1434 Master branch only -->
-[#1434]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1434 
+[#1434]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1434
+[#1441]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1441
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -2944,6 +2958,8 @@ Need to switch languages?
 [#1.20.30-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.30-r2
 <!--1.20.40-PNX Protocol Version 622-->
 [#1.20.40-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.40-r1
+<!--1.20.50-PNX Protocol Version 630-->
+[#1.20.50-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.50-r1
 <!--1.20.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
@@ -2956,3 +2972,11 @@ Need to switch languages?
 <!--Social Links-->
 [QQ]: https://jq.qq.com/?_wv=1027&k=6rm3gbUI
 [Discord]: https://discord.gg/BcPhZCVJHJ
+
+<!--
+2022/2/2 - 2023/12/26
+这应该是我最后一次维护这个文档了，留个言做个纪念
+终于可以不用见到这个3K行的痛苦文档了:D
+如果你看到了这句话，恭喜你也发现了个小彩蛋（雾）
+Message from chencu
+-->
