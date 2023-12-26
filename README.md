@@ -1,1 +1,0 @@
-Just a server software, fork from [PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)!
