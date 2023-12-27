@@ -73,8 +73,7 @@ public abstract class BlockFence extends BlockTransparent implements BlockConnec
             }
             return true;
         }
-        if (block instanceof BlockTrapdoor) {
-            BlockTrapdoor trapdoor = (BlockTrapdoor) block;
+        if (block instanceof BlockTrapdoor trapdoor) {
             return trapdoor.isOpen() && trapdoor.getBlockFace() == calculateFace(this, trapdoor);
         }
         return block instanceof BlockFenceGate || block.isSolid() && !block.isTransparent();

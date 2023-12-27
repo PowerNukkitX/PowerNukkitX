@@ -1,37 +1,27 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
 /**
  * @author Pub4Game
  * @since 26.12.2015
  */
 
-public class BlockWallSign extends BlockSignPost {
-
-
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.FACING_DIRECTION_BLOCK_PROPERTIES;
+public class BlockWallSign extends BlockStandingSign {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:wall_sign", FACING_DIRECTION);
 
     public BlockWallSign() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockWallSign(int meta) {
-        super(meta);
+    public BlockWallSign(BlockState blockState) {
+        super(blockState);
     }
-
-    @Override
-    public int getId() {
-        return WALL_SIGN;
-    }
-
 
     @NotNull
     @Override
@@ -41,14 +31,13 @@ public class BlockWallSign extends BlockSignPost {
 
 
     @Override
-    public int getWallId() {
+    public String getWallSignId() {
         return getId();
     }
 
-
     @Override
-    protected int getPostId() {
-        return SIGN_POST;
+    protected String getStandingSignId() {
+        return STANDING_SIGN;
     }
 
     @Override
@@ -70,12 +59,12 @@ public class BlockWallSign extends BlockSignPost {
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(FACING_DIRECTION, face);
+        setPropertyValue(FACING_DIRECTION, face.getIndex());
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(FACING_DIRECTION);
+        return BlockFace.fromIndex(getPropertyValue(FACING_DIRECTION));
     }
 
 

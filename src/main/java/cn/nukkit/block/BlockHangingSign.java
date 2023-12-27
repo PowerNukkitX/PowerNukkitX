@@ -44,7 +44,7 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (isHanging()) {
-                if (up().getId() == Block.AIR) {
+                if (up().isAir()) {
                     getLevel().useBreakOn(this);
                     return Level.BLOCK_UPDATE_NORMAL;
                 }

@@ -43,50 +43,6 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
 
     private static final AxisAlignedBB[] boundingBox2SpecialV = new AxisAlignedBB[0x1 << PROPERTIES.getSpecialValueBits()];
 
-    public BlockTrapdoor() {
-        this(PROPERTIES.getDefaultState());
-    }
-
-    public BlockTrapdoor(BlockState blockState) {
-        super(blockState);
-    }
-
-    @Override
-    public @NotNull BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    @Override
-    public String getName() {
-        return "Oak Trapdoor";
-    }
-
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 15;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
     //<editor-fold desc="pre-computing the bounding boxes" defaultstate="collapsed">
     static {
         for (int specialValue = 0; specialValue < boundingBox2SpecialV.length; specialValue++) {
@@ -137,6 +93,48 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
     }
     //</editor-fold>
 
+    public BlockTrapdoor() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockTrapdoor(BlockState blockState) {
+        super(blockState);
+    }
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
+    public String getName() {
+        return "Oak Trapdoor";
+    }
+
+    @Override
+    public double getHardness() {
+        return 3;
+    }
+
+    @Override
+    public double getResistance() {
+        return 15;
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_AXE;
+    }
+
+    @Override
+    public int getWaterloggingLevel() {
+        return 1;
+    }
 
     private AxisAlignedBB getRelativeBoundingBox() {
         return boundingBox2SpecialV[this.blockstate.specialValue()];

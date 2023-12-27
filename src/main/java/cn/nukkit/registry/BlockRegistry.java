@@ -39,8 +39,8 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(ACACIA_STAIRS, BlockAcaciaStairs.class);
         register(ACACIA_STANDING_SIGN, BlockAcaciaStandingSign.class);
         register(ACACIA_TRAPDOOR, BlockAcaciaTrapdoor.class);
-        register(ACACIA_WALL_SIGN, BlockAcaciaWallSign.class);//next
-        register(ACTIVATOR_RAIL, BlockActivatorRail.class);
+        register(ACACIA_WALL_SIGN, BlockAcaciaWallSign.class);
+        register(ACTIVATOR_RAIL, BlockActivatorRail.class);//next
         register(AIR, BlockAir.class);
         register(ALLOW, BlockAllow.class);
         register(AMETHYST_BLOCK, BlockAmethystBlock.class);
