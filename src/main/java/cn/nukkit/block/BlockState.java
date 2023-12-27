@@ -18,6 +18,8 @@ public interface BlockState {
 
     int blockStateHash();
 
+    short specialValue();
+
     long unsignedBlockStateHash();
 
     @UnmodifiableView
@@ -25,4 +27,12 @@ public interface BlockState {
 
     @UnmodifiableView
     CompoundTagView getBlockStateTag();
+
+    <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> DATATYPE getPropertyValue(PROPERTY p);
+
+    <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> void setPropertyValue(Block block, PROPERTY property, DATATYPE value);
+
+    void setPropertyValue(Block block, BlockPropertyType.BlockPropertyValue<?, ?, ?> propertyValue);
+
+    void setPropertyValues(Block block, BlockPropertyType.BlockPropertyValue<?, ?, ?>... values);
 }

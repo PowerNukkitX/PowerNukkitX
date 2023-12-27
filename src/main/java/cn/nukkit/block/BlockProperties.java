@@ -130,10 +130,6 @@ public final class BlockProperties {
         return Pair.of(blockStates, defaultState);
     }
 
-    public BlockState getBlockState() {
-        return specialValueMap.get((short) 0);
-    }
-
     public BlockState getBlockState(short specialValue) {
         return specialValueMap.get(specialValue);
     }
@@ -144,5 +140,9 @@ public final class BlockProperties {
 
     public boolean containBlockState(BlockState blockState) {
         return this.specialValueMap.containsValue(blockState);
+    }
+
+    public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> DATATYPE getPropertyValue(int specialValue, PROPERTY p) {
+        return getBlockState((short) specialValue).getPropertyValue(p);
     }
 }

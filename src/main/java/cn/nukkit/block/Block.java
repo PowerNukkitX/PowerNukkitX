@@ -50,7 +50,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static final double DEFAULT_AIR_FLUID_FRICTION = 0.95;
     //todo fix getcolor
     protected static final Long2ObjectOpenHashMap<BlockColor> VANILLA_BLOCK_COLOR_MAP = new Long2ObjectOpenHashMap<>();
-    private BlockState blockstate;
+    protected BlockState blockstate;
     protected BlockColor color;
     public int layer;
 
@@ -485,79 +485,24 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return this.blockstate == BlockAir.STATE;
     }
 
-    public BlockState getBlockState() {
-        return this.blockstate;
+    public BlockState getBlockstate() {
+        return blockstate;
     }
 
-    @SuppressWarnings("unchecked")
     public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> DATATYPE getPropertyValue(PROPERTY p) {
-        for (var property : this.blockstate.getBlockPropertyValues()) {
-            if (property.getPropertyType() == p) {
-                return (DATATYPE) property.getValue();
-            }
-        }
-        throw new IllegalArgumentException("Property " + p + " is not supported by this block");
+        return blockstate.getPropertyValue(p);
     }
 
     public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> void setPropertyValue(PROPERTY property, DATATYPE value) {
-        setPropertyValue(property.createValue(value));
+        blockstate.setPropertyValue(this, property, value);
     }
 
     public void setPropertyValue(BlockPropertyType.BlockPropertyValue<?, ?, ?> propertyValue) {
-        final var blockPropertyValues = ((BlockStateImpl) this.blockstate).blockPropertyValues();
-        final var newPropertyValues = new BlockPropertyType.BlockPropertyValue<?, ?, ?>[blockPropertyValues.length];
-        var succeed = false;
-        for (int i = 0; i < blockPropertyValues.length; i++) {
-            final var v = blockPropertyValues[i];
-            if (v.getPropertyType() == propertyValue.getPropertyType()) {
-                succeed = true;
-                newPropertyValues[i] = propertyValue;
-            } else newPropertyValues[i] = v;
-        }
-        if (!succeed) {
-            throw new IllegalArgumentException("Property " + propertyValue.getPropertyType() + " is not supported by this block");
-        }
-        this.blockstate = getNewBlockState(newPropertyValues);
+        blockstate.setPropertyValue(this, propertyValue);
     }
 
     public void setPropertyValues(BlockPropertyType.BlockPropertyValue<?, ?, ?>... values) {
-        final var blockPropertyValues = ((BlockStateImpl) this.blockstate).blockPropertyValues();
-        final var newPropertyValues = new BlockPropertyType.BlockPropertyValue<?, ?, ?>[blockPropertyValues.length];
-        final var propertyValues = List.of(values);
-        final var succeed = new boolean[propertyValues.size()];
-        var succeedCount = 0;
-        for (int i = 0; i < blockPropertyValues.length; i++) {
-            final var v = blockPropertyValues[i];
-            int index;
-            if ((index = propertyValues.indexOf(v)) != -1) {
-                succeedCount++;
-                succeed[index] = true;
-                newPropertyValues[i] = propertyValues.get(index);
-            } else newPropertyValues[i] = v;
-        }
-        if (succeedCount != propertyValues.size()) {
-            var errorMsgBuilder = new StringBuilder("Properties ");
-            for (int i = 0; i < propertyValues.size(); i++) {
-                if (!succeed[i]) {
-                    errorMsgBuilder.append(propertyValues.get(i).getPropertyType().getName());
-                    if (i != propertyValues.size() - 1)
-                        errorMsgBuilder.append(", ");
-                }
-            }
-            errorMsgBuilder.append(" are not supported by this block");
-            throw new IllegalArgumentException(errorMsgBuilder.toString());
-        }
-        this.blockstate = getNewBlockState(newPropertyValues);
-    }
-
-    private BlockState getNewBlockState(BlockPropertyType.BlockPropertyValue<?, ?, ?>[] values) {
-        Preconditions.checkNotNull(getProperties());
-        byte bits = getProperties().getSpecialValueBits();
-        if (bits <= 16) {
-            return getProperties().getBlockState(computeSpecialValue(bits, values));
-        } else {
-            throw new IllegalArgumentException();
-        }
+        blockstate.setPropertyValues(this, values);
     }
 
     public final int getRuntimeId() {

@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -19,15 +20,6 @@ import static cn.nukkit.block.property.CommonBlockProperties.WEIRDO_DIRECTION;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockStairs extends BlockTransparent implements Faceable {
-    private final static BiMap<BlockFace, Integer> weirdoDirectionMapping = HashBiMap.create(4);
-
-    static {
-        weirdoDirectionMapping.put(BlockFace.EAST, 0);
-        weirdoDirectionMapping.put(BlockFace.WEST, 1);
-        weirdoDirectionMapping.put(BlockFace.SOUTH, 2);
-        weirdoDirectionMapping.put(BlockFace.NORTH, 3);
-    }
-
     protected BlockStairs(BlockState blockState) {
         super(blockState);
     }
@@ -145,12 +137,12 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
     
     @Override
     public BlockFace getBlockFace() {
-        return weirdoDirectionMapping.inverse().get(getPropertyValue(WEIRDO_DIRECTION));
+        return CommonPropertyMap.EWSN_DIRECTION.inverse().get(getPropertyValue(WEIRDO_DIRECTION));
     }
 
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(WEIRDO_DIRECTION, weirdoDirectionMapping.get(face));
+        setPropertyValue(WEIRDO_DIRECTION, CommonPropertyMap.EWSN_DIRECTION.get(face));
     }
 }

@@ -19,6 +19,8 @@ import cn.nukkit.math.BlockFace.AxisDirection;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -36,6 +38,15 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
     // previously the door always closed, when placing an unpowered redstone at the door, this fixes it
     // and gives the vanilla behavior; no idea how to make this better :d
     private static final List<Location> manualOverrides = new ArrayList<>();
+
+    protected final static BiMap<BlockFace, Integer> DOOR_DIRECTION = HashBiMap.create(4);
+
+    static {
+        DOOR_DIRECTION.put(BlockFace.EAST, 0);
+        DOOR_DIRECTION.put(BlockFace.SOUTH, 1);
+        DOOR_DIRECTION.put(BlockFace.WEST, 2);
+        DOOR_DIRECTION.put(BlockFace.NORTH, 3);
+    }
 
     protected BlockDoor(BlockState blockState) {
         super(blockState);
@@ -384,13 +395,13 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(getPropertyValue(CommonBlockProperties.DIRECTION));
+        return DOOR_DIRECTION.inverse().get(getPropertyValue(CommonBlockProperties.DIRECTION));
     }
 
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(CommonBlockProperties.DIRECTION, face.getIndex());
+        setPropertyValue(CommonBlockProperties.DIRECTION, DOOR_DIRECTION.get(face));
     }
 
     @Override

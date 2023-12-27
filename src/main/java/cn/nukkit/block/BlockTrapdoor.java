@@ -2,10 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.DoorToggleEvent;
 import cn.nukkit.item.Item;
@@ -21,66 +19,40 @@ import cn.nukkit.math.BlockFace.AxisDirection;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
+import com.google.common.collect.Sets;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-
-import static cn.nukkit.block.BlockStairs.UPSIDE_DOWN;
-import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
+import java.util.Set;
 
 /**
  * @author Pub4Game
  * @since 26.12.2015
  */
 
-public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneComponent, Faceable {
+public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent, Faceable {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:trapdoor", CommonBlockProperties.DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPSIDE_DOWN_BIT);
+
     private static final double THICKNESS = 0.1875;
 
     // Contains a list of positions of trap doors, which have been opened by hand (by a player).
     // It is used to detect on redstone update, if the door should be closed if redstone is off on the update,
     // previously the door always closed, when placing an unpowered redstone at the door, this fixes it
     // and gives the vanilla behavior; no idea how to make this better :d
-    private static final List<Location> manualOverrides = new ArrayList<>();
+    private static final Set<Location> manualOverrides = Sets.newConcurrentHashSet();
 
-
-    public static final BlockProperty<BlockFace> TRAPDOOR_DIRECTION = new ArrayBlockProperty<>("direction", false, new BlockFace[]{
-            // It's basically weirdo_direction but renamed
-            BlockFace.EAST, BlockFace.WEST,
-            BlockFace.SOUTH, BlockFace.NORTH
-    }).ordinal(true);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(TRAPDOOR_DIRECTION, UPSIDE_DOWN, OPEN);
-
-    private static final AxisAlignedBB[] boundingBoxDamage = new AxisAlignedBB[0x1 << PROPERTIES.getBitSize()];
-
-    @Deprecated
-    @DeprecationDetails(reason = "Use the properties or the accessors", since = "1.4.0.0-PN", replaceWith = "CommonBlockProperties.OPEN")
-    public static final int TRAPDOOR_OPEN_BIT = 0x08;
-
-    @Deprecated
-    @DeprecationDetails(reason = "Use the properties or the accessors", since = "1.4.0.0-PN", replaceWith = "BlockStairs.UPSIDE_DOWN")
-    public static final int TRAPDOOR_TOP_BIT = 0x04;
+    private static final AxisAlignedBB[] boundingBox2SpecialV = new AxisAlignedBB[0x1 << PROPERTIES.getSpecialValueBits()];
 
     public BlockTrapdoor() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockTrapdoor(int meta) {
-        super(meta);
+    public BlockTrapdoor(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
-    public int getId() {
-        return TRAPDOOR;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -117,10 +89,10 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
 
     //<editor-fold desc="pre-computing the bounding boxes" defaultstate="collapsed">
     static {
-        for (int damage = 0; damage < boundingBoxDamage.length; damage++) {
+        for (int specialValue = 0; specialValue < boundingBox2SpecialV.length; specialValue++) {
             AxisAlignedBB bb;
-            if (PROPERTIES.getBooleanValue(damage, OPEN.getName())) {
-                BlockFace face = (BlockFace) PROPERTIES.getValue(damage, TRAPDOOR_DIRECTION.getName());
+            if (PROPERTIES.getPropertyValue(specialValue, CommonBlockProperties.OPEN_BIT)) {
+                BlockFace face = CommonPropertyMap.EWSN_DIRECTION.inverse().get(PROPERTIES.getPropertyValue(specialValue, CommonBlockProperties.DIRECTION));
                 face = face.getOpposite();
                 if (face.getAxisDirection() == AxisDirection.NEGATIVE) {
                     bb = new SimpleAxisAlignedBB(
@@ -141,7 +113,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
                             1
                     );
                 }
-            } else if (PROPERTIES.getBooleanValue(damage, UPSIDE_DOWN.getName())) {
+            } else if (PROPERTIES.getPropertyValue(specialValue, CommonBlockProperties.UPSIDE_DOWN_BIT)) {
                 bb = new SimpleAxisAlignedBB(
                         0,
                         1 - THICKNESS,
@@ -160,17 +132,14 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
                         1
                 );
             }
-
-            boundingBoxDamage[damage] = bb;
+            boundingBox2SpecialV[specialValue] = bb;
         }
     }
     //</editor-fold>
 
 
     private AxisAlignedBB getRelativeBoundingBox() {
-        @SuppressWarnings("deprecation")
-        int bigDamage = getSignedBigDamage();
-        return boundingBoxDamage[bigDamage];
+        return boundingBox2SpecialV[this.blockstate.specialValue()];
     }
 
     @Override
@@ -276,10 +245,6 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         return this.setOpen(player, !this.isOpen());
     }
 
-
-
-            "Also adding possibility to detect, whether a player or redstone recently opened/closed the door.", since = "1.4.0.0-PN")
-
     public boolean setOpen(Player player, boolean open) {
         if (open == this.isOpen()) {
             return false;
@@ -294,7 +259,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
 
         player = event.getPlayer();
 
-        setBooleanValue(OPEN, open);
+        setPropertyValue(CommonBlockProperties.OPEN_BIT, open);
         if (!level.setBlock(this, this, true, true))
             return false;
 
@@ -330,32 +295,32 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
     }
 
     public boolean isOpen() {
-        return getBooleanValue(OPEN);
+        return getPropertyValue(CommonBlockProperties.OPEN_BIT);
     }
 
 
     public void setOpen(boolean open) {
-        setBooleanValue(OPEN, open);
+        setPropertyValue(CommonBlockProperties.OPEN_BIT, open);
     }
 
     public boolean isTop() {
-        return getBooleanValue(UPSIDE_DOWN);
+        return getPropertyValue(CommonBlockProperties.UPSIDE_DOWN_BIT);
     }
 
 
     public void setTop(boolean top) {
-        setBooleanValue(UPSIDE_DOWN, top);
+        setPropertyValue(CommonBlockProperties.UPSIDE_DOWN_BIT, top);
     }
 
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(TRAPDOOR_DIRECTION);
+        return CommonPropertyMap.EWSN_DIRECTION.inverse().get(getPropertyValue(CommonBlockProperties.DIRECTION));
     }
 
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(TRAPDOOR_DIRECTION, face);
+        setPropertyValue(CommonBlockProperties.DIRECTION, CommonPropertyMap.EWSN_DIRECTION.get(face));
     }
 }
