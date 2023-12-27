@@ -29,7 +29,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
     @Override
     public void init() {
         register(ACACIA_BUTTON, BlockAcaciaButton.class);
-        register(ACACIA_DOOR, BlockAcaciaDoor.class);//
+        register(ACACIA_DOOR, BlockAcaciaDoor.class);
         register(ACACIA_FENCE, BlockAcaciaFence.class);
         register(ACACIA_FENCE_GATE, BlockAcaciaFenceGate.class);
         register(ACACIA_HANGING_SIGN, BlockAcaciaHangingSign.class);

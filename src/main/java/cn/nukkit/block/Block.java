@@ -485,7 +485,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return this.blockstate == BlockAir.STATE;
     }
 
-    public BlockState getBlockstate() {
+    public BlockState getBlockState() {
         return blockstate;
     }
 
