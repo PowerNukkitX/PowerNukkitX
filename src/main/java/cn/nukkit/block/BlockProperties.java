@@ -6,15 +6,14 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.Identifier;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import lombok.Getter;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -24,32 +23,16 @@ import java.util.stream.Collectors;
 public final class BlockProperties {
     @Getter
     private final String identifier;
-    private final BlockPropertyType<?>[] properties;
+    private final Set<BlockPropertyType<?>> properties;
     private final Map<Short, BlockState> specialValueMap;
     @Getter
     private final BlockState defaultState;
     private final byte bitSize;
 
-    public static short computeSpecialValue(BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
-        byte specialValueBits = 0;
-        for (var value : propertyValues) specialValueBits += value.getPropertyType().getBitSize();
-        return computeSpecialValue(specialValueBits, propertyValues);
-    }
-
-    //todo match vanilla
-    public static short computeSpecialValue(byte specialValueBits, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
-        short specialValue = 0;
-        for (var value : propertyValues) {
-            specialValue |= (short) (((short) value.getIndex()) << (specialValueBits - value.getPropertyType().getBitSize()));
-            specialValueBits -= value.getPropertyType().getBitSize();
-        }
-        return specialValue;
-    }
-
     public BlockProperties(String identifier, BlockPropertyType<?>... properties) {
         Identifier.assertValid(identifier);
         this.identifier = identifier.intern();
-        this.properties = properties;
+        this.properties = Sets.newHashSet(properties);
 
         byte specialValueBits = 0;
         for (var value : this.properties) specialValueBits += value.getBitSize();
@@ -69,7 +52,7 @@ public final class BlockProperties {
     }
 
     private Pair<Map<Integer, BlockStateImpl>, BlockStateImpl> initStates() {
-        List<BlockPropertyType<?>> propertyTypeList = Arrays.stream(this.properties).toList();
+        List<BlockPropertyType<?>> propertyTypeList = this.properties.stream().toList();
         int size = propertyTypeList.size();
         if (size == 0) {
             BlockStateImpl blockState = new BlockStateImpl(identifier, new BlockPropertyType.BlockPropertyValue<?, ?, ?>[]{});
@@ -117,7 +100,7 @@ public final class BlockProperties {
                 indices[i] = 0;
             }
         }
-        int defaultStateHash = HashUtils.computeBlockStateHash(this.identifier, Arrays.stream(properties).map(p -> p.tryCreateValue(p.getDefaultValue())).collect(Collectors.toList()));
+        int defaultStateHash = HashUtils.computeBlockStateHash(this.identifier, properties.stream().map(p -> p.tryCreateValue(p.getDefaultValue())).collect(Collectors.toList()));
         BlockStateImpl defaultState = null;
         for (var s : blockStates.values()) {
             if (s.blockStateHash() == defaultStateHash) {
@@ -140,6 +123,10 @@ public final class BlockProperties {
 
     public boolean containBlockState(BlockState blockState) {
         return this.specialValueMap.containsValue(blockState);
+    }
+
+    public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> boolean containProperty(PROPERTY property) {
+        return properties.contains(property);
     }
 
     public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> DATATYPE getPropertyValue(int specialValue, PROPERTY p) {

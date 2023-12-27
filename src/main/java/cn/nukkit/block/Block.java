@@ -38,8 +38,6 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.function.Predicate;
 
-import static cn.nukkit.block.BlockProperties.computeSpecialValue;
-
 /**
  * @author MagicDroidX (Nukkit Project)
  */

@@ -35,7 +35,7 @@ import java.util.Map;
  * @author CreeperFace (Nukkit Project)
  */
 
-public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<BlockEntityCauldron> {
+public class BlockCauldron extends BlockSolid implements BlockEntityHolder<BlockEntityCauldron> {
 
 
     public static final IntBlockProperty FILL_LEVEL = new IntBlockProperty("fill_level", false, 6);

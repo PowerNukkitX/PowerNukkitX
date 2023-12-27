@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockActivatorRail extends Block {
+public class BlockActivatorRail extends BlockRail {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:activator_rail", CommonBlockProperties.RAIL_DATA_BIT, CommonBlockProperties.RAIL_DIRECTION_6);
 
     @Override

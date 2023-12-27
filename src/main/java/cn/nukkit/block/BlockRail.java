@@ -2,10 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BlockProperty;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
@@ -23,6 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DIRECTION_10;
 import static cn.nukkit.math.BlockFace.*;
 import static cn.nukkit.utils.Rail.Orientation.*;
 
@@ -31,9 +29,9 @@ import static cn.nukkit.utils.Rail.Orientation.*;
  * @since 2016/1/11
  */
 public class BlockRail extends BlockFlowable implements Faceable {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:rail", RAIL_DIRECTION_10);
 
-
-    public static final BooleanBlockProperty ACTIVE = new BooleanBlockProperty("rail_data_bit", false);
+    /*public static final BooleanBlockProperty ACTIVE = new BooleanBlockProperty("rail_data_bit", false);
 
 
     public static final BlockProperty<Rail.Orientation> UNCURVED_RAIL_DIRECTION = new ArrayBlockProperty<>("rail_direction", false, new Rail.Orientation[]{
@@ -55,7 +53,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     public static final BlockProperties ACTIVABLE_PROPERTIES = new BlockProperties(UNCURVED_RAIL_DIRECTION, ACTIVE);
 
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(CURVED_RAIL_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CURVED_RAIL_DIRECTION);*/
 
     // 0x8: Set the block active
     // 0x7: Reset the block to normal
@@ -63,23 +61,17 @@ public class BlockRail extends BlockFlowable implements Faceable {
     protected boolean canBePowered = false;
 
     public BlockRail() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockRail(int meta) {
-        super(meta);
+    public BlockRail(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "Rail";
     }
-
-    @Override
-    public int getId() {
-        return RAIL;
-    }
-
 
     @NotNull
     @Override
@@ -301,14 +293,12 @@ public class BlockRail extends BlockFlowable implements Faceable {
      *
      * @param orientation The new orientation
      */
-
-
     public void setRailDirection(Orientation orientation) {
-        setPropertyValue(CURVED_RAIL_DIRECTION.getName(), orientation);
+        setPropertyValue(RAIL_DIRECTION_10, orientation.metadata());
     }
 
     public Orientation getOrientation() {
-        return (Orientation) getPropertyValue(CURVED_RAIL_DIRECTION.getName());
+        return Orientation.byMetadata(getPropertyValue(RAIL_DIRECTION_10));
     }
 
     /**
@@ -335,14 +325,14 @@ public class BlockRail extends BlockFlowable implements Faceable {
         // Reason: When the rail is curved, the meta will return STRAIGHT_NORTH_SOUTH.
         // OR Null Pointer Exception
         if (!isAbstract()) {
-            return getDamage() & 0x7;
+            return this.getBlockState().specialValue() & 0x7;
         }
         // Return the default: This meta
-        return getDamage();
+        return this.getBlockState().specialValue();
     }
 
     public boolean isActive() {
-        return getProperties().contains(ACTIVE) && getBooleanValue(ACTIVE);
+        return getProperties().containProperty(CommonBlockProperties.ACTIVE) && getPropertyValue(CommonBlockProperties.ACTIVE);
     }
 
     /**
@@ -357,7 +347,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
      * @see Level#setBlock(Vector3, int, Block, boolean, boolean)
      */
     public void setActive(boolean active) {
-        if (getProperties().contains(ACTIVE)) {
+        if (getProperties().containProperty(CommonBlockProperties.ACTIVE)) {
             setRailActive(active);
         }
         level.setBlock(this, this, true, true);
@@ -365,21 +355,19 @@ public class BlockRail extends BlockFlowable implements Faceable {
 
 
     public OptionalBoolean isRailActive() {
-        return getProperties().contains(ACTIVE) ?
-                OptionalBoolean.of(getBooleanValue(ACTIVE)) :
+        return getProperties().containProperty(CommonBlockProperties.ACTIVE) ?
+                OptionalBoolean.of(getPropertyValue(CommonBlockProperties.ACTIVE)) :
                 OptionalBoolean.empty();
     }
 
     /**
      * @throws NoSuchElementException If attempt to set the rail to active but it don't have the {@link #ACTIVE} property.
      */
-
-
-    public void setRailActive(boolean active) throws NoSuchElementException {
-        if (!active && !getProperties().contains(ACTIVE)) {
+    public void setRailActive(boolean active){
+        if (!active && !getProperties().containProperty(CommonBlockProperties.ACTIVE)) {
             return;
         }
-        setBooleanValue(ACTIVE, active);
+        setPropertyValue(CommonBlockProperties.ACTIVE,active);
     }
 
     @Override
@@ -389,7 +377,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+        return BlockFace.fromHorizontalIndex(this.getBlockState().specialValue() & 0x07);
     }
 
     @Override

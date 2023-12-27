@@ -24,6 +24,22 @@ record BlockStateImpl(String identifier,
                       BlockPropertyType.BlockPropertyValue<?, ?, ?>[] blockPropertyValues,
                       CompoundTagView blockStateTag
 ) implements BlockState {
+    public static short computeSpecialValue(BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
+        byte specialValueBits = 0;
+        for (var value : propertyValues) specialValueBits += value.getPropertyType().getBitSize();
+        return computeSpecialValue(specialValueBits, propertyValues);
+    }
+
+    //todo match vanilla
+    public static short computeSpecialValue(byte specialValueBits, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
+        short specialValue = 0;
+        for (var value : propertyValues) {
+            specialValue |= (short) (((short) value.getIndex()) << (specialValueBits - value.getPropertyType().getBitSize()));
+            specialValueBits -= value.getPropertyType().getBitSize();
+        }
+        return specialValue;
+    }
+
     private static CompoundTagView buildBlockStateTag(String identifier, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
         //build block state tag
         var states = new CompoundTag("", new TreeMap<>());
