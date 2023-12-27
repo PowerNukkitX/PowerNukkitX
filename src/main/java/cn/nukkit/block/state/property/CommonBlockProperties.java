@@ -5,6 +5,7 @@ import cn.nukkit.block.state.property.type.BlockPropertyType;
 import cn.nukkit.block.state.property.type.BooleanPropertyType;
 import cn.nukkit.block.state.property.type.EnumPropertyType;
 import cn.nukkit.block.state.property.type.IntPropertyType;
+import cn.nukkit.math.BlockFace;
 
 import java.util.List;
 
@@ -187,9 +188,9 @@ public interface CommonBlockProperties {
 
     BooleanPropertyType PERSISTENT_BIT = BooleanPropertyType.of("persistent_bit", false);
 
-    EnumPropertyType<PillarAxis> PILLAR_AXIS = EnumPropertyType.of("pillar_axis", PillarAxis.class, PillarAxis.values()[0]);
+    EnumPropertyType<BlockFace.Axis> PILLAR_AXIS = EnumPropertyType.of("pillar_axis", BlockFace.Axis.class, BlockFace.Axis.values()[0]);
 
-    EnumPropertyType<PortalAxis> PORTAL_AXIS = EnumPropertyType.of("portal_axis", PortalAxis.class, PortalAxis.values()[0]);
+    EnumPropertyType<BlockFace.Axis> PORTAL_AXIS = EnumPropertyType.of("portal_axis", BlockFace.Axis.class, BlockFace.Axis.values()[0]);
 
     BooleanPropertyType POWERED_BIT = BooleanPropertyType.of("powered_bit", false);
 

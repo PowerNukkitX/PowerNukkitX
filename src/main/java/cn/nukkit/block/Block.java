@@ -79,6 +79,30 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return block;
     }
 
+    public static Block get(BlockState blockState) {
+        return Registries.BLOCK.get(blockState);
+    }
+
+    public static Block get(BlockState blockState, Position pos) {
+        return Registries.BLOCK.get(blockState, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), pos.level);
+    }
+
+    public static Block get(BlockState blockState, Position pos, int layer) {
+        Block block = get(blockState, pos);
+        block.layer = layer;
+        return block;
+    }
+
+    public static Block get(BlockState blockState, Level level, int x, int y, int z) {
+        return Registries.BLOCK.get(blockState, x, y, z, level);
+    }
+
+    public static Block get(BlockState blockState, Level level, int x, int y, int z, int layer) {
+        Block block = get(blockState, level, x, y, z);
+        block.layer = layer;
+        return block;
+    }
+
     static {
         try (var reader = new InputStreamReader(new BufferedInputStream(Objects.requireNonNull(Block.class.getClassLoader().getResourceAsStream("block_color.json"))))) {
             var parser = JsonParser.parseReader(reader);

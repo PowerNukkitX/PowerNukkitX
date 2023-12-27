@@ -4,7 +4,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -49,7 +49,7 @@ public interface BlockEntityHolder<E extends BlockEntity> {
     @NotNull
     default E createBlockEntity(@Nullable CompoundTag initialData, @Nullable Object... args) {
         String typeName = getBlockEntityType();
-        FullChunk chunk = getChunk();
+        IChunk chunk = getChunk();
         if (chunk == null) {
             throw new LevelException("Undefined Level or chunk reference");
         }
@@ -99,7 +99,7 @@ public interface BlockEntityHolder<E extends BlockEntity> {
 
 
     @Nullable
-    FullChunk getChunk();
+    IChunk getChunk();
 
 
     int getFloorX();

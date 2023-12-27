@@ -1,32 +1,19 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
+import static cn.nukkit.block.state.property.CommonBlockProperties.PILLAR_AXIS;
 
 
-public abstract class BlockLog extends BlockSolidMeta implements IBlockWood {
-
-
-    protected static final BlockProperties PILLAR_PROPERTIES = new BlockProperties(CommonBlockProperties.PILLAR_AXIS);
-
-
-    protected BlockLog(int meta) {
-        super(meta);
+public abstract class BlockLog extends BlockSolid implements IBlockWood {
+    protected BlockLog(BlockState blockState) {
+        super(blockState);
     }
-
-
-    @NotNull
-    @Override
-    public abstract BlockProperties getProperties();
-
 
     public abstract BlockState getStrippedState();
 
@@ -55,7 +42,7 @@ public abstract class BlockLog extends BlockSolidMeta implements IBlockWood {
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         if (item.isAxe()) {
-            Block strippedBlock = getStrippedState().getBlock(this);
+            Block strippedBlock = Block.get(getStrippedState());
             item.useOn(this);
             this.level.setBlock(this, strippedBlock, true, true);
             return true;

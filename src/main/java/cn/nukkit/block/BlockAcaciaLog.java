@@ -5,7 +5,7 @@ import cn.nukkit.block.state.BlockState;
 import cn.nukkit.block.state.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockAcaciaLog extends Block {
+public class BlockAcaciaLog extends BlockLog {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:acacia_log", CommonBlockProperties.PILLAR_AXIS);
 
     @Override
@@ -19,5 +19,10 @@ public class BlockAcaciaLog extends Block {
 
     public BlockAcaciaLog(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public BlockState getStrippedState() {
+        return BlockStrippedAcaciaLog.PROPERTIES.getDefaultState();
     }
 }

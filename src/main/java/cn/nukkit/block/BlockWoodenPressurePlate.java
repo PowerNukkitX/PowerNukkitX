@@ -3,9 +3,12 @@ package cn.nukkit.block;
 import cn.nukkit.block.state.BlockProperties;
 import cn.nukkit.block.state.BlockState;
 import cn.nukkit.block.state.property.CommonBlockProperties;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.AxisAlignedBB;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockWoodenPressurePlate extends Block {
+public class BlockWoodenPressurePlate extends BlockPressurePlateBase {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:wooden_pressure_plate", CommonBlockProperties.REDSTONE_SIGNAL);
 
     @Override
@@ -19,5 +22,41 @@ public class BlockWoodenPressurePlate extends Block {
 
     public BlockWoodenPressurePlate(BlockState blockstate) {
         super(blockstate);
+        this.onPitch = 0.8f;
+        this.offPitch = 0.7f;
+    }
+
+
+    @Override
+    public String getName() {
+        return "Oak Pressure Plate";
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_AXE;
+    }
+
+    @Override
+    public double getHardness() {
+        return 0.5D;
+    }
+
+    @Override
+    public double getResistance() {
+        return 0.5D;
+    }
+
+    @Override
+    protected int computeRedstoneStrength() {
+        AxisAlignedBB bb = getCollisionBoundingBox();
+
+        for (Entity entity : this.level.getCollidingEntities(bb)) {
+            if (entity.doesTriggerPressurePlate()) {
+                return 15;
+            }
+        }
+
+        return 0;
     }
 }

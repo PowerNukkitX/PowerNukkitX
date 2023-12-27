@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.math.BlockFace;
 
 /**
@@ -7,7 +8,8 @@ import cn.nukkit.math.BlockFace;
  */
 public abstract class BlockSolid extends Block {
 
-    protected BlockSolid() {
+    protected BlockSolid(BlockState blockState) {
+        super(blockState);
     }
 
     @Override

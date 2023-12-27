@@ -4,7 +4,7 @@ import cn.nukkit.block.state.BlockProperties;
 import cn.nukkit.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockAcaciaPlanks extends Block {
+public class BlockAcaciaPlanks extends BlockPlanks {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:acacia_planks");
 
     @Override
