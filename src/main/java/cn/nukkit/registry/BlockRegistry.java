@@ -1,8 +1,9 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.block.*;
-import cn.nukkit.block.state.BlockProperties;
-import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockProperties;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Level;
 import cn.nukkit.utils.OK;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;

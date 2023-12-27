@@ -1,6 +1,6 @@
 package cn.nukkit.registry;
 
-import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.utils.OK;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 

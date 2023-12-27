@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.state.BlockState;
 import cn.nukkit.item.ItemTool;
 
 /**

@@ -1,8 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.state.BlockState;
-import cn.nukkit.block.state.property.CommonBlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.event.block.SignColorChangeEvent;
 import cn.nukkit.event.block.SignGlowEvent;

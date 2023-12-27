@@ -1,6 +1,6 @@
 package cn.nukkit.level;
 
-import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.ChunkVector2;
 import org.jetbrains.annotations.NotNull;

@@ -1,8 +1,7 @@
 package cn.nukkit.block;
 
 
-import cn.nukkit.block.state.BlockProperties;
-import cn.nukkit.block.state.property.CommonBlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockAcaciaHangingSign extends BlockHangingSign {

@@ -8,12 +8,12 @@ public class ItemWool extends Item {
         this(0, 1);
     }
 
-    public ItemWool(Integer meta) {
-        this(meta, 1);
+    public ItemWool(Integer aux) {
+        this(aux, 1);
     }
 
-    public ItemWool(Integer meta, int count) {
-        super(WOOL, meta, count);
+    public ItemWool(Integer aux, int count) {
+        super(WOOL, aux, count);
         adjust();
     }
 

@@ -1,7 +1,7 @@
 package cn.nukkit.level.format;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;

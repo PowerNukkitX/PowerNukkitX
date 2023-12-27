@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.api.API;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.Fuel;
 import cn.nukkit.item.customitem.CustomItemDefinition;

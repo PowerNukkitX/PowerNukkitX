@@ -2,6 +2,7 @@ package cn.nukkit.level.generator.populator.impl.structure.stronghold.structure;
 
 import cn.nukkit.Server;
 import cn.nukkit.block.*;
+import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.mob.EntitySilverfish;
 import cn.nukkit.level.ChunkManager;

@@ -1,7 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.state.BlockProperties;
-import cn.nukkit.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockOrangeTerracotta extends Block {

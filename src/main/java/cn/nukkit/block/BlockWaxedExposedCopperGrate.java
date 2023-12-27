@@ -1,9 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.state.BlockProperties;
-import cn.nukkit.block.state.BlockState;
-import cn.nukkit.block.state.property.CommonBlockProperties;
-import cn.nukkit.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockWaxedExposedCopperGrate extends Block {

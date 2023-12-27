@@ -2,13 +2,12 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.customblock.CustomBlock;
-import cn.nukkit.block.state.BlockProperties;
-import cn.nukkit.block.state.BlockState;
-import cn.nukkit.block.state.property.type.BlockPropertyType;
+import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.customitem.ItemCustomTool;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -39,7 +38,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.function.Predicate;
 
-import static cn.nukkit.block.state.BlockProperties.computeSpecialValue;
+import static cn.nukkit.block.BlockProperties.computeSpecialValue;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -505,14 +504,15 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public void setPropertyValue(BlockPropertyType.BlockPropertyValue<?, ?, ?> propertyValue) {
-        final var blockPropertyValues = this.blockstate.getBlockPropertyValues();
-        final var newPropertyValues = new ArrayList<BlockPropertyType.BlockPropertyValue<?, ?, ?>>(blockPropertyValues.size());
+        final var blockPropertyValues = ((BlockStateImpl) this.blockstate).blockPropertyValues();
+        final var newPropertyValues = new BlockPropertyType.BlockPropertyValue<?, ?, ?>[blockPropertyValues.length];
         var succeed = false;
-        for (var v : blockPropertyValues) {
+        for (int i = 0; i < blockPropertyValues.length; i++) {
+            final var v = blockPropertyValues[i];
             if (v.getPropertyType() == propertyValue.getPropertyType()) {
                 succeed = true;
-                newPropertyValues.add(propertyValue);
-            } else newPropertyValues.add(v);
+                newPropertyValues[i] = propertyValue;
+            } else newPropertyValues[i] = v;
         }
         if (!succeed) {
             throw new IllegalArgumentException("Property " + propertyValue.getPropertyType() + " is not supported by this block");
@@ -521,18 +521,19 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public void setPropertyValues(BlockPropertyType.BlockPropertyValue<?, ?, ?>... values) {
-        final var blockPropertyValues = this.blockstate.getBlockPropertyValues();
-        final var newPropertyValues = new ArrayList<BlockPropertyType.BlockPropertyValue<?, ?, ?>>(blockPropertyValues.size());
+        final var blockPropertyValues = ((BlockStateImpl) this.blockstate).blockPropertyValues();
+        final var newPropertyValues = new BlockPropertyType.BlockPropertyValue<?, ?, ?>[blockPropertyValues.length];
         final var propertyValues = List.of(values);
         final var succeed = new boolean[propertyValues.size()];
         var succeedCount = 0;
-        for (var v : blockPropertyValues) {
+        for (int i = 0; i < blockPropertyValues.length; i++) {
+            final var v = blockPropertyValues[i];
             int index;
             if ((index = propertyValues.indexOf(v)) != -1) {
                 succeedCount++;
                 succeed[index] = true;
-                newPropertyValues.add(propertyValues.get(index));
-            } else newPropertyValues.add(v);
+                newPropertyValues[i] = propertyValues.get(index);
+            } else newPropertyValues[i] = v;
         }
         if (succeedCount != propertyValues.size()) {
             var errorMsgBuilder = new StringBuilder("Properties ");
@@ -549,7 +550,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         this.blockstate = getNewBlockState(newPropertyValues);
     }
 
-    private BlockState getNewBlockState(ArrayList<BlockPropertyType.BlockPropertyValue<?, ?, ?>> values) {
+    private BlockState getNewBlockState(BlockPropertyType.BlockPropertyValue<?, ?, ?>[] values) {
         Preconditions.checkNotNull(getProperties());
         byte bits = getProperties().getSpecialValueBits();
         if (bits <= 16) {
@@ -1320,7 +1321,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public Item toItem() {
-        return null;
+        return new ItemBlock(this);
     }
 
     /**

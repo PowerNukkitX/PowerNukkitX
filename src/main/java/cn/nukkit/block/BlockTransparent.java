@@ -1,7 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.state.BlockState;
-
 /**
  * @author MagicDroidX (Nukkit Project)
  */

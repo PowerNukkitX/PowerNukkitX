@@ -2,6 +2,7 @@ package cn.nukkit.dispenser;
 
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.*;
+import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.level.vibration.VibrationEvent;

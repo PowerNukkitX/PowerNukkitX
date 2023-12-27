@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.state.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -13,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.block.state.property.CommonBlockProperties.UPSIDE_DOWN_BIT;
-import static cn.nukkit.block.state.property.CommonBlockProperties.WEIRDO_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.UPSIDE_DOWN_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.WEIRDO_DIRECTION;
 
 /**
  * @author MagicDroidX (Nukkit Project)

@@ -1,8 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.state.BlockProperties;
-import cn.nukkit.block.state.property.CommonBlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;

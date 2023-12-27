@@ -1,6 +1,7 @@
 package cn.nukkit.entity.weather;
 
 import cn.nukkit.block.*;
+import cn.nukkit.block.Block;
 import cn.nukkit.blockproperty.value.OxidizationLevel;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockFadeEvent;

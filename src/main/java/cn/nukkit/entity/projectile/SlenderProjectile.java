@@ -2,15 +2,12 @@ package cn.nukkit.entity.projectile;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockSignPost;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.ProjectileHitEvent;
 import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.level.generator.populator.impl.structure.utils.block.state.Direction;
 import cn.nukkit.math.BVector3;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 

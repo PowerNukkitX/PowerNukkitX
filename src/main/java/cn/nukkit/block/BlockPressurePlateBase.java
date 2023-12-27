@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.state.BlockState;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.block.BlockRedstoneEvent;
@@ -18,7 +17,7 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.block.state.property.CommonBlockProperties.REDSTONE_SIGNAL;
+import static cn.nukkit.block.property.CommonBlockProperties.REDSTONE_SIGNAL;
 
 /**
  * @author Snake1999

@@ -135,7 +135,7 @@ public interface BlockEntityHolder<E extends BlockEntity> {
     static <E extends BlockEntity, H extends BlockEntityHolder<E>> E setBlockAndCreateEntity(
             @NotNull H holder, boolean direct, boolean update, @Nullable CompoundTag initialData,
             @Nullable Object... args) {
-        Block block = holder.getBlock(); 
+        Block block = holder.getBlock();
         Level level = block.getLevel();
         Block layer0 = level.getBlock(block, 0);
         Block layer1 = level.getBlock(block, 1);

@@ -12,6 +12,7 @@ import java.io.IOException;
  * @author Cool_Loong
  */
 public class BlockState2ItemMetaRegistry extends BaseRegistry<String, Integer, Integer> {
+    //blockid#meta -> blockhash
     private static final Object2IntOpenHashMap<String> MAP = new Object2IntOpenHashMap<>();
 
     @Override

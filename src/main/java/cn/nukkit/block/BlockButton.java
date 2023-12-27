@@ -2,9 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
-import cn.nukkit.api.UsedByReflection;
-import cn.nukkit.block.state.BlockState;
-import cn.nukkit.block.state.property.CommonBlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.event.block.BlockRedstoneEvent;

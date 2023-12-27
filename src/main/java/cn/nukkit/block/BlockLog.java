@@ -1,13 +1,12 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.state.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.block.state.property.CommonBlockProperties.PILLAR_AXIS;
+import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
 
 
 public abstract class BlockLog extends BlockSolid implements IBlockWood {

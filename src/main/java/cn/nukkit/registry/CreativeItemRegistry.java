@@ -1,7 +1,7 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;

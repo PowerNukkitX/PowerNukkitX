@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.state.BlockState;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;

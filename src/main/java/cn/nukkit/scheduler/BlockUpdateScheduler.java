@@ -1,6 +1,5 @@
 package cn.nukkit.scheduler;
 
-import cn.nukkit.api.
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;

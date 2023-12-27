@@ -1,7 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.registry.Registries;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -15,12 +15,12 @@ public class ItemBlock extends Item {
         this(block, 0, 1);
     }
 
-    public ItemBlock(Block block, Integer meta) {
-        this(block, meta, 1);
+    public ItemBlock(Block block, Integer aux) {
+        this(block, aux, 1);
     }
 
-    public ItemBlock(Block block, Integer meta, int count) {
-        super(block.getItemId(), meta, count, block.getName());
+    public ItemBlock(Block block, Integer aux, int count) {
+        super(block.getItemId(), aux, count, block.getName());
         this.block = block;
     }
 

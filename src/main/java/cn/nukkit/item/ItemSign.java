@@ -7,7 +7,7 @@ import cn.nukkit.block.BlockID;
  * 注意做好sign和standing_sign方块的映射关系，物品通过this.block指定，方块通过toItem指定
  */
 public abstract class ItemSign extends Item {
-    public ItemSign(String id) {
+    protected ItemSign(String id) {
         super(id);
         if (id.equals(DARK_OAK_SIGN)) {
             this.block = Block.get(BlockID.DARKOAK_STANDING_SIGN);

@@ -35,7 +35,7 @@ public interface Waxable {
             return false;
         }
 
-        Position location = this instanceof Block? (Position) this : getLocation();
+        Position location = this instanceof Block ? (Position) this : getLocation();
         if (player == null || !player.isCreative()) {
             if (waxed) {
                 item.count--;

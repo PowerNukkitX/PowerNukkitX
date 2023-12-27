@@ -1,6 +1,6 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.block.state.property.type.BlockPropertyType;
+import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.SneakyThrows;

@@ -2,6 +2,7 @@ package cn.nukkit.level.generator.populator.impl.structure.village.structure;
 
 import cn.nukkit.Server;
 import cn.nukkit.block.*;
+import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.passive.EntityVillagerV1;

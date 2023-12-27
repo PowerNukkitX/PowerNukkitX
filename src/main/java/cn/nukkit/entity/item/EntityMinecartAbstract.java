@@ -5,6 +5,7 @@ import cn.nukkit.api.API;
 import cn.nukkit.api.API.Definition;
 import cn.nukkit.api.API.Usage;
 import cn.nukkit.block.*;
+import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntityHopper;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;

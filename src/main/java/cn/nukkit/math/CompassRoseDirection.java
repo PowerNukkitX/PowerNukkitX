@@ -1,6 +1,5 @@
 package cn.nukkit.math;
 
-import cn.nukkit.block.state.property.CommonBlockProperties;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 

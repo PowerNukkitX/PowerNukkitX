@@ -1,8 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.state.BlockProperties;
-import cn.nukkit.block.state.property.CommonBlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.state.property.enums.DoublePlantType;
 import cn.nukkit.block.state.property.enums.TallGrassType;
 import cn.nukkit.item.Item;
