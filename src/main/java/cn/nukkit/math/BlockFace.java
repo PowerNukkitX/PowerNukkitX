@@ -325,18 +325,13 @@ public enum BlockFace {
 
 
     public CompassRoseDirection getCompassRoseDirection() {
-        switch (this) {
-            case NORTH:
-                return CompassRoseDirection.NORTH;
-            case SOUTH:
-                return CompassRoseDirection.SOUTH;
-            case WEST:
-                return CompassRoseDirection.WEST;
-            case EAST:
-                return CompassRoseDirection.EAST;
-            default:
-                return null;
-        }
+        return switch (this) {
+            case NORTH -> CompassRoseDirection.NORTH;
+            case SOUTH -> CompassRoseDirection.SOUTH;
+            case WEST -> CompassRoseDirection.WEST;
+            case EAST -> CompassRoseDirection.EAST;
+            default -> null;
+        };
     }
 
 

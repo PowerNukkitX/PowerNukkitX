@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.state.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityChiseledBookshelf;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -129,7 +130,7 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(CommonBlockProperties.DIRECTION);
+        return BlockFace.fromHorizontalIndex(getPropertyValue(CommonBlockProperties.DIRECTION));
     }
 
     @Override

@@ -2,8 +2,9 @@ package cn.nukkit.block;
 
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
+import cn.nukkit.block.state.BlockProperties;
+import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.state.property.CommonBlockProperties;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.DoorToggleEvent;
 import cn.nukkit.item.Item;
@@ -16,46 +17,32 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
+import com.google.common.collect.Sets;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
-import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
+import java.util.Set;
 
 /**
  * @author xtypr
  * @since 2015/11/23
  */
+public class BlockFenceGate extends BlockTransparent implements RedstoneComponent, Faceable {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:fence_gate", CommonBlockProperties.DIRECTION, CommonBlockProperties.IN_WALL_BIT, CommonBlockProperties.OPEN_BIT);
 
-public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComponent, Faceable {
     // Contains a list of positions of fence gates, which have been opened by hand (by a player).
     // It is used to detect on redstone update, if the gate should be closed if redstone is off on the update,
     // previously the gate always closed, when placing an unpowered redstone at the gate, this fixes it
     // and gives the vanilla behavior; no idea how to make this better :d
-    private static final List<Location> manualOverrides = new ArrayList<>();
-
-
-    public static final BooleanBlockProperty IN_WALL = new BooleanBlockProperty("in_wall_bit", false);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, OPEN, IN_WALL);
+    private static final Set<Location> manualOverrides = Sets.newConcurrentHashSet();
 
     public BlockFenceGate() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockFenceGate(int meta) {
-        super(meta);
+    public BlockFenceGate(BlockState blockState) {
+        super(blockState);
     }
-
-    @Override
-    public int getId() {
-        return FENCE_GATE;
-    }
-
 
     @NotNull
     @Override
@@ -77,7 +64,6 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
     public double getResistance() {
         return 15;
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -112,13 +98,10 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
     }
 
     private int getOffsetIndex() {
-        switch (getBlockFace()) {
-            case SOUTH:
-            case NORTH:
-                return 0;
-            default:
-                return 1;
-        }
+        return switch (getBlockFace()) {
+            case SOUTH, NORTH -> 0;
+            default -> 1;
+        };
     }
 
     @Override
@@ -226,7 +209,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         }
         
         setBlockFace(direction);
-        toggleBooleanProperty(OPEN);
+        setPropertyValue(CommonBlockProperties.OPEN_BIT,!getPropertyValue(CommonBlockProperties.OPEN_BIT));
         this.level.setBlock(this, this, false, false);
 
         if (player != null) {
@@ -261,12 +244,12 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
     }
 
     public boolean isOpen() {
-        return getBooleanValue(OPEN);
+        return getPropertyValue(CommonBlockProperties.OPEN_BIT);
     }
 
 
     public void setOpen(boolean open) {
-        setBooleanValue(OPEN, open);
+        setPropertyValue(CommonBlockProperties.OPEN_BIT,open);
     }
 
 
@@ -323,22 +306,22 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
 
 
     public boolean isInWall() {
-        return getBooleanValue(IN_WALL);
+        return getPropertyValue(CommonBlockProperties.IN_WALL_BIT);
     }
 
 
     public void setInWall(boolean inWall) {
-        setBooleanValue(IN_WALL, inWall);
+        setPropertyValue(CommonBlockProperties.IN_WALL_BIT,inWall);
     }
     
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(DIRECTION);
+        return BlockFace.fromHorizontalIndex(getPropertyValue(CommonBlockProperties.DIRECTION));
     }
 
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(DIRECTION, face);
+        setPropertyValue(CommonBlockProperties.DIRECTION,face.getHorizontalIndex());
     }
 }

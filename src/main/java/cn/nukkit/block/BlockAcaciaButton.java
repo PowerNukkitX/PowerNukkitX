@@ -20,4 +20,9 @@ public class BlockAcaciaButton extends Block {
     public BlockAcaciaButton(BlockState blockstate) {
         super(blockstate);
     }
+
+    @Override
+    public String getName() {
+        return "Acacia Button";
+    }
 }

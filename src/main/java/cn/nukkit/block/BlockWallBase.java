@@ -27,7 +27,7 @@ import static cn.nukkit.math.VectorMath.calculateFace;
 
 
 @Log4j2
-public abstract class BlockWallBase extends BlockTransparentMeta implements BlockConnectable {
+public abstract class BlockWallBase extends BlockTransparent implements BlockConnectable {
 
 
     public static final BlockProperty<WallConnectionType> WALL_CONNECTION_TYPE_SOUTH = new ArrayBlockProperty<>("wall_connection_type_south", false, WallConnectionType .class);

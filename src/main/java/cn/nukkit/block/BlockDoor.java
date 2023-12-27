@@ -385,7 +385,7 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.DIRECTION));
+        return BlockFace.fromHorizontalIndex(getPropertyValue(CommonBlockProperties.DIRECTION));
     }
 
 

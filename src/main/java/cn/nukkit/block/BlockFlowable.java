@@ -1,19 +1,14 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.math.AxisAlignedBB;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public abstract class BlockFlowable extends BlockTransparentMeta {
-
-
-    protected BlockFlowable(){
-        super();
-    }
-
-    protected BlockFlowable(int meta) {
-        super(meta);
+public abstract class BlockFlowable extends BlockTransparent {
+    protected BlockFlowable(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -42,14 +37,12 @@ public abstract class BlockFlowable extends BlockTransparentMeta {
     }
 
     @Override
-
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 

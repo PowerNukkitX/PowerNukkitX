@@ -1,16 +1,13 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.state.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntitySign;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.event.block.SignColorChangeEvent;
 import cn.nukkit.event.block.SignGlowEvent;
 import cn.nukkit.event.block.SignWaxedEvent;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemGlowInkSac;
-import cn.nukkit.item.ItemHoneycomb;
-import cn.nukkit.item.ItemTool;
+import cn.nukkit.item.*;
 import cn.nukkit.level.particle.WaxOnParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
@@ -22,18 +19,12 @@ import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 
-public abstract class BlockSignBase extends BlockTransparentMeta implements Faceable {
 
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.GROUND_SIGN_DIRECTION);
-
-    public BlockSignBase() {
-        this(0);
-    }
-
-    public BlockSignBase(int meta) {
-        super(meta);
+public abstract class BlockSignBase extends BlockTransparent implements Faceable {
+    public BlockSignBase(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -71,7 +62,7 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
             return;
         }
         // If a sign is waxed, it cannot be modified.
-        if (sign.isWaxed() || (player.isSneaking() && item.getId() != 0)) {
+        if (sign.isWaxed() || (player.isSneaking() && !Objects.equals(item.getId(), AIR))) {
             level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_WAXED_SIGN_INTERACT_FAIL);
             return;
         }
@@ -85,7 +76,7 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
             case SOUTH_EAST, SOUTH_SOUTH_EAST, EAST_SOUTH_EAST -> face == BlockFace.EAST || face == BlockFace.SOUTH;
             case SOUTH_WEST, SOUTH_SOUTH_WEST, WEST_SOUTH_WEST -> face == BlockFace.WEST || face == BlockFace.SOUTH;
         };
-        if (item.getId() == Item.DYE) {
+        if (item instanceof ItemDye) {
             BlockColor color = DyeColor.getByDyeData(item.getAux()).getSignColor();
             if (color.equals(sign.getColor(front)) || sign.isEmpty(front)) {
                 player.openSignEditor(this, front);
@@ -147,12 +138,12 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
 
 
     public CompassRoseDirection getSignDirection() {
-        return getPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION);
+        return CompassRoseDirection.from(getPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION));
     }
 
 
     public void setSignDirection(CompassRoseDirection direction) {
-        setPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION, direction);
+        setPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION, direction.getIndex());
     }
 
     

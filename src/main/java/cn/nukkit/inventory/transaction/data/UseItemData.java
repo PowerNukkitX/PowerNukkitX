@@ -12,7 +12,6 @@ import lombok.ToString;
  */
 @ToString
 public class UseItemData implements TransactionData {
-
     public int actionType;
     public BlockVector3 blockPos;
     public BlockFace face;

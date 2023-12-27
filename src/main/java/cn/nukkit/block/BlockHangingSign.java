@@ -1,6 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.state.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityHangingSign;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -20,18 +22,8 @@ import javax.annotation.Nullable;
 
 @Log4j2
 public abstract class BlockHangingSign extends BlockSignBase implements BlockEntityHolder<BlockEntityHangingSign> {
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    public BlockHangingSign() {
-        this(0);
-    }
-
-    public BlockHangingSign(int meta) {
-        super(meta);
+    public BlockHangingSign(BlockState blockState) {
+        super(blockState);
     }
 
     @NotNull
@@ -71,24 +63,19 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
     }
 
     public boolean isHanging() {
-        return getBooleanValue(CommonBlockProperties.HANGING);
+        return getPropertyValue(CommonBlockProperties.HANGING);
     }
 
     public boolean isAttached() {
-        return getBooleanValue(CommonBlockProperties.ATTACHED);
-    }
-
-    @Override
-    public Item toItem() {
-        return new ItemHangingSign(this);
+        return getPropertyValue(CommonBlockProperties.ATTACHED_BIT);
     }
 
     @Override
     public CompassRoseDirection getSignDirection() {
         if (isHanging() && isAttached()) {
-            return getPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION);
+            return CompassRoseDirection.from(getPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION));
         } else {
-            return getPropertyValue(CommonBlockProperties.FACING_DIRECTION).getCompassRoseDirection();
+            return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION)).getCompassRoseDirection();
         }
     }
 
@@ -115,19 +102,19 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
 
         if (face == BlockFace.DOWN) {
             this.setPropertyValue(CommonBlockProperties.HANGING, true);
-            CompassRoseDirection direction = CommonBlockProperties.GROUND_SIGN_DIRECTION.getValueForMeta(
+            CompassRoseDirection direction = CompassRoseDirection.from(
                     (int) Math.floor((((player != null ? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f
             );
             if ((player != null && player.isSneaking()) || target instanceof BlockThin || target instanceof BlockChain || target instanceof BlockHangingSign) {
-                this.setPropertyValue(CommonBlockProperties.ATTACHED, true);
-                this.setPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION, direction);
+                this.setPropertyValue(CommonBlockProperties.ATTACHED_BIT, true);
+                this.setPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION, direction.getIndex());
                 getLevel().setBlock(block, this, true);
             } else {
-                this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, direction.getClosestBlockFace());
+                this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, direction.getClosestBlockFace().getIndex());
                 getLevel().setBlock(block, this, true);
             }
         } else {
-            this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.rotateY());
+            this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.rotateY().getIndex());
             getLevel().setBlock(block, this, true);
         }
         if (item.hasCustomBlockData()) {
