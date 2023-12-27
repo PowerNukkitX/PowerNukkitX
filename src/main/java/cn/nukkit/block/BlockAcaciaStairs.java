@@ -5,7 +5,7 @@ import cn.nukkit.block.state.BlockState;
 import cn.nukkit.block.state.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockAcaciaStairs extends Block {
+public class BlockAcaciaStairs extends BlockStairs {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:acacia_stairs", CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
 
     @Override
