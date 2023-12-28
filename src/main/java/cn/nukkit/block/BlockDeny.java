@@ -5,22 +5,17 @@ import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 
-
-@ParametersAreNonnullByDefault
 public class BlockDeny extends BlockSolid {
-
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:deny");
 
     public BlockDeny() {
-        // Does nothing
+        super(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return DENY;
+    public BlockDeny(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -36,6 +31,11 @@ public class BlockDeny extends BlockSolid {
     @Override
     public String getName() {
         return "Deny";
+    }
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override

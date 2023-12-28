@@ -1,25 +1,20 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * @author LoboMetalurgico
- * @since 08/06/2021
- */
-
-
-@
 public class BlockCalcite extends BlockSolid {
 
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:calcite");
 
 
     public BlockCalcite() {
+        super(PROPERTIES.getDefaultState());
     }
 
+    public BlockCalcite(BlockState blockState) {
+        super(blockState);
+    }
 
     @NotNull
     @Override
@@ -30,11 +25,6 @@ public class BlockCalcite extends BlockSolid {
     @Override
     public String getName() {
         return "Calcite";
-    }
-
-    @Override
-    public int getId() {
-        return CALCITE;
     }
 
     @Override

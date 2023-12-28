@@ -7,13 +7,14 @@ import cn.nukkit.item.ItemTool;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockIcePacked extends BlockIce {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:packed_ice");
 
     public BlockIcePacked() {
+        super(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return PACKED_ICE;
+    public BlockIcePacked(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
