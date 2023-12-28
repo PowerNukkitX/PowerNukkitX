@@ -114,14 +114,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             log.error("Failed to load block color map", e);
         }
     }
-
-    protected Block() {
-        this(null);
-    }
-
     protected Block(@Nullable BlockState blockState) {
         super(0, 0, 0, null);
-        if (blockState != null || getProperties().containBlockState(blockState)) {
+        if (blockState != null && getProperties().containBlockState(blockState)) {
             this.blockstate = blockState;
         } else {
             this.blockstate = this.getProperties().getDefaultState();
@@ -524,12 +519,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @return 掉落的物品数组
      */
     public Item[] getDrops(Item item) {
-        //todo adapt
-        if (this instanceof CustomBlock) {
-            return new Item[]{
-                    this.toItem()
-            };
-        } else if (canHarvestWithHand() || canHarvest(item)) {
+        if (canHarvestWithHand() || canHarvest(item)) {
             return new Item[]{
                     this.toItem()
             };

@@ -12,15 +12,20 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public class BlockAllow extends BlockSolid {
-
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:allow");
+    public static final BlockState STATE = PROPERTIES.getDefaultState();
 
     public BlockAllow() {
-        // Does nothing
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockAllow(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
-    public int getId() {
-        return ALLOW;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override

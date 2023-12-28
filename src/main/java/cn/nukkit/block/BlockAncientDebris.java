@@ -1,18 +1,23 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 
 public class BlockAncientDebris extends BlockSolid {
-
-
-    public BlockAncientDebris() {
-        // Does nothing
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(ANCIENT_DEBRIS);
 
     @Override
-    public int getId() {
-        return ANCIENT_DEBRIS;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockAncientDebris() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockAncientDebris(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

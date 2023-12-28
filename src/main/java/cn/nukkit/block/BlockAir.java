@@ -13,6 +13,14 @@ public class BlockAir extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:air");
     public static final BlockState STATE = PROPERTIES.getDefaultState();
 
+    public BlockAir() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockAir(BlockState blockState) {
+        super(blockState);
+    }
+
     @Override
     public String getName() {
         return "Air";

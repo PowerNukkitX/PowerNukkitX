@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BlockProperty;
@@ -23,36 +24,21 @@ import java.util.Collection;
  * @since 27.12.2015
  */
 
-public class BlockAnvil extends BlockFallableMeta implements Faceable {
-
-
-    public static final BlockProperty<AnvilDamage> DAMAGE = new ArrayBlockProperty<>("damage", false, AnvilDamage.class);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(
-            CommonBlockProperties.CARDINAL_DIRECTION.exportingToItems(true), DAMAGE.exportingToItems(true)
-    );
-
-    public BlockAnvil() {
-        // Does nothing
-    }
-
-    public BlockAnvil(int meta) {
-        super(meta);
-    }
+public class BlockAnvil extends BlockFallable implements Faceable {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:anvil", CommonBlockProperties.DAMAGE, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
-    public int getId() {
-        return ANVIL;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 
+    public BlockAnvil() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockAnvil(BlockState blockstate) {
+        super(blockstate);
+    }
 
     public AnvilDamage getAnvilDamage() {
         return getPropertyValue(DAMAGE);
