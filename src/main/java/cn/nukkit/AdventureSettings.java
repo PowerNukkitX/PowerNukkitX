@@ -128,8 +128,6 @@ public class AdventureSettings implements Cloneable {
         return value == null ? type.getDefaultValue() : value;
     }
 
-
-    @
     public void update() {
         //向所有玩家发送以使他们能看到彼此的权限
         //Permission to send to all players so they can see each other
