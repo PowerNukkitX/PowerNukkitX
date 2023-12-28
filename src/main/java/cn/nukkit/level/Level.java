@@ -1561,22 +1561,20 @@ public class Level implements ChunkManager, Metadatable {
                     entity.scheduleUpdate();
                 }
                 int tickSpeed = gameRules.getInteger(GameRule.RANDOM_TICK_SPEED);
+                if (tickSpeed <= 0) { continue; }
 
-                if (tickSpeed > 0) {
-                    for (ChunkSection section : chunk.getSections()) {
-                        if (!section.isEmpty()) {
-                            int Y = section.y();
-                            for (int i = 0; i < tickSpeed; ++i) {
-                                int lcg = this.getUpdateLCG();
-                                int x = lcg & 0x0f;
-                                int y = lcg >>> 8 & 0x0f;
-                                int z = lcg >>> 16 & 0x0f;
-                                BlockState state = section.getBlockState(x, y, z);
-                                if (randomTickBlocks.contains(state.getIdentifier())) {
-                                    Block block = BlockRegistry.get(state);
-                                    block.onUpdate(BLOCK_UPDATE_RANDOM);
-                                }
-                            }
+                for (ChunkSection section : chunk.getSections()) {
+                    if (section.isEmpty()) { continue; }
+                    int Y = section.y();
+                    for (int i = 0; i < tickSpeed; ++i) {
+                        int lcg = this.getUpdateLCG();
+                        int x = lcg & 0x0f;
+                        int y = lcg >>> 8 & 0x0f;
+                        int z = lcg >>> 16 & 0x0f;
+                        BlockState state = section.getBlockState(x, y, z);
+                        if (randomTickBlocks.contains(state.getIdentifier())) {
+                            Block block = BlockRegistry.get(state);
+                            block.onUpdate(BLOCK_UPDATE_RANDOM);
                         }
                     }
                 }
@@ -1633,21 +1631,22 @@ public class Level implements ChunkManager, Metadatable {
         for (BlockFace face : Plane.HORIZONTAL) {
             temporalVector.setComponentsAdding(v, face);
 
-            if (this.isChunkLoaded((int) temporalVector.x >> 4, (int) temporalVector.z >> 4)) {
-                Block block1 = this.getBlock(temporalVector);
+            if (!this.isChunkLoaded((int) temporalVector.x >> 4, (int) temporalVector.z >> 4)) {
+                continue;
+            }
+            Block block1 = this.getBlock(temporalVector);
 
-                if (block1.getId() == BlockID.OBSERVER) {
-                    if (observer) {
-                        block1.onNeighborChange(face.getOpposite());
-                    }
-                } else if (BlockRedstoneDiode.isDiode(block1)) {
+            if (BlockID.OBSERVER.equals(block1.getId())) {
+                if (observer) {
+                    block1.onNeighborChange(face.getOpposite());
+                }
+            } else if (BlockRedstoneDiode.isDiode(block1)) {
+                block1.onUpdate(BLOCK_UPDATE_REDSTONE);
+            } else if (block1.isNormalBlock()) {
+                block1 = this.getBlock(temporalVector.setComponentsAdding(temporalVector, face));
+
+                if (BlockRedstoneDiode.isDiode(block1)) {
                     block1.onUpdate(BLOCK_UPDATE_REDSTONE);
-                } else if (block1.isNormalBlock()) {
-                    block1 = this.getBlock(temporalVector.setComponentsAdding(temporalVector, face));
-
-                    if (BlockRedstoneDiode.isDiode(block1)) {
-                        block1.onUpdate(BLOCK_UPDATE_REDSTONE);
-                    }
                 }
             }
         }
@@ -1659,7 +1658,7 @@ public class Level implements ChunkManager, Metadatable {
         for (BlockFace face : Plane.VERTICAL) {
             Block block1 = this.getBlock(temporalVector.setComponentsAdding(v, face));
 
-            if (block1.getId() == BlockID.OBSERVER) {
+            if (BlockID.OBSERVER.equals(block1.getId())) {
                 block1.onNeighborChange(face.getOpposite());
             }
         }
@@ -2528,17 +2527,16 @@ public class Level implements ChunkManager, Metadatable {
             }
         }
 
-        if (item.getId() != 0 && item.getCount() > 0) {
-            EntityItem itemEntity = (EntityItem) Entity.createEntity("Item",
-                    this.getChunk((int) source.getX() >> 4, (int) source.getZ() >> 4, true),
-                    Entity.getDefaultNBT(source, motion, new Random().nextFloat() * 360, 0)
-                            .putShort("Health", 5)
-                            .putCompound("Item", NBTIO.putItemHelper(item))
-                            .putShort("PickupDelay", delay));
+        if (item.isNull()) { return; }
+        EntityItem itemEntity = (EntityItem) Entity.createEntity("Item",
+                this.getChunk((int) source.getX() >> 4, (int) source.getZ() >> 4, true),
+                Entity.getDefaultNBT(source, motion, new Random().nextFloat() * 360, 0)
+                        .putShort("Health", 5)
+                        .putCompound("Item", NBTIO.putItemHelper(item))
+                        .putShort("PickupDelay", delay));
 
-            if (itemEntity != null) {
-                itemEntity.spawnToAll();
-            }
+        if (itemEntity != null) {
+            itemEntity.spawnToAll();
         }
     }
 
@@ -2563,8 +2561,7 @@ public class Level implements ChunkManager, Metadatable {
 
     @Nullable
     public EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion, boolean dropAround, int delay) {
-        EntityItem itemEntity = null;
-
+        if (item.isNull()) { return null; }
         if (motion == null) {
             if (dropAround) {
                 float f = ThreadLocalRandom.current().nextFloat() * 0.5f;
@@ -2580,24 +2577,22 @@ public class Level implements ChunkManager, Metadatable {
         CompoundTag itemTag = NBTIO.putItemHelper(item);
         itemTag.setName("Item");
 
-        if (item.getId() != 0 && item.getCount() > 0) {
-            itemEntity = (EntityItem) Entity.createEntity("Item",
-                    this.getChunk((int) source.getX() >> 4, (int) source.getZ() >> 4, true),
-                    new CompoundTag().putList(new ListTag<DoubleTag>("Pos").add(new DoubleTag("", source.getX()))
-                                    .add(new DoubleTag("", source.getY())).add(new DoubleTag("", source.getZ())))
+        EntityItem itemEntity = (EntityItem) Entity.createEntity("Item",
+                this.getChunk((int) source.getX() >> 4, (int) source.getZ() >> 4, true),
+                new CompoundTag().putList(new ListTag<DoubleTag>("Pos").add(new DoubleTag("", source.getX()))
+                                .add(new DoubleTag("", source.getY())).add(new DoubleTag("", source.getZ())))
 
-                            .putList(new ListTag<DoubleTag>("Motion").add(new DoubleTag("", motion.x))
-                                    .add(new DoubleTag("", motion.y)).add(new DoubleTag("", motion.z)))
+                        .putList(new ListTag<DoubleTag>("Motion").add(new DoubleTag("", motion.x))
+                                .add(new DoubleTag("", motion.y)).add(new DoubleTag("", motion.z)))
 
-                            .putList(new ListTag<FloatTag>("Rotation")
-                                    .add(new FloatTag("", ThreadLocalRandom.current().nextFloat() * 360))
-                                    .add(new FloatTag("", 0)))
+                        .putList(new ListTag<FloatTag>("Rotation")
+                                .add(new FloatTag("", ThreadLocalRandom.current().nextFloat() * 360))
+                                .add(new FloatTag("", 0)))
 
-                            .putShort("Health", 5).putCompound("Item", itemTag).putShort("PickupDelay", delay));
+                        .putShort("Health", 5).putCompound("Item", itemTag).putShort("PickupDelay", delay));
 
-            if (itemEntity != null) {
-                itemEntity.spawnToAll();
-            }
+        if (itemEntity != null) {
+            itemEntity.spawnToAll();
         }
 
         return itemEntity;
@@ -2665,12 +2660,12 @@ public class Level implements ChunkManager, Metadatable {
                 boolean canBreak = false;
                 if (tag instanceof ListTag) {
                     for (Tag v : ((ListTag<? extends Tag>) tag).getAll()) {
-                        if (v instanceof StringTag) {
-                            Item entry = Item.fromString(((StringTag) v).data);
-                            if (entry.getId() > 0 && entry.getBlockItem() != null && entry.getBlockItem().getId() == target.getId()) {
-                                canBreak = true;
-                                break;
-                            }
+                        if (!(v instanceof StringTag stringTag)) { continue; }
+                        Item entry = Item.fromString(stringTag.data);
+                        if (!entry.isNull() &&
+                                entry.getBlockItem().getId().equals(target.getId())) {
+                            canBreak = true;
+                            break;
                         }
                     }
                 }
@@ -2981,12 +2976,11 @@ public class Level implements ChunkManager, Metadatable {
                 boolean canPlace = false;
                 if (tag instanceof ListTag) {
                     for (Tag v : ((ListTag<Tag>) tag).getAll()) {
-                        if (v instanceof StringTag) {
-                            Item entry = Item.fromString(((StringTag) v).data);
-                            if (entry.getId() > 0 && entry.getBlockItem() != null && entry.getBlockItem().getId() == target.getId()) {
-                                canPlace = true;
-                                break;
-                            }
+                        if (!(v instanceof StringTag stringTag)) { continue; }
+                        Item entry = Item.fromString(stringTag.data);
+                        if (!entry.isNull() && entry.getBlockItem().getId().equals(target.getId())) {
+                            canPlace = true;
+                            break;
                         }
                     }
                 }

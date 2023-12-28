@@ -240,7 +240,7 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
 
         Block left = this.getSide(direction.rotateYCCW());
         Block right = this.getSide(direction.rotateY());
-        if (left.getId() == this.getId() || (!right.isTransparent() && left.isTransparent())) { //Door hinge
+        if (left.getId().equals(this.getId()) || (!right.isTransparent() && left.isTransparent())) { //Door hinge
             setRightHinged(true);
         }
 
@@ -248,7 +248,7 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
 
         level.setBlock(block, this, true, false); //Bottom
 
-        if (blockUp instanceof BlockLiquid && ((BlockLiquid) blockUp).usesWaterLogging()) {
+        if (blockUp instanceof BlockLiquid liquid && liquid.usesWaterLogging()) {
             level.setBlock(blockUp, 1, blockUp, true, false);
         }
 

@@ -24,7 +24,6 @@ import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.BlockColor;
-import com.google.common.base.Preconditions;
 import com.google.gson.JsonParser;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
@@ -129,7 +128,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     /**
-     * Place and initialize a this block correctly in the world.
+     * Place and initialize sa this block correctly in the world.
      * <p>The current instance must have level, x, y, z, and layer properties already set before calling this method.</p>
      *
      * @param item   The item being used to place the block. Should be used as an optional reference, may mismatch the block that is being placed depending on plugin implementations.
@@ -171,15 +170,13 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * 当玩家使用与左键或者右键方块时会触发，常被用于处理例如物品展示框左键掉落物品这种逻辑<br>
      * 触发点在{@link Player}的onBlockBreakStart中
      * <p>
-     * It will be triggered when the player uses the left or right click on the block, which is often used to deal with logic such as left button dropping items in the item frame<br>
+     * It will be triggered when the player uses the left or right-click on the block, which is often used to deal with logic such as left button dropping items in the item frame<br>
      * The trigger point is in the onBlockBreakStart of {@link Player}
      *
      * @param player the player
      * @param action the action
      * @return 状态值，返回值不为0代表这是一个touch操作而不是一个挖掘方块的操作<br>Status value, if the return value is not 0, it means that this is a touch operation rather than a mining block operation
      */
-
-
     public int onTouch(@Nullable Player player, PlayerInteractEvent.Action action) {
         onUpdate(Level.BLOCK_UPDATE_TOUCH);
         return 0;
@@ -693,7 +690,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
 
     public double calculateBreakTimeNotInAir(@NotNull Item item, @Nullable Player player) {
-        double seconds = 0;
+        double seconds;
         double blockHardness = getHardness();
         boolean canHarvest = canHarvest(item);
 
