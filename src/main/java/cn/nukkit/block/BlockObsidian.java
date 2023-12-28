@@ -2,14 +2,21 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
  * @since 2015/12/2
  */
 public class BlockObsidian extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:obsidian");
 
     public BlockObsidian() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockObsidian(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -18,8 +25,8 @@ public class BlockObsidian extends BlockSolid {
     }
 
     @Override
-    public int getId() {
-        return OBSIDIAN;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override
@@ -52,7 +59,7 @@ public class BlockObsidian extends BlockSolid {
                 this.west(), this.east(),
         };
         for (Block aNearby : nearby) {
-            if (aNearby != null && aNearby.getId() == NETHER_PORTAL) {
+            if (aNearby != null && aNearby.getId().equals(PORTAL)) {
                 aNearby.onBreak(item);
             }
         }

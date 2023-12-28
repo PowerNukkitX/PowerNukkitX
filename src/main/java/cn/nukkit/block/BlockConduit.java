@@ -10,22 +10,28 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 
 public class BlockConduit extends BlockTransparent implements BlockEntityHolder<BlockEntityConduit> {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:conduit");
 
     public BlockConduit() {
-        // Does nothing
+        super(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return CONDUIT;
+    public BlockConduit(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "Conduit";
+    }
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
 
@@ -60,7 +66,7 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (item.getBlockItem() != null && item.getBlockId() == CONDUIT && target.getId() == CONDUIT) {
+        if (item.getBlockItem() != null && Objects.equals(item.getBlockId(), CONDUIT) && target.getId().equals(CONDUIT)) {
             return false;
         }
 

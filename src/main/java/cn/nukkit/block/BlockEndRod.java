@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
@@ -17,29 +18,21 @@ import javax.annotation.Nullable;
  *
  * @author PikyCZ
  */
-public class BlockEndRod extends BlockTransparentMeta implements Faceable {
-
-
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.FACING_DIRECTION_BLOCK_PROPERTIES;
+public class BlockEndRod extends BlockTransparent implements Faceable {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:end_rod", CommonBlockProperties.FACING_DIRECTION);
 
     public BlockEndRod() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockEndRod(int meta) {
-        super(meta);
+    public BlockEndRod(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "End Rod";
     }
-
-    @Override
-    public int getId() {
-        return END_ROD;
-    }
-
 
     @NotNull
     @Override
@@ -101,7 +94,7 @@ public class BlockEndRod extends BlockTransparentMeta implements Faceable {
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         int[] faces = {0, 1, 3, 2, 5, 4};
-        this.setDamage(faces[player != null ? face.getIndex() : 0]);
+        setPropertyValue(CommonBlockProperties.FACING_DIRECTION, faces[player != null ? face.getIndex() : 0]);
         this.getLevel().setBlock(block, this, true, true);
 
         return true;
@@ -115,7 +108,7 @@ public class BlockEndRod extends BlockTransparentMeta implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromIndex(this.getDamage() & 0x07);
+        return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION) & 0x07);
     }
 
 }

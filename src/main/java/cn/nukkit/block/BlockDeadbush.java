@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemStick;
 import cn.nukkit.level.Level;
@@ -15,14 +13,15 @@ import java.util.Random;
  * @author xtypr
  * @since 2015/12/2
  */
-public class BlockDeadBush extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
-    public BlockDeadBush() {
-        this(0);
+public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:deadbush");
+    public BlockDeadbush() {
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockDeadBush(int meta) {
+    public BlockDeadbush(BlockState blockState) {
         // Dead bushes can't have meta. Also stops the server from throwing an exception with the block palette.
-        super(0);
+        super(blockState);
     }
 
     @Override
@@ -30,16 +29,10 @@ public class BlockDeadBush extends BlockFlowable implements BlockFlowerPot.Flowe
         return "Dead Bush";
     }
 
-    @Override
-    public int getId() {
-        return DEAD_BUSH;
-    }
-
-
     @NotNull
     @Override
     public BlockProperties getProperties() {
-        return CommonBlockProperties.EMPTY_PROPERTIES;
+        return PROPERTIES;
     }
 
 

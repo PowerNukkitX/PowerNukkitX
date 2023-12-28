@@ -5,7 +5,6 @@ import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -63,16 +62,14 @@ public abstract class BlockEntity extends Position {
     public static final String BELL = "Bell";
     public static final String DISPENSER = "Dispenser";
     public static final String DROPPER = "Dropper";
-
-
-
-
-
-
-
-
-
-
+    public static final String NETHER_REACTOR = "NetherReactor";
+    public static final String LODESTONE = "Lodestone";
+    public static final String TARGET = "Target";
+    public static final String END_PORTAL = "EndPortal";
+    public static final String END_GATEWAY = "EndGateway";
+    public static final String COMMAND_BLOCK = "CommandBlock";
+    public static final String SCULK_SENSOR = "SculkSensor";
+    public static final String SCULK_CATALYST = "SculkCatalyst";
     public static final String SCULK_SHRIEKER = "SculkShrieker";
 
 

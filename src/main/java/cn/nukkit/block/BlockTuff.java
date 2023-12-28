@@ -1,26 +1,32 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author GoodLucky777
  */
 public class BlockTuff extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:tuff");
 
     public BlockTuff() {
-        // Does Nothing
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockTuff(BlockState blockState) {
+        super(blockState);
     }
     
     @Override
     public String getName() {
         return "Tuff";
     }
-    
+
     @Override
-    public int getId() {
-        return TUFF;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
-    
+
     @Override
     public double getHardness() {
         return 1.5;

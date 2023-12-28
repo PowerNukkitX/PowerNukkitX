@@ -4,8 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityDecoratedPot;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -17,28 +15,24 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 
-public class BlockDecoratedPot extends BlockTransparentMeta implements Faceable, BlockEntityHolder<BlockEntityDecoratedPot>{
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.DIRECTION);
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
+public class BlockDecoratedPot extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityDecoratedPot>{
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:decorated_pot", CommonBlockProperties.DIRECTION);
 
     public BlockDecoratedPot() {
+        super(PROPERTIES.getDefaultState());
     }
 
-    public BlockDecoratedPot(int meta) {
-        super(meta);
-    }
-
-    public int getId() {
-        return DECORATED_POT;
+    public BlockDecoratedPot(BlockState blockState) {
+        super(blockState);
     }
 
     public String getName() {
         return "Decorated Pot";
+    }
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override
@@ -78,9 +72,9 @@ public class BlockDecoratedPot extends BlockTransparentMeta implements Faceable,
     @Override
     public void setBlockFace(BlockFace face) {
         if(face != null) {
-            this.setPropertyValue(CommonBlockProperties.DIRECTION, face);
+            setPropertyValue(CommonBlockProperties.DIRECTION, face.getHorizontalIndex());
         } else {
-            this.setPropertyValue(CommonBlockProperties.DIRECTION, BlockFace.SOUTH);
+            setPropertyValue(CommonBlockProperties.DIRECTION, BlockFace.SOUTH.getHorizontalIndex());
         }
     }
 
