@@ -100,6 +100,7 @@ public interface CommonBlockProperties {
 
     IntPropertyType DEPRECATED = IntPropertyType.of("deprecated", 0, 3, 0);
 
+    // Horizontal-index based
     IntPropertyType DIRECTION = IntPropertyType.of("direction", 0, 3, 0);
 
     EnumPropertyType<DirtType> DIRT_TYPE = EnumPropertyType.of("dirt_type", DirtType.class, DirtType.values()[0]);

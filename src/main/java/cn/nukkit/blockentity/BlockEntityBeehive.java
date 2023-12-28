@@ -18,6 +18,8 @@ import cn.nukkit.nbt.tag.ListTag;
 
 import java.util.*;
 
+import static cn.nukkit.block.property.CommonBlockProperties.HONEY_LEVEL;
+
 
 public class BlockEntityBeehive extends BlockEntity {
 
@@ -177,12 +179,12 @@ public class BlockEntityBeehive extends BlockEntity {
 
 
     public boolean isHoneyEmpty() {
-        return getHoneyLevel() == BlockBeehive.HONEY_LEVEL.getMinValue();
+        return getHoneyLevel() == HONEY_LEVEL.getMin();
     }
 
 
     public boolean isHoneyFull() {
-        return getHoneyLevel() == BlockBeehive.HONEY_LEVEL.getMaxValue();
+        return getHoneyLevel() == HONEY_LEVEL.getMax();
     }
 
 

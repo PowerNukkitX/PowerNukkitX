@@ -2,8 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
@@ -13,29 +11,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.block.property.CommonBlockProperties.GROWTH;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockCrops extends BlockFlowable {
-
-
-    public static final IntBlockProperty GROWTH = new IntBlockProperty("growth", false, 7);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(GROWTH);
-
-
     public static final int MINIMUM_LIGHT_LEVEL = 9;
 
-    protected BlockCrops(int meta) {
-        super(meta);
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
+    protected BlockCrops(BlockState blockState) {
+        super(blockState);
     }
 
 
@@ -45,17 +30,17 @@ public abstract class BlockCrops extends BlockFlowable {
 
 
     public int getMaxGrowth() {
-        return GROWTH.getMaxValue();
+        return GROWTH.getMax();
     }
 
 
     public int getGrowth() {
-        return getIntValue(GROWTH);
+        return getPropertyValue(GROWTH);
     }
 
 
     public void setGrowth(int growth) {
-        setIntValue(GROWTH, growth);
+        setPropertyValue(GROWTH, growth);
     }
 
 
@@ -71,7 +56,7 @@ public abstract class BlockCrops extends BlockFlowable {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (block.down().getId() == FARMLAND) {
+        if (block.down().getId().equals(FARMLAND)) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
         }
@@ -112,7 +97,7 @@ public abstract class BlockCrops extends BlockFlowable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (this.down().getId() != FARMLAND) {
+            if (!this.down().getId().equals(FARMLAND)) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }

@@ -29,7 +29,6 @@ import java.util.Set;
  * @author Pub4Game
  * @since 26.12.2015
  */
-
 public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent, Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:trapdoor", CommonBlockProperties.DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPSIDE_DOWN_BIT);
 

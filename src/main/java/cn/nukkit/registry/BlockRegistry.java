@@ -80,7 +80,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(BEDROCK, BlockBedrock.class);
         register(BEE_NEST, BlockBeeNest.class);
         register(BEEHIVE, BlockBeehive.class);
-        register(BEETROOT, BlockBeetroot.class);
+        register(BEETROOT, BlockBeetroot.class);//
         register(BELL, BlockBell.class);
         register(BIG_DRIPLEAF, BlockBigDripleaf.class);
         register(BIRCH_BUTTON, BlockBirchButton.class);// done.

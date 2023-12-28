@@ -7,37 +7,30 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
+import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
 import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 
 
-public class BlockBasalt extends BlockSolidMeta {
+public class BlockBasalt extends BlockSolid {
 
+    public static final BlockProperties PROPERTIES = new BlockProperties(BASALT,PILLAR_AXIS);
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(PILLAR_AXIS);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
+    public BlockBasalt() {
+        this(PROPERTIES.getDefaultState());
+    }
 
-    public BlockBasalt() { this(0); }
-
-
-    public BlockBasalt(int meta) {
-        super(meta);
+    public BlockBasalt(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
     public String getName() {
         return "Basalt";
-    }
-
-    @Override
-    public int getId() {
-        return BlockID.BASALT;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
