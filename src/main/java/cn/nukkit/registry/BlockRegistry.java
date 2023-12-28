@@ -897,7 +897,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(TORCHFLOWER_CROP, BlockTorchflowerCrop.class);
         register(TRAPDOOR, BlockTrapdoor.class);
         register(TRAPPED_CHEST, BlockTrappedChest.class);
-        register(TRIP_WIRE, BlockTripWire.class);
+        register(TRIP_WIRE, BlockTripwire.class);
         register(TRIPWIRE_HOOK, BlockTripwireHook.class);
         register(TUBE_CORAL, BlockTubeCoral.class);
         register(TUFF, BlockTuff.class);
