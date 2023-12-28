@@ -15,7 +15,7 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.Chunk;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -46,7 +46,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     @Getter
     private EntityArmorInventory armorInventory;
 
-    public EntityMob(FullChunk chunk, CompoundTag nbt) {
+    public EntityMob(Chunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

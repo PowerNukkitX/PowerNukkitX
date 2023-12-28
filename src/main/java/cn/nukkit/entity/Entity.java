@@ -29,8 +29,9 @@ import cn.nukkit.event.entity.EntityPortalEnterEvent.PortalType;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent;
+import cn.nukkit.inventory.ItemTag;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTotem;
+import cn.nukkit.item.ItemTotemOfUndying;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.*;
 import cn.nukkit.level.format.IChunk;
@@ -574,8 +575,6 @@ public abstract class Entity extends Location implements Metadatable {
      * @param args       the args
      * @return the entity
      */
-
-
     @Nullable
     public static Entity createEntity(Identifier identifier, @NotNull Position pos, @Nullable Object... args) {
         Integer id = EntityIds.IDENTIFIER_2_IDS.get(identifier.toString());
@@ -645,7 +644,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     /**
-     * @see #registerEntity(String, Class<? extends Entity>, boolean)
+     * @see #registerEntity(String, Class, boolean)
      */
     public static boolean registerEntity(String name, Class<? extends Entity> clazz) {
         return registerEntity(name, clazz, false);
@@ -686,8 +685,6 @@ public abstract class Entity extends Location implements Metadatable {
     /**
      * @see #registerEntity(EntityProvider, boolean)
      */
-
-
     public static boolean registerEntity(EntityProvider<? extends Entity> provider) {
         return registerEntity(provider, false);
     }
@@ -701,8 +698,6 @@ public abstract class Entity extends Location implements Metadatable {
      * @param force    the force
      * @return the boolean
      */
-
-
     public static boolean registerEntity(EntityProvider<? extends Entity> provider, boolean force) {
         if (provider == null) {
             return false;
@@ -728,7 +723,6 @@ public abstract class Entity extends Location implements Metadatable {
      *
      * @return the entity definitions
      */
-
     public static Set<CustomEntityDefinition> getEntityDefinitions() {
         return new HashSet<>(entityDefinitions);
     }
@@ -741,8 +735,6 @@ public abstract class Entity extends Location implements Metadatable {
      * @param customEntityProvider the custom entity provider
      * @return the ok
      */
-
-
     public static OK<?> registerCustomEntity(CustomEntityProvider customEntityProvider) {
         if (!Server.getInstance().isEnableExperimentMode()) {
             return new OK<>(false, "The server does not have the experiment mode feature enabled.Unable to register custom entity!");
@@ -759,8 +751,6 @@ public abstract class Entity extends Location implements Metadatable {
      * @return the known entity ids
      */
     @NotNull
-
-
     public static IntCollection getKnownEntityIds() {
         return knownEntities.keySet().stream()
                 .filter(Utils::isInteger)
@@ -776,8 +766,6 @@ public abstract class Entity extends Location implements Metadatable {
      * @return the known entities
      */
     @NotNull
-
-
     @Deprecated
     public static Map<String, Class<? extends Entity>> getKnownEntities() {
         return knownEntities.entrySet().stream()
@@ -787,8 +775,6 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     @NotNull
-
-
     @Deprecated
     public static Map<String, EntityProvider<? extends Entity>> getKnownEntityProviders() {
         return Collections.unmodifiableMap(knownEntities);
@@ -802,8 +788,6 @@ public abstract class Entity extends Location implements Metadatable {
      * @return the known entity providers
      */
     @NotNull
-
-
     public static List<String> getSaveIds() {
         return new ArrayList<>(shortNames.values());
     }
@@ -817,8 +801,6 @@ public abstract class Entity extends Location implements Metadatable {
      * @return the save id
      */
     @NotNull
-
-
     public static OptionalInt getSaveId(String id) {
         var entityProvider = knownEntities.get(id);
         if (entityProvider == null) {
@@ -841,8 +823,6 @@ public abstract class Entity extends Location implements Metadatable {
      * @return the save id
      */
     @Nullable
-
-
     public static String getSaveId(int id) {
         var entityProvider = knownEntities.get(Integer.toString(id));
         if (entityProvider == null) {
@@ -1838,10 +1818,10 @@ public abstract class Entity extends Location implements Metadatable {
             if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.SUICIDE) {
                 boolean totem = false;
                 boolean isOffhand = false;
-                if (player.getOffhandInventory().getItem(0) instanceof ItemTotem) {
+                if (player.getOffhandInventory().getItem(0) instanceof ItemTotemOfUndying) {
                     totem = true;
                     isOffhand = true;
-                } else if (player.getInventory().getItemInHand() instanceof ItemTotem) {
+                } else if (player.getInventory().getItemInHand() instanceof ItemTotemOfUndying) {
                     totem = true;
                 }
                 //复活图腾实现
@@ -2589,7 +2569,8 @@ public abstract class Entity extends Location implements Metadatable {
 
             if (damage > 0) {
                 if (!this.isSneaking()) {
-                    if (!(this instanceof EntityItem item) || item.getItem().getBlockId() != BlockID.WOOL) {
+                    if (!(this instanceof EntityItem item) ||
+                            !ItemTag.getTags(item.getIdentifier().toString()).contains(ItemTag.WOOL.toString())) {
                         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.HIT_GROUND));
                     }
                 }
@@ -2600,14 +2581,14 @@ public abstract class Entity extends Location implements Metadatable {
         down.onEntityFallOn(this, fallDistance);
 
         if (fallDistance > 0.75) {//todo: moving these into their own classes (method "onEntityFallOn()")
-            if (down.getId() == Block.FARMLAND) {
+            if (Block.FARMLAND.equals(down.getId())) {
                 if (onPhysicalInteraction(down, false)) {
                     return;
                 }
                 var farmEvent = new FarmLandDecayEvent(this, down);
                 this.server.getPluginManager().callEvent(farmEvent);
                 if (farmEvent.isCancelled()) return;
-                this.level.setBlock(down, new BlockDirt(), false, true);
+                this.level.setBlock(down, Block.get(Block.DIRT), false, true);
                 return;
             }
 
@@ -2621,8 +2602,6 @@ public abstract class Entity extends Location implements Metadatable {
             }
         }
     }
-
-    @
 
     protected boolean onPhysicalInteraction(Block block, boolean cancelled) {
         Event ev;
@@ -2767,13 +2746,12 @@ public abstract class Entity extends Location implements Metadatable {
         int x = this.getFloorX();
         int y = this.getFloorY();
         int z = this.getFloorZ();
-        for (int i = y + 1; i <= this.getLevel().getMaxHeight(); i++)
-            if (this.getLevel().getBlock(x, i, z).getId() != BlockID.AIR) return true;
+        for (int i = y + 1; i <= this.getLevel().getMaxHeight(); i++) {
+            if (!this.getLevel().getBlock(x, i, z).isAir()) { return true; }
+        }
         return false;
     }
 
-
-    @
 
     public boolean hasWaterAt(float height) {
         return hasWaterAt(height, false);
@@ -2848,7 +2826,7 @@ public abstract class Entity extends Location implements Metadatable {
     public boolean isOnLadder() {
         Block b = this.getLevelBlock();
 
-        return b.getId() == Block.LADDER;
+        return Block.LADDER.equals(b.getId());
     }
 
     public boolean fastMove(double dx, double dy, double dz) {
@@ -2882,8 +2860,6 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     //Player do not use
-    @
-
     public boolean move(double dx, double dy, double dz) {
         if (dx == 0 && dz == 0 && dy == 0) {
             this.onGround = !this.getPosition().setComponents(this.down()).getTickCachedLevelBlock().canPassThrough();
@@ -3114,7 +3090,7 @@ public abstract class Entity extends Location implements Metadatable {
         boolean endPortal = false;
         for (var block : this.getTickCachedCollisionBlocks()) {
             switch (block.getId()) {
-                case Block.NETHER_PORTAL -> portal = true;
+                case Block.PORTAL -> portal = true;
                 case BlockID.SCAFFOLDING -> scaffolding = true;
                 case BlockID.END_PORTAL -> endPortal = true;
             }
@@ -3138,7 +3114,7 @@ public abstract class Entity extends Location implements Metadatable {
             for (int i = minX; i <= maxX; i++) {
                 for (int j = minZ; j <= maxZ; j++) {
                     Location location = new Location(i, Y, j, level);
-                    if (location.getLevelBlock(false).getId() == BlockID.SCAFFOLDING) {
+                    if (BlockID.SCAFFOLDING.equals(location.getLevelBlock(false).getId())) {
                         setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_OVER_SCAFFOLDING, true);
                         break outerScaffolding;
                     }
@@ -3254,7 +3230,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     /**
-     * Whether the entity can active pressure plates.
+     * Whether the entity can activate pressure plates.
      * Used for {@link cn.nukkit.entity.passive.EntityBat}s only.
      *
      * @return triggers pressure plate
@@ -3722,9 +3698,7 @@ public abstract class Entity extends Location implements Metadatable {
 
 
     public void setFreezingTicks(int ticks) {
-        if (ticks < 0) this.freezingTicks = 0;
-        else if (ticks > 140) this.freezingTicks = 140;
-        else this.freezingTicks = ticks;
+        this.freezingTicks = Math.max(0, Math.min(ticks, 140));
         setFreezingEffectStrength(ticks / 140f);
     }
 
@@ -3841,15 +3815,17 @@ public abstract class Entity extends Location implements Metadatable {
         List<EntityProperty> entityPropertyList = EntityProperty.getEntityProperty(this.getIdentifier().toString());
 
         for (EntityProperty property : entityPropertyList) {
-            if (property.getIdentifier() == identifier && property instanceof EnumEntityProperty) {
-                int index = ((EnumEntityProperty) property).findIndex(value);
-
-                if (index >= 0) {
-                    intProperties.put(identifier, index);
-                    return true;
-                }
-                return false;
+            if (!identifier.equals(property.getIdentifier()) ||
+                    !(property instanceof EnumEntityProperty enumProperty)) {
+                continue;
             }
+            int index = enumProperty.findIndex(value);
+
+            if (index >= 0) {
+                intProperties.put(identifier, index);
+                return true;
+            }
+            return false;
         }
         return false;
     }
@@ -3869,17 +3845,13 @@ public abstract class Entity extends Location implements Metadatable {
         for (EntityProperty property : entityPropertyList) {
             final String identifier = property.getIdentifier();
 
-            if (property instanceof FloatEntityProperty) {
-                FloatEntityProperty floatProperty = (FloatEntityProperty) property;
+            if (property instanceof FloatEntityProperty floatProperty) {
                 floatProperties.put(identifier, floatProperty.getDefaultValue());
-            } else if (property instanceof IntEntityProperty) {
-                IntEntityProperty intProperty = (IntEntityProperty) property;
+            } else if (property instanceof IntEntityProperty intProperty) {
                 intProperties.put(identifier, intProperty.getDefaultValue());
-            } else if (property instanceof BooleanEntityProperty) {
-                BooleanEntityProperty booleanProperty = (BooleanEntityProperty) property;
+            } else if (property instanceof BooleanEntityProperty booleanProperty) {
                 intProperties.put(identifier, booleanProperty.getDefaultValue() ? 1 : 0);
-            } else if (property instanceof EnumEntityProperty) {
-                EnumEntityProperty enumProperty = (EnumEntityProperty) property;
+            } else if (property instanceof EnumEntityProperty enumProperty) {
                 intProperties.put(identifier, enumProperty.findIndex(enumProperty.getDefaultValue()));
             }
         }

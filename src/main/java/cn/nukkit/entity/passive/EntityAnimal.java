@@ -6,7 +6,7 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.RuntimeItems;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.Chunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
@@ -15,7 +15,7 @@ import cn.nukkit.network.protocol.EntityEventPacket;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class EntityAnimal extends EntityIntelligent {
-    public EntityAnimal(FullChunk chunk, CompoundTag nbt) {
+    public EntityAnimal(Chunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

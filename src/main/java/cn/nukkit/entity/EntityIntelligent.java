@@ -14,7 +14,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.form.window.FormWindowSimple;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.Chunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Getter;
@@ -37,7 +37,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     @Getter
     protected boolean isActive = true;
 
-    public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
+    public EntityIntelligent(Chunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         var storage = getMemoryStorage();
         if (storage != null) {

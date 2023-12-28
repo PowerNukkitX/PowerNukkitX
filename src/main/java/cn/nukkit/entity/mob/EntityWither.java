@@ -3,17 +3,14 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.entity.EntitySmite;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.Chunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-/**
- * @author PikyCZ
- */
 public class EntityWither extends EntityMob implements EntityFlyable, EntitySmite {
 
     public static final int NETWORK_ID = 52;
 
-    public EntityWither(FullChunk chunk, CompoundTag nbt) {
+    public EntityWither(Chunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
