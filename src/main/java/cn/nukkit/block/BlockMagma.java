@@ -11,21 +11,27 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.potion.Effect;
+import org.jetbrains.annotations.NotNull;
 
 public class BlockMagma extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:magma");
 
     public BlockMagma(){
-
+        super(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return MAGMA;
+    public BlockMagma(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "Magma Block";
+    }
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override

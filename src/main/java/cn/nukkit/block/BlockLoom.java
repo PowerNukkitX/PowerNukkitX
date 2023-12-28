@@ -1,7 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
@@ -9,32 +9,21 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
-
 /**
  * @implNote Faceable since FUTURE
  */
 
-public class BlockLoom extends BlockSolidMeta implements Faceable {
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION);
-
+public class BlockLoom extends BlockSolid implements Faceable {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:loom", CommonBlockProperties.DIRECTION);
 
     public BlockLoom() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
 
-    public BlockLoom(int meta) {
-        super(meta);
+    public BlockLoom(BlockState blockState) {
+        super(blockState);
     }
-
-    @Override
-    public int getId() {
-        return LOOM;
-    }
-
 
     @NotNull
     @Override
@@ -95,12 +84,12 @@ public class BlockLoom extends BlockSolidMeta implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(DIRECTION);
+        return BlockFace.getHorizontals()[getPropertyValue(CommonBlockProperties.DIRECTION)];
     }
 
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(DIRECTION, face);
+        setPropertyValue(CommonBlockProperties.DIRECTION, face.getHorizontalIndex());
     }
 }

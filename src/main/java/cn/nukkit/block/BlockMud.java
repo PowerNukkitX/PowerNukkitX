@@ -1,9 +1,17 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 public class BlockMud extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:mud");
+
     public BlockMud() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockMud(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -12,8 +20,8 @@ public class BlockMud extends BlockSolid {
     }
 
     @Override
-    public int getId() {
-        return MUD;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override

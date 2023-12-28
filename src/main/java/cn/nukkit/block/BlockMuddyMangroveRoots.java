@@ -1,30 +1,27 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
-
-
 public class BlockMuddyMangroveRoots extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties(PILLAR_AXIS);
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:muddy_mangrove_roots", CommonBlockProperties.PILLAR_AXIS);
 
     public BlockMuddyMangroveRoots() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockMuddyMangroveRoots(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "Muddy Mangrove Roots";
-    }
-
-    @Override
-    public int getId() {
-        return MUDDY_MANGROVE_ROOTS;
     }
 
     @NotNull
@@ -49,21 +46,16 @@ public class BlockMuddyMangroveRoots extends BlockSolid {
     }
 
     @Override
-    public int getToolType() {
-        return ItemTool.AIR;
-    }
-
-    @Override
     public boolean isTransparent() {
         return true;
     }
 
     public BlockFace.Axis getPillarAxis() {
-        return getPropertyValue(PILLAR_AXIS);
+        return getPropertyValue(CommonBlockProperties.PILLAR_AXIS);
     }
 
     public void setPillarAxis(BlockFace.Axis axis) {
-        setPropertyValue(PILLAR_AXIS, axis);
+        setPropertyValue(CommonBlockProperties.PILLAR_AXIS, axis);
     }
 
     @Override
