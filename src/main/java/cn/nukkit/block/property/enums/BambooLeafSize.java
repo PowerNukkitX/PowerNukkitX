@@ -7,9 +7,7 @@ package cn.nukkit.block.property.enums;
  * @author daoge_cmd
  */
 public enum BambooLeafSize {
-    LARGE_LEAVES,
-
     NO_LEAVES,
-
-    SMALL_LEAVES
+    SMALL_LEAVES,
+    LARGE_LEAVES
 }

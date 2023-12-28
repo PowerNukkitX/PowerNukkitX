@@ -6,19 +6,18 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
+import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
+
 
 public class BlockStrippedBambooBlock extends BlockLog {
+    public static final BlockProperties PROPERTIES = new BlockProperties(STRIPPED_BAMBOO_BLOCK, PILLAR_AXIS);
+
     public BlockStrippedBambooBlock() {
-        super(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockStrippedBambooBlock(int meta) {
-        super(meta);
-    }
-
-
-    public int getId() {
-        return STRIPPED_BAMBOO_BLOCK;
+    public BlockStrippedBambooBlock(BlockState blockState) {
+        super(blockState);
     }
 
     public String getName() {
@@ -28,7 +27,7 @@ public class BlockStrippedBambooBlock extends BlockLog {
     @NotNull
     @Override
     public BlockProperties getProperties() {
-        return PILLAR_PROPERTIES;
+        return PROPERTIES;
     }
 
     @Override

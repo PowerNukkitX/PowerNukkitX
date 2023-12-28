@@ -2137,7 +2137,6 @@ public class Level implements ChunkManager, Metadatable {
         return getBlock(pos, 0);
     }
 
-
     public Block getBlock(Vector3 pos, int layer) {
         return this.getBlock(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), layer);
     }
@@ -2145,7 +2144,6 @@ public class Level implements ChunkManager, Metadatable {
     public Block getBlock(Vector3 pos, boolean load) {
         return getBlock(pos, 0, load);
     }
-
 
     public Block getBlock(Vector3 pos, int layer, boolean load) {
         return this.getBlock(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), layer, load);
@@ -2155,7 +2153,6 @@ public class Level implements ChunkManager, Metadatable {
         return getBlock(x, y, z, 0);
     }
 
-
     public Block getBlock(int x, int y, int z, int layer) {
         return getBlock(x, y, z, layer, true);
     }
@@ -2163,7 +2160,6 @@ public class Level implements ChunkManager, Metadatable {
     public Block getBlock(int x, int y, int z, boolean load) {
         return getBlock(x, y, z, 0, load);
     }
-
 
     public Block getBlock(int x, int y, int z, int layer, boolean load) {
         BlockState fullState;
@@ -2187,6 +2183,14 @@ public class Level implements ChunkManager, Metadatable {
         Block block = BlockRegistry.get(fullState, x, y, z, layer, this);
         setBlock(x, y, z, layer, block, false, false); // Update set to false to fix PowerNukkit#650
         return block;
+    }
+
+    public String getBlockIdAt(int x, int y, int z) {
+        return getBlockIdAt(x, y, z, 0);
+    }
+
+    public String getBlockIdAt(int x, int y, int z, int layer) {
+        return this.getChunk(x >> 4, z >> 4, true).getBlockState(x & 0x0f, ensureY(y), z & 0x0f, layer).getIdentifier();
     }
 
     public synchronized void updateAllLight(Vector3 pos) {

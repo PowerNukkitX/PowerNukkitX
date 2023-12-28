@@ -1,26 +1,24 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.property.enums.OldLeafType;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
+import static cn.nukkit.block.property.CommonBlockProperties.PERSISTENT_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.UPDATE_BIT;
+
 public class BlockAzaleaLeaves extends BlockLeaves {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(BlockLeaves.PERSISTENT, BlockLeaves.UPDATE);
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:azalea_leaves",PERSISTENT_BIT, UPDATE_BIT);
 
     public BlockAzaleaLeaves() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockAzaleaLeaves(int meta) {
-        super(meta);
-    }
-
-
-    @Override
-    public int getId() {
-        return AZALEA_LEAVES;
+    public BlockAzaleaLeaves(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -32,7 +30,6 @@ public class BlockAzaleaLeaves extends BlockLeaves {
     public boolean canHarvestWithHand() {
         return false;
     }
-
 
     @Override
     public boolean canHarvest(Item item) {
@@ -48,8 +45,8 @@ public class BlockAzaleaLeaves extends BlockLeaves {
 
     /*这里写木质类型为OAK只是为了获取凋落物时的概率正确，并不代表真的就是橡木*/
     @Override
-    public WoodType getType() {
-        return WoodType.OAK;
+    public OldLeafType getType() {
+        return OldLeafType.OAK;
     }
 
     @Override

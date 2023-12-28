@@ -2,11 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BlockProperty;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockproperty.value.AnvilDamage;
+import cn.nukkit.block.property.CommonPropertyMap;
+import cn.nukkit.block.property.enums.Damage;
 import cn.nukkit.inventory.AnvilInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
@@ -19,13 +16,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
+import static cn.nukkit.block.property.CommonBlockProperties.DAMAGE;
+
 /**
  * @author Pub4Game
  * @since 27.12.2015
  */
-
 public class BlockAnvil extends BlockFallable implements Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:anvil", CommonBlockProperties.DAMAGE, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:anvil", DAMAGE, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -40,12 +38,12 @@ public class BlockAnvil extends BlockFallable implements Faceable {
         super(blockstate);
     }
 
-    public AnvilDamage getAnvilDamage() {
+    public Damage getAnvilDamage() {
         return getPropertyValue(DAMAGE);
     }
 
 
-    public void setAnvilDamage(AnvilDamage anvilDamage) {
+    public void setAnvilDamage(Damage anvilDamage) {
         setPropertyValue(DAMAGE, anvilDamage);
     }
 
@@ -82,7 +80,7 @@ public class BlockAnvil extends BlockFallable implements Faceable {
 
     @Override
     public String getName() {
-        return getAnvilDamage().getEnglishName();
+        return getAnvilDamage().name();
     }
 
 
@@ -124,20 +122,20 @@ public class BlockAnvil extends BlockFallable implements Faceable {
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, face);
+        setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION);
+        return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));
     }
 
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         BlockFace face = getBlockFace().rotateY();
-        double xOffset = Math.abs(face.getXOffset()) * (2/16.0);
-        double zOffset = Math.abs(face.getZOffset()) * (2/16.0);
+        double xOffset = Math.abs(face.getXOffset()) * (2 / 16.0);
+        double zOffset = Math.abs(face.getZOffset()) * (2 / 16.0);
         return new SimpleAxisAlignedBB(x + xOffset, y, z + zOffset, x + 1 - xOffset, y + 1, z + 1 - zOffset);
     }
 }
