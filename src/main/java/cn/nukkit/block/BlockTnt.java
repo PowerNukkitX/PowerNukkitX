@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.type.BooleanPropertyType;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityArrow;
@@ -22,14 +23,13 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
+import static cn.nukkit.block.property.CommonBlockProperties.ALLOW_UNDERWATER_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.EXPLODE_BIT;
+
 public class BlockTnt extends BlockSolid implements RedstoneComponent {
-    public static final BooleanPropertyType EXPLODE_ON_BREAK =
-            BooleanPropertyType.of("explode_bit", false);
-    public static final BooleanPropertyType ALLOW_UNDERWATER =
-            BooleanPropertyType.of("allow_underwater_bit", false);
 
     public static final BlockProperties PROPERTIES = new BlockProperties(TNT,
-            EXPLODE_ON_BREAK, ALLOW_UNDERWATER);
+            EXPLODE_BIT, ALLOW_UNDERWATER_BIT);
 
     public BlockTnt() {
         this(PROPERTIES.getDefaultState());
