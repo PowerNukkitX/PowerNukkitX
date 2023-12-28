@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDoorCherry;
+import cn.nukkit.item.ItemCherryDoor;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCherryDoor extends BlockWoodenDoor {
@@ -28,6 +28,6 @@ public class BlockCherryDoor extends BlockWoodenDoor {
 
     @Override
     public Item toItem() {
-        return new ItemDoorCherry();
+        return new ItemCherryDoor();
     }
 }

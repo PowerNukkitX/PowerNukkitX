@@ -1,30 +1,34 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDoorBamboo;
+import cn.nukkit.item.ItemBambooDoor;
+import org.jetbrains.annotations.NotNull;
 
 
-public class BlockBambooDoor extends BlockDoorWood {
-    public BlockBambooDoor() {
-        this(0);
-    }
-
-    public BlockBambooDoor(int meta) {
-        super(meta);
-    }
+public class BlockBambooDoor extends BlockWoodenDoor {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:bamboo_door", CommonBlockProperties.DIRECTION, CommonBlockProperties.DOOR_HINGE_BIT, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPPER_BLOCK_BIT);
 
     @Override
-    public int getId() {
-        return BAMBOO_DOOR;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockBambooDoor() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBambooDoor(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
     public String getName() {
-        return "Bamboo Door";
+        return "Bamboo Door Block";
     }
 
     @Override
     public Item toItem() {
-        return new ItemDoorBamboo();
+        return new ItemBambooDoor();
     }
 }
