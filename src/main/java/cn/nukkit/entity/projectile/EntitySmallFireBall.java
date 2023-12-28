@@ -11,7 +11,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.ProjectileHitEvent;
 import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
@@ -22,7 +22,7 @@ public class EntitySmallFireBall extends EntityProjectile {
 
     public static final int NETWORK_ID = 94;
 
-    public EntitySmallFireBall(FullChunk chunk, CompoundTag nbt) {
+    public EntitySmallFireBall(Chunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
