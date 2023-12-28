@@ -83,8 +83,8 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(BEETROOT, BlockBeetroot.class);
         register(BELL, BlockBell.class);
         register(BIG_DRIPLEAF, BlockBigDripleaf.class);
-        register(BIRCH_BUTTON, BlockBirchButton.class);
-        register(BIRCH_DOOR, BlockBirchDoor.class);
+        register(BIRCH_BUTTON, BlockBirchButton.class);// done.
+        register(BIRCH_DOOR, BlockBirchDoor.class);// done.
         register(BIRCH_FENCE, BlockBirchFence.class);
         register(BIRCH_FENCE_GATE, BlockBirchFenceGate.class);
         register(BIRCH_HANGING_SIGN, BlockBirchHangingSign.class);
@@ -166,8 +166,8 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(CHAIN_COMMAND_BLOCK, BlockChainCommandBlock.class);
         register(CHEMICAL_HEAT, BlockChemicalHeat.class);
         register(CHEMISTRY_TABLE, BlockChemistryTable.class);
-        register(CHERRY_BUTTON, BlockCherryButton.class);
-        register(CHERRY_DOOR, BlockCherryDoor.class);
+        register(CHERRY_BUTTON, BlockCherryButton.class);// done.
+        register(CHERRY_DOOR, BlockCherryDoor.class);// done.
         register(CHERRY_DOUBLE_SLAB, BlockCherryDoubleSlab.class);
         register(CHERRY_FENCE, BlockCherryFence.class);
         register(CHERRY_FENCE_GATE, BlockCherryFenceGate.class);
@@ -228,8 +228,8 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(CRACKED_POLISHED_BLACKSTONE_BRICKS, BlockCrackedPolishedBlackstoneBricks.class);
         register(CRAFTER, BlockCrafter.class);
         register(CRAFTING_TABLE, BlockCraftingTable.class);
-        register(CRIMSON_BUTTON, BlockCrimsonButton.class);
-        register(CRIMSON_DOOR, BlockCrimsonDoor.class);
+        register(CRIMSON_BUTTON, BlockCrimsonButton.class);// done.
+        register(CRIMSON_DOOR, BlockCrimsonDoor.class);// done.
         register(CRIMSON_DOUBLE_SLAB, BlockCrimsonDoubleSlab.class);
         register(CRIMSON_FENCE, BlockCrimsonFence.class);
         register(CRIMSON_FENCE_GATE, BlockCrimsonFenceGate.class);
@@ -261,8 +261,8 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(CYAN_STAINED_GLASS_PANE, BlockCyanStainedGlassPane.class);
         register(CYAN_TERRACOTTA, BlockCyanTerracotta.class);
         register(CYAN_WOOL, BlockCyanWool.class);
-        register(DARK_OAK_BUTTON, BlockDarkOakButton.class);
-        register(DARK_OAK_DOOR, BlockDarkOakDoor.class);
+        register(DARK_OAK_BUTTON, BlockDarkOakButton.class);// done.
+        register(DARK_OAK_DOOR, BlockDarkOakDoor.class);// done.
         register(DARK_OAK_FENCE, BlockDarkOakFence.class);
         register(DARK_OAK_FENCE_GATE, BlockDarkOakFenceGate.class);
         register(DARK_OAK_HANGING_SIGN, BlockDarkOakHangingSign.class);
@@ -532,13 +532,13 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(INVISIBLE_BEDROCK, BlockInvisibleBedrock.class);
         register(IRON_BARS, BlockIronBars.class);
         register(IRON_BLOCK, BlockIronBlock.class);
-        register(IRON_DOOR, BlockIronDoor.class);
+        register(IRON_DOOR, BlockIronDoor.class);// done.
         register(IRON_ORE, BlockIronOre.class);
         register(IRON_TRAPDOOR, BlockIronTrapdoor.class);
         register(JIGSAW, BlockJigsaw.class);
         register(JUKEBOX, BlockJukebox.class);
-        register(JUNGLE_BUTTON, BlockJungleButton.class);
-        register(JUNGLE_DOOR, BlockJungleDoor.class);
+        register(JUNGLE_BUTTON, BlockJungleButton.class);// done.
+        register(JUNGLE_DOOR, BlockJungleDoor.class);// done.
         register(JUNGLE_FENCE, BlockJungleFence.class);
         register(JUNGLE_FENCE_GATE, BlockJungleFenceGate.class);
         register(JUNGLE_HANGING_SIGN, BlockJungleHangingSign.class);
@@ -616,8 +616,8 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(MAGENTA_TERRACOTTA, BlockMagentaTerracotta.class);
         register(MAGENTA_WOOL, BlockMagentaWool.class);
         register(MAGMA, BlockMagma.class);
-        register(MANGROVE_BUTTON, BlockMangroveButton.class);
-        register(MANGROVE_DOOR, BlockMangroveDoor.class);
+        register(MANGROVE_BUTTON, BlockMangroveButton.class);// done.
+        register(MANGROVE_DOOR, BlockMangroveDoor.class);// done.
         register(MANGROVE_DOUBLE_SLAB, BlockMangroveDoubleSlab.class);
         register(MANGROVE_FENCE, BlockMangroveFence.class);
         register(MANGROVE_FENCE_GATE, BlockMangroveFenceGate.class);
@@ -840,8 +840,8 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(SOUL_TORCH, BlockSoulTorch.class);
         register(SPONGE, BlockSponge.class);
         register(SPORE_BLOSSOM, BlockSporeBlossom.class);
-        register(SPRUCE_BUTTON, BlockSpruceButton.class);
-        register(SPRUCE_DOOR, BlockSpruceDoor.class);
+        register(SPRUCE_BUTTON, BlockSpruceButton.class);// done.
+        register(SPRUCE_DOOR, BlockSpruceDoor.class);// done.
         register(SPRUCE_FENCE, BlockSpruceFence.class);
         register(SPRUCE_FENCE_GATE, BlockSpruceFenceGate.class);
         register(SPRUCE_HANGING_SIGN, BlockSpruceHangingSign.class);
@@ -922,8 +922,8 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(VINE, BlockVine.class);
         register(WALL_BANNER, BlockWallBanner.class);
         register(WALL_SIGN, BlockWallSign.class);
-        register(WARPED_BUTTON, BlockWarpedButton.class);
-        register(WARPED_DOOR, BlockWarpedDoor.class);
+        register(WARPED_BUTTON, BlockWarpedButton.class);// done.
+        register(WARPED_DOOR, BlockWarpedDoor.class);// done.
         register(WARPED_DOUBLE_SLAB, BlockWarpedDoubleSlab.class);
         register(WARPED_FENCE, BlockWarpedFence.class);
         register(WARPED_FENCE_GATE, BlockWarpedFenceGate.class);
@@ -1009,8 +1009,8 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(WHITE_WOOL, BlockWhiteWool.class);
         register(WITHER_ROSE, BlockWitherRose.class);
         register(WOOD, BlockWood.class);
-        register(WOODEN_BUTTON, BlockWoodenButton.class);
-        register(WOODEN_DOOR, BlockWoodenDoor.class);
+        register(WOODEN_BUTTON, BlockWoodenButton.class);// done.
+        register(WOODEN_DOOR, BlockWoodenDoor.class);// done.
         register(WOODEN_PRESSURE_PLATE, BlockWoodenPressurePlate.class);
         register(WOODEN_SLAB, BlockWoodenSlab.class);
         register(YELLOW_CANDLE, BlockYellowCandle.class);
