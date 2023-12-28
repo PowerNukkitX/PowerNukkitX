@@ -5,19 +5,20 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.NukkitRandom;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockGravel extends BlockFallable {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:gravel");
 
     public BlockGravel() {
-        // Does Nothing
+        super(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return GRAVEL;
+    public BlockGravel(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -38,6 +39,11 @@ public class BlockGravel extends BlockFallable {
     @Override
     public String getName() {
         return "Gravel";
+    }
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override

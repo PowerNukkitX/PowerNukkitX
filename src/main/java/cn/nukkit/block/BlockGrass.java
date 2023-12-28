@@ -2,10 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
-import cn.nukkit.blockproperty.value.DirtType;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.DirtType;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.event.block.BlockSpreadEvent;
 import cn.nukkit.item.Item;
@@ -16,9 +14,7 @@ import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
-import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -26,26 +22,22 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 
 public class BlockGrass extends BlockDirt {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:grass");
 
     public BlockGrass() {
-        this(0);
+        super(PROPERTIES.getDefaultState());
     }
 
-    public BlockGrass(int meta) {
+    public BlockGrass(BlockState blockState) {
         // Grass can't have meta.
-        super(0);
+        super(blockState);
     }
 
 
     @NotNull
     @Override
     public BlockProperties getProperties() {
-        return CommonBlockProperties.EMPTY_PROPERTIES;
-    }
-
-    @Override
-    public int getId() {
-        return GRASS;
+        return PROPERTIES;
     }
 
     @Override
@@ -66,15 +58,15 @@ public class BlockGrass extends BlockDirt {
 
     @NotNull
     @Override
-    public Optional<DirtType> getDirtType() {
-        return Optional.empty();
+    public DirtType getDirtType() {
+        return DirtType.NORMAL;
     }
 
 
     @Override
-    public void setDirtType(@Nullable DirtType dirtType) {
+    public void setDirtType(@Nullable DirtType dirtType) throws Exception {
         if (dirtType != null) {
-            throw new InvalidBlockPropertyValueException(DIRT_TYPE, null, dirtType, getName()+" don't support DirtType");
+            throw new Exception(getName() + "don't support DirtType!");
         }
     }
 
@@ -150,7 +142,7 @@ public class BlockGrass extends BlockDirt {
                 if (block.getId() == Block.DIRT
                         
                         // It cannot spread to coarse dirt        
-                        && block.getPropertyValue(DIRT_TYPE) == DirtType.NORMAL
+                        && block.getPropertyValue(CommonBlockProperties.DIRT_TYPE) == DirtType.NORMAL
                         
                         // The dirt block must have a light level of at least 4 above it.
                         && getLevel().getFullLight(block) >= 4

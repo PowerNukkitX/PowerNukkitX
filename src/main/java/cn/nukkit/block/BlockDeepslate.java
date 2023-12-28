@@ -1,37 +1,25 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
-import cn.nukkit.item.MinecraftItemID;
+import cn.nukkit.item.ItemTool;;
 import org.jetbrains.annotations.NotNull;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
-
-/**
- * @author LoboMetalurgico
- * @since 08/06/2021
- */
-
 
 public class BlockDeepslate extends BlockSolid {
 
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(PILLAR_AXIS);
-
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:deepslate", CommonBlockProperties.PILLAR_AXIS);
 
     public BlockDeepslate() {
-        // Does nothing
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockDeepslate(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "Deepslate";
-    }
-
-    @Override
-    public int getId() {
-        return DEEPSLATE;
     }
 
     @Override
@@ -66,7 +54,7 @@ public class BlockDeepslate extends BlockSolid {
             return Item.EMPTY_ARRAY;
         }
 
-        return new Item[]{MinecraftItemID.COBBLED_DEEPSLATE.get(1)};
+        return new Item[]{Item.getBlockItem(BlockID.COBBLED_DEEPSLATE)};
     }
 
     @Override

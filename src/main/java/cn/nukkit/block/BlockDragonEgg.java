@@ -5,13 +5,20 @@ import cn.nukkit.event.block.BlockFromToEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.level.Level;
 import cn.nukkit.network.protocol.LevelEventPacket;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockDragonEgg extends BlockFallable {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:dragon_egg");
 
     public BlockDragonEgg() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockDragonEgg(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -20,8 +27,8 @@ public class BlockDragonEgg extends BlockFallable {
     }
 
     @Override
-    public int getId() {
-        return DRAGON_EGG;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override

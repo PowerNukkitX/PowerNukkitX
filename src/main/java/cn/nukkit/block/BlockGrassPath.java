@@ -13,13 +13,14 @@ import org.jetbrains.annotations.NotNull;
  * @since 2015/11/22
  */
 public class BlockGrassPath extends BlockGrass {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:grass_path");
 
     public BlockGrassPath() {
+        super(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return GRASS_PATH;
+    public BlockGrassPath(BlockState blockState) {
+        super(blockState);
     }
 
     @Override

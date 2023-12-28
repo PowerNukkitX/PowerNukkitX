@@ -1,7 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
@@ -10,31 +8,26 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author Nukkit Project Team
  */
-public class BlockBookshelf extends BlockSolidMeta {
-
-    public BlockBookshelf(int meta) {
-        super(meta);
-    }
+public class BlockBookshelf extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:bookshelf");
 
     public BlockBookshelf() {
-        this(0);
+        super(PROPERTIES.getDefaultState());
     }
 
+    public BlockBookshelf(BlockState blockState) {
+        super(blockState);
+    }
 
     @NotNull
     @Override
     public BlockProperties getProperties() {
-        return CommonBlockProperties.EMPTY_PROPERTIES;
+        return PROPERTIES;
     }
 
     @Override
     public String getName() {
         return "Bookshelf";
-    }
-
-    @Override
-    public int getId() {
-        return BOOKSHELF;
     }
 
     @Override

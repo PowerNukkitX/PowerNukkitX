@@ -12,19 +12,24 @@ import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockChorusPlant extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:chorus_plant");
 
     public BlockChorusPlant() {
-        // Nothing
+        super(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return CHORUS_PLANT;
+    public BlockChorusPlant(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "Chorus Plant";
+    }
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override

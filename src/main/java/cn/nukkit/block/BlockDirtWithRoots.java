@@ -16,18 +16,24 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class BlockDirtWithRoots extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:dirt_with_roots");
 
     public BlockDirtWithRoots() {
+        super(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return DIRT_WITH_ROOTS;
+    public BlockDirtWithRoots(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "Dirt With Roots";
+    }
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override

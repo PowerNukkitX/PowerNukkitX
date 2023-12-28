@@ -1,23 +1,28 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 
 public class BlockBlackstone extends BlockSolid {
-
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:blackstone");
 
     public BlockBlackstone() {
-        // Does nothing
+        super(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return BLACKSTONE;
+    protected BlockBlackstone(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "Blackstone";
+    }
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override
