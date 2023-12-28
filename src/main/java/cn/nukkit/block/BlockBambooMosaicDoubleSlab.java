@@ -1,10 +1,24 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 
 public class BlockBambooMosaicDoubleSlab extends BlockDoubleSlabBase {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_MOSAIC_DOUBLE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockBambooMosaicDoubleSlab() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBambooMosaicDoubleSlab(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -13,12 +27,8 @@ public class BlockBambooMosaicDoubleSlab extends BlockDoubleSlabBase {
     }
 
     @Override
-    public int getSingleSlabId() {
+    public String getSingleSlabId() {
         return BAMBOO_MOSAIC_SLAB;
-    }
-
-    public int getId() {
-        return BAMBOO_MOSAIC_DOUBLE_SLAB;
     }
 
     @Override

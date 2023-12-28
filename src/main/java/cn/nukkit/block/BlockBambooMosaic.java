@@ -1,12 +1,22 @@
 package cn.nukkit.block;
 
 
+import org.jetbrains.annotations.NotNull;
+
 public class BlockBambooMosaic extends BlockSolid {
-    public BlockBambooMosaic() {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_MOSAIC);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public int getId() {
-        return BAMBOO_MOSAIC;
+    public BlockBambooMosaic() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBambooMosaic(BlockState blockstate) {
+        super(blockstate);
     }
 
     public String getName() {

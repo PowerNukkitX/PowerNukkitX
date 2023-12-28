@@ -1,17 +1,19 @@
 package cn.nukkit.block;
 
 
+import cn.nukkit.block.property.CommonBlockProperties;
+import org.jetbrains.annotations.NotNull;
+
 public class BlockBambooMosaicStairs extends BlockStairs {
-    public BlockBambooMosaicStairs() {
-        this(0);
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:acacia_stairs", CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public BlockBambooMosaicStairs(int meta) {
-        super(meta);
-    }
-
-    public int getId() {
-        return BAMBOO_MOSAIC_STAIRS;
+    public BlockBambooMosaicStairs(BlockState blockState) {
+        super(blockState);
     }
 
     public String getName() {

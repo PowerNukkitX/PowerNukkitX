@@ -1,14 +1,23 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 
 public class BlockBambooPlanks extends BlockSolid {
-    public BlockBambooPlanks() {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_PLANKS);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public int getId() {
-        return BAMBOO_PLANKS;
+    public BlockBambooPlanks() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBambooPlanks(BlockState blockstate) {
+        super(blockstate);
     }
 
     public String getName() {

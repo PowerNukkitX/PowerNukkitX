@@ -53,7 +53,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(AZALEA_LEAVES, BlockAzaleaLeaves.class);
         register(AZALEA_LEAVES_FLOWERED, BlockAzaleaLeavesFlowered.class);
         register(BAMBOO, BlockBamboo.class);
-        register(BAMBOO_BLOCK, BlockBambooBlock.class);//
+        register(BAMBOO_BLOCK, BlockBambooBlock.class);
         register(BAMBOO_BUTTON, BlockBambooButton.class);
         register(BAMBOO_DOOR, BlockBambooDoor.class);
         register(BAMBOO_DOUBLE_SLAB, BlockBambooDoubleSlab.class);

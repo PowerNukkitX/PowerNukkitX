@@ -1,12 +1,24 @@
 package cn.nukkit.block;
 
 
+import cn.nukkit.block.property.CommonBlockProperties;
+import org.jetbrains.annotations.NotNull;
+
 public class BlockBambooFenceGate extends BlockFenceGate {
-    public BlockBambooFenceGate() {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:bamboo_fence_gate",
+            CommonBlockProperties.DIRECTION,CommonBlockProperties.IN_WALL_BIT,CommonBlockProperties.OPEN_BIT);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public int getId() {
-        return BAMBOO_FENCE_GATE;
+    public BlockBambooFenceGate() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBambooFenceGate(BlockState blockstate) {
+        super(blockstate);
     }
 
     public String getName() {
