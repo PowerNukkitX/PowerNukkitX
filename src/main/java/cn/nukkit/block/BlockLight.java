@@ -21,8 +21,8 @@ public class BlockLight extends BlockTransparentMeta {
     }
 
 
-    public BlockLight(int meta) {
-        super(meta);
+    public BlockLight(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

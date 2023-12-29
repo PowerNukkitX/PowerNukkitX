@@ -29,8 +29,8 @@ public class BlockCauldronLava extends BlockCauldron {
     }
 
 
-    public BlockCauldronLava(int meta) {
-        super(meta);
+    public BlockCauldronLava(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

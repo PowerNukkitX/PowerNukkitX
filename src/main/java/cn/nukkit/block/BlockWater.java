@@ -18,8 +18,8 @@ public class BlockWater extends BlockLiquid {
         this(0);
     }
 
-    public BlockWater(int meta) {
-        super(meta);
+    public BlockWater(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

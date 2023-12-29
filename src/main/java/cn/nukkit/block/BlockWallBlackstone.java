@@ -11,8 +11,8 @@ public class BlockWallBlackstone extends BlockWallBase {
     }
 
 
-    public BlockWallBlackstone(int meta) {
-        super(meta);
+    public BlockWallBlackstone(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

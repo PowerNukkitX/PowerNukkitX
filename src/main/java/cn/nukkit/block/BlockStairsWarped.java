@@ -9,8 +9,8 @@ public class BlockStairsWarped extends BlockStairsWood {
     }
 
 
-    public BlockStairsWarped(int meta) {
-        super(meta);
+    public BlockStairsWarped(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

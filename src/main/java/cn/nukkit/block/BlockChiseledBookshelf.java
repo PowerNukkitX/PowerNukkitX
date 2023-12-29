@@ -27,8 +27,8 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
     public static final IntBlockProperty BOOKS_STORED = new IntBlockProperty("books_stored", false, 63);
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.DIRECTION, BOOKS_STORED);
 
-    public BlockChiseledBookshelf(int meta) {
-        super(meta);
+    public BlockChiseledBookshelf(BlockState blockstate) {
+        super(blockstate);
     }
 
     public BlockChiseledBookshelf() {

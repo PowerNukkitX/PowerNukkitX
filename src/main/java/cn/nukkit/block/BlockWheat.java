@@ -17,8 +17,8 @@ public class BlockWheat extends BlockCrops {
         this(0);
     }
 
-    public BlockWheat(int meta) {
-        super(meta);
+    public BlockWheat(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

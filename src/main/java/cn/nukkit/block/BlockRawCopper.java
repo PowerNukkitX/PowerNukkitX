@@ -14,8 +14,8 @@ public class BlockRawCopper extends BlockRaw {
     }
 
 
-    public BlockRawCopper(int meta) {
-        super(meta);
+    public BlockRawCopper(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

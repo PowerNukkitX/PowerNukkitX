@@ -33,8 +33,8 @@ public class BlockChorusFlower extends BlockTransparentMeta {
         this(0);
     }
     
-    public BlockChorusFlower(int meta) {
-        super(meta);
+    public BlockChorusFlower(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

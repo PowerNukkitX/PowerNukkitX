@@ -8,8 +8,8 @@ public class BlockFloweringAzalea extends BlockAzalea{
     }
 
 
-    public BlockFloweringAzalea(int meta) {
-        super(meta);
+    public BlockFloweringAzalea(BlockState blockstate) {
+        super(blockstate);
     }
 
 

@@ -25,8 +25,8 @@ public class BlockSnifferEgg extends BlockTransparentMeta {
     public BlockSnifferEgg() {
     }
 
-    public BlockSnifferEgg(int meta) {
-        super(meta);
+    public BlockSnifferEgg(BlockState blockstate) {
+        super(blockstate);
     }
 
     public int getId() {

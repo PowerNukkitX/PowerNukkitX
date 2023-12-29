@@ -11,8 +11,8 @@ public class BlockLavaStill extends BlockLava {
         super(0);
     }
 
-    public BlockLavaStill(int meta) {
-        super(meta);
+    public BlockLavaStill(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

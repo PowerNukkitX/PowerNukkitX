@@ -32,8 +32,8 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
     }
 
 
-    public BlockLectern(int meta) {
-        super(meta);
+    public BlockLectern(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

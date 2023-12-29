@@ -13,8 +13,8 @@ public class BlockPumpkinLit extends BlockPumpkin {
         this(0);
     }
 
-    public BlockPumpkinLit(int meta) {
-        super(meta);
+    public BlockPumpkinLit(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -9,8 +9,8 @@ public class BlockButtonWarped extends BlockButtonWooden {
     }
 
 
-    public BlockButtonWarped(int meta) {
-        super(meta);
+    public BlockButtonWarped(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

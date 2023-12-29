@@ -31,8 +31,8 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         this(0);
     }
 
-    public BlockFlowerPot(int meta) {
-        super(meta);
+    public BlockFlowerPot(BlockState blockstate) {
+        super(blockstate);
     }
 
 

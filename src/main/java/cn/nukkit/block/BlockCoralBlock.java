@@ -24,8 +24,8 @@ public class BlockCoralBlock extends BlockSolidMeta {
     }
 
 
-    public BlockCoralBlock(int meta) {
-        super(meta);
+    public BlockCoralBlock(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

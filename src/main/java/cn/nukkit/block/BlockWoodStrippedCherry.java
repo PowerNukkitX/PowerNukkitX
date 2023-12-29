@@ -12,8 +12,8 @@ public class BlockWoodStrippedCherry extends BlockLog {
         super(0);
     }
 
-    public BlockWoodStrippedCherry(int meta) {
-        super(meta);
+    public BlockWoodStrippedCherry(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

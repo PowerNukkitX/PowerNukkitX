@@ -10,8 +10,8 @@ public class BlockStairsGranite extends BlockStairs {
     }
 
 
-    public BlockStairsGranite(int meta) {
-        super(meta);
+    public BlockStairsGranite(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

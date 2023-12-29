@@ -12,8 +12,8 @@ public class BlockWarpedWallSign extends BlockWallSign {
     }
 
 
-    public BlockWarpedWallSign(int meta) {
-        super(meta);
+    public BlockWarpedWallSign(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

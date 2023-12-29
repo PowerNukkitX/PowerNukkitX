@@ -17,8 +17,8 @@ public class BlockItemFrameGlow extends BlockItemFrame {
     }
 
 
-    public BlockItemFrameGlow(int meta) {
-        super(meta);
+    public BlockItemFrameGlow(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

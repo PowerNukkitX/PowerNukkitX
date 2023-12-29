@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BlockProperty;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
@@ -45,8 +42,8 @@ public class BlockWall extends BlockWallBase {
         this(0);
     }
 
-    public BlockWall(int meta) {
-        super(meta);
+    public BlockWall(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -26,8 +26,8 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
     }
 
 
-    public BlockStonecutterBlock(int meta) {
-        super(meta);
+    public BlockStonecutterBlock(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

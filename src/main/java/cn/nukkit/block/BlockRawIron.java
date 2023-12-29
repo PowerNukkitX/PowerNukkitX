@@ -14,8 +14,8 @@ public class BlockRawIron extends BlockRaw {
     }
 
 
-    public BlockRawIron(int meta) {
-        super(meta);
+    public BlockRawIron(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

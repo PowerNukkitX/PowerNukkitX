@@ -15,8 +15,8 @@ public class BlockStairsDeepslatePolished extends BlockStairs {
     }
 
 
-    public BlockStairsDeepslatePolished(int meta) {
-        super(meta);
+    public BlockStairsDeepslatePolished(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

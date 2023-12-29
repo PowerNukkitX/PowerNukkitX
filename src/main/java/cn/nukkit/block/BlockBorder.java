@@ -20,8 +20,8 @@ public class BlockBorder extends BlockWallBase {
     }
 
 
-    public BlockBorder(int meta) {
-        super(meta);
+    public BlockBorder(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

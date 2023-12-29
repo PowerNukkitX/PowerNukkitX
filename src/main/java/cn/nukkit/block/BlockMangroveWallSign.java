@@ -11,8 +11,8 @@ public class BlockMangroveWallSign extends BlockWallSign {
     }
 
 
-    public BlockMangroveWallSign(int meta) {
-        super(meta);
+    public BlockMangroveWallSign(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

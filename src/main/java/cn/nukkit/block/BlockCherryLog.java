@@ -11,8 +11,8 @@ public class BlockCherryLog extends BlockLog {
         this(0);
     }
 
-    public BlockCherryLog(int meta) {
-        super(meta);
+    public BlockCherryLog(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

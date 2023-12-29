@@ -32,8 +32,8 @@ public class BlockStructure extends BlockSolidMeta implements BlockEntityHolder<
     }
 
 
-    public BlockStructure(int meta) {
-        super(meta);
+    public BlockStructure(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

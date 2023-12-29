@@ -12,8 +12,8 @@ public class BlockCandleWhite extends BlockCandle {
         this(0);
     }
 
-    public BlockCandleWhite(int meta) {
-        super(meta);
+    public BlockCandleWhite(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

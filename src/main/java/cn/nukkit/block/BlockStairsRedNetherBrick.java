@@ -10,8 +10,8 @@ public class BlockStairsRedNetherBrick extends BlockStairs {
     }
 
 
-    public BlockStairsRedNetherBrick(int meta) {
-        super(meta);
+    public BlockStairsRedNetherBrick(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

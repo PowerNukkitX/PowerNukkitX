@@ -10,8 +10,8 @@ public class BlockStairsAndesitePolished extends BlockStairs {
     }
 
 
-    public BlockStairsAndesitePolished(int meta) {
-        super(meta);
+    public BlockStairsAndesitePolished(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

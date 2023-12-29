@@ -17,8 +17,8 @@ public class BlockDoubleSlabCopperCutOxidized extends BlockDoubleSlabCopperCut {
     }
 
 
-    public BlockDoubleSlabCopperCutOxidized(int meta) {
-        super(meta);
+    public BlockDoubleSlabCopperCutOxidized(BlockState blockstate) {
+        super(blockstate);
     }
 
 

@@ -8,8 +8,8 @@ public class BlockSmoker extends BlockSmokerBurning {
     }
 
 
-    public BlockSmoker(int meta) {
-        super(meta);
+    public BlockSmoker(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

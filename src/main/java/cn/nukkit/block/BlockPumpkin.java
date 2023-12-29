@@ -26,8 +26,8 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
         this(0);
     }
 
-    public BlockPumpkin(int meta) {
-        super(meta);
+    public BlockPumpkin(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -7,8 +7,8 @@ public class BlockStairsCherry extends BlockStairs {
         this(0);
     }
 
-    public BlockStairsCherry(int meta) {
-        super(meta);
+    public BlockStairsCherry(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

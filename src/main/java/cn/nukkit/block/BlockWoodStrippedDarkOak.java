@@ -10,8 +10,8 @@ public class BlockWoodStrippedDarkOak extends BlockWoodStripped {
     }
 
 
-    public BlockWoodStrippedDarkOak(int meta) {
-        super(meta);
+    public BlockWoodStrippedDarkOak(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

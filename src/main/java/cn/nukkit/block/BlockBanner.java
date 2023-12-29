@@ -34,8 +34,8 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
         this(0);
     }
 
-    public BlockBanner(int meta) {
-        super(meta);
+    public BlockBanner(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

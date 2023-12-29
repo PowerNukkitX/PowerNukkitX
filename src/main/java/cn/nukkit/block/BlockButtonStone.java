@@ -13,8 +13,8 @@ public class BlockButtonStone extends BlockButton {
         this(0);
     }
 
-    public BlockButtonStone(int meta) {
-        super(meta);
+    public BlockButtonStone(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -14,8 +14,8 @@ public class BlockDoubleSlabCopperCutWaxed extends BlockDoubleSlabCopperCut {
     }
 
 
-    public BlockDoubleSlabCopperCutWaxed(int meta) {
-        super(meta);
+    public BlockDoubleSlabCopperCutWaxed(BlockState blockstate) {
+        super(blockstate);
     }
 
 

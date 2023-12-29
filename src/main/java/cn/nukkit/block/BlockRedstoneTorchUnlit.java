@@ -18,8 +18,8 @@ public class BlockRedstoneTorchUnlit extends BlockTorch implements RedstoneCompo
         this(0);
     }
 
-    public BlockRedstoneTorchUnlit(int meta) {
-        super(meta);
+    public BlockRedstoneTorchUnlit(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

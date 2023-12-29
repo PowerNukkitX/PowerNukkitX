@@ -25,8 +25,8 @@ public class BlockPitcherPlant extends BlockFlowable {
     public BlockPitcherPlant() {
     }
 
-    public BlockPitcherPlant(int meta) {
-        super(meta);
+    public BlockPitcherPlant(BlockState blockstate) {
+        super(blockstate);
     }
 
     public int getId() {

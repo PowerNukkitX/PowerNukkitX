@@ -14,8 +14,8 @@ public class BlockStairsCopperCutWeatheredWaxed extends BlockStairsCopperCutWeat
     }
 
 
-    public BlockStairsCopperCutWeatheredWaxed(int meta) {
-        super(meta);
+    public BlockStairsCopperCutWeatheredWaxed(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

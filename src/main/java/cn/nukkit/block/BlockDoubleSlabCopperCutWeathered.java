@@ -17,8 +17,8 @@ public class BlockDoubleSlabCopperCutWeathered extends BlockDoubleSlabCopperCut 
     }
 
 
-    public BlockDoubleSlabCopperCutWeathered(int meta) {
-        super(meta);
+    public BlockDoubleSlabCopperCutWeathered(BlockState blockstate) {
+        super(blockstate);
     }
 
 

@@ -9,8 +9,8 @@ public class BlockStairsBlackstonePolished extends BlockStairsBlackstone {
     }
 
 
-    public BlockStairsBlackstonePolished(int meta) {
-        super(meta);
+    public BlockStairsBlackstonePolished(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

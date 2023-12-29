@@ -34,8 +34,8 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
         this(0);
     }
 
-    public BlockEndPortalFrame(int meta) {
-        super(meta);
+    public BlockEndPortalFrame(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -46,8 +46,8 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
         this(0);
     }
 
-    public BlockHopper(int meta) {
-        super(meta);
+    public BlockHopper(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -37,8 +37,8 @@ public class BlockSeaPickle extends BlockFlowable {
     }
 
 
-    protected BlockSeaPickle(int meta) {
-        super(meta);
+    protected BlockSeaPickle(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

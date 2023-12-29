@@ -12,8 +12,8 @@ public class BlockCrimsonSignPost extends BlockSignPost {
     }
 
 
-    public BlockCrimsonSignPost(int meta) {
-        super(meta);
+    public BlockCrimsonSignPost(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

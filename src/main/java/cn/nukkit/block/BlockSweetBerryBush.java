@@ -33,8 +33,8 @@ public class BlockSweetBerryBush extends BlockFlowable {
     }
 
 
-    public BlockSweetBerryBush(int meta) {
-        super(meta);
+    public BlockSweetBerryBush(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -31,8 +31,8 @@ public class BlockVine extends BlockTransparentMeta {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(VINE_DIRECTION_BITS);
 
-    public BlockVine(int meta) {
-        super(meta);
+    public BlockVine(BlockState blockstate) {
+        super(blockstate);
     }
 
     public BlockVine() {

@@ -17,8 +17,8 @@ public class BlockDoubleSlabBrickDeepslate extends BlockDoubleSlabBase {
     }
 
 
-    protected BlockDoubleSlabBrickDeepslate(int meta) {
-        super(meta);
+    protected BlockDoubleSlabBrickDeepslate(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

@@ -20,8 +20,8 @@ public class BlockStemPumpkin extends BlockCropsStem implements Faceable {
         this(0);
     }
 
-    public BlockStemPumpkin(int meta) {
-        super(meta);
+    public BlockStemPumpkin(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

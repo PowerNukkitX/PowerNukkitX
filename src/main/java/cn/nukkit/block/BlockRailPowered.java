@@ -20,8 +20,8 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
         canBePowered = true;
     }
 
-    public BlockRailPowered(int meta) {
-        super(meta);
+    public BlockRailPowered(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

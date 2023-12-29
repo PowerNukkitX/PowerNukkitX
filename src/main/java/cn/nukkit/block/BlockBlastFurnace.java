@@ -8,8 +8,8 @@ public class BlockBlastFurnace extends BlockBlastFurnaceBurning {
     }
 
 
-    public BlockBlastFurnace(int meta) {
-        super(meta);
+    public BlockBlastFurnace(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

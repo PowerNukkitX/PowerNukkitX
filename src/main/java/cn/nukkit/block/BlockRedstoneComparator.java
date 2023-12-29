@@ -38,8 +38,8 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
         this(0);
     }
 
-    public BlockRedstoneComparator(int meta) {
-        super(meta);
+    public BlockRedstoneComparator(BlockState blockstate) {
+        super(blockstate);
     }
 
 

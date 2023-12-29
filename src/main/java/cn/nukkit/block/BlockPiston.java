@@ -10,8 +10,8 @@ public class BlockPiston extends BlockPistonBase {
         this(0);
     }
 
-    public BlockPiston(int meta) {
-        super(meta);
+    public BlockPiston(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -53,8 +53,8 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
         this(0);
     }
 
-    public BlockDispenser(int meta) {
-        super(meta);
+    public BlockDispenser(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -13,8 +13,8 @@ public class BlockRedSandstone extends BlockSandstone {
         this(0);
     }
 
-    public BlockRedSandstone(int meta) {
-        super(meta);
+    public BlockRedSandstone(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

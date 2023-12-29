@@ -30,8 +30,8 @@ public class BlockKelp extends BlockFlowable {
     }
 
 
-    public BlockKelp(int meta) {
-        super(meta);
+    public BlockKelp(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

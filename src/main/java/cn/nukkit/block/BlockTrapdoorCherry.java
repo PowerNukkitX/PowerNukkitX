@@ -6,8 +6,8 @@ public class BlockTrapdoorCherry extends BlockTrapdoor {
         this(0);
     }
 
-    public BlockTrapdoorCherry(int meta) {
-        super(meta);
+    public BlockTrapdoorCherry(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

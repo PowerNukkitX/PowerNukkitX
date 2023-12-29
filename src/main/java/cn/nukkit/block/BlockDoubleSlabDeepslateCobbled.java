@@ -14,8 +14,8 @@ public class BlockDoubleSlabDeepslateCobbled extends BlockDoubleSlabBase {
     }
 
 
-    public BlockDoubleSlabDeepslateCobbled(int meta) {
-        super(meta);
+    public BlockDoubleSlabDeepslateCobbled(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

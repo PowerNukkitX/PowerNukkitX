@@ -10,8 +10,8 @@ public class BlockStairsSmoothRedSandstone extends BlockStairs {
     }
 
 
-    public BlockStairsSmoothRedSandstone(int meta) {
-        super(meta);
+    public BlockStairsSmoothRedSandstone(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

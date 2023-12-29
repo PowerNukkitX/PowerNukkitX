@@ -11,8 +11,8 @@ public class BlockSpruceWallSign extends BlockWallSign {
     }
 
 
-    public BlockSpruceWallSign(int meta) {
-        super(meta);
+    public BlockSpruceWallSign(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

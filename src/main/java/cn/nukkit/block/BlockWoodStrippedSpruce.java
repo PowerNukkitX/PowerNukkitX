@@ -10,8 +10,8 @@ public class BlockWoodStrippedSpruce extends BlockWoodStripped {
     }
 
 
-    public BlockWoodStrippedSpruce(int meta) {
-        super(meta);
+    public BlockWoodStrippedSpruce(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

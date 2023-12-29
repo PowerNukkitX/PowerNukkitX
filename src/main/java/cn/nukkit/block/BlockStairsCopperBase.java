@@ -16,8 +16,8 @@ import javax.annotation.Nullable;
 
 
 public abstract class BlockStairsCopperBase extends BlockStairs implements Waxable, Oxidizable {
-    public BlockStairsCopperBase(int meta) {
-        super(meta);
+    public BlockStairsCopperBase(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

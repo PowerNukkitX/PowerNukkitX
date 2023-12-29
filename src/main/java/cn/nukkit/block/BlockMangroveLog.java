@@ -11,8 +11,8 @@ public class BlockMangroveLog extends BlockLog {
         this(0);
     }
 
-    public BlockMangroveLog(int meta) {
-        super(meta);
+    public BlockMangroveLog(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -8,8 +8,8 @@ public class BlockTrapdoorJungle extends BlockTrapdoor {
     }
 
 
-    public BlockTrapdoorJungle(int meta) {
-        super(meta);
+    public BlockTrapdoorJungle(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

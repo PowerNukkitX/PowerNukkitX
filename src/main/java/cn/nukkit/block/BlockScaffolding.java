@@ -33,8 +33,8 @@ public class BlockScaffolding extends BlockFallableMeta {
     }
 
 
-    public BlockScaffolding(int meta) {
-        super(meta);
+    public BlockScaffolding(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -55,8 +55,8 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
     }
 
 
-    public BlockCampfire(int meta) {
-        super(meta);
+    public BlockCampfire(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

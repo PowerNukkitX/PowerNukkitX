@@ -23,8 +23,8 @@ public class BlockJigsaw extends BlockSolidMeta implements Faceable {
     }
 
 
-    public BlockJigsaw(int meta) {
-        super(meta);
+    public BlockJigsaw(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

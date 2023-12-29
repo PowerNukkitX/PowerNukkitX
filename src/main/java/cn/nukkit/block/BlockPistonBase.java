@@ -44,8 +44,8 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
     public boolean sticky = false;
 
-    public BlockPistonBase(int meta) {
-        super(meta);
+    public BlockPistonBase(BlockState blockstate) {
+        super(blockstate);
     }
 
     /**

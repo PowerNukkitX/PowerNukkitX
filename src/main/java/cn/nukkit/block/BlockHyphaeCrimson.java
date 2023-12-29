@@ -11,8 +11,8 @@ public class BlockHyphaeCrimson extends BlockStem {
     }
 
 
-    public BlockHyphaeCrimson(int meta) {
-        super(meta);
+    public BlockHyphaeCrimson(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

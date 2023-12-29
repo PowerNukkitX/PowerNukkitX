@@ -18,9 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Allay Project 12/15/2023
- *
- * @author Cool_Loong
+ * @author Cool_Loong | Mcayear | KoshakMineDEV | WWMB
  */
 public final class BlockRegistry extends BaseRegistry<String, Block, Class<? extends Block>> implements BlockID {
     private static final Set<String> KEYSET = new HashSet<>();

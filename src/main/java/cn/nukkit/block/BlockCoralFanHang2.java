@@ -24,8 +24,8 @@ public class BlockCoralFanHang2 extends BlockCoralFanHang {
     }
 
 
-    public BlockCoralFanHang2(int meta) {
-        super(meta);
+    public BlockCoralFanHang2(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

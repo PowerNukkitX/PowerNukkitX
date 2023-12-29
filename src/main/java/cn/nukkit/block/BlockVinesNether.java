@@ -41,8 +41,8 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      */
 
 
-    public BlockVinesNether(int meta) {
-        super(meta);
+    public BlockVinesNether(BlockState blockstate) {
+        super(blockstate);
     }
 
     /**

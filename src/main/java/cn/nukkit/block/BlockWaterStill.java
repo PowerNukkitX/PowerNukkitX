@@ -9,8 +9,8 @@ public class BlockWaterStill extends BlockWater {
         super(0);
     }
 
-    public BlockWaterStill(int meta) {
-        super(meta);
+    public BlockWaterStill(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

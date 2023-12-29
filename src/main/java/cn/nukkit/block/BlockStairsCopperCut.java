@@ -20,8 +20,8 @@ public class BlockStairsCopperCut extends BlockStairsCopperBase {
     }
 
 
-    public BlockStairsCopperCut(int meta) {
-        super(meta);
+    public BlockStairsCopperCut(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

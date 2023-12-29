@@ -6,8 +6,8 @@ public class BlockStairMangrove extends BlockStairsWood{
         this(0);
     }
 
-    public BlockStairMangrove(int meta) {
-        super(meta);
+    public BlockStairMangrove(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -17,8 +17,8 @@ public class BlockDoubleSlabWood extends BlockDoubleSlabBase {
         this(0);
     }
 
-    public BlockDoubleSlabWood(int meta) {
-        super(meta);
+    public BlockDoubleSlabWood(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

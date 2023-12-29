@@ -11,8 +11,8 @@ public class BlockWarpedSignPost extends BlockSignPost {
     }
 
 
-    public BlockWarpedSignPost(int meta) {
-        super(meta);
+    public BlockWarpedSignPost(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -10,8 +10,8 @@ public class BlockStairsDarkPrismarine extends BlockStairs {
     }
 
 
-    public BlockStairsDarkPrismarine(int meta) {
-        super(meta);
+    public BlockStairsDarkPrismarine(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

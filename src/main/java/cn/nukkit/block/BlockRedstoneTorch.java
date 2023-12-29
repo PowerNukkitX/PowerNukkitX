@@ -18,8 +18,8 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
         this(0);
     }
 
-    public BlockRedstoneTorch(int meta) {
-        super(meta);
+    public BlockRedstoneTorch(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

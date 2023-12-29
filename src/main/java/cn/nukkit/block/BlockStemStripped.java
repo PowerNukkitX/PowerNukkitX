@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 public abstract class BlockStemStripped extends BlockStem {
 
 
-    public BlockStemStripped(int meta) {
-        super(meta);
+    public BlockStemStripped(BlockState blockstate) {
+        super(blockstate);
     }
 
 

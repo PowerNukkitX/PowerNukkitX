@@ -34,8 +34,8 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
         this(0);
     }
 
-    public BlockChest(int meta) {
-        super(meta);
+    public BlockChest(BlockState blockstate) {
+        super(blockstate);
     }
 
 

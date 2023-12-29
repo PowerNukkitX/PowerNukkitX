@@ -11,8 +11,8 @@ public class BlockBirchWallSign extends BlockWallSign {
     }
 
 
-    public BlockBirchWallSign(int meta) {
-        super(meta);
+    public BlockBirchWallSign(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

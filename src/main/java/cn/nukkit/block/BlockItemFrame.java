@@ -47,8 +47,8 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
         this(0);
     }
 
-    public BlockItemFrame(int meta) {
-        super(meta);
+    public BlockItemFrame(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -30,8 +30,8 @@ public class BlockWood extends BlockLog {
         this(0);
     }
 
-    public BlockWood(int meta) {
-        super(meta);
+    public BlockWood(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

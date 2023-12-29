@@ -18,8 +18,8 @@ public class BlockDoubleSlabCopperCut extends BlockDoubleSlabCopperBase {
     }
 
 
-    public BlockDoubleSlabCopperCut(int meta) {
-        super(meta);
+    public BlockDoubleSlabCopperCut(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

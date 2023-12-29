@@ -40,8 +40,8 @@ public class BlockBricksStone extends BlockSolidMeta {
         this(0);
     }
 
-    public BlockBricksStone(int meta) {
-        super(meta);
+    public BlockBricksStone(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

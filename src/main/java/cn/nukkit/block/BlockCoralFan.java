@@ -30,8 +30,8 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
     }
 
 
-    public BlockCoralFan(int meta) {
-        super(meta);
+    public BlockCoralFan(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override
