@@ -1,8 +1,9 @@
 package cn.nukkit.block;
 
+import cn.nukkit.utils.DyeColor;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockYellowWool extends Block {
+public class BlockYellowWool extends BlockWool {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:yellow_wool");
 
     @Override
@@ -16,5 +17,10 @@ public class BlockYellowWool extends Block {
 
     public BlockYellowWool(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public DyeColor getDyeColor() {
+        return DyeColor.YELLOW;
     }
 }
