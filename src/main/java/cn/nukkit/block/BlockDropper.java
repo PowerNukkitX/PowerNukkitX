@@ -16,6 +16,11 @@ public class BlockDropper extends BlockDispenser {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(DROPPER);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockDropper() {
         this(PROPERTIES.getDefaultState());
     }
