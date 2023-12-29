@@ -864,8 +864,8 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(STONE_PRESSURE_PLATE, BlockStonePressurePlate.class);
         register(STONE_STAIRS, BlockStoneStairs.class);
         register(STONEBRICK, BlockStonebrick.class);
-        register(STONECUTTER, BlockStonecutter.class);
-        register(STONECUTTER_BLOCK, BlockStonecutterBlock.class);
+        register(STONECUTTER, BlockStonecutter.class);// done.
+        register(STONECUTTER_BLOCK, BlockStonecutterBlock.class);// done.
         register(STRIPPED_ACACIA_LOG, BlockStrippedAcaciaLog.class);// done.
         register(STRIPPED_BAMBOO_BLOCK, BlockStrippedBambooBlock.class);
         register(STRIPPED_BIRCH_LOG, BlockStrippedBirchLog.class);// done.
