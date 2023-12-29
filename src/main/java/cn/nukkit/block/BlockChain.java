@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemChain;
 import cn.nukkit.item.ItemTool;
@@ -11,14 +11,17 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
-
 
 public class BlockChain extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:chain", CommonBlockProperties.PILLAR_AXIS);
 
 
     public BlockChain() {
-        // Does nothing
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockChain(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -26,26 +29,21 @@ public class BlockChain extends BlockTransparent {
         return "Chain";
     }
 
-    @Override
-    public int getId() {
-        return CHAIN_BLOCK;
-    }
-
 
     @NotNull
     @Override
     public BlockProperties getProperties() {
-        return BlockLog.PILLAR_PROPERTIES;
+        return PROPERTIES;
     }
 
 
     public BlockFace.Axis getPillarAxis() {
-        return getPropertyValue(PILLAR_AXIS);
+        return getPropertyValue(CommonBlockProperties.PILLAR_AXIS);
     }
 
 
     public void setPillarAxis(BlockFace.Axis axis) {
-        setPropertyValue(PILLAR_AXIS, axis);
+        setPropertyValue(CommonBlockProperties.PILLAR_AXIS, axis);
     }
 
     @Override

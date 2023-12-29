@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockCrimsonButton extends Block {
+public class BlockCrimsonButton extends BlockWoodenButton {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:crimson_button", CommonBlockProperties.BUTTON_PRESSED_BIT, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
@@ -17,5 +17,10 @@ public class BlockCrimsonButton extends Block {
 
     public BlockCrimsonButton(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Crimson Button";
     }
 }

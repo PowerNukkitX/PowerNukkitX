@@ -1,41 +1,25 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
-
-public abstract class BlockDoubleSlabBase extends BlockSolidMeta {
-
-
-    public BlockDoubleSlabBase(int meta) {
-        super(meta);
+public abstract class BlockDoubleSlabBase extends BlockSolid {
+    protected BlockDoubleSlabBase(BlockState blockState) {
+        super(blockState);
     }
-
-
-    public BlockDoubleSlabBase(){}
 
     @Override
     public String getName() {
         return "Double "+getSlabName()+" Slab";
     }
 
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return BlockSlab.SIMPLE_SLAB_PROPERTIES;
-    }
-
-
     public abstract String getSlabName();
 
-
-    public abstract int getSingleSlabId();
+    public abstract String getSingleSlabId();
 
     @Override
     public Item toItem() {
-        return getBlockState().forItem().withBlockId(getSingleSlabId()).asItemBlock();
+        return Block.get(getSingleSlabId()).toItem();
     }
 
 

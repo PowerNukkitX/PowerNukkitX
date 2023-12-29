@@ -8,7 +8,7 @@ import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 
-public class BlockMangroveRoots extends BlockTransparentMeta {
+public class BlockMangroveRoots extends BlockTransparent {
     public BlockMangroveRoots() {
         super(0);
     }

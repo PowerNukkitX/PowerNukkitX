@@ -7,11 +7,11 @@ package cn.nukkit.block.property.enums;
  * @author daoge_cmd
  */
 public enum OldLeafType {
-    BIRCH,
-
-    JUNGLE,
-
     OAK,
 
-    SPRUCE
+    SPRUCE,
+
+    BIRCH,
+
+    JUNGLE
 }

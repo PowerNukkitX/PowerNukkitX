@@ -1,19 +1,20 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 
 public class BlockBambooSlab extends BlockSlab {
-    public BlockBambooSlab() {
-        this(0);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public BlockBambooSlab(int meta) {
-        super(meta, BAMBOO_DOUBLE_SLAB);
-    }
-
-    public int getId() {
-        return BAMBOO_SLAB;
+    public BlockBambooSlab(BlockState blockState) {
+        super(blockState, BAMBOO_DOUBLE_SLAB);
     }
 
     @Override

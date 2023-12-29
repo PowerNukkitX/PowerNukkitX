@@ -5,23 +5,30 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockIce extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:ice");
 
     public BlockIce() {
+        super(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return ICE;
+    public BlockIce(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "Ice";
+    }
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override

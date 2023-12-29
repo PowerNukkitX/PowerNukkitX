@@ -1,9 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockproperty.value.WoodType;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
@@ -23,41 +21,26 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author LoboMetalurgico
  * @since 13/06/2021
  */
-
-
 public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:azalea");
 
-
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
-
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockAzalea() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-
-
-    public BlockAzalea(int meta) {
-        super(meta);
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
+    public BlockAzalea(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
     public String getName() {
         return "Azalea";
     }
-
-    @Override
-    public int getId() {
-        return AZALEA;
-    }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -160,10 +143,9 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
         return true;
     }
 
-
-    public boolean isSameType(Vector3 pos, WoodType type) {
+    public boolean isSameType(Vector3 pos) {
         Block block = this.level.getBlock(pos);
-        return block.getId() == this.getId() && ((BlockSapling) block).getWoodType() == type;
+        return block.getId().equals(this.getId()) && block.getProperties() == this.getProperties();
     }
 
     private void grow() {
@@ -184,6 +166,6 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
         for (Block block : ev.getBlockList()) {
             this.level.setBlock(block, block);
         }
-        this.level.setBlock(this, Block.get(LOG));
+        this.level.setBlock(this, Block.get(OAK_LOG));
     }
 }

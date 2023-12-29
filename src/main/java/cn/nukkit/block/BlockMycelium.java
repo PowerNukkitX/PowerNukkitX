@@ -2,6 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.DirtType;
 import cn.nukkit.event.block.BlockSpreadEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -17,8 +19,15 @@ import org.jetbrains.annotations.NotNull;
  * @since 03.01.2016
  */
 public class BlockMycelium extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:mycelium");
+
 
     public BlockMycelium() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockMycelium(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -27,8 +36,8 @@ public class BlockMycelium extends BlockSolid {
     }
 
     @Override
-    public int getId() {
-        return MYCELIUM;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override
@@ -63,7 +72,7 @@ public class BlockMycelium extends BlockSolid {
                 y = random.nextRange((int) y - 1, (int) y + 1);
                 z = random.nextRange((int) z - 1, (int) z + 1);
                 Block block = this.getLevel().getBlock(new Vector3(x, y, z));
-                if (block.getId() == Block.DIRT && block.getDamage() == 0) {
+                if (block.getId().equals(Block.DIRT) && block.getPropertyValue(CommonBlockProperties.DIRT_TYPE) == DirtType.NORMAL) {
                     if (block.up().isTransparent()) {
                         BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.MYCELIUM));
                         Server.getInstance().getPluginManager().callEvent(ev);

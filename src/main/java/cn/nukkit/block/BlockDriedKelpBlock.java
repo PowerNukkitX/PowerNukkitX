@@ -1,22 +1,29 @@
 package cn.nukkit.block;
 
 
-public class BlockDriedKelpBlock extends BlockSolid {
+import org.jetbrains.annotations.NotNull;
 
+public class BlockDriedKelpBlock extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:dried_kelp_block");
 
     public BlockDriedKelpBlock() {
+        super(PROPERTIES.getDefaultState());
     }
-    
-    @Override
-    public int getId() {
-        return DRIED_KELP_BLOCK;
+
+    public BlockDriedKelpBlock(BlockState blockState) {
+        super(blockState);
     }
     
     @Override
     public String getName() {
         return "Dried Kelp Block";
     }
-    
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     @Override
     public double getHardness() {
         return 0.5F;

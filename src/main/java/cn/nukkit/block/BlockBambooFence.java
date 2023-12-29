@@ -1,12 +1,22 @@
 package cn.nukkit.block;
 
 
-public class BlockBambooFence extends BlockFenceBase {
-    public BlockBambooFence() {
+import org.jetbrains.annotations.NotNull;
+
+public class BlockBambooFence extends BlockFence {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:bamboo_fence");
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public int getId() {
-        return BAMBOO_FENCE;
+    public BlockBambooFence() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBambooFence(BlockState blockstate) {
+        super(blockstate);
     }
 
     public String getName() {

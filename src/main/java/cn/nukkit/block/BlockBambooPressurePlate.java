@@ -1,17 +1,13 @@
 package cn.nukkit.block;
 
 
-public class BlockBambooPressurePlate extends BlockPressurePlateWood {
-    public BlockBambooPressurePlate(int meta) {
-        super(meta);
-    }
+import cn.nukkit.block.property.CommonBlockProperties;
 
-    public BlockBambooPressurePlate() {
-        this(0);
-    }
+public class BlockBambooPressurePlate extends BlockWoodenPressurePlate {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_PRESSURE_PLATE, CommonBlockProperties.REDSTONE_SIGNAL);
 
-    public int getId() {
-        return BAMBOO_PRESSURE_PLATE;
+    public BlockBambooPressurePlate(BlockState blockState) {
+        super(blockState);
     }
 
     public String getName() {

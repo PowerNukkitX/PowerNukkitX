@@ -2,14 +2,17 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
-/**
- * @author Pub4Game
- * @since 27.12.2015
- */
 public class BlockMobSpawner extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:mob_spawner");
 
     public BlockMobSpawner() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockMobSpawner(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -18,8 +21,8 @@ public class BlockMobSpawner extends BlockSolid {
     }
 
     @Override
-    public int getId() {
-        return MOB_SPAWNER;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override

@@ -1,12 +1,27 @@
 package cn.nukkit.block;
 
 
+import cn.nukkit.block.property.CommonBlockProperties;
+import org.jetbrains.annotations.NotNull;
+
 public class BlockBambooHangingSign extends BlockHangingSign {
-    public BlockBambooHangingSign() {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_HANGING_SIGN,
+            CommonBlockProperties.ATTACHED_BIT,
+            CommonBlockProperties.FACING_DIRECTION,
+            CommonBlockProperties.GROUND_SIGN_DIRECTION,
+            CommonBlockProperties.HANGING);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public int getId() {
-        return BAMBOO_HANGING_SIGN;
+    public BlockBambooHangingSign() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBambooHangingSign(BlockState blockstate) {
+        super(blockstate);
     }
 
     public String getName() {

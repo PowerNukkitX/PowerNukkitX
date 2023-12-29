@@ -1,7 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntitySmallFireBall;
 import cn.nukkit.item.Item;
@@ -11,15 +9,20 @@ import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
 
-public class BlockPowderSnow extends BlockTransparentMeta {
-    @Override
-    public String getName() {
-        return "Powder Snow";
+public class BlockPowderSnow extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:powder_snow");
+
+    public BlockPowderSnow() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockPowderSnow(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
-    public int getId() {
-        return BlockID.POWDER_SNOW;
+    public String getName() {
+        return "Powder Snow";
     }
 
     @Override
@@ -57,7 +60,7 @@ public class BlockPowderSnow extends BlockTransparentMeta {
     @NotNull
     @Override
     public BlockProperties getProperties() {
-        return CommonBlockProperties.EMPTY_PROPERTIES;
+        return PROPERTIES;
     }
 
     @Override

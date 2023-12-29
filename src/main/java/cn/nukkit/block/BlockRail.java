@@ -338,7 +338,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     /**
      * Changes the active flag and update the state in the world in a single call.
      * <p>
-     * The active flag will not change if the block state don't have the {@link #ACTIVE} property,
+     * The active flag will not change if the block state don't have the {@link CommonBlockProperties#ACTIVE} property,
      * and it will not throw exceptions related to missing block properties.
      * <p>
      * The level block will always update.
@@ -361,7 +361,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     }
 
     /**
-     * @throws NoSuchElementException If attempt to set the rail to active but it don't have the {@link #ACTIVE} property.
+     * @throws NoSuchElementException If attempt to set the rail to active but it don't have the {@link CommonBlockProperties#ACTIVE} property.
      */
     public void setRailActive(boolean active){
         if (!active && !getProperties().containProperty(CommonBlockProperties.ACTIVE)) {

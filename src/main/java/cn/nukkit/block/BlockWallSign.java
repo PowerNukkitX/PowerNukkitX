@@ -11,7 +11,6 @@ import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
  * @author Pub4Game
  * @since 26.12.2015
  */
-
 public class BlockWallSign extends BlockStandingSign {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:wall_sign", FACING_DIRECTION);
 
@@ -36,7 +35,7 @@ public class BlockWallSign extends BlockStandingSign {
     }
 
     @Override
-    protected String getStandingSignId() {
+    public String getStandingSignId() {
         return STANDING_SIGN;
     }
 

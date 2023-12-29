@@ -1,52 +1,39 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
+
+import static cn.nukkit.block.property.CommonBlockProperties.INFINIBURN_BIT;
 
 /**
  * @author Angelic47 (Nukkit Project)
  * @apiNote Extends BlockSolidMeta instead of BlockSolid only in PowerNukkit
  */
 
-public class BlockBedrock extends BlockSolidMeta {
+public class BlockBedrock extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:bedrock", INFINIBURN_BIT);
 
-
-    public static final BooleanBlockProperty INFINIBURN = new BooleanBlockProperty("infiniburn_bit", true);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(INFINIBURN);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockBedrock() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-
-    public BlockBedrock(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return BEDROCK;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
+    public BlockBedrock(BlockState blockstate) {
+        super(blockstate);
     }
 
 
     public boolean getBurnIndefinitely() {
-        return getBooleanValue(INFINIBURN);
+        return getPropertyValue(INFINIBURN_BIT);
     }
 
 
     public void setBurnIndefinitely(boolean infiniburn) {
-        setBooleanValue(INFINIBURN, infiniburn);
+        setPropertyValue(INFINIBURN_BIT, infiniburn);
     }
 
     @Override
@@ -76,7 +63,7 @@ public class BlockBedrock extends BlockSolidMeta {
 
     @Override
 
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 

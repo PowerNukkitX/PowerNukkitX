@@ -100,6 +100,7 @@ public interface CommonBlockProperties {
 
     IntPropertyType DEPRECATED = IntPropertyType.of("deprecated", 0, 3, 0);
 
+    // Horizontal-index based
     IntPropertyType DIRECTION = IntPropertyType.of("direction", 0, 3, 0);
 
     EnumPropertyType<DirtType> DIRT_TYPE = EnumPropertyType.of("dirt_type", DirtType.class, DirtType.values()[0]);
@@ -158,11 +159,11 @@ public interface CommonBlockProperties {
 
     BooleanPropertyType LIT = BooleanPropertyType.of("lit", false);
 
-    EnumPropertyType<MinecraftBlockFace> MINECRAFT_BLOCK_FACE = EnumPropertyType.of("minecraft:block_face", MinecraftBlockFace.class, MinecraftBlockFace.values()[0]);
+    EnumPropertyType<BlockFace> MINECRAFT_BLOCK_FACE = EnumPropertyType.of("minecraft:block_face", BlockFace.class, BlockFace.DOWN);
 
     EnumPropertyType<MinecraftCardinalDirection> MINECRAFT_CARDINAL_DIRECTION = EnumPropertyType.of("minecraft:cardinal_direction", MinecraftCardinalDirection.class, MinecraftCardinalDirection.values()[0]);
 
-    EnumPropertyType<MinecraftFacingDirection> MINECRAFT_FACING_DIRECTION = EnumPropertyType.of("minecraft:facing_direction", MinecraftFacingDirection.class, MinecraftFacingDirection.values()[0]);
+    EnumPropertyType<BlockFace> MINECRAFT_FACING_DIRECTION = EnumPropertyType.of("minecraft:facing_direction", BlockFace.class, BlockFace.values()[0]);
 
     EnumPropertyType<MinecraftVerticalHalf> MINECRAFT_VERTICAL_HALF = EnumPropertyType.of("minecraft:vertical_half", MinecraftVerticalHalf.class, MinecraftVerticalHalf.values()[0]);
 
@@ -190,7 +191,7 @@ public interface CommonBlockProperties {
 
     EnumPropertyType<BlockFace.Axis> PILLAR_AXIS = EnumPropertyType.of("pillar_axis", BlockFace.Axis.class, BlockFace.Axis.values()[0]);
 
-    EnumPropertyType<BlockFace.Axis> PORTAL_AXIS = EnumPropertyType.of("portal_axis", BlockFace.Axis.class, BlockFace.Axis.values()[0]);
+    EnumPropertyType<PortalAxis> PORTAL_AXIS = EnumPropertyType.of("portal_axis", PortalAxis.class, PortalAxis.values()[0]);
 
     BooleanPropertyType POWERED_BIT = BooleanPropertyType.of("powered_bit", false);
 

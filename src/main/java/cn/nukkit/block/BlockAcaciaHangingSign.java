@@ -11,14 +11,17 @@ public class BlockAcaciaHangingSign extends BlockHangingSign {
             CommonBlockProperties.GROUND_SIGN_DIRECTION,
             CommonBlockProperties.HANGING
     );
+    public BlockAcaciaHangingSign() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockAcaciaHangingSign(BlockState blockstate) {
+        super(blockstate);
+    }
 
     @Override
     public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
-    }
-
-    public BlockAcaciaHangingSign() {
-        super(PROPERTIES.getDefaultState());
     }
 
     public String getName() {

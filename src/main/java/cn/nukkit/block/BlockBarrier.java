@@ -1,6 +1,10 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
+import org.jetbrains.annotations.NotNull;
+
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.OPEN_BIT;
 
 /**
  * @author Pub4Game
@@ -8,14 +12,14 @@ import cn.nukkit.item.Item;
  */
 
 public class BlockBarrier extends BlockSolid {
-
+    public static final BlockProperties PROPERTIES = new BlockProperties(BARRIER);
 
     public BlockBarrier() {
+        this(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return BARRIER;
+    public BlockBarrier(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -23,6 +27,10 @@ public class BlockBarrier extends BlockSolid {
         return "Barrier";
     }
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     @Override
     public int getWaterloggingLevel() {

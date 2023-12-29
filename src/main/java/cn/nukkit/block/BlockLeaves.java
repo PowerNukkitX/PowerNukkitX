@@ -3,10 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
-import cn.nukkit.blockproperty.value.WoodType;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.OldLeafType;
 import cn.nukkit.event.block.LeavesDecayEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -24,55 +22,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.block.property.CommonBlockProperties.*;
+
 /**
  * @author Angelic47 (Nukkit Project)
  */
-public class BlockLeaves extends BlockTransparentMeta {
+public class BlockLeaves extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:leaves",
+            OLD_LEAF_TYPE,
+            PERSISTENT_BIT,
+            UPDATE_BIT
+    );
 
-    public static final ArrayBlockProperty<WoodType> OLD_LEAF_TYPE = new ArrayBlockProperty<>("old_leaf_type", true, new WoodType[]{
-            WoodType.OAK, WoodType.SPRUCE, WoodType.BIRCH, WoodType.JUNGLE
-    });
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
-
-    public static final BooleanBlockProperty PERSISTENT = new BooleanBlockProperty("persistent_bit", false);
-
-
-    public static final BooleanBlockProperty UPDATE = new BooleanBlockProperty("update_bit", false);
-
-
-    public static final BlockProperties OLD_LEAF_PROPERTIES = new BlockProperties(OLD_LEAF_TYPE, PERSISTENT, UPDATE);
-    
     private static final BlockFace[] VISIT_ORDER = new BlockFace[]{
             BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.DOWN, BlockFace.UP
     };
     
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
-    public static final int OAK = 0;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
-    public static final int SPRUCE = 1;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
-    public static final int BIRCH = 2;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
-    public static final int JUNGLE = 3;
-
     public BlockLeaves() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockLeaves(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return LEAVES;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return OLD_LEAF_PROPERTIES;
+    public BlockLeaves(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -86,18 +62,18 @@ public class BlockLeaves extends BlockTransparentMeta {
     }
 
 
-    public WoodType getType() {
+    public OldLeafType getType() {
         return getPropertyValue(OLD_LEAF_TYPE);
     }
 
 
-    public void setType(WoodType type) {
+    public void setType(OldLeafType type) {
         setPropertyValue(OLD_LEAF_TYPE, type);
     }
 
     @Override
     public String getName() {
-        return getType().getEnglishName() + " Leaves";
+        return getType().name() + " Leaves";
     }
 
     @Override
@@ -142,22 +118,22 @@ public class BlockLeaves extends BlockTransparentMeta {
             case 0 -> {
                 appleOdds = 200;
                 stickOdds = 50;
-                saplingOdds = getType() == WoodType.JUNGLE ? 40 : 20;
+                saplingOdds = getType() == OldLeafType.JUNGLE ? 40 : 20;
             }
             case 1 -> {
                 appleOdds = 180;
                 stickOdds = 45;
-                saplingOdds = getType() == WoodType.JUNGLE ? 36 : 16;
+                saplingOdds = getType() == OldLeafType.JUNGLE ? 36 : 16;
             }
             case 2 -> {
                 appleOdds = 160;
                 stickOdds = 40;
-                saplingOdds = getType() == WoodType.JUNGLE ? 32 : 12;
+                saplingOdds = getType() == OldLeafType.JUNGLE ? 32 : 12;
             }
             default -> {
                 appleOdds = 120;
                 stickOdds = 30;
-                saplingOdds = getType() == WoodType.JUNGLE ? 24 : 10;
+                saplingOdds = getType() == OldLeafType.JUNGLE ? 24 : 10;
             }
         }
 
@@ -236,19 +212,19 @@ public class BlockLeaves extends BlockTransparentMeta {
     }
     
     public boolean isCheckDecay() {
-        return getBooleanValue(UPDATE);
+        return getPropertyValue(UPDATE_BIT);
     }
 
     public void setCheckDecay(boolean checkDecay) {
-        setBooleanValue(UPDATE, checkDecay);
+        setPropertyValue(UPDATE_BIT, checkDecay);
     }
 
     public boolean isPersistent() {
-        return getBooleanValue(PERSISTENT);
+        return getPropertyValue(PERSISTENT_BIT);
     }
 
     public void setPersistent(boolean persistent) {
-        setBooleanValue(PERSISTENT, persistent);
+        setPropertyValue(PERSISTENT_BIT, persistent);
     }
 
     @Override
@@ -257,19 +233,17 @@ public class BlockLeaves extends BlockTransparentMeta {
     }
 
     protected boolean canDropApple() {
-        return getType() == WoodType.OAK;
+        return getType() == OldLeafType.OAK;
     }
 
     protected Item getSapling() {
-        return Item.get(BlockID.SAPLING, getIntValue(OLD_LEAF_TYPE));
+        return Item.get(BlockID.SAPLING, getPropertyValue(OLD_LEAF_TYPE).ordinal());
     }
-
 
     @Override
     public boolean diffusesSkyLight() {
         return true;
     }
-
 
     @Override
 

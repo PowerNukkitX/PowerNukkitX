@@ -1,10 +1,9 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBed;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockExplosionPrimeEvent;
 import cn.nukkit.item.Item;
@@ -27,51 +26,35 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.*;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 
 @Log4j2
-public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEntityHolder<BlockEntityBed> {
-
-
-    public static final BooleanBlockProperty HEAD_PIECE = new BooleanBlockProperty("head_piece_bit", false);
-
-
-    public static final BooleanBlockProperty OCCUPIED = new BooleanBlockProperty("occupied_bit", false);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, OCCUPIED, HEAD_PIECE);
-
-    public BlockBed() {
-        this(0);
-    }
-
-    public BlockBed(int meta) {
-        super(meta);
-    }
+public class BlockBed extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityBed> {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BED,
+            DIRECTION, CommonBlockProperties.HEAD_PIECE_BIT, CommonBlockProperties.OCCUPIED_BIT);
 
     @Override
-    public int getId() {
-        return BED_BLOCK;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 
+    public BlockBed() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBed(BlockState blockstate) {
+        super(blockstate);
+    }
 
     @NotNull
     @Override
     public Class<? extends BlockEntityBed> getBlockEntityClass() {
         return BlockEntityBed.class;
     }
-
 
     @NotNull
     @Override
@@ -132,7 +115,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
                 if (player != null && !willExplode) {
                     player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.bed.notValid"));
                 }
-                
+
                 if (!shouldExplode) {
                     return true;
                 }
@@ -151,7 +134,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
             if (event.isCancelled()) {
                 return true;
             }
-            
+
             level.setBlock(this, get(AIR), false, false);
             onBreak(Item.getBlockItem(BlockID.AIR));
             level.updateAround(this);
@@ -227,23 +210,23 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
         if (!next.canBeReplaced() || !(BlockLever.isSupportValid(downNext, BlockFace.UP) || downNext instanceof BlockCauldron)) {
             return false;
         }
-        
+
         Block thisLayer0 = level.getBlock(this, 0);
         Block thisLayer1 = level.getBlock(this, 1);
         Block nextLayer0 = level.getBlock(next, 0);
         Block nextLayer1 = level.getBlock(next, 1);
-        
+
         setBlockFace(direction);
 
         level.setBlock(block, this, true, true);
         if (next instanceof BlockLiquid && ((BlockLiquid) next).usesWaterLogging()) {
             level.setBlock(next, 1, next, true, false);
         }
-        
+
         BlockBed head = (BlockBed) clone();
         head.setHeadPiece(true);
         level.setBlock(next, head, true, true);
-        
+
         BlockEntityBed thisBed = null;
         try {
             thisBed = createBlockEntity(new CompoundTag().putByte("color", item.getAux()));
@@ -268,12 +251,12 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
         BlockFace direction = getBlockFace();
         if (isHeadPiece()) { //This is the Top part of bed
             Block other = getSide(direction.getOpposite());
-            if (other.getId() == getId() && !((BlockBed) other).isHeadPiece() && direction.equals(((BlockBed) other).getBlockFace())) {
+            if (other.getId().equals(getId()) && !((BlockBed) other).isHeadPiece() && direction.equals(((BlockBed) other).getBlockFace())) {
                 getLevel().setBlock(other, Block.get(BlockID.AIR), true, true);
             }
         } else { //Bottom Part of Bed
             Block other = getSide(direction);
-            if (other.getId() == getId() && ((BlockBed) other).isHeadPiece() && direction.equals(((BlockBed) other).getBlockFace())) {
+            if (other.getId().equals(getId()) && ((BlockBed) other).isHeadPiece() && direction.equals(((BlockBed) other).getBlockFace())) {
                 getLevel().setBlock(other, Block.get(BlockID.AIR), true, true);
             }
         }
@@ -302,33 +285,33 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(DIRECTION);
+        return BlockFace.fromHorizontalIndex(getPropertyValue(DIRECTION));
     }
 
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(DIRECTION, face);
+        setPropertyValue(DIRECTION,face.getHorizontalIndex());
     }
 
 
     public boolean isHeadPiece() {
-        return getBooleanValue(HEAD_PIECE);
+        return getPropertyValue(HEAD_PIECE_BIT);
     }
 
 
     public void setHeadPiece(boolean headPiece) {
-        setBooleanValue(HEAD_PIECE, headPiece);
+        setPropertyValue(HEAD_PIECE_BIT, headPiece);
     }
 
 
     public boolean isOccupied() {
-        return getBooleanValue(OCCUPIED);
+        return getPropertyValue(OCCUPIED_BIT);
     }
 
 
     public void setOccupied(boolean occupied) {
-        setBooleanValue(OCCUPIED, occupied);
+        setPropertyValue(OCCUPIED_BIT, occupied);
     }
 
     @Override
@@ -339,7 +322,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
 
     @Override
 
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 
@@ -355,8 +338,8 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
             head = getSide(dir);
             foot = this;
         }
-        
-        return head.getId() == foot.getId() 
+
+        return head.getId().equals(foot.getId())
                 && ((BlockBed) head).isHeadPiece() && ((BlockBed) head).getBlockFace().equals(dir)
                 && !((BlockBed) foot).isHeadPiece() && ((BlockBed) foot).getBlockFace().equals(dir);
     }
@@ -369,7 +352,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
         }
         BlockFace dir = getBlockFace();
         Block head = getSide(dir);
-        if (head.getId() == getId() && ((BlockBed) head).isHeadPiece() && ((BlockBed) head).getBlockFace().equals(dir)) {
+        if (head.getId().equals(getId()) && ((BlockBed) head).isHeadPiece() && ((BlockBed) head).getBlockFace().equals(dir)) {
             return (BlockBed) head;
         }
         return null;
@@ -381,10 +364,10 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
         if (!isHeadPiece()) {
             return this;
         }
-        
+
         BlockFace dir = getBlockFace();
         Block foot = getSide(dir.getOpposite());
-        if (foot.getId() == getId() && !((BlockBed) foot).isHeadPiece() && ((BlockBed) foot).getBlockFace().equals(dir)) {
+        if (foot.getId().equals(getId()) && !((BlockBed) foot).isHeadPiece() && ((BlockBed) foot).getBlockFace().equals(dir)) {
             return (BlockBed) foot;
         }
         return null;

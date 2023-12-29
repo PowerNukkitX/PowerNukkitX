@@ -4,6 +4,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemGlowstoneDust;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.MathHelper;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
@@ -12,7 +13,13 @@ import java.util.Random;
  * @since 2015/12/6
  */
 public class BlockGlowstone extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:glowstone");
     public BlockGlowstone() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockGlowstone(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -21,8 +28,8 @@ public class BlockGlowstone extends BlockTransparent {
     }
 
     @Override
-    public int getId() {
-        return GLOWSTONE;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override

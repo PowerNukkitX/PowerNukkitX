@@ -16,16 +16,20 @@ import javax.annotation.Nullable;
  */
 
 public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<BlockEntityBeacon> {
-
-    public BlockBeacon() {
-        // Does nothing
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(BEACON);
 
     @Override
-    public int getId() {
-        return BEACON;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
+    public BlockBeacon() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBeacon(BlockState blockstate) {
+        super(blockstate);
+    }
 
     @NotNull
     @Override

@@ -12,14 +12,15 @@ import cn.nukkit.nbt.tag.*;
  */
 public abstract class BlockFallable extends BlockSolid {
 
-    protected BlockFallable() {
+    protected BlockFallable(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
     public int onUpdate(int type) {
         Block down = this.down();
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if ((down.getId() == AIR || down instanceof BlockFire || down instanceof BlockLiquid ||
+            if ((down.isAir() || down instanceof BlockFire || down instanceof BlockLiquid ||
                     (down instanceof BlockBubbleColumn && down.getLevelBlockAtLayer(1) instanceof BlockLiquid))) {
                 BlockFallEvent event = new BlockFallEvent(this);
                 this.level.getServer().getPluginManager().callEvent(event);

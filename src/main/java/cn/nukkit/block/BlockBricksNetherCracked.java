@@ -5,7 +5,7 @@ package cn.nukkit.block;
  */
 
 
-public class BlockBricksNetherCracked extends BlockBricksNether {
+public class BlockBricksNetherCracked extends BlockNetherBrick {
 
 
     public BlockBricksNetherCracked() {

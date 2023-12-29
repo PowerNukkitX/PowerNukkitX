@@ -1,10 +1,6 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BlockProperty;
-import cn.nukkit.blockproperty.value.StoneType;
+import cn.nukkit.block.property.enums.StoneType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
@@ -12,55 +8,28 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class BlockStone extends BlockSolidMeta {
+public class BlockStone extends BlockSolid{
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:stone");
 
-
-    public static final BlockProperty<StoneType> STONE_TYPE = new ArrayBlockProperty<>("stone_type", true, StoneType.class);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(STONE_TYPE);
-    
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", replaceWith = "getStoneType()", reason = "Use the BlockProperty API instead")
-    public static final int NORMAL = 0;
-
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", replaceWith = "getStoneType()", reason = "Use the BlockProperty API instead")
+    /*
     public static final int GRANITE = 1;
 
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", replaceWith = "getStoneType()", reason = "Use the BlockProperty API instead")
     public static final int POLISHED_GRANITE = 2;
 
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", replaceWith = "getStoneType()", reason = "Use the BlockProperty API instead")
     public static final int DIORITE = 3;
 
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", replaceWith = "getStoneType()", reason = "Use the BlockProperty API instead")
     public static final int POLISHED_DIORITE = 4;
 
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", replaceWith = "getStoneType()", reason = "Use the BlockProperty API instead")
-    public static final int ANDESITE = 5;
-
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", replaceWith = "getStoneType()", reason = "Use the BlockProperty API instead")
     public static final int POLISHED_ANDESITE = 6;
+    */
 
     public BlockStone() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockStone(int meta) {
-        super(meta);
+    public BlockStone(BlockState blockState) {
+        super(blockState);
     }
-
-    @Override
-    public int getId() {
-        return STONE;
-    }
-
 
     @NotNull
     @Override
@@ -84,22 +53,11 @@ public class BlockStone extends BlockSolidMeta {
     }
 
 
-    public StoneType getStoneType() {
-        return getPropertyValue(STONE_TYPE);
-    }
-
-
-    public void setStoneType(StoneType stoneType) {
-        setPropertyValue(STONE_TYPE, stoneType);
+    public StoneType stoneType() {
+        return StoneType.STONE;
     }
 
     @Override
-    public String getName() {
-        return getStoneType().getEnglishName();
-    }
-
-    @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -108,7 +66,7 @@ public class BlockStone extends BlockSolidMeta {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= getToolTier()) {
             return new Item[]{
-                    StoneType.STONE.equals(getStoneType())
+                    StoneType.STONE.equals(stoneType())
                             ? Item.getBlockItem(BlockID.COBBLESTONE)
                             : toItem()
             };

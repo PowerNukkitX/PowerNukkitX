@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
@@ -13,14 +11,12 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.BLOCK_FACE;
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_BLOCK_FACE;
 
-
-public abstract class BlockAmethystBud extends BlockTransparentMeta implements Faceable {
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(BLOCK_FACE);
+public abstract class BlockAmethystBud extends BlockTransparent implements Faceable {
+    protected BlockAmethystBud(BlockState blockState) {
+        super(blockState);
+    }
 
     @Override
     public String getName() {
@@ -28,10 +24,6 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
     }
 
     protected abstract String getNamePrefix();
-
-    @Override
-    public abstract int getId();
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -72,22 +64,15 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
         return false;
     }
 
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(BLOCK_FACE);
+        return getPropertyValue(MINECRAFT_BLOCK_FACE);
     }
 
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(BLOCK_FACE, face);
+        setPropertyValue(MINECRAFT_BLOCK_FACE, face);
     }
 
     @Override
@@ -112,7 +97,7 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
 
     @Override
     public int onUpdate(int type) {
-        if ((this.getSide(this.getBlockFace().getOpposite()).getId() == BlockID.AIR))
+        if ((this.getSide(this.getBlockFace().getOpposite()).isAir()))
             this.onBreak(Item.get(ItemID.DIAMOND_PICKAXE));
         return 0;
     }

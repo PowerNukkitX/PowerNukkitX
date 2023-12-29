@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
@@ -18,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 import static cn.nukkit.block.property.CommonBlockProperties.AGE_16;
-
 public class BlockCactus extends BlockTransparent implements BlockFlowerPot.FlowerPotBlock {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CACTUS,
@@ -31,7 +31,7 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     public BlockCactus() {
         this(PROPERTIES.getDefaultState());
     }
-
+  
     @NotNull
     @Override
     public BlockProperties getProperties() {
