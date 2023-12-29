@@ -2667,7 +2667,7 @@ public class Level implements ChunkManager, Metadatable {
                         if (!(v instanceof StringTag stringTag)) { continue; }
                         Item entry = Item.fromString(stringTag.data);
                         if (!entry.isNull() &&
-                                entry.getBlockItem().getId().equals(target.getId())) {
+                                entry.getBlock().getId().equals(target.getId())) {
                             canBreak = true;
                             break;
                         }
@@ -2856,7 +2856,7 @@ public class Level implements ChunkManager, Metadatable {
         Block target = this.getBlock(vector);
         Block block = target.getSide(face);
 
-        if (item.getBlockItem() instanceof BlockScaffolding && face == BlockFace.UP && block.getId() == BlockID.SCAFFOLDING) {
+        if (Item.getItemBlock() instanceof BlockScaffolding && face == BlockFace.UP && block.getId() == BlockID.SCAFFOLDING) {
             while (block instanceof BlockScaffolding) {
                 block = block.up();
             }
@@ -2923,7 +2923,7 @@ public class Level implements ChunkManager, Metadatable {
 
         Block hand;
         if (item.canBePlaced()) {
-            hand = item.getBlockItem();
+            hand = Item.getItemBlock();
             hand.position(block);
         } else {
             return null;
@@ -2982,7 +2982,7 @@ public class Level implements ChunkManager, Metadatable {
                     for (Tag v : ((ListTag<Tag>) tag).getAll()) {
                         if (!(v instanceof StringTag stringTag)) { continue; }
                         Item entry = Item.fromString(stringTag.data);
-                        if (!entry.isNull() && entry.getBlockItem().getId().equals(target.getId())) {
+                        if (!entry.isNull() && entry.getBlock().getId().equals(target.getId())) {
                             canPlace = true;
                             break;
                         }

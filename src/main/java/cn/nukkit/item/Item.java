@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 public abstract class Item implements Cloneable, ItemID {
-    public static final Item AIR_ITEM = Item.getBlockItem(BlockID.AIR);
+    public static final Item AIR_ITEM = Item.getItemBlock(BlockID.AIR);
     public static final Item[] EMPTY_ARRAY = new Item[0];
 
     /**
@@ -121,18 +121,18 @@ public abstract class Item implements Cloneable, ItemID {
         return false;
     }
 
-    public static Item getBlockItem(String id) {
-        return getBlockItem(id, 0);
+    public static ItemBlock getItemBlock(String id) {
+        return getItemBlock(id, 0);
     }
 
 
-    public static Item getBlockItem(String id, Integer meta) {
-        return getBlockItem(id, meta, 1);
+    public static ItemBlock getItemBlock(String id, Integer meta) {
+        return getItemBlock(id, meta, 1);
     }
 
 
-    public static Item getBlockItem(String id, Integer meta, int count) {
-        return getBlockItem(id, meta, count, EmptyArrays.EMPTY_BYTES);
+    public static ItemBlock getItemBlock(String id, Integer meta, int count) {
+        return getItemBlock(id, meta, count, EmptyArrays.EMPTY_BYTES);
     }
 
 
@@ -145,7 +145,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @param tags  the Item tags
      * @return the ItemBlock
      */
-    public static Item getBlockItem(String id, Integer meta, int count, byte[] tags) {
+    public static ItemBlock getItemBlock(String id, Integer meta, int count, byte[] tags) {
         ItemBlock itemBlock = new ItemBlock(Registries.BLOCK.get(getItemBlockState(id, meta)));
         itemBlock.setCount(count);
         itemBlock.setCompoundTag(tags);
@@ -820,14 +820,13 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     @NotNull
-    public Block getBlockItem() {
+    public Block getBlock() {
         if (this.block != null) {
             return this.block.clone();
         } else {
             return Block.get(BlockID.AIR);
         }
     }
-
 
     @API(definition = API.Definition.INTERNAL, usage = API.Usage.INCUBATING)
     public Block getBlockUnsafe() {
@@ -1185,7 +1184,7 @@ public abstract class Item implements Cloneable, ItemID {
 
     public final Item increment(int amount) {
         if (count + amount <= 0) {
-            return getBlockItem(BlockID.AIR);
+            return getItemBlock(BlockID.AIR);
         }
         Item cloned = clone();
         cloned.count += amount;

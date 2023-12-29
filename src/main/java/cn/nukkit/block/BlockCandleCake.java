@@ -1,8 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemCake;
 import cn.nukkit.item.ItemID;
@@ -12,22 +11,18 @@ import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 
-public class BlockCandleCake extends BlockTransparentMeta {
+public class BlockCandleCake extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:candle_cake", CommonBlockProperties.LIT);
 
-
-    private static final BooleanBlockProperty LIT = new BooleanBlockProperty("lit", false);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(LIT);
-
-    public BlockCandleCake(int meta) {
-        super(meta);
+    public BlockCandleCake(BlockState blockState) {
+        super(blockState);
     }
 
     public BlockCandleCake() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
     @Override
@@ -38,12 +33,6 @@ public class BlockCandleCake extends BlockTransparentMeta {
     protected String getColorName() {
         return "Simple";
     }
-
-    @Override
-    public int getId() {
-        return CANDLE_CAKE;
-    }
-
 
     @NotNull
     @Override
@@ -74,7 +63,7 @@ public class BlockCandleCake extends BlockTransparentMeta {
 
     @Override
     public double getMinX() {
-        return this.x + (1 + getDamage() * 2) / 16d;
+        return this.x + (1 + blockstate.specialValue() * 2) / 16d;
     }
 
     @Override
@@ -104,7 +93,7 @@ public class BlockCandleCake extends BlockTransparentMeta {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (down().getId() != Block.AIR) {
+        if (!down().isAir()) {
             getLevel().setBlock(block, this, true, true);
             return true;
         }
@@ -114,7 +103,7 @@ public class BlockCandleCake extends BlockTransparentMeta {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (down().getId() == Block.AIR) {
+            if (down().isAir()) {
                 getLevel().setBlock(this, Block.get(BlockID.AIR), true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -140,13 +129,13 @@ public class BlockCandleCake extends BlockTransparentMeta {
     @SuppressWarnings("DuplicatedCode")
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-        if (getPropertyValue(LIT) && item.getId() != ItemID.FLINT_AND_STEEL) {
-            setPropertyValue(LIT, false);
+        if (getPropertyValue(CommonBlockProperties.LIT) && !Objects.equals(item.getId(), ItemID.FLINT_AND_STEEL)) {
+            setPropertyValue(CommonBlockProperties.LIT, false);
             getLevel().addSound(this, Sound.RANDOM_FIZZ);
             getLevel().setBlock(this, this, true, true);
             return true;
-        } else if (!getPropertyValue(LIT) && item.getId() == ItemID.FLINT_AND_STEEL) {
-            setPropertyValue(LIT, true);
+        } else if (!getPropertyValue(CommonBlockProperties.LIT) && Objects.equals(item.getId(), ItemID.FLINT_AND_STEEL)) {
+            setPropertyValue(CommonBlockProperties.LIT, true);
             getLevel().addSound(this, Sound.FIRE_IGNITE);
             getLevel().setBlock(this, this, true, true);
             return true;
@@ -154,7 +143,7 @@ public class BlockCandleCake extends BlockTransparentMeta {
             final Block cake = new BlockCake();
             this.getLevel().setBlock(this, cake, true, true);
             this.getLevel().dropItem(this.add(0.5, 0.5, 0.5), getDrops(null)[0]);
-            return this.getLevel().getBlock(this).onActivate(Item.get(0), player);
+            return this.getLevel().getBlock(this).onActivate(Item.getItemBlock(AIR), player);
         }
         return false;
     }

@@ -136,7 +136,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
             }
 
             level.setBlock(this, get(AIR), false, false);
-            onBreak(Item.getBlockItem(BlockID.AIR));
+            onBreak(Item.getItemBlock(BlockID.AIR));
             level.updateAround(this);
 
             Explosion explosion = new Explosion(this, event.getForce(), this);

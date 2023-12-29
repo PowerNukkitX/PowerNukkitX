@@ -246,7 +246,7 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
             return;
         }
 
-        lectern.setBook(Item.getBlockItem(BlockID.AIR));
+        lectern.setBook(Item.getItemBlock(BlockID.AIR));
         lectern.spawnToAll();
         this.level.dropItem(lectern.add(0.5f, 0.6f, 0.5f), dropBookEvent.getBook());
     }

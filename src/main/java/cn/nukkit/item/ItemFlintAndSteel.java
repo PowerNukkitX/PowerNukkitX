@@ -77,7 +77,7 @@ public class ItemFlintAndSteel extends ItemTool {
         if (!player.isCreative() && useOn(block)) {
             if (this.getAux() >= this.getMaxDurability()) {
                 this.count = 0;
-                player.getInventory().setItemInHand(Item.getBlockItem(BlockID.AIR));
+                player.getInventory().setItemInHand(Item.getItemBlock(BlockID.AIR));
             } else {
                 player.getInventory().setItemInHand(this);
             }

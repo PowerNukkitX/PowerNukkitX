@@ -80,7 +80,7 @@ public class BlockRespawnAnchor extends BlockMeta {
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         int charge = getCharge();
-        if (item.getBlockId() == BlockID.GLOWSTONE && charge < RESPAWN_ANCHOR_CHARGE.getMaxValue()) {
+        if (Item.getItemBlockId() == BlockID.GLOWSTONE && charge < RESPAWN_ANCHOR_CHARGE.getMaxValue()) {
             if (player == null || !player.isCreative()) {
                 item.count--;
             }
@@ -227,7 +227,7 @@ public class BlockRespawnAnchor extends BlockMeta {
     @Override
     public Item[] getDrops(Item item) {
         if (canHarvest(item)) {
-            return new Item[]{Item.getBlockItem(getId())};
+            return new Item[]{Item.getItemBlock(getId())};
         }
         return Item.EMPTY_ARRAY;
     }

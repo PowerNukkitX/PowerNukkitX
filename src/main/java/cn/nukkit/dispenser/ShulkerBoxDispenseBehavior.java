@@ -26,7 +26,7 @@ public class ShulkerBoxDispenseBehavior extends DefaultDispenseBehavior {
             return null;
         }
 
-        BlockUndyedShulkerBox shulkerBox = (BlockUndyedShulkerBox) item.getBlockItem().clone();
+        BlockUndyedShulkerBox shulkerBox = (BlockUndyedShulkerBox) Item.getItemBlock().clone();
         shulkerBox.level = block.level;
         shulkerBox.layer = 0;
         shulkerBox.x = target.x;

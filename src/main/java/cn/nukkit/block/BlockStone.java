@@ -67,7 +67,7 @@ public class BlockStone extends BlockSolid{
         if (item.isPickaxe() && item.getTier() >= getToolTier()) {
             return new Item[]{
                     StoneType.STONE.equals(stoneType())
-                            ? Item.getBlockItem(BlockID.COBBLESTONE)
+                            ? Item.getItemBlock(BlockID.COBBLESTONE)
                             : toItem()
             };
         } else {

@@ -2,6 +2,7 @@ package cn.nukkit.event.block;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBigDripleaf;
+import cn.nukkit.block.property.enums.BigDripleafTilt;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 
@@ -14,24 +15,24 @@ public class BigDripleafTiltChangeEvent extends BlockEvent implements Cancellabl
         return handlers;
     }
 
-    private BlockBigDripleaf.Tilt oldTilt;
-    private BlockBigDripleaf.Tilt newTilt;
+    private BigDripleafTilt oldTilt;
+    private BigDripleafTilt newTilt;
 
-    public BigDripleafTiltChangeEvent(Block block, BlockBigDripleaf.Tilt oldTilt, BlockBigDripleaf.Tilt newTilt) {
+    public BigDripleafTiltChangeEvent(Block block, BigDripleafTilt oldTilt, BigDripleafTilt newTilt) {
         super(block);
         this.oldTilt = oldTilt;
         this.newTilt = newTilt;
     }
 
-    public BlockBigDripleaf.Tilt getOldTilt() {
+    public BigDripleafTilt getOldTilt() {
         return oldTilt;
     }
 
-    public BlockBigDripleaf.Tilt getNewTilt() {
+    public BigDripleafTilt getNewTilt() {
         return newTilt;
     }
 
-    public void setNewTilt(BlockBigDripleaf.Tilt newTilt) {
+    public void setNewTilt(BigDripleafTilt newTilt) {
         this.newTilt = newTilt;
     }
 }

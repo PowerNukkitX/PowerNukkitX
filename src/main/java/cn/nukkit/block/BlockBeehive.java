@@ -193,7 +193,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
     
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{Item.getBlockItem(BlockID.BEEHIVE)};
+        return new Item[]{Item.getItemBlock(BlockID.BEEHIVE)};
     }
 
     @Override

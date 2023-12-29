@@ -581,7 +581,7 @@ public class BinaryStream {
 
     private Item createFakeUnknownItem(Item item) {
         boolean hasCompound = item.hasCompoundTag();
-        Item fallback = Item.getBlockItem(FALLBACK_ID, 0, item.getCount());
+        Item fallback = Item.getItemBlock(FALLBACK_ID, 0, item.getCount());
         CompoundTag tag = item.getNamedTag();
         if (tag == null) {
             tag = new CompoundTag();
@@ -649,7 +649,7 @@ public class BinaryStream {
             putVarInt(0); // netId
         }
 
-        Block block = item.getBlockUnsafe();//write blockDefinition
+        Block block = Item.getItemBlockUnsafe();//write blockDefinition
         int blockRuntimeId = block == null ? 0 : block.getRuntimeId();
         putVarInt(blockRuntimeId);
 

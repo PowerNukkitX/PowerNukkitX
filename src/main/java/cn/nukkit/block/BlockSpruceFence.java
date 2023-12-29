@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockSpruceFence extends Block {
+public class BlockSpruceFence extends BlockFence {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:spruce_fence");
 
     @Override

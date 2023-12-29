@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockWarpedFence extends Block {
+public class BlockWarpedFence extends BlockFence {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:warped_fence");
 
     @Override
@@ -17,4 +17,20 @@ public class BlockWarpedFence extends Block {
     public BlockWarpedFence(BlockState blockstate) {
         super(blockstate);
     }
+
+    @Override
+    public String getName() {
+        return "Warped Fence";
+    }
+
+    @Override
+    public int getBurnChance() {
+        return 0;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 0;
+    }
+
 }

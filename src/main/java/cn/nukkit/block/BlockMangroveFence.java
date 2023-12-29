@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockMangroveFence extends Block {
+public class BlockMangroveFence extends BlockFence {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:mangrove_fence");
 
     @Override
@@ -16,5 +16,19 @@ public class BlockMangroveFence extends Block {
 
     public BlockMangroveFence(BlockState blockstate) {
         super(blockstate);
+    }
+    @Override
+    public String getName() {
+        return "Mangrove Fence";
+    }
+
+    @Override
+    public int getBurnChance() {
+        return 0;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 0;
     }
 }

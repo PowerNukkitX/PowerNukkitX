@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemCake;
 import cn.nukkit.item.food.Food;
@@ -14,35 +12,26 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
+import static cn.nukkit.block.property.CommonBlockProperties.BITE_COUNTER;
+
 /**
  * @author Nukkit Project Team
  */
-public class BlockCake extends BlockTransparentMeta {
+public class BlockCake extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:cake", BITE_COUNTER);
 
-
-    public static final IntBlockProperty BITES = new IntBlockProperty("bite_counter", false, 6);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(BITES);
-
-    public BlockCake(int meta) {
-        super(meta);
+    public BlockCake(BlockState blockState) {
+        super(blockState);
     }
 
     public BlockCake() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
     @Override
     public String getName() {
         return "Cake Block";
     }
-
-    @Override
-    public int getId() {
-        return CAKE_BLOCK;
-    }
-
 
     @NotNull
     @Override
@@ -73,7 +62,7 @@ public class BlockCake extends BlockTransparentMeta {
 
     @Override
     public double getMinX() {
-        return this.x + (1 + getDamage() * 2) / 16;
+        return this.x + (1 + getBiteCount() * 2) / 16;
     }
 
     @Override
@@ -136,12 +125,13 @@ public class BlockCake extends BlockTransparentMeta {
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-        if (item.getBlockId() >= BlockID.CANDLE && item.getBlockId() <= BlockID.BLACK_CANDLE) {
+        if (!(item.getBlock() instanceof BlockCandle)) {
             return false;
         }
+        int damage = getBiteCount();
         if (player != null && (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel() || player.isCreative() || player.getServer().getDifficulty() == 0)) {
-            if (getDamage() <= 0x06) setDamage(getDamage() + 1);
-            if (getDamage() >= 0x06) {
+            if (damage <= 0x06) setBiteCount(damage + 1);
+            if (damage >= 0x06) {
                 getLevel().setBlock(this, Block.get(BlockID.AIR), true);
             } else {
                 Food.getByRelative(this).eatenBy(player);
@@ -155,7 +145,7 @@ public class BlockCake extends BlockTransparentMeta {
 
     @Override
     public int getComparatorInputOverride() {
-        return (7 - this.getDamage()) * 2;
+        return (7 - this.getBiteCount()) * 2;
     }
 
     @Override
@@ -164,14 +154,20 @@ public class BlockCake extends BlockTransparentMeta {
     }
 
     @Override
-
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-
     public boolean sticksToPiston() {
         return false;
+    }
+
+    public int getBiteCount() {
+        return getPropertyValue(BITE_COUNTER);
+    }
+
+    public void setBiteCount(int count) {
+        setPropertyValue(BITE_COUNTER, count);
     }
 }

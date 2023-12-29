@@ -37,7 +37,7 @@ public final class Fishing {
     public static final Selector JUNK_STRING_ITEM = putSelector(new ConstantItemSelector(ItemID.STRING, JUNKS), 0.06F);
     public static final Selector JUNK_WATTER_BOTTLE = putSelector(new ConstantItemSelector(ItemID.POTION, Potion.NO_EFFECTS, JUNKS), 0.12F);
     public static final Selector JUNK_BONE = putSelector(new ConstantItemSelector(ItemID.BONE, JUNKS), 0.12F);
-    public static final Selector JUNK_TRIPWIRE_HOOK = putSelector(new ConstantItemSelector(Item.getBlockItem(BlockID.TRIPWIRE_HOOK), JUNKS), 0.12F);
+    public static final Selector JUNK_TRIPWIRE_HOOK = putSelector(new ConstantItemSelector(Item.getItemBlock(BlockID.TRIPWIRE_HOOK), JUNKS), 0.12F);
 
     public static Item getFishingResult(Item rod) {
         int fortuneLevel = 0;

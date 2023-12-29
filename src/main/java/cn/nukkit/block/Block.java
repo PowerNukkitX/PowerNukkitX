@@ -415,8 +415,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      *
      * @return 挖掘方块的最低工具级别
      */
-
-
     public int getToolTier() {
         return 0;
     }

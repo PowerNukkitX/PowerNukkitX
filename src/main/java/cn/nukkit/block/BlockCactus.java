@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
@@ -165,7 +164,7 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{
-                Item.getBlockItem(BlockID.CACTUS, 0, 1)
+                Item.getItemBlock(BlockID.CACTUS, 0, 1)
         };
     }
 

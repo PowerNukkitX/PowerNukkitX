@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
-import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
@@ -13,6 +10,11 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
+import java.util.Objects;
+
+import static cn.nukkit.block.property.CommonBlockProperties.CANDLES;
+import static cn.nukkit.block.property.CommonBlockProperties.LIT;
+
 /**
  * @author Gabriel8579
  * @since 2021-07-14
@@ -20,23 +22,21 @@ import javax.annotation.Nullable;
 
 
 public class BlockCandle extends BlockFlowable {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:black_candle", CANDLES, LIT);
 
-
-    private static final BooleanBlockProperty LIT = new BooleanBlockProperty("lit", false);
-
-
-    private static final IntBlockProperty CANDLES = new IntBlockProperty("candles", false, 3, 0, 2);
-
-
-    private static final BlockProperties PROPERTIES = new BlockProperties(LIT, CANDLES);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockCandle() {
-        super(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockCandle(int meta) {
-        super(meta);
+    public BlockCandle(BlockState blockstate) {
+        super(blockstate);
     }
+
 
     protected Block toCakeForm() {
         return new BlockCandleCake();
@@ -44,14 +44,14 @@ public class BlockCandle extends BlockFlowable {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (target.getId() == BlockID.CAKE_BLOCK && target.getDamage() == 0) {//必须是完整的蛋糕才能插蜡烛
+        if (target.getId().equals(BlockID.CAKE) && target.isDefaultState()) {//必须是完整的蛋糕才能插蜡烛
             target.getLevel().setBlock(target, toCakeForm(), true, true);
             return true;
         }
-        if (target.up().getId() == getId()) {
+        if (target.up().getId().equals(getId())) {
             target = target.up();
         }
-        if (target.getId() == getId()) {
+        if (target.getId().equals(getId())) {
             if (target.getPropertyValue(CANDLES) < 3) {
                 target.setPropertyValue(CANDLES, target.getPropertyValue(CANDLES) + 1);
                 getLevel().setBlock(target, target, true, true);
@@ -70,17 +70,16 @@ public class BlockCandle extends BlockFlowable {
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-
-        if (item.getId() != ItemID.FLINT_AND_STEEL && !item.isNull()) {
+        if (!Objects.equals(item.getId(), ItemID.FLINT_AND_STEEL) && !item.isNull()) {
             return false;
         }
 
-        if (getPropertyValue(LIT) && item.getId() != ItemID.FLINT_AND_STEEL) {
+        if (getPropertyValue(LIT) && !Objects.equals(item.getId(), ItemID.FLINT_AND_STEEL)) {
             setPropertyValue(LIT, false);
             getLevel().addSound(this, Sound.RANDOM_FIZZ);
             getLevel().setBlock(this, this, true, true);
             return true;
-        } else if (!getPropertyValue(LIT) && item.getId() == ItemID.FLINT_AND_STEEL) {
+        } else if (!getPropertyValue(LIT) && Objects.equals(item.getId(), ItemID.FLINT_AND_STEEL)) {
             setPropertyValue(LIT, true);
             getLevel().addSound(this, Sound.FIRE_IGNITE);
             getLevel().setBlock(this, this, true, true);
@@ -108,11 +107,6 @@ public class BlockCandle extends BlockFlowable {
     }
 
     @Override
-    public int getId() {
-        return BlockID.CANDLE;
-    }
-
-    @Override
     public int getLightLevel() {
         return getPropertyValue(LIT) ? getPropertyValue(CANDLES) * 3 : 0;
     }
@@ -126,12 +120,4 @@ public class BlockCandle extends BlockFlowable {
     public double getResistance() {
         return 0.1;
     }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
 }

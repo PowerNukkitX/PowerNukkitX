@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockBirchFence extends Block {
+public class BlockBirchFence extends BlockFence {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:birch_fence");
 
     @Override
@@ -16,5 +16,10 @@ public class BlockBirchFence extends Block {
 
     public BlockBirchFence(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Birch Fence Gate";
     }
 }
