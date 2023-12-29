@@ -1,8 +1,9 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.property.enums.StoneType;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockDiorite extends Block {
+public class BlockDiorite extends BlockStone {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:diorite");
 
     @Override
@@ -16,5 +17,10 @@ public class BlockDiorite extends Block {
 
     public BlockDiorite(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public StoneType stoneType() {
+        return StoneType.DIORITE;
     }
 }

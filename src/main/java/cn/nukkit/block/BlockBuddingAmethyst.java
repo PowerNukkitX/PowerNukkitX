@@ -1,7 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
@@ -10,16 +8,20 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class BlockBuddingAmethyst extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BUDDING_AMETHYST);
     private static final NukkitRandom RANDOM = new NukkitRandom();
+
+    public BlockBuddingAmethyst() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBuddingAmethyst(BlockState blockState) {
+        super(blockState);
+    }
 
     @Override
     public String getName() {
         return "Budding Amethyst";
-    }
-
-    @Override
-    public int getId() {
-        return BUDDING_AMETHYST;
     }
 
     @Override
@@ -36,7 +38,7 @@ public class BlockBuddingAmethyst extends BlockSolid {
     @NotNull
     @Override
     public BlockProperties getProperties() {
-        return CommonBlockProperties.EMPTY_PROPERTIES;
+        return PROPERTIES;
     }
 
 

@@ -144,8 +144,8 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(BROWN_WOOL, BlockBrownWool.class);// done.
         register(BUBBLE_COLUMN, BlockBubbleColumn.class);
         register(BUBBLE_CORAL, BlockBubbleCoral.class);
-        register(BUDDING_AMETHYST, BlockBuddingAmethyst.class);
-        register(CACTUS, BlockCactus.class);
+        register(BUDDING_AMETHYST, BlockBuddingAmethyst.class);// done.
+        register(CACTUS, BlockCactus.class);// done.
         register(CAKE, BlockCake.class);// done.
         register(CALCITE, BlockCalcite.class);// done.
         register(CALIBRATED_SCULK_SENSOR, BlockCalibratedSculkSensor.class);
@@ -304,7 +304,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(DETECTOR_RAIL, BlockDetectorRail.class);
         register(DIAMOND_BLOCK, BlockDiamondBlock.class);
         register(DIAMOND_ORE, BlockDiamondOre.class);
-        register(DIORITE, BlockDiorite.class);
+        register(DIORITE, BlockDiorite.class);// done.
         register(DIORITE_STAIRS, BlockDioriteStairs.class);
         register(DIRT, BlockDirt.class);// done.
         register(DIRT_WITH_ROOTS, BlockDirtWithRoots.class);// done.
@@ -483,7 +483,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(GOLD_BLOCK, BlockGoldBlock.class);
         register(GOLD_ORE, BlockGoldOre.class);
         register(GOLDEN_RAIL, BlockGoldenRail.class);
-        register(GRANITE, BlockGranite.class);
+        register(GRANITE, BlockGranite.class);// done.
         register(GRANITE_STAIRS, BlockGraniteStairs.class);
         register(GRASS, BlockGrass.class);// done.
         register(GRASS_PATH, BlockGrassPath.class);// done.
