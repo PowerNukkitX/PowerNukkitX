@@ -109,7 +109,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(BLACKSTONE_SLAB, BlockBlackstoneSlab.class);
         register(BLACKSTONE_STAIRS, BlockBlackstoneStairs.class);
         register(BLACKSTONE_WALL, BlockBlackstoneWall.class);
-        register(BLAST_FURNACE, BlockBlastFurnace.class);
+        register(BLAST_FURNACE, BlockBlastFurnace.class);// done
         register(BLUE_CANDLE, BlockBlueCandle.class);
         register(BLUE_CANDLE_CAKE, BlockBlueCandleCake.class);// done.
         register(BLUE_CARPET, BlockBlueCarpet.class);

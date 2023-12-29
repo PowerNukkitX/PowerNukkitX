@@ -1,10 +1,10 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityFurnace;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -23,29 +23,21 @@ import java.util.Map;
  * @author Angelic47 (Nukkit Project)
  */
 
-public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable, BlockEntityHolder<BlockEntityFurnace> {
+public class BlockFurnaceBurning extends BlockSolid implements Faceable, BlockEntityHolder<BlockEntityFurnace> {
 
+    public static final BlockProperties PROPERTIES = new BlockProperties(LIT_FURNACE, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockFurnaceBurning() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockFurnaceBurning(BlockState blockstate) {
         super(blockstate);
-    }
-
-    @Override
-    public int getId() {
-        return LIT_FURNACE;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -95,7 +87,7 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable, Blo
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         int[] faces = {2, 3, 0, 1};
-        this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
+        setBlockFace(BlockFace.fromHorizontalIndex(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]));
         CompoundTag nbt = new CompoundTag().putList(new ListTag<>("Items"));
 
         if (item.hasCustomName()) {
@@ -169,6 +161,11 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable, Blo
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x7);
+        return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));
+    }
+
+    @Override
+    public void setBlockFace(BlockFace face) {
+        setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
     }
 }
