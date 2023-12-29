@@ -46,8 +46,8 @@ public class BlockSnowLayer extends BlockFallableMeta {
         // Does nothing
     }
 
-    public BlockSnowLayer(int meta) {
-        super(meta);
+    public BlockSnowLayer(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

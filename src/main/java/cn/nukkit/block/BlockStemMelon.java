@@ -20,8 +20,8 @@ public class BlockStemMelon extends BlockCropsStem implements Faceable {
         this(0);
     }
 
-    public BlockStemMelon(int meta) {
-        super(meta);
+    public BlockStemMelon(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

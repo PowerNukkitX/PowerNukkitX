@@ -11,8 +11,8 @@ public class BlockHyphaeWarped extends BlockStem {
     }
 
 
-    public BlockHyphaeWarped(int meta) {
-        super(meta);
+    public BlockHyphaeWarped(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

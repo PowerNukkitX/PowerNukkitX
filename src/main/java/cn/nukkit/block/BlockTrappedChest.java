@@ -20,8 +20,8 @@ public class BlockTrappedChest extends BlockChest {
         this(0);
     }
 
-    public BlockTrappedChest(int meta) {
-        super(meta);
+    public BlockTrappedChest(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -63,8 +63,8 @@ public class BlockTurtleEgg extends BlockFlowable {
     }
 
 
-    public BlockTurtleEgg(int meta) {
-        super(meta);
+    public BlockTurtleEgg(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

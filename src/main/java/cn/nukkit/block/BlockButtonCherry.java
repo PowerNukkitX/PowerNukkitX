@@ -8,8 +8,8 @@ public class BlockButtonCherry extends BlockButtonWooden {
     }
 
 
-    public BlockButtonCherry(int meta) {
-        super(meta);
+    public BlockButtonCherry(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

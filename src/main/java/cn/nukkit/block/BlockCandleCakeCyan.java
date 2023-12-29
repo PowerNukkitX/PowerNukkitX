@@ -1,8 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockCandleCakeCyan extends BlockCandleCake {
-    public BlockCandleCakeCyan(int meta) {
-        super(meta);
+    public BlockCandleCakeCyan(BlockState blockstate) {
+        super(blockstate);
     }
 
     public BlockCandleCakeCyan() {

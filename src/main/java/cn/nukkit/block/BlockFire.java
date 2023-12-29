@@ -40,8 +40,8 @@ public class BlockFire extends BlockFlowable {
         this(0);
     }
 
-    public BlockFire(int meta) {
-        super(meta);
+    public BlockFire(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -26,8 +26,8 @@ public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.Flow
         this(1);
     }
 
-    public BlockTallGrass(int meta) {
-        super(meta);
+    public BlockTallGrass(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

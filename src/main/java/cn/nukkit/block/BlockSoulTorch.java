@@ -9,8 +9,8 @@ public class BlockSoulTorch extends BlockTorch {
     }
 
 
-    public BlockSoulTorch(int meta) {
-        super(meta);
+    public BlockSoulTorch(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

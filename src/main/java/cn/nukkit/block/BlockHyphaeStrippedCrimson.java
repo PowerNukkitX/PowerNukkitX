@@ -9,8 +9,8 @@ public class BlockHyphaeStrippedCrimson extends BlockStemStripped {
     }
 
 
-    public BlockHyphaeStrippedCrimson(int meta) {
-        super(meta);
+    public BlockHyphaeStrippedCrimson(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

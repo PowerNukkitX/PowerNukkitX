@@ -14,8 +14,8 @@ public class BlockBlastFurnaceBurning extends BlockFurnaceBurning {
     }
 
 
-    public BlockBlastFurnaceBurning(int meta) {
-        super(meta);
+    public BlockBlastFurnaceBurning(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

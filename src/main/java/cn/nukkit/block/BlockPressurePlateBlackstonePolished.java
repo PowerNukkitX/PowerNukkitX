@@ -9,8 +9,8 @@ public class BlockPressurePlateBlackstonePolished extends BlockPressurePlateSton
     }
 
 
-    public BlockPressurePlateBlackstonePolished(int meta) {
-        super(meta);
+    public BlockPressurePlateBlackstonePolished(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

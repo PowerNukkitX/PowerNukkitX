@@ -17,8 +17,8 @@ public class BlockDropper extends BlockDispenser {
     }
 
 
-    public BlockDropper(int meta) {
-        super(meta);
+    public BlockDropper(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

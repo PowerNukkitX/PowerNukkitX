@@ -29,8 +29,8 @@ public class BlockLantern extends BlockFlowable {
     }
 
 
-    public BlockLantern(int meta) {
-        super(meta);
+    public BlockLantern(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

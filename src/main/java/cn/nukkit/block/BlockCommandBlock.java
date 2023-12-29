@@ -27,8 +27,8 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
         this(0);
     }
 
-    public BlockCommandBlock(int meta) {
-        super(meta);
+    public BlockCommandBlock(BlockState blockstate) {
+        super(blockstate);
     }
 
     @NotNull

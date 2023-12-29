@@ -8,8 +8,8 @@ public class BlockTrapdoorBirch extends BlockTrapdoor {
     }
 
 
-    public BlockTrapdoorBirch(int meta) {
-        super(meta);
+    public BlockTrapdoorBirch(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

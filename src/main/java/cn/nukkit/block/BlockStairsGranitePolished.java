@@ -10,8 +10,8 @@ public class BlockStairsGranitePolished extends BlockStairs {
     }
 
 
-    public BlockStairsGranitePolished(int meta) {
-        super(meta);
+    public BlockStairsGranitePolished(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -11,8 +11,8 @@ public class BlockStemCrimson extends BlockStem {
     }
 
 
-    public BlockStemCrimson(int meta) {
-        super(meta);
+    public BlockStemCrimson(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

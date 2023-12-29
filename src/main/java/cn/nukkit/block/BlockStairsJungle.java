@@ -10,8 +10,8 @@ public class BlockStairsJungle extends BlockStairsWood {
         this(0);
     }
 
-    public BlockStairsJungle(int meta) {
-        super(meta);
+    public BlockStairsJungle(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

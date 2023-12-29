@@ -37,8 +37,8 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
     }
 
 
-    public BlockGrindstone(int meta) {
-        super(meta);
+    public BlockGrindstone(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

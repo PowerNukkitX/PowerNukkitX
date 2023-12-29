@@ -16,8 +16,8 @@ public class BlockRawGold extends BlockRaw {
     }
 
 
-    public BlockRawGold(int meta) {
-        super(meta);
+    public BlockRawGold(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

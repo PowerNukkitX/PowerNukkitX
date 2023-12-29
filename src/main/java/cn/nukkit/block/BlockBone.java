@@ -45,8 +45,8 @@ public class BlockBone extends BlockSolidMeta implements Faceable {
         this(0);
     }
 
-    public BlockBone(int meta) {
-        super(meta);
+    public BlockBone(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

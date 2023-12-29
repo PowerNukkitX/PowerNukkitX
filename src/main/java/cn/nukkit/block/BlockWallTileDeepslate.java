@@ -15,8 +15,8 @@ public class BlockWallTileDeepslate extends BlockWallBase {
     }
 
 
-    public BlockWallTileDeepslate(int meta) {
-        super(meta);
+    public BlockWallTileDeepslate(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

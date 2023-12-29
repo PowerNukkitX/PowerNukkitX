@@ -39,8 +39,8 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         this(0);
     }
 
-    public BlockLever(int meta) {
-        super(meta);
+    public BlockLever(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

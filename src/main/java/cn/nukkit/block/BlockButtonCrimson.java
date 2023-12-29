@@ -9,8 +9,8 @@ public class BlockButtonCrimson extends BlockButtonWooden {
     }
 
 
-    public BlockButtonCrimson(int meta) {
-        super(meta);
+    public BlockButtonCrimson(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

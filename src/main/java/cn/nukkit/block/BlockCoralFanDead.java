@@ -10,8 +10,8 @@ public class BlockCoralFanDead extends BlockCoralFan {
     }
 
 
-    public BlockCoralFanDead(int meta) {
-        super(meta);
+    public BlockCoralFanDead(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

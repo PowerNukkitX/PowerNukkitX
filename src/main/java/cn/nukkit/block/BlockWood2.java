@@ -28,8 +28,8 @@ public class BlockWood2 extends BlockWood {
         this(0);
     }
 
-    public BlockWood2(int meta) {
-        super(meta);
+    public BlockWood2(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

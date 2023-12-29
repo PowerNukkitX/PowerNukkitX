@@ -22,7 +22,7 @@ public class BlockDoubleSlab extends BlockDoubleSlabStone {
         this(0);
     }
 
-    public BlockDoubleSlab(int meta) {
-        super(meta);
+    public BlockDoubleSlab(BlockState blockstate) {
+        super(blockstate);
     }
 }

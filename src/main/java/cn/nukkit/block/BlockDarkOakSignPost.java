@@ -10,8 +10,8 @@ public class BlockDarkOakSignPost extends BlockSignPost {
     }
 
 
-    public BlockDarkOakSignPost(int meta) {
-        super(meta);
+    public BlockDarkOakSignPost(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

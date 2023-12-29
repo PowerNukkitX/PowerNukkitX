@@ -26,8 +26,8 @@ public class BlockPitcherCrop extends BlockCrops {
         this(0);
     }
 
-    public BlockPitcherCrop(int meta) {
-        super(meta);
+    public BlockPitcherCrop(BlockState blockstate) {
+        super(blockstate);
     }
 
     public int getId() {

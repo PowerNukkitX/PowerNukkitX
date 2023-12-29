@@ -9,8 +9,8 @@ public class BlockPressurePlateSpruce extends BlockPressurePlateWood {
     }
 
 
-    public BlockPressurePlateSpruce(int meta) {
-        super(meta);
+    public BlockPressurePlateSpruce(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

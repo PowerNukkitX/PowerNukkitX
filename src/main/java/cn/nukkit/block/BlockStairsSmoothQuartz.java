@@ -10,8 +10,8 @@ public class BlockStairsSmoothQuartz extends BlockStairs {
     }
 
 
-    public BlockStairsSmoothQuartz(int meta) {
-        super(meta);
+    public BlockStairsSmoothQuartz(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

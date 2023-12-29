@@ -11,8 +11,8 @@ public class BlockStairsQuartz extends BlockStairs {
         this(0);
     }
 
-    public BlockStairsQuartz(int meta) {
-        super(meta);
+    public BlockStairsQuartz(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

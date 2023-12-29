@@ -80,8 +80,8 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
         this(0);
     }
 
-    public BlockSapling(int meta) {
-        super(meta);
+    public BlockSapling(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

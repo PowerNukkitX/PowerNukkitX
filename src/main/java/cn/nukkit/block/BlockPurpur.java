@@ -20,8 +20,8 @@ public class BlockPurpur extends BlockSolidMeta {
         this(0);
     }
 
-    public BlockPurpur(int meta) {
-        super(meta);
+    public BlockPurpur(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

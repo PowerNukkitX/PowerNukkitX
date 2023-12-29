@@ -32,8 +32,8 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
         this(0);
     }
 
-    public BlockEnderChest(int meta) {
-        super(meta);
+    public BlockEnderChest(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

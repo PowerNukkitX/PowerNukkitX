@@ -26,8 +26,8 @@ public class BlockWoodBark extends BlockWood {
     }
 
 
-    public BlockWoodBark(int meta) {
-        super(meta);
+    public BlockWoodBark(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

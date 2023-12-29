@@ -31,8 +31,8 @@ public class BlockTorch extends BlockFlowable implements Faceable {
         this(0);
     }
 
-    public BlockTorch(int meta) {
-        super(meta);
+    public BlockTorch(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

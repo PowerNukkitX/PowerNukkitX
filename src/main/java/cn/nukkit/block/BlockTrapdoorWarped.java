@@ -9,8 +9,8 @@ public class BlockTrapdoorWarped extends BlockTrapdoor {
     }
 
 
-    public BlockTrapdoorWarped(int meta) {
-        super(meta);
+    public BlockTrapdoorWarped(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

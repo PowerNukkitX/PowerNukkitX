@@ -34,8 +34,8 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
     }
 
 
-    public BlockBubbleColumn(int meta) {
-        super(meta);
+    public BlockBubbleColumn(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

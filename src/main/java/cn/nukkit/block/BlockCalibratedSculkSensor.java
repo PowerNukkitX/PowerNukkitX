@@ -22,8 +22,8 @@ public class BlockCalibratedSculkSensor extends BlockTransparentMeta {
     public BlockCalibratedSculkSensor() {
     }
 
-    public BlockCalibratedSculkSensor(int meta) {
-        super(meta);
+    public BlockCalibratedSculkSensor(BlockState blockstate) {
+        super(blockstate);
     }
 
     public int getId() {

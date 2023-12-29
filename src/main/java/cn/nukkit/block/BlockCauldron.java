@@ -50,8 +50,8 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
         super(0);
     }
 
-    public BlockCauldron(int meta) {
-        super(meta);
+    public BlockCauldron(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

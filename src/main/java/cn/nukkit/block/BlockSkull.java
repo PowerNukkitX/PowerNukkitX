@@ -42,8 +42,8 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
         this(0);
     }
 
-    public BlockSkull(int meta) {
-        super(meta);
+    public BlockSkull(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

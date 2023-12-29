@@ -12,8 +12,8 @@ public class BlockTerracottaGlazedPink extends BlockGlazedTerracotta {
         this(0);
     }
 
-    public BlockTerracottaGlazedPink(int meta) {
-        super(meta);
+    public BlockTerracottaGlazedPink(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

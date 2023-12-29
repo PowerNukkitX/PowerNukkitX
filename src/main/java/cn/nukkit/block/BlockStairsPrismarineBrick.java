@@ -10,8 +10,8 @@ public class BlockStairsPrismarineBrick extends BlockStairs {
     }
 
 
-    public BlockStairsPrismarineBrick(int meta) {
-        super(meta);
+    public BlockStairsPrismarineBrick(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -8,8 +8,8 @@ public class BlockStairsPurpur extends BlockStairs {
         this(0);
     }
 
-    public BlockStairsPurpur(int meta) {
-        super(meta);
+    public BlockStairsPurpur(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

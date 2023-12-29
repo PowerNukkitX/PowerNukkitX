@@ -9,8 +9,8 @@ public class BlockTrapdoorCrimson extends BlockTrapdoor {
     }
 
 
-    public BlockTrapdoorCrimson(int meta) {
-        super(meta);
+    public BlockTrapdoorCrimson(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

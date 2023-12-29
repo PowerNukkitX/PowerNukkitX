@@ -23,8 +23,8 @@ public class BlockDoubleSlabStone extends BlockDoubleSlabBase {
         this(0);
     }
 
-    public BlockDoubleSlabStone(int meta) {
-        super(meta);
+    public BlockDoubleSlabStone(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -27,8 +27,8 @@ public class BlockFarmland extends BlockTransparentMeta {
         this(0);
     }
 
-    public BlockFarmland(int meta) {
-        super(meta);
+    public BlockFarmland(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

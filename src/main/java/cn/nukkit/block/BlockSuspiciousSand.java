@@ -16,8 +16,8 @@ public class BlockSuspiciousSand extends BlockFallableMeta {
     public BlockSuspiciousSand() {
     }
 
-    public BlockSuspiciousSand(int meta) {
-        super(meta);
+    public BlockSuspiciousSand(BlockState blockstate) {
+        super(blockstate);
     }
 
     @NotNull

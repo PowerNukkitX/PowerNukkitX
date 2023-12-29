@@ -8,8 +8,8 @@ public class BlockCherrySignPost extends BlockSignPost {
     public BlockCherrySignPost() {
     }
 
-    public BlockCherrySignPost(int meta) {
-        super(meta);
+    public BlockCherrySignPost(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

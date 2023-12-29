@@ -11,8 +11,8 @@ public class BlockWoodStrippedAcacia extends BlockWoodStripped {
     }
 
 
-    public BlockWoodStrippedAcacia(int meta) {
-        super(meta);
+    public BlockWoodStrippedAcacia(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

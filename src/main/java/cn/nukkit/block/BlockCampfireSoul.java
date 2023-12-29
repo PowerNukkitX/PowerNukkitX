@@ -16,8 +16,8 @@ public class BlockCampfireSoul extends BlockCampfire {
     }
 
 
-    public BlockCampfireSoul(int meta) {
-        super(meta);
+    public BlockCampfireSoul(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

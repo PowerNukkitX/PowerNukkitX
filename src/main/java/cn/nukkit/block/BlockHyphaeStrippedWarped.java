@@ -9,8 +9,8 @@ public class BlockHyphaeStrippedWarped extends BlockStemStripped {
     }
 
 
-    public BlockHyphaeStrippedWarped(int meta) {
-        super(meta);
+    public BlockHyphaeStrippedWarped(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

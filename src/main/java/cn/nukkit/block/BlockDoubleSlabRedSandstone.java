@@ -16,8 +16,8 @@ public class BlockDoubleSlabRedSandstone extends BlockDoubleSlabBase {
         this(0);
     }
 
-    public BlockDoubleSlabRedSandstone(int meta) {
-        super(meta);
+    public BlockDoubleSlabRedSandstone(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

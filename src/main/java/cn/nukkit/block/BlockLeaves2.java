@@ -31,8 +31,8 @@ public class BlockLeaves2 extends BlockLeaves {
         this(0);
     }
 
-    public BlockLeaves2(int meta) {
-        super(meta);
+    public BlockLeaves2(BlockState blockstate) {
+        super(blockstate);
     }
 
 

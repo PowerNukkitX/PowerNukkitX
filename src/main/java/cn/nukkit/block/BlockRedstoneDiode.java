@@ -24,8 +24,8 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
         this(0);
     }
 
-    public BlockRedstoneDiode(int meta) {
-        super(meta);
+    public BlockRedstoneDiode(BlockState blockstate) {
+        super(blockstate);
     }
 
 

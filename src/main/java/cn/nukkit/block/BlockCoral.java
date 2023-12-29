@@ -36,8 +36,8 @@ public class BlockCoral extends BlockFlowable {
     }
 
 
-    public BlockCoral(int meta) {
-        super(meta);
+    public BlockCoral(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

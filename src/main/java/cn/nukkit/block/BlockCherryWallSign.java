@@ -9,8 +9,8 @@ public class BlockCherryWallSign extends BlockWallSign {
         this(0);
     }
 
-    public BlockCherryWallSign(int meta) {
-        super(meta);
+    public BlockCherryWallSign(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

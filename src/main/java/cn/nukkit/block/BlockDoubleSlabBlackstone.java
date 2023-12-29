@@ -11,8 +11,8 @@ public class BlockDoubleSlabBlackstone extends BlockDoubleSlabBase {
     }
 
 
-    protected BlockDoubleSlabBlackstone(int meta) {
-        super(meta);
+    protected BlockDoubleSlabBlackstone(BlockState blockstate) {
+        super(blockstate);
     }
 
 

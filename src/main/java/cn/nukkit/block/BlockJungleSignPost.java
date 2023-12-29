@@ -10,8 +10,8 @@ public class BlockJungleSignPost extends BlockSignPost {
     }
 
 
-    public BlockJungleSignPost(int meta) {
-        super(meta);
+    public BlockJungleSignPost(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

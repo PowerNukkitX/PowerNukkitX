@@ -9,8 +9,8 @@ public class BlockStairsCrimson extends BlockStairsWood {
     }
 
 
-    public BlockStairsCrimson(int meta) {
-        super(meta);
+    public BlockStairsCrimson(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

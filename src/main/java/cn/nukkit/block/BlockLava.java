@@ -28,8 +28,8 @@ public class BlockLava extends BlockLiquid {
         this(0);
     }
 
-    public BlockLava(int meta) {
-        super(meta);
+    public BlockLava(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

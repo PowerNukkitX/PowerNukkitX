@@ -8,8 +8,8 @@ public class BlockPistonHeadSticky extends BlockPistonHead {
     }
 
 
-    public BlockPistonHeadSticky(int meta) {
-        super(meta);
+    public BlockPistonHeadSticky(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

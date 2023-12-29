@@ -2,8 +2,8 @@ package cn.nukkit.block;
 
 
 public class BlockPressurePlateCherry extends BlockPressurePlateWood {
-    public BlockPressurePlateCherry(int meta) {
-        super(meta);
+    public BlockPressurePlateCherry(BlockState blockstate) {
+        super(blockstate);
     }
 
     public BlockPressurePlateCherry() {

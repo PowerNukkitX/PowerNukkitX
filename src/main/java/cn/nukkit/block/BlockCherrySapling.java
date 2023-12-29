@@ -27,8 +27,8 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
     }
 
 
-    public BlockCherrySapling(int meta) {
-        super(meta);
+    public BlockCherrySapling(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -28,8 +28,8 @@ public class BlockTorchflowerCrop extends BlockCrops {
         super(0);
     }
 
-    public BlockTorchflowerCrop(int meta) {
-        super(meta);
+    public BlockTorchflowerCrop(BlockState blockstate) {
+        super(blockstate);
     }
 
     public int getId() {

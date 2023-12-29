@@ -29,8 +29,8 @@ public class BlockQuartz extends BlockSolidMeta {
         this(0);
     }
 
-    public BlockQuartz(int meta) {
-        super(meta);
+    public BlockQuartz(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

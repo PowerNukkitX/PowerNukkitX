@@ -12,8 +12,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockPotato extends BlockCrops {
 
-    public BlockPotato(int meta) {
-        super(meta);
+    public BlockPotato(BlockState blockstate) {
+        super(blockstate);
     }
 
     public BlockPotato() {

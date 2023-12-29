@@ -25,8 +25,8 @@ public class BlockIceFrosted extends BlockTransparentMeta {
     }
 
 
-    public BlockIceFrosted(int meta) {
-        super(meta);
+    public BlockIceFrosted(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

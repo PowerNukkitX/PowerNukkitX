@@ -29,8 +29,8 @@ public class BlockNetherWart extends BlockFlowable {
         this(0);
     }
 
-    public BlockNetherWart(int meta) {
-        super(meta);
+    public BlockNetherWart(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

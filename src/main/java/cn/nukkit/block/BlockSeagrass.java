@@ -27,8 +27,8 @@ public class BlockSeagrass extends BlockFlowable {
     }
 
 
-    public BlockSeagrass(int meta) {
-        super(meta);
+    public BlockSeagrass(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

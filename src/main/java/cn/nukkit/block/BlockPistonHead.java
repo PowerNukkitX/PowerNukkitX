@@ -19,8 +19,8 @@ public class BlockPistonHead extends BlockTransparentMeta implements Faceable {
         this(0);
     }
 
-    public BlockPistonHead(int meta) {
-        super(meta);
+    public BlockPistonHead(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

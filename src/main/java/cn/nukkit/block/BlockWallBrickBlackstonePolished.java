@@ -8,8 +8,8 @@ public class BlockWallBrickBlackstonePolished extends BlockWallBlackstonePolishe
     }
 
 
-    public BlockWallBrickBlackstonePolished(int meta) {
-        super(meta);
+    public BlockWallBrickBlackstonePolished(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

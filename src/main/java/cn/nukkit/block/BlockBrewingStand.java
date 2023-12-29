@@ -36,8 +36,8 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
         this(0);
     }
 
-    public BlockBrewingStand(int meta) {
-        super(meta);
+    public BlockBrewingStand(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

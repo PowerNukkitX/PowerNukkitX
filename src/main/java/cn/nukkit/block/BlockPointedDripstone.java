@@ -74,8 +74,8 @@ public class BlockPointedDripstone extends BlockFallableMeta {
     public BlockPointedDripstone() {
     }
 
-    public BlockPointedDripstone(int meta) {
-        super(meta);
+    public BlockPointedDripstone(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

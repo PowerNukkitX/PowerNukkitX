@@ -20,8 +20,8 @@ public class BlockHugeMushroomRed extends BlockSolidMeta {
         this(0);
     }
 
-    public BlockHugeMushroomRed(int meta) {
-        super(meta);
+    public BlockHugeMushroomRed(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

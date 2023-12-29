@@ -22,8 +22,8 @@ public abstract class BlockRaw extends BlockSolidMeta {
     }
 
 
-    public BlockRaw(int meta) {
-        super(meta);
+    public BlockRaw(BlockState blockstate) {
+        super(blockstate);
     }
 
 

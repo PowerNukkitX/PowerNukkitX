@@ -10,8 +10,8 @@ public class BlockStairsDiorite extends BlockStairs {
     }
 
 
-    public BlockStairsDiorite(int meta) {
-        super(meta);
+    public BlockStairsDiorite(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

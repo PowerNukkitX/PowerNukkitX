@@ -9,8 +9,8 @@ public class BlockPressurePlateCrimson extends BlockPressurePlateWood {
     }
 
 
-    public BlockPressurePlateCrimson(int meta) {
-        super(meta);
+    public BlockPressurePlateCrimson(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

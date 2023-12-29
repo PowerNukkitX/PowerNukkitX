@@ -9,8 +9,8 @@ public class BlockButtonBlackstonePolished extends BlockButtonStone {
     }
 
 
-    public BlockButtonBlackstonePolished(int meta) {
-        super(meta);
+    public BlockButtonBlackstonePolished(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

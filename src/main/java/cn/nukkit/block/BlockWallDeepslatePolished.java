@@ -15,8 +15,8 @@ public class BlockWallDeepslatePolished extends BlockWallBase {
     }
 
 
-    public BlockWallDeepslatePolished(int meta) {
-        super(meta);
+    public BlockWallDeepslatePolished(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

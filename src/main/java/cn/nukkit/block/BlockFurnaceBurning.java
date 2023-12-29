@@ -32,8 +32,8 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable, Blo
         this(0);
     }
 
-    public BlockFurnaceBurning(int meta) {
-        super(meta);
+    public BlockFurnaceBurning(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

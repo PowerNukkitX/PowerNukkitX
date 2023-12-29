@@ -19,8 +19,8 @@ public class BlockWool extends BlockSolidMeta {
         this(0);
     }
 
-    public BlockWool(int meta) {
-        super(meta);
+    public BlockWool(BlockState blockstate) {
+        super(blockstate);
     }
 
     public BlockWool(DyeColor dyeColor) {

@@ -42,8 +42,8 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
         this(0);
     }
 
-    public BlockObserver(int meta) {
-        super(meta);
+    public BlockObserver(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

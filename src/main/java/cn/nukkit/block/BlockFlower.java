@@ -82,8 +82,8 @@ public class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerP
         this(0);
     }
 
-    public BlockFlower(int meta) {
-        super(meta);
+    public BlockFlower(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

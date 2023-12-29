@@ -9,8 +9,8 @@ public class BlockSoulLantern extends BlockLantern {
     }
 
 
-    public BlockSoulLantern(int meta) {
-        super(meta);
+    public BlockSoulLantern(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

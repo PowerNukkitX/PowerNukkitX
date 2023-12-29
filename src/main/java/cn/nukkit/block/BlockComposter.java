@@ -49,8 +49,8 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
     }
 
 
-    public BlockComposter(int meta) {
-        super(meta);
+    public BlockComposter(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

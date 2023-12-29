@@ -8,8 +8,8 @@ public class BlockButtonMangrove extends BlockButtonWooden{
     }
 
 
-    public BlockButtonMangrove(int meta) {
-        super(meta);
+    public BlockButtonMangrove(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

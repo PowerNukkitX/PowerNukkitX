@@ -20,8 +20,8 @@ public class BlockWoodCherry extends BlockLog {
         super(0);
     }
 
-    public BlockWoodCherry(int meta) {
-        super(meta);
+    public BlockWoodCherry(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

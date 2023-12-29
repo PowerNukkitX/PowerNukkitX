@@ -22,8 +22,8 @@ public class BlockWallBanner extends BlockBanner {
         this(0);
     }
 
-    public BlockWallBanner(int meta) {
-        super(meta);
+    public BlockWallBanner(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

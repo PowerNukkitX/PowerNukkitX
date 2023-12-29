@@ -15,8 +15,8 @@ public class BlockStairsTileDeepslate extends BlockStairs {
     }
 
 
-    public BlockStairsTileDeepslate(int meta) {
-        super(meta);
+    public BlockStairsTileDeepslate(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

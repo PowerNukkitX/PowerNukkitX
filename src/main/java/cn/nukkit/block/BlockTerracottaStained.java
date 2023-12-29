@@ -19,8 +19,8 @@ public class BlockTerracottaStained extends BlockSolidMeta {
         this(0);
     }
 
-    public BlockTerracottaStained(int meta) {
-        super(meta);
+    public BlockTerracottaStained(BlockState blockstate) {
+        super(blockstate);
     }
 
     public BlockTerracottaStained(DyeColor dyeColor) {

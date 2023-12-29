@@ -24,8 +24,8 @@ public class BlockSuspiciousGravel extends BlockFallableMeta {
     public BlockSuspiciousGravel() {
     }
 
-    public BlockSuspiciousGravel(int meta) {
-        super(meta);
+    public BlockSuspiciousGravel(BlockState blockstate) {
+        super(blockstate);
     }
 
     public int getId() {

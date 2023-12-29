@@ -6,8 +6,8 @@ public class BlockCommandBlockChain extends BlockCommandBlock {
         this(0);
     }
 
-    public BlockCommandBlockChain(int meta) {
-        super(meta);
+    public BlockCommandBlockChain(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

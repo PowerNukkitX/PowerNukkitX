@@ -7,8 +7,8 @@ import org.jetbrains.annotations.NotNull;
 public abstract class BlockStem extends BlockLog {
 
 
-    public BlockStem(int meta) {
-        super(meta);
+    public BlockStem(BlockState blockstate) {
+        super(blockstate);
     }
 
 

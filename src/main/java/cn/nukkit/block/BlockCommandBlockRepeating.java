@@ -6,8 +6,8 @@ public class BlockCommandBlockRepeating extends BlockCommandBlock {
         this(0);
     }
 
-    public BlockCommandBlockRepeating(int meta) {
-        super(meta);
+    public BlockCommandBlockRepeating(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

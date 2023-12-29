@@ -35,8 +35,8 @@ public class BlockMonsterEgg extends BlockSolidMeta {
         this(0);
     }
 
-    public BlockMonsterEgg(int meta) {
-        super(meta);
+    public BlockMonsterEgg(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

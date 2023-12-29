@@ -11,8 +11,8 @@ public class BlockDoubleSlabMangrove extends BlockDoubleSlabBase {
     }
 
 
-    protected BlockDoubleSlabMangrove(int meta) {
-        super(meta);
+    protected BlockDoubleSlabMangrove(BlockState blockstate) {
+        super(blockstate);
     }
 
 

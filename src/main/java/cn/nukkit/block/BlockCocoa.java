@@ -43,8 +43,8 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
         this(0);
     }
 
-    public BlockCocoa(int meta) {
-        super(meta);
+    public BlockCocoa(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

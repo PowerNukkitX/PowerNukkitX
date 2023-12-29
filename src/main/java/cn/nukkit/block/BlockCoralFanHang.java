@@ -34,8 +34,8 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
     }
 
 
-    public BlockCoralFanHang(int meta) {
-        super(meta);
+    public BlockCoralFanHang(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

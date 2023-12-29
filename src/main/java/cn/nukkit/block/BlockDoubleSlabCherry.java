@@ -13,8 +13,8 @@ public class BlockDoubleSlabCherry extends BlockDoubleSlabBase {
     }
 
 
-    protected BlockDoubleSlabCherry(int meta) {
-        super(meta);
+    protected BlockDoubleSlabCherry(BlockState blockstate) {
+        super(blockstate);
     }
 
 

@@ -15,8 +15,8 @@ public class BlockTrapdoorIron extends BlockTrapdoor {
         this(0);
     }
 
-    public BlockTrapdoorIron(int meta) {
-        super(meta);
+    public BlockTrapdoorIron(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

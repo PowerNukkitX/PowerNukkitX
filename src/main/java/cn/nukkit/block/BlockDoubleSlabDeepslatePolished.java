@@ -15,8 +15,8 @@ public class BlockDoubleSlabDeepslatePolished extends BlockDoubleSlabBase {
     }
 
 
-    public BlockDoubleSlabDeepslatePolished(int meta) {
-        super(meta);
+    public BlockDoubleSlabDeepslatePolished(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

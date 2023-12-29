@@ -10,8 +10,8 @@ public class BlockAcaciaSignPost extends BlockSignPost {
     }
 
 
-    public BlockAcaciaSignPost(int meta) {
-        super(meta);
+    public BlockAcaciaSignPost(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

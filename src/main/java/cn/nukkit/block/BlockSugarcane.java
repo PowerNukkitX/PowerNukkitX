@@ -29,8 +29,8 @@ public class BlockSugarcane extends BlockFlowable {
         this(0);
     }
 
-    public BlockSugarcane(int meta) {
-        super(meta);
+    public BlockSugarcane(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

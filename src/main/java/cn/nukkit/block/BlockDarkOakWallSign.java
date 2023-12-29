@@ -11,8 +11,8 @@ public class BlockDarkOakWallSign extends BlockWallSign {
     }
 
 
-    public BlockDarkOakWallSign(int meta) {
-        super(meta);
+    public BlockDarkOakWallSign(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

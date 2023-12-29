@@ -8,8 +8,8 @@ public class BlockTrapdoorMangrove extends BlockTrapdoor {
     }
 
 
-    public BlockTrapdoorMangrove(int meta) {
-        super(meta);
+    public BlockTrapdoorMangrove(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

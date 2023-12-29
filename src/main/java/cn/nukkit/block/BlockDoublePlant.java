@@ -56,8 +56,8 @@ public class BlockDoublePlant extends BlockFlowable {
         this(0);
     }
 
-    public BlockDoublePlant(int meta) {
-        super(meta);
+    public BlockDoublePlant(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

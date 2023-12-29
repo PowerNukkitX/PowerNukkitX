@@ -12,8 +12,8 @@ public class BlockLogStrippedCherry extends BlockLog {
         super(0);
     }
 
-    public BlockLogStrippedCherry(int meta) {
-        super(meta);
+    public BlockLogStrippedCherry(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

@@ -12,8 +12,8 @@ public class BlockStairsRedSandstone extends BlockStairs {
         this(0);
     }
 
-    public BlockStairsRedSandstone(int meta) {
-        super(meta);
+    public BlockStairsRedSandstone(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

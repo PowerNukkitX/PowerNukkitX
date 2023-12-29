@@ -10,8 +10,8 @@ public class BlockRedstoneComparatorUnpowered extends BlockRedstoneComparator {
         this(0);
     }
 
-    public BlockRedstoneComparatorUnpowered(int meta) {
-        super(meta);
+    public BlockRedstoneComparatorUnpowered(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

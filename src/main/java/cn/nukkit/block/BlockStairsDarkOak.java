@@ -10,8 +10,8 @@ public class BlockStairsDarkOak extends BlockStairsWood {
         this(0);
     }
 
-    public BlockStairsDarkOak(int meta) {
-        super(meta);
+    public BlockStairsDarkOak(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

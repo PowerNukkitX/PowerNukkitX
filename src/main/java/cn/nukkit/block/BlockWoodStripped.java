@@ -16,8 +16,8 @@ public abstract class BlockWoodStripped extends BlockWood {
     }
 
 
-    public BlockWoodStripped(int meta) {
-        super(meta);
+    public BlockWoodStripped(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override
