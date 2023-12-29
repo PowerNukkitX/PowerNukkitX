@@ -17,4 +17,9 @@ public class BlockDarkOakFence extends BlockFence {
     public BlockDarkOakFence(BlockState blockstate) {
         super(blockstate);
     }
+
+    @Override
+    public String getName() {
+        return "Dark Oak Fence";
+    }
 }

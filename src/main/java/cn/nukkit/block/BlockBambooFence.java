@@ -22,14 +22,4 @@ public class BlockBambooFence extends BlockFence {
     public String getName() {
         return "Bamboo Fence";
     }
-
-    @Override
-    public int getBurnChance() {
-        return 5;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 20;
-    }
 }

@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockCrimsonFenceGate extends Block {
+public class BlockCrimsonFenceGate extends BlockFenceGate {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:crimson_fence_gate", CommonBlockProperties.DIRECTION, CommonBlockProperties.IN_WALL_BIT, CommonBlockProperties.OPEN_BIT);
 
     @Override
@@ -17,5 +17,20 @@ public class BlockCrimsonFenceGate extends Block {
 
     public BlockCrimsonFenceGate(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Crimson Fence Gate";
+    }
+
+    @Override
+    public int getBurnChance() {
+        return 0;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 0;
     }
 }

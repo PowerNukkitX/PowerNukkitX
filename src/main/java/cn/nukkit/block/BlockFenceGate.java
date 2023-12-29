@@ -317,9 +317,18 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
         return BlockFace.fromHorizontalIndex(getPropertyValue(CommonBlockProperties.DIRECTION));
     }
 
-
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.DIRECTION,face.getHorizontalIndex());
+    }
+
+    @Override
+    public int getBurnChance() {
+        return 5;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 20;
     }
 }
