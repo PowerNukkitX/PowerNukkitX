@@ -18,4 +18,9 @@ public class BlockGrayCandle extends BlockCandle {
     public BlockGrayCandle(BlockState blockstate) {
         super(blockstate);
     }
+
+    @Override
+    protected Block toCakeForm() {
+        return new BlockGrayCandleCake();
+    }
 }
