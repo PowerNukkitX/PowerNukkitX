@@ -1,21 +1,9 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.BlockProperties;
-import org.jetbrains.annotations.NotNull;
-
-
 public abstract class BlockStem extends BlockLog {
-
 
     public BlockStem(BlockState blockstate) {
         super(blockstate);
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PILLAR_PROPERTIES;
     }
 
     @Override
