@@ -1,9 +1,12 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.item.ItemID;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockMelonStem extends Block {
+public class BlockMelonStem extends BlockCropsStem implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:melon_stem", CommonBlockProperties.FACING_DIRECTION, CommonBlockProperties.GROWTH);
 
     @Override
@@ -17,5 +20,35 @@ public class BlockMelonStem extends Block {
 
     public BlockMelonStem(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getFruitId() {
+        return MELON_BLOCK;
+    }
+
+    @Override
+    public String getSeedsId() {
+        return ItemID.MELON_SEEDS;
+    }
+
+    @Override
+    public String getName() {
+        return "Melon Stem";
+    }
+
+    @Override
+    public BlockState getStrippedState() {
+        return BlockStrippedAcaciaLog.PROPERTIES.getDefaultState();
+    }
+
+    @Override
+    public BlockFace getBlockFace() {
+        return getFacing();
+    }
+
+    @Override
+    public void setBlockFace(BlockFace face) {
+        setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
     }
 }
