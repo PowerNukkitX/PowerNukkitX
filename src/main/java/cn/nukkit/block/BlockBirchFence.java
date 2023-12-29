@@ -20,6 +20,6 @@ public class BlockBirchFence extends BlockFence {
 
     @Override
     public String getName() {
-        return "Birch Fence Gate";
+        return "Birch Fence";
     }
 }

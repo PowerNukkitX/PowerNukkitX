@@ -17,4 +17,9 @@ public class BlockAcaciaFence extends BlockFence {
     public BlockAcaciaFence(BlockState blockstate) {
         super(blockstate);
     }
+
+    @Override
+    public String getName() {
+        return "Acacia Fence";
+    }
 }

@@ -17,4 +17,9 @@ public class BlockSpruceFence extends BlockFence {
     public BlockSpruceFence(BlockState blockstate) {
         super(blockstate);
     }
+
+    @Override
+    public String getName() {
+        return "Spruce Fence";
+    }
 }

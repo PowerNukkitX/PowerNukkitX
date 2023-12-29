@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockMangroveFenceGate extends Block {
+public class BlockMangroveFenceGate extends BlockFenceGate {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:mangrove_fence_gate", CommonBlockProperties.DIRECTION, CommonBlockProperties.IN_WALL_BIT, CommonBlockProperties.OPEN_BIT);
 
     @Override
@@ -17,5 +17,10 @@ public class BlockMangroveFenceGate extends Block {
 
     public BlockMangroveFenceGate(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Mangrove Fence Gate";
     }
 }
