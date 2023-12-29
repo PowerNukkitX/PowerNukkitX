@@ -17,18 +17,15 @@ import javax.annotation.Nullable;
 import static cn.nukkit.block.BlockTripwireHook.MAX_TRIPWIRE_CIRCUIT_LENGTH;
 import static cn.nukkit.block.property.CommonBlockProperties.*;
 
-/**
- * @author CreeperFace
- */
-public class BlockTripwire extends BlockTransparent {
+public class BlockTripWire extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(TRIP_WIRE,
             POWERED_BIT, SUSPENDED_BIT, ATTACHED_BIT, DISARMED_BIT);
 
-    public BlockTripwire() {
+    public BlockTripWire() {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockTripwire(BlockState state) { super(state); }
+    public BlockTripWire(BlockState state) { super(state); }
 
     @NotNull
     @Override
@@ -144,7 +141,7 @@ public class BlockTripwire extends BlockTransparent {
                     break;
                 }
 
-                if (!(block instanceof BlockTripwire)) { break; }
+                if (!(block instanceof BlockTripWire)) { break; }
             }
         }
     }

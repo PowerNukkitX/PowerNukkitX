@@ -105,7 +105,7 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
     }
 
     public void updateLine(boolean isHookBroken, boolean doUpdateAroundHook,
-                           int eventDistance, BlockTripwire eventBlock) {
+                           int eventDistance, BlockTripWire eventBlock) {
         if (!this.level.getServer().isRedstoneEnabled()) { return; }
 
         BlockFace facing = this.getFacing();
@@ -117,7 +117,7 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
         boolean isPowered = false;
 
         int pairedHookDistance = -1;
-        BlockTripwire[] line = new BlockTripwire[MAX_TRIPWIRE_CIRCUIT_LENGTH];
+        BlockTripWire[] line = new BlockTripWire[MAX_TRIPWIRE_CIRCUIT_LENGTH];
         //Skip the starting hook in potential circuit
         for (int steps = 1; steps < MAX_TRIPWIRE_CIRCUIT_LENGTH; ++steps) {
             Block b = this.level.getBlock(position.getSide(facing, steps));
@@ -133,7 +133,7 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
                 b = eventBlock;
             }
 
-            if (!(b instanceof BlockTripwire tripwire)) {
+            if (!(b instanceof BlockTripWire tripwire)) {
                 line[steps] = null;
                 isConnected = false;
                 continue;
@@ -182,7 +182,7 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
 
         if (wasConnected == isConnected) { return; }
         for (int steps = 1; steps < pairedHookDistance; steps++) {
-            BlockTripwire wire = line[steps];
+            BlockTripWire wire = line[steps];
             if(wire == null) { continue; }
             Vector3 vc = position.getSide(facing, steps);
             wire.setAttached(isConnected);
