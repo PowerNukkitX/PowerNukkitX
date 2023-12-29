@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityDropper;
 import cn.nukkit.dispenser.DispenseBehavior;
@@ -8,14 +9,16 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
+
 
 public class BlockDropper extends BlockDispenser {
 
+    public static final BlockProperties PROPERTIES = new BlockProperties(DROPPER);
 
     public BlockDropper() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
-
 
     public BlockDropper(BlockState blockstate) {
         super(blockstate);
@@ -27,30 +30,19 @@ public class BlockDropper extends BlockDispenser {
     }
 
     @Override
-    public int getId() {
-        return DROPPER;
-    }
-
-
-    @NotNull
-    @Override
-    public Class<? extends BlockEntityDropper> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityDropper> getBlockEntityClass() {
         return BlockEntityDropper.class;
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.DROPPER;
     }
-
 
     @Override
     public void dispense() {
         super.dispense();
     }
-
 
     @Override
     protected DispenseBehavior getDispenseBehavior(Item item) {
