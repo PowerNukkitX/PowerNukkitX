@@ -1,35 +1,28 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.entity.item.EntityFallingBlock;
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
 //todo complete
+public class BlockSuspiciousGravel extends BlockFallable {
 
+    public static final BlockProperties PROPERTIES = new BlockProperties(SUSPICIOUS_GRAVEL,
+            CommonBlockProperties.HANGING,
+            CommonBlockProperties.BRUSHED_PROGRESS);
 
-public class BlockSuspiciousGravel extends BlockFallableMeta {
-    public static final IntBlockProperty BRUSHED_PROGRESS = new IntBlockProperty("brushed_progress", false, 3);
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.HANGING, BRUSHED_PROGRESS);
-
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     public BlockSuspiciousGravel() {
+        this(PROPERTIES.getDefaultState());
     }
-
     public BlockSuspiciousGravel(BlockState blockstate) {
         super(blockstate);
-    }
-
-    public int getId() {
-        return SUSPICIOUS_GRAVEL;
     }
 
     public String getName() {

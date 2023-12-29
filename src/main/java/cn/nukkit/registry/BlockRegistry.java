@@ -882,9 +882,9 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(STRIPPED_WARPED_HYPHAE, BlockStrippedWarpedHyphae.class);// done.
         register(STRIPPED_WARPED_STEM, BlockStrippedWarpedStem.class);
         register(STRUCTURE_BLOCK, BlockStructureBlock.class);
-        register(STRUCTURE_VOID, BlockStructureVoid.class);
-        register(SUSPICIOUS_GRAVEL, BlockSuspiciousGravel.class);
-        register(SUSPICIOUS_SAND, BlockSuspiciousSand.class);
+        register(STRUCTURE_VOID, BlockStructureVoid.class);// done.
+        register(SUSPICIOUS_GRAVEL, BlockSuspiciousGravel.class);// done.
+        register(SUSPICIOUS_SAND, BlockSuspiciousSand.class);// done.
         register(SWEET_BERRY_BUSH, BlockSweetBerryBush.class);
         register(TALLGRASS, BlockTallgrass.class);
         register(TARGET, BlockTarget.class);
