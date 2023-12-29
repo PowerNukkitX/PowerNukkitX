@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityFallingBlock;
 import cn.nukkit.item.Item;
@@ -11,29 +9,32 @@ import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BlockFrogSpawn extends BlockFlowable{
+public class BlockFrogSpawn extends BlockFlowable {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:frog_spawn");
+
+    public BlockFrogSpawn() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockFrogSpawn(BlockState blockState) {
+        super(blockState);
+    }
 
     @Override
     public String getName() {
         return "Frog Spawn";
     }
 
-    @Override
-    public int getId() {
-        return FROG_SPAWN;
-    }
-
-
     @NotNull
     @Override
     public BlockProperties getProperties() {
-        return CommonBlockProperties.EMPTY_PROPERTIES;
+        return PROPERTIES;
     }
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (supportable(block)){
-            if (block.getId() == Block.AIR)
+            if (block.getId().equals(Block.AIR))
                 return super.place(item, block, target, face, fx, fy, fz, player);
         }
         return false;
@@ -54,14 +55,14 @@ public class BlockFrogSpawn extends BlockFlowable{
     public boolean supportable(Position pos){
         Block under = pos.getSide(BlockFace.DOWN).getLevelBlock();
         return under.getId() == FLOWING_WATER
-                || under.getId() == STILL_WATER
+                || under.getId() == WATER
                 || under.getLevelBlockAtLayer(1).getId() == FLOWING_WATER
-                || under.getLevelBlockAtLayer(1).getId() == STILL_WATER;
+                || under.getLevelBlockAtLayer(1).getId() == WATER;
     }
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[0];
+        return Item.EMPTY_ARRAY;
     }
 
     @Override

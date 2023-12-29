@@ -1,14 +1,21 @@
 package cn.nukkit.block;
 
 import cn.nukkit.math.BlockFace;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Pub4Game
  * @since 21.02.2016
  */
 public class BlockSlime extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:slime");
 
     public BlockSlime() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockSlime(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -22,8 +29,8 @@ public class BlockSlime extends BlockTransparent {
     }
 
     @Override
-    public int getId() {
-        return SLIME_BLOCK;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override

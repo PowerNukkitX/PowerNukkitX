@@ -1,15 +1,12 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
-
 
 public class BlockBasalt extends BlockSolid {
 

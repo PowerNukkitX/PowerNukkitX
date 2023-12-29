@@ -2,8 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBeetrootSeeds;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.item.ItemSeedsBeetroot;
 import cn.nukkit.item.enchantment.Enchantment;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,7 +36,7 @@ public class BlockBeetroot extends BlockCrops {
 
     @Override
     public Item toItem() {
-        return new ItemSeedsBeetroot();
+        return new ItemBeetrootSeeds();
     }
 
     @Override

@@ -16,9 +16,14 @@ import javax.annotation.Nullable;
  * @author PikyCZ
  */
 public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<BlockEntityEndGateway> {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:end_gateway");
 
     public BlockEndGateway() {
-        // Nothing
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockEndGateway(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -27,10 +32,9 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
     }
 
     @Override
-    public int getId() {
-        return END_GATEWAY;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
-
 
     @NotNull
     @Override

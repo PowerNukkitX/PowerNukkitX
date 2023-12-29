@@ -1,14 +1,21 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
  * @since 2015/12/1
  */
 public class BlockEndStone extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:end_stone");
 
     public BlockEndStone() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockEndStone(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -17,8 +24,8 @@ public class BlockEndStone extends BlockSolid {
     }
 
     @Override
-    public int getId() {
-        return END_STONE;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override

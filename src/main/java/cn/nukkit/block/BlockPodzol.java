@@ -1,42 +1,32 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
-import cn.nukkit.blockproperty.value.DirtType;
+import cn.nukkit.block.property.enums.DirtType;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
-import java.util.Optional;
 
 /**
  * @author xtypr
  * @since 2015/11/22
  */
 public class BlockPodzol extends BlockDirt {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:podzol");
 
     public BlockPodzol() {
-        this(0);
+        super(PROPERTIES.getDefaultState());
     }
 
-    public BlockPodzol(int meta) {
-        // Podzol can't have meta.
-        super(0);
+    public BlockPodzol(BlockState blockState) {
+        super(blockState);
     }
 
 
     @NotNull
     @Override
     public BlockProperties getProperties() {
-        return CommonBlockProperties.EMPTY_PROPERTIES;
-    }
-
-    @Override
-    public int getId() {
-        return PODZOL;
+        return PROPERTIES;
     }
 
     @Override
@@ -47,15 +37,15 @@ public class BlockPodzol extends BlockDirt {
 
     @NotNull
     @Override
-    public Optional<DirtType> getDirtType() {
-        return Optional.empty();
+    public DirtType getDirtType() {
+        return DirtType.NORMAL;
     }
 
 
     @Override
-    public void setDirtType(@Nullable DirtType dirtType) {
+    public void setDirtType(@Nullable DirtType dirtType) throws Exception {
         if (dirtType != null) {
-            throw new InvalidBlockPropertyValueException(DIRT_TYPE, null, dirtType, getName()+" don't support DirtType");
+            throw new Exception(getName() + "don't support DirtType!");
         }
     }
 

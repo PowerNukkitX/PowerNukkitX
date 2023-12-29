@@ -7,8 +7,14 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockSnow extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:snow");
 
     public BlockSnow() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockSnow(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -17,8 +23,8 @@ public class BlockSnow extends BlockSolid {
     }
 
     @Override
-    public int getId() {
-        return SNOW_BLOCK;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override
