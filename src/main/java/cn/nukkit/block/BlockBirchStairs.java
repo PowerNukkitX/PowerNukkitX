@@ -3,8 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockBirchStairs extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:birch_stairs", CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+public class BlockBirchStairs extends BlockStairsWood {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BIRCH_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -17,5 +17,10 @@ public class BlockBirchStairs extends Block {
 
     public BlockBirchStairs(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Birch Wood Stairs";
     }
 }

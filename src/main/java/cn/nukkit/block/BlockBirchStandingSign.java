@@ -3,8 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockBirchStandingSign extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:birch_standing_sign", CommonBlockProperties.GROUND_SIGN_DIRECTION);
+public class BlockBirchStandingSign extends BlockStandingSign {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BIRCH_STANDING_SIGN, CommonBlockProperties.GROUND_SIGN_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -17,5 +17,15 @@ public class BlockBirchStandingSign extends Block {
 
     public BlockBirchStandingSign(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    protected String getStandingSignId() {
+        return PROPERTIES.getIdentifier();
+    }
+
+    @Override
+    public String getWallSignId() {
+        return BlockBirchWallSign.PROPERTIES.getIdentifier();
     }
 }

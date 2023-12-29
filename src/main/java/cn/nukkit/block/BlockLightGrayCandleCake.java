@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockLightGrayCandleCake extends Block {
+public class BlockLightGrayCandleCake extends BlockCandleCake {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:light_gray_candle_cake", CommonBlockProperties.LIT);
 
     @Override
@@ -17,5 +17,10 @@ public class BlockLightGrayCandleCake extends Block {
 
     public BlockLightGrayCandleCake(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    protected BlockCandle toCandleForm() {
+        return new BlockLightGrayCandle();
     }
 }

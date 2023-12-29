@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockBrownCandle extends Block {
+public class BlockBrownCandle extends BlockCandle {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:brown_candle", CommonBlockProperties.CANDLES, CommonBlockProperties.LIT);
 
     @Override

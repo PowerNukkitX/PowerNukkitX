@@ -2,8 +2,8 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockBirchPlanks extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:birch_planks");
+public class BlockBirchPlanks extends BlockPlanks {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BIRCH_PLANKS);
 
     @Override
     public @NotNull BlockProperties getProperties() {
