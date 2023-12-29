@@ -1,12 +1,9 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemShears;
 import cn.nukkit.item.ItemString;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.vibration.VibrationEvent;
@@ -17,40 +14,18 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
+import static cn.nukkit.block.BlockTripwireHook.MAX_TRIPWIRE_CIRCUIT_LENGTH;
+import static cn.nukkit.block.property.CommonBlockProperties.*;
 
-/**
- * @author CreeperFace
- */
-public class BlockTripWire extends BlockTransparentMeta {
-    @Deprecated(since = "1.20.0-r2",forRemoval = true)
-    @DeprecationDetails(since = "1.20.0-r2", reason = "replace to CommonBlockProperties")
-
-
-    public static final BooleanBlockProperty ATTACHED = new BooleanBlockProperty("attached_bit", false);
-
-
-    public static final BooleanBlockProperty DISARMED = new BooleanBlockProperty("disarmed_bit", false);
-
-
-    public static final BooleanBlockProperty SUSPENDED = new BooleanBlockProperty("suspended_bit", false);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(POWERED, SUSPENDED, CommonBlockProperties.ATTACHED, DISARMED);
-
-    public BlockTripWire(int meta) {
-        super(meta);
-    }
+public class BlockTripWire extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties(TRIP_WIRE,
+            POWERED_BIT, SUSPENDED_BIT, ATTACHED_BIT, DISARMED_BIT);
 
     public BlockTripWire() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return TRIP_WIRE;
-    }
-
+    public BlockTripWire(BlockState state) { super(state); }
 
     @NotNull
     @Override
@@ -67,7 +42,6 @@ public class BlockTripWire extends BlockTransparentMeta {
     public boolean canPassThrough() {
         return true;
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -100,72 +74,65 @@ public class BlockTripWire extends BlockTransparentMeta {
     }
 
     public boolean isPowered() {
-        return (this.getDamage() & 1) > 0;
+        return this.getPropertyValue(POWERED_BIT);
     }
 
     public boolean isAttached() {
-        return (this.getDamage() & 4) > 0;
+        return this.getPropertyValue(ATTACHED_BIT);
+    }
+
+    public boolean isSuspended() {
+        return this.getPropertyValue(SUSPENDED_BIT);
     }
 
     public boolean isDisarmed() {
-        return (this.getDamage() & 8) > 0;
+        return this.getPropertyValue(DISARMED_BIT);
     }
 
-    public void setPowered(boolean value) {
-        if (value ^ this.isPowered()) {
-            this.setDamage(this.getDamage() ^ 0x01);
-        }
+    public void setPowered(boolean isPowered) {
+        if (this.isPowered() == isPowered) { return; }
+        this.setPropertyValue(POWERED_BIT, isPowered);
     }
 
-    public void setAttached(boolean value) {
-        if (value ^ this.isAttached()) {
-            this.setDamage(this.getDamage() ^ 0x04);
-        }
+    public void setAttached(boolean isAttached) {
+        if (this.isAttached() == isAttached) { return; }
+        this.setPropertyValue(ATTACHED_BIT, isAttached);
     }
 
-    public void setDisarmed(boolean value) {
-        if (value ^ this.isDisarmed()) {
-            this.setDamage(this.getDamage() ^ 0x08);
-        }
+    public void setDisarmed(boolean isDisarmed) {
+        if (this.isDisarmed() == isDisarmed) { return; }
+        this.setPropertyValue(DISARMED_BIT, isDisarmed);
     }
 
+    public void setSuspended(boolean isSuspended) {
+        if (this.isSuspended() == isSuspended) { return; }
+        this.setPropertyValue(SUSPENDED_BIT, isSuspended);
+    }
     
     @Override
     public void onEntityCollide(Entity entity) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
-            return;
-        }
+        if (!this.level.getServer().isRedstoneEnabled()) { return; }
+        if (!entity.doesTriggerPressurePlate()) { return; }
+        if (this.isPowered()) { return; }
 
-        if (!entity.doesTriggerPressurePlate()) {
-            return;
-        }
+        this.setPowered(true);
+        this.level.setBlock(this, this, true, false);
+        this.updateHook(false);
 
-        boolean powered = this.isPowered();
-
-        if (!powered) {
-            this.setPowered(true);
-            this.level.setBlock(this, this, true, false);
-            this.updateHook(false);
-
-            this.level.scheduleUpdate(this, 10);
-            this.level.updateComparatorOutputLevelSelective(this, true);
-        }
+        this.level.scheduleUpdate(this, 10);
+        this.level.updateComparatorOutputLevelSelective(this, true);
     }
 
     private void updateHook(boolean scheduleUpdate) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
-            return;
-        }
+        if (!this.level.getServer().isRedstoneEnabled()) { return; }
 
         for (BlockFace side : new BlockFace[]{BlockFace.SOUTH, BlockFace.WEST}) {
-            for (int i = 1; i < 42; ++i) {
+            for (int i = 1; i < MAX_TRIPWIRE_CIRCUIT_LENGTH; ++i) {
                 Block block = this.getSide(side, i);
 
-                if (block instanceof BlockTripWireHook) {
-                    BlockTripWireHook hook = (BlockTripWireHook) block;
-
+                if (block instanceof BlockTripwireHook hook) {
                     if (hook.getFacing() == side.getOpposite()) {
-                        hook.calculateState(false, true, i, this);
+                        hook.updateLine(false, true, i, this);
                     }
 
                     /*if(scheduleUpdate) {
@@ -174,9 +141,7 @@ public class BlockTripWire extends BlockTransparentMeta {
                     break;
                 }
 
-                if (block.getId() != Block.TRIP_WIRE) {
-                    break;
-                }
+                if (!(block instanceof BlockTripWire)) { break; }
             }
         }
     }
@@ -184,33 +149,23 @@ public class BlockTripWire extends BlockTransparentMeta {
     
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
-            return 0;
-        }
+        if (!this.level.getServer().isRedstoneEnabled()) { return 0; }
 
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (!isPowered()) {
+            if (!isPowered()) { return type; }
+
+            for (Entity entity : this.level.getCollidingEntities(this.getCollisionBoundingBox())) {
+                if (!entity.doesTriggerPressurePlate()) { continue; }
+                this.level.scheduleUpdate(this, 10);
                 return type;
             }
 
-            boolean found = false;
-            for (Entity entity : this.level.getCollidingEntities(this.getCollisionBoundingBox())) {
-                if (!entity.doesTriggerPressurePlate()) {
-                    continue;
-                }
+            this.setPowered(false);
+            this.level.setBlock(this, this, true, false);
+            this.updateHook(false);
 
-                found = true;
-            }
+            this.level.updateComparatorOutputLevelSelective(this, true);
 
-            if (found) {
-                this.level.scheduleUpdate(this, 10);
-            } else {
-                this.setPowered(false);
-                this.level.setBlock(this, this, true, false);
-                this.updateHook(false);
-
-                this.level.updateComparatorOutputLevelSelective(this, true);
-            }
             return type;
         }
 
@@ -227,18 +182,20 @@ public class BlockTripWire extends BlockTransparentMeta {
 
     @Override
     public boolean onBreak(Item item) {
-        if (item.getId() == Item.SHEARS) {
+        if (item instanceof ItemShears) {
             this.setDisarmed(true);
             this.level.setBlock(this, this, true, false);
             this.updateHook(false);
             this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
             //todo: initiator should be a entity
-            level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.SHEAR));
-        } else {
-            this.setPowered(true);
-            this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
-            this.updateHook(true);
+            level.getVibrationManager().callVibrationEvent(new VibrationEvent(
+                    this, this.add(0.5, 0.5, 0.5), VibrationType.SHEAR));
+            return true;
         }
+
+        this.setPowered(true);
+        this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
+        this.updateHook(true);
 
         return true;
     }

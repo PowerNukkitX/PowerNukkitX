@@ -23,6 +23,7 @@ public final class ItemTag {
     public final static Identifier DOOR = new Identifier("minecraft:door");
     public final static Identifier GOLDEN_TIER = new Identifier("minecraft:golden_tier");
     public final static Identifier HANGING_ACTOR = new Identifier("minecraft:hanging_actor");
+    public final static Identifier HANGING_SIGN = new Identifier("minecraft:hanging_sign");
     public final static Identifier HORSE_ARMOR = new Identifier("minecraft:horse_armor");
     public final static Identifier IRON_TIER = new Identifier("minecraft:iron_tier");
     public final static Identifier IS_ARMOR = new Identifier("minecraft:is_armor");
@@ -89,7 +90,7 @@ public final class ItemTag {
 
     public static List<String> getTags(String namespaceId) {
         var result = ITEM_2_TAGS.get(namespaceId);
-        if (result == null) return null;
+        if (result == null) return List.of();
         return result.stream().toList();
     }
 
@@ -100,7 +101,7 @@ public final class ItemTag {
 
     public static List<String> getItems(String tag) {
         var result = TAG_2_ITEMS.get(tag);
-        if (result == null) return null;
+        if (result == null) return List.of();
         return result.stream().toList();
     }
 

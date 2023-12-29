@@ -25,7 +25,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
@@ -44,7 +44,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     public boolean sheared = false;
     public int color = 0;
 
-    public EntitySheep(FullChunk chunk, CompoundTag nbt) {
+    public EntitySheep(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -80,7 +80,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
                                 ),
                                 any(
                                         new BlockCheckEvaluator(Block.GRASS, new Vector3(0, -1, 0)),
-                                        new BlockCheckEvaluator(Block.TALL_GRASS, Vector3.ZERO))),
+                                        new BlockCheckEvaluator(Block.TALLGRASS, Vector3.ZERO))),
                                 3, 1, 100
                         ),
                         new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
@@ -185,7 +185,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     @Override
     public Item[] getDrops() {
         if (this.lastDamageCause instanceof EntityDamageByEntityEvent) {
-            return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_MUTTON : Item.RAW_MUTTON)), Item.get(Item.WOOL, getColor(), 1)};
+            return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_MUTTON : Item.MUTTON)), Item.get(Item.WOOL, getColor(), 1)};
         }
         return Item.EMPTY_ARRAY;
     }

@@ -1,8 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.type.BooleanPropertyType;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntitySmallFireBall;
@@ -23,35 +23,26 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-/**
- * @author xtypr
- * @since 2015/12/8
- */
+import static cn.nukkit.block.property.CommonBlockProperties.ALLOW_UNDERWATER_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.EXPLODE_BIT;
 
-public class BlockTNT extends BlockSolid implements RedstoneComponent {
+public class BlockTnt extends BlockSolid implements RedstoneComponent {
 
+    public static final BlockProperties PROPERTIES = new BlockProperties(TNT,
+            EXPLODE_BIT, ALLOW_UNDERWATER_BIT);
 
-    public static final BooleanBlockProperty EXPLODE_ON_BREAK = new BooleanBlockProperty("explode_bit", false);
+    public BlockTnt() {
+        this(PROPERTIES.getDefaultState());
+    }
 
-
-    public static final BooleanBlockProperty ALLOW_UNDERWATER = new BooleanBlockProperty("allow_underwater_bit", false);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(EXPLODE_ON_BREAK, ALLOW_UNDERWATER);
-
-    public BlockTNT() {
+    public BlockTnt(BlockState state) {
+        super(state);
     }
 
     @Override
     public String getName() {
         return "TNT";
     }
-
-    @Override
-    public int getId() {
-        return TNT;
-    }
-
 
     @NotNull
     @Override
@@ -92,7 +83,6 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
         prime(fuse, null);
     }
 
-
     public void prime(int fuse, Entity source) {
         this.getLevel().setBlock(this, Block.get(BlockID.AIR), true);
         double mot = (new NukkitRandom()).nextSignedFloat() * Math.PI * 2;
@@ -117,11 +107,11 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
             return;
         }
         tnt.spawnToAll();
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(source != null ? source : this, this.add(0.5, 0.5, 0.5), VibrationType.PRIME_FUSE));
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(
+                source != null ? source : this, this.add(0.5, 0.5, 0.5), VibrationType.PRIME_FUSE));
     }
 
     @Override
-
     public int onUpdate(int type) {
         if (!this.level.getServer().isRedstoneEnabled()) {
             return 0;
@@ -136,15 +126,19 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
-        if (item.getId() == Item.FLINT_STEEL) {
-            item.useOn(this);
-            this.prime(80, player);
-            return true;
-        } else if (item.getId() == Item.FIRE_CHARGE) {
-            if (!player.isCreative()) item.count--;
-            this.prime(80, player);
-            return true;
-        } else if (item.hasEnchantment(Enchantment.ID_FIRE_ASPECT) && item.applyEnchantments()) {
+        switch (item.getId()) {
+            case Item.FLINT_AND_STEEL -> {
+                item.useOn(this);
+                this.prime(80, player);
+                return true;
+            }
+            case Item.FIRE_CHARGE -> {
+                if (player != null && !player.isCreative()) { item.count--; }
+                this.prime(80, player);
+                return true;
+            }
+        }
+        if (item.hasEnchantment(Enchantment.ID_FIRE_ASPECT) && item.applyEnchantments()) {
             item.useOn(this);
             this.prime(80, player);
             return true;
@@ -152,10 +146,11 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
         return false;
     }
 
-
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
-        if (projectile instanceof EntitySmallFireBall || (projectile.isOnFire() && projectile instanceof EntityArrow)) {
+        //TODO: Wither skull, ghast fireball
+        if (projectile instanceof EntitySmallFireBall ||
+                (projectile.isOnFire() && projectile instanceof EntityArrow) ) {
             prime(80, projectile);
             return true;
         }

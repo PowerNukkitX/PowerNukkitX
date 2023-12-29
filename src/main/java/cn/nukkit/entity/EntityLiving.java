@@ -11,10 +11,10 @@ import cn.nukkit.entity.weather.EntityWeather;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTurtleShell;
+import cn.nukkit.item.ItemTurtleHelmet;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.FloatTag;
@@ -29,9 +29,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author MagicDroidX (Nukkit Project)
- */
 public abstract class EntityLiving extends Entity implements EntityDamageable {
     public final static float DEFAULT_SPEED = 0.1f;
     protected int attackTime = 0;
@@ -41,7 +38,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     private boolean attackTimeByShieldKb;
     private int attackTimeBefore;
 
-    public EntityLiving(FullChunk chunk, CompoundTag nbt) {
+    public EntityLiving(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -215,15 +212,15 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     public boolean entityBaseTick(int tickDiff) {
         boolean isBreathing = !this.isInsideOfWater();
 
-        if (this instanceof Player) {
-            if (isBreathing && ((Player) this).getInventory().getHelmet() instanceof ItemTurtleShell) {
+        if (this instanceof Player player) {
+            if (isBreathing && player.getInventory().getHelmet() instanceof ItemTurtleHelmet) {
                 turtleTicks = 200;
             } else if (turtleTicks > 0) {
                 isBreathing = true;
                 turtleTicks--;
             }
 
-            if ((((Player) this).isCreative() || ((Player) this).isSpectator())) {
+            if (player.isCreative() || player.isSpectator()) {
                 isBreathing = true;
             }
         }
@@ -347,7 +344,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             int id = block.getId();
 
             if (transparent == null) {
-                if (id != 0) {
+                if (!block.isAir()) {
                     break;
                 }
             } else {
@@ -451,14 +448,11 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return true;
     }
 
-
-    @
     protected void onBlock(Entity entity, EntityDamageEvent event, boolean animate) {
         if (animate) {
             getLevel().addSound(this, Sound.ITEM_SHIELD_BLOCK);
         }
     }
-
 
     public boolean isBlocking() {
         return this.getDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_BLOCKING);
@@ -469,16 +463,13 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         this.setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_BLOCKING, value);
     }
 
-
     public boolean isPersistent() {
         return namedTag.containsByte("Persistent") && namedTag.getBoolean("Persistent");
     }
 
-
     public void setPersistent(boolean persistent) {
         namedTag.putBoolean("Persistent", persistent);
     }
-
 
     public void preAttack(Player player) {
         if (attackTimeByShieldKb) {
@@ -487,23 +478,19 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
     }
 
-
     public void postAttack(Player player) {
         if (attackTimeByShieldKb && attackTime == 0) {
             attackTime = attackTimeBefore;
         }
     }
 
-
     public int getAttackTime() {
         return attackTime;
     }
 
-
     public boolean isAttackTimeByShieldKb() {
         return attackTimeByShieldKb;
     }
-
 
     public int getAttackTimeBefore() {
         return attackTimeBefore;

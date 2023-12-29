@@ -6,7 +6,7 @@ import cn.nukkit.block.BlockLava;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.EntityFreezeEvent;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
@@ -42,7 +42,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     protected boolean needsRecalcMovement = true;
     private boolean needsCollisionDamage = false;
 
-    public EntityPhysical(FullChunk chunk, CompoundTag nbt) {
+    public EntityPhysical(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         this.tickSpread = globalCycleTickSpread.getAndIncrement() & 0xf;
         this.offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);

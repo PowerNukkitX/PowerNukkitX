@@ -1,7 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockFromToEvent;
 import cn.nukkit.event.block.LiquidFlowEvent;
@@ -21,17 +19,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * @author MagicDroidX (Nukkit Project)
- */
-public abstract class BlockLiquid extends BlockTransparentMeta {
+import static cn.nukkit.block.property.CommonBlockProperties.LIQUID_DEPTH;
 
-
-    public static final IntBlockProperty LIQUID_DEPTH = new IntBlockProperty("liquid_depth", false, 15);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(LIQUID_DEPTH);
-
+public abstract class BlockLiquid extends BlockTransparent {
     private static final byte CAN_FLOW_DOWN = 1;
     private static final byte CAN_FLOW = 0;
     private static final byte BLOCKED = -1;
@@ -39,15 +29,8 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
     protected Vector3 flowVector = null;
     private final Long2ByteMap flowCostVisited = new Long2ByteOpenHashMap();
 
-    protected BlockLiquid(int meta) {
-        super(meta);
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
+    protected BlockLiquid(BlockState state) {
+        super(state);
     }
 
     @Override
@@ -234,7 +217,7 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
             this.checkForHarden();
             if (usesWaterLogging() && layer > 0) {
                 Block layer0 = this.level.getBlock(this, 0);
-                if (layer0.getId() == 0) {
+                if (layer0.isAir()) {
                     this.level.setBlock(this, 1, Block.get(BlockID.AIR), false, false);
                     this.level.setBlock(this, 0, this, false, false);
                 } else if (layer0.getWaterloggingLevel() <= 0 || layer0.getWaterloggingLevel() == 1 && getLiquidDepth() > 0) {
@@ -341,8 +324,8 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
             LiquidFlowEvent event = new LiquidFlowEvent(block, this, newFlowDecay);
             level.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
-                if (block.layer == 0 && block.getId() > 0) {
-                    this.level.useBreakOn(block, block.getId() == COBWEB ? Item.get(Item.WOODEN_SWORD) : null);
+                if (block.layer == 0 && !block.isAir()) {
+                    this.level.useBreakOn(block, block instanceof BlockCobweb ? Item.get(Item.WOODEN_SWORD) : null);
                 }
                 this.level.setBlock(block, block.layer, getBlock(newFlowDecay), true, true);
                 this.level.scheduleUpdate(block, this.tickRate());
