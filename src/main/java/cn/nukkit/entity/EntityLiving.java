@@ -14,7 +14,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTurtleHelmet;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.Chunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.FloatTag;
@@ -38,7 +38,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     private boolean attackTimeByShieldKb;
     private int attackTimeBefore;
 
-    public EntityLiving(Chunk chunk, CompoundTag nbt) {
+    public EntityLiving(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

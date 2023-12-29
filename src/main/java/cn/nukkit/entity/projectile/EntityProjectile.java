@@ -13,7 +13,7 @@ import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.format.Chunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.AxisAlignedBB;
@@ -51,11 +51,11 @@ public abstract class EntityProjectile extends Entity {
      */
     private boolean noAge;
 
-    public EntityProjectile(Chunk chunk, CompoundTag nbt) {
+    public EntityProjectile(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityProjectile(Chunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntityProjectile(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt);
         this.shootingEntity = shootingEntity;
         if (shootingEntity != null) {

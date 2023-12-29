@@ -25,7 +25,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.Chunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
@@ -44,7 +44,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     public boolean sheared = false;
     public int color = 0;
 
-    public EntitySheep(Chunk chunk, CompoundTag nbt) {
+    public EntitySheep(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
