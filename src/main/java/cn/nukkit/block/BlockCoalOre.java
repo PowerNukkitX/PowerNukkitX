@@ -1,8 +1,13 @@
 package cn.nukkit.block;
 
+import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class BlockCoalOre extends Block {
+import java.util.concurrent.ThreadLocalRandom;
+
+public class BlockCoalOre extends BlockOre {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:coal_ore");
 
     @Override
@@ -16,5 +21,36 @@ public class BlockCoalOre extends Block {
 
     public BlockCoalOre(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Coal Ore";
+    }
+
+    @Nullable
+    @Override
+    protected String getRawMaterial() {
+        return ItemID.COAL;
+    }
+
+    @Override
+    public int getToolTier() {
+        return ItemTool.TIER_WOODEN;
+    }
+
+    @Override
+    public int getDropExp() {
+        return ThreadLocalRandom.current().nextInt(3);
+    }
+
+    @Override
+    public double getResistance() {
+        return 3;
+    }
+
+    @Override
+    public double getHardness() {
+        return 3;
     }
 }

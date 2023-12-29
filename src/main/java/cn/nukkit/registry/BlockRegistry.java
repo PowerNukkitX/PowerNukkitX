@@ -127,7 +127,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(BORDER_BLOCK, BlockBorderBlock.class);
         register(BRAIN_CORAL, BlockBrainCoral.class);
         register(BREWING_STAND, BlockBrewingStand.class);
-        register(BRICK_BLOCK, BlockBrickBlock.class);
+        register(BRICK_BLOCK, BlockBrickBlock.class);// done.
         register(BRICK_STAIRS, BlockBrickStairs.class);
         register(BROWN_CANDLE, BlockBrownCandle.class);// done.
         register(BROWN_CANDLE_CAKE, BlockBrownCandleCake.class);// done.
@@ -194,7 +194,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(CLAY, BlockClay.class);// done.
         register(CLIENT_REQUEST_PLACEHOLDER_BLOCK, BlockClientRequestPlaceholderBlock.class);
         register(COAL_BLOCK, BlockCoalBlock.class);
-        register(COAL_ORE, BlockCoalOre.class);
+        register(COAL_ORE, BlockCoalOre.class);// done.
         register(COBBLED_DEEPSLATE, BlockCobbledDeepslate.class);
         register(COBBLED_DEEPSLATE_DOUBLE_SLAB, BlockCobbledDeepslateDoubleSlab.class);
         register(COBBLED_DEEPSLATE_SLAB, BlockCobbledDeepslateSlab.class);
@@ -212,7 +212,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(COPPER_BULB, BlockCopperBulb.class);
         register(COPPER_DOOR, BlockCopperDoor.class);
         register(COPPER_GRATE, BlockCopperGrate.class);
-        register(COPPER_ORE, BlockCopperOre.class);
+        register(COPPER_ORE, BlockCopperOre.class);// done.
         register(COPPER_TRAPDOOR, BlockCopperTrapdoor.class);
         register(CORAL_BLOCK, BlockCoralBlock.class);
         register(CORAL_FAN, BlockCoralFan.class);
@@ -287,14 +287,14 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(DEEPSLATE_BRICK_STAIRS, BlockDeepslateBrickStairs.class);
         register(DEEPSLATE_BRICK_WALL, BlockDeepslateBrickWall.class);
         register(DEEPSLATE_BRICKS, BlockDeepslateBricks.class);
-        register(DEEPSLATE_COAL_ORE, BlockDeepslateCoalOre.class);
-        register(DEEPSLATE_COPPER_ORE, BlockDeepslateCopperOre.class);
-        register(DEEPSLATE_DIAMOND_ORE, BlockDeepslateDiamondOre.class);
-        register(DEEPSLATE_EMERALD_ORE, BlockDeepslateEmeraldOre.class);
-        register(DEEPSLATE_GOLD_ORE, BlockDeepslateGoldOre.class);
-        register(DEEPSLATE_IRON_ORE, BlockDeepslateIronOre.class);
-        register(DEEPSLATE_LAPIS_ORE, BlockDeepslateLapisOre.class);
-        register(DEEPSLATE_REDSTONE_ORE, BlockDeepslateRedstoneOre.class);
+        register(DEEPSLATE_COAL_ORE, BlockDeepslateCoalOre.class);// done.
+        register(DEEPSLATE_COPPER_ORE, BlockDeepslateCopperOre.class);// done.
+        register(DEEPSLATE_DIAMOND_ORE, BlockDeepslateDiamondOre.class);// done.
+        register(DEEPSLATE_EMERALD_ORE, BlockDeepslateEmeraldOre.class);// done.
+        register(DEEPSLATE_GOLD_ORE, BlockDeepslateGoldOre.class);// done.
+        register(DEEPSLATE_IRON_ORE, BlockDeepslateIronOre.class);// done.
+        register(DEEPSLATE_LAPIS_ORE, BlockDeepslateLapisOre.class);// done.
+        register(DEEPSLATE_REDSTONE_ORE, BlockDeepslateRedstoneOre.class);// done.
         register(DEEPSLATE_TILE_DOUBLE_SLAB, BlockDeepslateTileDoubleSlab.class);
         register(DEEPSLATE_TILE_SLAB, BlockDeepslateTileSlab.class);
         register(DEEPSLATE_TILE_STAIRS, BlockDeepslateTileStairs.class);
@@ -303,7 +303,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(DENY, BlockDeny.class);// done.
         register(DETECTOR_RAIL, BlockDetectorRail.class);
         register(DIAMOND_BLOCK, BlockDiamondBlock.class);
-        register(DIAMOND_ORE, BlockDiamondOre.class);
+        register(DIAMOND_ORE, BlockDiamondOre.class);// done.
         register(DIORITE, BlockDiorite.class);// done.
         register(DIORITE_STAIRS, BlockDioriteStairs.class);
         register(DIRT, BlockDirt.class);// done.
@@ -440,7 +440,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
 //        register(ELEMENT_98, BlockElement98.class);
 //        register(ELEMENT_99, BlockElement99.class);
         register(EMERALD_BLOCK, BlockEmeraldBlock.class);
-        register(EMERALD_ORE, BlockEmeraldOre.class);
+        register(EMERALD_ORE, BlockEmeraldOre.class);// done.
         register(ENCHANTING_TABLE, BlockEnchantingTable.class);
         register(END_BRICK_STAIRS, BlockEndBrickStairs.class);
         register(END_BRICKS, BlockEndBricks.class);
@@ -481,7 +481,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(GLOWINGOBSIDIAN, BlockGlowingobsidian.class);
         register(GLOWSTONE, BlockGlowstone.class);// done.
         register(GOLD_BLOCK, BlockGoldBlock.class);
-        register(GOLD_ORE, BlockGoldOre.class);
+        register(GOLD_ORE, BlockGoldOre.class);// done.
         register(GOLDEN_RAIL, BlockGoldenRail.class);
         register(GRANITE, BlockGranite.class);// done.
         register(GRANITE_STAIRS, BlockGraniteStairs.class);
@@ -531,7 +531,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(IRON_BARS, BlockIronBars.class);
         register(IRON_BLOCK, BlockIronBlock.class);
         register(IRON_DOOR, BlockIronDoor.class);// done.
-        register(IRON_ORE, BlockIronOre.class);
+        register(IRON_ORE, BlockIronOre.class);// done.
         register(IRON_TRAPDOOR, BlockIronTrapdoor.class);
         register(JIGSAW, BlockJigsaw.class);
         register(JUKEBOX, BlockJukebox.class);
@@ -551,7 +551,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(LADDER, BlockLadder.class);
         register(LANTERN, BlockLantern.class);
         register(LAPIS_BLOCK, BlockLapisBlock.class);
-        register(LAPIS_ORE, BlockLapisOre.class);
+        register(LAPIS_ORE, BlockLapisOre.class);// done.
         register(LARGE_AMETHYST_BUD, BlockLargeAmethystBud.class);
         register(LAVA, BlockLava.class);
         register(LEAVES, BlockLeaves.class);
@@ -713,7 +713,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(PITCHER_PLANT, BlockPitcherPlant.class);
         register(PODZOL, BlockPodzol.class);// done.
         register(POINTED_DRIPSTONE, BlockPointedDripstone.class);
-        register(POLISHED_ANDESITE, BlockPolishedAndesite.class);
+        register(POLISHED_ANDESITE, BlockPolishedAndesite.class);// done.
         register(POLISHED_ANDESITE_STAIRS, BlockPolishedAndesiteStairs.class);
         register(POLISHED_BASALT, BlockPolishedBasalt.class);
         register(POLISHED_BLACKSTONE, BlockPolishedBlackstone.class);
@@ -733,9 +733,9 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(POLISHED_DEEPSLATE_SLAB, BlockPolishedDeepslateSlab.class);
         register(POLISHED_DEEPSLATE_STAIRS, BlockPolishedDeepslateStairs.class);
         register(POLISHED_DEEPSLATE_WALL, BlockPolishedDeepslateWall.class);
-        register(POLISHED_DIORITE, BlockPolishedDiorite.class);
+        register(POLISHED_DIORITE, BlockPolishedDiorite.class);// done.
         register(POLISHED_DIORITE_STAIRS, BlockPolishedDioriteStairs.class);
-        register(POLISHED_GRANITE, BlockPolishedGranite.class);
+        register(POLISHED_GRANITE, BlockPolishedGranite.class);// done.
         register(POLISHED_GRANITE_STAIRS, BlockPolishedGraniteStairs.class);
         register(POLISHED_TUFF, BlockPolishedTuff.class);
         register(POLISHED_TUFF_DOUBLE_SLAB, BlockPolishedTuffDoubleSlab.class);
@@ -793,7 +793,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(RED_WOOL, BlockRedWool.class);// done.
         register(REDSTONE_BLOCK, BlockRedstoneBlock.class);
         register(REDSTONE_LAMP, BlockRedstoneLamp.class);
-        register(REDSTONE_ORE, BlockRedstoneOre.class);
+        register(REDSTONE_ORE, BlockRedstoneOre.class);// done.
         register(REDSTONE_TORCH, BlockRedstoneTorch.class);
         register(REDSTONE_WIRE, BlockRedstoneWire.class);
         register(REEDS, BlockReeds.class);

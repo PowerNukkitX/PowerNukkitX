@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.NukkitMath;
 
@@ -18,7 +17,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public abstract class BlockOre extends BlockSolid {
 
 
-    public BlockOre() {
+    public BlockOre(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -26,7 +26,7 @@ public abstract class BlockOre extends BlockSolid {
         if (!canHarvest(item)) {
             return Item.EMPTY_ARRAY;
         }
-        MinecraftItemID rawMaterial = getRawMaterial();
+        String rawMaterial = getRawMaterial();
         if (rawMaterial == null) {
             return super.getDrops(item);
         }
@@ -41,12 +41,14 @@ public abstract class BlockOre extends BlockSolid {
             int increase = ThreadLocalRandom.current().nextInt((int)(multiplier * fortuneLevel) + 1);
             amount += increase;
         }
-        return new Item[]{ rawMaterial.get(amount) };
+        Item itemRaw = Item.get(rawMaterial);
+        itemRaw.setCount(amount);
+        return new Item[]{itemRaw};
     }
 
 
     @Nullable
-    protected abstract MinecraftItemID getRawMaterial();
+    protected abstract String getRawMaterial();
 
 
     protected float getDropMultiplier() {
