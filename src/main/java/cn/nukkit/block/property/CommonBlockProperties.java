@@ -121,6 +121,7 @@ public interface CommonBlockProperties {
 
     BooleanPropertyType EXTINGUISHED = BooleanPropertyType.of("extinguished", false);
 
+    //Base index for BlockFace
     IntPropertyType FACING_DIRECTION = IntPropertyType.of("facing_direction", 0, 5, 0);
 
     IntPropertyType FILL_LEVEL = IntPropertyType.of("fill_level", 0, 6, 0);

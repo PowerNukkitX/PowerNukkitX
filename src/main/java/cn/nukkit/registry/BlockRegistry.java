@@ -97,14 +97,14 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(BIRCH_WALL_SIGN, BlockBirchWallSign.class);
         register(BLACK_CANDLE, BlockBlackCandle.class);// done.
         register(BLACK_CANDLE_CAKE, BlockBlackCandleCake.class);// done.
-        register(BLACK_CARPET, BlockBlackCarpet.class);
-        register(BLACK_CONCRETE, BlockBlackConcrete.class);
-        register(BLACK_CONCRETE_POWDER, BlockBlackConcretePowder.class);
-        register(BLACK_GLAZED_TERRACOTTA, BlockBlackGlazedTerracotta.class);
-        register(BLACK_SHULKER_BOX, BlockBlackShulkerBox.class);
+        register(BLACK_CARPET, BlockBlackCarpet.class);// done.
+        register(BLACK_CONCRETE, BlockBlackConcrete.class);// done.
+        register(BLACK_CONCRETE_POWDER, BlockBlackConcretePowder.class);// done.
+        register(BLACK_GLAZED_TERRACOTTA, BlockBlackGlazedTerracotta.class);// done.
+        register(BLACK_SHULKER_BOX, BlockBlackShulkerBox.class);// done.
         register(BLACK_STAINED_GLASS, BlockBlackStainedGlass.class);
         register(BLACK_STAINED_GLASS_PANE, BlockBlackStainedGlassPane.class);
-        register(BLACK_TERRACOTTA, BlockBlackTerracotta.class);
+        register(BLACK_TERRACOTTA, BlockBlackTerracotta.class);// done.
         register(BLACK_WOOL, BlockBlackWool.class);
         register(BLACKSTONE, BlockBlackstone.class);// done.
         register(BLACKSTONE_DOUBLE_SLAB, BlockBlackstoneDoubleSlab.class);
@@ -913,7 +913,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(TURTLE_EGG, BlockTurtleEgg.class);
         register(TWISTING_VINES, BlockTwistingVines.class);
         register(UNDERWATER_TORCH, BlockUnderwaterTorch.class);
-        register(UNDYED_SHULKER_BOX, BlockUndyedShulkerBox.class);
+        register(UNDYED_SHULKER_BOX, BlockUndyedShulkerBox.class);//done
         register(UNKNOWN, BlockUnknown.class);
         register(UNLIT_REDSTONE_TORCH, BlockUnlitRedstoneTorch.class);
         register(UNPOWERED_COMPARATOR, BlockUnpoweredComparator.class);

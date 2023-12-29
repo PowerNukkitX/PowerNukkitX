@@ -14,33 +14,9 @@ import org.jetbrains.annotations.NotNull;
  * @author xtypr
  * @since 2015/11/24
  */
-public class BlockCarpet extends BlockFlowable {
-
-
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.COLOR_BLOCK_PROPERTIES;
-
-    public BlockCarpet() {
-        this(0);
-    }
-
-    public BlockCarpet(int meta) {
-        super(meta);
-    }
-
-    public BlockCarpet(DyeColor dyeColor) {
-        this(dyeColor.getWoolData());
-    }
-
-    @Override
-    public int getId() {
-        return CARPET;
-    }
-
-    @NotNull
-    @Override
-
-    public BlockProperties getProperties() {
-        return PROPERTIES;
+public abstract class BlockCarpet extends BlockFlowable {
+    public BlockCarpet(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -58,22 +34,15 @@ public class BlockCarpet extends BlockFlowable {
         return false;
     }
 
-
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
     @Override
-    public String getName() {
-        return DyeColor.getByWoolData(getDamage()) + " Carpet";
-    }
-
-    @Override
     public boolean canPassThrough() {
         return false;
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -93,7 +62,7 @@ public class BlockCarpet extends BlockFlowable {
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         Block down = this.down();
-        if (down.getId() != Item.AIR) {
+        if (!down.isAir()) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
         }
@@ -103,23 +72,12 @@ public class BlockCarpet extends BlockFlowable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (this.down().getId() == Item.AIR) {
+            if (this.down().isAir()) {
                 this.getLevel().useBreakOn(this);
 
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         }
-
         return 0;
     }
-
-    public DyeColor getDyeColor() {
-        return getPropertyValue(CommonBlockProperties.COLOR);
-    }
-
-
-    public void setDyeColor(@NotNull DyeColor color) {
-        setPropertyValue(CommonBlockProperties.COLOR, color);
-    }
-
 }

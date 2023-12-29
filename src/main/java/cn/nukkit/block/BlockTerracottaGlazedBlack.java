@@ -6,7 +6,7 @@ import cn.nukkit.utils.DyeColor;
  * @author CreeperFace
  * @since 2.6.2017
  */
-public class BlockTerracottaGlazedBlack extends BlockTerracottaGlazed {
+public class BlockTerracottaGlazedBlack extends BlockGlazedTerracotta {
 
     public BlockTerracottaGlazedBlack() {
         this(0);

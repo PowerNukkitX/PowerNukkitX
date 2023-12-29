@@ -28,28 +28,22 @@ import java.util.Map;
  */
 
 public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEntityHolder<BlockEntityShulkerBox> {
+    public static final BlockProperties PROPERTIES = new BlockProperties(UNDYED_SHULKER_BOX);
 
-    public BlockUndyedShulkerBox() {
-        super();
+    public BlockUndyedShulkerBox(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
-    public int getId() {
-        return UNDYED_SHULKER_BOX;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
-
-    @Override
-    public String getName() {
-        return "Shulker Box";
-    }
-
 
     @NotNull
     @Override
     public Class<? extends BlockEntityShulkerBox> getBlockEntityClass() {
         return BlockEntityShulkerBox.class;
     }
-
 
     @NotNull
     @Override
@@ -83,9 +77,13 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         return 1;
     }
 
+    public Item getShulkerBox() {
+        return new ItemBlock(this);
+    }
+
     @Override
     public Item toItem() {
-        ItemBlock item = new ItemBlock(this, this.getDamage(), 1);
+        Item item = getShulkerBox();
 
         if (this.getLevel() == null) return item;
 
