@@ -30,7 +30,7 @@ public class BlockAcaciaWallSign extends BlockWallSign {
 
 
     @Override
-    protected String getStandingSignId() {
+    public String getStandingSignId() {
         return ACACIA_STANDING_SIGN;
     }
 

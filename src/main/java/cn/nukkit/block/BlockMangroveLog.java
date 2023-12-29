@@ -1,58 +1,33 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 
 public class BlockMangroveLog extends BlockLog {
+    public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_LOG, CommonBlockProperties.PILLAR_AXIS);
 
     public BlockMangroveLog() {
-        this(0);
+        super(PROPERTIES.getDefaultState());
     }
 
-    public BlockMangroveLog(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 2;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 5;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 10;
+    public BlockMangroveLog(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
-        return "mangrove log";
-    }
-
-    @Override
-    public int getId() {
-        return MANGROVE_LOG;
+        return "Mangrove Log";
     }
 
     @NotNull
     @Override
     public BlockProperties getProperties() {
-        return PILLAR_PROPERTIES;
+        return PROPERTIES;
     }
 
     @Override
     public BlockState getStrippedState() {
-        return getBlockState().withBlockId(STRIPPED_MANGROVE_LOG);
+        return BlockStrippedMangroveLog.PROPERTIES.getDefaultState();
     }
 }

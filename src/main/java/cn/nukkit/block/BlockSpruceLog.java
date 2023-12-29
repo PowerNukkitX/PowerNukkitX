@@ -3,8 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockSpruceLog extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:spruce_log", CommonBlockProperties.PILLAR_AXIS);
+public class BlockSpruceLog extends BlockLog {
+    public static final BlockProperties PROPERTIES = new BlockProperties(SPRUCE_LOG, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -17,5 +17,10 @@ public class BlockSpruceLog extends Block {
 
     public BlockSpruceLog(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public BlockState getStrippedState() {
+        return BlockStrippedSpruceLog.PROPERTIES.getDefaultState();
     }
 }

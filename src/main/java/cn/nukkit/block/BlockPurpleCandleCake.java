@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockPurpleCandleCake extends Block {
+public class BlockPurpleCandleCake extends BlockCandleCake {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:purple_candle_cake", CommonBlockProperties.LIT);
 
     @Override
@@ -17,5 +17,10 @@ public class BlockPurpleCandleCake extends Block {
 
     public BlockPurpleCandleCake(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    protected BlockCandle toCandleForm() {
+        return new BlockPurpleCandle();
     }
 }

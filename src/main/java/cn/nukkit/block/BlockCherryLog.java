@@ -1,18 +1,18 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 
 public class BlockCherryLog extends BlockLog {
+    public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_LOG, CommonBlockProperties.PILLAR_AXIS);
 
     public BlockCherryLog() {
-        this(0);
+        super(PROPERTIES.getDefaultState());
     }
 
-    public BlockCherryLog(int meta) {
-        super(meta);
+    public BlockCherryLog(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -40,20 +40,15 @@ public class BlockCherryLog extends BlockLog {
         return "Cherry log";
     }
 
-    @Override
-    public int getId() {
-        return CHERRY_LOG;
-    }
-
     @NotNull
     @Override
     public BlockProperties getProperties() {
-        return PILLAR_PROPERTIES;
+        return PROPERTIES;
     }
 
     @Override
     public BlockState getStrippedState() {
-        return getBlockState().withBlockId(STRIPPED_CHERRY_LOG);
+        return BlockStrippedCherryLog.PROPERTIES.getDefaultState();
     }
 }
 

@@ -3,8 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockBirchLog extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:birch_log", CommonBlockProperties.PILLAR_AXIS);
+public class BlockBirchLog extends BlockLog {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BIRCH_LOG, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -17,5 +17,10 @@ public class BlockBirchLog extends Block {
 
     public BlockBirchLog(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public BlockState getStrippedState() {
+        return BlockStrippedBirchLog.PROPERTIES.getDefaultState();
     }
 }
