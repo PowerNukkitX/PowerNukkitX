@@ -1,10 +1,13 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemAcaciaSign;
+import cn.nukkit.item.ItemBambooSign;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockAcaciaStandingSign extends BlockStandingSign {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:acacia_standing_sign", CommonBlockProperties.GROUND_SIGN_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(ACACIA_STANDING_SIGN, CommonBlockProperties.GROUND_SIGN_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -27,5 +30,10 @@ public class BlockAcaciaStandingSign extends BlockStandingSign {
     @Override
     public String getWallSignId() {
         return BlockAcaciaWallSign.PROPERTIES.getIdentifier();
+    }
+
+    @Override
+    public Item toItem() {
+        return new ItemAcaciaSign();
     }
 }

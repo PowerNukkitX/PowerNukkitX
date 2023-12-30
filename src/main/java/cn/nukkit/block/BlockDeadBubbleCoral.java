@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockDeadBubbleCoral extends Block {
+public class BlockDeadBubbleCoral extends BlockBubbleCoral {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:dead_bubble_coral");
 
     @Override

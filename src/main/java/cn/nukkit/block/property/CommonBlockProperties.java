@@ -270,13 +270,13 @@ public interface CommonBlockProperties {
 
     EnumPropertyType<WallBlockType> WALL_BLOCK_TYPE = EnumPropertyType.of("wall_block_type", WallBlockType.class, WallBlockType.values()[0]);
 
-    EnumPropertyType<WallConnectionTypeEast> WALL_CONNECTION_TYPE_EAST = EnumPropertyType.of("wall_connection_type_east", WallConnectionTypeEast.class, WallConnectionTypeEast.values()[0]);
+    EnumPropertyType<WallConnectionType> WALL_CONNECTION_TYPE_EAST = EnumPropertyType.of("wall_connection_type_east", WallConnectionType.class, WallConnectionType.values()[0]);
 
-    EnumPropertyType<WallConnectionTypeNorth> WALL_CONNECTION_TYPE_NORTH = EnumPropertyType.of("wall_connection_type_north", WallConnectionTypeNorth.class, WallConnectionTypeNorth.values()[0]);
+    EnumPropertyType<WallConnectionType> WALL_CONNECTION_TYPE_NORTH = EnumPropertyType.of("wall_connection_type_north", WallConnectionType.class, WallConnectionType.values()[0]);
 
-    EnumPropertyType<WallConnectionTypeSouth> WALL_CONNECTION_TYPE_SOUTH = EnumPropertyType.of("wall_connection_type_south", WallConnectionTypeSouth.class, WallConnectionTypeSouth.values()[0]);
+    EnumPropertyType<WallConnectionType> WALL_CONNECTION_TYPE_SOUTH = EnumPropertyType.of("wall_connection_type_south", WallConnectionType.class, WallConnectionType.values()[0]);
 
-    EnumPropertyType<WallConnectionTypeWest> WALL_CONNECTION_TYPE_WEST = EnumPropertyType.of("wall_connection_type_west", WallConnectionTypeWest.class, WallConnectionTypeWest.values()[0]);
+    EnumPropertyType<WallConnectionType> WALL_CONNECTION_TYPE_WEST = EnumPropertyType.of("wall_connection_type_west", WallConnectionType.class, WallConnectionType.values()[0]);
 
     BooleanPropertyType WALL_POST_BIT = BooleanPropertyType.of("wall_post_bit", false);
 

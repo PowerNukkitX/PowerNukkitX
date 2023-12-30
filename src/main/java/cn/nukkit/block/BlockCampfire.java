@@ -2,11 +2,9 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCampfire;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityPotion;
 import cn.nukkit.entity.projectile.EntityArrow;
@@ -37,33 +35,21 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
+import static cn.nukkit.block.property.CommonBlockProperties.EXTINGUISHED;
 import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
 
 
 @Log4j2
-public class BlockCampfire extends BlockTransparentMeta implements Faceable, BlockEntityHolder<BlockEntityCampfire> {
-
-
-    public static final BooleanBlockProperty EXTINGUISHED = new BooleanBlockProperty("extinguished", false);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(EXTINGUISHED, CommonBlockProperties.CARDINAL_DIRECTION);
-
+public class BlockCampfire extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityCampfire> {
+    public static final BlockProperties PROPERTIES = new BlockProperties(CAMPFIRE, EXTINGUISHED, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     public BlockCampfire() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
-
 
     public BlockCampfire(BlockState blockstate) {
         super(blockstate);
     }
-
-    @Override
-    public int getId() {
-        return CAMPFIRE_BLOCK;
-    }
-
 
     @NotNull
     @Override
@@ -112,7 +98,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{MinecraftItemID.CHARCOAL.get(2)};
+        return new Item[]{Item.get(ItemID.CHARCOAL, 0, 2)};
     }
 
     @Override
@@ -122,7 +108,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (down().getId() == CAMPFIRE_BLOCK) {
+        if (down().getProperties() == PROPERTIES) {
             return false;
         }
 
@@ -130,8 +116,8 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
         final Block layer1 = level.getBlock(this, 1);
 
         setBlockFace(player != null ? player.getDirection().getOpposite() : null);
-        boolean defaultLayerCheck = (block instanceof BlockWater && ((BlockWater) block).isSourceOrFlowingDown()) || block instanceof BlockIceFrosted;
-        boolean layer1Check = (layer1 instanceof BlockWater && ((BlockWater) layer1).isSourceOrFlowingDown()) || layer1 instanceof BlockIceFrosted;
+        boolean defaultLayerCheck = (block instanceof BlockWater && ((BlockWater) block).isSourceOrFlowingDown()) || block instanceof BlockFrostedIce;
+        boolean layer1Check = (layer1 instanceof BlockWater && ((BlockWater) layer1).isSourceOrFlowingDown()) || layer1 instanceof BlockFrostedIce;
         if (defaultLayerCheck || layer1Check) {
             setExtinguished(true);
             this.level.addSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
@@ -207,7 +193,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!isExtinguished()) {
                 Block layer1 = getLevelBlockAtLayer(1);
-                if (layer1 instanceof BlockWater || layer1 instanceof BlockIceFrosted) {
+                if (layer1 instanceof BlockWater || layer1 instanceof BlockFrostedIce) {
                     setExtinguished(true);
                     this.level.setBlock(this, this, true, true);
                     this.level.addSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
@@ -292,24 +278,24 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
 
 
     public boolean isExtinguished() {
-        return getBooleanValue(EXTINGUISHED);
+        return getPropertyValue(EXTINGUISHED);
     }
 
 
     public void setExtinguished(boolean extinguished) {
-        setBooleanValue(EXTINGUISHED, extinguished);
+        setPropertyValue(EXTINGUISHED, extinguished);
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION);
+        return getPropertyValue(CommonBlockProperties.MINECRAFT_BLOCK_FACE);
     }
 
     @Override
 
 
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, face);
+        setPropertyValue(CommonBlockProperties.MINECRAFT_BLOCK_FACE, face);
     }
 
     @Override

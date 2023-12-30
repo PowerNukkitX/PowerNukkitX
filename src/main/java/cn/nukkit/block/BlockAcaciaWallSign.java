@@ -8,7 +8,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
 
 public class BlockAcaciaWallSign extends BlockWallSign {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:acacia_wall_sign", FACING_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(ACACIA_WALL_SIGN, FACING_DIRECTION);
 
     public BlockAcaciaWallSign() {
         this(PROPERTIES.getDefaultState());
@@ -27,7 +27,6 @@ public class BlockAcaciaWallSign extends BlockWallSign {
     public String getWallSignId() {
         return ACACIA_WALL_SIGN;
     }
-
 
     @Override
     public String getStandingSignId() {

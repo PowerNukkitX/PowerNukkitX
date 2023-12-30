@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockWhiteConcretePowder extends Block {
+public class BlockWhiteConcretePowder extends BlockConcretePowder {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:white_concrete_powder");
 
     @Override
@@ -16,5 +16,10 @@ public class BlockWhiteConcretePowder extends Block {
 
     public BlockWhiteConcretePowder(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public BlockConcrete getConcrete() {
+        return new BlockWhiteConcrete();
     }
 }

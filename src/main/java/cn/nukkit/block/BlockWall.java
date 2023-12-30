@@ -78,43 +78,4 @@ public class BlockWall extends BlockWallBase {
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
-
-
-    public enum WallConnectionType {
-
-
-    }
-
-
-    public enum WallType {
-
-
-        private final BlockColor color;
-        private final String typeName;
-        
-        WallType(BlockColor color) {
-            this.color = color;
-            String name = Arrays.stream(name().split("_"))
-                    .map(part-> part.substring(0,1) + part.substring(1).toLowerCase())
-                    .collect(Collectors.joining(" "));
-            
-            // Concatenation separated to workaround https://bugs.openjdk.java.net/browse/JDK-8077605
-            // https://www.reddit.com/r/learnprogramming/comments/32bfle/can_you_explain_this_strange_java8_error/
-            typeName = name + " Wall";
-        }
-
-        WallType() {
-            this(STONE_BLOCK_COLOR);
-        }
-
-
-        public BlockColor getColor() {
-            return color;
-        }
-
-
-        public String getTypeName() {
-            return typeName;
-        }
-    }
 }

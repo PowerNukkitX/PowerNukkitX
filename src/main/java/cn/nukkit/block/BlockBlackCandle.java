@@ -21,6 +21,6 @@ public class BlockBlackCandle extends BlockCandle {
 
     @Override
     protected Block toCakeForm() {
-        return new BlockCandleCakeBlack();
+        return new BlockBlackCandleCake();
     }
 }

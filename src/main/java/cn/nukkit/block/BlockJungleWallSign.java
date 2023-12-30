@@ -2,27 +2,34 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemJungleSign;
+import org.jetbrains.annotations.NotNull;
+
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
 
 public class BlockJungleWallSign extends BlockWallSign {
+    public static final BlockProperties PROPERTIES = new BlockProperties(JUNGLE_WALL_SIGN, FACING_DIRECTION);
 
     public BlockJungleWallSign() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-
-    public BlockJungleWallSign(BlockState blockstate) {
-        super(blockstate);
+    public BlockJungleWallSign(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
-    public int getId() {
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
+    public String getWallSignId() {
         return JUNGLE_WALL_SIGN;
     }
 
-
     @Override
-    protected int getPostId() {
+    public String getStandingSignId() {
         return JUNGLE_STANDING_SIGN;
     }
 

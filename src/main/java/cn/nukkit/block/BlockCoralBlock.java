@@ -1,6 +1,6 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -12,27 +12,21 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.block.property.CommonBlockProperties.CORAL_COLOR;
+import static cn.nukkit.block.property.CommonBlockProperties.DEAD_BIT;
 
-public class BlockCoralBlock extends BlockSolidMeta {
 
-
-    public static final BlockProperties PROPERTIES = BlockCoral.PROPERTIES;
-
+public class BlockCoralBlock extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_BLOCK, CORAL_COLOR, DEAD_BIT);
 
     public BlockCoralBlock() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
 
     public BlockCoralBlock(BlockState blockstate) {
         super(blockstate);
     }
-    
-    @Override
-    public int getId() {
-        return CORAL_BLOCK;
-    }
-
 
     @NotNull
     @Override
@@ -40,38 +34,20 @@ public class BlockCoralBlock extends BlockSolidMeta {
         return PROPERTIES;
     }
 
-
     public boolean isDead() {
-        return (getDamage() & 0x8) == 0x8;
+        return getPropertyValue(DEAD_BIT);
     }
-
 
     public void setDead(boolean dead) {
-        if (dead) {
-            setDamage(getDamage() | 0x8);
-        } else {
-            setDamage(getDamage() ^ 0x8);
-        }
+        setPropertyValue(DEAD_BIT, dead);
     }
-    
+
     @Override
     public String getName() {
-        String[] names = new String[] {
-                "Tube Coral Block",
-                "Brain Coral Block",
-                "Bubble Coral Block",
-                "Fire Coral Block",
-                "Horn Coral Block",
-                // Invalid
-                "Tube Coral Block",
-                "Tube Coral Block",
-                "Tube Coral Block"
-        };
-        String name = names[getDamage() & 0x7];
         if (isDead()) {
-            return "Dead " + name;
+            return "Dead " + this.getPropertyValue(CORAL_COLOR).name() +" Coral Block";
         } else {
-            return name;
+            return this.getPropertyValue(CORAL_COLOR).name() +" Coral Block";
         }
     }
 
@@ -79,22 +55,22 @@ public class BlockCoralBlock extends BlockSolidMeta {
     public double getHardness() {
         return 7;
     }
-    
+
     @Override
     public double getResistance() {
         return 6.0;
     }
-    
+
     @Override
     public boolean canHarvestWithHand() {
         return false;
     }
-    
+
     @Override
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
-    
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -106,11 +82,11 @@ public class BlockCoralBlock extends BlockSolidMeta {
             if (!isDead()) {
                 for (BlockFace face : BlockFace.values()) {
                     if (getSideAtLayer(0, face) instanceof BlockWater || getSideAtLayer(1, face) instanceof BlockWater
-                        || getSideAtLayer(0, face) instanceof BlockIceFrosted || getSideAtLayer(1, face) instanceof BlockIceFrosted) {
+                            || getSideAtLayer(0, face) instanceof BlockFrostedIce || getSideAtLayer(1, face) instanceof BlockIceFrosted) {
                         return type;
                     }
                 }
-                BlockFadeEvent event = new BlockFadeEvent(this, new BlockCoralBlock(getDamage() | 0x8));
+                BlockFadeEvent event = new BlockFadeEvent(this, new BlockCoralBlock(blockstate));
                 if (!event.isCancelled()) {
                     setDead(true);
                     this.getLevel().setBlock(this, event.getNewState(), true, true);
@@ -120,14 +96,14 @@ public class BlockCoralBlock extends BlockSolidMeta {
         }
         return 0;
     }
-    
+
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             if (item.getEnchantment(Enchantment.ID_SILK_TOUCH) != null) {
-                return new Item[]{ toItem() };
+                return new Item[]{toItem()};
             } else {
-                return new Item[]{ new ItemBlock(clone(), getDamage() | 0x8) };
+                return new Item[]{new ItemBlock(clone(), this.getPropertyValue(CORAL_COLOR).ordinal())};//0 - 4
             }
         } else {
             return Item.EMPTY_ARRAY;

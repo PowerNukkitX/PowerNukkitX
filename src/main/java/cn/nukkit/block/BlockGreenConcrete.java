@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockGreenConcrete extends Block {
+public class BlockGreenConcrete extends BlockConcrete {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:green_concrete");
 
     @Override

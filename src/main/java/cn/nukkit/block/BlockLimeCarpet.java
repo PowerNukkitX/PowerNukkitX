@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockLimeCarpet extends Block {
+public class BlockLimeCarpet extends BlockCarpet {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:lime_carpet");
 
     @Override

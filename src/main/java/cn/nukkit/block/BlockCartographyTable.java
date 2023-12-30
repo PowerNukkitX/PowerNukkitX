@@ -9,14 +9,19 @@ import javax.annotation.Nullable;
 
 
 public class BlockCartographyTable extends BlockSolid {
-
-
-    public BlockCartographyTable() {
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(CARTOGRAPHY_TABLE);
 
     @Override
-    public int getId() {
-        return CARTOGRAPHY_TABLE;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockCartographyTable() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockCartographyTable(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -55,6 +60,7 @@ public class BlockCartographyTable extends BlockSolid {
     }
 
     @Override
+    //todo feature
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         //if (player != null) {
         //    player.craftingType = Player.CRAFTING_CARTOGRAPHY;

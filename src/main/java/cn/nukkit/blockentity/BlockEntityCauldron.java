@@ -5,8 +5,10 @@ import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCauldron;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -21,33 +23,38 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockEntityCauldron extends BlockEntitySpawnable {
 
-    
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
+
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Magic value", replaceWith = "PotionType")
 
     public static final int POTION_TYPE_EMPTY = -1;
 
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Magic value", replaceWith = "PotionType")
 
     public static final int POTION_TYPE_NORMAL = 0;
 
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Magic value", replaceWith = "PotionType")
 
     public static final int POTION_TYPE_SPLASH = 1;
 
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Magic value", replaceWith = "PotionType")
 
     public static final int POTION_TYPE_LINGERING = 2;
 
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Magic value", replaceWith = "PotionType")
 
     public static final int POTION_TYPE_LAVA = 0xF19B;
 
-    public BlockEntityCauldron(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityCauldron(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -61,7 +68,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
         }
         potionId = namedTag.getShort("PotionId");
 
-        int potionType = (potionId & 0xFFFF) == 0xFFFF? POTION_TYPE_EMPTY : POTION_TYPE_NORMAL;
+        int potionType = (potionId & 0xFFFF) == 0xFFFF ? POTION_TYPE_EMPTY : POTION_TYPE_NORMAL;
         if (namedTag.getBoolean("SplashPotion")) {
             potionType = POTION_TYPE_SPLASH;
             namedTag.remove("SplashPotion");
@@ -77,7 +84,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
         super.saveNBT();
         namedTag.putShort("PotionId", getPotionId());
         int potionId = namedTag.getShort("PotionId");
-        int potionType = (potionId & 0xFFFF) == 0xFFFF? POTION_TYPE_EMPTY : POTION_TYPE_NORMAL;
+        int potionType = (potionId & 0xFFFF) == 0xFFFF ? POTION_TYPE_EMPTY : POTION_TYPE_NORMAL;
         namedTag.putShort("PotionType", potionType);
     }
 
@@ -96,12 +103,12 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
 
 
     public void setPotionType(int potionType) {
-        this.namedTag.putShort("PotionType", (short)(potionType & 0xFFFF));
+        this.namedTag.putShort("PotionType", (short) (potionType & 0xFFFF));
     }
 
 
     public int getPotionType() {
-        return (short)(this.namedTag.getShort("PotionType") & 0xFFFF);
+        return (short) (this.namedTag.getShort("PotionType") & 0xFFFF);
     }
 
 
@@ -117,7 +124,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     public boolean isSplashPotion() {
         return namedTag.getShort("PotionType") == POTION_TYPE_SPLASH;
     }
-    
+
     /**
      * @deprecated Use {@link #setPotionType(int)} instead.
      */
@@ -171,7 +178,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
         this.level.sendBlocks(viewers, new Vector3[]{block});
         super.spawnToAll();
         Location location = getLocation();
-        Server.getInstance().getScheduler().scheduleTask(null, ()-> {
+        Server.getInstance().getScheduler().scheduleTask(null, () -> {
             if (isValid()) {
                 BlockEntity cauldron = this.level.getBlockEntity(location);
                 if (cauldron == BlockEntityCauldron.this) {
@@ -184,8 +191,8 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
 
     @Override
     public boolean isBlockEntityValid() {
-        int id = getBlock().getId();
-        return id == Block.CAULDRON_BLOCK || id == Block.LAVA_CAULDRON;
+        String id = getBlock().getId();
+        return id.equals(BlockID.CAULDRON);
     }
 
     @Override
@@ -208,10 +215,16 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
 
     @RequiredArgsConstructor
     public enum PotionType {
-
+        EMPTY(POTION_TYPE_EMPTY),
+        NORMAL(POTION_TYPE_NORMAL),
+        SPLASH(POTION_TYPE_SPLASH),
+        LINGERING(POTION_TYPE_LINGERING),
+        LAVA(POTION_TYPE_LAVA),
+        UNKNOWN(-2);
 
         private final int potionTypeData;
         private static final Int2ObjectMap<PotionType> BY_DATA;
+
         static {
             PotionType[] types = values();
             BY_DATA = new Int2ObjectOpenHashMap<>(types.length);

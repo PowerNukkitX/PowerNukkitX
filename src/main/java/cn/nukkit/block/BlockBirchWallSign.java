@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemAcaciaSign;
 import cn.nukkit.item.ItemBirchSign;
 
 import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;

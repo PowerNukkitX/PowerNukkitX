@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.BlockWall.WallConnectionType;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BlockProperty;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
-import cn.nukkit.blockproperty.value.AttachmentType;
+import cn.nukkit.block.property.enums.Attachment;
+import cn.nukkit.block.property.enums.WallConnectionType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
@@ -22,57 +18,24 @@ import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import static cn.nukkit.block.property.CommonBlockProperties.*;
 import static cn.nukkit.math.VectorMath.calculateAxis;
 import static cn.nukkit.math.VectorMath.calculateFace;
 
 
 @Log4j2
 public abstract class BlockWallBase extends BlockTransparent implements BlockConnectable {
-
-
-    public static final BlockProperty<WallConnectionType> WALL_CONNECTION_TYPE_SOUTH = new ArrayBlockProperty<>("wall_connection_type_south", false, WallConnectionType .class);
-
-
-    public static final BlockProperty<WallConnectionType> WALL_CONNECTION_TYPE_WEST = new ArrayBlockProperty<>("wall_connection_type_west", false, WallConnectionType .class);
-
-
-    public static final BlockProperty<WallConnectionType> WALL_CONNECTION_TYPE_NORTH = new ArrayBlockProperty<>("wall_connection_type_north", false, WallConnectionType .class);
-
-
-    public static final BlockProperty<WallConnectionType> WALL_CONNECTION_TYPE_EAST = new ArrayBlockProperty<>("wall_connection_type_east", false, WallConnectionType .class);
-
-
-    public static final BooleanBlockProperty WALL_POST_BIT = new BooleanBlockProperty("wall_post_bit", false);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(
-            WALL_CONNECTION_TYPE_SOUTH,
-            WALL_CONNECTION_TYPE_WEST,
-            WALL_CONNECTION_TYPE_NORTH,
-            WALL_CONNECTION_TYPE_EAST,
-            WALL_POST_BIT
-    );
-
     private static final double MIN_POST_BB =  5.0/16;
     private static final double MAX_POST_BB = 11.0/16;
 
-
-    public BlockWallBase(BlockState blockstate) {
+    protected BlockWallBase(BlockState blockstate) {
         super(blockstate);
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
     public boolean isSolid() {
         return false;
     }
-
 
     @Override
     public boolean isSolid(BlockFace side) {
@@ -96,26 +59,26 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
     }
 
     private boolean shouldBeTall(Block above, BlockFace face) {
-        switch (above.getId()) {
-            case AIR:
-            case SKULL_BLOCK:
-                return false;
+        return switch (above.getId()) {
+            case AIR, SKULL -> false;
 
             // If the bell is standing and follow the path, make it tall
-            case BELL:
+            case BELL -> {
                 BlockBell bell = (BlockBell) above;
-                return bell.getAttachment() == AttachmentType.STANDING
+                yield bell.getAttachment() == Attachment.STANDING
                         && bell.getBlockFace().getAxis() != face.getAxis();
-            default:
+            }
+            default -> {
                 if (above instanceof BlockWallBase) {
-                    return ((BlockWallBase) above).getConnectionType(face) != WallConnectionType.NONE;
+                    yield ((BlockWallBase) above).getConnectionType(face) != WallConnectionType.NONE;
                 } else if (above instanceof BlockConnectable) {
-                    return ((BlockConnectable) above).isConnected(face);
+                    yield ((BlockConnectable) above).isConnected(face);
                 } else if (above instanceof BlockPressurePlateBase || above instanceof BlockStairs) {
-                    return true;
+                    yield true;
                 }
-                return above.isSolid() && !above.isTransparent() || shouldBeTallBasedOnBoundingBox(above, face);
-        }
+                yield above.isSolid() && !above.isTransparent() || shouldBeTallBasedOnBoundingBox(above, face);
+            }
+        };
     }
 
     private boolean shouldBeTallBasedOnBoundingBox(Block above, BlockFace face) {
@@ -149,7 +112,7 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
 
 
     public boolean autoConfigureState() {
-        final Number previousMeta = getDataStorage();
+        final short previousMeta = blockstate.specialValue();
 
         setWallPost(true);
 
@@ -171,8 +134,7 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         }
 
         recheckPostConditions(above);
-
-        return !getDataStorage().equals(previousMeta);
+        return  blockstate.specialValue() != previousMeta;
     }
 
     
@@ -196,12 +158,12 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
 
 
     public boolean isWallPost() {
-        return getBooleanValue(WALL_POST_BIT);
+        return getPropertyValue(WALL_POST_BIT);
     }
 
 
     public void setWallPost(boolean wallPost) {
-        setBooleanValue(WALL_POST_BIT, wallPost);
+        setPropertyValue(WALL_POST_BIT, wallPost);
     }
 
 
@@ -226,45 +188,41 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
 
 
     public WallConnectionType getConnectionType(BlockFace blockFace) {
-        switch (blockFace) {
-            case NORTH:
-                return getPropertyValue(WALL_CONNECTION_TYPE_NORTH);
-            case SOUTH:
-                return getPropertyValue(WALL_CONNECTION_TYPE_SOUTH);
-            case WEST:
-                return getPropertyValue(WALL_CONNECTION_TYPE_WEST);
-            case EAST:
-                return getPropertyValue(WALL_CONNECTION_TYPE_EAST);
-            default:
-                return WallConnectionType.NONE;
-        }
+        return switch (blockFace) {
+            case NORTH -> getPropertyValue(WALL_CONNECTION_TYPE_NORTH);
+            case SOUTH -> getPropertyValue(WALL_CONNECTION_TYPE_SOUTH);
+            case WEST -> getPropertyValue(WALL_CONNECTION_TYPE_WEST);
+            case EAST -> getPropertyValue(WALL_CONNECTION_TYPE_EAST);
+            default -> WallConnectionType.NONE;
+        };
     }
 
 
     public boolean setConnection(BlockFace blockFace, WallConnectionType type) {
-        switch (blockFace) {
-            case NORTH:
+        return switch (blockFace) {
+            case NORTH -> {
                 setPropertyValue(WALL_CONNECTION_TYPE_NORTH, type);
-                return true;
-            case SOUTH:
+                yield true;
+            }
+            case SOUTH -> {
                 setPropertyValue(WALL_CONNECTION_TYPE_SOUTH, type);
-                return true;
-            case WEST:
+                yield true;
+            }
+            case WEST -> {
                 setPropertyValue(WALL_CONNECTION_TYPE_WEST, type);
-                return true;
-            case EAST:
+                yield true;
+            }
+            case EAST -> {
                 setPropertyValue(WALL_CONNECTION_TYPE_EAST, type);
-                return true;
-            default:
-                return false;
-        }
+                yield true;
+            }
+            default -> false;
+        };
     }
 
     /**
      * @return true if it should be a post
      */
-
-
     public void autoUpdatePostFlag() {
         setWallPost(recheckPostConditions(up(1, 0)));
     }
@@ -300,8 +258,8 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
 
         switch (above.getId()) {
             // These special blocks forces walls to become a post
-            case FLOWER_POT_BLOCK:
-            case SKULL_BLOCK:
+            case FLOWER_POT:
+            case SKULL:
             case CONDUIT:
             case STANDING_BANNER:
             case TURTLE_EGG:
@@ -317,7 +275,7 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
             // If the bell is standing and don't follow the path, make it a post
             case BELL:
                 BlockBell bell = (BlockBell) above;
-                if (bell.getAttachment() == AttachmentType.STANDING
+                if (bell.getAttachment() == Attachment.STANDING
                         && bell.getBlockFace().getAxis() == axis) {
                     return true;
                 }
@@ -371,7 +329,7 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         }
 
         // Sign posts always makes the wall become a post
-        return above instanceof BlockSignPost;
+        return above instanceof BlockStandingSign;
     }
 
 
@@ -462,15 +420,13 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
     public boolean canConnect(Block block) {
         switch (block.getId()) {
             case GLASS_PANE:
-            case STAINED_GLASS_PANE:
             case IRON_BARS:
             case GLASS:
-            case STAINED_GLASS:
                 return true;
             default:
-                if (block instanceof BlockWallBase) {
+                if (block instanceof BlockGlassStained || block instanceof BlockGlassPaneStained || block instanceof BlockWallBase) {
                     return true;
-                } 
+                }
                 if (block instanceof BlockFenceGate) {
                     BlockFenceGate fenceGate = (BlockFenceGate) block;
                     return fenceGate.getBlockFace().getAxis() != calculateAxis(this, block);
