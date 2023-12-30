@@ -118,17 +118,17 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(BLUE_GLAZED_TERRACOTTA, BlockBlueGlazedTerracotta.class);// done.
         register(BLUE_ICE, BlockBlueIce.class);// done.
         register(BLUE_SHULKER_BOX, BlockBlueShulkerBox.class);// done.
-        register(BLUE_STAINED_GLASS, BlockBlueStainedGlass.class);
-        register(BLUE_STAINED_GLASS_PANE, BlockBlueStainedGlassPane.class);
+        register(BLUE_STAINED_GLASS, BlockBlueStainedGlass.class);// done.
+        register(BLUE_STAINED_GLASS_PANE, BlockBlueStainedGlassPane.class);// done.
         register(BLUE_TERRACOTTA, BlockBlueTerracotta.class);// done.
         register(BLUE_WOOL, BlockBlueWool.class);// done.
-        register(BONE_BLOCK, BlockBoneBlock.class);
+        register(BONE_BLOCK, BlockBoneBlock.class);// done.
         register(BOOKSHELF, BlockBookshelf.class);// done.
-        register(BORDER_BLOCK, BlockBorderBlock.class);
+        register(BORDER_BLOCK, BlockBorderBlock.class);// done.
         register(BRAIN_CORAL, BlockBrainCoral.class);
         register(BREWING_STAND, BlockBrewingStand.class);// done.
         register(BRICK_BLOCK, BlockBrickBlock.class);// done.
-        register(BRICK_STAIRS, BlockBrickStairs.class);
+        register(BRICK_STAIRS, BlockBrickStairs.class);// done.
         register(BROWN_CANDLE, BlockBrownCandle.class);// done.
         register(BROWN_CANDLE_CAKE, BlockBrownCandleCake.class);// done.
         register(BROWN_CARPET, BlockBrownCarpet.class);
