@@ -1,8 +1,9 @@
 package cn.nukkit.block;
 
+import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockBrickBlock extends Block {
+public class BlockBrickBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:brick_block");
 
     @Override
@@ -17,4 +18,20 @@ public class BlockBrickBlock extends Block {
     public BlockBrickBlock(BlockState blockstate) {
         super(blockstate);
     }
+
+    @Override
+    public double getHardness() {
+        return 2;
+    }
+
+    @Override
+    public double getResistance() {
+        return 6;
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_PICKAXE;
+    }
+
 }

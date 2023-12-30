@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockDeepslateLapisOre extends Block {
+public class BlockDeepslateLapisOre extends BlockLapisOre {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:deepslate_lapis_ore");
 
     @Override
@@ -16,5 +16,15 @@ public class BlockDeepslateLapisOre extends Block {
 
     public BlockDeepslateLapisOre(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Deepslate Lapis Ore";
+    }
+
+    @Override
+    public double getHardness() {
+        return 4.5;
     }
 }

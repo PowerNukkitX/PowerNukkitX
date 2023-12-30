@@ -44,7 +44,7 @@ public class BlockStone extends BlockSolid{
 
     @Override
     public double getResistance() {
-        return 10;
+        return 6;
     }
 
     @Override

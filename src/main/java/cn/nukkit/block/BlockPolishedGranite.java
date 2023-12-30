@@ -1,8 +1,9 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.property.enums.StoneType;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockPolishedGranite extends Block {
+public class BlockPolishedGranite extends BlockStone {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:polished_granite");
 
     @Override
@@ -16,5 +17,15 @@ public class BlockPolishedGranite extends Block {
 
     public BlockPolishedGranite(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public StoneType stoneType() {
+        return StoneType.GRANITE_SMOOTH;
+    }
+
+    @Override
+    public boolean canSilkTouch() {
+        return false;
     }
 }

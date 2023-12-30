@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockWhiteTerracotta extends Block {
+public class BlockWhiteTerracotta extends BlockTerracotta {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:white_terracotta");
 
     @Override

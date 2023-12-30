@@ -17,4 +17,9 @@ public class BlockRawIronBlock extends Block {
     public BlockRawIronBlock(BlockState blockstate) {
         super(blockstate);
     }
+
+    @Override
+    public String getName() {
+        return "Block of Raw Iron";
+    }
 }

@@ -17,4 +17,14 @@ public class BlockDeepslateEmeraldOre extends Block {
     public BlockDeepslateEmeraldOre(BlockState blockstate) {
         super(blockstate);
     }
+
+    @Override
+    public String getName() {
+        return "Deepslate Emerald Ore";
+    }
+
+    @Override
+    public double getHardness() {
+        return 4.5;
+    }
 }
