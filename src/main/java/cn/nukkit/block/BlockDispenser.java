@@ -1,11 +1,10 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityDispenser;
 import cn.nukkit.blockentity.BlockEntityEjectable;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.dispenser.DispenseBehavior;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.dispenser.DropperDispenseBehavior;
@@ -33,24 +32,24 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
 /**
  * @author CreeperFace
  * @since 15.4.2017
  */
 
+public class BlockDispenser extends BlockSolid implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityEjectable> {
 
-public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityEjectable> {
+    public static final BlockProperties PROPERTIES = new BlockProperties(DISPENSER, FACING_DIRECTION, CommonBlockProperties.TRIGGERED_BIT);
 
-
-    public static final BooleanBlockProperty TRIGGERED = new BooleanBlockProperty("triggered_bit", false);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, TRIGGERED);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockDispenser() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockDispenser(BlockState blockstate) {
@@ -68,21 +67,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
     }
 
     @Override
-    public int getId() {
-        return DISPENSER;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-
-    @NotNull
-    @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.DISPENSER;
     }
 
@@ -96,10 +81,8 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
         return 3.5;
     }
 
-
-    @NotNull
     @Override
-    public Class<? extends BlockEntityEjectable> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityEjectable> getBlockEntityClass() {
         return BlockEntityDispenser.class;
     }
 
@@ -120,7 +103,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
     }
 
     public boolean isTriggered() {
-        return (this.getDamage() & 8) > 0;
+        return (getPropertyValue(FACING_DIRECTION) & 8) > 0;
     }
 
     public void setTriggered(boolean value) {
@@ -131,7 +114,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
             i |= 8;
         }
 
-        this.setDamage(i);
+        setPropertyValue(FACING_DIRECTION, i);
     }
 
     @Override
@@ -163,14 +146,14 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
                 double y = player.y + player.getEyeHeight();
 
                 if (y - this.y > 2) {
-                    this.setDamage(BlockFace.UP.getIndex());
+                    setBlockFace(BlockFace.UP);
                 } else if (this.y - y > 0) {
-                    this.setDamage(BlockFace.DOWN.getIndex());
+                    setBlockFace(BlockFace.DOWN);
                 } else {
-                    this.setDamage(player.getHorizontalFacing().getOpposite().getIndex());
+                    setBlockFace(player.getHorizontalFacing().getOpposite());
                 }
             } else {
-                this.setDamage(player.getHorizontalFacing().getOpposite().getIndex());
+                setBlockFace(player.getHorizontalFacing().getOpposite());
             }
         }
 
@@ -274,7 +257,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
         inv.setItem(slot, target);
 
         if (result != null) {
-            if (result.getId() != origin.getId() || result.getAux() != origin.getAux()) {
+            if (result.getId().equals(origin.getId()) || result.getAux() != origin.getAux()) {
                 Item[] fit = inv.addItem(result);
 
                 if (fit.length > 0) {
@@ -320,6 +303,11 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromIndex(this.getDamage() & 0x07);
+        return BlockFace.fromIndex(getPropertyValue(FACING_DIRECTION));
+    }
+
+    @Override
+    public void setBlockFace(BlockFace face) {
+        setPropertyValue(FACING_DIRECTION, face.getIndex());
     }
 }

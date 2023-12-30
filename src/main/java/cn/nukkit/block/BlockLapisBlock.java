@@ -1,9 +1,10 @@
 package cn.nukkit.block;
 
+import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockLapisBlock extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:lapis_block");
+public class BlockLapisBlock extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties(LAPIS_BLOCK);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -16,5 +17,36 @@ public class BlockLapisBlock extends Block {
 
     public BlockLapisBlock(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Lapis Lazuli Block";
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_PICKAXE;
+    }
+
+    @Override
+    public double getHardness() {
+        return 3;
+    }
+
+    @Override
+    public double getResistance() {
+        return 5;
+    }
+
+    @Override
+
+    public int getToolTier() {
+        return ItemTool.TIER_STONE;
+    }
+
+    @Override
+    public boolean canHarvestWithHand() {
+        return false;
     }
 }

@@ -4,7 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockStonebrick extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:stonebrick", CommonBlockProperties.STONE_BRICK_TYPE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(STONEBRICK, CommonBlockProperties.STONE_BRICK_TYPE);
 
     @Override
     public @NotNull BlockProperties getProperties() {

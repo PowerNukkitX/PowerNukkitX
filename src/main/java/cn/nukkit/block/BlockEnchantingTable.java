@@ -21,13 +21,20 @@ import java.util.Map;
  */
 
 public class BlockEnchantingTable extends BlockTransparent implements BlockEntityHolder<BlockEntityEnchantTable> {
-    public BlockEnchantingTable() {
-        // Does nothing
-    }
+
+    public static final BlockProperties PROPERTIES = new BlockProperties(ENCHANTING_TABLE);
 
     @Override
-    public int getId() {
-        return ENCHANTING_TABLE;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockEnchantingTable() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockEnchantingTable(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -35,17 +42,13 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
         return "Enchanting Table";
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.ENCHANT_TABLE;
     }
 
-
-    @NotNull
     @Override
-    public Class<? extends BlockEntityEnchantTable> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityEnchantTable> getBlockEntityClass() {
         return BlockEntityEnchantTable.class;
     }
 
@@ -64,7 +67,6 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
         return 6000;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -80,21 +82,18 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
         return true;
     }
 
-    
     @Override
     public double getMaxY() {
-        return getY() + 12/16.0;
+        return getY() + 12 / 16.0;
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-
         CompoundTag nbt = new CompoundTag();
 
         if (item.hasCustomName()) {
