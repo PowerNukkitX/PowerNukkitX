@@ -1,10 +1,12 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemWarpedSign;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockWarpedStandingSign extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:warped_standing_sign", CommonBlockProperties.GROUND_SIGN_DIRECTION);
+public class BlockWarpedStandingSign extends BlockStandingSign {
+    public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_STANDING_SIGN, CommonBlockProperties.GROUND_SIGN_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -17,5 +19,15 @@ public class BlockWarpedStandingSign extends Block {
 
     public BlockWarpedStandingSign(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getWallSignId() {
+        return BlockWarpedWallSign.PROPERTIES.getIdentifier();
+    }
+
+    @Override
+    public Item toItem() {
+        return new ItemWarpedSign();
     }
 }

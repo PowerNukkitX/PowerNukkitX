@@ -1,10 +1,12 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemCherrySign;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockCrimsonStandingSign extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:crimson_standing_sign", CommonBlockProperties.GROUND_SIGN_DIRECTION);
+public class BlockCrimsonStandingSign extends BlockStandingSign {
+    public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_STANDING_SIGN, CommonBlockProperties.GROUND_SIGN_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -17,5 +19,15 @@ public class BlockCrimsonStandingSign extends Block {
 
     public BlockCrimsonStandingSign(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getWallSignId() {
+        return BlockCrimsonWallSign.PROPERTIES.getIdentifier();
+    }
+
+    @Override
+    public Item toItem() {
+        return new ItemCherrySign();
     }
 }
