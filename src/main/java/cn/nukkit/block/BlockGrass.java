@@ -22,7 +22,13 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 
 public class BlockGrass extends BlockDirt {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:grass");
+
+    public static final BlockProperties PROPERTIES = new BlockProperties(GRASS);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockGrass() {
         super(PROPERTIES.getDefaultState());
@@ -31,13 +37,6 @@ public class BlockGrass extends BlockDirt {
     public BlockGrass(BlockState blockState) {
         // Grass can't have meta.
         super(blockState);
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -55,13 +54,10 @@ public class BlockGrass extends BlockDirt {
         return "Grass Block";
     }
 
-
-    @NotNull
     @Override
-    public DirtType getDirtType() {
+    public @NotNull DirtType getDirtType() {
         return DirtType.NORMAL;
     }
-
 
     @Override
     public void setDirtType(@Nullable DirtType dirtType) throws Exception {
@@ -107,7 +103,6 @@ public class BlockGrass extends BlockDirt {
         return false;
     }
 
-    
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {

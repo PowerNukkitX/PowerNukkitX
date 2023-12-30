@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockGravel extends BlockFallable {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:gravel");
+    public static final BlockProperties PROPERTIES = new BlockProperties(GRAVEL);
 
     public BlockGravel() {
         super(PROPERTIES.getDefaultState());
@@ -56,25 +56,25 @@ public class BlockGravel extends BlockFallable {
         
         NukkitRandom nukkitRandom = new NukkitRandom();
         switch (fortune) {
-            case 0:
+            case 0 -> {
                 if (nukkitRandom.nextRange(0, 9) == 0) {
-                    return new Item[]{ Item.get(ItemID.FLINT, 0, 1) };
-                    
+                    return new Item[]{Item.get(ItemID.FLINT, 0, 1)};
+
                 }
-                break;
-            case 1:
+            }
+            case 1 -> {
                 if (nukkitRandom.nextRange(0, 6) == 0) {
-                    return new Item[]{ Item.get(ItemID.FLINT, 0, 1) };
+                    return new Item[]{Item.get(ItemID.FLINT, 0, 1)};
                 }
-                break;
-            case 2:
+            }
+            case 2 -> {
                 if (nukkitRandom.nextRange(0, 3) == 0) {
-                    return new Item[]{ Item.get(ItemID.FLINT, 0, 1) };
+                    return new Item[]{Item.get(ItemID.FLINT, 0, 1)};
                 }
-                break;
-            default:
-            case 3:
-                return new Item[]{ Item.get(ItemID.FLINT, 0, 1) };
+            }
+            default -> {
+                return new Item[]{Item.get(ItemID.FLINT, 0, 1)};
+            }
         }
         return new Item[]{ toItem() };
     }

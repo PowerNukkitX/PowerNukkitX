@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Angelic47 (Nukkit Project)
  */
 public class BlockGlass extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:glass");
+    public static final BlockProperties PROPERTIES = new BlockProperties(GLASS);
 
     public BlockGlass() {
         super(PROPERTIES.getDefaultState());

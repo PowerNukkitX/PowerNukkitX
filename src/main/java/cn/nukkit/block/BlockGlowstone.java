@@ -13,7 +13,7 @@ import java.util.Random;
  * @since 2015/12/6
  */
 public class BlockGlowstone extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:glowstone");
+    public static final BlockProperties PROPERTIES = new BlockProperties(GLOWSTONE);
     public BlockGlowstone() {
         super(PROPERTIES.getDefaultState());
     }

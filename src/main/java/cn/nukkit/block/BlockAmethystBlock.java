@@ -4,7 +4,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockAmethystBlock extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:amethyst_block");
+    public static final BlockProperties PROPERTIES = new BlockProperties(AMETHYST_BLOCK);
 
     @Override
     public @NotNull BlockProperties getProperties() {

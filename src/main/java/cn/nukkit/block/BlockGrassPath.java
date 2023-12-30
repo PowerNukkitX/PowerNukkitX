@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 2015/11/22
  */
 public class BlockGrassPath extends BlockGrass {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:grass_path");
+    public static final BlockProperties PROPERTIES = new BlockProperties(GRASS_PATH);
 
     public BlockGrassPath() {
         super(PROPERTIES.getDefaultState());
@@ -79,13 +79,11 @@ public class BlockGrassPath extends BlockGrass {
         return false;
     }
 
-
     @Override
     public boolean isSolid(BlockFace side) {
         return true;
     }
 
-    
     @Override
     public boolean isTransparent() {
         return true;
