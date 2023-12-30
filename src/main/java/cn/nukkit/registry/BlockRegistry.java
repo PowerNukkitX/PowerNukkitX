@@ -161,9 +161,9 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(CAVE_VINES_BODY_WITH_BERRIES, BlockCaveVinesBodyWithBerries.class);// done.
         register(CAVE_VINES_HEAD_WITH_BERRIES, BlockCaveVinesHeadWithBerries.class);// done.
         register(CHAIN, BlockChain.class);// done.
-        register(CHAIN_COMMAND_BLOCK, BlockChainCommandBlock.class);
-        register(CHEMICAL_HEAT, BlockChemicalHeat.class);
-        register(CHEMISTRY_TABLE, BlockChemistryTable.class);
+        register(CHAIN_COMMAND_BLOCK, BlockChainCommandBlock.class);// done.
+//        register(CHEMICAL_HEAT, BlockChemicalHeat.class);//edu
+//        register(CHEMISTRY_TABLE, BlockChemistryTable.class);//edu
         register(CHERRY_BUTTON, BlockCherryButton.class);// done.
         register(CHERRY_DOOR, BlockCherryDoor.class);// done.
         register(CHERRY_DOUBLE_SLAB, BlockCherryDoubleSlab.class);
@@ -181,7 +181,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(CHERRY_TRAPDOOR, BlockCherryTrapdoor.class);// done.
         register(CHERRY_WALL_SIGN, BlockCherryWallSign.class);// done.
         register(CHERRY_WOOD, BlockCherryWood.class);
-        register(CHEST, BlockChest.class);
+        register(CHEST, BlockChest.class);// done.
         register(CHISELED_BOOKSHELF, BlockChiseledBookshelf.class);
         register(CHISELED_COPPER, BlockChiseledCopper.class);
         register(CHISELED_DEEPSLATE, BlockChiseledDeepslate.class);
@@ -205,7 +205,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(COCOA, BlockCocoa.class);
         register(COLORED_TORCH_BP, BlockColoredTorchBp.class);
         register(COLORED_TORCH_RG, BlockColoredTorchRg.class);
-        register(COMMAND_BLOCK, BlockCommandBlock.class);
+        register(COMMAND_BLOCK, BlockCommandBlock.class);// done.
         register(COMPOSTER, BlockComposter.class);
         register(CONDUIT, BlockConduit.class);// done.
         register(COPPER_BLOCK, BlockCopperBlock.class);

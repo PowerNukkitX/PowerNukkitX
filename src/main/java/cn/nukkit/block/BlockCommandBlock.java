@@ -3,9 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCommandBlock;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
@@ -13,18 +10,15 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.CONDITIONAL_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
 //special thanks to wode
-
-
-public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, BlockEntityHolder<BlockEntityCommandBlock>{
-
-    public static final BooleanBlockProperty CONDITIONAL_BIT = new BooleanBlockProperty("conditional_bit", false);
-    public static final BlockProperties PROPERTIES = new BlockProperties(CONDITIONAL_BIT, CommonBlockProperties.FACING_DIRECTION);
+public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEntityHolder<BlockEntityCommandBlock> {
+    public static final BlockProperties PROPERTIES = new BlockProperties(COMMAND_BLOCK, CONDITIONAL_BIT, FACING_DIRECTION);
 
     public BlockCommandBlock() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockCommandBlock(BlockState blockstate) {
@@ -35,11 +29,6 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
-    }
-
-    @Override
-    public int getId() {
-        return BlockID.COMMAND_BLOCK;
     }
 
     @Override
@@ -74,7 +63,12 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(FACING_DIRECTION);
+        return BlockFace.fromIndex(getPropertyValue(FACING_DIRECTION));
+    }
+
+    @Override
+    public void setBlockFace(BlockFace face) {
+        setPropertyValue(FACING_DIRECTION, face.getIndex());
     }
 
     @Override
@@ -85,17 +79,17 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
             if (Math.abs(player.getFloorX() - this.x) < 2 && Math.abs(player.getFloorZ() - this.z) < 2) {
                 double y = player.y + player.getEyeHeight();
                 if (y - this.y > 2) {
-                    this.setPropertyValue(FACING_DIRECTION, BlockFace.UP);
+                    this.setBlockFace(BlockFace.UP);
                 } else if (this.y - y > 0) {
-                    this.setPropertyValue(FACING_DIRECTION, BlockFace.DOWN);
+                    this.setBlockFace(BlockFace.DOWN);
                 } else {
-                    this.setPropertyValue(FACING_DIRECTION, player.getHorizontalFacing().getOpposite());
+                    this.setBlockFace(player.getHorizontalFacing().getOpposite());
                 }
             } else {
-                this.setPropertyValue(FACING_DIRECTION, player.getHorizontalFacing().getOpposite());
+                this.setBlockFace(player.getHorizontalFacing().getOpposite());
             }
         } else {
-            this.setPropertyValue(FACING_DIRECTION, BlockFace.DOWN);
+            this.setBlockFace(BlockFace.DOWN);
         }
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true) != null;
     }
