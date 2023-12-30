@@ -1,25 +1,7 @@
-/*
- * https://PowerNukkit.org - The Nukkit you know but Powerful!
- * Copyright (C) 2020  José Roberto de Araújo Júnior
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package cn.nukkit.block;
 
 import cn.nukkit.Server;
-import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
@@ -30,8 +12,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
-
 /**
  * @author joserobjr
  * @since 2020-09-15
@@ -40,8 +20,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 
 public abstract class BlockCropsStem extends BlockCrops implements Faceable {
 
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(GROWTH, FACING_DIRECTION);
+    public abstract BlockState getStrippedState();
 
     //https://minecraft.wiki/w/Melon_Seeds#Breaking
     private static final double[][] dropChances = new double[][]{
@@ -66,33 +45,26 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
         }
     }
 
-
     protected BlockCropsStem(BlockState blockstate) {
         super(blockstate);
     }
 
+    public abstract String getFruitId();
 
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-
-    public abstract int getFruitId();
-
-
-    public abstract int getSeedsId();
+    public abstract String getSeedsId();
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(FACING_DIRECTION);
+        return getFacing();
     }
-
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(FACING_DIRECTION, face);
+        setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
+    }
+
+    public BlockFace getFacing() {
+        return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
     }
 
     @Override
@@ -121,7 +93,7 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
         }
         
         int growth = getGrowth();
-        if (growth < GROWTH.getMaxValue()) {
+        if (growth < CommonBlockProperties.GROWTH.getMax()) {
             BlockCropsStem block = this.clone();
             block.setGrowth(growth + 1);
             BlockGrowEvent ev = new BlockGrowEvent(this, block);
@@ -138,10 +110,10 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
 
 
     public boolean growFruit() {
-        int fruitId = getFruitId();
+        String fruitId = getFruitId();
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
             Block b = this.getSide(face);
-            if (b.getId() == fruitId) {
+            if (b.getId().equals(fruitId)) {
                 return false;
             }
         }
