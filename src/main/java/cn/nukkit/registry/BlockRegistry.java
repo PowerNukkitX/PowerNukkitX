@@ -85,12 +85,12 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(BIRCH_DOOR, BlockBirchDoor.class);// done.
         register(BIRCH_FENCE, BlockBirchFence.class);// done.
         register(BIRCH_FENCE_GATE, BlockBirchFenceGate.class);// done.
-        register(BIRCH_HANGING_SIGN, BlockBirchHangingSign.class);
+        register(BIRCH_HANGING_SIGN, BlockBirchHangingSign.class);// done.
         register(BIRCH_LOG, BlockBirchLog.class);// done.
         register(BIRCH_PLANKS, BlockBirchPlanks.class);// done.
         register(BIRCH_PRESSURE_PLATE, BlockBirchPressurePlate.class);// done.
         register(BIRCH_STAIRS, BlockBirchStairs.class);// done.
-        register(BIRCH_STANDING_SIGN, BlockBirchStandingSign.class);
+        register(BIRCH_STANDING_SIGN, BlockBirchStandingSign.class);// done.
         register(BIRCH_TRAPDOOR, BlockBirchTrapdoor.class);// done.
         register(BIRCH_WALL_SIGN, BlockBirchWallSign.class);// done.
         register(BLACK_CANDLE, BlockBlackCandle.class);// done.
@@ -169,7 +169,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(CHERRY_DOUBLE_SLAB, BlockCherryDoubleSlab.class);
         register(CHERRY_FENCE, BlockCherryFence.class);// done.
         register(CHERRY_FENCE_GATE, BlockCherryFenceGate.class);// done.
-        register(CHERRY_HANGING_SIGN, BlockCherryHangingSign.class);
+        register(CHERRY_HANGING_SIGN, BlockCherryHangingSign.class);// done.
         register(CHERRY_LEAVES, BlockCherryLeaves.class);
         register(CHERRY_LOG, BlockCherryLog.class);// done.
         register(CHERRY_PLANKS, BlockCherryPlanks.class);
@@ -177,9 +177,9 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(CHERRY_SAPLING, BlockCherrySapling.class);
         register(CHERRY_SLAB, BlockCherrySlab.class);
         register(CHERRY_STAIRS, BlockCherryStairs.class);
-        register(CHERRY_STANDING_SIGN, BlockCherryStandingSign.class);
+        register(CHERRY_STANDING_SIGN, BlockCherryStandingSign.class);// done.
         register(CHERRY_TRAPDOOR, BlockCherryTrapdoor.class);// done.
-        register(CHERRY_WALL_SIGN, BlockCherryWallSign.class);
+        register(CHERRY_WALL_SIGN, BlockCherryWallSign.class);// done.
         register(CHERRY_WOOD, BlockCherryWood.class);
         register(CHEST, BlockChest.class);
         register(CHISELED_BOOKSHELF, BlockChiseledBookshelf.class);
@@ -232,7 +232,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(CRIMSON_FENCE, BlockCrimsonFence.class);// done.
         register(CRIMSON_FENCE_GATE, BlockCrimsonFenceGate.class);// done.
         register(CRIMSON_FUNGUS, BlockCrimsonFungus.class);
-        register(CRIMSON_HANGING_SIGN, BlockCrimsonHangingSign.class);
+        register(CRIMSON_HANGING_SIGN, BlockCrimsonHangingSign.class);// done.
         register(CRIMSON_HYPHAE, BlockCrimsonHyphae.class);// done.
         register(CRIMSON_NYLIUM, BlockCrimsonNylium.class);
         register(CRIMSON_PLANKS, BlockCrimsonPlanks.class);
@@ -240,10 +240,10 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(CRIMSON_ROOTS, BlockCrimsonRoots.class);
         register(CRIMSON_SLAB, BlockCrimsonSlab.class);
         register(CRIMSON_STAIRS, BlockCrimsonStairs.class);
-        register(CRIMSON_STANDING_SIGN, BlockCrimsonStandingSign.class);
+        register(CRIMSON_STANDING_SIGN, BlockCrimsonStandingSign.class);// done.
         register(CRIMSON_STEM, BlockCrimsonStem.class);// done.
         register(CRIMSON_TRAPDOOR, BlockCrimsonTrapdoor.class);// done.
-        register(CRIMSON_WALL_SIGN, BlockCrimsonWallSign.class);
+        register(CRIMSON_WALL_SIGN, BlockCrimsonWallSign.class);// done.
         register(CRYING_OBSIDIAN, BlockCryingObsidian.class);
         register(CUT_COPPER, BlockCutCopper.class);
         register(CUT_COPPER_SLAB, BlockCutCopperSlab.class);
@@ -263,15 +263,15 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(DARK_OAK_DOOR, BlockDarkOakDoor.class);// done.
         register(DARK_OAK_FENCE, BlockDarkOakFence.class);// done.
         register(DARK_OAK_FENCE_GATE, BlockDarkOakFenceGate.class);// done.
-        register(DARK_OAK_HANGING_SIGN, BlockDarkOakHangingSign.class);
+        register(DARK_OAK_HANGING_SIGN, BlockDarkOakHangingSign.class);// done.
         register(DARK_OAK_LOG, BlockDarkOakLog.class);// done.
         register(DARK_OAK_PLANKS, BlockDarkOakPlanks.class);
         register(DARK_OAK_PRESSURE_PLATE, BlockDarkOakPressurePlate.class);
         register(DARK_OAK_STAIRS, BlockDarkOakStairs.class);
         register(DARK_OAK_TRAPDOOR, BlockDarkOakTrapdoor.class);// done.
         register(DARK_PRISMARINE_STAIRS, BlockDarkPrismarineStairs.class);
-        register(DARKOAK_STANDING_SIGN, BlockDarkoakStandingSign.class);
-        register(DARKOAK_WALL_SIGN, BlockDarkoakWallSign.class);
+        register(DARKOAK_STANDING_SIGN, BlockDarkoakStandingSign.class);// done.
+        register(DARKOAK_WALL_SIGN, BlockDarkoakWallSign.class);// done.
         register(DAYLIGHT_DETECTOR, BlockDaylightDetector.class);
         register(DAYLIGHT_DETECTOR_INVERTED, BlockDaylightDetectorInverted.class);
         register(DEAD_BRAIN_CORAL, BlockDeadBrainCoral.class);
@@ -539,14 +539,14 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(JUNGLE_DOOR, BlockJungleDoor.class);// done.
         register(JUNGLE_FENCE, BlockJungleFence.class);// done.
         register(JUNGLE_FENCE_GATE, BlockJungleFenceGate.class);// done.
-        register(JUNGLE_HANGING_SIGN, BlockJungleHangingSign.class);
+        register(JUNGLE_HANGING_SIGN, BlockJungleHangingSign.class);// done.
         register(JUNGLE_LOG, BlockJungleLog.class);// done.
         register(JUNGLE_PLANKS, BlockJunglePlanks.class);
         register(JUNGLE_PRESSURE_PLATE, BlockJunglePressurePlate.class);
         register(JUNGLE_STAIRS, BlockJungleStairs.class);
-        register(JUNGLE_STANDING_SIGN, BlockJungleStandingSign.class);
+        register(JUNGLE_STANDING_SIGN, BlockJungleStandingSign.class);// done.
         register(JUNGLE_TRAPDOOR, BlockJungleTrapdoor.class);// done.
-        register(JUNGLE_WALL_SIGN, BlockJungleWallSign.class);
+        register(JUNGLE_WALL_SIGN, BlockJungleWallSign.class);// done.
         register(KELP, BlockKelp.class);
         register(LADDER, BlockLadder.class);
         register(LANTERN, BlockLantern.class);
@@ -619,7 +619,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(MANGROVE_DOUBLE_SLAB, BlockMangroveDoubleSlab.class);
         register(MANGROVE_FENCE, BlockMangroveFence.class);// done.
         register(MANGROVE_FENCE_GATE, BlockMangroveFenceGate.class);// done.
-        register(MANGROVE_HANGING_SIGN, BlockMangroveHangingSign.class);
+        register(MANGROVE_HANGING_SIGN, BlockMangroveHangingSign.class);// done.
         register(MANGROVE_LEAVES, BlockMangroveLeaves.class);
         register(MANGROVE_LOG, BlockMangroveLog.class);// done.
         register(MANGROVE_PLANKS, BlockMangrovePlanks.class);
@@ -628,9 +628,9 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(MANGROVE_ROOTS, BlockMangroveRoots.class);
         register(MANGROVE_SLAB, BlockMangroveSlab.class);
         register(MANGROVE_STAIRS, BlockMangroveStairs.class);
-        register(MANGROVE_STANDING_SIGN, BlockMangroveStandingSign.class);
+        register(MANGROVE_STANDING_SIGN, BlockMangroveStandingSign.class);// done.
         register(MANGROVE_TRAPDOOR, BlockMangroveTrapdoor.class);// done.
-        register(MANGROVE_WALL_SIGN, BlockMangroveWallSign.class);
+        register(MANGROVE_WALL_SIGN, BlockMangroveWallSign.class);// done.
         register(MANGROVE_WOOD, BlockMangroveWood.class);
         register(MEDIUM_AMETHYST_BUD, BlockMediumAmethystBud.class);
         register(MELON_BLOCK, BlockMelonBlock.class);
@@ -664,7 +664,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(NORMAL_STONE_STAIRS, BlockNormalStoneStairs.class);
         register(NOTEBLOCK, BlockNoteblock.class);
         register(OAK_FENCE, BlockOakFence.class);// done.
-        register(OAK_HANGING_SIGN, BlockOakHangingSign.class);
+        register(OAK_HANGING_SIGN, BlockOakHangingSign.class);// done.
         register(OAK_LOG, BlockOakLog.class);// done.
         register(OAK_PLANKS, BlockOakPlanks.class);
         register(OAK_STAIRS, BlockOakStairs.class);
@@ -842,14 +842,14 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(SPRUCE_DOOR, BlockSpruceDoor.class);// done.
         register(SPRUCE_FENCE, BlockSpruceFence.class);// done.
         register(SPRUCE_FENCE_GATE, BlockSpruceFenceGate.class);// done.
-        register(SPRUCE_HANGING_SIGN, BlockSpruceHangingSign.class);
+        register(SPRUCE_HANGING_SIGN, BlockSpruceHangingSign.class);// done.
         register(SPRUCE_LOG, BlockSpruceLog.class);// done.
         register(SPRUCE_PLANKS, BlockSprucePlanks.class);
         register(SPRUCE_PRESSURE_PLATE, BlockSprucePressurePlate.class);
         register(SPRUCE_STAIRS, BlockSpruceStairs.class);
-        register(SPRUCE_STANDING_SIGN, BlockSpruceStandingSign.class);
+        register(SPRUCE_STANDING_SIGN, BlockSpruceStandingSign.class);// done.
         register(SPRUCE_TRAPDOOR, BlockSpruceTrapdoor.class);// done.
-        register(SPRUCE_WALL_SIGN, BlockSpruceWallSign.class);
+        register(SPRUCE_WALL_SIGN, BlockSpruceWallSign.class);// done.
         register(STANDING_BANNER, BlockStandingBanner.class);
         register(STANDING_SIGN, BlockStandingSign.class);
         register(STICKY_PISTON, BlockStickyPiston.class);
@@ -926,7 +926,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(WARPED_FENCE, BlockWarpedFence.class);// done.
         register(WARPED_FENCE_GATE, BlockWarpedFenceGate.class);// done.
         register(WARPED_FUNGUS, BlockWarpedFungus.class);
-        register(WARPED_HANGING_SIGN, BlockWarpedHangingSign.class);
+        register(WARPED_HANGING_SIGN, BlockWarpedHangingSign.class);// done.
         register(WARPED_HYPHAE, BlockWarpedHyphae.class);// done.
         register(WARPED_NYLIUM, BlockWarpedNylium.class);
         register(WARPED_PLANKS, BlockWarpedPlanks.class);
@@ -934,10 +934,10 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(WARPED_ROOTS, BlockWarpedRoots.class);
         register(WARPED_SLAB, BlockWarpedSlab.class);
         register(WARPED_STAIRS, BlockWarpedStairs.class);
-        register(WARPED_STANDING_SIGN, BlockWarpedStandingSign.class);
-        register(WARPED_STEM, BlockWarpedStem.class);
+        register(WARPED_STANDING_SIGN, BlockWarpedStandingSign.class);// done.
+        register(WARPED_STEM, BlockWarpedStem.class);// done.
         register(WARPED_TRAPDOOR, BlockWarpedTrapdoor.class);// done.
-        register(WARPED_WALL_SIGN, BlockWarpedWallSign.class);
+        register(WARPED_WALL_SIGN, BlockWarpedWallSign.class);// done.
         register(WARPED_WART_BLOCK, BlockWarpedWartBlock.class);
         register(WATER, BlockWater.class);
         register(WATERLILY, BlockWaterlily.class);
