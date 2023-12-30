@@ -3,9 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityEndPortal;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
@@ -18,14 +15,19 @@ import javax.annotation.Nullable;
 
 public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<BlockEntityEndPortal> {
 
-    private static final BlockState STATE_OBSIDIAN = BlockState.of(OBSIDIAN);
+    public static final BlockProperties PROPERTIES = new BlockProperties(END_PORTAL);
 
-    public BlockEndPortal() {
-        this(0);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public BlockEndPortal(int meta) {
-        super(0);
+    public BlockEndPortal() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockEndPortal(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -34,34 +36,18 @@ public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<B
     }
 
     @Override
-    public int getId() {
-        return END_PORTAL;
-    }
-
-
-    @NotNull
-    @Override
-    public Class<? extends BlockEntityEndPortal> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityEndPortal> getBlockEntityClass() {
         return BlockEntityEndPortal.class;
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.END_PORTAL;
     }
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return CommonBlockProperties.EMPTY_PROPERTIES;
     }
 
     @Override
@@ -93,7 +79,6 @@ public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<B
     public boolean hasEntityCollision() {
         return true;
     }
-
 
     @Override
     public AxisAlignedBB getCollisionBoundingBox() {
@@ -130,7 +115,6 @@ public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<B
         return getY() + (12.0 / 16.0);
     }
 
-
     public static void spawnObsidianPlatform(Position position) {
         Level level = position.getLevel();
         int x = position.getFloorX();
@@ -139,9 +123,9 @@ public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<B
 
         for (int blockX = x - 2; blockX <= x + 2; blockX++) {
             for (int blockZ = z - 2; blockZ <= z + 2; blockZ++) {
-                level.setBlockStateAt(blockX, y - 1, blockZ, STATE_OBSIDIAN);
+                level.setBlockStateAt(blockX, y - 1, blockZ, PROPERTIES.getDefaultState());
                 for (int blockY = y; blockY <= y + 3; blockY++) {
-                    level.setBlockStateAt(blockX, blockY, blockZ, BlockState.AIR);
+                    level.setBlockStateAt(blockX, blockY, blockZ, BlockAir.PROPERTIES.getDefaultState());
                 }
             }
         }

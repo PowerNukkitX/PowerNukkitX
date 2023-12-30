@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
@@ -8,17 +9,24 @@ import cn.nukkit.item.Item;
  */
 public class BlockGlassPane extends BlockThin {
 
+    public static final BlockProperties PROPERTIES = new BlockProperties(GLASS_PANE);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockGlassPane() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockGlassPane(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
     public String getName() {
         return "Glass Pane";
-    }
-
-    @Override
-    public int getId() {
-        return GLASS_PANE;
     }
 
     @Override

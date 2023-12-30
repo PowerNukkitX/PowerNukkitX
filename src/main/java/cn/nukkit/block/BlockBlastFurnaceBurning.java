@@ -6,22 +6,23 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import org.jetbrains.annotations.NotNull;
 
-
 public class BlockBlastFurnaceBurning extends BlockFurnaceBurning {
 
-    public BlockBlastFurnaceBurning() {
-        this(0);
+    public static final BlockProperties PROPERTIES = new BlockProperties(LIT_BLAST_FURNACE);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
+    public BlockBlastFurnaceBurning() {
+        this(PROPERTIES.getDefaultState());
+    }
 
     public BlockBlastFurnaceBurning(BlockState blockstate) {
         super(blockstate);
     }
 
-    @Override
-    public int getId() {
-        return LIT_BLAST_FURNACE;
-    }
 
     @Override
     public String getName() {

@@ -1,10 +1,9 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBrewingStand;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBrewingStand;
@@ -18,22 +17,20 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-public class BlockBrewingStand extends BlockTransparentMeta implements BlockEntityHolder<BlockEntityBrewingStand> {
+public class BlockBrewingStand extends BlockTransparent implements BlockEntityHolder<BlockEntityBrewingStand> {
 
+    public static final BlockProperties PROPERTIES = new BlockProperties(BREWING_STAND ,
+            CommonBlockProperties.BREWING_STAND_SLOT_A_BIT,
+            CommonBlockProperties.BREWING_STAND_SLOT_B_BIT,
+            CommonBlockProperties.BREWING_STAND_SLOT_C_BIT);
 
-    public static final BooleanBlockProperty HAS_POTION_A = new BooleanBlockProperty("brewing_stand_slot_a_bit", false);
-
-
-    public static final BooleanBlockProperty HAS_POTION_B = new BooleanBlockProperty("brewing_stand_slot_b_bit", false);
-
-
-    public static final BooleanBlockProperty HAS_POTION_C = new BooleanBlockProperty("brewing_stand_slot_c_bit", false);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(HAS_POTION_A, HAS_POTION_B, HAS_POTION_C);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockBrewingStand() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockBrewingStand(BlockState blockstate) {
@@ -69,18 +66,6 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
     @Override
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getId() {
-        return BREWING_STAND_BLOCK;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

@@ -26,7 +26,12 @@ import java.util.Set;
  * @since 2015/11/23
  */
 public class BlockFenceGate extends BlockTransparent implements RedstoneComponent, Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:fence_gate", CommonBlockProperties.DIRECTION, CommonBlockProperties.IN_WALL_BIT, CommonBlockProperties.OPEN_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(FENCE_GATE, CommonBlockProperties.DIRECTION, CommonBlockProperties.IN_WALL_BIT, CommonBlockProperties.OPEN_BIT);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     // Contains a list of positions of fence gates, which have been opened by hand (by a player).
     // It is used to detect on redstone update, if the gate should be closed if redstone is off on the update,
@@ -40,12 +45,6 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
 
     public BlockFenceGate(BlockState blockState) {
         super(blockState);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -122,8 +121,6 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
         return this.z + offMaxZ[getOffsetIndex()];
     }
 
-
-
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         BlockFace direction = player.getDirection();
@@ -150,13 +147,11 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
         return toggle(player);
     }
 
-
     public boolean toggle(Player player) {
         if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
             return false;
         return this.setOpen(player, !this.isOpen());
     }
-
 
     public boolean setOpen(@Nullable Player player, boolean open) {
         if (open == this.isOpen()) {
@@ -173,7 +168,6 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
         player = event.getPlayer();
 
         BlockFace direction;
-
 
         BlockFace originDirection = getBlockFace();
         
@@ -222,7 +216,6 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
         return true;
     }
 
-
     public void playOpenCloseSound() {
         if (this.isOpen()) {
             this.playOpenSound();
@@ -231,11 +224,9 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
         }
     }
 
-
     public void playOpenSound() {
         level.addSound(this, Sound.RANDOM_DOOR_OPEN);
     }
-
 
     public void playCloseSound() {
         level.addSound(this, Sound.RANDOM_DOOR_CLOSE);
@@ -245,11 +236,9 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
         return getPropertyValue(CommonBlockProperties.OPEN_BIT);
     }
 
-
     public void setOpen(boolean open) {
         setPropertyValue(CommonBlockProperties.OPEN_BIT,open);
     }
-
 
     @Override
     public int onUpdate(int type) {
@@ -269,7 +258,6 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
         return 0;
     }
 
-
     private void onRedstoneUpdate() {
         if ((this.isOpen() != this.isGettingPower()) && !this.getManualOverride()) {
             if (this.isOpen() != this.isGettingPower()) {
@@ -282,7 +270,6 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
         }
     }
 
-
     public void setManualOverride(boolean val) {
         if (val) {
             manualOverrides.add(this.getLocation());
@@ -290,7 +277,6 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
             manualOverrides.remove(this.getLocation());
         }
     }
-
 
     public boolean getManualOverride() {
         return manualOverrides.contains(this.getLocation());
@@ -302,11 +288,9 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
         return super.onBreak(item);
     }
 
-
     public boolean isInWall() {
         return getPropertyValue(CommonBlockProperties.IN_WALL_BIT);
     }
-
 
     public void setInWall(boolean inWall) {
         setPropertyValue(CommonBlockProperties.IN_WALL_BIT,inWall);

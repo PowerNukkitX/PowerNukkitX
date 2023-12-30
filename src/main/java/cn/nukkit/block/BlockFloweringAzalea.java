@@ -1,25 +1,27 @@
 package cn.nukkit.block;
 
-public class BlockFloweringAzalea extends BlockAzalea{
+import org.jetbrains.annotations.NotNull;
 
+public class BlockFloweringAzalea extends BlockAzalea {
 
-    public BlockFloweringAzalea() {
-        this(0);
+    public static final BlockProperties PROPERTIES = new BlockProperties(FLOWERING_AZALEA);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
+    public BlockFloweringAzalea() {
+        this(PROPERTIES.getDefaultState());
+    }
 
     public BlockFloweringAzalea(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {
         return "FloweringAzalea";
     }
 
-    @Override
-    public int getId() {
-        return FLOWERING_AZALEA;
-    }
 }
