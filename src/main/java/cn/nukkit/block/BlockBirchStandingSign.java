@@ -1,6 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBirchSign;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockBirchStandingSign extends BlockStandingSign {
@@ -27,5 +29,10 @@ public class BlockBirchStandingSign extends BlockStandingSign {
     @Override
     public String getWallSignId() {
         return BlockBirchWallSign.PROPERTIES.getIdentifier();
+    }
+
+    @Override
+    public Item toItem() {
+        return new ItemBirchSign();
     }
 }

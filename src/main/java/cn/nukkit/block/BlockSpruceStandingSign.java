@@ -1,10 +1,12 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemSpruceSign;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockSpruceStandingSign extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:spruce_standing_sign", CommonBlockProperties.GROUND_SIGN_DIRECTION);
+public class BlockSpruceStandingSign extends BlockStandingSign {
+    public static final BlockProperties PROPERTIES = new BlockProperties(SPRUCE_STANDING_SIGN, CommonBlockProperties.GROUND_SIGN_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -17,5 +19,15 @@ public class BlockSpruceStandingSign extends Block {
 
     public BlockSpruceStandingSign(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getWallSignId() {
+        return BlockSpruceWallSign.PROPERTIES.getIdentifier();
+    }
+
+    @Override
+    public Item toItem() {
+        return new ItemSpruceSign();
     }
 }

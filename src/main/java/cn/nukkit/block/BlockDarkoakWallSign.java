@@ -1,20 +1,20 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemMangroveSign;
+import cn.nukkit.item.ItemDarkOakSign;
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
 
-public class BlockMangroveWallSign extends BlockWallSign {
-    public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_WALL_SIGN, FACING_DIRECTION);
+public class BlockDarkoakWallSign extends BlockWallSign {
+    public static final BlockProperties PROPERTIES = new BlockProperties(DARKOAK_WALL_SIGN, FACING_DIRECTION);
 
-    public BlockMangroveWallSign() {
+    public BlockDarkoakWallSign() {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockMangroveWallSign(BlockState blockState) {
+    public BlockDarkoakWallSign(BlockState blockState) {
         super(blockState);
     }
 
@@ -25,21 +25,16 @@ public class BlockMangroveWallSign extends BlockWallSign {
 
     @Override
     public String getWallSignId() {
-        return MANGROVE_WALL_SIGN;
+        return DARKOAK_WALL_SIGN;
     }
 
     @Override
     public String getStandingSignId() {
-        return MANGROVE_STANDING_SIGN;
-    }
-
-    @Override
-    public String getName() {
-        return "Mangrove Wall Sign";
+        return DARKOAK_STANDING_SIGN;
     }
 
     @Override
     public Item toItem() {
-        return new ItemMangroveSign();
+        return new ItemDarkOakSign();
     }
 }

@@ -2,35 +2,39 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemCherrySign;
+import org.jetbrains.annotations.NotNull;
+
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
 
 public class BlockCherryWallSign extends BlockWallSign {
+    public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_WALL_SIGN, FACING_DIRECTION);
+
     public BlockCherryWallSign() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockCherryWallSign(BlockState blockstate) {
-        super(blockstate);
+    public BlockCherryWallSign(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
-    public int getId() {
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
+    public String getWallSignId() {
         return CHERRY_WALL_SIGN;
     }
 
     @Override
-    protected int getPostId() {
+    public String getStandingSignId() {
         return CHERRY_STANDING_SIGN;
-    }
-
-    @Override
-    public String getName() {
-        return "Cherry Wall Sign";
     }
 
     @Override
     public Item toItem() {
         return new ItemCherrySign();
     }
-
 }

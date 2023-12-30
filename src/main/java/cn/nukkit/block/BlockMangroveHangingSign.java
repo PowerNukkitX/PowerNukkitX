@@ -1,12 +1,27 @@
 package cn.nukkit.block;
 
 
+import cn.nukkit.block.property.CommonBlockProperties;
+import org.jetbrains.annotations.NotNull;
+
 public class BlockMangroveHangingSign extends BlockHangingSign {
-    public BlockMangroveHangingSign() {
+    public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_HANGING_SIGN,
+            CommonBlockProperties.ATTACHED_BIT,
+            CommonBlockProperties.FACING_DIRECTION,
+            CommonBlockProperties.GROUND_SIGN_DIRECTION,
+            CommonBlockProperties.HANGING);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public int getId() {
-        return MANGROVE_HANGING_SIGN;
+    public BlockMangroveHangingSign() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockMangroveHangingSign(BlockState blockstate) {
+        super(blockstate);
     }
 
     public String getName() {
