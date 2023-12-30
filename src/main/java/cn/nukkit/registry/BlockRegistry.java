@@ -112,7 +112,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(BLAST_FURNACE, BlockBlastFurnace.class);// done.
         register(BLUE_CANDLE, BlockBlueCandle.class);// done.
         register(BLUE_CANDLE_CAKE, BlockBlueCandleCake.class);// done.
-        register(BLUE_CARPET, BlockBlueCarpet.class);
+        register(BLUE_CARPET, BlockBlueCarpet.class);// done.
         register(BLUE_CONCRETE, BlockBlueConcrete.class);// done.
         register(BLUE_CONCRETE_POWDER, BlockBlueConcretePowder.class);// done.
         register(BLUE_GLAZED_TERRACOTTA, BlockBlueGlazedTerracotta.class);// done.
@@ -131,7 +131,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(BRICK_STAIRS, BlockBrickStairs.class);// done.
         register(BROWN_CANDLE, BlockBrownCandle.class);// done.
         register(BROWN_CANDLE_CAKE, BlockBrownCandleCake.class);// done.
-        register(BROWN_CARPET, BlockBrownCarpet.class);
+        register(BROWN_CARPET, BlockBrownCarpet.class);// done.
         register(BROWN_CONCRETE, BlockBrownConcrete.class);// done.
         register(BROWN_CONCRETE_POWDER, BlockBrownConcretePowder.class);// done.
         register(BROWN_GLAZED_TERRACOTTA, BlockBrownGlazedTerracotta.class);// done.
@@ -250,7 +250,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(CUT_COPPER_STAIRS, BlockCutCopperStairs.class);
         register(CYAN_CANDLE, BlockCyanCandle.class);// done.
         register(CYAN_CANDLE_CAKE, BlockCyanCandleCake.class);// done.
-        register(CYAN_CARPET, BlockCyanCarpet.class);
+        register(CYAN_CARPET, BlockCyanCarpet.class);// done.
         register(CYAN_CONCRETE, BlockCyanConcrete.class);// done.
         register(CYAN_CONCRETE_POWDER, BlockCyanConcretePowder.class);// done.
         register(CYAN_GLAZED_TERRACOTTA, BlockCyanGlazedTerracotta.class);// done.
@@ -490,7 +490,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(GRAVEL, BlockGravel.class);// done.
         register(GRAY_CANDLE, BlockGrayCandle.class);// done.
         register(GRAY_CANDLE_CAKE, BlockGrayCandleCake.class);// done.
-        register(GRAY_CARPET, BlockGrayCarpet.class);
+        register(GRAY_CARPET, BlockGrayCarpet.class);// done.
         register(GRAY_CONCRETE, BlockGrayConcrete.class);// done.
         register(GRAY_CONCRETE_POWDER, BlockGrayConcretePowder.class);// done.
         register(GRAY_GLAZED_TERRACOTTA, BlockGrayGlazedTerracotta.class);// done.
@@ -501,7 +501,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(GRAY_WOOL, BlockGrayWool.class);// done.
         register(GREEN_CANDLE, BlockGreenCandle.class);// done.
         register(GREEN_CANDLE_CAKE, BlockGreenCandleCake.class);// done.
-        register(GREEN_CARPET, BlockGreenCarpet.class);
+        register(GREEN_CARPET, BlockGreenCarpet.class);// done.
         register(GREEN_CONCRETE, BlockGreenConcrete.class);// done.
         register(GREEN_CONCRETE_POWDER, BlockGreenConcretePowder.class);// done.
         register(GREEN_GLAZED_TERRACOTTA, BlockGreenGlazedTerracotta.class);// done.
@@ -561,7 +561,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(LIGHT_BLOCK, BlockLightBlock.class);// done.
         register(LIGHT_BLUE_CANDLE, BlockLightBlueCandle.class);// done.
         register(LIGHT_BLUE_CANDLE_CAKE, BlockLightBlueCandleCake.class);// done.
-        register(LIGHT_BLUE_CARPET, BlockLightBlueCarpet.class);
+        register(LIGHT_BLUE_CARPET, BlockLightBlueCarpet.class);// done.
         register(LIGHT_BLUE_CONCRETE, BlockLightBlueConcrete.class);// done.
         register(LIGHT_BLUE_CONCRETE_POWDER, BlockLightBlueConcretePowder.class);// done.
         register(LIGHT_BLUE_GLAZED_TERRACOTTA, BlockLightBlueGlazedTerracotta.class);// done.
@@ -572,7 +572,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(LIGHT_BLUE_WOOL, BlockLightBlueWool.class);// done.
         register(LIGHT_GRAY_CANDLE, BlockLightGrayCandle.class);// done.
         register(LIGHT_GRAY_CANDLE_CAKE, BlockLightGrayCandleCake.class);// done.
-        register(LIGHT_GRAY_CARPET, BlockLightGrayCarpet.class);
+        register(LIGHT_GRAY_CARPET, BlockLightGrayCarpet.class);// done.
         register(LIGHT_GRAY_CONCRETE, BlockLightGrayConcrete.class);// done.
         register(LIGHT_GRAY_CONCRETE_POWDER, BlockLightGrayConcretePowder.class);// done.
         register(LIGHT_GRAY_SHULKER_BOX, BlockLightGrayShulkerBox.class);// done.
@@ -584,7 +584,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(LIGHTNING_ROD, BlockLightningRod.class);
         register(LIME_CANDLE, BlockLimeCandle.class);// done.
         register(LIME_CANDLE_CAKE, BlockLimeCandleCake.class);// done.
-        register(LIME_CARPET, BlockLimeCarpet.class);
+        register(LIME_CARPET, BlockLimeCarpet.class);// done.
         register(LIME_CONCRETE, BlockLimeConcrete.class);// done.
         register(LIME_CONCRETE_POWDER, BlockLimeConcretePowder.class);// done.
         register(LIME_GLAZED_TERRACOTTA, BlockLimeGlazedTerracotta.class);// done.
@@ -604,7 +604,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(LOOM, BlockLoom.class);// done.
         register(MAGENTA_CANDLE, BlockMagentaCandle.class);// done.
         register(MAGENTA_CANDLE_CAKE, BlockMagentaCandleCake.class);// done.
-        register(MAGENTA_CARPET, BlockMagentaCarpet.class);
+        register(MAGENTA_CARPET, BlockMagentaCarpet.class);// done.
         register(MAGENTA_CONCRETE, BlockMagentaConcrete.class);// done.
         register(MAGENTA_CONCRETE_POWDER, BlockMagentaConcretePowder.class);// done.
         register(MAGENTA_GLAZED_TERRACOTTA, BlockMagentaGlazedTerracotta.class);// done.
@@ -638,7 +638,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(MOB_SPAWNER, BlockMobSpawner.class);// done.
         register(MONSTER_EGG, BlockMonsterEgg.class);
         register(MOSS_BLOCK, BlockMossBlock.class);
-        register(MOSS_CARPET, BlockMossCarpet.class);
+        register(MOSS_CARPET, BlockMossCarpet.class);// done.
         register(MOSSY_COBBLESTONE, BlockMossyCobblestone.class);
         register(MOSSY_COBBLESTONE_STAIRS, BlockMossyCobblestoneStairs.class);
         register(MOSSY_STONE_BRICK_STAIRS, BlockMossyStoneBrickStairs.class);
@@ -673,7 +673,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(OCHRE_FROGLIGHT, BlockOchreFroglight.class);
         register(ORANGE_CANDLE, BlockOrangeCandle.class);// done.
         register(ORANGE_CANDLE_CAKE, BlockOrangeCandleCake.class);// done.
-        register(ORANGE_CARPET, BlockOrangeCarpet.class);
+        register(ORANGE_CARPET, BlockOrangeCarpet.class);// done.
         register(ORANGE_CONCRETE, BlockOrangeConcrete.class);// done.
         register(ORANGE_CONCRETE_POWDER, BlockOrangeConcretePowder.class);// done.
         register(ORANGE_GLAZED_TERRACOTTA, BlockOrangeGlazedTerracotta.class);// done.
@@ -697,7 +697,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(PEARLESCENT_FROGLIGHT, BlockPearlescentFroglight.class);
         register(PINK_CANDLE, BlockPinkCandle.class);// done.
         register(PINK_CANDLE_CAKE, BlockPinkCandleCake.class);// done.
-        register(PINK_CARPET, BlockPinkCarpet.class);
+        register(PINK_CARPET, BlockPinkCarpet.class);// done.
         register(PINK_CONCRETE, BlockPinkConcrete.class);// done.
         register(PINK_CONCRETE_POWDER, BlockPinkConcretePowder.class);// done.
         register(PINK_GLAZED_TERRACOTTA, BlockPinkGlazedTerracotta.class);// done.
@@ -754,7 +754,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(PUMPKIN_STEM, BlockPumpkinStem.class);// done.
         register(PURPLE_CANDLE, BlockPurpleCandle.class);// done.
         register(PURPLE_CANDLE_CAKE, BlockPurpleCandleCake.class);// done.
-        register(PURPLE_CARPET, BlockPurpleCarpet.class);
+        register(PURPLE_CARPET, BlockPurpleCarpet.class);// done.
         register(PURPLE_CONCRETE, BlockPurpleConcrete.class);// done.
         register(PURPLE_CONCRETE_POWDER, BlockPurpleConcretePowder.class);// done.
         register(PURPLE_GLAZED_TERRACOTTA, BlockPurpleGlazedTerracotta.class);// done.
@@ -775,7 +775,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(RAW_IRON_BLOCK, BlockRawIronBlock.class);// done.
         register(RED_CANDLE, BlockRedCandle.class);// done.
         register(RED_CANDLE_CAKE, BlockRedCandleCake.class);// done.
-        register(RED_CARPET, BlockRedCarpet.class);
+        register(RED_CARPET, BlockRedCarpet.class);// done.
         register(RED_CONCRETE, BlockRedConcrete.class);// done.
         register(RED_CONCRETE_POWDER, BlockRedConcretePowder.class);// done.
         register(RED_FLOWER, BlockRedFlower.class);
@@ -996,7 +996,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(WHEAT, BlockWheat.class);
         register(WHITE_CANDLE, BlockWhiteCandle.class);// done.
         register(WHITE_CANDLE_CAKE, BlockWhiteCandleCake.class);// done.
-        register(WHITE_CARPET, BlockWhiteCarpet.class);
+        register(WHITE_CARPET, BlockWhiteCarpet.class);// done.
         register(WHITE_CONCRETE, BlockWhiteConcrete.class);// done.
         register(WHITE_CONCRETE_POWDER, BlockWhiteConcretePowder.class);// done.
         register(WHITE_GLAZED_TERRACOTTA, BlockWhiteGlazedTerracotta.class);// done.
@@ -1013,7 +1013,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(WOODEN_SLAB, BlockWoodenSlab.class);
         register(YELLOW_CANDLE, BlockYellowCandle.class);// done.
         register(YELLOW_CANDLE_CAKE, BlockYellowCandleCake.class);// done.
-        register(YELLOW_CARPET, BlockYellowCarpet.class);
+        register(YELLOW_CARPET, BlockYellowCarpet.class);// done.
         register(YELLOW_CONCRETE, BlockYellowConcrete.class);// done.
         register(YELLOW_CONCRETE_POWDER, BlockYellowConcretePowder.class);// done.
         register(YELLOW_FLOWER, BlockYellowFlower.class);
