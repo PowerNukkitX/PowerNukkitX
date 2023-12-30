@@ -1,8 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
@@ -11,19 +11,13 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * @author xtypr
- * @since 2015/12/8
- */
-public class BlockPumpkin extends BlockSolidMeta implements Faceable {
+public class BlockPumpkin extends BlockSolid implements Faceable {
 
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(
-            CommonBlockProperties.CARDINAL_DIRECTION
-    );
+    public static final BlockProperties PROPERTIES = new BlockProperties(PUMPKIN, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     public BlockPumpkin() {
-        this(0);
+        super(PROPERTIES.getDefaultState());
     }
 
     public BlockPumpkin(BlockState blockstate) {
@@ -34,12 +28,6 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
     public String getName() {
         return "Pumpkin";
     }
-
-    @Override
-    public int getId() {
-        return PUMPKIN;
-    }
-
 
     @NotNull
     @Override
@@ -115,12 +103,12 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION);
+        return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));
     }
 
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, face);
+        setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
     }
 }

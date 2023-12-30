@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockRawCopperBlock extends Block {
+public class BlockRawCopperBlock extends BlockRaw {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:raw_copper_block");
 
     @Override
@@ -16,5 +16,10 @@ public class BlockRawCopperBlock extends Block {
 
     public BlockRawCopperBlock(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Block of Raw Copper";
     }
 }

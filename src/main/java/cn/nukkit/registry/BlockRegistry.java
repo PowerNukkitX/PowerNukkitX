@@ -747,10 +747,10 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(POWDER_SNOW, BlockPowderSnow.class);
         register(POWERED_COMPARATOR, BlockPoweredComparator.class);
         register(POWERED_REPEATER, BlockPoweredRepeater.class);
-        register(PRISMARINE, BlockPrismarine.class);
+        register(PRISMARINE, BlockPrismarine.class);// done.
         register(PRISMARINE_BRICKS_STAIRS, BlockPrismarineBricksStairs.class);
         register(PRISMARINE_STAIRS, BlockPrismarineStairs.class);
-        register(PUMPKIN, BlockPumpkin.class);
+        register(PUMPKIN, BlockPumpkin.class);// done.
         register(PUMPKIN_STEM, BlockPumpkinStem.class);// done.
         register(PURPLE_CANDLE, BlockPurpleCandle.class);// done.
         register(PURPLE_CANDLE_CAKE, BlockPurpleCandleCake.class);// done.
@@ -770,9 +770,9 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(QUARTZ_ORE, BlockQuartzOre.class);
         register(QUARTZ_STAIRS, BlockQuartzStairs.class);
         register(RAIL, BlockRail.class);
-        register(RAW_COPPER_BLOCK, BlockRawCopperBlock.class);
-        register(RAW_GOLD_BLOCK, BlockRawGoldBlock.class);
-        register(RAW_IRON_BLOCK, BlockRawIronBlock.class);
+        register(RAW_COPPER_BLOCK, BlockRawCopperBlock.class);// done.
+        register(RAW_GOLD_BLOCK, BlockRawGoldBlock.class);// done.
+        register(RAW_IRON_BLOCK, BlockRawIronBlock.class);// done.
         register(RED_CANDLE, BlockRedCandle.class);// done.
         register(RED_CANDLE_CAKE, BlockRedCandleCake.class);// done.
         register(RED_CARPET, BlockRedCarpet.class);

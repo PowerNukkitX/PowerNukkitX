@@ -11,26 +11,10 @@ import org.jetbrains.annotations.NotNull;
  */
 
 
-public abstract class BlockRaw extends BlockSolidMeta {
-
-
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
-
-
-    public BlockRaw() {
-        this(0);
-    }
-
+public abstract class BlockRaw extends BlockSolid {
 
     public BlockRaw(BlockState blockstate) {
         super(blockstate);
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
