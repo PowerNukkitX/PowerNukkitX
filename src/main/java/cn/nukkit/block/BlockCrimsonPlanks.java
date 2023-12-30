@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockCrimsonPlanks extends Block {
+public class BlockCrimsonPlanks extends BlockPlanks {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:crimson_planks");
 
     @Override

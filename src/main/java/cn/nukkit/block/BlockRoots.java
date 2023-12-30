@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
@@ -12,15 +10,8 @@ import org.jetbrains.annotations.NotNull;
 public abstract class BlockRoots extends BlockFlowable {
 
 
-    protected BlockRoots() {
-        super(0);
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return CommonBlockProperties.EMPTY_PROPERTIES;
+    public BlockRoots(BlockState blockState) {
+        super(blockState);
     }
 
     @Override

@@ -9,8 +9,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.SAND_STONE_TYPE;
 public class BlockSandstone extends BlockSolid {
 
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(SANDSTONE,
-            SAND_STONE_TYPE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(SANDSTONE, SAND_STONE_TYPE);
 
     public BlockSandstone() {
         this(PROPERTIES.getDefaultState());

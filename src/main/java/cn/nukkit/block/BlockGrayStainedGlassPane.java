@@ -1,8 +1,9 @@
 package cn.nukkit.block;
 
+import cn.nukkit.utils.DyeColor;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockGrayStainedGlassPane extends Block {
+public class BlockGrayStainedGlassPane extends BlockGlassPaneStained {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:gray_stained_glass_pane");
 
     @Override
@@ -16,5 +17,10 @@ public class BlockGrayStainedGlassPane extends Block {
 
     public BlockGrayStainedGlassPane(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public DyeColor getDyeColor() {
+        return DyeColor.GRAY;
     }
 }

@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
  * @author xtypr
  * @since 2015/12/2
  */
-public class BlockDandelion extends BlockFlower {
+public class BlockDandelion extends BlockRedFlower {
     public BlockDandelion() {
         this(0);
     }

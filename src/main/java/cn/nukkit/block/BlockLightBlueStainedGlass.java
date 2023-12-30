@@ -1,8 +1,9 @@
 package cn.nukkit.block;
 
+import cn.nukkit.utils.DyeColor;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockLightBlueStainedGlass extends Block {
+public class BlockLightBlueStainedGlass extends BlockGlassStained {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:light_blue_stained_glass");
 
     @Override
@@ -16,5 +17,10 @@ public class BlockLightBlueStainedGlass extends Block {
 
     public BlockLightBlueStainedGlass(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public @NotNull DyeColor getDyeColor() {
+        return DyeColor.LIGHT_BLUE;
     }
 }
