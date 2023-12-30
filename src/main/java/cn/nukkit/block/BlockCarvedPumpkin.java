@@ -6,15 +6,19 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class BlockCarvedPumpkin extends BlockPumpkin {
-
-
-    public BlockCarvedPumpkin() {
-        super();
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(CARVED_PUMPKIN);
 
     @Override
-    public int getId() {
-        return CARVED_PUMPKIN;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockCarvedPumpkin() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockCarvedPumpkin(BlockState blockstate) {
+        super(blockstate);
     }
     
     @Override

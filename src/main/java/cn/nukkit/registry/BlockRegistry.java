@@ -142,24 +142,24 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(BROWN_STAINED_GLASS_PANE, BlockBrownStainedGlassPane.class);
         register(BROWN_TERRACOTTA, BlockBrownTerracotta.class);// done.
         register(BROWN_WOOL, BlockBrownWool.class);// done.
-        register(BUBBLE_COLUMN, BlockBubbleColumn.class);
-        register(BUBBLE_CORAL, BlockBubbleCoral.class);
+        register(BUBBLE_COLUMN, BlockBubbleColumn.class);// done.
+        register(BUBBLE_CORAL, BlockBubbleCoral.class);// done.
         register(BUDDING_AMETHYST, BlockBuddingAmethyst.class);// done.
         register(CACTUS, BlockCactus.class);// done.
         register(CAKE, BlockCake.class);// done.
         register(CALCITE, BlockCalcite.class);// done.
         register(CALIBRATED_SCULK_SENSOR, BlockCalibratedSculkSensor.class);
-        register(CAMERA, BlockCamera.class);
-        register(CAMPFIRE, BlockCampfire.class);
+//        register(CAMERA, BlockCamera.class);//edu
+        register(CAMPFIRE, BlockCampfire.class);// done.
         register(CANDLE, BlockCandle.class);// done.
         register(CANDLE_CAKE, BlockCandleCake.class);// done.
-        register(CARROTS, BlockCarrots.class);
-        register(CARTOGRAPHY_TABLE, BlockCartographyTable.class);
-        register(CARVED_PUMPKIN, BlockCarvedPumpkin.class);
-        register(CAULDRON, BlockCauldron.class);
-        register(CAVE_VINES, BlockCaveVines.class);
-        register(CAVE_VINES_BODY_WITH_BERRIES, BlockCaveVinesBodyWithBerries.class);
-        register(CAVE_VINES_HEAD_WITH_BERRIES, BlockCaveVinesHeadWithBerries.class);
+        register(CARROTS, BlockCarrots.class);// done.
+        register(CARTOGRAPHY_TABLE, BlockCartographyTable.class);// done.
+        register(CARVED_PUMPKIN, BlockCarvedPumpkin.class);// done.
+        register(CAULDRON, BlockCauldron.class);// done.
+        register(CAVE_VINES, BlockCaveVines.class);// done.
+        register(CAVE_VINES_BODY_WITH_BERRIES, BlockCaveVinesBodyWithBerries.class);// done.
+        register(CAVE_VINES_HEAD_WITH_BERRIES, BlockCaveVinesHeadWithBerries.class);// done.
         register(CHAIN, BlockChain.class);// done.
         register(CHAIN_COMMAND_BLOCK, BlockChainCommandBlock.class);
         register(CHEMICAL_HEAT, BlockChemicalHeat.class);
@@ -214,7 +214,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(COPPER_GRATE, BlockCopperGrate.class);
         register(COPPER_ORE, BlockCopperOre.class);// done.
         register(COPPER_TRAPDOOR, BlockCopperTrapdoor.class);
-        register(CORAL_BLOCK, BlockCoralBlock.class);
+        register(CORAL_BLOCK, BlockCoralBlock.class);// done.
         register(CORAL_FAN, BlockCoralFan.class);
         register(CORAL_FAN_DEAD, BlockCoralFanDead.class);
         register(CORAL_FAN_HANG, BlockCoralFanHang.class);
@@ -275,7 +275,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(DAYLIGHT_DETECTOR, BlockDaylightDetector.class);
         register(DAYLIGHT_DETECTOR_INVERTED, BlockDaylightDetectorInverted.class);
         register(DEAD_BRAIN_CORAL, BlockDeadBrainCoral.class);
-        register(DEAD_BUBBLE_CORAL, BlockDeadBubbleCoral.class);
+        register(DEAD_BUBBLE_CORAL, BlockDeadBubbleCoral.class);// done.
         register(DEAD_FIRE_CORAL, BlockDeadFireCoral.class);
         register(DEAD_HORN_CORAL, BlockDeadHornCoral.class);
         register(DEAD_TUBE_CORAL, BlockDeadTubeCoral.class);
@@ -471,7 +471,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(FLOWING_WATER, BlockFlowingWater.class);
         register(FRAME, BlockFrame.class);
         register(FROG_SPAWN, BlockFrogSpawn.class);// done.
-        register(FROSTED_ICE, BlockFrostedIce.class);
+        register(FROSTED_ICE, BlockFrostedIce.class);// done.
         register(FURNACE, BlockFurnace.class);// done.
         register(GILDED_BLACKSTONE, BlockGildedBlackstone.class);
         register(GLASS, BlockGlass.class);// done.

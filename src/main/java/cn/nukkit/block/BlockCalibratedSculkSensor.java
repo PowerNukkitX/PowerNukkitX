@@ -1,17 +1,11 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-//todo complete
-
-
-public class BlockCalibratedSculkSensor extends BlockTransparentMeta {
-    public static final IntBlockProperty SCULK_SENSOR_PHASE = new IntBlockProperty("sculk_sensor_phase", false, 2);
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION, SCULK_SENSOR_PHASE);
+//todo complete feature
+public class BlockCalibratedSculkSensor extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties(CALIBRATED_SCULK_SENSOR, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.SCULK_SENSOR_PHASE);
 
     @NotNull
     @Override
@@ -20,14 +14,11 @@ public class BlockCalibratedSculkSensor extends BlockTransparentMeta {
     }
 
     public BlockCalibratedSculkSensor() {
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockCalibratedSculkSensor(BlockState blockstate) {
         super(blockstate);
-    }
-
-    public int getId() {
-        return CALIBRATED_SCULK_SENSOR;
     }
 
     public String getName() {

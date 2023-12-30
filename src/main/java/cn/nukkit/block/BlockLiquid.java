@@ -14,7 +14,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -109,9 +108,9 @@ public abstract class BlockLiquid extends BlockTransparent {
     }
 
     protected int getFlowDecay(Block block) {
-        if (block.getId() != this.getId()) {
+        if (!block.getId().equals(this.getId())) {
             Block layer1 = block.getLevelBlockAtLayer(1);
-            if (layer1.getId() != this.getId()) {
+            if (!layer1.getId().equals(this.getId())) {
                 return -1;
             } else {
                 return ((BlockLiquid) layer1).getLiquidDepth();
@@ -121,9 +120,9 @@ public abstract class BlockLiquid extends BlockTransparent {
     }
 
     protected int getEffectiveFlowDecay(Block block) {
-        if (block.getId() != this.getId()) {
+        if (!block.getId().equals(this.getId())) {
             block = block.getLevelBlockAtLayer(1);
-            if (block.getId() != this.getId()) {
+            if (!block.getId().equals(this.getId())) {
                 return -1;
             }
         }
@@ -264,7 +263,7 @@ public abstract class BlockLiquid extends BlockTransparent {
                     if (decayed) {
                         to = Block.get(BlockID.AIR);
                     } else {
-                        to = getBlock(decay);
+                        to = getBlock();
                     }
                     BlockFromToEvent event = new BlockFromToEvent(this, to);
                     level.getServer().getPluginManager().callEvent(event);
@@ -327,7 +326,7 @@ public abstract class BlockLiquid extends BlockTransparent {
                 if (block.layer == 0 && !block.isAir()) {
                     this.level.useBreakOn(block, block instanceof BlockCobweb ? Item.get(Item.WOODEN_SWORD) : null);
                 }
-                this.level.setBlock(block, block.layer, getBlock(newFlowDecay), true, true);
+                this.level.setBlock(block, block.layer, getBlock(), true, true);
                 this.level.scheduleUpdate(block, this.tickRate());
             }
         }
@@ -348,7 +347,7 @@ public abstract class BlockLiquid extends BlockTransparent {
                 ++x;
             } else if (j == 2) {
                 --z;
-            } else if (j == 3) {
+            } else {
                 ++z;
             }
             long hash = Level.blockHash(x, y, z, this.getLevel());
@@ -465,7 +464,7 @@ public abstract class BlockLiquid extends BlockTransparent {
         }
     }
 
-    public abstract BlockLiquid getBlock(int meta);
+    public abstract BlockLiquid getBlock();
 
     @Override
     public boolean canPassThrough() {
