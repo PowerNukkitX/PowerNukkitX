@@ -2,28 +2,34 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemWarpedSign;
+import org.jetbrains.annotations.NotNull;
+
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
 
 public class BlockWarpedWallSign extends BlockWallSign {
-
+    public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_WALL_SIGN, FACING_DIRECTION);
 
     public BlockWarpedWallSign() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-
-    public BlockWarpedWallSign(BlockState blockstate) {
-        super(blockstate);
+    public BlockWarpedWallSign(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
-    public int getId() {
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
+    public String getWallSignId() {
         return WARPED_WALL_SIGN;
     }
 
-
     @Override
-    protected int getPostId() {
+    public String getStandingSignId() {
         return WARPED_STANDING_SIGN;
     }
 
@@ -35,15 +41,5 @@ public class BlockWarpedWallSign extends BlockWallSign {
     @Override
     public Item toItem() {
         return new ItemWarpedSign();
-    }
-    
-    @Override
-    public int getBurnChance() {
-        return 0;
-    }
-    
-    @Override
-    public int getBurnAbility() {
-        return 0;
     }
 }

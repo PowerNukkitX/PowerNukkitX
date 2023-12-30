@@ -22,8 +22,9 @@ public class BlockBambooStandingSign extends BlockStandingSign {
         super(blockstate);
     }
 
-    public String getName() {
-        return "Bamboo Standing Sign";
+    @Override
+    public String getWallSignId() {
+        return BlockBambooWallSign.PROPERTIES.getIdentifier();
     }
 
     @Override

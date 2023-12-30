@@ -1,10 +1,12 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemDarkOakSign;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockDarkoakStandingSign extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:darkoak_standing_sign", CommonBlockProperties.GROUND_SIGN_DIRECTION);
+public class BlockDarkoakStandingSign extends BlockStandingSign {
+    public static final BlockProperties PROPERTIES = new BlockProperties(DARKOAK_STANDING_SIGN, CommonBlockProperties.GROUND_SIGN_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -17,5 +19,15 @@ public class BlockDarkoakStandingSign extends Block {
 
     public BlockDarkoakStandingSign(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getWallSignId() {
+        return BlockDarkoakWallSign.PROPERTIES.getIdentifier();
+    }
+
+    @Override
+    public Item toItem() {
+        return new ItemDarkOakSign();
     }
 }
