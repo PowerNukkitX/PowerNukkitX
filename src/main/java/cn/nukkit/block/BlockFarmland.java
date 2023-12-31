@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.FarmLandDecayEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -11,20 +10,11 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * @author xtypr
- * @since 2015/12/2
- */
-public class BlockFarmland extends BlockTransparentMeta {
-
-
-    public static final IntBlockProperty MOISTURIZED_AMOUNT = new IntBlockProperty("moisturized_amount", false, 7);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(MOISTURIZED_AMOUNT);
+public class BlockFarmland extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties(FARMLAND, CommonBlockProperties.MOISTURIZED_AMOUNT);
 
     public BlockFarmland() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockFarmland(BlockState blockstate) {
@@ -35,12 +25,6 @@ public class BlockFarmland extends BlockTransparentMeta {
     public String getName() {
         return "Farmland";
     }
-
-    @Override
-    public int getId() {
-        return FARMLAND;
-    }
-
 
     @NotNull
     @Override
@@ -99,14 +83,14 @@ public class BlockFarmland extends BlockTransparentMeta {
                             }
 
                             v.setComponents(x, y, z);
-                            int block = this.level.getBlockIdAt(v.getFloorX(), v.getFloorY(), v.getFloorZ());
+                            String block = this.level.getBlockIdAt(v.getFloorX(), v.getFloorY(), v.getFloorZ());
 
-                            if (block == FLOWING_WATER || block == STILL_WATER || block == ICE_FROSTED) {
+                            if (block == FLOWING_WATER || block == WATER || block == FROSTED_ICE) {
                                 found = true;
                                 break;
                             } else {
                                 block = this.level.getBlockIdAt(v.getFloorX(), v.getFloorY(), v.getFloorZ(), 1);
-                                if (block == FLOWING_WATER || block == STILL_WATER || block == ICE_FROSTED) {
+                                if (block == FLOWING_WATER || block == WATER || block == FROSTED_ICE) {
                                     found = true;
                                     break;
                                 }
@@ -117,18 +101,17 @@ public class BlockFarmland extends BlockTransparentMeta {
             }
 
             Block block = this.level.getBlock(v.setComponents(x, y - 1, z));
-            int damage = this.getDamage();
-            if (found || block instanceof BlockWater || block instanceof BlockIceFrosted) {
-                if (damage < 7) {
-                    this.setDamage(7);
-                    this.level.setBlock(this, this, false, damage == 0);
+            if (found || block instanceof BlockWater || block instanceof BlockFrostedIce) {
+                if (getMoistureAmount() < 7) {
+                    setMoistureAmount(7);
+                    this.level.setBlock(this, this, false, getMoistureAmount() == 0);
                 }
                 return Level.BLOCK_UPDATE_RANDOM;
             }
 
-            if (damage > 0) {
-                this.setDamage(damage - 1);
-                this.level.setBlock(this, this, false, damage == 1);
+            if (getMoistureAmount() > 0) {
+                this.setMoistureAmount(getMoistureAmount() - 1);
+                this.level.setBlock(this, this, false, getMoistureAmount() == 1);
             } else {
                 var farmEvent = new FarmLandDecayEvent(null, this);
                 this.level.getServer().getPluginManager().callEvent(farmEvent);
@@ -153,9 +136,16 @@ public class BlockFarmland extends BlockTransparentMeta {
         return true;
     }
 
-    
     @Override
     public boolean isTransparent() {
         return true;
+    }
+
+    public int getMoistureAmount() {
+        return getPropertyValue(CommonBlockProperties.MOISTURIZED_AMOUNT);
+    }
+
+    public void setMoistureAmount(int value) {
+        setPropertyValue(CommonBlockProperties.MOISTURIZED_AMOUNT, value);
     }
 }

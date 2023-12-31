@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
@@ -13,15 +14,25 @@ import java.util.*;
  * @since 2021-06-13
  */
 
-public class BlockGlowLichen extends BlockLichen{
+public class BlockGlowLichen extends BlockLichen {
+    public static final BlockProperties PROPERTIES = new BlockProperties(GLOW_LICHEN, CommonBlockProperties.MULTI_FACE_DIRECTION_BITS);
+
+    public BlockGlowLichen() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockGlowLichen(BlockState blockState) {
+        super(blockState);
+    }
+
     @Override
     public String getName() {
         return "Glow Lichen";
     }
 
     @Override
-    public int getId() {
-        return GLOW_LICHEN;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override
@@ -53,7 +64,7 @@ public class BlockGlowLichen extends BlockLichen{
             newLichen = Block.get(GLOW_LICHEN);
         }
 
-        newLichen.setPropertyValue(MULTI_FACE_DIRECTION_BITS, newLichen.getPropertyValue(MULTI_FACE_DIRECTION_BITS) | (0b000001 << candidates.get(random).getDUSWNEIndex()));
+        newLichen.setPropertyValue(CommonBlockProperties.MULTI_FACE_DIRECTION_BITS, newLichen.getPropertyValue(CommonBlockProperties.MULTI_FACE_DIRECTION_BITS) | (0b000001 << candidates.get(random).getDUSWNEIndex()));
 
         getLevel().setBlock(random, newLichen, true, true);
 
@@ -104,19 +115,19 @@ public class BlockGlowLichen extends BlockLichen{
 
     private boolean isSupportNeighborAdded(@NotNull Map<Block, BlockFace> candidates, @NotNull BlockFace side, @NotNull Block supportNeighbor) {
         // Air is a valid candidate!
-        if (supportNeighbor.getId() == BlockID.AIR) {
+        if (supportNeighbor.getId().equals(BlockID.AIR)) {
             candidates.put(supportNeighbor, side);
         }
 
-        // Other non solid blocks isn't a valid candidates
+        // Other non-solid blocks isn't a valid candidates
         return supportNeighbor.isSolid(side);
     }
 
     private boolean shouldAddSupportNeighborOppositeSide(@NotNull BlockFace side, @NotNull Block supportNeighborOppositeSide) {
-        if (supportNeighborOppositeSide.getId() == BlockID.AIR || supportNeighborOppositeSide.getId() == BlockID.GLOW_LICHEN) {
-            return supportNeighborOppositeSide.getId() != BlockID.GLOW_LICHEN ||
+        if (supportNeighborOppositeSide.getId().equals(BlockID.AIR) || supportNeighborOppositeSide.getId().equals(BlockID.GLOW_LICHEN)) {
+            return !supportNeighborOppositeSide.getId().equals(BlockID.GLOW_LICHEN) ||
                     (!((BlockGlowLichen) supportNeighborOppositeSide).isGrowthToSide(side) &&
-                            supportNeighborOppositeSide.getSide(side).getId() != BlockID.AIR);
+                            !supportNeighborOppositeSide.getSide(side).getId().equals(BlockID.AIR));
         }
         return false;
     }
