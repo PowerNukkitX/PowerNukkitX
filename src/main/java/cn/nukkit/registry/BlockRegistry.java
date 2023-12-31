@@ -462,7 +462,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(EXPOSED_CUT_COPPER_SLAB, BlockExposedCutCopperSlab.class);
         register(EXPOSED_CUT_COPPER_STAIRS, BlockExposedCutCopperStairs.class);
         register(EXPOSED_DOUBLE_CUT_COPPER_SLAB, BlockExposedDoubleCutCopperSlab.class);
-        register(FARMLAND, BlockFarmland.class);
+        register(FARMLAND, BlockFarmland.class);// done.
         register(FENCE_GATE, BlockFenceGate.class);// done.
         register(FIRE, BlockFire.class);
         register(FIRE_CORAL, BlockFireCoral.class);
@@ -479,7 +479,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(GLASS, BlockGlass.class);// done.
         register(GLASS_PANE, BlockGlassPane.class);// done.
         register(GLOW_FRAME, BlockGlowFrame.class);
-        register(GLOW_LICHEN, BlockGlowLichen.class);
+        register(GLOW_LICHEN, BlockGlowLichen.class);// done.
         register(GLOWINGOBSIDIAN, BlockGlowingobsidian.class);
         register(GLOWSTONE, BlockGlowstone.class);// done.
         register(GOLD_BLOCK, BlockGoldBlock.class);// done.
@@ -519,10 +519,10 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(HARD_STAINED_GLASS, BlockHardStainedGlass.class);
         register(HARD_STAINED_GLASS_PANE, BlockHardStainedGlassPane.class);
         register(HARDENED_CLAY, BlockHardenedClay.class);
-        register(HAY_BLOCK, BlockHayBlock.class);
+        register(HAY_BLOCK, BlockHayBlock.class);// done.
         register(HEAVY_WEIGHTED_PRESSURE_PLATE, BlockHeavyWeightedPressurePlate.class);
         register(HONEY_BLOCK, BlockHoneyBlock.class);
-        register(HONEYCOMB_BLOCK, BlockHoneycombBlock.class);
+        register(HONEYCOMB_BLOCK, BlockHoneycombBlock.class);// done.
         register(HOPPER, BlockHopper.class);
         register(HORN_CORAL, BlockHornCoral.class);
         register(ICE, BlockIce.class);// done.
@@ -552,11 +552,11 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(KELP, BlockKelp.class);
         register(LADDER, BlockLadder.class);
         register(LANTERN, BlockLantern.class);
-        register(LAPIS_BLOCK, BlockLapisBlock.class);
+        register(LAPIS_BLOCK, BlockLapisBlock.class);// done.
         register(LAPIS_ORE, BlockLapisOre.class);// done.
         register(LARGE_AMETHYST_BUD, BlockLargeAmethystBud.class);
         register(LAVA, BlockLava.class);
-        register(LEAVES, BlockLeaves.class);
+        register(LEAVES, BlockLeaves.class);// done.
         register(LEAVES2, BlockLeaves2.class);
         register(LECTERN, BlockLectern.class);
         register(LEVER, BlockLever.class);
@@ -583,7 +583,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(LIGHT_GRAY_TERRACOTTA, BlockLightGrayTerracotta.class);// done.
         register(LIGHT_GRAY_WOOL, BlockLightGrayWool.class);// done.
         register(LIGHT_WEIGHTED_PRESSURE_PLATE, BlockLightWeightedPressurePlate.class);
-        register(LIGHTNING_ROD, BlockLightningRod.class);
+        register(LIGHTNING_ROD, BlockLightningRod.class);// done.
         register(LIME_CANDLE, BlockLimeCandle.class);// done.
         register(LIME_CANDLE_CAKE, BlockLimeCandleCake.class);// done.
         register(LIME_CARPET, BlockLimeCarpet.class);// done.
@@ -627,7 +627,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(MANGROVE_PLANKS, BlockMangrovePlanks.class);// done.
         register(MANGROVE_PRESSURE_PLATE, BlockMangrovePressurePlate.class);
         register(MANGROVE_PROPAGULE, BlockMangrovePropagule.class);
-        register(MANGROVE_ROOTS, BlockMangroveRoots.class);
+        register(MANGROVE_ROOTS, BlockMangroveRoots.class);// done.
         register(MANGROVE_SLAB, BlockMangroveSlab.class);
         register(MANGROVE_STAIRS, BlockMangroveStairs.class);
         register(MANGROVE_STANDING_SIGN, BlockMangroveStandingSign.class);// done.

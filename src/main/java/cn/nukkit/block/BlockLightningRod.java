@@ -1,20 +1,23 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+public class BlockLightningRod extends BlockTransparent implements Faceable {
+    public static final BlockProperties PROPERTIES = new BlockProperties(LIGHTNING_ROD, CommonBlockProperties.FACING_DIRECTION);
 
+    public BlockLightningRod() {
+        super(PROPERTIES.getDefaultState());
+    }
 
-public class BlockLightningRod extends BlockTransparentMeta implements Faceable {
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION);
+    public BlockLightningRod(BlockState blockState) {
+        super(blockState);
+    }
 
     @Override
     public String getName() {
@@ -22,21 +25,14 @@ public class BlockLightningRod extends BlockTransparentMeta implements Faceable 
     }
 
     @Override
-    public int getId() {
-        return LIGHTNING_ROD;
-    }
-
-    @Override
     public boolean isSolid() {
         return false;
     }
-
 
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -74,12 +70,12 @@ public class BlockLightningRod extends BlockTransparentMeta implements Faceable 
 
     @Override
     public BlockFace getBlockFace() {
-        return this.getPropertyValue(FACING_DIRECTION);
+        return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
     }
 
     @Override
     public void setBlockFace(BlockFace face) {
-        this.setPropertyValue(FACING_DIRECTION, face);
+        this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
     }
 
     @Override

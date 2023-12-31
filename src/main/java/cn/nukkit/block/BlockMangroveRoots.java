@@ -1,34 +1,31 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 
 public class BlockMangroveRoots extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_ROOTS);
     public BlockMangroveRoots() {
-        super(0);
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockMangroveRoots(BlockState blockState) {
+        super(blockState);
     }
 
     @NotNull
     @Override
     public BlockProperties getProperties() {
-        return CommonBlockProperties.EMPTY_PROPERTIES;
+        return PROPERTIES;
     }
 
     @Override
     public String getName() {
         return "Mangrove Roots";
     }
-
-    @Override
-    public int getId() {
-        return MANGROVE_ROOTS;
-    }
-
 
     @Override
     public int getWaterloggingLevel() {
