@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockBlastFurnace extends BlockBlastFurnaceBurning {
+public class BlockBlastFurnace extends BlockLitBlastFurnace {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(BLAST_FURNACE);
 

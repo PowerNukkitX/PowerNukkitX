@@ -1,14 +1,15 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Angelic47 (Nukkit Project)
  */
 
-public class BlockFurnace extends BlockFurnaceBurning {
+public class BlockFurnace extends BlockLitFurnace {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(FURNACE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(FURNACE, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {

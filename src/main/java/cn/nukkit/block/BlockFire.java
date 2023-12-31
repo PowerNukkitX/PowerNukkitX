@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Server;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.event.block.BlockBurnEvent;
@@ -25,35 +22,33 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.block.property.CommonBlockProperties.AGE_16;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockFire extends BlockFlowable {
+    public static final BlockProperties PROPERTIES = new BlockProperties(FIRE, AGE_16);
 
-
-    public static final IntBlockProperty FIRE_AGE = CommonBlockProperties.AGE_15;
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(FIRE_AGE);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockFire() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockFire(BlockState blockstate) {
         super(blockstate);
     }
 
-    @Override
-    public int getId() {
-        return FIRE;
+    public int getAge() {
+        return getPropertyValue(AGE_16);
     }
 
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
+    public void setAge(int age) {
+        setPropertyValue(AGE_16, age);
     }
 
     @Override
@@ -105,14 +100,13 @@ public class BlockFire extends BlockFlowable {
 
     @Override
     public int onUpdate(int type) {
-
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_RANDOM) {
             Block down = down();
 
             if (type == Level.BLOCK_UPDATE_NORMAL) {
-                int downId = down.getId();
-                if (downId == Block.SOUL_SAND || downId == Block.SOUL_SOIL) {
-                    this.getLevel().setBlock(this, getBlockState().withBlockId(BlockID.SOUL_FIRE).getBlock(this));
+                String downId = down.getId();
+                if (downId.equals(Block.SOUL_SAND) || downId.equals(Block.SOUL_SOIL)) {
+                    this.getLevel().setBlock(this, Block.get(SOUL_FIRE).setPropertyValue(AGE_16, this.getAge()));
                     return type;
                 }
             }
@@ -133,12 +127,11 @@ public class BlockFire extends BlockFlowable {
             return Level.BLOCK_UPDATE_NORMAL;
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
             Block down = down();
-            int downId = down.getId();
+            String downId = down.getId();
 
             ThreadLocalRandom random = ThreadLocalRandom.current();
 
             //TODO: END
-
             if (!this.isBlockTopFacingSurfaceSolid(down) && !this.canNeighborBurn()) {
                 BlockFadeEvent event = new BlockFadeEvent(this, get(AIR));
                 level.getServer().getPluginManager().callEvent(event);
@@ -147,15 +140,16 @@ public class BlockFire extends BlockFlowable {
                 }
             }
 
-            boolean forever = downId == BlockID.NETHERRACK || downId == BlockID.MAGMA
-                    || downId == BlockID.BEDROCK && ((BlockBedrock) down).getBurnIndefinitely();
+            boolean forever = downId.equals(BlockID.NETHERRACK) ||
+                    downId.equals(BlockID.MAGMA) ||
+                    downId.equals(BlockID.BEDROCK) && ((BlockBedrock) down).getBurnIndefinitely();
 
             if (!checkRain()) {
-                int meta = this.getDamage();
+                int meta = getAge();
 
                 if (meta < 15) {
                     int newMeta = meta + random.nextInt(3);
-                    this.setDamage(Math.min(newMeta, 15));
+                    this.setAge(Math.min(newMeta, 15));
                     this.getLevel().setBlock(this, this, true);
                 }
 
@@ -179,7 +173,6 @@ public class BlockFire extends BlockFlowable {
                     int o = 0;
 
                     //TODO: decrease the o if the rainfall values are high
-
                     this.tryToCatchBlockOnFire(this.east(), 300 + o, meta);
                     this.tryToCatchBlockOnFire(this.west(), 300 + o, meta);
                     this.tryToCatchBlockOnFire(down, 250 + o, meta);
@@ -194,7 +187,7 @@ public class BlockFire extends BlockFlowable {
                                     int k = 100;
 
                                     if (y > this.y + 1) {
-                                        k += (y - (this.y + 1)) * 100;
+                                        k += (int) ((y - (this.y + 1)) * 100);
                                     }
 
                                     Block block = this.getLevel().getBlock(new Vector3(x, y, z));
@@ -216,7 +209,7 @@ public class BlockFire extends BlockFlowable {
                                             this.level.getServer().getPluginManager().callEvent(e);
 
                                             if (!e.isCancelled()) {
-                                                this.getLevel().setBlock(block, Block.get(BlockID.FIRE, damage), true);
+                                                this.getLevel().setBlock(block, Block.get(blockstate.setPropertyValue(PROPERTIES, AGE_16.createValue(this.getAge()))), true);
                                                 this.getLevel().scheduleUpdate(block, this.tickRate());
                                             }
                                         }
@@ -228,7 +221,6 @@ public class BlockFire extends BlockFlowable {
                 }
             }
         }
-
         return 0;
     }
 
@@ -250,7 +242,7 @@ public class BlockFire extends BlockFlowable {
                 this.level.getServer().getPluginManager().callEvent(e);
 
                 if (!e.isCancelled()) {
-                    this.getLevel().setBlock(block, Block.get(BlockID.FIRE, meta), true);
+                    this.getLevel().setBlock(block, Block.get(blockstate.setPropertyValue(PROPERTIES, AGE_16.createValue(this.getAge()))), true);
                     this.getLevel().scheduleUpdate(block, this.tickRate());
                 }
             } else {
@@ -262,14 +254,14 @@ public class BlockFire extends BlockFlowable {
                 }
             }
 
-            if (block instanceof BlockTNT) {
-                ((BlockTNT) block).prime();
+            if (block instanceof BlockTnt blockTnt) {
+                blockTnt.prime();
             }
         }
     }
 
     private int getChanceOfNeighborsEncouragingFire(Block block) {
-        if (block.getId() != AIR) {
+        if (!block.isAir()) {
             return 0;
         } else {
             int chance = 0;
@@ -331,15 +323,14 @@ public class BlockFire extends BlockFlowable {
 
     /**
      * 检查火焰是否应被雨水浇灭
+     *
      * @return 是否应被雨水浇灭
      */
-
-
     protected boolean checkRain() {
         var down = down();
-        int downId = down.getId();
-        boolean forever = downId == BlockID.NETHERRACK || downId == BlockID.MAGMA
-                || downId == BlockID.BEDROCK && ((BlockBedrock) down).getBurnIndefinitely();
+        String downId = down.getId();
+        boolean forever = downId.equals(BlockID.NETHERRACK) || downId.equals(BlockID.MAGMA)
+                || downId.equals(BlockID.BEDROCK) && ((BlockBedrock) down).getBurnIndefinitely();
 
         if (!forever && this.getLevel().isRaining() &&
                 (this.getLevel().canBlockSeeSky(this) ||

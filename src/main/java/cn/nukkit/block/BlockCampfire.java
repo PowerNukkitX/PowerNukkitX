@@ -34,9 +34,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Objects;
 
 import static cn.nukkit.block.property.CommonBlockProperties.EXTINGUISHED;
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
 
 
 @Log4j2
@@ -117,7 +117,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
 
         setBlockFace(player != null ? player.getDirection().getOpposite() : null);
         boolean defaultLayerCheck = (block instanceof BlockFlowingWater w && w.isSourceOrFlowingDown()) || block instanceof BlockFrostedIce;
-        boolean layer1Check = (layer1 instanceof BlockFlowingWater w&& w.isSourceOrFlowingDown()) || layer1 instanceof BlockFrostedIce;
+        boolean layer1Check = (layer1 instanceof BlockFlowingWater w && w.isSourceOrFlowingDown()) || layer1 instanceof BlockFrostedIce;
         if (defaultLayerCheck || layer1Check) {
             setExtinguished(true);
             this.level.addSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
@@ -206,7 +206,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
-        if (item.getId() == BlockID.AIR || item.getCount() <= 0) {
+        if (item.isNull()) {
             return false;
         }
 
@@ -220,7 +220,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
                 this.level.addSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
                 itemUsed = true;
             }
-        } else if (item.getId() == ItemID.FLINT_AND_STEEL || item.getEnchantment(Enchantment.ID_FIRE_ASPECT) != null) {
+        } else if (Objects.equals(item.getId(), ItemID.FLINT_AND_STEEL) || item.getEnchantment(Enchantment.ID_FIRE_ASPECT) != null) {
             item.useOn(this);
             setExtinguished(false);
             this.level.setBlock(this, this, true, true);
