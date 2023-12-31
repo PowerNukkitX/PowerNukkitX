@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockCoalOre extends BlockOre {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:coal_ore");
+    public static final BlockProperties PROPERTIES = new BlockProperties(COAL_ORE);
 
     @Override
     public @NotNull BlockProperties getProperties() {

@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityDaylightDetector;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -20,25 +21,21 @@ import org.jetbrains.annotations.NotNull;
  */
 
 
-public class BlockDaylightDetector extends BlockTransparentMeta implements RedstoneComponent, BlockEntityHolder<BlockEntityDaylightDetector> {
+public class BlockDaylightDetector extends BlockTransparent implements RedstoneComponent, BlockEntityHolder<BlockEntityDaylightDetector> {
 
+    public static final BlockProperties PROPERTIES = new BlockProperties(DAYLIGHT_DETECTOR, CommonBlockProperties.REDSTONE_SIGNAL);
 
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.REDSTONE_SIGNAL_BLOCK_PROPERTY;
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockDaylightDetector() {
-        // Does nothing
+        this(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return DAYLIGHT_DETECTOR;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
+    public BlockDaylightDetector(BlockState state) {
+        super(state);
     }
 
     @Override
@@ -46,17 +43,13 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
         return "Daylight Detector";
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.DAYLIGHT_DETECTOR;
     }
 
-
-    @NotNull
     @Override
-    public Class<? extends BlockEntityDaylightDetector> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityDaylightDetector> getBlockEntityClass() {
         return BlockEntityDaylightDetector.class;
     }
 
@@ -64,7 +57,6 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
     public double getHardness() {
         return 0.2;
     }
-
 
     @Override
     public int getWaterloggingLevel() {

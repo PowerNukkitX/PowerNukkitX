@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public class BlockDeny extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:deny");
+    public static final BlockProperties PROPERTIES = new BlockProperties(DENY);
 
     public BlockDeny() {
         super(PROPERTIES.getDefaultState());
@@ -49,7 +49,6 @@ public class BlockDeny extends BlockSolid {
     }
 
     @Override
-
     public  boolean canBePulled() {
         return false;
     }
@@ -66,7 +65,6 @@ public class BlockDeny extends BlockSolid {
         }
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
-
 
     @Override
     public boolean isBreakable(Vector3 vector, int layer, BlockFace face, Item item, @Nullable Player player, boolean setBlockDestroy) {

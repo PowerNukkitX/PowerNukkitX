@@ -101,7 +101,7 @@ public class BlockCaveVines extends BlockTransparent {
                 }
             }
             //random grow feature,according to wiki in https://minecraft.wiki/w/Glow_Berries#Growth
-            if (down().getId() == AIR && random.nextInt(10) == 0) {
+            if (down().isAir() && random.nextInt(10) == 0) {
                 BlockCaveVines block;
                 if (this.up() instanceof BlockCaveVines && !(this.down() instanceof BlockCaveVines)) {
                     block = new BlockCaveVinesHeadWithBerries();
@@ -114,7 +114,7 @@ public class BlockCaveVines extends BlockTransparent {
                 } else {
                     return type;
                 }
-            } else if (down().getId() == AIR) {
+            } else if (down().isAir()) {
                 BlockCaveVines block = new BlockCaveVines();
                 block.setGrowth(0);
                 BlockGrowEvent ev = new BlockGrowEvent(this, block);

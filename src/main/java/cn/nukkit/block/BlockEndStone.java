@@ -8,7 +8,12 @@ import org.jetbrains.annotations.NotNull;
  * @since 2015/12/1
  */
 public class BlockEndStone extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:end_stone");
+    public static final BlockProperties PROPERTIES = new BlockProperties(END_STONE);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockEndStone() {
         super(PROPERTIES.getDefaultState());
@@ -21,11 +26,6 @@ public class BlockEndStone extends BlockSolid {
     @Override
     public String getName() {
         return "End Stone";
-    }
-
-    @Override
-    public @NotNull BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -44,7 +44,6 @@ public class BlockEndStone extends BlockSolid {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -53,5 +52,4 @@ public class BlockEndStone extends BlockSolid {
     public boolean canHarvestWithHand() {
         return false;
     }
-
 }

@@ -13,10 +13,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.Objects;
 
 
-public class BlockDecoratedPot extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityDecoratedPot>{
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:decorated_pot", CommonBlockProperties.DIRECTION);
+public class BlockDecoratedPot extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityDecoratedPot> {
+
+    public static final BlockProperties PROPERTIES = new BlockProperties(DECORATED_POT, CommonBlockProperties.DIRECTION);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockDecoratedPot() {
         super(PROPERTIES.getDefaultState());
@@ -28,11 +35,6 @@ public class BlockDecoratedPot extends BlockTransparent implements Faceable, Blo
 
     public String getName() {
         return "Decorated Pot";
-    }
-
-    @Override
-    public @NotNull BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -57,25 +59,19 @@ public class BlockDecoratedPot extends BlockTransparent implements Faceable, Blo
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntityDecoratedPot> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityDecoratedPot> getBlockEntityClass() {
         return BlockEntityDecoratedPot.class;
     }
 
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.DECORATED_POT;
     }
 
     @Override
     public void setBlockFace(BlockFace face) {
-        if(face != null) {
-            setPropertyValue(CommonBlockProperties.DIRECTION, face.getHorizontalIndex());
-        } else {
-            setPropertyValue(CommonBlockProperties.DIRECTION, BlockFace.SOUTH.getHorizontalIndex());
-        }
+        setPropertyValue(CommonBlockProperties.DIRECTION, Objects.requireNonNullElse(face, BlockFace.SOUTH).getHorizontalIndex());
     }
 
     @Override

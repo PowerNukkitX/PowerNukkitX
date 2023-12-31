@@ -86,8 +86,8 @@ public class BlockFurnaceBurning extends BlockSolid implements Faceable, BlockEn
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        int[] faces = {2, 3, 0, 1};
-        setBlockFace(BlockFace.fromHorizontalIndex(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]));
+        setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getHorizontalIndex()) : BlockFace.SOUTH);
+
         CompoundTag nbt = new CompoundTag().putList(new ListTag<>("Items"));
 
         if (item.hasCustomName()) {
@@ -166,6 +166,6 @@ public class BlockFurnaceBurning extends BlockSolid implements Faceable, BlockEn
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
+        this.setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
     }
 }

@@ -18,8 +18,8 @@ import javax.annotation.Nullable;
 public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, Waxable {
 
 
-    public BlockCopperBase() {
-        // Does nothing
+    public BlockCopperBase(BlockState blockState) {
+        super(blockState);
     }
 
     @Override

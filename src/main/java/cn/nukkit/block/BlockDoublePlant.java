@@ -128,7 +128,7 @@ public class BlockDoublePlant extends BlockFlowable {
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         Block up = up();
 
-        if (up.getId() == AIR && isSupportValid(down())) {
+        if (upisAir() && isSupportValid(down())) {
             setTopHalf(false);
             this.getLevel().setBlock(block, this, true, false); // If we update the bottom half, it will drop the item because there isn't a flower block above
 

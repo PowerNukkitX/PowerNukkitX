@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import org.jetbrains.annotations.NotNull;
@@ -12,11 +13,14 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockDaylightDetectorInverted extends BlockDaylightDetector {
 
-    public BlockDaylightDetectorInverted() {}
+    public static final BlockProperties PROPERTIES = new BlockProperties(DAYLIGHT_DETECTOR_INVERTED, CommonBlockProperties.REDSTONE_SIGNAL);
 
-    @Override
-    public int getId() {
-        return DAYLIGHT_DETECTOR_INVERTED;
+    public BlockDaylightDetectorInverted() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockDaylightDetectorInverted(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -39,10 +43,8 @@ public class BlockDaylightDetectorInverted extends BlockDaylightDetector {
         return true;
     }
 
-
     @Override
     public boolean isInverted() {
         return true;
     }
-
 }

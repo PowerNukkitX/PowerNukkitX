@@ -14,7 +14,13 @@ import java.util.Random;
  * @since 2015/12/2
  */
 public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:deadbush");
+    public static final BlockProperties PROPERTIES = new BlockProperties(DEADBUSH);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockDeadbush() {
         this(PROPERTIES.getDefaultState());
     }
@@ -28,13 +34,6 @@ public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.Flowe
     public String getName() {
         return "Dead Bush";
     }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
 
     @Override
     public int getWaterloggingLevel() {

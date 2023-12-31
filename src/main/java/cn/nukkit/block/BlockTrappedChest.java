@@ -1,6 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.item.Item;
@@ -16,17 +18,19 @@ import java.util.Map;
 
 public class BlockTrappedChest extends BlockChest {
 
+    public static final BlockProperties PROPERTIES = new BlockProperties(TRAPPED_CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockTrappedChest() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockTrappedChest(BlockState blockstate) {
         super(blockstate);
-    }
-
-    @Override
-    public int getId() {
-        return TRAPPED_CHEST;
     }
 
     @Override
@@ -36,20 +40,19 @@ public class BlockTrappedChest extends BlockChest {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        int[] faces = {2, 3, 0, 1};
+        setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getHorizontalIndex()) : BlockFace.SOUTH);
 
         BlockEntityChest chest = null;
-        this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
 
         for (BlockFace side : Plane.HORIZONTAL) {
-            if ((this.getDamage() == 4 || this.getDamage() == 5) && (side == BlockFace.WEST || side == BlockFace.EAST)) {
+            if ((getBlockFace() == BlockFace.WEST || getBlockFace() == BlockFace.EAST) && (side == BlockFace.WEST || side == BlockFace.EAST)) {
                 continue;
-            } else if ((this.getDamage() == 3 || this.getDamage() == 2) && (side == BlockFace.NORTH || side == BlockFace.SOUTH)) {
+            } else if ((getBlockFace() == BlockFace.NORTH || getBlockFace() == BlockFace.SOUTH) && (side == BlockFace.NORTH || side == BlockFace.SOUTH)) {
                 continue;
             }
             Block c = this.getSide(side);
-            if (c instanceof BlockTrappedChest && c.getDamage() == this.getDamage()) {
-                BlockEntity blockEntity = this.getLevel().getBlockEntity(c);
+            if (c instanceof BlockTrappedChest trappedChest && trappedChest.getBlockFace() == getBlockFace()) {
+                BlockEntity blockEntity = this.getLevel().getBlockEntity(trappedChest);
                 if (blockEntity instanceof BlockEntityChest && !((BlockEntityChest) blockEntity).isPaired()) {
                     chest = (BlockEntityChest) blockEntity;
                     break;
