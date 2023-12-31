@@ -1,10 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
@@ -12,38 +8,25 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
+import static cn.nukkit.block.property.CommonBlockProperties.HANGING;
+
 
 public class BlockLantern extends BlockFlowable {
-    @Deprecated(since = "1.20.0-r2",forRemoval = true)
-    @DeprecationDetails(since = "1.20.0-r2", reason = "replace to CommonBlockProperties")
+    public static final BlockProperties PROPERTIES = new BlockProperties(LANTERN, HANGING);
 
-
-    public static final BooleanBlockProperty HANGING = new BooleanBlockProperty("hanging", false);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.HANGING);
-
-
-    public BlockLantern() {
-        this(0);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
+    public BlockLantern() {
+        this(PROPERTIES.getDefaultState());
+    }
 
     public BlockLantern(BlockState blockstate) {
         super(blockstate);
     }
 
-    @Override
-    public int getId() {
-        return LANTERN;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
 
     @Override
     public String getName() {
@@ -53,9 +36,9 @@ public class BlockLantern extends BlockFlowable {
     private boolean isBlockAboveValid() {
         Block support = up();
         switch (support.getId()) {
-            case CHAIN_BLOCK:
+            case CHAIN:
             case IRON_BARS:
-            case HOPPER_BLOCK:
+            case HOPPER:
                 return true;
             default:
                 if (support instanceof BlockWallBase || support instanceof BlockFence) {
@@ -73,7 +56,7 @@ public class BlockLantern extends BlockFlowable {
 
     private boolean isBlockUnderValid() {
         Block support = down();
-        if (support.getId() == HOPPER_BLOCK) {
+        if (support.getId().equals(HOPPER)) {
             return true;
         }
         if (support instanceof BlockWallBase || support instanceof BlockFence) {
@@ -180,19 +163,18 @@ public class BlockLantern extends BlockFlowable {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
 
 
     public boolean isHanging() {
-        return getBooleanValue(CommonBlockProperties.HANGING);
+        return getPropertyValue(HANGING);
     }
 
 
     public void setHanging(boolean hanging) {
-        setBooleanValue(CommonBlockProperties.HANGING, hanging);
+        setPropertyValue(HANGING, hanging);
     }
 
 

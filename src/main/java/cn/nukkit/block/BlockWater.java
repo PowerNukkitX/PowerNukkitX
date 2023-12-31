@@ -1,6 +1,10 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.item.Item;
+import cn.nukkit.math.BlockFace;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * alisa still water
@@ -14,6 +18,11 @@ public class BlockWater extends BlockFlowingWater {
 
     public BlockWater(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+        return this.getLevel().setBlock(this, this, true, false);
     }
 
     @Override

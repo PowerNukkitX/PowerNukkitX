@@ -3,7 +3,7 @@ package cn.nukkit.level.generator.object.tree;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockSapling;
-import cn.nukkit.blockproperty.value.WoodType;
+import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.math.NukkitRandom;
 

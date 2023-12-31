@@ -1,8 +1,9 @@
 package cn.nukkit.block;
 
+import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockHardenedClay extends Block {
+public class BlockHardenedClay extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:hardened_clay");
 
     @Override
@@ -16,5 +17,25 @@ public class BlockHardenedClay extends Block {
 
     public BlockHardenedClay(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_PICKAXE;
+    }
+
+    @Override
+    public double getHardness() {
+        return 1.25;
+    }
+
+    @Override
+    public double getResistance() {
+        return 7;
+    }
+
+    @Override
+    public int getToolTier() {
+        return ItemTool.TIER_WOODEN;
     }
 }

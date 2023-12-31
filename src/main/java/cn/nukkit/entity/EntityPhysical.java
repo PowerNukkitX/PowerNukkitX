@@ -2,7 +2,7 @@ package cn.nukkit.entity;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockLava;
+import cn.nukkit.block.BlockFlowingLava;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.EntityFreezeEvent;
@@ -344,7 +344,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected final float getLiquidMovementSpeed(BlockLiquid liquid) {
-        if (liquid instanceof BlockLava) {
+        if (liquid instanceof BlockFlowingLava) {
             return 0.02f;
         }
         return 0.05f;

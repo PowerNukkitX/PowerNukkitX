@@ -63,7 +63,7 @@ public class BucketDispenseBehavior extends DefaultDispenseBehavior {
                 target.level.setBlock(target, Block.get(BlockID.AIR));
                 target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
                 return MinecraftItemID.WATER_BUCKET.get(1, bucket.getCompoundTag());
-            } else if (target instanceof BlockLava && target.getDamage() == 0) {
+            } else if (target instanceof BlockFlowingLava && target.getDamage() == 0) {
                 target.level.setBlock(target, Block.get(BlockID.AIR));
                 target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
                 return MinecraftItemID.LAVA_BUCKET.get(1, bucket.getCompoundTag());

@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -30,30 +29,6 @@ import static cn.nukkit.utils.Rail.Orientation.*;
  */
 public class BlockRail extends BlockFlowable implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:rail", RAIL_DIRECTION_10);
-
-    /*public static final BooleanBlockProperty ACTIVE = new BooleanBlockProperty("rail_data_bit", false);
-
-
-    public static final BlockProperty<Rail.Orientation> UNCURVED_RAIL_DIRECTION = new ArrayBlockProperty<>("rail_direction", false, new Rail.Orientation[]{
-            STRAIGHT_NORTH_SOUTH, STRAIGHT_EAST_WEST,
-            ASCENDING_EAST, ASCENDING_WEST,
-            ASCENDING_NORTH, ASCENDING_SOUTH
-    }).ordinal(true);
-
-
-    public static final BlockProperty<Rail.Orientation> CURVED_RAIL_DIRECTION = new ArrayBlockProperty<>("rail_direction", false, new Rail.Orientation[]{
-            STRAIGHT_NORTH_SOUTH, STRAIGHT_EAST_WEST,
-            ASCENDING_EAST, ASCENDING_WEST,
-            ASCENDING_NORTH, ASCENDING_SOUTH,
-            CURVED_SOUTH_EAST, CURVED_SOUTH_WEST,
-            CURVED_NORTH_WEST, CURVED_NORTH_EAST
-    }).ordinal(true);
-
-
-    public static final BlockProperties ACTIVABLE_PROPERTIES = new BlockProperties(UNCURVED_RAIL_DIRECTION, ACTIVE);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(CURVED_RAIL_DIRECTION);*/
 
     // 0x8: Set the block active
     // 0x7: Reset the block to normal
@@ -117,7 +92,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
             var connect = checkRailsConnected().values();
             List<BlockFace> railFace = new ArrayList<>();
             for (BlockFace face : connect) {
-                if (this.getSide(face.getOpposite()).getId() == BlockID.RAIL) {
+                if (this.getSide(face.getOpposite()).getId().equals(BlockID.RAIL)) {
                     railFace.add(face.getOpposite());
                 } else {
                     railFace.add(face);
@@ -175,7 +150,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
                     this.setRailDirection(this.connect(rail1, railsAround.get(rail1), rail2, railsAround.get(rail2)));
                 } else {
                     List<BlockFace> cd = Stream.of(CURVED_SOUTH_EAST, CURVED_NORTH_EAST, CURVED_SOUTH_WEST)
-                            .filter(o -> faces.containsAll(o.connectingDirections()))
+                            .filter(o -> new HashSet<>(faces).containsAll(o.connectingDirections()))
                             .findFirst().get().connectingDirections();
                     BlockFace f1 = cd.get(0);
                     BlockFace f2 = cd.get(1);
@@ -275,7 +250,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     }
 
     public boolean isAbstract() {
-        return this.getId() == RAIL;
+        return this.getId().equals(RAIL);
     }
 
     public boolean canPowered() {
@@ -316,9 +291,6 @@ public class BlockRail extends BlockFlowable implements Faceable {
         }
     }
 
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
-            reason = "This hack is no longer needed after the block state implementation and is no longer maintained")
     public int getRealMeta() {
         // Check if this can be powered
         // Avoid modifying the value from meta (The rail orientation may be false)
@@ -386,7 +358,6 @@ public class BlockRail extends BlockFlowable implements Faceable {
     }
 
     @Override
-
     public boolean canBePulled() {
         return true;
     }

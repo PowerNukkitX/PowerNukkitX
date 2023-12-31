@@ -9,9 +9,10 @@ import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.ACTIVE;
+import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DATA_BIT;
 
 public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:activator_rail", CommonBlockProperties.RAIL_DATA_BIT, CommonBlockProperties.RAIL_DIRECTION_6);
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:activator_rail", RAIL_DATA_BIT, CommonBlockProperties.RAIL_DIRECTION_6);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -173,20 +174,21 @@ public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
 
     @Override
     public boolean isActive() {
-        return getPropertyValue(ACTIVE);
+        return getPropertyValue(RAIL_DATA_BIT);
     }
 
 
     @Override
     public OptionalBoolean isRailActive() {
-        return OptionalBoolean.of(getPropertyValue(ACTIVE));
+        return OptionalBoolean.of(getPropertyValue(RAIL_DATA_BIT));
     }
 
 
     @Override
     public void setRailActive(boolean active) {
-        setPropertyValue(ACTIVE, active);
+        setPropertyValue(RAIL_DATA_BIT, active);
     }
+
     @Override
     public double getHardness() {
         return 0.5;

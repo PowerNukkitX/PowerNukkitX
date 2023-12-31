@@ -116,8 +116,8 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         final Block layer1 = level.getBlock(this, 1);
 
         setBlockFace(player != null ? player.getDirection().getOpposite() : null);
-        boolean defaultLayerCheck = (block instanceof BlockFlowingWater && ((BlockWater) block).isSourceOrFlowingDown()) || block instanceof BlockFrostedIce;
-        boolean layer1Check = (layer1 instanceof BlockFlowingWater && ((BlockWater) layer1).isSourceOrFlowingDown()) || layer1 instanceof BlockFrostedIce;
+        boolean defaultLayerCheck = (block instanceof BlockFlowingWater w && w.isSourceOrFlowingDown()) || block instanceof BlockFrostedIce;
+        boolean layer1Check = (layer1 instanceof BlockFlowingWater w&& w.isSourceOrFlowingDown()) || layer1 instanceof BlockFrostedIce;
         if (defaultLayerCheck || layer1Check) {
             setExtinguished(true);
             this.level.addSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);

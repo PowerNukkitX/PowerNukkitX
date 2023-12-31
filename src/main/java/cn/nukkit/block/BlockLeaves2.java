@@ -1,62 +1,44 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.value.WoodType;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.NewLeafType;
+import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
+
+import static cn.nukkit.block.property.CommonBlockProperties.NEW_LEAF_TYPE;
 
 /**
  * @author xtypr
  * @since 2015/12/1
  */
 public class BlockLeaves2 extends BlockLeaves {
+    public static final BlockProperties PROPERTIES = new BlockProperties(LEAVES2,
+            NEW_LEAF_TYPE,
+            CommonBlockProperties.PERSISTENT_BIT,
+            CommonBlockProperties.UPDATE_BIT);
 
-
-    public static final ArrayBlockProperty<WoodType> NEW_LEAF_TYPE = new ArrayBlockProperty<>("new_leaf_type", true, new WoodType[]{
-            WoodType.ACACIA, WoodType.DARK_OAK
-    }, 2);
-
-
-    public static final BlockProperties NEW_LEAF_PROPERTIES = new BlockProperties(NEW_LEAF_TYPE, PERSISTENT, UPDATE);
-
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
-    public static final int ACACIA = 0;
-
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
-    public static final int DARK_OAK = 1;
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockLeaves2() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockLeaves2(BlockState blockstate) {
         super(blockstate);
     }
 
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return NEW_LEAF_PROPERTIES;
-    }
-
-
     @Override
     public WoodType getType() {
-        return getPropertyValue(NEW_LEAF_TYPE);
+        return WoodType.valueOf(getPropertyValue(NEW_LEAF_TYPE).name().toUpperCase());
     }
-
 
     @Override
     public void setType(WoodType type) {
-        setPropertyValue(NEW_LEAF_TYPE, type);
-    }
-
-    @Override
-    public int getId() {
-        return LEAVES2;
+        setPropertyValue(NEW_LEAF_TYPE, NewLeafType.valueOf(type.name().toUpperCase()));
     }
 
     @Override
@@ -66,6 +48,6 @@ public class BlockLeaves2 extends BlockLeaves {
 
     @Override
     protected Item getSapling() {
-        return Item.get(BlockID.SAPLING, getIntValue(NEW_LEAF_TYPE) + 4);
+        return Item.getItemBlock(BlockID.SAPLING, getPropertyValue(NEW_LEAF_TYPE).ordinal() + 4);
     }
 }

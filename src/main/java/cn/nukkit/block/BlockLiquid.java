@@ -247,11 +247,11 @@ public abstract class BlockLiquid extends BlockTransparent {
                     Block bottomBlock = this.level.getBlock((int) this.x, (int) this.y - 1, (int) this.z);
                     if (bottomBlock.isSolid()) {
                         newDecay = 0;
-                    } else if (bottomBlock instanceof BlockFlowingWater && ((BlockWater) bottomBlock).getLiquidDepth() == 0) {
+                    } else if (bottomBlock instanceof BlockFlowingWater w&& w.getLiquidDepth() == 0) {
                         newDecay = 0;
                     } else {
                         bottomBlock = bottomBlock.getLevelBlockAtLayer(1);
-                        if (bottomBlock instanceof BlockFlowingWater && ((BlockWater) bottomBlock).getLiquidDepth() == 0) {
+                        if (bottomBlock instanceof BlockFlowingWater w && w.getLiquidDepth() == 0) {
                             newDecay = 0;
                         }
                     }

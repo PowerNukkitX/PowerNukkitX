@@ -14,11 +14,6 @@ import static cn.nukkit.block.property.CommonBlockProperties.WOOD_TYPE;
 
 public class BlockWood extends BlockLog {
     public static final BlockProperties PROPERTIES = new BlockProperties(WOOD, PILLAR_AXIS, CommonBlockProperties.STRIPPED_BIT, WOOD_TYPE);
-    public static final int OAK = 0;
-    public static final int SPRUCE = 1;
-    public static final int BIRCH = 2;
-    public static final int JUNGLE = 3;
-
 
     public BlockWood() {
         this(PROPERTIES.getDefaultState());

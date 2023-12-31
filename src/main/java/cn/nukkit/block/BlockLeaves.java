@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.OldLeafType;
+import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.event.block.LeavesDecayEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -42,7 +43,7 @@ public class BlockLeaves extends BlockTransparent {
     private static final BlockFace[] VISIT_ORDER = new BlockFace[]{
             BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.DOWN, BlockFace.UP
     };
-    
+
     public BlockLeaves() {
         this(PROPERTIES.getDefaultState());
     }
@@ -62,13 +63,12 @@ public class BlockLeaves extends BlockTransparent {
     }
 
 
-    public OldLeafType getType() {
-        return getPropertyValue(OLD_LEAF_TYPE);
+    public WoodType getType() {
+        return WoodType.valueOf(getPropertyValue(OLD_LEAF_TYPE).name().toUpperCase());
     }
 
-
-    public void setType(OldLeafType type) {
-        setPropertyValue(OLD_LEAF_TYPE, type);
+    public void setType(WoodType type) {
+        setPropertyValue(OLD_LEAF_TYPE, OldLeafType.valueOf(type.name().toUpperCase()));
     }
 
     @Override
@@ -109,8 +109,8 @@ public class BlockLeaves extends BlockTransparent {
 
         List<Item> drops = new ArrayList<>(1);
         Enchantment fortuneEnchantment = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
-        
-        int fortune = fortuneEnchantment != null? fortuneEnchantment.getLevel() : 0;
+
+        int fortune = fortuneEnchantment != null ? fortuneEnchantment.getLevel() : 0;
         int appleOdds;
         int stickOdds;
         int saplingOdds;
@@ -118,22 +118,22 @@ public class BlockLeaves extends BlockTransparent {
             case 0 -> {
                 appleOdds = 200;
                 stickOdds = 50;
-                saplingOdds = getType() == OldLeafType.JUNGLE ? 40 : 20;
+                saplingOdds = getType() == WoodType.JUNGLE ? 40 : 20;
             }
             case 1 -> {
                 appleOdds = 180;
                 stickOdds = 45;
-                saplingOdds = getType() == OldLeafType.JUNGLE ? 36 : 16;
+                saplingOdds = getType() == WoodType.JUNGLE ? 36 : 16;
             }
             case 2 -> {
                 appleOdds = 160;
                 stickOdds = 40;
-                saplingOdds = getType() == OldLeafType.JUNGLE ? 32 : 12;
+                saplingOdds = getType() == WoodType.JUNGLE ? 32 : 12;
             }
             default -> {
                 appleOdds = 120;
                 stickOdds = 30;
-                saplingOdds = getType() == OldLeafType.JUNGLE ? 24 : 10;
+                saplingOdds = getType() == WoodType.JUNGLE ? 24 : 10;
             }
         }
 
@@ -147,7 +147,7 @@ public class BlockLeaves extends BlockTransparent {
         if (random.nextInt(saplingOdds) == 0) {
             drops.add(getSapling());
         }
-        
+
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
@@ -172,7 +172,7 @@ public class BlockLeaves extends BlockTransparent {
                 setCheckDecay(true);
                 getLevel().setBlock(this, this, false, false);
             }
-            
+
             // Slowly propagates the need to update instead of peaking down the TPS for huge trees
             for (BlockFace side : BlockFace.values()) {
                 Block other = getSide(side);
@@ -204,13 +204,13 @@ public class BlockLeaves extends BlockTransparent {
         }
         visited.put(hash, distance);
         for (BlockFace face : VISIT_ORDER) {
-            if(findLog(current.getSide(face), distance - 1, visited)) {
+            if (findLog(current.getSide(face), distance - 1, visited)) {
                 return true;
             }
         }
         return false;
     }
-    
+
     public boolean isCheckDecay() {
         return getPropertyValue(UPDATE_BIT);
     }
@@ -233,7 +233,7 @@ public class BlockLeaves extends BlockTransparent {
     }
 
     protected boolean canDropApple() {
-        return getType() == OldLeafType.OAK;
+        return getType() == WoodType.OAK;
     }
 
     protected Item getSapling() {
@@ -253,7 +253,7 @@ public class BlockLeaves extends BlockTransparent {
 
     @Override
 
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 }

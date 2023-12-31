@@ -2815,7 +2815,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     public boolean isInsideOfLava() {
         for (Block block : this.getCollisionBlocks()) {
-            if (block instanceof BlockLava) {
+            if (block instanceof BlockFlowingLava) {
                 return true;
             }
         }

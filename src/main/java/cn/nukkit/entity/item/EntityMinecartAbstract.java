@@ -21,7 +21,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemMinecart;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.*;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MinecartType;
@@ -64,7 +64,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     private double maxSpeed = 0.4D;
     private boolean hasUpdated = false;
 
-    public EntityMinecartAbstract(FullChunk chunk, CompoundTag nbt) {
+    public EntityMinecartAbstract(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
 
         setMaxHealth(40);
@@ -156,13 +156,13 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             if (Rail.isRailBlock(block)) {
                 processMovement(dx, dy, dz, (BlockRail) block);
                 // Activate the minecart/TNT
-                if (block instanceof BlockRailActivator activator && activator.isActive()) {
-                    activate(dx, dy, dz, (block.getDamage() & 0x8) != 0);
+                if (block instanceof BlockActivatorRail activator && activator.isActive()) {
+                    activate(dx, dy, dz, activator.isActive());
                     if (this.isRideable() && this.getRiding() != null) {
                         this.dismountEntity(this.getRiding());
                     }
                 }
-                if (block instanceof BlockRailDetector detector && !detector.isActive()) {
+                if (block instanceof BlockDetectorRail detector && !detector.isActive()) {
                     detector.updateState(true);
                 }
             } else {
@@ -494,7 +494,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         boolean isPowered = false;
         boolean isSlowed = false;
 
-        if (block instanceof BlockRailPowered) {
+        if (block instanceof BlockGoldenRail) {
             isPowered = block.isActive();
             isSlowed = !block.isActive();
         }
@@ -809,8 +809,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         if (block != null) {
             if (block.isNormalBlock()) {
                 blockInside = block;
-                int display = blockInside.getId()
-                        | blockInside.getDamage() << 16;
+                //              Runtimeid
+                int display = blockInside.getId() | blockInside.getBlockState().specialValue() << 16;
                 setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 1));
                 setDataProperty(new IntEntityData(DATA_DISPLAY_ITEM, display));
                 setDisplayBlockOffset(6);

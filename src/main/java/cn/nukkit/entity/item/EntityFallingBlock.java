@@ -2,7 +2,7 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockLava;
+import cn.nukkit.block.BlockFlowingLava;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
@@ -140,7 +140,7 @@ public class EntityFallingBlock extends Entity {
 
             Vector3 pos = (new Vector3(x - 0.5, y, z - 0.5)).round();
 
-            if (breakOnLava && level.getBlock(pos.subtract(0, 1, 0)) instanceof BlockLava) {
+            if (breakOnLava && level.getBlock(pos.subtract(0, 1, 0)) instanceof BlockFlowingLava) {
                 close();
                 if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
                     dropItems();

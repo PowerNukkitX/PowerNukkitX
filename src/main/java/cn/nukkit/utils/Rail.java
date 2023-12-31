@@ -18,7 +18,6 @@ import static cn.nukkit.utils.Rail.Orientation.State.*;
  */
 @API(usage = API.Usage.BLEEDING, definition = API.Definition.INTERNAL)
 public final class Rail {
-
     public static boolean isRailBlock(Block block) {
         Objects.requireNonNull(block, "Rail block predicate can not accept null block");
         return isRailBlock(block.getId());
@@ -58,29 +57,21 @@ public final class Rail {
         }
 
         public static Orientation straight(BlockFace face) {
-            switch (face) {
-                case NORTH:
-                case SOUTH:
-                    return STRAIGHT_NORTH_SOUTH;
-                case EAST:
-                case WEST:
-                    return STRAIGHT_EAST_WEST;
-            }
-            return STRAIGHT_NORTH_SOUTH;
+            return switch (face) {
+                case NORTH, SOUTH -> STRAIGHT_NORTH_SOUTH;
+                case EAST, WEST -> STRAIGHT_EAST_WEST;
+                default -> STRAIGHT_NORTH_SOUTH;
+            };
         }
 
         public static Orientation ascending(BlockFace face) {
-            switch (face) {
-                case NORTH:
-                    return ASCENDING_NORTH;
-                case SOUTH:
-                    return ASCENDING_SOUTH;
-                case EAST:
-                    return ASCENDING_EAST;
-                case WEST:
-                    return ASCENDING_WEST;
-            }
-            return ASCENDING_EAST;
+            return switch (face) {
+                case NORTH -> ASCENDING_NORTH;
+                case SOUTH -> ASCENDING_SOUTH;
+                case EAST -> ASCENDING_EAST;
+                case WEST -> ASCENDING_WEST;
+                default -> ASCENDING_EAST;
+            };
         }
 
         public static Orientation curved(BlockFace f1, BlockFace f2) {
@@ -144,16 +135,11 @@ public final class Rail {
         }
     }
 
-    public static boolean isRailBlock(int blockId) {
-        switch (blockId) {
-            case Block.RAIL:
-            case Block.POWERED_RAIL:
-            case Block.ACTIVATOR_RAIL:
-            case Block.DETECTOR_RAIL:
-                return true;
-            default:
-                return false;
-        }
+    public static boolean isRailBlock(String blockId) {
+        return switch (blockId) {
+            case Block.RAIL, Block.GOLDEN_RAIL, Block.ACTIVATOR_RAIL, Block.DETECTOR_RAIL -> true;
+            default -> false;
+        };
     }
 
     private Rail() {

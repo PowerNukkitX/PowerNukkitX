@@ -158,7 +158,7 @@ public class ItemBucket extends Item {
                 Item result;
                 if (target instanceof BlockPowderSnow) {
                     result = Item.get(BUCKET, 11, 1);
-                } else if (target instanceof BlockLavaStill) {
+                } else if (target instanceof BlockLava) {
                     result = Item.get(BUCKET, 10, 1);
                 } else {
                     result = Item.get(BUCKET, 8, 1);
@@ -195,7 +195,7 @@ public class ItemBucket extends Item {
                         }
                     }
 
-                    if (target instanceof BlockLava) {
+                    if (target instanceof BlockFlowingLava) {
                         level.addSound(block, Sound.BUCKET_FILL_LAVA);
                     } else if (target instanceof BlockFlowingWater) {
                         level.addSound(block, Sound.BUCKET_FILL_WATER);
