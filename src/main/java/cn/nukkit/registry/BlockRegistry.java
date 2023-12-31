@@ -649,7 +649,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(MUD_BRICK_SLAB, BlockMudBrickSlab.class);
         register(MUD_BRICK_STAIRS, BlockMudBrickStairs.class);
         register(MUD_BRICK_WALL, BlockMudBrickWall.class);
-        register(MUD_BRICKS, BlockMudBricks.class);
+        register(MUD_BRICKS, BlockMudBricks.class);// done.
         register(MUDDY_MANGROVE_ROOTS, BlockMuddyMangroveRoots.class);// done.
         register(MYCELIUM, BlockMycelium.class);// done.
         register(NETHER_BRICK, BlockNetherBrick.class);// done.
@@ -659,8 +659,8 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(NETHER_SPROUTS, BlockNetherSprouts.class);
         register(NETHER_WART, BlockNetherWart.class);
         register(NETHER_WART_BLOCK, BlockNetherWartBlock.class);
-        register(NETHERITE_BLOCK, BlockNetheriteBlock.class);
-        register(NETHERRACK, BlockNetherrack.class);
+        register(NETHERITE_BLOCK, BlockNetheriteBlock.class);// done.
+        register(NETHERRACK, BlockNetherrack.class);// done.
         register(NETHERREACTOR, BlockNetherreactor.class);// done.
         register(NORMAL_STONE_STAIRS, BlockNormalStoneStairs.class);
         register(NOTEBLOCK, BlockNoteblock.class);
@@ -994,7 +994,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(WEATHERED_DOUBLE_CUT_COPPER_SLAB, BlockWeatheredDoubleCutCopperSlab.class);
         register(WEB, BlockWeb.class);
         register(WEEPING_VINES, BlockWeepingVines.class);
-        register(WHEAT, BlockWheat.class);
+        register(WHEAT, BlockWheat.class);// done.
         register(WHITE_CANDLE, BlockWhiteCandle.class);// done.
         register(WHITE_CANDLE_CAKE, BlockWhiteCandleCake.class);// done.
         register(WHITE_CARPET, BlockWhiteCarpet.class);// done.
