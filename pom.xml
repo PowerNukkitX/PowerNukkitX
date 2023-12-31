@@ -79,7 +79,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <junit.jupiter.version>5.7.2</junit.jupiter.version>
         <mockito.version>3.11.2</mockito.version>
-        <log4j2.version>2.17.1</log4j2.version>
+        <log4j2.version>2.22.0</log4j2.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <jline.version>3.21.0</jline.version>
@@ -205,11 +205,27 @@
             <groupId>com.github.daniellansun</groupId>
             <artifactId>fast-reflection</artifactId>
             <version>08ec134a5c</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>net.daporkchop</groupId>
             <artifactId>leveldb-mcpe-jni</artifactId>
             <version>0.0.10-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-buffer</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!--   JMH     -->
         <dependency>
