@@ -1,16 +1,20 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+
+import static cn.nukkit.block.property.CommonBlockProperties.SAND_STONE_TYPE;
 
 /**
  * @author CreeperFace
  * @since 26. 11. 2016
  */
 public class BlockRedSandstone extends BlockSandstone {
+    public static final BlockProperties PROPERTIES = new BlockProperties(RED_SANDSTONE, SAND_STONE_TYPE);
 
     public BlockRedSandstone() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockRedSandstone(BlockState blockstate) {
@@ -18,26 +22,18 @@ public class BlockRedSandstone extends BlockSandstone {
     }
 
     @Override
-    public int getId() {
-        return RED_SANDSTONE;
-    }
-
-    @Override
     public String getName() {
-        String[] names = new String[]{
-                "Red Sandstone",
-                "Chiseled Red Sandstone",
-                "Cut Red Sandstone",
-                "Smooth Red Sandstone",
-                ""
+        return switch (getSandstoneType()) {
+            case CUT -> "Cut Red Sandstone";
+            case DEFAULT -> "Red Sandstone";
+            case HEIROGLYPHS -> "Chiseled Red Sandstone";
+            case SMOOTH -> "Smooth Red Sandstone";
         };
-
-        return names[this.getDamage() & 0x03];
     }
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, this.getDamage() & 0x03);
+        return new ItemBlock(this, getSandstoneType().ordinal());
     }
 
     @Override
