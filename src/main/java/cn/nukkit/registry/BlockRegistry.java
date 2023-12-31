@@ -745,7 +745,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(POLISHED_TUFF_WALL, BlockPolishedTuffWall.class);
         register(PORTAL, BlockPortal.class);
         register(POTATOES, BlockPotatoes.class);
-        register(POWDER_SNOW, BlockPowderSnow.class);
+        register(POWDER_SNOW, BlockPowderSnow.class);// done.
         register(POWERED_COMPARATOR, BlockPoweredComparator.class);
         register(POWERED_REPEATER, BlockPoweredRepeater.class);
         register(PRISMARINE, BlockPrismarine.class);// done.
@@ -815,7 +815,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(SEA_LANTERN, BlockSeaLantern.class);
         register(SEA_PICKLE, BlockSeaPickle.class);
         register(SEAGRASS, BlockSeagrass.class);
-        register(SHROOMLIGHT, BlockShroomlight.class);
+        register(SHROOMLIGHT, BlockShroomlight.class);// done.
         register(SILVER_GLAZED_TERRACOTTA, BlockSilverGlazedTerracotta.class);// done.
         register(SKULL, BlockSkull.class);// done.
         register(SLIME, BlockSlime.class);// done.
