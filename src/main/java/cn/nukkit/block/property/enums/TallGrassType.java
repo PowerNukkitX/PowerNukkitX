@@ -8,10 +8,7 @@ package cn.nukkit.block.property.enums;
  */
 public enum TallGrassType {
     DEFAULT,
-
+    TALL,
     FERN,
-
-    SNOW,
-
-    TALL
+    SNOW
 }

@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.blockproperty.IntBlockProperty;
@@ -15,38 +16,24 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
-
-public class BlockScaffolding extends BlockFallableMeta {
-
-
-    public static final BooleanBlockProperty STABILITY_CHECK = new BooleanBlockProperty("stability_check", false);
+import static cn.nukkit.block.property.CommonBlockProperties.STABILITY;
+import static cn.nukkit.block.property.CommonBlockProperties.STABILITY_CHECK;
 
 
-    public static final IntBlockProperty STABILITY = new IntBlockProperty("stability", false, 7);
+public class BlockScaffolding extends BlockFallable {
+    public static final BlockProperties PROPERTIES = new BlockProperties(SCAFFOLDING, STABILITY, CommonBlockProperties.STABILITY_CHECK);
 
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(STABILITY, STABILITY_CHECK);
-
-
-    public BlockScaffolding() {
-        // Does nothing
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
+    public BlockScaffolding() {
+        this(PROPERTIES.getDefaultState());
+    }
 
     public BlockScaffolding(BlockState blockstate) {
         super(blockstate);
-    }
-
-    @Override
-    public int getId() {
-        return SCAFFOLDING;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -56,31 +43,26 @@ public class BlockScaffolding extends BlockFallableMeta {
 
 
     public int getStability() {
-        return getDamage() & 0x7;
+        return getPropertyValue(STABILITY);
     }
 
 
     public void setStability(int stability) {
-        setDamage(stability & 0x7 | (getDamage() & 0x8));
+        setPropertyValue(STABILITY, stability);
     }
 
 
     public boolean getStabilityCheck() {
-        return (getDamage() & 0x8) > 0;
+        return getPropertyValue(STABILITY_CHECK);
     }
 
-
     public void setStabilityCheck(boolean check) {
-        if (check) {
-            setDamage(getDamage() | 0x8);
-        } else {
-            setDamage(getDamage() & 0x7);
-        }
+        setPropertyValue(STABILITY_CHECK, check);
     }
 
     @Override
     public Item toItem() {
-        return new ItemBlock(new BlockScaffolding(0));
+        return new ItemBlock(new BlockScaffolding());
     }
 
     @Override
@@ -90,13 +72,13 @@ public class BlockScaffolding extends BlockFallableMeta {
         }
 
         Block down = down();
-        if (target.getId() != SCAFFOLDING && down.getId() != SCAFFOLDING && down.getId() != AIR && !down.isSolid()) {
+        if (!target.getId().equals(SCAFFOLDING) && !down.getId().equals(SCAFFOLDING) && !down.isAir() && !down.isSolid()) {
             boolean scaffoldOnSide = false;
             for (int i = 0; i < 4; i++) {
                 BlockFace sideFace = BlockFace.fromHorizontalIndex(i);
                 if (sideFace != face) {
                     Block side = getSide(sideFace);
-                    if (side.getId() == SCAFFOLDING) {
+                    if (side.getId().equals(SCAFFOLDING)) {
                         scaffoldOnSide = true;
                         break;
                     }
@@ -107,7 +89,7 @@ public class BlockScaffolding extends BlockFallableMeta {
             }
         }
 
-        setDamage(0x8);
+        setStabilityCheck(true);
         this.getLevel().setBlock(this, this, true, true);
         return true;
     }
@@ -117,8 +99,8 @@ public class BlockScaffolding extends BlockFallableMeta {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block down = down();
             if (down.isSolid()) {
-                if (getDamage() != 0) {
-                    setDamage(0);
+                if (!isDefaultState()) {
+                    setPropertyValues(STABILITY.createValue(0), STABILITY_CHECK.createValue(false));
                     this.getLevel().setBlock(this, this, true, true);
                 }
                 return type;
@@ -168,7 +150,7 @@ public class BlockScaffolding extends BlockFallableMeta {
 
     @Override
     protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {
-        setDamage(0);
+        setPropertyValues(STABILITY.createValue(0), STABILITY_CHECK.createValue(false));
         customNbt.putBoolean("BreakOnLava", true);
         return super.createFallingEntity(customNbt);
     }
@@ -216,7 +198,7 @@ public class BlockScaffolding extends BlockFallableMeta {
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-        return new SimpleAxisAlignedBB(x, y + (2.0/16), z, x + 1, y + 1, z + 1);
+        return new SimpleAxisAlignedBB(x, y + (2.0 / 16), z, x + 1, y + 1, z + 1);
     }
 
     @Override
@@ -241,7 +223,7 @@ public class BlockScaffolding extends BlockFallableMeta {
 
     @Override
     public double getMinY() {
-        return this.y + (14.0/16);
+        return this.y + (14.0 / 16);
     }
 
     @Override

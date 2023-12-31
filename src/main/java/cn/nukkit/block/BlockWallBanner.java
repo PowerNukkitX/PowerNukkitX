@@ -1,41 +1,30 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
 /**
  * @author PetteriM1
  */
 
-public class BlockWallBanner extends BlockBanner {
+public class BlockWallBanner extends BlockStandingBanner {
+    public static final BlockProperties PROPERTIES = new BlockProperties(WALL_BANNER, FACING_DIRECTION);
 
-
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.FACING_DIRECTION_BLOCK_PROPERTIES;
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockWallBanner() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockWallBanner(BlockState blockstate) {
         super(blockstate);
-    }
-
-    @Override
-    public int getId() {
-        return WALL_BANNER;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -57,12 +46,12 @@ public class BlockWallBanner extends BlockBanner {
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(FACING_DIRECTION, face);
+        setPropertyValue(FACING_DIRECTION, face.getIndex());
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(FACING_DIRECTION);
+        return BlockFace.fromIndex(getPropertyValue(FACING_DIRECTION));
     }
 
 

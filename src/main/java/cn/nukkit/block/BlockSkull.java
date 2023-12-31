@@ -5,10 +5,9 @@ package cn.nukkit.block;
  */
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySkull;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemSkull;
@@ -25,46 +24,28 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 
+public class BlockSkull extends BlockTransparent implements RedstoneComponent, BlockEntityHolder<BlockEntitySkull>, Faceable {
+    public static final BlockProperties PROPERTIES = new BlockProperties(SKULL, CommonBlockProperties.FACING_DIRECTION);
 
-
-public class BlockSkull extends BlockTransparentMeta implements RedstoneComponent, BlockEntityHolder<BlockEntitySkull>, Faceable {
-
-    @Deprecated
-
-    public static final BooleanBlockProperty NO_DROP = new BooleanBlockProperty("no_drop_bit", false);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockSkull() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockSkull(BlockState blockstate) {
         super(blockstate);
     }
 
-    @Override
-    public int getId() {
-        return SKULL_BLOCK;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-
     @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.SKULL;
     }
-
 
     @NotNull
     @Override
@@ -126,7 +107,7 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
             case EAST:
             case WEST:
             case UP:
-                this.setDamage(face.getIndex());
+                setBlockFace(face);
                 break;
             case DOWN:
             default:
@@ -145,7 +126,7 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
     }
 
     @Override
-    
+
     public int onUpdate(int type) {
         if ((type != Level.BLOCK_UPDATE_REDSTONE && type != Level.BLOCK_UPDATE_NORMAL) || !level.getServer().isRedstoneEnabled()) {
             return 0;
@@ -196,35 +177,34 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
     }
 
     @Override
-
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-
     public boolean sticksToPiston() {
         return false;
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromIndex(this.getDamage() & 0x7);
+        return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
+    }
+
+    @Override
+    public void setBlockFace(BlockFace face) {
+        setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
     }
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         AxisAlignedBB bb = new SimpleAxisAlignedBB(this.x + 0.25, this.y, this.z + 0.25, this.x + 1 - 0.25, this.y + 0.5, this.z + 1 - 0.25);
-        switch (this.getBlockFace()) {
-            case NORTH:
-                return bb.offset(0, 0.25, 0.25);
-            case SOUTH:
-                return bb.offset(0, 0.25, -0.25);
-            case WEST:
-                return bb.offset(0.25, 0.25, 0);
-            case EAST:
-                return bb.offset(-0.25, 0.25, 0);
-        }
-        return bb;
+        return switch (this.getBlockFace()) {
+            case NORTH -> bb.offset(0, 0.25, 0.25);
+            case SOUTH -> bb.offset(0, 0.25, -0.25);
+            case WEST -> bb.offset(0.25, 0.25, 0);
+            case EAST -> bb.offset(-0.25, 0.25, 0);
+            default -> bb;
+        };
     }
 }

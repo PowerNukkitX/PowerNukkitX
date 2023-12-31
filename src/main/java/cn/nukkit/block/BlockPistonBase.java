@@ -1,13 +1,10 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityMovingBlock;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.event.block.BlockPistonEvent;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
@@ -34,14 +31,8 @@ import java.util.stream.Collectors;
 /**
  * @author CreeperFace
  */
-
-
 @Log4j2
-public abstract class BlockPistonBase extends BlockTransparentMeta implements Faceable, RedstoneComponent, BlockEntityHolder<BlockEntityPistonArm> {
-
-
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.FACING_DIRECTION_BLOCK_PROPERTIES;
-
+public abstract class BlockPistonBase extends BlockTransparent implements Faceable, RedstoneComponent, BlockEntityHolder<BlockEntityPistonArm> {
     public boolean sticky = false;
 
     public BlockPistonBase(BlockState blockstate) {
@@ -69,20 +60,11 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
         return false;
     }
 
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-
     @NotNull
     @Override
     public Class<? extends BlockEntityPistonArm> getBlockEntityClass() {
         return BlockEntityPistonArm.class;
     }
-
 
     @NotNull
     @Override
@@ -107,21 +89,21 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
     }
 
     @Override
-    
+
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (player != null) {
             if (Math.abs(player.getFloorX() - this.x) <= 1 && Math.abs(player.getFloorZ() - this.z) <= 1) {
                 double y = player.y + player.getEyeHeight();
 
                 if (y - this.y > 2) {
-                    this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, BlockFace.UP);
+                    this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, BlockFace.UP.getIndex());
                 } else if (this.y - y > 0) {
-                    this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, BlockFace.DOWN);
+                    this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, BlockFace.DOWN.getIndex());
                 } else {
-                    this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, player.getHorizontalFacing());
+                    this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, player.getHorizontalFacing().getIndex());
                 }
             } else {
-                this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, player.getHorizontalFacing());
+                this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, player.getHorizontalFacing().getIndex());
             }
         }
         this.level.setBlock(block, this, true, true);
@@ -139,7 +121,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
     public boolean onBreak(Item item) {
         this.level.setBlock(this, Block.get(BlockID.AIR), true, true);
         var block = this.getSide(getBlockFace());
-        if (block instanceof BlockPistonHead b && b.getBlockFace() == this.getBlockFace())
+        if (block instanceof BlockPistonArmCollision b && b.getBlockFace() == this.getBlockFace())
             block.onBreak(item);
         return true;
     }
@@ -147,12 +129,9 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
     public boolean isExtended() {
         var face = getBlockFace();
         var block = getSide(face);
-        return block instanceof BlockPistonHead b && b.getBlockFace() == face;
+        return block instanceof BlockPistonArmCollision b && b.getBlockFace() == face;
     }
 
-    @Override
-    
-            "even if the piston can't move.", since = "1.4.0.0-PN")
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_MOVED) {
             if (!this.level.getServer().isRedstoneEnabled())
@@ -197,7 +176,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             if (side == face)
                 continue;
             var b = this.getSide(side);
-            if (b.getId() == Block.REDSTONE_WIRE && b.getDamage() > 0)
+            if (b.getId().equals(Block.REDSTONE_WIRE) && b.getPropertyValue(CommonBlockProperties.REDSTONE_SIGNAL) > 0)
                 return true;
             if (this.level.isSidePowered(b, side))
                 return true;
@@ -229,7 +208,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
         var face = getBlockFace();
         var block = getSide(face);
         boolean isExtended;
-        if (block instanceof BlockPistonHead b) {
+        if (block instanceof BlockPistonArmCollision b) {
             if (b.getBlockFace() != face)
                 return false;
             isExtended = true;
@@ -281,19 +260,12 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                 var newPos = blockToMove.getSidePos(moveDirection);
                 //清除位置上所含的水等
                 level.setBlock(newPos, 1, Block.get(AIR), true, false);
-                //TODO: 使用Block-State Tag而不是id-meta
-                //2023/2/8: NBTIO.getBlockHelper()有性能问题，先不换用
-                CompoundTag movingBlockTag = /*NBTIO.putBlockHelper(blockToMove);*/new CompoundTag()
-                        .putInt("id", blockToMove.getId()) //only for nukkit purpose
-                        .putInt("meta", blockToMove.getDamage()) //only for nukkit purpose
-                        .putString("name", BlockStateRegistry.getPersistenceName(blockToMove.getId()))
-                        .putShort("val", blockToMove.getDamage());
                 CompoundTag nbt = BlockEntity.getDefaultCompound(newPos, BlockEntity.MOVING_BLOCK)
                         .putBoolean("expanding", extending)
                         .putInt("pistonPosX", this.getFloorX())
                         .putInt("pistonPosY", this.getFloorY())
                         .putInt("pistonPosZ", this.getFloorZ())
-                        .putCompound("movingBlock", movingBlockTag);
+                        .putCompound("movingBlock", blockToMove.blockstate.getBlockStateTag());
                 var blockEntity = this.level.getBlockEntity(oldPos);
                 //移动方块实体
                 if (blockEntity != null && !(blockEntity instanceof BlockEntityMovingBlock)) {
@@ -304,7 +276,8 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                     blockEntity.close();
                 }
                 oldPosList.add(oldPos);
-                blockEntityHolderList.add((BlockEntityHolder<?>) BlockState.of(BlockID.MOVING_BLOCK).getBlock(Position.fromObject(newPos, this.level)));
+
+                blockEntityHolderList.add((BlockEntityHolder<?>) Block.get(MOVING_BLOCK,Position.fromObject(newPos, this.level)));
                 nbtList.add(nbt);
             }
         }
@@ -325,7 +298,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             var pistonArmPos = this.getSide(pistonFace);
             //清除位置上所含的水等
             level.setBlock(pistonArmPos, 1, Block.get(AIR), true, false);
-            this.level.setBlock(pistonArmPos, createHead(this.getDamage()));
+            this.level.setBlock(pistonArmPos, createHead(getBlockFace()));
         }
         //开始移动
         this.getBlockEntity().move();
@@ -333,16 +306,11 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
     }
 
 
-    protected BlockPistonHead createHead(int damage) {
-        return (BlockPistonHead) Block.get(getPistonHeadBlockId(), damage);
-    }
-
-
-    public abstract int getPistonHeadBlockId();
+    protected abstract Block createHead(BlockFace blockFace);
 
     @Override
     public BlockFace getBlockFace() {
-        var face = BlockFace.fromIndex(this.getDamage());
+        var face = BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
         return face.getHorizontalIndex() >= 0 ? face.getOpposite() : face;
     }
 

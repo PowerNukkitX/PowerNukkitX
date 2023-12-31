@@ -2,9 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
@@ -18,28 +16,24 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
+import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_FACING_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.POWERED_BIT;
 
 /**
  * @author Leonidius20, joserobjr
  * @since 18.08.18
  */
 
-public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, Faceable {
+public class BlockObserver extends BlockSolid implements RedstoneComponent, Faceable {
+    public static final BlockProperties PROPERTIES = new BlockProperties(OBSERVER, CommonBlockProperties.MINECRAFT_FACING_DIRECTION, POWERED_BIT);
 
-
-    public static final BlockProperty<BlockFace> FACING_DIRECTION = new ArrayBlockProperty<>("minecraft:facing_direction", false, new BlockFace[]{
-            // Index based
-            BlockFace.DOWN, BlockFace.UP,
-            BlockFace.NORTH, BlockFace.SOUTH,
-            BlockFace.WEST, BlockFace.EAST,
-    });
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, POWERED);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockObserver() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockObserver(BlockState blockstate) {
@@ -49,18 +43,6 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
     @Override
     public String getName() {
         return "Observer";
-    }
-
-    @Override
-    public int getId() {
-        return OBSERVER;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -181,22 +163,22 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
 
 
     public boolean isPowered() {
-        return getBooleanValue(POWERED);
+        return getPropertyValue(POWERED_BIT);
     }
 
 
     public void setPowered(boolean powered) {
-        setBooleanValue(POWERED, powered);
+        setPropertyValue(POWERED_BIT, powered);
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(FACING_DIRECTION);
+        return getPropertyValue(MINECRAFT_FACING_DIRECTION);
     }
 
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(FACING_DIRECTION, face);
+        setPropertyValue(MINECRAFT_FACING_DIRECTION, face);
     }
 }

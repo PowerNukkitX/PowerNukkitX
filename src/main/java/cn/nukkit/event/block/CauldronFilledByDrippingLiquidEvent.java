@@ -1,7 +1,7 @@
 package cn.nukkit.event.block;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.blockproperty.value.CauldronLiquid;
+import cn.nukkit.block.property.enums.CauldronLiquid;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 
@@ -14,7 +14,7 @@ public class CauldronFilledByDrippingLiquidEvent extends BlockEvent implements C
 
     private int liquidLevelIncrement;
 
-    public CauldronFilledByDrippingLiquidEvent(Block cauldron, CauldronLiquid liquid,int liquidLevelIncrement) {
+    public CauldronFilledByDrippingLiquidEvent(Block cauldron, CauldronLiquid liquid, int liquidLevelIncrement) {
         super(cauldron);
         this.liquid = liquid;
         this.liquidLevelIncrement = liquidLevelIncrement;

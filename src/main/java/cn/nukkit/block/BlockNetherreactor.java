@@ -14,20 +14,21 @@ import javax.annotation.Nullable;
 /**
  * @author good777LUCKY
  */
+public class BlockNetherreactor extends BlockSolid implements BlockEntityHolder<BlockEntityNetherReactor> {
+    public static final BlockProperties PROPERTIES = new BlockProperties(NETHERREACTOR);
 
-
-public class BlockNetherReactor extends BlockSolid implements BlockEntityHolder<BlockEntityNetherReactor> {
-
-
-    public BlockNetherReactor() {
-        // Does nothing
-    }
-    
     @Override
-    public int getId() {
-        return NETHER_REACTOR;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
+    public BlockNetherreactor() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockNetherreactor(BlockState blockstate) {
+        super(blockstate);
+    }
 
     @NotNull
     @Override

@@ -1,9 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.state.property.enums.DoublePlantType;
-import cn.nukkit.block.state.property.enums.TallGrassType;
+import cn.nukkit.block.property.enums.DoublePlantType;
+import cn.nukkit.block.property.enums.TallGrassType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
@@ -17,40 +16,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.block.property.CommonBlockProperties.TALL_GRASS_TYPE;
+
 /**
  * @author Angelic47 (Nukkit Project)
  */
-public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
-    public static final BlockProperties PROPERTIES = new BlockProperties(TALLGRASS, CommonBlockProperties.TALL_GRASS_TYPE);
-    public BlockTallGrass() {
-        this(1);
-    }
-
-    public BlockTallGrass(BlockState blockstate) {
-        super(blockstate);
-    }
+public class BlockTallgrass extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
+    public static final BlockProperties PROPERTIES = new BlockProperties(TALLGRASS, TALL_GRASS_TYPE);
 
     @Override
-    public int getId() {
-        return TALL_GRASS;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 
+    public BlockTallgrass() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockTallgrass(BlockState blockstate) {
+        super(blockstate);
+    }
+
+
     @Override
     public String getName() {
-        String[] names = new String[]{
-                "Grass",
-                "Grass",
-                "Fern",
-                "Fern"
-        };
-        return names[this.getDamage() & 0x03];
+        return getPropertyValue(TALL_GRASS_TYPE).name() + "Tallgrass";
     }
 
     @Override
@@ -100,37 +90,25 @@ public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.Flow
             Block up = this.up();
 
             if (up.isAir()) {
-                DoublePlantType type;
+                DoublePlantType type = switch (getPropertyValue(TALL_GRASS_TYPE)) {
+                    case DEFAULT, TALL -> DoublePlantType.GRASS;
+                    case FERN, SNOW -> DoublePlantType.FERN;
+                };
 
-                switch (this.getDamage()) {
-                    case 0:
-                    case 1:
-                        type = DoublePlantType.GRASS;
-                        break;
-                    case 2:
-                    case 3:
-                        type = DoublePlantType.FERN;
-                        break;
-                    default:
-                        type = null;
+                if (player != null && !player.isCreative()) {
+                    item.count--;
                 }
 
-                if (type != null) {
-                    if (player != null && !player.isCreative()) {
-                        item.count--;
-                    }
+                BlockDoublePlant doublePlant = (BlockDoublePlant) Block.get(BlockID.DOUBLE_PLANT);
+                doublePlant.setDoublePlantType(type);
+                doublePlant.setTopHalf(false);
 
-                    BlockDoublePlant doublePlant = (BlockDoublePlant) Block.get(BlockID.DOUBLE_PLANT);
-                    doublePlant.setDoublePlantType(type);
-                    doublePlant.setTopHalf(false);
+                this.level.addParticle(new BoneMealParticle(this));
+                this.level.setBlock(this, doublePlant, true, false);
 
-                    this.level.addParticle(new BoneMealParticle(this));
-                    this.level.setBlock(this, doublePlant, true, false);
-
-                    doublePlant.setTopHalf(true);
-                    this.level.setBlock(up, doublePlant, true);
-                    this.level.updateAround(this);
-                }
+                doublePlant.setTopHalf(true);
+                this.level.setBlock(up, doublePlant, true);
+                this.level.updateAround(this);
             }
 
             return true;
@@ -144,7 +122,7 @@ public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.Flow
         // https://minecraft.wiki/w/Fortune#Grass_and_ferns
         List<Item> drops = new ArrayList<>(2);
         if (item.isShears()) {
-            drops.add(getBlockState().asItemBlock());
+            drops.add(toItem());
         }
 
         ThreadLocalRandom random = ThreadLocalRandom.current();

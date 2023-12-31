@@ -1,9 +1,10 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockStickyPiston extends Block {
+public class BlockStickyPiston extends BlockPistonBase {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:sticky_piston", CommonBlockProperties.FACING_DIRECTION);
 
     @Override
@@ -17,5 +18,15 @@ public class BlockStickyPiston extends Block {
 
     public BlockStickyPiston(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    protected Block createHead(BlockFace blockFace) {
+        return new BlockStickyPistonArmCollision().setPropertyValue(CommonBlockProperties.FACING_DIRECTION, blockFace.getIndex());
+    }
+
+    @Override
+    public String getName() {
+        return "Sticky Piston";
     }
 }

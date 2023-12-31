@@ -1336,7 +1336,7 @@ public class Level implements ChunkManager, Metadatable {
             }
 
             var b = this.getBlock(vector.getFloorX(), vector.getFloorY(), vector.getFloorZ());
-            if (b.getProperties() != BlockTallGrass.PROPERTIES && b.getProperties() != BlockWater.PROPERTIES)
+            if (b.getProperties() != BlockTallgrass.PROPERTIES && b.getProperties() != BlockWater.PROPERTIES)
                 vector.y += 1;
             CompoundTag nbt = new CompoundTag()
                     .putList(new ListTag<DoubleTag>("Pos").add(new DoubleTag("", vector.x))

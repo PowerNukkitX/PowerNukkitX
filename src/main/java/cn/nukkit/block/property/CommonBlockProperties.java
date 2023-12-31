@@ -128,6 +128,7 @@ public interface CommonBlockProperties {
 
     EnumPropertyType<FlowerType> FLOWER_TYPE = EnumPropertyType.of("flower_type", FlowerType.class, FlowerType.values()[0]);
 
+    //CompassRoseDirection base index
     IntPropertyType GROUND_SIGN_DIRECTION = IntPropertyType.of("ground_sign_direction", 0, 15, 0);
 
     IntPropertyType GROWING_PLANT_AGE = IntPropertyType.of("growing_plant_age", 0, 25, 0);

@@ -1,9 +1,10 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityLectern;
-import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.LecternDropBookEvent;
 import cn.nukkit.item.Item;
@@ -18,19 +19,19 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.*;
+import java.util.Objects;
 
+public class BlockLectern extends BlockTransparent implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityLectern> {
+    public static final BlockProperties PROPERTIES = new BlockProperties(LECTERN, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.POWERED_BIT);
 
-public class BlockLectern extends BlockTransparentMeta implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityLectern> {
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(CARDINAL_DIRECTION, POWERED);
-
-
-    public BlockLectern() {
-        this(0);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
+    public BlockLectern() {
+        this(PROPERTIES.getDefaultState());
+    }
 
     public BlockLectern(BlockState blockstate) {
         super(blockstate);
@@ -40,19 +41,6 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
     public String getName() {
         return "Lectern";
     }
-
-    @Override
-    public int getId() {
-        return LECTERN;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
 
     @NotNull
     @Override
@@ -119,17 +107,14 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(getDamage() & 0b11);
+        return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));
     }
 
     @Override
 
 
     public void setBlockFace(BlockFace face) {
-        int horizontalIndex = face.getHorizontalIndex();
-        if (horizontalIndex >= 0) {
-            setDamage(getDamage() & (DATA_MASK ^ 0b11) | (horizontalIndex & 0b11));
-        }
+        setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
     }
 
     @Override
@@ -145,8 +130,7 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
         if (!currentBook.isNull()) {
             return true;
         }
-
-        if (item.getId() != ItemID.WRITTEN_BOOK && item.getId() != ItemID.BOOK_AND_QUILL) {
+        if (!Objects.equals(item.getId(), ItemID.WRITTEN_BOOK) && !Objects.equals(item.getId(), ItemID.WRITABLE_BOOK)) {
             return false;
         }
 
@@ -169,16 +153,12 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
 
 
     public boolean isActivated() {
-        return (this.getDamage() & 0x04) == 0x04;
+        return getPropertyValue(CommonBlockProperties.POWERED_BIT);
     }
 
 
     public void setActivated(boolean activated) {
-        if (activated) {
-            setDamage(getDamage() | 0x04);
-        } else {
-            setDamage(getDamage() ^ 0x04);
-        }
+        setPropertyValue(CommonBlockProperties.POWERED_BIT, activated);
     }
 
 
