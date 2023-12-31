@@ -95,8 +95,12 @@ public class BlockRedFlower extends BlockFlowable implements BlockFlowerPot.Flow
                         ThreadLocalRandom.current().nextInt(-1, 2),
                         ThreadLocalRandom.current().nextInt(-3, 4));
 
-                if (level.getBlock(vec).getId() == AIR && level.getBlock(vec.down()).getId() == GRASS && vec.getY() >= 0 && vec.getY() < level.getMaxHeight()) {
-                    this.level.setBlock(vec, this, true);
+                if (level.getBlock(vec).getId().equals(AIR) && level.getBlock(vec.down()).getId().equals(GRASS) && vec.getY() >= level.getDimensionData().getMinHeight() && vec.getY() < level.getDimensionData().getMaxHeight()) {
+                    if (ThreadLocalRandom.current().nextInt(10) == 0) {
+                        this.level.setBlock(vec, this.getUncommonFlower(), true);
+                    } else {
+                        this.level.setBlock(vec, this, true);
+                    }
                 }
             }
 
@@ -104,5 +108,9 @@ public class BlockRedFlower extends BlockFlowable implements BlockFlowerPot.Flow
         }
 
         return false;
+    }
+
+    protected Block getUncommonFlower() {
+        return get(YELLOW_FLOWER);
     }
 }
