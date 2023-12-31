@@ -601,7 +601,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(LIT_REDSTONE_LAMP, BlockLitRedstoneLamp.class);
         register(LIT_REDSTONE_ORE, BlockLitRedstoneOre.class);
         register(LIT_SMOKER, BlockLitSmoker.class);// done.
-        register(LODESTONE, BlockLodestone.class);
+        register(LODESTONE, BlockLodestone.class);// done.
         register(LOOM, BlockLoom.class);// done.
         register(MAGENTA_CANDLE, BlockMagentaCandle.class);// done.
         register(MAGENTA_CANDLE_CAKE, BlockMagentaCandleCake.class);// done.
@@ -632,7 +632,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(MANGROVE_STANDING_SIGN, BlockMangroveStandingSign.class);// done.
         register(MANGROVE_TRAPDOOR, BlockMangroveTrapdoor.class);// done.
         register(MANGROVE_WALL_SIGN, BlockMangroveWallSign.class);// done.
-        register(MANGROVE_WOOD, BlockMangroveWood.class);
+        register(MANGROVE_WOOD, BlockMangroveWood.class);// done.
         register(MEDIUM_AMETHYST_BUD, BlockMediumAmethystBud.class);
         register(MELON_BLOCK, BlockMelonBlock.class);
         register(MELON_STEM, BlockMelonStem.class);// done.

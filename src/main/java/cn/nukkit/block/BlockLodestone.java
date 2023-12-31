@@ -4,8 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityLodestone;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemCompassLodestone;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemLodestoneCompass;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
@@ -22,24 +22,20 @@ import java.io.IOException;
 
 @Log4j2
 public class BlockLodestone extends BlockSolid implements BlockEntityHolder<BlockEntityLodestone> {
-
-
+    public static final BlockProperties PROPERTIES = new BlockProperties(LODESTONE);
     public BlockLodestone() {
-        // Does nothing
-    }
-    
-    @Override
-    public int getId() {
-        return LODESTONE;
+        super(PROPERTIES.getDefaultState());
     }
 
+    public BlockLodestone(BlockState blockState) {
+        super(blockState);
+    }
 
     @NotNull
     @Override
     public Class<? extends BlockEntityLodestone> getBlockEntityClass() {
         return BlockEntityLodestone.class;
     }
-
 
     @NotNull
     @Override
@@ -64,7 +60,7 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
         }
 
 
-        ItemCompassLodestone compass = (ItemCompassLodestone) Item.get(ItemID.LODESTONE_COMPASS);
+        ItemLodestoneCompass compass = (ItemLodestoneCompass) Item.get(ItemID.LODESTONE_COMPASS);
         if (item.hasCompoundTag()) {
             compass.setCompoundTag(item.getCompoundTag().clone());
         }
@@ -108,6 +104,11 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
     @Override
     public String getName() {
         return "Lodestone";
+    }
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override
