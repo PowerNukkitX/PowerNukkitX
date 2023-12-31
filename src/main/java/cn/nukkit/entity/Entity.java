@@ -2148,7 +2148,7 @@ public abstract class Entity extends Location implements Metadatable {
                                     // player
                                     inPortalTicks = 81;
                                     teleport(finalPos, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
-                                    BlockNetherPortal.spawnPortal(newPos);
+                                    BlockPortal.spawnPortal(newPos);
                                 }
                             }, 5);
                         }

@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
@@ -12,6 +13,8 @@ import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
+import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
+
 /**
  * @author CreeperFace
  */
@@ -19,10 +22,6 @@ import org.jetbrains.annotations.NotNull;
 public abstract class BlockRedstoneDiode extends BlockFlowable implements RedstoneComponent, Faceable {
 
     protected boolean isPowered = false;
-
-    public BlockRedstoneDiode() {
-        this(0);
-    }
 
     public BlockRedstoneDiode(BlockState blockstate) {
         super(blockstate);
@@ -50,15 +49,14 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
         return true;
     }
 
-    
-    
+
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!isSupportValid(down())) {
             return false;
         }
 
-        this.setDamage(player != null ? player.getDirection().getOpposite().getHorizontalIndex() : 0);
+        setBlockFace(player != null ? player.getDirection().getOpposite() : BlockFace.SOUTH);
         if (!this.level.setBlock(block, this, true, true)) {
             return false;
         }
@@ -76,8 +74,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
         return BlockLever.isSupportValid(support, BlockFace.UP) || support instanceof BlockCauldron;
     }
 
-    
-    
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
@@ -156,7 +153,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
             return power;
         } else {
             Block block = this.level.getBlock(pos);
-            return Math.max(power, block.getId() == Block.REDSTONE_WIRE ? block.getDamage() : 0);
+            return Math.max(power, block.getId().equals(Block.REDSTONE_WIRE) ? block.blockstate.specialValue() : 0);
         }
     }
 
@@ -171,7 +168,10 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
 
     protected int getPowerOnSide(Vector3 pos, BlockFace side) {
         Block block = this.level.getBlock(pos);
-        return isAlternateInput(block) ? (block.getId() == Block.REDSTONE_BLOCK ? 15 : (block.getId() == Block.REDSTONE_WIRE ? block.getDamage() : this.level.getStrongPower(pos, side))) : 0;
+        return isAlternateInput(block) ? (block.getId().equals(Block.REDSTONE_BLOCK) ? 15 : (block.getId().equals(Block.REDSTONE_WIRE) ?
+                block.blockstate.specialValue()
+                :
+                this.level.getStrongPower(pos, side))) : 0;
     }
 
     @Override
@@ -245,7 +245,11 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+        return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(MINECRAFT_CARDINAL_DIRECTION));
     }
 
+    @Override
+    public void setBlockFace(BlockFace face) {
+        setPropertyValue(MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
+    }
 }

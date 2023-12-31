@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockWarpedRoots extends Block {
+public class BlockWarpedRoots extends BlockRoots implements BlockFlowerPot.FlowerPotBlock {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:warped_roots");
 
     @Override
@@ -16,5 +16,10 @@ public class BlockWarpedRoots extends Block {
 
     public BlockWarpedRoots(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Warped Roots";
     }
 }

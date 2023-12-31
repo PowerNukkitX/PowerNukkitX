@@ -1,8 +1,9 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.property.enums.FlowerType;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockYellowFlower extends Block {
+public class BlockYellowFlower extends BlockRedFlower {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:yellow_flower");
 
     @Override
@@ -16,5 +17,22 @@ public class BlockYellowFlower extends Block {
 
     public BlockYellowFlower(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    protected Block getUncommonFlower() {
+        return get(RED_FLOWER);
+    }
+
+
+    @Override
+    public void setFlowerType(FlowerType flowerType) {
+        throw new UnsupportedOperationException();
+    }
+
+
+    @Override
+    public FlowerType getFlowerType() {
+        throw new UnsupportedOperationException();
     }
 }
