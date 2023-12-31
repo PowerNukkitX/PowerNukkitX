@@ -3,7 +3,7 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.MinecraftItemID;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -11,16 +11,13 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public class EntitySquid extends EntityAnimal implements EntitySwimmable {
 
-    public static final int NETWORK_ID = 17;
+    
 
-    public EntitySquid(FullChunk chunk, CompoundTag nbt) {
+    public EntitySquid(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {

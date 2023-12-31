@@ -16,7 +16,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.randomitem.Fishing;
 import cn.nukkit.level.MovingObjectPosition;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.BubbleParticle;
 import cn.nukkit.level.particle.WaterParticle;
 import cn.nukkit.math.Vector3;
@@ -36,7 +36,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityFishingHook extends SlenderProjectile {
 
-    public static final int NETWORK_ID = 77;
+    
 
     public int waitChance = 120;
     public int waitTimer = 240;
@@ -51,11 +51,11 @@ public class EntityFishingHook extends SlenderProjectile {
 
     public Item rod = null;
 
-    public EntityFishingHook(FullChunk chunk, CompoundTag nbt) {
+    public EntityFishingHook(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityFishingHook(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntityFishingHook(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
         // https://github.com/PowerNukkit/PowerNukkit/issues/267
         if (this.age > 0) {
@@ -63,10 +63,7 @@ public class EntityFishingHook extends SlenderProjectile {
         }
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getLength() {

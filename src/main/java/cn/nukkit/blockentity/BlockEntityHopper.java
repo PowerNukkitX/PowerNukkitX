@@ -15,7 +15,7 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemPotion;
 import cn.nukkit.item.ItemPotionSplash;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
@@ -57,7 +57,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
     private InventoryHolder minecartInvPushTo = null;
 
-    public BlockEntityHopper(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityHopper(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

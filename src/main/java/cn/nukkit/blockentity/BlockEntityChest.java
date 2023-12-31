@@ -6,7 +6,7 @@ import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.ChestInventory;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.DoubleChestInventory;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -19,7 +19,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
 
     protected DoubleChestInventory doubleInventory = null;
 
-    public BlockEntityChest(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityChest(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

@@ -13,12 +13,12 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityAsyncPrepare;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.item.EntityFirework;
+import cn.nukkit.entity.item.EntityFireworksRocket;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityPainting;
-import cn.nukkit.entity.item.EntityXPOrb;
+import cn.nukkit.entity.item.EntityXpOrb;
 import cn.nukkit.entity.projectile.EntityProjectile;
-import cn.nukkit.entity.weather.EntityLightning;
+import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.event.block.BlockBreakEvent;
 import cn.nukkit.event.block.BlockPlaceEvent;
 import cn.nukkit.event.block.BlockUpdateEvent;
@@ -1346,7 +1346,7 @@ public class Level implements ChunkManager, Metadatable {
                     .putList(new ListTag<FloatTag>("Rotation").add(new FloatTag("", 0))
                             .add(new FloatTag("", 0)));
 
-            EntityLightning bolt = new EntityLightning(chunk, nbt);
+            EntityLightningBolt bolt = new EntityLightningBolt(chunk, nbt);
             LightningStrikeEvent ev = new LightningStrikeEvent(this, bolt);
             getServer().getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
@@ -1355,8 +1355,8 @@ public class Level implements ChunkManager, Metadatable {
                 bolt.setEffect(false);
             }
 
-            this.addLevelSoundEvent(vector, LevelSoundEventPacket.SOUND_THUNDER, -1, EntityLightning.NETWORK_ID);
-            this.addLevelSoundEvent(vector, LevelSoundEventPacket.SOUND_EXPLODE, -1, EntityLightning.NETWORK_ID);
+            this.addLevelSoundEvent(vector, LevelSoundEventPacket.SOUND_THUNDER, -1, EntityLightningBolt.NETWORK_ID);
+            this.addLevelSoundEvent(vector, LevelSoundEventPacket.SOUND_EXPLODE, -1, EntityLightningBolt.NETWORK_ID);
         }
     }
 
@@ -2811,20 +2811,20 @@ public class Level implements ChunkManager, Metadatable {
     }
 
 
-    public List<EntityXPOrb> dropExpOrbAndGetEntities(Vector3 source, int exp) {
+    public List<EntityXpOrb> dropExpOrbAndGetEntities(Vector3 source, int exp) {
         return dropExpOrbAndGetEntities(source, exp, null);
     }
 
 
-    public List<EntityXPOrb> dropExpOrbAndGetEntities(Vector3 source, int exp, Vector3 motion) {
+    public List<EntityXpOrb> dropExpOrbAndGetEntities(Vector3 source, int exp, Vector3 motion) {
         return dropExpOrbAndGetEntities(source, exp, motion, 10);
     }
 
 
-    public List<EntityXPOrb> dropExpOrbAndGetEntities(Vector3 source, int exp, Vector3 motion, int delay) {
+    public List<EntityXpOrb> dropExpOrbAndGetEntities(Vector3 source, int exp, Vector3 motion, int delay) {
         Random rand = ThreadLocalRandom.current();
-        List<Integer> drops = EntityXPOrb.splitIntoOrbSizes(exp);
-        List<EntityXPOrb> entities = new ArrayList<>(drops.size());
+        List<Integer> drops = EntityXpOrb.splitIntoOrbSizes(exp);
+        List<EntityXpOrb> entities = new ArrayList<>(drops.size());
         for (int split : drops) {
             CompoundTag nbt = Entity.getDefaultNBT(source, motion == null ? new Vector3(
                             (rand.nextDouble() * 0.2 - 0.1) * 2,
@@ -2835,7 +2835,7 @@ public class Level implements ChunkManager, Metadatable {
             nbt.putShort("Value", split);
             nbt.putShort("PickupDelay", delay);
 
-            EntityXPOrb entity = (EntityXPOrb) Entity.createEntity("XpOrb", this.getChunk(source.getChunkX(), source.getChunkZ()), nbt);
+            EntityXpOrb entity = (EntityXpOrb) Entity.createEntity("XpOrb", this.getChunk(source.getChunkX(), source.getChunkZ()), nbt);
             if (entity != null) {
                 entities.add(entity);
                 entity.spawnToAll();
@@ -2950,7 +2950,7 @@ public class Level implements ChunkManager, Metadatable {
             int realCount = 0;
             Entity[] entities = this.getCollidingEntities(hand.getBoundingBox());
             for (Entity e : entities) {
-                if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXPOrb || e instanceof EntityFirework ||
+                if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXpOrb || e instanceof EntityFireworksRocket ||
                         e instanceof EntityPainting || e == player || (e instanceof Player p && p.isSpectator())) {
                     continue;
                 }

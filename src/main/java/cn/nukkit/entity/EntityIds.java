@@ -4,7 +4,7 @@ import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.mob.*;
 import cn.nukkit.entity.passive.*;
 import cn.nukkit.entity.projectile.*;
-import cn.nukkit.entity.weather.EntityLightning;
+import cn.nukkit.entity.weather.EntityLightningBolt;
 import com.google.common.collect.ImmutableMap;
 
 /**
@@ -32,13 +32,13 @@ public final class EntityIds {
             .put("minecraft:piglin", EntityPiglin.NETWORK_ID)
             .put("minecraft:bee", EntityBee.NETWORK_ID)
             .put("minecraft:fox", EntityFox.NETWORK_ID)//121
-            .put("minecraft:wandering_trader", EntityWanderingTrader.NETWORK_ID)//118
-            .put("minecraft:zombie_villager_v2", EntityZombieVillager.NETWORK_ID)
-            .put("minecraft:villager_v2", EntityVillager.NETWORK_ID)
+            .put("minecraft:wandering_trader", EntityTraderLlama.NETWORK_ID)//118
+            .put("minecraft:zombie_villager_v2", EntityZombieVillagerV2.NETWORK_ID)
+            .put("minecraft:villager_v2", EntityVillagerV2.NETWORK_ID)
             .put("minecraft:pillager", EntityPillager.NETWORK_ID)
             .put("minecraft:panda", EntityPanda.NETWORK_ID)
             .put("minecraft:cod", EntityCod.NETWORK_ID)
-            .put("minecraft:tropicalfish", EntityTropicalFish.NETWORK_ID)//111
+            .put("minecraft:tropicalfish", EntityTropicalfish.NETWORK_ID)//111
             .put("minecraft:drowned", EntityDrowned.NETWORK_ID)
             .put("minecraft:salmon", EntitySalmon.NETWORK_ID)
             .put("minecraft:pufferfish", EntityPufferfish.NETWORK_ID)
@@ -48,22 +48,22 @@ public final class EntityIds {
             .put("minecraft:evocation_illager", EntityEvoker.NETWORK_ID)
             .put("minecraft:evocation_fang", 103)
             .put("minecraft:llama_spit", 102)
-            .put("minecraft:lingering_potion", EntityPotionLingering.NETWORK_ID)
+            .put("minecraft:lingering_potion", EntityLingeringPotion.NETWORK_ID)
             .put("minecraft:command_block_minecart", 100)
-            .put("minecraft:chest_minecart", EntityMinecartChest.NETWORK_ID)//98
-            .put("minecraft:tnt_minecart", EntityMinecartTNT.NETWORK_ID)
-            .put("minecraft:hopper_minecart", EntityMinecartHopper.NETWORK_ID)
+            .put("minecraft:chest_minecart", EntityChestMinecart.NETWORK_ID)//98
+            .put("minecraft:tnt_minecart", EntityTntMinecart.NETWORK_ID)
+            .put("minecraft:hopper_minecart", EntityHopperMinecart.NETWORK_ID)
             .put("minecraft:area_effect_cloud", EntityAreaEffectCloud.NETWORK_ID)
-            .put("minecraft:small_fireball", EntitySmallFireBall.NETWORK_ID)
-            .put("minecraft:lightning_bolt", EntityLightning.NETWORK_ID)
+            .put("minecraft:small_fireball", EntitySmallFireball.NETWORK_ID)
+            .put("minecraft:lightning_bolt", EntityLightningBolt.NETWORK_ID)
             .put("minecraft:wither_skull_dangerous", 91)
             .put("minecraft:boat", EntityBoat.NETWORK_ID)
             .put("minecraft:wither_skull", 89)
             .put("minecraft:leash_knot", 88)
             .put("minecraft:ender_pearl", EntityEnderPearl.NETWORK_ID)
-            .put("minecraft:splash_potion", EntityPotion.NETWORK_ID)
+            .put("minecraft:splash_potion", EntitySplashPotion.NETWORK_ID)
             .put("minecraft:fireball", 85)
-            .put("minecraft:minecart", EntityMinecartEmpty.NETWORK_ID)//84
+            .put("minecraft:minecart", EntityMinecart.NETWORK_ID)//84
             .put("minecraft:painting", EntityPainting.NETWORK_ID)
             .put("minecraft:egg", EntityEgg.NETWORK_ID)
             .put("minecraft:snowball", EntitySnowball.NETWORK_ID)
@@ -74,13 +74,13 @@ public final class EntityIds {
             .put("minecraft:cat", EntityCat.NETWORK_ID)//75
             .put("minecraft:turtle", EntityTurtle.NETWORK_ID)//74
             .put("minecraft:thrown_trident", EntityThrownTrident.NETWORK_ID)
-            .put("minecraft:fireworks_rocket", EntityFirework.NETWORK_ID)
-            .put("minecraft:ender_crystal", EntityEndCrystal.NETWORK_ID)
+            .put("minecraft:fireworks_rocket", EntityFireworksRocket.NETWORK_ID)
+            .put("minecraft:ender_crystal", EntityEnderCrystal.NETWORK_ID)
             .put("minecraft:eye_of_ender_signal", 70)
-            .put("minecraft:xp_orb", EntityXPOrb.NETWORK_ID)//69
-            .put("minecraft:xp_bottle", EntityExpBottle.NETWORK_ID)
+            .put("minecraft:xp_orb", EntityXpOrb.NETWORK_ID)//69
+            .put("minecraft:xp_bottle", EntityXpBottle.NETWORK_ID)
             .put("minecraft:falling_block", EntityFallingBlock.NETWORK_ID)
-            .put("minecraft:tnt", EntityPrimedTNT.NETWORK_ID)
+            .put("minecraft:tnt", EntityTnt.NETWORK_ID)
             .put("minecraft:item", EntityItem.NETWORK_ID)
             .put("minecraft:player", 63)
             .put("minecraft:tripod_camera", 62)
@@ -100,7 +100,7 @@ public final class EntityIds {
             .put("minecraft:husk", EntityHusk.NETWORK_ID)
             .put("minecraft:stray", EntityStray.NETWORK_ID)
             .put("minecraft:witch", EntityWitch.NETWORK_ID)
-            .put("minecraft:zombie_villager", EntityZombieVillagerV1.NETWORK_ID)
+            .put("minecraft:zombie_villager", EntityZombieVillager.NETWORK_ID)
             .put("minecraft:blaze", EntityBlaze.NETWORK_ID)
             .put("minecraft:magma_cube", EntityMagmaCube.NETWORK_ID)
             .put("minecraft:ghast", EntityGhast.NETWORK_ID)
@@ -115,7 +115,7 @@ public final class EntityIds {
             .put("minecraft:zombie", EntityZombie.NETWORK_ID)
             .put("minecraft:dolphin", EntityDolphin.NETWORK_ID)//31
             .put("minecraft:parrot", EntityParrot.NETWORK_ID)
-            .put("minecraft:llama", EntityLlama.NETWORK_ID)
+            .put("minecraft:llama", EntityLlamaSpit.NETWORK_ID)
             .put("minecraft:polar_bear", EntityPolarBear.NETWORK_ID)
             .put("minecraft:zombie_horse", EntityZombieHorse.NETWORK_ID)
             .put("minecraft:skeleton_horse", EntitySkeletonHorse.NETWORK_ID)
@@ -129,7 +129,7 @@ public final class EntityIds {
             .put("minecraft:rabbit", EntityRabbit.NETWORK_ID)
             .put("minecraft:squid", EntitySquid.NETWORK_ID)//17
             .put("minecraft:mooshroom", EntityMooshroom.NETWORK_ID)
-            .put("minecraft:villager", EntityVillagerV1.NETWORK_ID)
+            .put("minecraft:villager", EntityVillager.NETWORK_ID)
             .put("minecraft:wolf", EntityWolf.NETWORK_ID)
             .put("minecraft:sheep", EntitySheep.NETWORK_ID)
             .put("minecraft:pig", EntityPig.NETWORK_ID)

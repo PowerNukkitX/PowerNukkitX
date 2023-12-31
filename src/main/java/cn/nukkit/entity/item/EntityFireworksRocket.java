@@ -12,7 +12,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemFirework;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
@@ -28,16 +28,16 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author CreeperFace
  */
-public class EntityFirework extends Entity {
+public class EntityFireworksRocket extends Entity {
 
-    public static final int NETWORK_ID = 72;
+    
     private final int lifetime;
     private int fireworkAge;
     private Item firework;
     private boolean hadCollision;
 
     
-    public EntityFirework(FullChunk chunk, CompoundTag nbt) {
+    public EntityFireworksRocket(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
 
         this.fireworkAge = 0;
@@ -80,10 +80,7 @@ public class EntityFirework extends Entity {
         this.setDataProperty(new LongEntityData(Entity.DATA_HAS_DISPLAY, -1));
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public boolean onUpdate(int currentTick) {

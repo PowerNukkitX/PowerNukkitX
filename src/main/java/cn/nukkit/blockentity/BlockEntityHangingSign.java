@@ -1,11 +1,11 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 
 public class BlockEntityHangingSign extends BlockEntitySign {
-    public BlockEntityHangingSign(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityHangingSign(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

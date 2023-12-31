@@ -6,7 +6,7 @@ import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MinecartType;
 
@@ -14,18 +14,15 @@ import cn.nukkit.utils.MinecartType;
  * @author Snake1999
  * @since 2016/1/30
  */
-public class EntityMinecartEmpty extends EntityMinecartAbstract {
+public class EntityMinecart extends EntityMinecartAbstract {
 
-    public static final int NETWORK_ID = 84;
+    
 
-    public EntityMinecartEmpty(FullChunk chunk, CompoundTag nbt) {
+    public EntityMinecart(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
 
     @Override

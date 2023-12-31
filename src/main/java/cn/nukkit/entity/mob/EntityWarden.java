@@ -23,7 +23,7 @@ import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationListener;
 import cn.nukkit.math.NukkitMath;
@@ -39,12 +39,12 @@ import java.util.Set;
 
 public class EntityWarden extends EntityMob implements EntityWalkable, VibrationListener {
 
-    public static final int NETWORK_ID = 131;
+    
     protected int lastDetectTime = Server.getInstance().getTick();
     protected int lastCollideTime = Server.getInstance().getTick();
     protected boolean waitForVibration = false;
 
-    public EntityWarden(FullChunk chunk, CompoundTag nbt) {
+    public EntityWarden(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -138,10 +138,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
         );
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getHeight() {

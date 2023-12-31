@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.mob.EntityBlaze;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.GenericParticle;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -19,7 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntitySnowball extends EntityProjectile {
 
-    public static final int NETWORK_ID = 81;
+    
     private static final byte[] particleCounts = new byte[24];
     private static int particleIndex = 0;
 
@@ -29,11 +29,11 @@ public class EntitySnowball extends EntityProjectile {
         }
     }
 
-    public EntitySnowball(FullChunk chunk, CompoundTag nbt) {
+    public EntitySnowball(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntitySnowball(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntitySnowball(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
@@ -45,10 +45,7 @@ public class EntitySnowball extends EntityProjectile {
         return particleCounts[index];
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {

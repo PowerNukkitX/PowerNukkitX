@@ -3,7 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
@@ -20,7 +20,7 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     public final List<Player> spawnExceptions = new ArrayList<>(2);
 
 
-    public BlockEntityBell(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityBell(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

@@ -4,7 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBamboo;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.populator.helper.EnsureBelow;
 import cn.nukkit.level.generator.populator.helper.EnsureCover;
 import cn.nukkit.level.generator.populator.helper.EnsureGrassBelow;

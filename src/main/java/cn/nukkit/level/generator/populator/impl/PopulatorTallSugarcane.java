@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.populator.impl;
 
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.NukkitRandom;
 
 import java.util.concurrent.ThreadLocalRandom;

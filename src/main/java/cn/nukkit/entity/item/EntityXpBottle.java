@@ -3,7 +3,7 @@ package cn.nukkit.entity.item;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.particle.SpellParticle;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -14,22 +14,19 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author xtypr
  */
-public class EntityExpBottle extends EntityProjectile {
+public class EntityXpBottle extends EntityProjectile {
 
-    public static final int NETWORK_ID = 68;
+    
 
-    public EntityExpBottle(FullChunk chunk, CompoundTag nbt) {
+    public EntityXpBottle(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityExpBottle(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntityXpBottle(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {

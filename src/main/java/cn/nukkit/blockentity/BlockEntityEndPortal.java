@@ -1,7 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -9,7 +9,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public class BlockEntityEndPortal extends BlockEntitySpawnable {
 
-    public BlockEntityEndPortal(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityEndPortal(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
     

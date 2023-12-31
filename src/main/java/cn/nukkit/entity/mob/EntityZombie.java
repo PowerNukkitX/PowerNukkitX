@@ -16,7 +16,7 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 
@@ -29,9 +29,9 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmite {
 
-    public static final int NETWORK_ID = 32;
+    
 
-    public EntityZombie(FullChunk chunk, CompoundTag nbt) {
+    public EntityZombie(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -71,10 +71,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
         );
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {

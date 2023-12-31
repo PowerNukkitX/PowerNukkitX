@@ -46,7 +46,7 @@ public class BlockWheat extends BlockCrops {
         if (!isFullyGrown()) {
             return new Item[]{ new ItemWheatSeeds() };
         }
-        
+
         ThreadLocalRandom random = ThreadLocalRandom.current();
         int count = 0;
         int attempts = 3 + Math.min(0, item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING));
@@ -57,11 +57,11 @@ public class BlockWheat extends BlockCrops {
                 count++;
             }
         }
-        
+
         if (count > 0) {
-            return new Item[]{ Item.get(ItemID.WHEAT), Item.get(ItemID.WHEAT_SEEDS, 0, count) };
+            return new Item[]{Item.get(ItemID.WHEAT), Item.get(ItemID.WHEAT_SEEDS, 0, count)};
         } else {
-            return new Item[]{ Item.get(ItemID.WHEAT) };
+            return new Item[]{Item.get(ItemID.WHEAT)};
         }
     }
 }

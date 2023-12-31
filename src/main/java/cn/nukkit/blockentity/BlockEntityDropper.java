@@ -2,14 +2,14 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.DropperInventory;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 
 public class BlockEntityDropper extends BlockEntityEjectable {
 
 
-    public BlockEntityDropper(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityDropper(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

@@ -5,7 +5,7 @@ import cn.nukkit.inventory.EjectableInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -17,7 +17,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
     protected EjectableInventory inventory;
 
 
-    public BlockEntityEjectable(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityEjectable(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

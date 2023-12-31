@@ -7,7 +7,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.EntityFreezeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShield;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddPlayerPacket;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
@@ -24,7 +24,7 @@ public class EntityHuman extends EntityHumanType {
     protected byte[] rawUUID;
     protected Skin skin;
 
-    public EntityHuman(FullChunk chunk, CompoundTag nbt) {
+    public EntityHuman(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -64,8 +64,7 @@ public class EntityHuman extends EntityHumanType {
         return 1.62f;
     }
 
-    @Override
-    public int getNetworkId() {
+    private int getNetworkId() {
         return -1;
     }
 
@@ -100,7 +99,6 @@ public class EntityHuman extends EntityHumanType {
         initHumanEntity(this);
         super.initEntity();
     }
-
 
     @Override
     public String getOriginalName() {

@@ -3,7 +3,7 @@ package cn.nukkit.level.generator.populator.impl.tree;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockSapling;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.object.tree.ObjectBigSpruceTree;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitMath;

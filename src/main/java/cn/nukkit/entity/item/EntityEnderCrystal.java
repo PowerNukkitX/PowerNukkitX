@@ -9,30 +9,27 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * @author PetteriM1
  */
-public class EntityEndCrystal extends Entity implements EntityExplosive {
+public class EntityEnderCrystal extends Entity implements EntityExplosive {
 
-    public static final int NETWORK_ID = 71;
+    
 
     /**
      * @since 1.2.1.0-PN
      */
     protected boolean detonated = false;
 
-    public EntityEndCrystal(FullChunk chunk, CompoundTag nbt) {
+    public EntityEnderCrystal(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {

@@ -20,7 +20,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 import static cn.nukkit.block.property.CommonBlockProperties.GROUND_SIGN_DIRECTION;
 
 /**
- * alisa post sign
+ * Alias post sign
  */
 @Slf4j
 public class BlockStandingSign extends BlockSignBase implements BlockEntityHolder<BlockEntitySign>{

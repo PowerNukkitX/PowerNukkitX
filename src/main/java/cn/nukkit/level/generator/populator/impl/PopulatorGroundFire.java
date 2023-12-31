@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.populator.impl;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.populator.helper.EnsureBelow;
 import cn.nukkit.level.generator.populator.helper.EnsureCover;
 import cn.nukkit.level.generator.populator.type.PopulatorSurfaceBlock;

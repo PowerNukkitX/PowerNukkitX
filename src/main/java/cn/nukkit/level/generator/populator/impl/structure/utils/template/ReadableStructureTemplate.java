@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator.populator.impl.structure.utils.template;
 
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.nbt.tag.CompoundTag;

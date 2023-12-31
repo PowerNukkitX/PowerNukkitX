@@ -7,7 +7,7 @@ import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * alisa still water
+ * Alias still water
  */
 public class BlockWater extends BlockFlowingWater {
     public static final BlockProperties PROPERTIES = new BlockProperties(WATER, CommonBlockProperties.LIQUID_DEPTH);

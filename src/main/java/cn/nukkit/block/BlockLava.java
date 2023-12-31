@@ -8,7 +8,7 @@ import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Alisa STILL LAVA
+ * Alias STILL LAVA
  *
  * @author Angelic47 (Nukkit Project)
  */

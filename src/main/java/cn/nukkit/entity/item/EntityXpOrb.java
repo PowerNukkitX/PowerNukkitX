@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 
@@ -14,10 +14,7 @@ import java.util.List;
  * @author xtypr
  * @since 2015/12/26
  */
-public class EntityXPOrb extends Entity {
-
-    public static final int NETWORK_ID = 69;
-
+public class EntityXpOrb extends Entity {
     /**
      * Split sizes used for dropping experience orbs.
      */
@@ -27,7 +24,7 @@ public class EntityXPOrb extends Entity {
     private int pickupDelay;
     private int exp;
 
-    public EntityXPOrb(FullChunk chunk, CompoundTag nbt) {
+    public EntityXpOrb(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -60,10 +57,7 @@ public class EntityXPOrb extends Entity {
         return result;
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {

@@ -36,7 +36,7 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
@@ -61,21 +61,18 @@ import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
  */
 public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, EntityRideable, EntityOwnable, InventoryHolder, EntityAgeable {
 
-    public static final int NETWORK_ID = 23;
+    
     private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6};
     private static final int[] MARK_VARIANTS = {0, 1, 2, 3, 4};
     private Map<String, Attribute> attributeMap;
     private HorseInventory horseInventory;
     private final AtomicBoolean jumping = new AtomicBoolean(false);
 
-    public EntityHorse(FullChunk chunk, CompoundTag nbt) {
+    public EntityHorse(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {

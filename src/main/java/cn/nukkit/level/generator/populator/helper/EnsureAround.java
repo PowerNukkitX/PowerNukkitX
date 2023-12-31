@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.populator.helper;
 
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 
 import static cn.nukkit.block.BlockID.AIR;
 

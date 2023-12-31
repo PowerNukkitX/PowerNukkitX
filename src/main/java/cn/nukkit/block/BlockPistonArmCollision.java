@@ -8,7 +8,7 @@ import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * alisa piston head
+ * Alias piston head
  */
 public class BlockPistonArmCollision extends BlockTransparent implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(PISTON_ARM_COLLISION, CommonBlockProperties.FACING_DIRECTION);

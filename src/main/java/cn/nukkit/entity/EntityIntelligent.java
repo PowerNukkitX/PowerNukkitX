@@ -120,7 +120,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
         if (!EntityAI.checkDebugOption(EntityAI.DebugOption.MEMORY)) {
             return super.onInteract(player, item, clickedPos);
         } else {
-            if (player.isOp() && item.getId() == ItemID.STICK) {
+            if (player.isOp() && Objects.equals(item.getId(), ItemID.STICK)) {
                 var strBuilder = new StringBuilder();
 
                 //Build memory information

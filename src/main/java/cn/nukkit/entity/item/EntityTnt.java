@@ -9,7 +9,6 @@ import cn.nukkit.event.entity.EntityExplosionPrimeEvent;
 import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -17,17 +16,15 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author MagicDroidX
  */
-public class EntityPrimedTNT extends Entity implements EntityExplosive {
-
-    public static final int NETWORK_ID = 65;
+public class EntityTnt extends Entity implements EntityExplosive {
     protected int fuse;
     protected Entity source;
 
-    public EntityPrimedTNT(FullChunk chunk, CompoundTag nbt) {
+    public EntityTnt(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityPrimedTNT(FullChunk chunk, CompoundTag nbt, Entity source) {
+    public EntityTnt(IChunk chunk, CompoundTag nbt, Entity source) {
         super(chunk, nbt);
         this.source = source;
     }
@@ -67,10 +64,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
         return false;
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public boolean attack(EntityDamageEvent source) {

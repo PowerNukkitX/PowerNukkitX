@@ -5,7 +5,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.EnumBiome;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.populator.impl.structure.shipwreck.loot.ShipwreckMapChest;
 import cn.nukkit.level.generator.populator.impl.structure.shipwreck.loot.ShipwreckSupplyChest;

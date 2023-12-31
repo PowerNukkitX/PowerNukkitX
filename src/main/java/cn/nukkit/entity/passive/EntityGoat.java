@@ -1,21 +1,18 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.entity.EntityWalkable;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 public class EntityGoat extends EntityAnimal implements EntityWalkable {
 
-    public static final int NETWORK_ID = 128;
+    
 
-    public EntityGoat(FullChunk chunk, CompoundTag nbt) {
+    public EntityGoat(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getHeight() {

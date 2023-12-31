@@ -98,7 +98,7 @@ public abstract class BlockEntity extends Position {
     protected long lastUpdate;
     protected Server server;
 
-    public BlockEntity(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntity(IChunk chunk, CompoundTag nbt) {
         if (chunk == null || chunk.getProvider() == null) {
             throw new ChunkException("Invalid garbage Chunk given to Block Entity");
         }

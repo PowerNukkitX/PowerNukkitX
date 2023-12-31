@@ -4,7 +4,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityTarget;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityArrow;
-import cn.nukkit.entity.projectile.EntitySmallFireBall;
+import cn.nukkit.entity.projectile.EntitySmallFireball;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
@@ -118,7 +118,7 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         int ticks = 8;
-        if (projectile instanceof EntityArrow || projectile instanceof EntityThrownTrident || projectile instanceof EntitySmallFireBall) {
+        if (projectile instanceof EntityArrow || projectile instanceof EntityThrownTrident || projectile instanceof EntitySmallFireball) {
             ticks = 20;
         }
 

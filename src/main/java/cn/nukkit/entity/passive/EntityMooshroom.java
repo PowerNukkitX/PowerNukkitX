@@ -19,7 +19,7 @@ import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.ParticleEffect;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
@@ -32,9 +32,9 @@ import java.util.Set;
  */
 public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
 
-    public static final int NETWORK_ID = 16;
+    
 
-    public EntityMooshroom(FullChunk chunk, CompoundTag nbt) {
+    public EntityMooshroom(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -95,10 +95,7 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
         return new Item[]{Item.get(Item.LEATHER), Item.get(Item.RAW_BEEF)};
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {

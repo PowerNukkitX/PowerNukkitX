@@ -3,7 +3,7 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityBeehive;
 import cn.nukkit.entity.EntityFlyable;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -13,19 +13,16 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public class EntityBee extends EntityAnimal implements EntityFlyable {
 
 
-    public static final int NETWORK_ID = 122;
+    
 
     private final int beehiveTimer = 600;
 
 
-    public EntityBee(FullChunk chunk, CompoundTag nbt) {
+    public EntityBee(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {

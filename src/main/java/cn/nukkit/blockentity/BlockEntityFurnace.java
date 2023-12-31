@@ -10,7 +10,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemBucket;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -36,7 +36,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
 
     private int crackledTime;
 
-    public BlockEntityFurnace(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityFurnace(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

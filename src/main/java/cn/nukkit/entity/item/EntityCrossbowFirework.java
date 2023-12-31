@@ -7,7 +7,7 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 
 import java.util.Random;
 
-public class EntityCrossbowFirework extends EntityFirework {
+public class EntityCrossbowFirework extends EntityFireworksRocket {
     private static final Random RANDOM = new Random();
     private final int lifetime;
     private int fireworkAge = 0;

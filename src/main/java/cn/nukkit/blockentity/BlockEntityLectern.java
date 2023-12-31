@@ -4,7 +4,7 @@ import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
@@ -16,7 +16,7 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     private int totalPages;
 
 
-    public BlockEntityLectern(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityLectern(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

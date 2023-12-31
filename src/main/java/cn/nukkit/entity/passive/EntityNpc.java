@@ -13,7 +13,6 @@ import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.NPCRequestPacket;
@@ -21,14 +20,8 @@ import cn.nukkit.network.protocol.NPCRequestPacket;
 /**
  * @author good777LUCKY
  */
-
-
-public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityInteractable {
+public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInteractable {
     //todo: Implement automatic steering of NPC entities
-
-
-    public static final int NETWORK_ID = 51;
-
     public static final String KEY_DIALOG_TITLE = "DialogTitle";
     public static final String KEY_DIALOG_CONTENT = "DialogContent";
     public static final String KEY_DIALOG_SKINDATA = "DialogSkinData";
@@ -39,14 +32,11 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
     protected int variant = 0;
 
 
-    public EntityNPCEntity(FullChunk chunk, CompoundTag nbt) {
+    public EntityNPCEntity(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {

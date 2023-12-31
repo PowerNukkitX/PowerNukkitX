@@ -6,7 +6,7 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -20,11 +20,11 @@ import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
 
 public class EntityChestBoat extends EntityBoat implements InventoryHolder {
 
-    public static final int NETWORK_ID = 218;
+    
 
     protected ChestBoatInventory inventory;
 
-    public EntityChestBoat(FullChunk chunk, CompoundTag nbt) {
+    public EntityChestBoat(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -33,10 +33,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
         return "Chest Boat";
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public ChestBoatInventory getInventory() {

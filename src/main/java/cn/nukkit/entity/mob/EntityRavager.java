@@ -2,21 +2,18 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityWalkable;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 public class EntityRavager extends EntityMob implements EntityWalkable {
 
-    public static final int NETWORK_ID = 59;
+    
 
-    public EntityRavager(FullChunk chunk, CompoundTag nbt) {
+    public EntityRavager(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {

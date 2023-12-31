@@ -14,7 +14,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
@@ -30,7 +30,7 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
     protected PlayerEnderChestInventory enderChestInventory;
     protected PlayerOffhandInventory offhandInventory;
 
-    public EntityHumanType(FullChunk chunk, CompoundTag nbt) {
+    public EntityHumanType(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

@@ -1,12 +1,12 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 
 public class BlockEntityDecoratedPot extends BlockEntitySpawnable {
-    public BlockEntityDecoratedPot(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityDecoratedPot(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

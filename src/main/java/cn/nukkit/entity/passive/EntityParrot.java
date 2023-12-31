@@ -2,7 +2,7 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -10,16 +10,13 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public class EntityParrot extends EntityAnimal implements EntityFlyable {
 
-    public static final int NETWORK_ID = 30;
+    
 
-    public EntityParrot(FullChunk chunk, CompoundTag nbt) {
+    public EntityParrot(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
 
     @Override

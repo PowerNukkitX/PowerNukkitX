@@ -3,11 +3,11 @@ package cn.nukkit.level.generator.populator.impl.structure.igloo;
 import cn.nukkit.Server;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.mob.EntityZombieVillager;
-import cn.nukkit.entity.passive.EntityVillager;
+import cn.nukkit.entity.mob.EntityZombieVillagerV2;
+import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.EnumBiome;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.populator.impl.structure.igloo.loot.IglooChest;
 import cn.nukkit.level.generator.populator.impl.structure.utils.template.ReadOnlyLegacyStructureTemplate;
 import cn.nukkit.level.generator.populator.impl.structure.utils.template.ReadableStructureTemplate;
@@ -55,12 +55,12 @@ public class PopulatorIgloo extends PopulatorStructure {
                     case "Villager":
                         Server.getInstance().getScheduler().scheduleDelayedTask(new ActorSpawnTask(chunk.getProvider().getLevel(),
                                 Entity.getDefaultNBT(new Vector3(nbt.getInt("x") + 0.5, nbt.getInt("y"), nbt.getInt("z") + 0.5))
-                                        .putString("id", String.valueOf(EntityVillager.NETWORK_ID))), 2);
+                                        .putString("id", String.valueOf(EntityVillagerV2.NETWORK_ID))), 2);
                         break;
                     case "Zombie Villager":
                         Server.getInstance().getScheduler().scheduleDelayedTask(new ActorSpawnTask(chunk.getProvider().getLevel(),
                                 Entity.getDefaultNBT(new Vector3(nbt.getInt("x") + 0.5, nbt.getInt("y"), nbt.getInt("z") + 0.5))
-                                        .putString("id", String.valueOf(EntityZombieVillager.NETWORK_ID))), 2);
+                                        .putString("id", String.valueOf(EntityZombieVillagerV2.NETWORK_ID))), 2);
                         break;
                 }
             }

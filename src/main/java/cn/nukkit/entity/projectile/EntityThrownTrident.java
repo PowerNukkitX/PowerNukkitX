@@ -5,7 +5,7 @@ import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.LongEntityData;
-import cn.nukkit.entity.weather.EntityLightning;
+import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -17,7 +17,7 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
@@ -37,7 +37,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityThrownTrident extends SlenderProjectile {
 
-    public static final int NETWORK_ID = 73;
+    
     private static final String TAG_PICKUP = "pickup";
     private static final String TAG_TRIDENT = "Trident";
     private static final String TAG_FAVORED_SLOT = "favoredSlot";
@@ -79,10 +79,7 @@ public class EntityThrownTrident extends SlenderProjectile {
         this(chunk, nbt, shootingEntity);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getLength() {
@@ -304,7 +301,7 @@ public class EntityThrownTrident extends SlenderProjectile {
         if (this.hasChanneling) {
             if (this.level.isThundering() && this.level.canBlockSeeSky(this)) {
                 Position pos = this.getPosition();
-                EntityLightning lighting = new EntityLightning(pos.getChunk(), getDefaultNBT(pos));
+                EntityLightningBolt lighting = new EntityLightningBolt(pos.getChunk(), getDefaultNBT(pos));
                 lighting.spawnToAll();
                 this.getLevel().addSound(this, Sound.ITEM_TRIDENT_THUNDER);
             }

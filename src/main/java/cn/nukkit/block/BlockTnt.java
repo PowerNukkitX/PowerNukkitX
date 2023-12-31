@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityArrow;
-import cn.nukkit.entity.projectile.EntitySmallFireBall;
+import cn.nukkit.entity.projectile.EntitySmallFireball;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
@@ -147,7 +147,7 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent {
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         //TODO: Wither skull, ghast fireball
-        if (projectile instanceof EntitySmallFireBall ||
+        if (projectile instanceof EntitySmallFireball ||
                 (projectile.isOnFire() && projectile instanceof EntityArrow) ) {
             prime(80, projectile);
             return true;

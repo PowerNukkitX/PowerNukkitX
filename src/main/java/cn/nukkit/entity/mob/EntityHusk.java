@@ -15,7 +15,7 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.IntEntityData;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
@@ -27,16 +27,13 @@ import java.util.Set;
  */
 public class EntityHusk extends EntityZombie {
 
-    public static final int NETWORK_ID = 47;
+    
 
-    public EntityHusk(FullChunk chunk, CompoundTag nbt) {
+    public EntityHusk(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(

@@ -9,17 +9,23 @@ import org.jetbrains.annotations.Nullable;
 
 
 public class BlockSculk extends BlockSolid {
-    public BlockSculk() {
+    public static final BlockProperties PROPERTIES = new BlockProperties(SCULK);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
+    public BlockSculk() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockSculk(BlockState blockstate) {
+        super(blockstate);
+    }
     @Override
     public String getName() {
         return "Sculk";
-    }
-
-    @Override
-    public int getId() {
-        return SCULK;
     }
 
     @Override

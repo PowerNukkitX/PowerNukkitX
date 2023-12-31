@@ -18,7 +18,7 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
@@ -58,7 +58,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     protected final Set<Player> viewers = Sets.newHashSet();
     protected int currentTick;
 
-    public BlockEntityCommandBlock(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityCommandBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
