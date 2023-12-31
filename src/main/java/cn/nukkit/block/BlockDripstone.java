@@ -33,11 +33,6 @@ public class BlockDripstone extends BlockSolid {
     }
 
     @Override
-    public int getId() {
-        return DRIPSTONE_BLOCK;
-    }
-
-    @Override
     public double getHardness() {
         return 1.5;
     }
@@ -51,7 +46,6 @@ public class BlockDripstone extends BlockSolid {
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
-
 
     @Override
     public int getToolTier() {

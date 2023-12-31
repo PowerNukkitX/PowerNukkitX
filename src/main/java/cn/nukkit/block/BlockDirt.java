@@ -36,7 +36,6 @@ public class BlockDirt extends BlockSolid {
         return getPropertyValue(CommonBlockProperties.DIRT_TYPE);
     }
 
-
     public void setDirtType(@Nullable DirtType dirtType) throws Exception {
         setPropertyValue(CommonBlockProperties.DIRT_TYPE, dirtType);
     }

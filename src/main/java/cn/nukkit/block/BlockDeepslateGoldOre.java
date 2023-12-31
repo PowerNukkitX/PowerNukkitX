@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockDeepslateGoldOre extends BlockGoldOre {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:deepslate_gold_ore");
+    public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_GOLD_ORE);
 
     @Override
     public @NotNull BlockProperties getProperties() {

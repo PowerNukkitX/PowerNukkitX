@@ -4,7 +4,7 @@ import cn.nukkit.block.property.enums.StoneType;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockDiorite extends BlockStone {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:diorite");
+    public static final BlockProperties PROPERTIES = new BlockProperties(DIORITE);
 
     @Override
     public @NotNull BlockProperties getProperties() {
