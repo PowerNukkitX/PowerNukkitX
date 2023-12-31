@@ -2,10 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.block.property.enums.BigDripleafTilt;
-import cn.nukkit.blockproperty.*;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.block.BigDripleafTiltChangeEvent;
@@ -26,12 +24,9 @@ import javax.annotation.Nullable;
 
 import java.util.Objects;
 
-import static cn.nukkit.block.BlockBigDripleaf.Tilt.*;
 import static cn.nukkit.block.property.CommonBlockProperties.*;
-
-
 public class BlockBigDripleaf extends BlockFlowable implements Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(BIG_DRIPLEAF, BIG_DRIPLEAF_HEAD, BIG_DRIPLEAF_TILT,MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BIG_DRIPLEAF, BIG_DRIPLEAF_HEAD, BIG_DRIPLEAF_TILT, MINECRAFT_CARDINAL_DIRECTION);
 
     public BlockBigDripleaf() {
         this(PROPERTIES.getDefaultState());
@@ -154,7 +149,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             if (head.getFloorY() + 1 >= level.getMaxHeight())
                 return false;
             Block above = head.up();
-            if (!(aboveisAir()) && !(above instanceof BlockWater))
+            if (!above.isAir() && !(above instanceof BlockWater))
                 return false;
             if (player != null && !player.isCreative())
                 item.count--;

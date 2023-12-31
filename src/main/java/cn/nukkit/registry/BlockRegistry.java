@@ -225,7 +225,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(CRACKED_NETHER_BRICKS, BlockCrackedNetherBricks.class);
         register(CRACKED_POLISHED_BLACKSTONE_BRICKS, BlockCrackedPolishedBlackstoneBricks.class);
         register(CRAFTER, BlockCrafter.class);
-        register(CRAFTING_TABLE, BlockCraftingTable.class);// done.
+        register(CRAFTING_TABLE, BlockCraftingTable.class);
         register(CRIMSON_BUTTON, BlockCrimsonButton.class);// done.
         register(CRIMSON_DOOR, BlockCrimsonDoor.class);// done.
         register(CRIMSON_DOUBLE_SLAB, BlockCrimsonDoubleSlab.class);
@@ -279,7 +279,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(DEAD_FIRE_CORAL, BlockDeadFireCoral.class);
         register(DEAD_HORN_CORAL, BlockDeadHornCoral.class);
         register(DEAD_TUBE_CORAL, BlockDeadTubeCoral.class);
-        register(DEADBUSH, BlockDeadbush.class);
+        register(DEADBUSH, BlockDeadbush.class);// done.
         register(DECORATED_POT, BlockDecoratedPot.class);// done.
         register(DEEPSLATE, BlockDeepslate.class);// done.
         register(DEEPSLATE_BRICK_DOUBLE_SLAB, BlockDeepslateBrickDoubleSlab.class);
