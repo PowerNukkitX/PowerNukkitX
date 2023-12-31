@@ -30,9 +30,9 @@ public interface BlockState {
 
     <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> DATATYPE getPropertyValue(PROPERTY p);
 
-    <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> void setPropertyValue(Block block, PROPERTY property, DATATYPE value);
+    <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> BlockState setPropertyValue(BlockProperties properties, PROPERTY property, DATATYPE value);
 
-    void setPropertyValue(Block block, BlockPropertyType.BlockPropertyValue<?, ?, ?> propertyValue);
+    BlockState setPropertyValue(BlockProperties properties, BlockPropertyType.BlockPropertyValue<?, ?, ?> propertyValue);
 
-    void setPropertyValues(Block block, BlockPropertyType.BlockPropertyValue<?, ?, ?>... values);
+    BlockState setPropertyValues(BlockProperties properties, BlockPropertyType.BlockPropertyValue<?, ?, ?>... values);
 }

@@ -1,23 +1,20 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.value.WoodType;
+import cn.nukkit.block.property.enums.OldLeafType;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
+
+import static cn.nukkit.block.property.CommonBlockProperties.PERSISTENT_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.UPDATE_BIT;
 
 
 public class BlockCherryLeaves extends BlockLeaves {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(PERSISTENT, UPDATE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_LEAVES,PERSISTENT_BIT, UPDATE_BIT);
 
     @Override
     public String getName() {
         return "Cherry Leaves";
-    }
-
-    @Override
-    public int getId() {
-        return CHERRY_LEAVES;
     }
 
     @Override
@@ -27,10 +24,9 @@ public class BlockCherryLeaves extends BlockLeaves {
 
     /*这里写木质类型为BIRCH只是为了获取凋落物时的概率正确，并不代表真的就是白桦木*/
     @Override
-    public WoodType getType() {
-        return WoodType.BIRCH;
+    public OldLeafType getType() {
+        return OldLeafType.BIRCH;
     }
-
 
     @NotNull
     @Override

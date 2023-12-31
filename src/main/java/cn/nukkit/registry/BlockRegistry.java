@@ -15,6 +15,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -23,6 +24,7 @@ import java.util.Set;
 public final class BlockRegistry extends BaseRegistry<String, Block, Class<? extends Block>> implements BlockID {
     private static final Set<String> KEYSET = new HashSet<>();
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Block>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
+    private static final Object2ObjectOpenHashMap<String, BlockProperties> PROPERTIES = new Object2ObjectOpenHashMap<>();
 
     @Override
     public void init() {
@@ -170,11 +172,11 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(CHERRY_FENCE, BlockCherryFence.class);// done.
         register(CHERRY_FENCE_GATE, BlockCherryFenceGate.class);// done.
         register(CHERRY_HANGING_SIGN, BlockCherryHangingSign.class);// done.
-        register(CHERRY_LEAVES, BlockCherryLeaves.class);
+        register(CHERRY_LEAVES, BlockCherryLeaves.class);// done.
         register(CHERRY_LOG, BlockCherryLog.class);// done.
         register(CHERRY_PLANKS, BlockCherryPlanks.class);// done.
         register(CHERRY_PRESSURE_PLATE, BlockCherryPressurePlate.class);
-        register(CHERRY_SAPLING, BlockCherrySapling.class);
+        register(CHERRY_SAPLING, BlockCherrySapling.class);// done.
         register(CHERRY_SLAB, BlockCherrySlab.class);
         register(CHERRY_STAIRS, BlockCherryStairs.class);
         register(CHERRY_STANDING_SIGN, BlockCherryStandingSign.class);// done.
@@ -192,7 +194,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(CHORUS_FLOWER, BlockChorusFlower.class);
         register(CHORUS_PLANT, BlockChorusPlant.class);// done.
         register(CLAY, BlockClay.class);// done.
-        register(CLIENT_REQUEST_PLACEHOLDER_BLOCK, BlockClientRequestPlaceholderBlock.class);
+        register(CLIENT_REQUEST_PLACEHOLDER_BLOCK, BlockClientRequestPlaceholderBlock.class);// done.
         register(COAL_BLOCK, BlockCoalBlock.class);
         register(COAL_ORE, BlockCoalOre.class);// done.
         register(COBBLED_DEEPSLATE, BlockCobbledDeepslate.class);
@@ -202,7 +204,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(COBBLED_DEEPSLATE_WALL, BlockCobbledDeepslateWall.class);
         register(COBBLESTONE, BlockCobblestone.class);
         register(COBBLESTONE_WALL, BlockCobblestoneWall.class);
-        register(COCOA, BlockCocoa.class);
+        register(COCOA, BlockCocoa.class);// done.
         register(COLORED_TORCH_BP, BlockColoredTorchBp.class);
         register(COLORED_TORCH_RG, BlockColoredTorchRg.class);
         register(COMMAND_BLOCK, BlockCommandBlock.class);// done.
@@ -1006,7 +1008,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(WHITE_TERRACOTTA, BlockWhiteTerracotta.class);// done.
         register(WHITE_WOOL, BlockWhiteWool.class);// done.
         register(WITHER_ROSE, BlockWitherRose.class);
-        register(WOOD, BlockWood.class);
+        register(WOOD, BlockWood.class);// done.
         register(WOODEN_BUTTON, BlockWoodenButton.class);// done.
         register(WOODEN_DOOR, BlockWoodenDoor.class);// done.
         register(WOODEN_PRESSURE_PLATE, BlockWoodenPressurePlate.class);
@@ -1027,6 +1029,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
 
     public void trim() {
         CACHE_CONSTRUCTORS.trim();
+        PROPERTIES.trim();
     }
 
     @UnmodifiableView
@@ -1048,6 +1051,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
                 FastConstructor<? extends Block> c = FastConstructor.create(value.getConstructor(BlockState.class));
                 if (CACHE_CONSTRUCTORS.putIfAbsent(blockProperties.getIdentifier(), c) == null) {
                     KEYSET.add(blockProperties.getIdentifier());
+                    PROPERTIES.put(blockProperties.getIdentifier(), blockProperties);
                     return OK.TRUE;
                 }
                 return new OK<>(false, new IllegalArgumentException("This block has already been registered with the identifier: " + blockProperties.getIdentifier()));
@@ -1057,6 +1061,13 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException e) {
             return new OK<>(false, e);
         }
+    }
+
+    public BlockProperties getBlockProperties(String identifier) {
+        BlockProperties properties = PROPERTIES.get(identifier);
+        if (properties == null) {
+            throw new IllegalArgumentException("Get the Block State from a unknown id: " + identifier);
+        } else return properties;
     }
 
     @NotNull

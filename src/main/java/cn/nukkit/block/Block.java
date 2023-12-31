@@ -481,16 +481,18 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return blockstate.getPropertyValue(p);
     }
 
-    public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> void setPropertyValue(PROPERTY property, DATATYPE value) {
-        blockstate.setPropertyValue(this, property, value);
+    public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> Block setPropertyValue(PROPERTY property, DATATYPE value) {
+        this.blockstate = blockstate.setPropertyValue(getProperties(), property, value);
+        return this;
     }
 
-    public void setPropertyValue(BlockPropertyType.BlockPropertyValue<?, ?, ?> propertyValue) {
-        blockstate.setPropertyValue(this, propertyValue);
+    public Block setPropertyValue(BlockPropertyType.BlockPropertyValue<?, ?, ?> propertyValue) {
+        this.blockstate = blockstate.setPropertyValue(getProperties(), propertyValue);
+        return this;
     }
 
     public void setPropertyValues(BlockPropertyType.BlockPropertyValue<?, ?, ?>... values) {
-        blockstate.setPropertyValues(this, values);
+        this.blockstate = blockstate.setPropertyValues(getProperties(), values);
     }
 
     public final int getRuntimeId() {
