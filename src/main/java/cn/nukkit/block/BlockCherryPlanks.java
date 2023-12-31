@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockCherryPlanks extends Block {
+public class BlockCherryPlanks extends BlockPlanks {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:cherry_planks");
 
     @Override

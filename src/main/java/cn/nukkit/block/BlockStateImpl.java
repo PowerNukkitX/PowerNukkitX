@@ -105,12 +105,12 @@ record BlockStateImpl(String identifier,
     }
 
     @Override
-    public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> void setPropertyValue(Block block, PROPERTY property, DATATYPE value) {
-        setPropertyValue(block, property.createValue(value));
+    public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> BlockState setPropertyValue(BlockProperties properties, PROPERTY property, DATATYPE value) {
+        return setPropertyValue(properties, property.createValue(value));
     }
 
     @Override
-    public void setPropertyValue(Block block, BlockPropertyType.BlockPropertyValue<?, ?, ?> propertyValue) {
+    public BlockState setPropertyValue(BlockProperties properties, BlockPropertyType.BlockPropertyValue<?, ?, ?> propertyValue) {
         final var blockPropertyValues = blockPropertyValues();
         final var newPropertyValues = new BlockPropertyType.BlockPropertyValue<?, ?, ?>[blockPropertyValues.length];
         var succeed = false;
@@ -124,11 +124,11 @@ record BlockStateImpl(String identifier,
         if (!succeed) {
             throw new IllegalArgumentException("Property " + propertyValue.getPropertyType() + " is not supported by this block");
         }
-        block.blockstate = getNewBlockState(block, newPropertyValues);
+        return getNewBlockState(properties, newPropertyValues);
     }
 
     @Override
-    public void setPropertyValues(Block block, BlockPropertyType.BlockPropertyValue<?, ?, ?>... values) {
+    public BlockState setPropertyValues(BlockProperties properties, BlockPropertyType.BlockPropertyValue<?, ?, ?>... values) {
         final var blockPropertyValues = blockPropertyValues();
         final var newPropertyValues = new BlockPropertyType.BlockPropertyValue<?, ?, ?>[blockPropertyValues.length];
         final var propertyValues = List.of(values);
@@ -155,14 +155,14 @@ record BlockStateImpl(String identifier,
             errorMsgBuilder.append(" are not supported by this block");
             throw new IllegalArgumentException(errorMsgBuilder.toString());
         }
-        block.blockstate = getNewBlockState(block, newPropertyValues);
+        return getNewBlockState(properties, newPropertyValues);
     }
 
-    private BlockState getNewBlockState(Block block, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] values) {
-        Preconditions.checkNotNull(block.getProperties());
-        byte bits = block.getProperties().getSpecialValueBits();
+    private BlockState getNewBlockState(BlockProperties properties, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] values) {
+        Preconditions.checkNotNull(properties);
+        byte bits = properties.getSpecialValueBits();
         if (bits <= 16) {
-            return block.getProperties().getBlockState(computeSpecialValue(bits, values));
+            return properties.getBlockState(computeSpecialValue(bits, values));
         } else {
             throw new IllegalArgumentException();
         }

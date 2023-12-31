@@ -116,6 +116,18 @@ public final class BlockProperties {
         return specialValueMap.get(specialValue);
     }
 
+    public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> BlockState getBlockState(PROPERTY property, DATATYPE value) {
+        return defaultState.setPropertyValue(this, property, value);
+    }
+
+    public BlockState getBlockState(BlockPropertyType.BlockPropertyValue<?, ?, ?> propertyValue) {
+        return defaultState.setPropertyValue(this, propertyValue);
+    }
+
+    public BlockState getBlockState(BlockPropertyType.BlockPropertyValue<?, ?, ?>... values) {
+        return defaultState.setPropertyValues(this, values);
+    }
+
     public byte getSpecialValueBits() {
         return bitSize;
     }

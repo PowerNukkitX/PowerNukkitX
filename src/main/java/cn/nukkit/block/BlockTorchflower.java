@@ -7,7 +7,7 @@ import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 
-public class BlockTorchflower extends BlockFlower {
+public class BlockTorchflower extends BlockRedFlower {
     public BlockTorchflower() {
     }
 

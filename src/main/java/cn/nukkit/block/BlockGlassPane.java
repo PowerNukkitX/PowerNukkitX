@@ -17,7 +17,7 @@ public class BlockGlassPane extends BlockThin {
     }
 
     public BlockGlassPane() {
-        this(PROPERTIES.getDefaultState());
+        super(PROPERTIES.getDefaultState());
     }
 
     public BlockGlassPane(BlockState blockstate) {

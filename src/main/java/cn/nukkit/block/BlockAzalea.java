@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
@@ -89,7 +88,7 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
         double chance = ThreadLocalRandom.current().nextDouble(1);
         boolean aged = chance > 0.8;
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!BlockFlower.isSupportValid(down())) {
+            if (!BlockRedFlower.isSupportValid(down())) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -110,7 +109,7 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (BlockFlower.isSupportValid(down())) {
+        if (BlockRedFlower.isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
         }

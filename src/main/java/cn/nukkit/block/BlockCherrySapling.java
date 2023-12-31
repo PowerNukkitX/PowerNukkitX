@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -16,26 +15,22 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.block.property.CommonBlockProperties.AGE_BIT;
+
 
 public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(BlockSapling.AGED);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_SAPLING, AGE_BIT);
 
 
     public BlockCherrySapling() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
 
     public BlockCherrySapling(BlockState blockstate) {
         super(blockstate);
     }
-
-    @Override
-    public int getId() {
-        return CHERRY_SAPLING;
-    }
-
 
     @NotNull
     @Override
@@ -89,11 +84,11 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
         if (ev.isCancelled()) {
             return;
         }
-        if (this.level.getBlock(vector3).getId() == BlockID.DIRT_WITH_ROOTS) {
+        if (this.level.getBlock(vector3).getId().equals(BlockID.DIRT_WITH_ROOTS)) {
             this.level.setBlock(vector3, Block.get(BlockID.DIRT));
         }
         for (Block block : ev.getBlockList()) {
-            if (block.getId() == BlockID.AIR) continue;
+            if (block.isAir()) continue;
             this.level.setBlock(block, block);
         }
     }
@@ -138,8 +133,8 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
     }
 
     private boolean isSupportInvalid() {
-        int downId = down().getId();
-        return !(downId == DIRT || downId == GRASS || downId == SAND || downId == GRAVEL || downId == PODZOL);
+        String downId = down().getId();
+        return !(downId.equals(DIRT) || downId.equals(GRASS) || downId.equals(SAND) || downId.equals(GRAVEL) || downId.equals(PODZOL));
     }
 
     public boolean isAge() {
@@ -147,7 +142,7 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
     }
 
     public void setAge(boolean age) {
-        this.setBooleanValue(BlockSapling.AGED, age);
+        this.setPropertyValue(BlockSapling.AGED, age);
     }
 
     @Override

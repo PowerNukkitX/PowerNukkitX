@@ -19,9 +19,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
-import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.BlockExplosionPrimeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
@@ -41,28 +39,16 @@ import java.util.Objects;
  * @since 2020-10-06
  */
 
-
-public class BlockRespawnAnchor extends BlockMeta {
-
-
-    public static final IntBlockProperty RESPAWN_ANCHOR_CHARGE = new IntBlockProperty("respawn_anchor_charge", true, 4);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(RESPAWN_ANCHOR_CHARGE);
-
-    @Override
-    public int getId() {
-        return RESPAWN_ANCHOR;
-    }
-
+public class BlockRespawnAnchor extends Block {
+    public static final BlockProperties PROPERTIES = new BlockProperties(RESPAWN_ANCHOR, CommonBlockProperties.RESPAWN_ANCHOR_CHARGE);
 
     public BlockRespawnAnchor() {
-        this(0);
+        super(PROPERTIES.getDefaultState());
     }
 
 
-    public BlockRespawnAnchor(int meta) throws InvalidBlockPropertyMetaException {
-        super(meta);
+    public BlockRespawnAnchor(BlockState blockState) {
+        super(blockState);
     }
 
 
@@ -80,7 +66,7 @@ public class BlockRespawnAnchor extends BlockMeta {
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         int charge = getCharge();
-        if (Item.getItemBlockId() == BlockID.GLOWSTONE && charge < RESPAWN_ANCHOR_CHARGE.getMaxValue()) {
+        if (item.getBlockId().equals(BlockID.GLOWSTONE) && charge < CommonBlockProperties.RESPAWN_ANCHOR_CHARGE.getMax()) {
             if (player == null || !player.isCreative()) {
                 item.count--;
             }
@@ -146,12 +132,12 @@ public class BlockRespawnAnchor extends BlockMeta {
 
 
     public int getCharge() {
-        return getIntValue(RESPAWN_ANCHOR_CHARGE);
+        return getPropertyValue(CommonBlockProperties.RESPAWN_ANCHOR_CHARGE);
     }
 
 
     public void setCharge(int charge) {
-        setIntValue(RESPAWN_ANCHOR_CHARGE, charge);
+        setPropertyValue(CommonBlockProperties.RESPAWN_ANCHOR_CHARGE, charge);
     }
 
     @Override
@@ -177,16 +163,12 @@ public class BlockRespawnAnchor extends BlockMeta {
 
     @Override
     public int getLightLevel() {
-        switch (getCharge()) {
-            case 0:
-                return 0;
-            case 1:
-                return 3;
-            case 2:
-                return 7;
-            default:
-                return 15;
-        }
+        return switch (getCharge()) {
+            case 0 -> 0;
+            case 1 -> 3;
+            case 2 -> 7;
+            default -> 15;
+        };
     }
 
     @Override
