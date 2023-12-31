@@ -8,7 +8,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.ItemPainting;
 import cn.nukkit.level.GameRule;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Axis;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class EntityPainting extends EntityHanging {
 
-    public static final int NETWORK_ID = 83;
+    
 
     public final static Motive[] motives = Motive.values();
     private Motive motive;
@@ -34,7 +34,7 @@ public class EntityPainting extends EntityHanging {
     private float length;
     private float height;
 
-    public EntityPainting(FullChunk chunk, CompoundTag nbt) {
+    public EntityPainting(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -57,10 +57,7 @@ public class EntityPainting extends EntityHanging {
         return height;
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {

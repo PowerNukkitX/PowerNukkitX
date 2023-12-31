@@ -6,7 +6,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.BeaconInventory;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.potion.Effect;
 
@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class BlockEntityBeacon extends BlockEntitySpawnable {
 
-    public BlockEntityBeacon(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityBeacon(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

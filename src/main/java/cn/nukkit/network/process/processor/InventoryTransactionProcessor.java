@@ -10,7 +10,7 @@ import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.item.EntityArmorStand;
-import cn.nukkit.entity.passive.EntityVillager;
+import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.PlayerInteractEntityEvent;
@@ -309,7 +309,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 for (Inventory inventory : playerHandle.getTradingTransaction().getInventories()) {
 
                     if (inventory instanceof TradeInventory tradeInventory) {
-                        EntityVillager ent = tradeInventory.getHolder();
+                        EntityVillagerV2 ent = tradeInventory.getHolder();
                         ent.namedTag.putBoolean("traded", true);
                         for (Tag tag : ent.getRecipes().getAll()) {
                             CompoundTag ta = (CompoundTag) tag;

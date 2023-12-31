@@ -17,7 +17,7 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.Set;
@@ -27,16 +27,13 @@ import java.util.Set;
  */
 public class EntitySkeleton extends EntityMob implements EntityWalkable, EntitySmite {
 
-    public static final int NETWORK_ID = 34;
+    
 
-    public EntitySkeleton(FullChunk chunk, CompoundTag nbt) {
+    public EntitySkeleton(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {

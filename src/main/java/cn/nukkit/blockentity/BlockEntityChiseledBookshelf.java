@@ -3,7 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.api.DoNotModify;
 import cn.nukkit.block.BlockChiseledBookshelf;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import com.google.common.base.Preconditions;
@@ -16,7 +16,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
     private Integer lastInteractedSlot;
     private Item[] items;
 
-    public BlockEntityChiseledBookshelf(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityChiseledBookshelf(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

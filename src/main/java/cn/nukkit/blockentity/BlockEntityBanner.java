@@ -1,7 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.BannerPattern;
@@ -11,7 +11,7 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
 
     public int color;
 
-    public BlockEntityBanner(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityBanner(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

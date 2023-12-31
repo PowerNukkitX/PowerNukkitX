@@ -4,7 +4,7 @@ import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -23,7 +23,7 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
 
     protected BlockVector3 piston;
 
-    public BlockEntityMovingBlock(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityMovingBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

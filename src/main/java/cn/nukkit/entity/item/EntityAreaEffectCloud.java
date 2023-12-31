@@ -9,7 +9,7 @@ import cn.nukkit.entity.data.ShortEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.potion.Effect;
@@ -21,9 +21,6 @@ import java.util.List;
 
 
 public class EntityAreaEffectCloud extends Entity {
-
-
-    public static final int NETWORK_ID = 95;
 
     public List<Effect> cloudEffects;
 
@@ -39,7 +36,7 @@ public class EntityAreaEffectCloud extends Entity {
     private int lastAge;
 
 
-    public EntityAreaEffectCloud(FullChunk chunk, CompoundTag nbt) {
+    public EntityAreaEffectCloud(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -439,12 +436,6 @@ public class EntityAreaEffectCloud extends Entity {
     protected float getDrag() {
         return 0;
     }
-
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
-
 
     @Override
     public String getOriginalName() {

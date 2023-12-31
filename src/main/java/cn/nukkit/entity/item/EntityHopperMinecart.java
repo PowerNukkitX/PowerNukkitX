@@ -12,16 +12,16 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.MinecartHopperInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.*;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.MinecartType;
 
-public class EntityMinecartHopper extends EntityMinecartAbstract implements InventoryHolder, BlockHopper.IHopper {
+public class EntityHopperMinecart extends EntityMinecartAbstract implements InventoryHolder, BlockHopper.IHopper {
 
-    public static final int NETWORK_ID = 96;
+    
     private final BlockVector3 temporalVector = new BlockVector3();
     public int transferCooldown;
 
@@ -29,7 +29,7 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
     private boolean disabled;
     private AxisAlignedBB pickupArea;
 
-    public EntityMinecartHopper(FullChunk chunk, CompoundTag nbt) {
+    public EntityHopperMinecart(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         setDisplayBlock(Block.get(Block.HOPPER_BLOCK), false);
     }
@@ -102,10 +102,7 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
         return false;
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public void dropItem() {

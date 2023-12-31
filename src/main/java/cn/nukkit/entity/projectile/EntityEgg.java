@@ -2,7 +2,7 @@ package cn.nukkit.entity.projectile;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.ItemEgg;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -13,20 +13,17 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityEgg extends EntityProjectile {
 
-    public static final int NETWORK_ID = 82;
+    
 
-    public EntityEgg(FullChunk chunk, CompoundTag nbt) {
+    public EntityEgg(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityEgg(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntityEgg(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {

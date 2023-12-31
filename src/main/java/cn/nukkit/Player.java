@@ -19,7 +19,7 @@ import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.entity.item.EntityItem;
-import cn.nukkit.entity.item.EntityXPOrb;
+import cn.nukkit.entity.item.EntityXpOrb;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
@@ -126,8 +126,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * <p>
      * A empty array of static constants that host the player
      */
-
-
     public static final Player[] EMPTY_ARRAY = new Player[0];
     public static final int SURVIVAL = 0;
     public static final int CREATIVE = 1;
@@ -151,10 +149,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * <p>
      * Villager trading window id
      */
-
-
     public static final int TRADE_WINDOW_ID = 500;
-
     public static final float DEFAULT_SPEED = 0.1f;
     public static final float DEFAULT_FLY_SPEED = 0.05f;
     public static final float MAXIMUM_SPEED = 0.5f;
@@ -166,8 +161,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final int ENCHANT_WINDOW_ID = 3;
     public static final int BEACON_WINDOW_ID = 4;
     public static final int GRINDSTONE_WINDOW_ID = dynamic(5);
-
-
     public static final int SMITHING_WINDOW_ID = dynamic(6);
     public final HashSet<String> achievements = new HashSet<>();
     public final Map<Long, Boolean> usedChunks = new Long2ObjectOpenHashMap<>();
@@ -988,7 +981,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
 
             switch (block.getId()) {
-                case BlockID.NETHER_PORTAL -> portal = true;
+                case BlockID.PORTAL -> portal = true;
                 case BlockID.SCAFFOLDING -> scaffolding = true;
                 case BlockID.END_PORTAL -> endPortal = true;
             }
@@ -5674,7 +5667,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         int tick = this.getServer().getTick();
-        if (pickedXPOrb < tick && entity instanceof EntityXPOrb xpOrb && this.boundingBox.isVectorInside(entity)) {
+        if (pickedXPOrb < tick && entity instanceof EntityXpOrb xpOrb && this.boundingBox.isVectorInside(entity)) {
             if (xpOrb.getPickupDelay() <= 0) {
                 int exp = xpOrb.getExp();
                 entity.kill();

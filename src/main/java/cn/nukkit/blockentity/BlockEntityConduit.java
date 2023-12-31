@@ -11,7 +11,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.biome.type.SnowyBiome;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -38,7 +38,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     private int validBlocks;
 
 
-    public BlockEntityConduit(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityConduit(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

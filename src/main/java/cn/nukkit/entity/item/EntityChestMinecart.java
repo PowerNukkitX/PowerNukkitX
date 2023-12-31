@@ -7,7 +7,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.MinecartChestInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -18,13 +18,13 @@ import cn.nukkit.utils.MinecartType;
  * @author Snake1999
  * @since 2016/1/30
  */
-public class EntityMinecartChest extends EntityMinecartAbstract implements InventoryHolder {
+public class EntityChestMinecart extends EntityMinecartAbstract implements InventoryHolder {
 
-    public static final int NETWORK_ID = 98;
+    
 
     protected MinecartChestInventory inventory;
 
-    public EntityMinecartChest(FullChunk chunk, CompoundTag nbt) {
+    public EntityChestMinecart(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         setDisplayBlock(Block.get(Block.CHEST), false);
     }
@@ -45,10 +45,7 @@ public class EntityMinecartChest extends EntityMinecartAbstract implements Inven
         return false;
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public void dropItem() {

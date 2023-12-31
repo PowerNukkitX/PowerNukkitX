@@ -29,15 +29,15 @@ import java.util.function.Supplier;
  * @author boybook
  * @since 2016/2/27
  */
-public class EntityLightning extends Entity implements EntityLightningStrike {
+public class EntityLightningBolt extends Entity implements EntityLightningStrike {
 
-    public static final int NETWORK_ID = 93;
+    
     public int state;
     public int liveTime;
     protected boolean isEffect = true;
 
 
-    public EntityLightning(IChunk chunk, CompoundTag nbt) {
+    public EntityLightningBolt(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -45,10 +45,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
         return block instanceof Oxidizable && (!(block instanceof Waxable) || !((Waxable) block).isWaxed());
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {

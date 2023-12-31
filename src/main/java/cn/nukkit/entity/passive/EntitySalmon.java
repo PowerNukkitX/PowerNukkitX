@@ -1,7 +1,7 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 
@@ -10,16 +10,13 @@ import cn.nukkit.utils.Utils;
  */
 public class EntitySalmon extends EntityFish {
 
-    public static final int NETWORK_ID = 109;
+    
 
-    public EntitySalmon(FullChunk chunk, CompoundTag nbt) {
+    public EntitySalmon(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
 
     @Override

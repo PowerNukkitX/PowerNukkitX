@@ -6,7 +6,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityEnderPearl;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
@@ -32,7 +32,7 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
     
     private static final BlockState STATE_BEDROCK = BlockState.of(BEDROCK);
     
-    public BlockEntityEndGateway(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityEndGateway(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
     

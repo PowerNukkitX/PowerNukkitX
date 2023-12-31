@@ -20,7 +20,7 @@ import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
@@ -36,9 +36,6 @@ import java.util.Collection;
 
 public class EntityArmorStand extends Entity implements EntityInventoryHolder, EntityInteractable, EntityNameable {
 
-
-    public static final int NETWORK_ID = 61;
-
     private static final String TAG_MAINHAND = "Mainhand";
     private static final String TAG_POSE_INDEX = "PoseIndex";
     private static final String TAG_OFFHAND = "Offhand";
@@ -48,7 +45,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     private EntityArmorInventory armorInventory;
 
 
-    public EntityArmorStand(FullChunk chunk, CompoundTag nbt) {
+    public EntityArmorStand(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         setMaxHealth(6);
         setHealth(6);
@@ -70,10 +67,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getHeight() {

@@ -1,7 +1,7 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
@@ -10,18 +10,18 @@ import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
 
 
-public class EntityPotionLingering extends EntityPotion {
+public class EntityLingeringPotion extends EntitySplashPotion {
 
 
-    public static final int NETWORK_ID = 101;
+    
 
 
-    public EntityPotionLingering(FullChunk chunk, CompoundTag nbt) {
+    public EntityLingeringPotion(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
 
-    public EntityPotionLingering(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntityLingeringPotion(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 

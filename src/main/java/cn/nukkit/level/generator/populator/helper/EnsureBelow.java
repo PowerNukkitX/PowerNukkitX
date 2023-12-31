@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.populator.helper;
 
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 
 /**
  * @author DaPorkchop_

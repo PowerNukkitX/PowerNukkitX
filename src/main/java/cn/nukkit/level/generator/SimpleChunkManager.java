@@ -3,7 +3,7 @@ package cn.nukkit.level.generator;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 
 /**
  * @author MagicDroidX (Nukkit Project)

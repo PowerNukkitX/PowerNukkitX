@@ -8,7 +8,7 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.ShulkerBoxInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -22,7 +22,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
 
     protected ShulkerBoxInventory inventory;
 
-    public BlockEntityShulkerBox(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityShulkerBox(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -12,16 +12,13 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmite {
 
-    public static final int NETWORK_ID = 58;
+    
 
-    public EntityPhantom(FullChunk chunk, CompoundTag nbt) {
+    public EntityPhantom(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {

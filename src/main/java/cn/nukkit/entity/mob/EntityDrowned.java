@@ -5,7 +5,7 @@ import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -13,16 +13,13 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public class EntityDrowned extends EntityMob implements EntitySwimmable, EntityWalkable, EntitySmite {
 
-    public static final int NETWORK_ID = 110;
+    
 
-    public EntityDrowned(FullChunk chunk, CompoundTag nbt) {
+    public EntityDrowned(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {

@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator.populator.impl.structure.swamphut;
 
 import cn.nukkit.level.biome.EnumBiome;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.populator.impl.structure.swamphut.structure.SwampHut;
 import cn.nukkit.level.generator.populator.impl.structure.utils.populator.PopulatorScatteredStructure;
 import cn.nukkit.level.generator.populator.impl.structure.utils.structure.ScatteredStructurePiece;

@@ -3,7 +3,7 @@ package cn.nukkit.level.generator.populator.impl.structure.desertwell;
 import cn.nukkit.block.BlockSlabStone;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.EnumBiome;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.populator.type.PopulatorStructure;
 import cn.nukkit.math.NukkitRandom;
 

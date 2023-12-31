@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityArrow extends SlenderProjectile {
 
-    public static final int NETWORK_ID = 80;
+    
 
     protected int pickupMode;
 
@@ -31,10 +31,7 @@ public class EntityArrow extends SlenderProjectile {
         this.setCritical(critical);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getLength() {

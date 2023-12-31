@@ -22,7 +22,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -36,17 +36,14 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityIronGolem extends EntityMob implements EntityWalkable {
 
 
-    public static final int NETWORK_ID = 20;
+    
 
 
-    public EntityIronGolem(FullChunk chunk, CompoundTag nbt) {
+    public EntityIronGolem(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
 
     @Override

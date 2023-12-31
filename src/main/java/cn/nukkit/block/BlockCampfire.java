@@ -6,10 +6,10 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCampfire;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.item.EntityPotion;
+import cn.nukkit.entity.item.EntitySplashPotion;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
-import cn.nukkit.entity.projectile.EntitySmallFireBall;
+import cn.nukkit.entity.projectile.EntitySmallFireball;
 import cn.nukkit.event.entity.EntityCombustByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -247,12 +247,12 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
 
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
-        if ((projectile instanceof EntitySmallFireBall || (projectile.isOnFire() && projectile instanceof EntityArrow)) && isExtinguished()) {
+        if ((projectile instanceof EntitySmallFireball || (projectile.isOnFire() && projectile instanceof EntityArrow)) && isExtinguished()) {
             setExtinguished(false);
             level.setBlock(this, this, true);
             return true;
-        } else if (projectile instanceof EntityPotion && !isExtinguished()
-                && ((EntityPotion) projectile).potionId == 0) {
+        } else if (projectile instanceof EntitySplashPotion && !isExtinguished()
+                && ((EntitySplashPotion) projectile).potionId == 0) {
             setExtinguished(true);
             level.setBlock(this, this, true);
             return true;

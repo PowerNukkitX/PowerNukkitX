@@ -3,7 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Server;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.positiontracking.PositionTracking;
 import cn.nukkit.positiontracking.PositionTrackingService;
@@ -23,7 +23,7 @@ import java.util.OptionalInt;
 public class BlockEntityLodestone extends BlockEntitySpawnable {
 
 
-    public BlockEntityLodestone(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityLodestone(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

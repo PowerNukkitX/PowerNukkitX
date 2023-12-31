@@ -4,7 +4,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.potion.PotionCollideEvent;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.particle.SpellParticle;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -14,19 +14,19 @@ import cn.nukkit.potion.Potion;
 /**
  * @author xtypr
  */
-public class EntityPotion extends EntityProjectile {
+public class EntitySplashPotion extends EntityProjectile {
 
-    public static final int NETWORK_ID = 86;
+    
 
     public static final int DATA_POTION_ID = 37;
 
     public int potionId;
 
-    public EntityPotion(FullChunk chunk, CompoundTag nbt) {
+    public EntitySplashPotion(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    public EntityPotion(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntitySplashPotion(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
@@ -53,10 +53,7 @@ public class EntityPotion extends EntityProjectile {
         }*/
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {

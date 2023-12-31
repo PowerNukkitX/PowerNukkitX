@@ -17,7 +17,7 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.Set;
@@ -27,9 +27,9 @@ import java.util.Set;
  */
 public class EntityPig extends EntityAnimal implements EntityWalkable {
 
-    public static final int NETWORK_ID = 12;
+    
 
-    public EntityPig(FullChunk chunk, CompoundTag nbt) {
+    public EntityPig(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -105,10 +105,7 @@ public class EntityPig extends EntityAnimal implements EntityWalkable {
         return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_PORKCHOP : Item.RAW_PORKCHOP))};
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public boolean isBreedingItem(Item item) {

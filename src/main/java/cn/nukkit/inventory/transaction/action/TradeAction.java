@@ -1,17 +1,17 @@
 package cn.nukkit.inventory.transaction.action;
 
 import cn.nukkit.Player;
-import cn.nukkit.entity.passive.EntityVillager;
+import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
 
 
 public class TradeAction extends InventoryAction {
-    private final EntityVillager villager;
+    private final EntityVillagerV2 villager;
     private final int type;
 
-    public TradeAction(Item sourceItem, Item targetItem, int windowId, EntityVillager villager) {
+    public TradeAction(Item sourceItem, Item targetItem, int windowId, EntityVillagerV2 villager) {
         super(sourceItem, targetItem);
         this.type = windowId;
         this.villager = villager;

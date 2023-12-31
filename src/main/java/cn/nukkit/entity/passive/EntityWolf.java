@@ -30,7 +30,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -47,17 +47,14 @@ import java.util.Set;
  * todo 野生狼不会被刷新
  */
 public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable, EntityColor {
-    public static final int NETWORK_ID = 14;
+    
     protected float[] diffHandDamage = new float[]{3, 4, 6};
 
-    public EntityWolf(FullChunk chunk, CompoundTag nbt) {
+    public EntityWolf(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
@@ -307,7 +304,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     @Override
     public boolean attackTarget(Entity entity) {
         return switch (entity.getNetworkId()) {
-            case EntityRabbit.NETWORK_ID, EntityFox.NETWORK_ID, EntitySkeleton.NETWORK_ID, EntityWitherSkeleton.NETWORK_ID, EntityStray.NETWORK_ID, EntityLlama.NETWORK_ID,
+            case EntityRabbit.NETWORK_ID, EntityFox.NETWORK_ID, EntitySkeleton.NETWORK_ID, EntityWitherSkeleton.NETWORK_ID, EntityStray.NETWORK_ID, EntityLlamaSpit.NETWORK_ID,
                     EntitySheep.NETWORK_ID, EntityTurtle.NETWORK_ID -> true;
             default -> false;
         };

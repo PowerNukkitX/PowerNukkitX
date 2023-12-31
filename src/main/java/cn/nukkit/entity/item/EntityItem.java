@@ -8,7 +8,7 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.ItemDespawnEvent;
 import cn.nukkit.event.entity.ItemSpawnEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddItemEntityPacket;
@@ -21,20 +21,17 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityItem extends Entity {
 
-    public static final int NETWORK_ID = 64;
+    
     protected String owner;
     protected String thrower;
     protected Item item;
     protected int pickupDelay;
 
-    public EntityItem(FullChunk chunk, CompoundTag nbt) {
+    public EntityItem(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {

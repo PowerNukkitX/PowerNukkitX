@@ -7,7 +7,7 @@ import cn.nukkit.entity.mob.EntitySkeleton;
 import cn.nukkit.entity.mob.EntitySpider;
 import cn.nukkit.entity.mob.EntityZombie;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.populator.impl.structure.dungeon.loot.DungeonChest;
 import cn.nukkit.level.generator.populator.type.PopulatorStructure;
 import cn.nukkit.level.generator.task.BlockActorSpawnTask;

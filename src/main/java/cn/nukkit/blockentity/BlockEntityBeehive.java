@@ -9,7 +9,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.passive.EntityBee;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
@@ -28,7 +28,7 @@ public class BlockEntityBeehive extends BlockEntity {
     private List<Occupant> occupants;
 
 
-    public BlockEntityBeehive(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityBeehive(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

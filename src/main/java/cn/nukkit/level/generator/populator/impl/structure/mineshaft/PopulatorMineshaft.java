@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.populator.impl.structure.mineshaft;
 
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.EnumBiome;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.populator.impl.structure.mineshaft.structure.MineshaftPieces;
 import cn.nukkit.level.generator.populator.impl.structure.utils.math.BoundingBox;

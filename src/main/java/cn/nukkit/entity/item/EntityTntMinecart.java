@@ -13,7 +13,7 @@ import cn.nukkit.item.ItemMinecartTNT;
 import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MinecartType;
@@ -23,12 +23,12 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author Adam Matthew [larryTheCoder] (Nukkit Project)
  */
-public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityExplosive {
+public class EntityTntMinecart extends EntityMinecartAbstract implements EntityExplosive {
 
-    public static final int NETWORK_ID = 97;
+    
     private int fuse;
 
-    public EntityMinecartTNT(FullChunk chunk, CompoundTag nbt) {
+    public EntityTntMinecart(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         super.setDisplayBlock(Block.get(BlockID.TNT), false);
     }
@@ -130,9 +130,8 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
         return MinecartType.valueOf(3);
     }
 
-    @Override
-    public int getNetworkId() {
-        return EntityMinecartTNT.NETWORK_ID;
+    private int getNetworkId() {
+        return EntityTntMinecart.NETWORK_ID;
     }
 
     @Override

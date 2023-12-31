@@ -2,7 +2,7 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFlowerPot;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -10,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @since 2016/2/4
  */
 public class BlockEntityFlowerPot extends BlockEntitySpawnable {
-    public BlockEntityFlowerPot(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityFlowerPot(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

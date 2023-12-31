@@ -3,7 +3,7 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -11,16 +11,13 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public class EntityZombieHorse extends EntityAnimal implements EntityWalkable, EntitySmite {
 
-    public static final int NETWORK_ID = 27;
+    
 
-    public EntityZombieHorse(FullChunk chunk, CompoundTag nbt) {
+    public EntityZombieHorse(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {

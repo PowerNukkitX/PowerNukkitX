@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockRail;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.item.EntityMinecartTNT;
+import cn.nukkit.entity.item.EntityTntMinecart;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -40,7 +40,7 @@ public class ItemTntMinecart extends Item {
             if (type.isAscending()) {
                 adjacent = 0.5D;
             }
-            EntityMinecartTNT minecart = (EntityMinecartTNT) Entity.createEntity("MinecartTnt",
+            EntityTntMinecart minecart = (EntityTntMinecart) Entity.createEntity("MinecartTnt",
                     level.getChunk(target.getFloorX() >> 4, target.getFloorZ() >> 4), new CompoundTag("")
                             .putList(new ListTag<>("Pos")
                                     .add(new DoubleTag("", target.getX() + 0.5))

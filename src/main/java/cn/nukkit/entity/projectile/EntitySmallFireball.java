@@ -18,18 +18,15 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 
-public class EntitySmallFireBall extends EntityProjectile {
+public class EntitySmallFireball extends EntityProjectile {
 
-    public static final int NETWORK_ID = 94;
+    
 
-    public EntitySmallFireBall(IChunk chunk, CompoundTag nbt) {
+    public EntitySmallFireball(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getHeight() {

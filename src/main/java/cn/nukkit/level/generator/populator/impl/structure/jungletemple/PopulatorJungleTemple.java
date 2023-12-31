@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator.populator.impl.structure.jungletemple;
 
 import cn.nukkit.level.biome.EnumBiome;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.populator.impl.structure.jungletemple.structure.JungleTemple;
 import cn.nukkit.level.generator.populator.impl.structure.utils.populator.PopulatorScatteredStructure;
 import cn.nukkit.level.generator.populator.impl.structure.utils.structure.ScatteredStructurePiece;
