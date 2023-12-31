@@ -45,7 +45,7 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         //todo: 实现红树树苗放置逻辑
-        if (BlockFlower.isSupportValid(down())) {
+        if (BlockRedFlower.isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
         }
@@ -81,7 +81,7 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!BlockFlower.isSupportValid(down())) {
+            if (!BlockRedFlower.isSupportValid(down())) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }

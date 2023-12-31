@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockDarkOakPlanks extends Block {
+public class BlockDarkOakPlanks extends BlockPlanks {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:dark_oak_planks");
 
     @Override

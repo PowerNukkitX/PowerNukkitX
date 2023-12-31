@@ -1,8 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.CrackedState;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
@@ -10,27 +10,21 @@ import org.jetbrains.annotations.Nullable;
 
 //todo complete
 
-
-public class BlockSnifferEgg extends BlockTransparentMeta {
-    public static final ArrayBlockProperty<String> CRACKED_STATE = new ArrayBlockProperty("cracked_state", false, new String[]{"cracked", "max_cracked", "no_cracks"});
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(CRACKED_STATE);
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
+public class BlockSnifferEgg extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties(SNIFFER_EGG, CommonBlockProperties.CRACKED_STATE);
 
     public BlockSnifferEgg() {
+        super(PROPERTIES.getDefaultState());
     }
 
     public BlockSnifferEgg(BlockState blockstate) {
         super(blockstate);
     }
 
-    public int getId() {
-        return SNIFFER_EGG;
+    @NotNull
+    @Override
+    public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     public String getName() {
@@ -39,7 +33,7 @@ public class BlockSnifferEgg extends BlockTransparentMeta {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        this.setPropertyValue(CRACKED_STATE, "no_cracks");
+        this.setPropertyValue(CommonBlockProperties.CRACKED_STATE, CrackedState.NO_CRACKS);
         return this.getLevel().setBlock(this, this);
     }
 }
