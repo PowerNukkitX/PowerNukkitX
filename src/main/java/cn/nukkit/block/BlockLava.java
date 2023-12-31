@@ -89,7 +89,7 @@ public class BlockLava extends BlockLiquid {
                     Vector3 v = this.add(random.nextInt(3) - 1, 1, random.nextInt(3) - 1);
                     Block block = this.getLevel().getBlock(v);
 
-                    if (block.getId() == AIR) {
+                    if (block.isAir()) {
                         if (this.isSurroundingBlockFlammable(block)) {
                             BlockIgniteEvent e = new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.LAVA);
                             this.level.getServer().getPluginManager().callEvent(e);
@@ -112,7 +112,7 @@ public class BlockLava extends BlockLiquid {
                     Vector3 v = this.add(random.nextInt(3) - 1, 0, random.nextInt(3) - 1);
                     Block block = this.getLevel().getBlock(v);
 
-                    if (block.up().getId() == AIR && block.getBurnChance() > 0 && isNetherSpreadNotAllowed(block)) {
+                    if (block.up().isAir() && block.getBurnChance() > 0 && isNetherSpreadNotAllowed(block)) {
                         BlockIgniteEvent e = new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.LAVA);
                         this.level.getServer().getPluginManager().callEvent(e);
 

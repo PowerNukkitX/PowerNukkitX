@@ -99,7 +99,7 @@ public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.Flow
         if (item.isFertilizer()) {
             Block up = this.up();
 
-            if (up.getId() == AIR) {
+            if (up.isAir()) {
                 DoublePlantType type;
 
                 switch (this.getDamage()) {

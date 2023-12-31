@@ -7,7 +7,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockDeepslate extends BlockSolid {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:deepslate", CommonBlockProperties.PILLAR_AXIS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE, CommonBlockProperties.PILLAR_AXIS);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockDeepslate() {
         super(PROPERTIES.getDefaultState());
@@ -37,7 +42,6 @@ public class BlockDeepslate extends BlockSolid {
         return ItemTool.TYPE_PICKAXE;
     }
 
-
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
@@ -60,12 +64,5 @@ public class BlockDeepslate extends BlockSolid {
     @Override
     public boolean canSilkTouch() {
         return true;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 }

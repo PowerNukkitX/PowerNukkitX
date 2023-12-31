@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockDeepslateBricks extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:deepslate_bricks");
+    public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_BRICKS);
 
     @Override
     public @NotNull BlockProperties getProperties() {

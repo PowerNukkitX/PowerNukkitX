@@ -17,7 +17,12 @@ import javax.annotation.Nullable;
  * @author PikyCZ
  */
 public class BlockEndRod extends BlockTransparent implements Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:end_rod", CommonBlockProperties.FACING_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(END_ROD, CommonBlockProperties.FACING_DIRECTION);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockEndRod() {
         this(PROPERTIES.getDefaultState());
@@ -30,12 +35,6 @@ public class BlockEndRod extends BlockTransparent implements Faceable {
     @Override
     public String getName() {
         return "End Rod";
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -78,7 +77,6 @@ public class BlockEndRod extends BlockTransparent implements Faceable {
         return this.z + 0.6;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 2;
@@ -108,5 +106,4 @@ public class BlockEndRod extends BlockTransparent implements Faceable {
     public BlockFace getBlockFace() {
         return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION) & 0x07);
     }
-
 }

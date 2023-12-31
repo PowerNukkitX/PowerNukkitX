@@ -2,8 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntitySmallFireBall;
@@ -21,32 +19,23 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BlockChorusFlower extends BlockTransparentMeta {
+import static cn.nukkit.block.property.CommonBlockProperties.AGE_6;
 
+public class BlockChorusFlower extends BlockTransparent {
 
-    public static final IntBlockProperty AGE = new IntBlockProperty("age", false, 5);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CHORUS_FLOWER, AGE_6);
 
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(AGE);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockChorusFlower() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
-    
+
     public BlockChorusFlower(BlockState blockstate) {
         super(blockstate);
-    }
-    
-    @Override
-    public int getId() {
-        return CHORUS_FLOWER;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -73,16 +62,16 @@ public class BlockChorusFlower extends BlockTransparentMeta {
         // Chorus flowers must be above end stone or chorus plant, or be above air and horizontally adjacent to exactly one chorus plant.
         // If these conditions are not met, the block breaks without dropping anything.
         Block down = down();
-        if (down.getId() == CHORUS_PLANT || down.getId() == END_STONE) {
+        if (down.getId().equals(CHORUS_PLANT) || down.getId().equals(END_STONE)) {
             return true;
         }
-        if (down.getId() != AIR) {
+        if (!down.isAir()) {
             return false;
         }
         boolean foundPlant = false;
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
             Block side = getSide(face);
-            if (side.getId() == CHORUS_PLANT) {
+            if (side.getId().equals(CHORUS_PLANT)) {
                 if (foundPlant) {
                     return false;
                 }
@@ -105,19 +94,19 @@ public class BlockChorusFlower extends BlockTransparentMeta {
             return type;
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             // Check limit
-            if (this.up().getId() == AIR && this.up().getY() < level.getMaxHeight()) {
+            if (this.up().isAir() && this.up().getY() < level.getMaxHeight()) {
                 if (!isFullyAged()) {
                     boolean growUp = false; // Grow upward?
                     boolean ground = false; // Is on the ground directly?
-                    if (this.down().getId() == AIR || this.down().getId() == END_STONE) {
+                    if (this.down().isAir() || this.down().getId().equals(END_STONE)) {
                         growUp = true;
-                    } else if (this.down().getId() == CHORUS_PLANT) {
+                    } else if (this.down().getId().equals(CHORUS_PLANT)) {
                         int height = 1;
                         for (int y = 2; y < 6; y++) {
-                            if (this.down(y).getId() == CHORUS_PLANT) {
+                            if (this.down(y).getId().equals(CHORUS_PLANT)) {
                                 height++;
                             } else {
-                                if (this.down(y).getId() == END_STONE) {
+                                if (this.down(y).getId().equals(END_STONE)) {
                                     ground = true;
                                 }
                                 break;
@@ -130,7 +119,7 @@ public class BlockChorusFlower extends BlockTransparentMeta {
                     }
                     
                     // Grow Upward
-                    if (growUp && this.up(2).getId() == AIR && isHorizontalAir(this.up())) {
+                    if (growUp && this.up(2).isAir() && isHorizontalAir(this.up())) {
                         BlockChorusFlower block = (BlockChorusFlower) this.clone();
                         block.y = this.y + 1;
                         BlockGrowEvent ev = new BlockGrowEvent(this, block);
@@ -148,7 +137,7 @@ public class BlockChorusFlower extends BlockTransparentMeta {
                         for (int i = 0; i < ThreadLocalRandom.current().nextInt(ground ? 5 : 4); i++) {
                             BlockFace face = BlockFace.Plane.HORIZONTAL.random();
                             Block check = this.getSide(face);
-                            if (check.getId() == AIR && check.down().getId() == AIR && isHorizontalAirExcept(check, face.getOpposite())) {
+                            if (check.isAir() && check.down().isAir() && isHorizontalAirExcept(check, face.getOpposite())) {
                                 BlockChorusFlower block = (BlockChorusFlower) this.clone();
                                 block.x = check.x;
                                 block.y = check.y;
@@ -226,17 +215,17 @@ public class BlockChorusFlower extends BlockTransparentMeta {
 
 
     public int getMaxAge() {
-        return AGE.getMaxValue();
+        return AGE_6.getMax();
     }
 
 
     public int getAge() {
-        return getIntValue(AGE);
+        return getPropertyValue(AGE_6);
     }
 
 
     public void setAge(int age) {
-        setIntValue(AGE, age);
+        setPropertyValue(AGE_6, age);
     }
 
 
@@ -247,7 +236,7 @@ public class BlockChorusFlower extends BlockTransparentMeta {
 
     private boolean isHorizontalAir(Block block) {
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
-            if (block.getSide(face).getId() != AIR) {
+            if (!block.getSide(face).isAir()) {
                 return false;
             }
         }
@@ -258,7 +247,7 @@ public class BlockChorusFlower extends BlockTransparentMeta {
     private boolean isHorizontalAirExcept(Block block, BlockFace except) {
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
             if (face != except) {
-                if (block.getSide(face).getId() != AIR) {
+                if (!block.getSide(face).isAir()) {
                     return false;
                 }
             }

@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.value.OxidizationLevel;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -9,7 +8,6 @@ import javax.annotation.Nullable;
  * @author LoboMetalurgico
  * @since 11/06/2021
  */
-
 
 public class BlockCopperCut extends BlockCopperBase {
 

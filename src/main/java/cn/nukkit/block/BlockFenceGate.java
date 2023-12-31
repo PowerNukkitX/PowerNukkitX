@@ -26,7 +26,10 @@ import java.util.Set;
  * @since 2015/11/23
  */
 public class BlockFenceGate extends BlockTransparent implements RedstoneComponent, Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(FENCE_GATE, CommonBlockProperties.DIRECTION, CommonBlockProperties.IN_WALL_BIT, CommonBlockProperties.OPEN_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(FENCE_GATE,
+            CommonBlockProperties.DIRECTION,
+            CommonBlockProperties.IN_WALL_BIT,
+            CommonBlockProperties.OPEN_BIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {

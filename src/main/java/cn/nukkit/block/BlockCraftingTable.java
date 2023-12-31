@@ -13,17 +13,25 @@ import javax.annotation.Nullable;
  * @since 2015/12/5
  */
 public class BlockCraftingTable extends BlockSolid {
+
+    public static final BlockProperties PROPERTIES = new BlockProperties(CRAFTING_TABLE);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockCraftingTable() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockCraftingTable(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "Crafting Table";
-    }
-
-    @Override
-    public int getId() {
-        return CRAFTING_TABLE;
     }
 
     @Override
@@ -62,5 +70,4 @@ public class BlockCraftingTable extends BlockSolid {
         }
         return true;
     }
-
 }

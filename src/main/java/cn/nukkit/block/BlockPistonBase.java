@@ -441,7 +441,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
         protected boolean addBlockLine(Block origin, Block from, boolean mainBlockLine) {
             var block = origin.clone();
-            if (block.getId() == AIR)
+            if (block.isAir())
                 return true;
             if (!mainBlockLine && block.canSticksBlock() && from.canSticksBlock() && block.getId() != from.getId())
                 return true;
@@ -461,7 +461,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                 block = origin.getSide(this.moveDirection.getOpposite(), count);
                 if ((!extending || !mainBlockLine) && block.canSticksBlock() && oldBlock.canSticksBlock() && block.getId() != oldBlock.getId())
                     break;
-                if (block.getId() == AIR || !canPush(block, this.moveDirection, false, extending) || block.equals(this.pistonPos))
+                if (block.isAir() || !canPush(block, this.moveDirection, false, extending) || block.equals(this.pistonPos))
                     break;
                 if (block.breaksWhenMoved() && block.sticksToPiston()) {
                     this.toDestroy.add(block);
@@ -488,7 +488,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                     }
                     return true;
                 }
-                if (nextBlock.getId() == AIR || nextBlock.equals(armPos))
+                if (nextBlock.isAir() || nextBlock.equals(armPos))
                     return true;
                 if (!canPush(nextBlock, this.moveDirection, true, extending) || nextBlock.equals(this.pistonPos))
                     return false;

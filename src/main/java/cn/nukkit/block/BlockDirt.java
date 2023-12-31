@@ -17,7 +17,7 @@ import java.util.Optional;
  */
 
 public class BlockDirt extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:dirt", CommonBlockProperties.DIRT_TYPE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(DIRT, CommonBlockProperties.DIRT_TYPE);
 
     public BlockDirt() {
         super(PROPERTIES.getDefaultState());
@@ -27,16 +27,12 @@ public class BlockDirt extends BlockSolid {
         super(blockState);
     }
 
-
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-
-    @NotNull
-    public DirtType getDirtType() {
+    public @NotNull DirtType getDirtType() {
         return getPropertyValue(CommonBlockProperties.DIRT_TYPE);
     }
 
@@ -99,5 +95,4 @@ public class BlockDirt extends BlockSolid {
     public Item[] getDrops(Item item) {
         return new Item[]{new ItemBlock(Block.get(BlockID.DIRT))};
     }
-
 }

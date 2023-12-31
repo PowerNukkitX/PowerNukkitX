@@ -223,7 +223,7 @@ public class BlockVine extends BlockTransparentMeta {
                 int faceMeta = getMetaFromFace(face);
                 int meta = this.getDamage();
 
-                if (this.y < 255 && face == BlockFace.UP && block.getId() == AIR) {
+                if (this.y < 255 && face == BlockFace.UP && block.isAir()) {
                     if (this.canSpread()) {
                         for (BlockFace horizontalFace : BlockFace.Plane.HORIZONTAL) {
                             if (random.nextBoolean() || !this.getSide(horizontalFace).getSide(face).isSolid()) {
@@ -234,7 +234,7 @@ public class BlockVine extends BlockTransparentMeta {
                     }
                 } else if (face.getHorizontalIndex() != -1 && (meta & faceMeta) != faceMeta) {
                     if (this.canSpread()) {
-                        if (block.getId() == AIR) {
+                        if (block.isAir()) {
                             BlockFace cwFace = face.rotateY();
                             BlockFace ccwFace = face.rotateYCCW();
                             Block cwBlock = block.getSide(cwFace);
@@ -248,9 +248,9 @@ public class BlockVine extends BlockTransparentMeta {
                                 putVine(block, getMetaFromFace(cwFace), this);
                             } else if (onCcw && ccwBlock.isSolid()) {
                                 putVine(block, getMetaFromFace(ccwFace), this);
-                            } else if (onCw && cwBlock.getId() == AIR && this.getSide(cwFace).isSolid()) {
+                            } else if (onCw && cwBlock.isAir() && this.getSide(cwFace).isSolid()) {
                                 putVine(cwBlock, getMetaFromFace(face.getOpposite()), this);
-                            } else if (onCcw && ccwBlock.getId() == AIR && this.getSide(ccwFace).isSolid()) {
+                            } else if (onCcw && ccwBlock.isAir() && this.getSide(ccwFace).isSolid()) {
                                 putVine(ccwBlock, getMetaFromFace(face.getOpposite()), this);
                             } else if (block.up().isSolid()) {
                                 putVine(block, 0, this);

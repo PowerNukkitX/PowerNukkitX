@@ -126,7 +126,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
 
     public boolean setFlower(@Nullable Item item) {
-        if (item == null || item.getId() == AIR) {
+        if (item!=null && item.isNull()) {
             removeFlower();
             return true;
         }

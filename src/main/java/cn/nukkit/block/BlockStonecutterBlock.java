@@ -40,7 +40,7 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable 
     public void setBlockFace(BlockFace face) {
         int horizontalIndex = face.getHorizontalIndex();
         if (horizontalIndex > -1) {
-            setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION,
+            this.setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION,
                     CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(BlockFace.fromHorizontalIndex(horizontalIndex)));
         }
     }
@@ -52,8 +52,8 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable 
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        int[] faces = {2, 3, 0, 1};
-        setBlockFace(BlockFace.fromHorizontalIndex(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]));
+        setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getHorizontalIndex()) : BlockFace.SOUTH);
+
         this.getLevel().setBlock(block, this, true, true);
         return true;
     }

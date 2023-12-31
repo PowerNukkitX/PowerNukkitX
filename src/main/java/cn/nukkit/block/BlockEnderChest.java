@@ -1,12 +1,13 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityEnderChest;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -20,16 +21,19 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+public class BlockEnderChest extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityEnderChest> {
 
-public class BlockEnderChest extends BlockTransparentMeta implements Faceable, BlockEntityHolder<BlockEntityEnderChest> {
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(ENDER_CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     private final Set<Player> viewers = new HashSet<>();
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockEnderChest() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockEnderChest(BlockState blockstate) {
@@ -42,28 +46,12 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
     }
 
     @Override
-    public int getId() {
-        return ENDER_CHEST;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-
-    @NotNull
-    @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.ENDER_CHEST;
     }
 
-
-    @NotNull
     @Override
-    public Class<? extends BlockEntityEnderChest> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityEnderChest> getBlockEntityClass() {
         return BlockEntityEnderChest.class;
     }
 
@@ -125,8 +113,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        int[] faces = {2, 3, 0, 1};
-        this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
+        setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getHorizontalIndex()) : BlockFace.SOUTH);
 
         CompoundTag nbt = new CompoundTag();
 
@@ -177,7 +164,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= getToolTier()) {
             return new Item[]{
-                    Item.get(Item.OBSIDIAN, 0, 8)
+                    Item.get(Block.get(OBSIDIAN).getItemId(), 0, 8)
             };
         } else {
             return Item.EMPTY_ARRAY;
@@ -194,7 +181,6 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
     }
 
     @Override
-
     public  boolean canBePulled() {
         return false;
     }
@@ -216,13 +202,16 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+        return CommonPropertyMap.CARDINAL_BLOCKFACE.get(this.getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));
     }
 
-
-    @Nullable
     @Override
-    public BlockEntityEnderChest getBlockEntity() {
+    public void setBlockFace(BlockFace face) {
+        this.setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
+    }
+
+    @Override
+    public @Nullable BlockEntityEnderChest getBlockEntity() {
         return getTypedBlockEntity(BlockEntityEnderChest.class);
     }
 }

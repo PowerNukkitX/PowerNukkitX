@@ -30,6 +30,11 @@ import java.util.Map;
 public class BlockChest extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityChest> {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockChest() {
         this(PROPERTIES.getDefaultState());
     }
@@ -38,28 +43,19 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
         super(blockstate);
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntityChest> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityChest> getBlockEntityClass() {
         return BlockEntityChest.class;
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.CHEST;
     }
 
     @Override
     public boolean canBeActivated() {
         return true;
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -71,7 +67,6 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
     public double getHardness() {
         return 2.5;
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -117,7 +112,6 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
     public double getMaxZ() {
         return this.z + 0.9375;
     }
-
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
@@ -170,8 +164,7 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
      *
      * @return 找到的可配对箱子。若没找到，则为null
      */
-    @Nullable
-    protected BlockEntityChest findPair() {
+    protected @Nullable BlockEntityChest findPair() {
         List<MinecraftCardinalDirection> universe = CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.getValidValues();
         BlockFace thisFace = getBlockFace();
         for (var face : universe) {
@@ -185,7 +178,6 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
         }
         return null;
     }
-
 
     @Override
     public boolean cloneTo(Position pos) {

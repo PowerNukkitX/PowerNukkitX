@@ -34,7 +34,6 @@ public class BlockGlassPane extends BlockThin {
         return 1.5;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;

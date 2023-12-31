@@ -11,7 +11,12 @@ import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockDragonEgg extends BlockFallable {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:dragon_egg");
+    public static final BlockProperties PROPERTIES = new BlockProperties(DRAGON_EGG);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockDragonEgg() {
         super(PROPERTIES.getDefaultState());
@@ -24,11 +29,6 @@ public class BlockDragonEgg extends BlockFallable {
     @Override
     public String getName() {
         return "Dragon Egg";
-    }
-
-    @Override
-    public @NotNull BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -51,7 +51,6 @@ public class BlockDragonEgg extends BlockFallable {
         return true;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -64,7 +63,6 @@ public class BlockDragonEgg extends BlockFallable {
         }
         return super.onUpdate(type);
     }
-
 
     @Override
     public int onTouch(@Nullable Player player, Action action) {
@@ -82,7 +80,7 @@ public class BlockDragonEgg extends BlockFallable {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < 1000; ++i) {
             Block to = this.getLevel().getBlock(this.add(random.nextInt(-16, 16), random.nextInt(0, 16), random.nextInt(-16, 16)));
-            if (to.getId() == AIR) {
+            if (to.isAir()) {
                 BlockFromToEvent event = new BlockFromToEvent(this, to);
                 this.level.getServer().getPluginManager().callEvent(event);
                 if (event.isCancelled()) return;
@@ -106,13 +104,11 @@ public class BlockDragonEgg extends BlockFallable {
     }
 
     @Override
-
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-
     public boolean sticksToPiston() {
         return false;
     }
