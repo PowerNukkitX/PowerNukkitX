@@ -463,21 +463,21 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(EXPOSED_DOUBLE_CUT_COPPER_SLAB, BlockExposedDoubleCutCopperSlab.class);
         register(FARMLAND, BlockFarmland.class);// done.
         register(FENCE_GATE, BlockFenceGate.class);// done.
-        register(FIRE, BlockFire.class);
+        register(FIRE, BlockFire.class);// done.
         register(FIRE_CORAL, BlockFireCoral.class);// done.
         register(FLETCHING_TABLE, BlockFletchingTable.class);// done.
         register(FLOWER_POT, BlockFlowerPot.class);
         register(FLOWERING_AZALEA, BlockFloweringAzalea.class);// done.
         register(FLOWING_LAVA, BlockFlowingLava.class);// done.
         register(FLOWING_WATER, BlockFlowingWater.class);// done.
-        register(FRAME, BlockFrame.class);
+        register(FRAME, BlockFrame.class);// done.
         register(FROG_SPAWN, BlockFrogSpawn.class);// done.
         register(FROSTED_ICE, BlockFrostedIce.class);// done.
         register(FURNACE, BlockFurnace.class);// done.
-        register(GILDED_BLACKSTONE, BlockGildedBlackstone.class);
+        register(GILDED_BLACKSTONE, BlockGildedBlackstone.class);// done.
         register(GLASS, BlockGlass.class);// done.
         register(GLASS_PANE, BlockGlassPane.class);// done.
-        register(GLOW_FRAME, BlockGlowFrame.class);
+        register(GLOW_FRAME, BlockGlowFrame.class);// done.
         register(GLOW_LICHEN, BlockGlowLichen.class);// done.
         register(GLOWINGOBSIDIAN, BlockGlowingobsidian.class);
         register(GLOWSTONE, BlockGlowstone.class);// done.
@@ -558,7 +558,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(LEAVES, BlockLeaves.class);// done.
         register(LEAVES2, BlockLeaves2.class);// done.
         register(LECTERN, BlockLectern.class);// done.
-        register(LEVER, BlockLever.class);
+        register(LEVER, BlockLever.class);// done.
         register(LIGHT_BLOCK, BlockLightBlock.class);// done.
         register(LIGHT_BLUE_CANDLE, BlockLightBlueCandle.class);// done.
         register(LIGHT_BLUE_CANDLE_CAKE, BlockLightBlueCandleCake.class);// done.
@@ -594,13 +594,13 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(LIME_STAINED_GLASS_PANE, BlockLimeStainedGlassPane.class);// done.
         register(LIME_TERRACOTTA, BlockLimeTerracotta.class);// done.
         register(LIME_WOOL, BlockLimeWool.class);// done.
-        register(LIT_BLAST_FURNACE, BlockLitBlastFurnace.class);
+        register(LIT_BLAST_FURNACE, BlockLitBlastFurnace.class);// done.
         register(LIT_DEEPSLATE_REDSTONE_ORE, BlockLitDeepslateRedstoneOre.class);
-        register(LIT_FURNACE, BlockLitFurnace.class);
+        register(LIT_FURNACE, BlockLitFurnace.class);// done.
         register(LIT_PUMPKIN, BlockLitPumpkin.class);
         register(LIT_REDSTONE_LAMP, BlockLitRedstoneLamp.class);
         register(LIT_REDSTONE_ORE, BlockLitRedstoneOre.class);
-        register(LIT_SMOKER, BlockLitSmoker.class);
+        register(LIT_SMOKER, BlockLitSmoker.class);// done.
         register(LODESTONE, BlockLodestone.class);
         register(LOOM, BlockLoom.class);// done.
         register(MAGENTA_CANDLE, BlockMagentaCandle.class);// done.
@@ -822,7 +822,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(SMALL_AMETHYST_BUD, BlockSmallAmethystBud.class);
         register(SMALL_DRIPLEAF_BLOCK, BlockSmallDripleafBlock.class);
         register(SMITHING_TABLE, BlockSmithingTable.class);
-        register(SMOKER, BlockSmoker.class);
+        register(SMOKER, BlockSmoker.class);// done.
         register(SMOOTH_BASALT, BlockSmoothBasalt.class);
         register(SMOOTH_QUARTZ_STAIRS, BlockSmoothQuartzStairs.class);
         register(SMOOTH_RED_SANDSTONE_STAIRS, BlockSmoothRedSandstoneStairs.class);
@@ -831,9 +831,9 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(SNIFFER_EGG, BlockSnifferEgg.class);// done.
         register(SNOW, BlockSnow.class);// done.
         register(SNOW_LAYER, BlockSnowLayer.class);// done.
-        register(SOUL_CAMPFIRE, BlockSoulCampfire.class);
-        register(SOUL_FIRE, BlockSoulFire.class);
-        register(SOUL_LANTERN, BlockSoulLantern.class);
+        register(SOUL_CAMPFIRE, BlockSoulCampfire.class);// done.
+        register(SOUL_FIRE, BlockSoulFire.class);// done.
+        register(SOUL_LANTERN, BlockSoulLantern.class);// done.
         register(SOUL_SAND, BlockSoulSand.class);
         register(SOUL_SOIL, BlockSoulSoil.class);
         register(SOUL_TORCH, BlockSoulTorch.class);
@@ -890,8 +890,8 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(TALLGRASS, BlockTallgrass.class);// done.
         register(TARGET, BlockTarget.class);
         register(TINTED_GLASS, BlockTintedGlass.class);
-        register(TNT, BlockTnt.class);
-        register(TORCH, BlockTorch.class);
+        register(TNT, BlockTnt.class);// done.
+        register(TORCH, BlockTorch.class);// done.
         register(TORCHFLOWER, BlockTorchflower.class);
         register(TORCHFLOWER_CROP, BlockTorchflowerCrop.class);
         register(TRAPDOOR, BlockTrapdoor.class);// done.
