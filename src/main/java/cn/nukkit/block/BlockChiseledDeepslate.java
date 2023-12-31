@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockChiseledDeepslate extends Block {
+public class BlockChiseledDeepslate extends BlockCobbledDeepslate {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:chiseled_deepslate");
 
     @Override
@@ -16,5 +16,11 @@ public class BlockChiseledDeepslate extends Block {
 
     public BlockChiseledDeepslate(BlockState blockstate) {
         super(blockstate);
+    }
+
+
+    @Override
+    public String getName() {
+        return "Chiseled Deepslate";
     }
 }

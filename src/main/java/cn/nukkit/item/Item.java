@@ -139,7 +139,7 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * Gets ItemBlock.
      *
-     * @param id    the BlockID id
+     * @param id    the {@link BlockID} id
      * @param meta  the Item Meta
      * @param count the Item count
      * @param tags  the Item tags
@@ -1483,8 +1483,6 @@ public abstract class Item implements Cloneable, ItemID {
      *
      * @return
      */
-
-
     public boolean keepOnDeath() {
         CompoundTag tag = getOrCreateNamedTag();
         return tag.contains("minecraft:keep_on_death");
@@ -1493,7 +1491,8 @@ public abstract class Item implements Cloneable, ItemID {
     protected static BlockState getItemBlockState(final String id, final Integer aux) {
         int i = Registries.BLOCKSTATE_ITEMMETA.get(id, aux);
         if (i == 0) {
-            throw new IllegalArgumentException("Unknown meta mapping in block: " + id);
+            Block block = Registries.BLOCK.get(id);
+            return block.getProperties().getDefaultState();
         }
         return Registries.BLOCKSTATE.get(i);
     }

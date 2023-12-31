@@ -1,7 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.Attachment;
 import cn.nukkit.inventory.GrindstoneInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -13,44 +14,21 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.block.BlockBell.ATTACHMENT_TYPE;
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
 
+public class BlockGrindstone extends BlockTransparent implements Faceable {
+    public static final BlockProperties PROPERTIES = new BlockProperties(GRINDSTONE, CommonBlockProperties.ATTACHMENT, CommonBlockProperties.DIRECTION);
 
-public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, ATTACHMENT_TYPE);
-
-
-    public static final int TYPE_ATTACHMENT_STANDING = 0;
-
-    public static final int TYPE_ATTACHMENT_HANGING = 1;
-
-    public static final int TYPE_ATTACHMENT_SIDE = 2;
-
-    public static final int TYPE_ATTACHMENT_MULTIPLE = 3;
-
-
-    public BlockGrindstone() {
-        this(0);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
+    public BlockGrindstone() {
+        this(PROPERTIES.getDefaultState());
+    }
 
     public BlockGrindstone(BlockState blockstate) {
         super(blockstate);
-    }
-
-    @Override
-    public int getId() {
-        return GRINDSTONE;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -97,43 +75,40 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(getDamage() & 0b11);
+        return BlockFace.fromHorizontalIndex(getPropertyValue(CommonBlockProperties.DIRECTION));
     }
 
     @Override
-
-
     public void setBlockFace(BlockFace face) {
         if (face.getHorizontalIndex() == -1) {
             return;
         }
-        setDamage(getDamage() & (DATA_MASK ^ 0b11) | face.getHorizontalIndex());
+        setPropertyValue(CommonBlockProperties.DIRECTION, face.getHorizontalIndex());
     }
 
 
-    public int getAttachmentType() {
-        return (getDamage() & 0b1100) >> 2 & 0b11;
+    public Attachment getAttachmentType() {
+        return getPropertyValue(CommonBlockProperties.ATTACHMENT);
     }
 
 
-    public void setAttachmentType(int attachmentType) {
-        attachmentType = attachmentType & 0b11;
-        setDamage(getDamage() & (DATA_MASK ^ 0b1100) | (attachmentType << 2));
+    public void setAttachmentType(Attachment attachmentType) {
+        setPropertyValue(CommonBlockProperties.ATTACHMENT, attachmentType);
     }
 
-    private boolean isConnectedTo(BlockFace connectedFace, int attachmentType, BlockFace blockFace) {
+    private boolean isConnectedTo(BlockFace connectedFace, Attachment attachmentType, BlockFace blockFace) {
         BlockFace.Axis faceAxis = connectedFace.getAxis();
         switch (attachmentType) {
-            case TYPE_ATTACHMENT_STANDING:
+            case STANDING:
                 if (faceAxis == BlockFace.Axis.Y) {
                     return connectedFace == BlockFace.DOWN;
                 } else {
                     return false;
                 }
-            case TYPE_ATTACHMENT_HANGING:
+            case HANGING:
                 return connectedFace == BlockFace.UP;
-            case TYPE_ATTACHMENT_SIDE:
-            case TYPE_ATTACHMENT_MULTIPLE:
+            case SIDE:
+            case MULTIPLE:
                 return connectedFace == blockFace.getOpposite();
         }
         return false;
@@ -152,21 +127,21 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (block.getId() != AIR && block.canBeReplaced()) {
+        if (!block.isAir() && block.canBeReplaced()) {
             face = BlockFace.UP;
         }
         switch (face) {
             case UP:
-                setAttachmentType(TYPE_ATTACHMENT_STANDING);
+                setAttachmentType(Attachment.STANDING);
                 setBlockFace(player.getDirection().getOpposite());
                 break;
             case DOWN:
-                setAttachmentType(TYPE_ATTACHMENT_HANGING);
+                setAttachmentType(Attachment.HANGING);
                 setBlockFace(player.getDirection().getOpposite());
                 break;
             default:
                 setBlockFace(face);
-                setAttachmentType(TYPE_ATTACHMENT_SIDE);
+                setAttachmentType(Attachment.SIDE);
         }
         if (!checkSupport()) {
             return false;
@@ -178,17 +153,17 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean checkSupport() {
         switch (getAttachmentType()) {
-            case TYPE_ATTACHMENT_STANDING:
+            case STANDING:
                 if (checkSupport(down())) {
                     return true;
                 }
                 break;
-            case TYPE_ATTACHMENT_HANGING:
+            case HANGING:
                 if (checkSupport(up())) {
                     return true;
                 }
                 break;
-            case TYPE_ATTACHMENT_SIDE:
+            case SIDE:
                 BlockFace blockFace = getBlockFace();
                 if (checkSupport(getSide(blockFace.getOpposite()))) {
                     return true;
@@ -200,13 +175,13 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
     }
 
     private boolean checkSupport(Block support) {
-        int id = support.getId();
-        return id != AIR && id != BUBBLE_COLUMN && !(support instanceof BlockLiquid);
+        String id = support.getId();
+        return !id.equals(AIR) && !id.equals(BUBBLE_COLUMN) && !(support instanceof BlockLiquid);
     }
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-        int attachmentType = getAttachmentType();
+        Attachment attachmentType = getAttachmentType();
         BlockFace blockFace = getBlockFace();
         boolean south = this.isConnectedTo(BlockFace.SOUTH, attachmentType, blockFace);
         boolean north = this.isConnectedTo(BlockFace.NORTH, attachmentType, blockFace);
@@ -215,7 +190,7 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
         boolean up = this.isConnectedTo(BlockFace.UP, attachmentType, blockFace);
         boolean down = this.isConnectedTo(BlockFace.DOWN, attachmentType, blockFace);
 
-        double pixels = (2.0/16);
+        double pixels = (2.0 / 16);
 
         double n = north ? 0 : pixels;
         double s = south ? 1 : 1 - pixels;

@@ -1,15 +1,12 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.event.block.ComposterEmptyEvent;
 import cn.nukkit.event.block.ComposterFillEvent;
 import cn.nukkit.item.*;
 import cn.nukkit.level.Sound;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.DyeColor;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.jetbrains.annotations.NotNull;
@@ -17,19 +14,13 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-
-public class BlockComposter extends BlockSolidMeta implements ItemID {
-
-    private static Int2IntMap compostableItems = new Int2IntOpenHashMap();
-    private static Object2IntMap<String> compostableStringItems = new Object2IntOpenHashMap<>();
+import static cn.nukkit.block.property.CommonBlockProperties.COMPOSTER_FILL_LEVEL;
 
 
-    public static final IntBlockProperty COMPOSTER_FILL_LEVEL = new IntBlockProperty("composter_fill_level", false, 8);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(COMPOSTER_FILL_LEVEL);
-
-
+public class BlockComposter extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties(COMPOSTER, COMPOSTER_FILL_LEVEL);
+    private static final Object2IntMap<String> compostableItems = new Object2IntOpenHashMap<>();
+    private static final Object2IntMap<BlockState> compostableBlocks = new Object2IntOpenHashMap<>();
     public static final Item OUTPUT_ITEM = new ItemDye(DyeColor.BONE_MEAL, 1);
 
     static {
@@ -45,17 +36,12 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
 
 
     public BlockComposter() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
 
     public BlockComposter(BlockState blockstate) {
         super(blockstate);
-    }
-
-    @Override
-    public int getId() {
-        return COMPOSTER;
     }
 
     @Override
@@ -125,15 +111,15 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-        if (item.getCount() <= 0 || item.getId() == Item.AIR) {
+        if (item.isNull()) {
             return false;
         }
 
         if (isFull()) {
-            ComposterEmptyEvent event = new ComposterEmptyEvent(this, player, item, MinecraftItemID.BONE_MEAL.get(1), 0);
+            ComposterEmptyEvent event = new ComposterEmptyEvent(this, player, item, Item.get(ItemID.BONE_MEAL), 0);
             this.level.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
-                setDamage(event.getNewLevel());
+                setPropertyValue(COMPOSTER_FILL_LEVEL, event.getNewLevel());
                 this.level.setBlock(this, this, true, true);
                 this.level.dropItem(add(0.5, 0.85, 0.5), event.getDrop(), event.getMotion(), false, 10);
                 this.level.addSound(add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_EMPTY);
@@ -177,7 +163,6 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
     }
 
 
-
     public Item empty(@Nullable Item item, @Nullable Player player) {
         ComposterEmptyEvent event = new ComposterEmptyEvent(this, player, item, new ItemDye(DyeColor.BONE_MEAL), 0);
         this.level.getServer().getPluginManager().callEvent(event);
@@ -198,102 +183,79 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
         return OUTPUT_ITEM.clone();
     }
 
-
-    public static void registerItem(int chance, @NotNull MinecraftItemID itemId) {
-        compostableStringItems.put(itemId.getItemFormNamespaceId(), chance);
+    public static void registerItem(int chance, @NotNull String itemId) {
+        compostableItems.put(itemId, chance);
     }
 
 
-    public static void registerItems(int chance, @NotNull MinecraftItemID... itemId) {
-        for (MinecraftItemID minecraftItemID : itemId) {
+    public static void registerItems(int chance, @NotNull String... itemId) {
+        for (String minecraftItemID : itemId) {
             registerItem(chance, minecraftItemID);
         }
     }
 
-
-    public static void registerItem(int chance, int itemId) {
-        registerItem(chance, itemId, 0);
-    }
-
-
-    public static void registerItem(int chance, int itemId, int meta) {
-        if (itemId == 255) {
-            throw new UnsupportedOperationException("Cannot register string identified items using this method.");
-        }
-        compostableItems.put(itemId << 6 | meta & 0x3F, chance);
-    }
-
-
-    public static void registerItems(int chance, int... itemIds) {
-        for (int itemId : itemIds) {
-            registerItem(chance, itemId, 0);
-        }
-    }
-
-
-    public static void registerBlocks(int chance, int... blockIds) {
-        for (int blockId : blockIds) {
+    public static void registerBlocks(int chance, String... blockIds) {
+        for (String blockId : blockIds) {
             registerBlock(chance, blockId, 0);
         }
     }
 
 
-    public static void registerBlock(int chance, int blockId) {
-        registerBlock(chance, blockId, 0);
+    public static void registerBlock(int chance, String blockId) {
+        BlockState blockState = Registries.BLOCK.get(blockId).getBlockState();
+        compostableBlocks.put(blockState, chance);
     }
 
 
-    public static void registerBlock(int chance, int blockId, int meta) {
-        if (blockId > 255) {
-            blockId = 255 - blockId;
+    public static void registerBlock(int chance, String blockId, int meta) {
+        int i = Registries.BLOCKSTATE_ITEMMETA.get(blockId, meta);
+        BlockState blockState;
+        if (i == 0) {
+            Block block = Registries.BLOCK.get(blockId);
+            blockState = block.getProperties().getDefaultState();
+        } else {
+            blockState = Registries.BLOCKSTATE.get(i);
         }
-        registerItem(chance, blockId, meta);
-    }
-
-
-    public static void register(int chance, Item item) {
-        registerItem(chance, item.getId(), item.getAux());
+        compostableBlocks.put(blockState, chance);
     }
 
 
     public static int getChance(Item item) {
-        if (item.getId() != ItemID.STRING_IDENTIFIED_ITEM) {
-            int chance = compostableItems.get(item.getId() << 6 | item.getAux());
-            if (chance != 0) {
-                return chance;
-            }
-            chance = compostableItems.get(item.getId() << 6);
-            if (chance != 0) {
-                return chance;
-            }
+        if (item instanceof ItemBlock) {
+            return compostableBlocks.getInt(item.getBlockUnsafe().getBlockState());
+        } else {
+            return compostableItems.getInt(item.getId());
         }
-        return compostableStringItems.getInt(item.getNamespaceId());
     }
 
     private static void registerDefaults() {
-        registerItems(30, KELP, BEETROOT_SEEDS, DRIED_KELP, MELON_SEEDS, PUMPKIN_SEEDS, SWEET_BERRIES,
-                WHEAT_SEEDS, MOSS_CARPET, HANGING_ROOTS, SMALL_DRIPLEAF_BLOCK);
-        registerItems(30, MinecraftItemID.GLOW_BERRIES);
-        registerItems(50, MELON_SLICE, SUGAR_CANE, NETHER_SPROUTS, GLOW_LICHEN);
-        registerItems(65, APPLE, BEETROOT, CARROT, COCOA, POTATO, WHEAT);
-        registerItems(85, BAKED_POTATOES, BREAD, COOKIE);
-        registerItems(100, CAKE, PUMPKIN_PIE);
+        registerItems(30,
+                ItemID.KELP,
+                ItemID.BEETROOT_SEEDS,
+                ItemID.DRIED_KELP,
+                ItemID.MELON_SEEDS,
+                ItemID.PUMPKIN_SEEDS,
+                ItemID.SWEET_BERRIES,
+                ItemID.WHEAT_SEEDS,
+                ItemID.GLOW_BERRIES
+        );
+        registerItems(50, ItemID.MELON_SLICE, ItemID.SUGAR_CANE, ItemID.NETHER_SPROUTS);
+        registerItems(65, ItemID.APPLE, ItemID.BEETROOT, ItemID.CARROT, ItemID.COCOA_BEANS, ItemID.POTATO, ItemID.WHEAT);
+        registerItems(85, ItemID.BAKED_POTATO, ItemID.BREAD, ItemID.COOKIE, ItemID.MUSHROOM_STEW);
+        registerItems(100, ItemID.CAKE, ItemID.PUMPKIN_PIE);
 
-        registerBlocks(30, BLOCK_KELP, LEAVES, LEAVES2, SAPLING, SEAGRASS, SWEET_BERRY_BUSH);
-        registerBlocks(50, GRASS, CACTUS, DRIED_KELP_BLOCK, VINE, NETHER_SPROUTS_BLOCK,
+        registerBlocks(30, PINK_PETALS, LEAVES, LEAVES2, SAPLING, SEAGRASS, SWEET_BERRY_BUSH, MOSS_CARPET, HANGING_ROOTS, SMALL_DRIPLEAF_BLOCK);
+        registerBlocks(50, GLOW_LICHEN, GRASS, CACTUS, DRIED_KELP_BLOCK, VINE, NETHER_SPROUTS,
                 TWISTING_VINES, WEEPING_VINES, GLOW_LICHEN);
-        registerBlocks(65, DANDELION, RED_FLOWER, DOUBLE_PLANT, WITHER_ROSE, WATERLILY, MELON_BLOCK,
+        registerBlock(50, TALLGRASS, 0);
+        registerBlock(50, TALLGRASS, 1);
+        registerBlock(65, TALLGRASS, 2);
+        registerBlock(65, TALLGRASS, 3);
+        registerBlocks(65, YELLOW_FLOWER, RED_FLOWER, DOUBLE_PLANT, WITHER_ROSE, WATERLILY, MELON_BLOCK,
                 PUMPKIN, CARVED_PUMPKIN, SEA_PICKLE, BROWN_MUSHROOM, RED_MUSHROOM,
                 WARPED_ROOTS, CRIMSON_ROOTS, SHROOMLIGHT, AZALEA, BIG_DRIPLEAF, MOSS_BLOCK,
                 SPORE_BLOSSOM);
-        registerBlocks(85, HAY_BALE, BROWN_MUSHROOM_BLOCK, RED_MUSHROOM_BLOCK, MUSHROOM_STEW);
-        registerBlocks(100, CAKE_BLOCK);
-
-        registerBlock(50, TALL_GRASS, 0);
-        registerBlock(50, TALL_GRASS, 1);
-        registerBlock(65, TALL_GRASS, 2);
-        registerBlock(65, TALL_GRASS, 3);
-
-        registerBlock(30, PINK_PETALS);
+        registerBlocks(85, HAY_BLOCK, BROWN_MUSHROOM_BLOCK, RED_MUSHROOM_BLOCK);
+        registerBlocks(100, CAKE);
     }
 }

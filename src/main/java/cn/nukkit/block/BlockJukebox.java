@@ -17,21 +17,25 @@ import javax.annotation.Nullable;
  */
 
 public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockEntityJukebox> {
+    public static final BlockProperties PROPERTIES = new BlockProperties(JUKEBOX);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockJukebox() {
-        // Does nothing
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockJukebox(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
     public String getName() {
         return "Jukebox";
     }
-
-    @Override
-    public int getId() {
-        return JUKEBOX;
-    }
-
 
     @NotNull
     @Override

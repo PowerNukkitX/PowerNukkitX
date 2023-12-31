@@ -3,9 +3,9 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityHopper;
-import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.event.inventory.InventoryMoveItemEvent;
@@ -29,46 +29,32 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
-import static cn.nukkit.blockproperty.CommonBlockProperties.TOGGLE;
+import static cn.nukkit.block.property.CommonBlockProperties.TOGGLE_BIT;
 
 /**
  * @author CreeperFace
  */
+public class BlockHopper extends BlockTransparent implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityHopper> {
+    public static final BlockProperties PROPERTIES = new BlockProperties(HOPPER, CommonBlockProperties.FACING_DIRECTION, TOGGLE_BIT);
 
-
-public class BlockHopper extends BlockTransparentMeta implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityHopper> {
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, TOGGLE);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockHopper() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockHopper(BlockState blockstate) {
         super(blockstate);
     }
 
-    @Override
-    public int getId() {
-        return HOPPER_BLOCK;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-
     @NotNull
     @Override
     public Class<? extends BlockEntityHopper> getBlockEntityClass() {
         return BlockEntityHopper.class;
     }
-
 
     @NotNull
     @Override
@@ -97,7 +83,7 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
         return 1;
     }
 
-    
+
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         BlockFace facing = face.getOpposite();
@@ -159,11 +145,11 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
     }
 
     public boolean isEnabled() {
-        return !getBooleanValue(TOGGLE);
+        return !getPropertyValue(TOGGLE_BIT);
     }
 
     public void setEnabled(boolean enabled) {
-        setBooleanValue(TOGGLE, !enabled);
+        setPropertyValue(TOGGLE_BIT, !enabled);
     }
 
     @Override
@@ -217,12 +203,12 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(FACING_DIRECTION, face);
+        setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(FACING_DIRECTION);
+        return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
     }
 
 

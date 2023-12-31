@@ -196,8 +196,6 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
     }
 
     @Override
-
-
     public boolean isGettingPower() {
         Location down;
         Location up;
