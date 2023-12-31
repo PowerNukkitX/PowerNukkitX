@@ -54,7 +54,7 @@ public class BlockSeagrass extends BlockFlowable {
         Block layer1Block = block.getLevelBlockAtLayer(1);
         int waterDamage;
         if (down.isSolid() && down.getId() != MAGMA && down.getId() != SOUL_SAND &&
-                (layer1Block instanceof BlockWater && ((waterDamage = (block.getDamage())) == 0 || waterDamage == 8))
+                (layer1Block instanceof BlockFlowingWater && ((waterDamage = (block.getDamage())) == 0 || waterDamage == 8))
         ) {
             if (waterDamage == 8) {
                 this.getLevel().setBlock(this, 1, new BlockWater(), true, false);
@@ -71,7 +71,7 @@ public class BlockSeagrass extends BlockFlowable {
             Block blockLayer1 = getLevelBlockAtLayer(1);
             int damage;
             if (!(blockLayer1 instanceof BlockIceFrosted)
-                    && (!(blockLayer1 instanceof BlockWater) || ((damage = blockLayer1.getDamage()) != 0 && damage != 8))) {
+                    && (!(blockLayer1 instanceof BlockFlowingWater) || ((damage = blockLayer1.getDamage()) != 0 && damage != 8))) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -110,7 +110,7 @@ public class BlockSeagrass extends BlockFlowable {
         if (getDamage() == 0 && item.isFertilizer()) {
             Block up = this.up();
             int damage;
-            if (up instanceof BlockWater && ((damage = up.getDamage()) == 0 || damage == 8)) {
+            if (up instanceof BlockFlowingWater && ((damage = up.getDamage()) == 0 || damage == 8)) {
                 if (player != null && (player.gamemode & 0x01) == 0) {
                     item.count--;
                 }

@@ -85,7 +85,7 @@ public class BlockMagma extends BlockSolid {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block up = up();
-            if (up instanceof BlockWater && (up.getDamage() == 0 || up.getDamage() == 8)) {
+            if (up instanceof BlockFlowingWater && (up.getDamage() == 0 || up.getDamage() == 8)) {
                 BlockFormEvent event = new BlockFormEvent(up, new BlockBubbleColumn(1));
                 if (!event.isCancelled()) {
                     if (event.getNewState().getWaterloggingLevel() > 0) {

@@ -81,8 +81,8 @@ public class BlockSponge extends BlockSolid {
             return true;
         }
         if (this.getSpongeType() == DRY && (
-                block instanceof BlockWater ||
-                block.getLevelBlockAround().stream().anyMatch(b -> b instanceof BlockWater)
+                block instanceof BlockFlowingWater ||
+                block.getLevelBlockAround().stream().anyMatch(b -> b instanceof BlockFlowingWater)
         ) && performWaterAbsorb(block)) {
             this.setSpongeType(WET);
             level.setBlock(block, this, true, true);
@@ -115,7 +115,7 @@ public class BlockSponge extends BlockSolid {
                 Block layer0 = entry.block.getSideAtLayer(0, face);
                 Block layer1 = layer0.getLevelBlockAtLayer(1);
                 
-                if (layer0 instanceof BlockWater) {
+                if (layer0 instanceof BlockFlowingWater) {
                     this.getLevel().setBlockStateAt(layer0.getFloorX(), layer0.getFloorY(), layer0.getFloorZ(),
                             BlockState.AIR);
                     this.getLevel().updateAround(layer0);
@@ -123,7 +123,7 @@ public class BlockSponge extends BlockSolid {
                     if (entry.distance < 6) {
                         entries.add(new Entry(layer0, entry.distance + 1));
                     }
-                } else if (layer1 instanceof BlockWater) {
+                } else if (layer1 instanceof BlockFlowingWater) {
                     if (BlockID.KELP.equals(layer0.getId()) ||
                             BlockID.SEAGRASS.equals(layer0.getId()) ||
                             BlockID.SEA_PICKLE.equals(layer0.getId()) || layer0 instanceof BlockCoralFan) {

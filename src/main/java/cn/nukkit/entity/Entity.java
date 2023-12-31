@@ -2535,8 +2535,8 @@ public abstract class Entity extends Location implements Metadatable {
                 // check if we fell into at least 1 block of water
                 var lb = this.getLevelBlock();
                 var lb2 = this.getLevelBlockAtLayer(1);
-                if (this instanceof EntityLiving && !(lb instanceof BlockWater || lb instanceof BlockFence ||
-                        (lb2 instanceof BlockWater && lb2.getMaxY() == 1d))) {
+                if (this instanceof EntityLiving && !(lb instanceof BlockFlowingWater || lb instanceof BlockFence ||
+                        (lb2 instanceof BlockFlowingWater && lb2.getMaxY() == 1d))) {
                     this.fall(fallDistance);
                 }
                 this.resetFallDistance();
@@ -2767,8 +2767,8 @@ public abstract class Entity extends Location implements Metadatable {
         boolean layer1 = false;
         Block block1 = tickCached ? block.getTickCachedLevelBlockAtLayer(1) : block.getLevelBlockAtLayer(1);
         if (!(block instanceof BlockBubbleColumn) && (
-                block instanceof BlockWater
-                        || (layer1 = block1 instanceof BlockWater))) {
+                block instanceof BlockFlowingWater
+                        || (layer1 = block1 instanceof BlockFlowingWater))) {
             BlockWater water = (BlockWater) (layer1 ? block1 : block);
             double f = (block.y + 1) - (water.getFluidHeightPercent() - 0.1111111);
             return y < f;

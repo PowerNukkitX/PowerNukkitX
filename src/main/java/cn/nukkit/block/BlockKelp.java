@@ -66,7 +66,7 @@ public class BlockKelp extends BlockFlowable {
         Block down = down();
         Block layer1Block = block.getLevelBlockAtLayer(1);
         if ((down.getId() == BLOCK_KELP || down.isSolid()) && down.getId() != MAGMA && down.getId() != ICE && down.getId() != SOUL_SAND &&
-                (layer1Block instanceof BlockWater && ((BlockWater) layer1Block).isSourceOrFlowingDown())
+                (layer1Block instanceof BlockFlowingWater && ((BlockWater) layer1Block).isSourceOrFlowingDown())
         ) {
             if (((BlockWater) layer1Block).isFlowingDown()) {
                 this.getLevel().setBlock(this, 1, get(FLOWING_WATER), true, false);
@@ -92,7 +92,7 @@ public class BlockKelp extends BlockFlowable {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block blockLayer1 = getLevelBlockAtLayer(1);
             if (!(blockLayer1 instanceof BlockIceFrosted) &&
-                    (!(blockLayer1 instanceof BlockWater) || !((BlockWater)blockLayer1).isSourceOrFlowingDown())) {
+                    (!(blockLayer1 instanceof BlockFlowingWater) || !((BlockWater)blockLayer1).isSourceOrFlowingDown())) {
                 this.getLevel().useBreakOn(this);
                 return type;
             }
@@ -103,7 +103,7 @@ public class BlockKelp extends BlockFlowable {
                 return type;
             }
         
-            if (blockLayer1 instanceof BlockWater && ((BlockWater)blockLayer1).isFlowingDown()) {
+            if (blockLayer1 instanceof BlockFlowingWater && ((BlockWater)blockLayer1).isFlowingDown()) {
                 this.getLevel().setBlock(this, 1, get(FLOWING_WATER), true, false);
             }
             return type;
@@ -122,7 +122,7 @@ public class BlockKelp extends BlockFlowable {
         int maxValue = KELP_AGE.getMaxValue();
         if (age < maxValue) {
             Block up = up();
-            if (up instanceof BlockWater && ((BlockWater)up).isSourceOrFlowingDown()) {
+            if (up instanceof BlockFlowingWater && ((BlockWater)up).isSourceOrFlowingDown()) {
                 Block grown = BlockState.of(BLOCK_KELP, age + 1).getBlock();
                 BlockGrowEvent ev = new BlockGrowEvent(this, grown);
                 Server.getInstance().getPluginManager().callEvent(ev);

@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.value.CoralType;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
@@ -10,39 +8,23 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PERMANENTLY_DEAD;
+import static cn.nukkit.block.property.CommonBlockProperties.*;
 
 
 public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
-
-
-    public static final ArrayBlockProperty<CoralType> HANG1_TYPE = new ArrayBlockProperty<>("coral_hang_type_bit", true,
-            new CoralType[]{CoralType.BLUE, CoralType.PINK}
-    ).ordinal(true);
-
-
-    public static final ArrayBlockProperty<BlockFace> HANG_DIRECTION = new ArrayBlockProperty<>("coral_direction", false,
-            new BlockFace[]{BlockFace.WEST, BlockFace.EAST, BlockFace.NORTH, BlockFace.SOUTH}
-    ).ordinal(true);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(HANG1_TYPE, PERMANENTLY_DEAD, HANG_DIRECTION);
-
+    public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_FAN_HANG,
+            CORAL_FAN_DIRECTION,
+            CORAL_HANG_TYPE_BIT,
+            DEAD_BIT);
 
     public BlockCoralFanHang() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
 
     public BlockCoralFanHang(BlockState blockstate) {
         super(blockstate);
     }
-    
-    @Override
-    public int getId() {
-        return CORAL_FAN_HANG;
-    }
-
 
     @NotNull
     @Override
@@ -64,9 +46,9 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
 
     @Override
     public boolean isDead() {
-        return (getDamage() & 0b10) == 0b10;
+        return getPropertyValue(DEAD_BIT);
     }
-    
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
@@ -79,27 +61,22 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
 
     @Override
     public int getType() {
-        if ((getDamage() & 0b1) == 0) {
+        if (getPropertyValue(CORAL_HANG_TYPE_BIT)) {
             return BlockCoral.TYPE_TUBE;
         } else {
             return BlockCoral.TYPE_BRAIN;
         }
     }
-    
+
     @Override
     public BlockFace getBlockFace() {
-        int face = getDamage() >> 2 & 0x3;
-        switch (face) {
-            case 0:
-                return BlockFace.WEST;
-            case 1:
-                return BlockFace.EAST;
-            case 2:
-                return BlockFace.NORTH;
-            default:
-            case 3:
-                return BlockFace.SOUTH;
-        }
+        int face = getPropertyValue(CORAL_FAN_DIRECTION);
+        return switch (face) {
+            case 0 -> BlockFace.WEST;
+            case 1 -> BlockFace.EAST;
+            case 2 -> BlockFace.NORTH;
+            default -> BlockFace.SOUTH;
+        };
     }
 
 
@@ -107,9 +84,9 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
     public BlockFace getRootsFace() {
         return getBlockFace().getOpposite();
     }
-    
+
     @Override
     public Item toItem() {
-        return new ItemBlock(isDead()? new BlockCoralFanDead() : new BlockCoralFan(), getType());
+        return new ItemBlock(isDead() ? new BlockCoralFanDead() : new BlockCoralFan(), getType());
     }
 }

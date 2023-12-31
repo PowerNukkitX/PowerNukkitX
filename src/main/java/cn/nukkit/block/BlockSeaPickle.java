@@ -82,7 +82,7 @@ public class BlockSeaPickle extends BlockFlowable {
             }
 
             Block layer1 = getLevelBlockAtLayer(1);
-            if (layer1 instanceof BlockWater || layer1.getId() == ICE_FROSTED) {
+            if (layer1 instanceof BlockFlowingWater || layer1.getId() == ICE_FROSTED) {
                 if (isDead() && (layer1.getId() == ICE_FROSTED || layer1.getDamage() == 0 || layer1.getDamage() == 8)) {
                     BlockFadeEvent event = new BlockFadeEvent(this, new BlockSeaPickle(getDamage() ^ 0x4));
                     if (!event.isCancelled()) {
@@ -117,7 +117,7 @@ public class BlockSeaPickle extends BlockFlowable {
                 return false;
             }
             Block layer1 = block.getLevelBlockAtLayer(1);
-            if (layer1 instanceof BlockWater) {
+            if (layer1 instanceof BlockFlowingWater) {
                 if (layer1.getDamage() != 0 && layer1.getDamage() != 8) {
                     return false;
                 }
@@ -169,7 +169,7 @@ public class BlockSeaPickle extends BlockFlowable {
             for (Block blockNearby : blocksAround) {
                 if (blockNearby.getId() == CORAL_BLOCK) {
                     Block up = blockNearby.up();
-                    if (up instanceof BlockWater && (up.getDamage() == 0 || up.getDamage() == 8) && random.nextInt(6) == 0 && new Vector2(up.x, up.z).distance(new Vector2(this.x, this.z)) <= 2) {
+                    if (up instanceof BlockFlowingWater && (up.getDamage() == 0 || up.getDamage() == 8) && random.nextInt(6) == 0 && new Vector2(up.x, up.z).distance(new Vector2(this.x, this.z)) <= 2) {
                         BlockSpreadEvent blockSpreadEvent = new BlockSpreadEvent(up, this, new BlockSeaPickle(random.nextInt(3)));
                         if (!blockSpreadEvent.isCancelled()) {
                             this.getLevel().setBlock(up, 1, new BlockWater(), true, false);

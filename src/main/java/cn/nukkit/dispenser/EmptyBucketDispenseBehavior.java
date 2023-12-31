@@ -21,7 +21,7 @@ public class EmptyBucketDispenseBehavior extends DefaultDispenseBehavior {
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);
 
-        if (target instanceof BlockWater && target.getDamage() == 0) {
+        if (target instanceof BlockFlowingWater && target.getDamage() == 0) {
             target.level.setBlock(target, new BlockAir());
             target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
             return MinecraftItemID.WATER_BUCKET.get(1, item.getCompoundTag());

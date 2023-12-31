@@ -170,7 +170,7 @@ public class BlockBubbleColumn extends BlockTransparent {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block water = getLevelBlockAtLayer(1);
-            if (!(water instanceof BlockWater w) || w.getLiquidDepth() != 0 && w.getLiquidDepth() != 8) {
+            if (!(water instanceof BlockFlowingWater w) || w.getLiquidDepth() != 0 && w.getLiquidDepth() != 8) {
                 fadeOut(water);
                 return type;
             }
@@ -201,7 +201,7 @@ public class BlockBubbleColumn extends BlockTransparent {
             }
 
             Block up = up();
-            if (up instanceof BlockWater && (up.blockstate.specialValue() == 0 || up.blockstate.specialValue() == 8)) {
+            if (up instanceof BlockFlowingWater && (up.blockstate.specialValue() == 0 || up.blockstate.specialValue() == 8)) {
                 BlockFromToEvent event = new BlockFromToEvent(this, up);
                 if (!event.isCancelled()) {
                     this.getLevel().setBlock(up, 1, new BlockWater(), true, false);

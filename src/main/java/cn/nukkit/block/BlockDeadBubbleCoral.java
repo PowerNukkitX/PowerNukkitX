@@ -17,4 +17,9 @@ public class BlockDeadBubbleCoral extends BlockBubbleCoral {
     public BlockDeadBubbleCoral(BlockState blockstate) {
         super(blockstate);
     }
+
+    @Override
+    public boolean isDead() {
+        return true;
+    }
 }

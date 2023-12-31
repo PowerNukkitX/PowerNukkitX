@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.property.enums.OxidizationLevel;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCopperBlock extends BlockCopperBase {

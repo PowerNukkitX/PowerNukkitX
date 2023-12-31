@@ -197,7 +197,7 @@ public class ItemBucket extends Item {
 
                     if (target instanceof BlockLava) {
                         level.addSound(block, Sound.BUCKET_FILL_LAVA);
-                    } else if (target instanceof BlockWater) {
+                    } else if (target instanceof BlockFlowingWater) {
                         level.addSound(block, Sound.BUCKET_FILL_WATER);
                     } else if (target instanceof BlockPowderSnow) {
                         level.addSound(block, Sound.BUCKET_FILL_POWDER_SNOW);

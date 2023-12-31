@@ -414,7 +414,7 @@ public class EntityBoat extends EntityVehicle {
             public void accept(int x, int y, int z) {
                 Block block = EntityBoat.this.level.getBlock(EntityBoat.this.temporalVector.setComponents(x, y, z));
 
-                if (block instanceof BlockWater || ((block = block.getLevelBlockAtLayer(1)) instanceof BlockWater)) {
+                if (block instanceof BlockFlowingWater || ((block = block.getLevelBlockAtLayer(1)) instanceof BlockFlowingWater)) {
                     double level = block.getMaxY();
 
                     diffY = Math.min(maxY - level, diffY);

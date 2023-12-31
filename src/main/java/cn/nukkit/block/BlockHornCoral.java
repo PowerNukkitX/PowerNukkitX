@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockHornCoral extends Block {
+public class BlockHornCoral extends BlockCoral {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:horn_coral");
 
     @Override
@@ -16,5 +16,15 @@ public class BlockHornCoral extends Block {
 
     public BlockHornCoral(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public boolean isDead() {
+        return false;
+    }
+
+    @Override
+    public Block getDeadCoral() {
+        return new BlockDeadHornCoral();
     }
 }

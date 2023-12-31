@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BlockBubbleCoral extends Block {
+public class BlockBubbleCoral extends BlockCoral {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:bubble_coral");
 
     @Override
@@ -24,6 +24,16 @@ public class BlockBubbleCoral extends Block {
     }
 
     @Override
+    public boolean isDead() {
+        return false;
+    }
+
+    @Override
+    public Block getDeadCoral() {
+        return new BlockDeadBubbleCoral();
+    }
+
+    @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (this.getId().equals(BUBBLE_CORAL)) {
@@ -32,13 +42,16 @@ public class BlockBubbleCoral extends Block {
             return type;
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             for (BlockFace face : BlockFace.values()) {
-                if (getSideAtLayer(0, face) instanceof BlockWater ||
-                        getSideAtLayer(1, face) instanceof BlockWater ||
+                if (getSideAtLayer(0, face) instanceof BlockFlowingWater ||
+                        getSideAtLayer(1, face) instanceof BlockFlowingWater ||
                         getSideAtLayer(0, face) instanceof BlockFrostedIce || getSideAtLayer(1, face) instanceof BlockFrostedIce) {
                     return type;
                 }
             }
-            this.getLevel().setBlock(this, new BlockDeadBubbleCoral(), true, true);
+            BlockFadeEvent event = new BlockFadeEvent(this, getDeadCoral());
+            if (!event.isCancelled()) {
+                this.getLevel().setBlock(this, event.getNewState(), true, true);
+            }
             return type;
         }
         return 0;

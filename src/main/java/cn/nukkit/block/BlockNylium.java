@@ -13,10 +13,8 @@ import javax.annotation.Nullable;
 
 
 public abstract class BlockNylium extends BlockSolid {
-
-
-    public BlockNylium() {
-        // Does nothing
+    protected BlockNylium(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -41,7 +39,7 @@ public abstract class BlockNylium extends BlockSolid {
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         Block up = up();
-        if (item.isNull() || !item.isFertilizer() || up.getId() != AIR) {
+        if (item.isNull() || !item.isFertilizer() || !up.isAir()) {
             return false;
         }
 
@@ -52,7 +50,7 @@ public abstract class BlockNylium extends BlockSolid {
         grow();
 
         level.addParticle(new BoneMealParticle(up));
-        
+
         return true;
     }
 
@@ -75,7 +73,7 @@ public abstract class BlockNylium extends BlockSolid {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{ Item.get(NETHERRACK) };
+            return new Item[]{Item.get(NETHERRACK)};
         }
         return Item.EMPTY_ARRAY;
     }

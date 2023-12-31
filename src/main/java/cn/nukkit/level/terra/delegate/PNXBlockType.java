@@ -19,7 +19,7 @@ public record PNXBlockType(cn.nukkit.blockstate.BlockState innerBlockState) impl
 
     @Override
     public boolean isWater() {
-        return innerBlockState.getBlock() instanceof BlockWater;
+        return innerBlockState.getBlock() instanceof BlockFlowingWater;
     }
 
     @Override

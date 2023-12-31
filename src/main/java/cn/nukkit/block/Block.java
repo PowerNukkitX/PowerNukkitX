@@ -113,6 +113,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             log.error("Failed to load block color map", e);
         }
     }
+
     protected Block(@Nullable BlockState blockState) {
         super(0, 0, 0, null);
         if (blockState != null && getProperties().containBlockState(blockState)) {
@@ -491,8 +492,14 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return this;
     }
 
-    public void setPropertyValues(BlockPropertyType.BlockPropertyValue<?, ?, ?>... values) {
+    public Block setPropertyValues(BlockPropertyType.BlockPropertyValue<?, ?, ?>... values) {
         this.blockstate = blockstate.setPropertyValues(getProperties(), values);
+        return this;
+    }
+
+    public Block setPropertyValues(List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> values) {
+        this.blockstate = blockstate.setPropertyValues(getProperties(), values.toArray(BlockPropertyType.BlockPropertyValue<?, ?, ?>[]::new));
+        return this;
     }
 
     public final int getRuntimeId() {

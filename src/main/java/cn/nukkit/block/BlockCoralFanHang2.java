@@ -1,38 +1,26 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.value.CoralType;
+import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PERMANENTLY_DEAD;
+import static cn.nukkit.block.property.CommonBlockProperties.CORAL_HANG_TYPE_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.DEAD_BIT;
 
 
 public class BlockCoralFanHang2 extends BlockCoralFanHang {
-
-
-    public static final ArrayBlockProperty<CoralType> HANG2_TYPE = new ArrayBlockProperty<>("coral_hang_type_bit", true,
-            new CoralType[]{CoralType.PURPLE, CoralType.RED}
-    ).ordinal(true);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(HANG2_TYPE, PERMANENTLY_DEAD, HANG_DIRECTION);
-
+    public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_FAN_HANG2,
+            CommonBlockProperties.CORAL_FAN_DIRECTION,
+            CORAL_HANG_TYPE_BIT,
+            DEAD_BIT);
 
     public BlockCoralFanHang2() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
 
     public BlockCoralFanHang2(BlockState blockstate) {
         super(blockstate);
     }
-    
-    @Override
-    public int getId() {
-        return CORAL_FAN_HANG2;
-    }
-
 
     @NotNull
     @Override
@@ -40,13 +28,12 @@ public class BlockCoralFanHang2 extends BlockCoralFanHang {
         return PROPERTIES;
     }
 
-
     @Override
     public int getType() {
-        if ((getDamage() & 0b1) == 0) {
-            return BlockCoral.TYPE_BUBBLE;
-        } else {
+        if (getPropertyValue(CORAL_HANG_TYPE_BIT)) {
             return BlockCoral.TYPE_FIRE;
+        } else {
+            return BlockCoral.TYPE_BUBBLE;
         }
     }
 }

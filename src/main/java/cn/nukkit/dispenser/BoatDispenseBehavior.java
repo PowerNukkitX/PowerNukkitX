@@ -26,9 +26,9 @@ public class BoatDispenseBehavior extends DefaultDispenseBehavior {
 
         Block target = block.getSide(face);
 
-        if (target instanceof BlockWater) {
+        if (target instanceof BlockFlowingWater) {
             pos.y += 1;
-        } else if (target.getId() != BlockID.AIR || !(target.down() instanceof BlockWater)) {
+        } else if (target.getId() != BlockID.AIR || !(target.down() instanceof BlockFlowingWater)) {
             return super.dispense(block, face, item);
         }
 

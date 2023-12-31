@@ -1,10 +1,10 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.value.OxidizationLevel;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.property.enums.OxidizationLevel;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -13,11 +13,7 @@ import javax.annotation.Nullable;
  * @author LoboMetalurgico
  * @since 11/06/2021
  */
-
-
 public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, Waxable {
-
-
     public BlockCopperBase(BlockState blockState) {
         super(blockState);
     }
@@ -67,7 +63,7 @@ public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, 
 
     @Override
     public BlockState getStateWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
-        return getBlockState().withBlockId(getCopperId(isWaxed(), oxidizationLevel));
+        return Registries.BLOCK.getBlockProperties(getCopperId(isWaxed(), oxidizationLevel)).getDefaultState();
     }
 
 
@@ -95,21 +91,15 @@ public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, 
     }
 
 
-    protected int getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel) {
+    protected String getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel) {
         if (oxidizationLevel == null) {
             return getId();
         }
-        switch (oxidizationLevel) {
-            case UNAFFECTED:
-                return waxed? WAXED_COPPER : COPPER_BLOCK;
-            case EXPOSED:
-                return waxed? WAXED_EXPOSED_COPPER : EXPOSED_COPPER;
-            case WEATHERED:
-                return waxed? WAXED_WEATHERED_COPPER : WEATHERED_COPPER;
-            case OXIDIZED:
-                return waxed? WAXED_OXIDIZED_COPPER : OXIDIZED_COPPER;
-            default:
-                return getId();
-        }
+        return switch (oxidizationLevel) {
+            case UNAFFECTED -> waxed ? WAXED_COPPER : COPPER_BLOCK;
+            case EXPOSED -> waxed ? WAXED_EXPOSED_COPPER : EXPOSED_COPPER;
+            case WEATHERED -> waxed ? WAXED_WEATHERED_COPPER : WEATHERED_COPPER;
+            case OXIDIZED -> waxed ? WAXED_OXIDIZED_COPPER : OXIDIZED_COPPER;
+        };
     }
 }

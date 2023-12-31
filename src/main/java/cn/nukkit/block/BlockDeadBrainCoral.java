@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockDeadBrainCoral extends Block {
+public class BlockDeadBrainCoral extends BlockBrainCoral {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEAD_BRAIN_CORAL);
 
     @Override
@@ -16,5 +16,10 @@ public class BlockDeadBrainCoral extends Block {
 
     public BlockDeadBrainCoral(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public boolean isDead() {
+        return true;
     }
 }

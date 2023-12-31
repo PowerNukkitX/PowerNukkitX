@@ -3510,7 +3510,7 @@ public class Level implements ChunkManager, Metadatable {
 
         var up = block.getSide(BlockFace.UP);
         var up1 = block.getSideAtLayer(1, BlockFace.UP);
-        if (up instanceof BlockWater || up1 instanceof BlockWater) {
+        if (up instanceof BlockFlowingWater || up1 instanceof BlockFlowingWater) {
             var r1 = color.getRed();
             var g1 = color.getGreen();
             var b1 = color.getBlue();
@@ -3573,7 +3573,7 @@ public class Level implements ChunkManager, Metadatable {
         while (y > getMinHeight()) {
             Block block = getBlock(x, y, z);
             if (block.getColor() == null) return null;
-            if (block.getColor().getAlpha() == 0/* || block instanceof BlockWater*/) {
+            if (block.getColor().getAlpha() == 0/* || block instanceof BlockFlowingWater*/) {
                 y--;
             } else {
                 return block;

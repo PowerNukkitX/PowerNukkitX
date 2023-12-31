@@ -30,17 +30,10 @@ public abstract class BlockRoots extends BlockFlowable {
 
 
     protected boolean isSupportValid() {
-        switch (down().getId()) {
-            case WARPED_NYLIUM:
-            case CRIMSON_NYLIUM:
-            case GRASS:
-            case PODZOL:
-            case DIRT:
-            case SOUL_SOIL:
-                return true;
-            default:
-                return false;
-        }
+        return switch (down().getId()) {
+            case WARPED_NYLIUM, CRIMSON_NYLIUM, GRASS, PODZOL, DIRT, SOUL_SOIL -> true;
+            default -> false;
+        };
     }
 
     @Override

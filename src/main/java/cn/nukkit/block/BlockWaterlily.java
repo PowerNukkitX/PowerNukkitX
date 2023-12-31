@@ -65,7 +65,7 @@ public class BlockWaterlily extends BlockFlowable {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (target instanceof BlockWater || target.getLevelBlockAtLayer(1) instanceof BlockWater) {
+        if (target instanceof BlockFlowingWater || target.getLevelBlockAtLayer(1) instanceof BlockFlowingWater) {
             Block up = target.up();
             if (up.isAir()) {
                 this.getLevel().setBlock(up, this, true, true);
@@ -79,7 +79,7 @@ public class BlockWaterlily extends BlockFlowable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block down = this.down();
-            if (!(down instanceof BlockWater) && !(down.getLevelBlockAtLayer(1) instanceof BlockWater)
+            if (!(down instanceof BlockFlowingWater) && !(down.getLevelBlockAtLayer(1) instanceof BlockFlowingWater)
                     && !(down instanceof BlockFrostedIce) && !(down.getLevelBlockAtLayer(1) instanceof BlockFrostedIce)) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;

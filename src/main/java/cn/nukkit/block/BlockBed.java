@@ -148,7 +148,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
             return true;
         }
 
-        if (player == null || !player.hasEffect(Effect.CONDUIT_POWER) && getLevelBlockAtLayer(1) instanceof BlockWater) {
+        if (player == null || !player.hasEffect(Effect.CONDUIT_POWER) && getLevelBlockAtLayer(1) instanceof BlockFlowingWater) {
             return true;
         }
 

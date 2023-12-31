@@ -101,7 +101,7 @@ public class BlockFarmland extends BlockTransparent {
             }
 
             Block block = this.level.getBlock(v.setComponents(x, y - 1, z));
-            if (found || block instanceof BlockWater || block instanceof BlockFrostedIce) {
+            if (found || block instanceof BlockFlowingWater || block instanceof BlockFrostedIce) {
                 if (getMoistureAmount() < 7) {
                     setMoistureAmount(7);
                     this.level.setBlock(this, this, false, getMoistureAmount() == 0);

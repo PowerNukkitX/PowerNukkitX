@@ -59,7 +59,7 @@ public class BucketDispenseBehavior extends DefaultDispenseBehavior {
             else
                 target.level.addSound(block, Sound.BUCKET_FILL_WATER);
 
-            if (target instanceof BlockWater && target.getDamage() == 0) {
+            if (target instanceof BlockFlowingWater && target.getDamage() == 0) {
                 target.level.setBlock(target, Block.get(BlockID.AIR));
                 target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
                 return MinecraftItemID.WATER_BUCKET.get(1, bucket.getCompoundTag());

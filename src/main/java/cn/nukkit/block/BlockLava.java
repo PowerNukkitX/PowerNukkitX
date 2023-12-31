@@ -188,7 +188,7 @@ public class BlockLava extends BlockLiquid {
         Block down = this.getSide(BlockFace.DOWN);
         for(int side = 1; side < 6; ++side){ //don't check downwards side
             Block blockSide = this.getSide(BlockFace.fromIndex(side));
-            if(blockSide instanceof BlockWater || blockSide.getLevelBlockAtLayer(1) instanceof BlockWater){
+            if(blockSide instanceof BlockFlowingWater || blockSide.getLevelBlockAtLayer(1) instanceof BlockFlowingWater){
                 colliding = blockSide;
                 break;
             }
@@ -210,7 +210,7 @@ public class BlockLava extends BlockLiquid {
 
     @Override
     protected void flowIntoBlock(Block block, int newFlowDecay){
-        if(block instanceof BlockWater){
+        if(block instanceof BlockFlowingWater){
             ((BlockLiquid) block).liquidCollide(this, Block.get(BlockID.STONE));
         } else {
             super.flowIntoBlock(block, newFlowDecay);

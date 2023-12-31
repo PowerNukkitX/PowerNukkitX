@@ -188,9 +188,9 @@ public class BlockSugarcane extends BlockFlowable {
         }
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
             Block possibleWater = down.getSide(face);
-            if (possibleWater instanceof BlockWater
+            if (possibleWater instanceof BlockFlowingWater
                     || possibleWater instanceof BlockIceFrosted
-                    || possibleWater.getLevelBlockAtLayer(1) instanceof BlockWater) {
+                    || possibleWater.getLevelBlockAtLayer(1) instanceof BlockFlowingWater) {
                 return true;
             }
         }

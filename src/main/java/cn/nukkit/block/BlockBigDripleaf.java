@@ -134,7 +134,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             setHead(true);
         }
 
-        if (block instanceof BlockWater)
+        if (block instanceof BlockFlowingWater)
             level.setBlock(this, 1, block, true, false);
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
@@ -149,7 +149,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             if (head.getFloorY() + 1 >= level.getMaxHeight())
                 return false;
             Block above = head.up();
-            if (!above.isAir() && !(above instanceof BlockWater))
+            if (!above.isAir() && !(above instanceof BlockFlowingWater))
                 return false;
             if (player != null && !player.isCreative())
                 item.count--;
@@ -157,7 +157,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             var aboveDownBlock = new BlockBigDripleaf();
             aboveDownBlock.setBlockFace(this.getBlockFace());
             level.setBlock(above.getSideVec(BlockFace.DOWN), aboveDownBlock, true, false);
-            if (above instanceof BlockWater)
+            if (above instanceof BlockFlowingWater)
                 level.setBlock(above, 1, above, true, false);
             var aboveBock = new BlockBigDripleaf();
             aboveBock.setBlockFace(this.getBlockFace());

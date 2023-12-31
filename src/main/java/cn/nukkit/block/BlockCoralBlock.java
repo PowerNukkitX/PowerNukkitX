@@ -81,8 +81,8 @@ public class BlockCoralBlock extends BlockSolid {
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (!isDead()) {
                 for (BlockFace face : BlockFace.values()) {
-                    if (getSideAtLayer(0, face) instanceof BlockWater || getSideAtLayer(1, face) instanceof BlockWater
-                            || getSideAtLayer(0, face) instanceof BlockFrostedIce || getSideAtLayer(1, face) instanceof BlockIceFrosted) {
+                    if (getSideAtLayer(0, face) instanceof BlockFlowingWater || getSideAtLayer(1, face) instanceof BlockFlowingWater
+                            || getSideAtLayer(0, face) instanceof BlockFrostedIce || getSideAtLayer(1, face) instanceof BlockFrostedIce) {
                         return type;
                     }
                 }

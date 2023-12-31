@@ -1,8 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.value.OxidizationLevel;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.property.enums.OxidizationLevel;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
@@ -18,8 +17,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author joserobjr
  * @since 2021-06-14
  */
-
-
 public interface Oxidizable {
 
 

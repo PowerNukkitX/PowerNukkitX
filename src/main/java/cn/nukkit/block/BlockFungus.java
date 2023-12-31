@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
@@ -13,17 +11,8 @@ import javax.annotation.Nullable;
 
 
 public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
-
-
-    protected BlockFungus() {
-        super(0);
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return CommonBlockProperties.EMPTY_PROPERTIES;
+    protected BlockFungus(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -76,19 +65,10 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
 
 
     protected boolean isValidSupport(@NotNull Block support) {
-        switch (support.getId()) {
-            case GRASS:
-            case DIRT:
-            case PODZOL:
-            case FARMLAND:
-            case CRIMSON_NYLIUM:
-            case WARPED_NYLIUM:
-            case SOUL_SOIL:
-            case MYCELIUM:
-                return true;
-            default:
-                return false;
-        }
+        return switch (support.getId()) {
+            case GRASS, DIRT, PODZOL, FARMLAND, CRIMSON_NYLIUM, WARPED_NYLIUM, SOUL_SOIL, MYCELIUM -> true;
+            default -> false;
+        };
     }
 
     @Override
