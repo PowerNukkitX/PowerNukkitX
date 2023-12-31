@@ -24,18 +24,21 @@ import java.util.List;
 /**
  * @author joserobjr
  */
-
-
 public class BlockTarget extends BlockTransparent implements RedstoneComponent, BlockEntityHolder<BlockEntityTarget> {
 
-
-    public BlockTarget() {
-        // Does nothing
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(TARGET);
 
     @Override
-    public int getId() {
-        return TARGET;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockTarget() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockTarget(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -43,17 +46,13 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
         return "Target";
     }
 
-
-    @NotNull
     @Override
-    public Class<? extends BlockEntityTarget> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityTarget> getBlockEntityClass() {
         return BlockEntityTarget.class;
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.TARGET;
     }
 
@@ -68,11 +67,9 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
         return target == null? 0 : target.getActivePower();
     }
 
-
     public boolean activatePower(int power) {
         return activatePower(power, 4 * 2);
     }
-
 
     public boolean activatePower(int power, int ticks) {
         Level level = getLevel();
@@ -94,7 +91,6 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
         }
         return true;
     }
-
 
     public boolean deactivatePower() {
         BlockEntityTarget target = getBlockEntity();
@@ -118,7 +114,6 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
         }
         return 0;
     }
-
 
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
@@ -184,5 +179,4 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
     public int getBurnChance() {
         return 0;
     }
-
 }

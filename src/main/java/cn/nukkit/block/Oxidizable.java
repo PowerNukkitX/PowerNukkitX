@@ -19,10 +19,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public interface Oxidizable {
 
-
     @NotNull
     Location getLocation();
-
 
     default int onUpdate(int type) {
         if (type != Level.BLOCK_UPDATE_RANDOM) {
