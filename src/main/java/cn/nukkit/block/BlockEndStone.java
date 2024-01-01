@@ -35,7 +35,7 @@ public class BlockEndStone extends BlockSolid {
 
     @Override
     public double getResistance() {
-        return 45;
+        return 9;
     }
 
     @Override

@@ -2,8 +2,8 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockEndBricks extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:end_bricks");
+public class BlockEndBricks extends BlockEndStone {
+    public static final BlockProperties PROPERTIES = new BlockProperties(END_BRICKS);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -16,5 +16,10 @@ public class BlockEndBricks extends Block {
 
     public BlockEndBricks(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "End Stone Bricks";
     }
 }
