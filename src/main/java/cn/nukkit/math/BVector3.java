@@ -12,7 +12,6 @@ import static java.lang.StrictMath.*;
  */
 
 
-@
 public final class BVector3 {
     /**
      * 向量的单位向量

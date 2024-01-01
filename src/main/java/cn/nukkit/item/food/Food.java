@@ -134,7 +134,6 @@ public abstract class Food {
 
     public static final Food glow_berries = registerDefaultFood(new FoodNormal(2, 0.4F).addRelative(Item.GLOW_BERRIES));
 
-    @
     //Opened API for plugins
     public static Food registerFood(Food food, Plugin plugin) {
         Objects.requireNonNull(food);

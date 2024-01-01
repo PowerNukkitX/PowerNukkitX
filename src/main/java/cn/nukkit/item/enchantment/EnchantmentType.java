@@ -21,6 +21,7 @@ public enum EnchantmentType {
     BOW,
     WEARABLE,
     TRIDENT,
+    CROSSBOW;
 
 
     public boolean canEnchantItem(@NotNull Item item) {

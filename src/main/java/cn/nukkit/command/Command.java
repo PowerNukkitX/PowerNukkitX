@@ -354,10 +354,6 @@ public abstract class Command implements GenericParameter {
             by = "PowerNukkit",
             since = "1.5.2.0-PN",
             reason = "Unused and always throws an exception even in Cloudburst Nukkit")
-    
-            since = "1.5.2.0-PN",
-            info = "Throws UnsupportedOperationException instead of NullPointerException"
-    )
     public static CommandData generateDefaultData() {
         throw new UnsupportedOperationException();
     }

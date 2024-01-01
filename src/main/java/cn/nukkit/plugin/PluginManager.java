@@ -75,8 +75,6 @@ public class PluginManager {
         return false;
     }
 
-
-    @
     public void loadInternalPlugin() {
         PluginLoader pluginLoader = fileAssociations.get(JavaPluginLoader.class.getName());
         InternalPlugin plugin = InternalPlugin.INSTANCE;
@@ -519,8 +517,6 @@ public class PluginManager {
         return pluginCmds;
     }
 
-
-    @
     public void disablePlugins() {
         ListIterator<Plugin> plugins = new ArrayList<>(this.getPlugins().values()).listIterator(this.getPlugins().size());
 

@@ -573,22 +573,18 @@ public final class PlayerHandle {
         player.lastBlockAction = actionData;
     }
 
-    @
     public void onBlockBreakContinue(Vector3 pos, BlockFace face) {
         player.onBlockBreakContinue(pos, face);
     }
 
-    @
     public void onBlockBreakStart(Vector3 pos, BlockFace face) {
         player.onBlockBreakStart(pos, face);
     }
 
-    @
     public void onBlockBreakAbort(Vector3 pos, BlockFace face) {
         player.onBlockBreakAbort(pos, face);
     }
 
-    @
     public void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
         player.onBlockBreakComplete(blockPos, face);
     }

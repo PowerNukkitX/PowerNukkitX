@@ -11,7 +11,6 @@ import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-@
 public class BlockUpdateScheduler {
     private final Level level;
     private long lastTick;

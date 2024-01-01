@@ -13,7 +13,6 @@ public class SkinAnimation {
 
     public final int expression;
 
-    ("Re-added for backward-compatibility")
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN",
             reason = "The expression field was added and the constructor's signature was changed",
