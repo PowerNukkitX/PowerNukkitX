@@ -389,7 +389,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         }
     }
 
-    @
     @Override
     public boolean onUpdate(int tick) {
         if (tick % 100 == 0) {

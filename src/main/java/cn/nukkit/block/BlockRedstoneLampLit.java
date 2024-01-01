@@ -35,8 +35,6 @@ public class BlockRedstoneLampLit extends BlockRedstoneLamp implements RedstoneC
         return new ItemBlock(Block.get(BlockID.REDSTONE_LAMP));
     }
 
-    
-            " + trigger observer.", since = "1.4.0.0-PN")
     @Override
     public int onUpdate(int type) {
         if (!this.level.getServer().isRedstoneEnabled()) {

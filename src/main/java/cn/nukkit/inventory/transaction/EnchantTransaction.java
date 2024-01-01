@@ -51,7 +51,6 @@ public class EnchantTransaction extends InventoryTransaction {
     }
 
     @Override
-    @
     public boolean execute() {
         // This will validate the enchant conditions
         if (this.hasExecuted || !this.canExecute()) {

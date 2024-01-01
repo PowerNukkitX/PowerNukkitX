@@ -273,9 +273,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected int chunkRadius;
     protected int viewDistance;
     protected Position spawnPosition;
-
-
-    @
     protected Position spawnBlockPosition;
 
     /**
@@ -352,15 +349,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private BlockEnderChest viewingEnderChest = null;
     private TaskHandler delayedPosTrackingUpdate;
     private int noShieldTicks;
-    @
-
-
     protected boolean showingCredits;
-    @
     protected static final int NO_SHIELD_DELAY = 10;
-    @
     protected boolean inventoryOpen;
-    @
     protected PlayerBlockActionData lastBlockAction;
     protected AsyncTask preLoginEventTask = null;
     protected boolean verified = false;
@@ -491,9 +482,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.server.getNetwork().unpackBatchedPackets(packet, this.server.isEnableSnappy() ? CompressionProvider.SNAPPY : CompressionProvider.ZLIB);
     }
 
-    @
-            @
-
     protected void onBlockBreakContinue(Vector3 pos, BlockFace face) {
         if (this.isBreakingBlock()) {
             var time = System.currentTimeMillis();
@@ -527,8 +515,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
         }
     }
-
-    @
 
     protected void onBlockBreakStart(Vector3 pos, BlockFace face) {
         BlockVector3 blockPos = pos.asBlockVector3();
@@ -620,8 +606,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.lastBreakPosition = blockPos;
     }
 
-    @
-
     protected void onBlockBreakAbort(Vector3 pos, BlockFace face) {
         if (pos.distanceSquared(this) < 100) {// same as with ACTION_START_BREAK
             LevelEventPacket pk = new LevelEventPacket();
@@ -636,8 +620,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.breakingBlock = null;
         this.breakingBlockFace = null;
     }
-
-    @
 
     protected void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
         if (!this.spawned || !this.isAlive()) {
@@ -2779,9 +2761,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @DeprecationDetails(by = "Cloudburst Nukkit", since = "2019-05-08", replaceWith = "dataPacket(DataPacket)",
             reason = "ACKs are handled by the RakNet layer only")
-    info ="Cloudburst changed the return values from 0/-1 to 1/0, breaking backward compatibility for no reason, "+
-            "we reversed that.")
-
     @Deprecated
     public int dataPacket(DataPacket packet, boolean needACK) {
         return dataPacket(packet) ? 0 : -1;
@@ -2804,9 +2783,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @DeprecationDetails(by = "Cloudburst Nukkit", since = "2019-05-08", replaceWith = "dataPacket(DataPacket)",
             reason = "ACK are handled by the RakNet layer and direct packets are no longer allowed")
-    info ="Cloudburst changed the return values from 0/-1 to 1/0, breaking backward compatibility for no reason, "+
-            "we reversed that.")
-
     @Deprecated
     public int directDataPacket(DataPacket packet, boolean needACK) {
         return this.dataPacket(packet) ? 0 : -1;
@@ -3164,8 +3140,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Override
-    @
-
     public boolean onUpdate(int currentTick) {
         if (!this.loggedIn) {
             return false;
@@ -3448,9 +3422,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         double dot1 = dV.dot(new Vector2(pos.x, pos.z));
         return (dot1 - dot) >= -maxDiff;
     }
-
-    @
-
     public void handleDataPacket(DataPacket packet) {
         if (!connected) {
             return;

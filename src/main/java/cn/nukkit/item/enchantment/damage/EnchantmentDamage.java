@@ -18,7 +18,6 @@ public abstract class EnchantmentDamage extends Enchantment {
 
     protected final TYPE damageType;
 
-    ("Re-added for backward compatibility")
     @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit", 
             reason = "The signature was changed and it doesn't exists anymore in Cloudburst Nukkit",
             replaceWith = "EnchantmentDamage(int id, String name, Rarity rarity, TYPE type)")

@@ -409,8 +409,6 @@ public class BinaryStream {
         byte[] data = this.getByteArray();
         return new SerializedImage(width, height, data);
     }
-
-    @
     public Item getSlot() {
         int networkId = getVarInt();
         if (networkId == 0) {
