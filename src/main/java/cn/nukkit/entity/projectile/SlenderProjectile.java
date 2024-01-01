@@ -5,7 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.ProjectileHitEvent;
 import cn.nukkit.level.MovingObjectPosition;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BVector3;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -24,11 +24,11 @@ public abstract class SlenderProjectile extends EntityProjectile {
     private static final int SPLIT_NUMBER = 10;
     private MovingObjectPosition lastHitBlock;
 
-    public SlenderProjectile(FullChunk chunk, CompoundTag nbt) {
+    public SlenderProjectile(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    public SlenderProjectile(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public SlenderProjectile(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 

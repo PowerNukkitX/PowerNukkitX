@@ -1,20 +1,17 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.entity.EntitySwimmable;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 public class EntityTadpole extends EntityAnimal implements EntitySwimmable {
-    public static final int NETWORK_ID = 133;
+    
 
-    public EntityTadpole(FullChunk chunk, CompoundTag nbt) {
+    public EntityTadpole(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getHeight() {

@@ -10,7 +10,6 @@ import cn.nukkit.level.Sound;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 
 /**
  * @author MagicDroidX (Nukkit Project), kvetinac97
@@ -35,7 +34,6 @@ public class BlockDirt extends BlockSolid {
     public @NotNull DirtType getDirtType() {
         return getPropertyValue(CommonBlockProperties.DIRT_TYPE);
     }
-
 
     public void setDirtType(@Nullable DirtType dirtType) throws Exception {
         setPropertyValue(CommonBlockProperties.DIRT_TYPE, dirtType);

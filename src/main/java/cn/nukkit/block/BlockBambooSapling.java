@@ -139,7 +139,7 @@ public class BlockBambooSapling extends BlockFlowable {
 
 
     /**
-     * alisa age == 0 | age == false | !age
+     * Alias age == 0 | age == false | !age
      */
     public boolean isAge() {
         return getPropertyValue(CommonBlockProperties.AGE_BIT);

@@ -8,7 +8,7 @@ import cn.nukkit.blockentity.BlockEntityShulkerBox;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
 import cn.nukkit.entity.item.EntityItem;
-import cn.nukkit.entity.item.EntityXPOrb;
+import cn.nukkit.entity.item.EntityXpOrb;
 import cn.nukkit.event.block.BlockExplodeEvent;
 import cn.nukkit.event.block.BlockUpdateEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
@@ -272,7 +272,7 @@ public class Explosion {
                     entity.attack(new EntityDamageEvent(entity, DamageCause.BLOCK_EXPLOSION, damage));
                 }
 
-                if (!(entity instanceof EntityItem || entity instanceof EntityXPOrb)) {
+                if (!(entity instanceof EntityItem || entity instanceof EntityXpOrb)) {
                     var multipliedMotion = motion.multiply(impact);
                     entity.motionX += multipliedMotion.x;
                     entity.motionY += multipliedMotion.y;

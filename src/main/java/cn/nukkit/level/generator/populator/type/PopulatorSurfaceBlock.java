@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator.populator.type;
 
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.populator.helper.PopulatorHelpers;
 import cn.nukkit.math.NukkitRandom;
 

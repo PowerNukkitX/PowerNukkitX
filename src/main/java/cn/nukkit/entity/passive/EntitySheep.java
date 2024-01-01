@@ -40,7 +40,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityShearable {
 
-    public static final int NETWORK_ID = 13;
+    
     public boolean sheared = false;
     public int color = 0;
 
@@ -115,10 +115,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
         return "Sheep";
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public void initEntity() {

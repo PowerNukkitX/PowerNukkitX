@@ -12,7 +12,7 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -28,7 +28,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
     private boolean[] keepItem;
 
 
-    public BlockEntityCampfire(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityCampfire(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

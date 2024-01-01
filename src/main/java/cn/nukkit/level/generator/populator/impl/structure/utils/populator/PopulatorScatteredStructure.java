@@ -3,7 +3,7 @@ package cn.nukkit.level.generator.populator.impl.structure.utils.populator;
 import cn.nukkit.Server;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.populator.impl.structure.utils.math.StructureBoundingBox;
 import cn.nukkit.level.generator.populator.impl.structure.utils.structure.ScatteredStructurePiece;

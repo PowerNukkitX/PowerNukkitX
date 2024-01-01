@@ -3,7 +3,7 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityArthropod;
 import cn.nukkit.entity.EntityWalkable;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -11,16 +11,13 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public class EntityCaveSpider extends EntityMob implements EntityWalkable, EntityArthropod {
 
-    public static final int NETWORK_ID = 40;
+    
 
-    public EntityCaveSpider(FullChunk chunk, CompoundTag nbt) {
+    public EntityCaveSpider(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {

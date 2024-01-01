@@ -2,7 +2,7 @@ package cn.nukkit.event.level;
 
 import cn.nukkit.api.ImmutableCollection;
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
 import org.jetbrains.annotations.NotNull;
 

@@ -24,7 +24,6 @@ import cn.nukkit.event.entity.CreeperPowerEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -36,14 +35,14 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityCreeper extends EntityMob implements EntityWalkable, EntityInteractable {
 
-    public static final int NETWORK_ID = 33;
+    
 
     public static final int DATA_SWELL_DIRECTION = 16;
     public static final int DATA_SWELL = 17;
     public static final int DATA_SWELL_OLD = 18;
     public static final int DATA_POWERED = 19;
 
-    public EntityCreeper(FullChunk chunk, CompoundTag nbt) {
+    public EntityCreeper(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -89,10 +88,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         );
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {

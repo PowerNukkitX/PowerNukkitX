@@ -10,7 +10,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.NukkitMath;
@@ -39,7 +39,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     protected FakeHumanEnderChestInventory enderChestInventory;
     protected FakeHumanOffhandInventory offhandInventory;
 
-    public EntityIntelligentHuman(FullChunk chunk, CompoundTag nbt) {
+    public EntityIntelligentHuman(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -74,8 +74,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
         return 1.62f;
     }
 
-    @Override
-    public int getNetworkId() {
+    private int getNetworkId() {
         return -1;
     }
 

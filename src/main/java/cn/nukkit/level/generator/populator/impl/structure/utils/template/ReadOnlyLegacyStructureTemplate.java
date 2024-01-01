@@ -5,7 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.task.ActorSpawnTask;
 import cn.nukkit.level.generator.task.BlockActorSpawnTask;
 import cn.nukkit.math.BlockVector3;

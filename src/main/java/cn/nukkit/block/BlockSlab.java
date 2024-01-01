@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 public abstract class BlockSlab extends BlockTransparent {
     protected final String doubleSlab;
 
-    protected BlockSlab(BlockState blockState,String doubleSlab) {
+    protected BlockSlab(BlockState blockState, String doubleSlab) {
         super(blockState);
         this.doubleSlab = doubleSlab;
     }
@@ -57,14 +57,11 @@ public abstract class BlockSlab extends BlockTransparent {
         return getPropertyValue(CommonBlockProperties.MINECRAFT_VERTICAL_HALF) == MinecraftVerticalHalf.TOP;
     }
 
-
     public void setOnTop(boolean top) {
         setPropertyValue(CommonBlockProperties.MINECRAFT_VERTICAL_HALF, top ? MinecraftVerticalHalf.TOP : MinecraftVerticalHalf.BOTTOM);
     }
 
-
     public abstract boolean isSameType(BlockSlab slab);
-
 
     @Override
     public boolean isSolid(BlockFace side) {

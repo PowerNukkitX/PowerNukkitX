@@ -19,7 +19,7 @@ import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.Set;
@@ -29,9 +29,9 @@ import java.util.Set;
  */
 public class EntityChicken extends EntityAnimal implements EntityWalkable {
 
-    public static final int NETWORK_ID = 10;
+    
 
-    public EntityChicken(FullChunk chunk, CompoundTag nbt) {
+    public EntityChicken(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -123,10 +123,7 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable {
         return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_CHICKEN : Item.RAW_CHICKEN)), Item.get(Item.FEATHER)};
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {

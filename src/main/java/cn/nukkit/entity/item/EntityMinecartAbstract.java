@@ -223,7 +223,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 var pickupArea = new SimpleAxisAlignedBB(this.x, this.y - 1, this.z, this.x + 1, this.y, this.z + 1);
                 checkPickupHopper(pickupArea, holder);
                 //漏斗矿车会自行拉取物品!
-                if (!(this instanceof EntityMinecartHopper)) {
+                if (!(this instanceof EntityHopperMinecart)) {
                     var pushArea = new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 2, this.z + 1);
                     checkPushHopper(pushArea, holder);
                 }

@@ -2,7 +2,7 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -10,16 +10,13 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public class EntityPolarBear extends EntityAnimal implements EntityWalkable {
 
-    public static final int NETWORK_ID = 28;
+    
 
-    public EntityPolarBear(FullChunk chunk, CompoundTag nbt) {
+    public EntityPolarBear(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {

@@ -1,38 +1,19 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemRedstoneRepeater;
+import cn.nukkit.item.ItemRepeater;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.REPEATER_DELAY;
 
 
 public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
-
-
-    protected static final IntBlockProperty REPEATER_DELAY = new IntBlockProperty("repeater_delay", false, 3);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(
-            CommonBlockProperties.CARDINAL_DIRECTION,
-            REPEATER_DELAY
-    );
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-
-    public BlockRedstoneRepeater() {
-        super(0);
+    public BlockRedstoneRepeater(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -48,14 +29,14 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
         return true;
     }
 
-    
+
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!isSupportValid(down())) {
             return false;
         }
-
-        setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH);
+        BlockFace blockFace = player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH;
+        setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(blockFace));
         if (!this.level.setBlock(block, this, true, true)) {
             return false;
         }
@@ -70,7 +51,7 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
 
     @Override
     public BlockFace getFacing() {
-        return getPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION);
+        return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));
     }
 
     @Override
@@ -80,12 +61,12 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
 
     @Override
     public Item toItem() {
-        return new ItemRedstoneRepeater();
+        return new ItemRepeater();
     }
 
     @Override
     protected int getDelay() {
-        return (1 + getIntValue(REPEATER_DELAY)) * 2;
+        return (1 + getPropertyValue(REPEATER_DELAY)) * 2;
     }
 
     @Override

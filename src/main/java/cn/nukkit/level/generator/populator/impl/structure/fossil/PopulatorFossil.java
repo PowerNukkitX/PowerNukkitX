@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.populator.impl.structure.fossil;
 
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.EnumBiome;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.populator.impl.structure.utils.template.ReadOnlyLegacyStructureTemplate;
 import cn.nukkit.level.generator.populator.impl.structure.utils.template.ReadableStructureTemplate;
 import cn.nukkit.level.generator.populator.type.PopulatorStructure;

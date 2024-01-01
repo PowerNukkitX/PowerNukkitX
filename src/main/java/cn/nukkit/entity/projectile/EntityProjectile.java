@@ -7,7 +7,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.item.EntityBoat;
-import cn.nukkit.entity.item.EntityEndCrystal;
+import cn.nukkit.entity.item.EntityEnderCrystal;
 import cn.nukkit.entity.item.EntityMinecartAbstract;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -139,7 +139,7 @@ public abstract class EntityProjectile extends Entity {
 
     @Override
     public boolean canCollideWith(Entity entity) {
-        return (entity instanceof EntityLiving || entity instanceof EntityEndCrystal || entity instanceof EntityMinecartAbstract || entity instanceof EntityBoat) && !this.onGround;
+        return (entity instanceof EntityLiving || entity instanceof EntityEnderCrystal || entity instanceof EntityMinecartAbstract || entity instanceof EntityBoat) && !this.onGround;
     }
 
     @Override

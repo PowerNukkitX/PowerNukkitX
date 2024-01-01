@@ -1,18 +1,26 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Angelic47 (Nukkit Project)
  */
 public class BlockCobblestone extends BlockSolid {
 
-    public BlockCobblestone() {
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(COBBLESTONE);
 
     @Override
-    public int getId() {
-        return COBBLESTONE;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockCobblestone() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockCobblestone(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -36,7 +44,6 @@ public class BlockCobblestone extends BlockSolid {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

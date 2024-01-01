@@ -1,7 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.projectile.EntitySmallFireBall;
+import cn.nukkit.entity.projectile.EntitySmallFireball;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
@@ -71,7 +71,7 @@ public class BlockPowderSnow extends BlockTransparent {
 
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
-        if (projectile instanceof EntitySmallFireBall) {
+        if (projectile instanceof EntitySmallFireball) {
             this.getLevel().useBreakOn(this);
             return true;
         }

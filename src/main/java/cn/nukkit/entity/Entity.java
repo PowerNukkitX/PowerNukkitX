@@ -20,7 +20,7 @@ import cn.nukkit.entity.provider.ClassEntityProvider;
 import cn.nukkit.entity.provider.CustomEntityProvider;
 import cn.nukkit.entity.provider.EntityProvider;
 import cn.nukkit.entity.provider.EntityProviderWithClass;
-import cn.nukkit.entity.weather.EntityLightning;
+import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.block.FarmLandDecayEvent;
 import cn.nukkit.event.entity.*;
@@ -50,8 +50,6 @@ import cn.nukkit.potion.Effect;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.*;
 import com.google.common.collect.Iterables;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
@@ -60,7 +58,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiPredicate;
-import java.util.stream.Collectors;
 
 import static cn.nukkit.network.protocol.SetEntityLinkPacket.*;
 import static cn.nukkit.utils.Utils.dynamic;
@@ -71,11 +68,10 @@ import static cn.nukkit.utils.Utils.dynamic;
 @Log4j2
 public abstract class Entity extends Location implements Metadatable {
     public static final Entity[] EMPTY_ARRAY = new Entity[0];
-
     //region data
     //All DATA constants were made dynamic because they have tendency to change on Minecraft updates,
     //these dynamic calls will avoid the need of plugin recompilations after Minecraft updates that shifts the data values
-    public static final int NETWORK_ID = -1;
+    
     public static final int DATA_TYPE_BYTE = 0;
     public static final int DATA_TYPE_SHORT = 1;
     public static final int DATA_TYPE_INT = 2;
@@ -456,10 +452,6 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FLAG_SEARCHING = dynamic(113);
 
     public static final int DATA_FLAG_CRAWLING = dynamic(114);
-    //endregion data
-    private static final Set<CustomEntityDefinition> entityDefinitions = new HashSet<>();
-    private static final Map<String, EntityProvider<? extends Entity>> knownEntities = new HashMap<>();
-    private static final Map<String, String> shortNames = new HashMap<>();
     public static long entityCount = 1;
     public final List<Entity> passengers = new ArrayList<>();
     public final AxisAlignedBB offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
@@ -743,76 +735,6 @@ public abstract class Entity extends Location implements Metadatable {
         return new OK<Void>(registerEntity(customEntityProvider, true));
     }
 
-    /**
-     * 获得全部实体的网络id
-     * <p>
-     * Get the network id of all entities
-     *
-     * @return the known entity ids
-     */
-    @NotNull
-    public static IntCollection getKnownEntityIds() {
-        return knownEntities.keySet().stream()
-                .filter(Utils::isInteger)
-                .mapToInt(Integer::parseInt)
-                .collect(IntArrayList::new, IntArrayList::add, IntArrayList::addAll);
-    }
-
-    /**
-     * 获取全部已经注册的实体，包括自定义实体
-     * <p>
-     * Get all registered entities, including custom entities
-     *
-     * @return the known entities
-     */
-    @NotNull
-    @Deprecated
-    public static Map<String, Class<? extends Entity>> getKnownEntities() {
-        return knownEntities.entrySet().stream()
-                .filter(e -> e.getValue() instanceof EntityProviderWithClass)
-                .map(e -> new OldStringClass(e.getKey(), ((EntityProviderWithClass) e.getValue()).getEntityClass()))
-                .collect(Collectors.toMap(OldStringClass::key, OldStringClass::value));
-    }
-
-    @NotNull
-    @Deprecated
-    public static Map<String, EntityProvider<? extends Entity>> getKnownEntityProviders() {
-        return Collections.unmodifiableMap(knownEntities);
-    }
-
-    /**
-     * 获取全部已经注册的实体提供者
-     * <p>
-     * Get all registered entity providers
-     *
-     * @return the known entity providers
-     */
-    @NotNull
-    public static List<String> getSaveIds() {
-        return new ArrayList<>(shortNames.values());
-    }
-
-    /**
-     * 从key id 查询该实体的网络id,{@link #knownEntities}
-     * <p>
-     * Query the network id of the entity from the key id,{@link #knownEntities}
-     *
-     * @param id the id
-     * @return the save id
-     */
-    @NotNull
-    public static OptionalInt getSaveId(String id) {
-        var entityProvider = knownEntities.get(id);
-        if (entityProvider == null) {
-            return OptionalInt.empty();
-        }
-        return knownEntities.entrySet().stream()
-                .filter(entry -> entry.getValue().equals(entityProvider))
-                .map(Map.Entry::getKey)
-                .filter(Utils::isInteger)
-                .mapToInt(Integer::parseInt)
-                .findFirst();
-    }
 
     /**
      * 从网络id 查询该实体的Name,对应{@link #knownEntities} key
@@ -928,14 +850,14 @@ public abstract class Entity extends Location implements Metadatable {
 
 
     public static void init() {
-        registerEntity("Lightning", EntityLightning.class);
+        registerEntity("Lightning", EntityLightningBolt.class);
         registerEntity("Arrow", EntityArrow.class);
         registerEntity("EnderPearl", EntityEnderPearl.class);
         registerEntity("FallingSand", EntityFallingBlock.class);
-        registerEntity("Firework", EntityFirework.class);
+        registerEntity("Firework", EntityFireworksRocket.class);
         registerEntity("Item", EntityItem.class);
         registerEntity("Painting", EntityPainting.class);
-        registerEntity("PrimedTnt", EntityPrimedTNT.class);
+        registerEntity("PrimedTnt", EntityTnt.class);
         registerEntity("Snowball", EntitySnowball.class);
         //Monsters
         registerEntity("Blaze", EntityBlaze.class);
@@ -975,8 +897,8 @@ public abstract class Entity extends Location implements Metadatable {
         registerEntity("Zombie", EntityZombie.class);
         registerEntity("Zoglin", EntityZoglin.class);
         registerEntity("ZombiePigman", EntityZombiePigman.class);
-        registerEntity("ZombieVillager", EntityZombieVillager.class);
-        registerEntity("ZombieVillagerV1", EntityZombieVillagerV1.class);
+        registerEntity("ZombieVillager", EntityZombieVillagerV2.class);
+        registerEntity("ZombieVillagerV1", EntityZombieVillager.class);
         //Passive
         registerEntity("Allay", EntityAllay.class);
         registerEntity("Axolotl", EntityAxolotl.class);
@@ -992,7 +914,7 @@ public abstract class Entity extends Location implements Metadatable {
         registerEntity("Frog", EntityFrog.class);
         registerEntity("Goat", EntityGoat.class);
         registerEntity("Horse", EntityHorse.class);
-        registerEntity("Llama", EntityLlama.class);
+        registerEntity("Llama", EntityLlamaSpit.class);
         registerEntity("Mooshroom", EntityMooshroom.class);
         registerEntity("Mule", EntityMule.class);
         registerEntity("Ocelot", EntityOcelot.class);
@@ -1008,36 +930,36 @@ public abstract class Entity extends Location implements Metadatable {
         registerEntity("Squid", EntitySquid.class);
         registerEntity("Strider", EntityStrider.class);
         registerEntity("Tadpole", EntityTadpole.class);
-        registerEntity("TropicalFish", EntityTropicalFish.class);
+        registerEntity("TropicalFish", EntityTropicalfish.class);
         registerEntity("Turtle", EntityTurtle.class);
-        registerEntity("Villager", EntityVillager.class);
-        registerEntity("VillagerV1", EntityVillagerV1.class);
-        registerEntity("WanderingTrader", EntityWanderingTrader.class);
+        registerEntity("Villager", EntityVillagerV2.class);
+        registerEntity("VillagerV1", EntityVillager.class);
+        registerEntity("WanderingTrader", EntityTraderLlama.class);
         registerEntity("Wolf", EntityWolf.class);
         registerEntity("ZombieHorse", EntityZombieHorse.class);
         registerEntity("NPC", EntityNPCEntity.class);
         registerEntity("Camel", EntityCamel.class);
         //Projectile
-        registerEntity("Small FireBall", EntitySmallFireBall.class);
+        registerEntity("Small FireBall", EntitySmallFireball.class);
         registerEntity("AreaEffectCloud", EntityAreaEffectCloud.class);
         registerEntity("Egg", EntityEgg.class);
-        registerEntity("LingeringPotion", EntityPotionLingering.class);
-        registerEntity("ThrownExpBottle", EntityExpBottle.class);
-        registerEntity("ThrownPotion", EntityPotion.class);
+        registerEntity("LingeringPotion", EntityLingeringPotion.class);
+        registerEntity("ThrownExpBottle", EntityXpBottle.class);
+        registerEntity("ThrownPotion", EntitySplashPotion.class);
         registerEntity("ThrownTrident", EntityThrownTrident.class);
-        registerEntity("XpOrb", EntityXPOrb.class);
+        registerEntity("XpOrb", EntityXpOrb.class);
         registerEntity("ArmorStand", EntityArmorStand.class);
 
         registerEntity("Human", EntityHuman.class, true);
         //Vehicle
         registerEntity("Boat", EntityBoat.class);
         registerEntity("ChestBoat", EntityChestBoat.class);
-        registerEntity("MinecartChest", EntityMinecartChest.class);
-        registerEntity("MinecartHopper", EntityMinecartHopper.class);
-        registerEntity("MinecartRideable", EntityMinecartEmpty.class);
-        registerEntity("MinecartTnt", EntityMinecartTNT.class);
+        registerEntity("MinecartChest", EntityChestMinecart.class);
+        registerEntity("MinecartHopper", EntityHopperMinecart.class);
+        registerEntity("MinecartRideable", EntityMinecart.class);
+        registerEntity("MinecartTnt", EntityTntMinecart.class);
 
-        registerEntity("EndCrystal", EntityEndCrystal.class);
+        registerEntity("EndCrystal", EntityEnderCrystal.class);
         registerEntity("FishingHook", EntityFishingHook.class);
     }
 
@@ -1052,15 +974,6 @@ public abstract class Entity extends Location implements Metadatable {
     public Identifier getIdentifier() {
         return Entity.getIdentifier(this.getNetworkId());
     }
-
-    /**
-     * 获得该实体的网络ID
-     * <p>
-     * Get the network ID of the entity
-     *
-     * @return the network id
-     */
-    public abstract int getNetworkId();
 
     /**
      * 实体高度
@@ -2148,7 +2061,7 @@ public abstract class Entity extends Location implements Metadatable {
                                     // player
                                     inPortalTicks = 81;
                                     teleport(finalPos, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
-                                    BlockNetherPortal.spawnPortal(newPos);
+                                    BlockPortal.spawnPortal(newPos);
                                 }
                             }, 5);
                         }

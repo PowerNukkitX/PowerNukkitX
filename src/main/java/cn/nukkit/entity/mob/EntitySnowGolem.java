@@ -1,23 +1,20 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.entity.EntityWalkable;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 
 public class EntitySnowGolem extends EntityMob implements EntityWalkable {
 
-    public static final int NETWORK_ID = 21;
+    
 
 
-    public EntitySnowGolem(FullChunk chunk, CompoundTag nbt) {
+    public EntitySnowGolem(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
 
     @Override

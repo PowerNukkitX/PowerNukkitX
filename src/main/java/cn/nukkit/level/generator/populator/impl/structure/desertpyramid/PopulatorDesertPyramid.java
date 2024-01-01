@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator.populator.impl.structure.desertpyramid;
 
 import cn.nukkit.level.biome.EnumBiome;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.populator.impl.structure.desertpyramid.structure.DesertPyramid;
 import cn.nukkit.level.generator.populator.impl.structure.utils.populator.PopulatorScatteredStructure;
 import cn.nukkit.level.generator.populator.impl.structure.utils.structure.ScatteredStructurePiece;

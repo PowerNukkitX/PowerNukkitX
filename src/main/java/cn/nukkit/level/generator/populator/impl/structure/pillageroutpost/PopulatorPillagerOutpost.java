@@ -7,7 +7,7 @@ import cn.nukkit.entity.mob.EntityIronGolem;
 import cn.nukkit.entity.mob.EntityPillager;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.EnumBiome;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.populator.impl.structure.pillageroutpost.loot.PillagerOutpostChest;
 import cn.nukkit.level.generator.populator.impl.structure.utils.template.ReadOnlyLegacyStructureTemplate;

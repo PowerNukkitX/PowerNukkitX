@@ -1,7 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.block.BlockRedstoneComparator;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -11,7 +11,7 @@ public class BlockEntityComparator extends BlockEntity {
 
     private int outputSignal;
 
-    public BlockEntityComparator(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityComparator(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

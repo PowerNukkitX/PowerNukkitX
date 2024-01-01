@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.SAND_STONE_TYPE;
 
@@ -12,6 +13,13 @@ import static cn.nukkit.block.property.CommonBlockProperties.SAND_STONE_TYPE;
  */
 public class BlockRedSandstone extends BlockSandstone {
     public static final BlockProperties PROPERTIES = new BlockProperties(RED_SANDSTONE, SAND_STONE_TYPE);
+
+    public static final BlockProperties PROPERTIES = new BlockProperties(RED_SANDSTONE, CommonBlockProperties.SAND_STONE_TYPE);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockRedSandstone() {
         this(PROPERTIES.getDefaultState());

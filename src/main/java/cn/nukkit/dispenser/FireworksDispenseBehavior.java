@@ -2,7 +2,7 @@ package cn.nukkit.dispenser;
 
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.item.EntityFirework;
+import cn.nukkit.entity.item.EntityFireworksRocket;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -25,7 +25,7 @@ public class FireworksDispenseBehavior extends DefaultDispenseBehavior {
 
         CompoundTag nbt = Entity.getDefaultNBT(pos);
         nbt.putCompound("FireworkItem", NBTIO.putItemHelper(item));
-        EntityFirework firework = new EntityFirework(block.level.getChunk(pos.getChunkX(), pos.getChunkZ()), nbt);
+        EntityFireworksRocket firework = new EntityFireworksRocket(block.level.getChunk(pos.getChunkX(), pos.getChunkZ()), nbt);
         firework.spawnToAll();
 
         return null;

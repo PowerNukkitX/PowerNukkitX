@@ -9,7 +9,7 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class EntityElytraFirework extends EntityFirework {
+public class EntityElytraFirework extends EntityFireworksRocket {
     private static final Random RANDOM = new Random();
     private final int lifetime;
     private Player followingPlayer;

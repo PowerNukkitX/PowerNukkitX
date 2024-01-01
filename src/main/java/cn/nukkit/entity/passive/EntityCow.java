@@ -18,7 +18,7 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
@@ -30,9 +30,9 @@ import java.util.Set;
  */
 public class EntityCow extends EntityAnimal implements EntityWalkable {
 
-    public static final int NETWORK_ID = 11;
+    
 
-    public EntityCow(FullChunk chunk, CompoundTag nbt) {
+    public EntityCow(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -95,10 +95,7 @@ public class EntityCow extends EntityAnimal implements EntityWalkable {
         return Item.EMPTY_ARRAY;
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {

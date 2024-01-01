@@ -21,7 +21,7 @@ import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.entity.passive.EntityTurtle;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
@@ -36,9 +36,9 @@ import java.util.Set;
  */
 public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, EntitySmite, EntityCanAttack {
 
-    public static final int NETWORK_ID = 48;
+    
 
-    public EntityWitherSkeleton(FullChunk chunk, CompoundTag nbt) {
+    public EntityWitherSkeleton(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -87,10 +87,7 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
         );
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     //凋零骷髅会攻击距离他16格范围内的玩家、雪傀儡、小海龟、铁傀儡、猪灵或猪灵蛮兵
     @Override

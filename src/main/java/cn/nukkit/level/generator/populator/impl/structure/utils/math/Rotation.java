@@ -355,7 +355,7 @@ public enum Rotation {
                 }
                 break;
 
-            case BlockID.NETHER_PORTAL:
+            case BlockID.PORTAL:
                 return (meta + 1) & 0x1;
 
             case BlockID.ITEM_FRAME_BLOCK:
@@ -718,7 +718,7 @@ public enum Rotation {
                 }
                 break;
 
-            case BlockID.NETHER_PORTAL:
+            case BlockID.PORTAL:
                 return (meta + 1) & 0x1;
 
             case BlockID.ITEM_FRAME_BLOCK:
@@ -1082,7 +1082,7 @@ public enum Rotation {
                 }
                 break;
 
-            case BlockID.NETHER_PORTAL:
+            case BlockID.PORTAL:
                 break;
 
             case BlockID.ITEM_FRAME_BLOCK:

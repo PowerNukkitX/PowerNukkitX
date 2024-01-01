@@ -1,7 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.block.BlockID;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -12,7 +12,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public class BlockEntitySculkCatalyst extends BlockEntity {
 
 
-    public BlockEntitySculkCatalyst(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntitySculkCatalyst(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

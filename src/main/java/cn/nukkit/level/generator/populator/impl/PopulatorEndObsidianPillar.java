@@ -1,9 +1,9 @@
 package cn.nukkit.level.generator.populator.impl;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.item.EntityEndCrystal;
+import cn.nukkit.entity.item.EntityEnderCrystal;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
@@ -39,7 +39,7 @@ public class PopulatorEndObsidianPillar extends Populator {
 
         var nbt = Entity.getDefaultNBT(new Vector3(x + 0.5, this.obsidianPillar.getHeight() + 1, z + 0.5));
         var entity = Entity.createEntity("EndCrystal", chunk, nbt);
-        ((EntityEndCrystal) entity).setShowBase(true);
+        ((EntityEnderCrystal) entity).setShowBase(true);
         entity.spawnToAll();
     }
 

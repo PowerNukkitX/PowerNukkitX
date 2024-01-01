@@ -1,10 +1,12 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.StoneSlabType4;
+import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockStoneBlockSlab4 extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:stone_block_slab4", CommonBlockProperties.MINECRAFT_VERTICAL_HALF, CommonBlockProperties.STONE_SLAB_TYPE_4);
+public class BlockStoneBlockSlab4 extends BlockSlab {
+    public static final BlockProperties PROPERTIES = new BlockProperties(STONE_BLOCK_SLAB4, CommonBlockProperties.MINECRAFT_VERTICAL_HALF, CommonBlockProperties.STONE_SLAB_TYPE_4);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -16,6 +18,40 @@ public class BlockStoneBlockSlab4 extends Block {
     }
 
     public BlockStoneBlockSlab4(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DOUBLE_STONE_BLOCK_SLAB4);
     }
+
+    public StoneSlabType4 getSlabType() {
+        return getPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE_4);
+    }
+
+    public void setSlabType(StoneSlabType4 type) {
+        setPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE_4, type);
+    }
+
+    @Override
+    public String getSlabName() {
+        return getSlabType().name();
+    }
+
+    @Override
+    public boolean isSameType(BlockSlab slab) {
+        return slab.getId().equals(getId()) && getSlabType().equals(slab.getPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE_4));
+    }
+
+    @Override
+    public int getToolTier() {
+        return ItemTool.TIER_WOODEN;
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_PICKAXE;
+    }
+
+    @Override
+    public boolean canHarvestWithHand() {
+        return false;
+    }
+
 }

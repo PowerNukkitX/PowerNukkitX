@@ -11,13 +11,19 @@ import javax.annotation.Nullable;
 
 public class BlockSmithingTable extends BlockSolid {
 
-
-    public BlockSmithingTable() {
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(SMITHING_TABLE);
 
     @Override
-    public int getId() {
-        return SMITHING_TABLE;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockSmithingTable() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockSmithingTable(BlockState blockState) {
+        super(blockState);
     }
 
     @Override

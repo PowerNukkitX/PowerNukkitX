@@ -1,7 +1,7 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.entity.EntityWalkable;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -12,14 +12,11 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
 
     public final static int NETWORK_ID = 125;
 
-    public EntityStrider(FullChunk chunk, CompoundTag nbt) {
+    public EntityStrider(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {

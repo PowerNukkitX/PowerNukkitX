@@ -22,7 +22,6 @@ public abstract class BlockDoubleSlabBase extends BlockSolid {
         return Block.get(getSingleSlabId()).toItem();
     }
 
-
     protected boolean isCorrectTool(Item item) {
         return canHarvestWithHand() || canHarvest(item);
     }

@@ -4,13 +4,13 @@ import cn.nukkit.block.Block;
 import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.inventory.SmeltingRecipe;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 
 public class BlockEntityBlastFurnace extends BlockEntityFurnace {
 
-    public BlockEntityBlastFurnace(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityBlastFurnace(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

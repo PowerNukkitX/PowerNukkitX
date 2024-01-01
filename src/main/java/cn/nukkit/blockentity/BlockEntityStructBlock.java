@@ -4,7 +4,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.blockproperty.value.StructureBlockType;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.StructBlockInventory;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.StructureBlockUpdatePacket;
@@ -34,7 +34,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     private BlockVector3 offset;
 
 
-    public BlockEntityStructBlock(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityStructBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

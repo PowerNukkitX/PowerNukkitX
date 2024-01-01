@@ -1,25 +1,33 @@
 package cn.nukkit.block;
 
 
+import cn.nukkit.block.property.CommonBlockProperties;
+import org.jetbrains.annotations.NotNull;
+
 public class BlockMudBrickSlab extends BlockSlab{
-    public BlockMudBrickSlab() {
-        super(MUD_BRICK_DOUBLE_SLAB);
-    }
+
+    public static final BlockProperties PROPERTIES = new BlockProperties(MUD_BRICK_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
-    public int getId() {
-        return MUD_BRICK_SLAB;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
+    public BlockMudBrickSlab() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockMudBrickSlab(BlockState blockState) {
+        super(blockState, MUD_BRICK_DOUBLE_SLAB);
+    }
 
     @Override
     public String getSlabName() {
         return "Mud Brick Slab";
     }
 
-
     @Override
     public boolean isSameType(BlockSlab slab) {
-        return slab.getId() == getId();
+        return slab.getId().equals(getId());
     }
 }

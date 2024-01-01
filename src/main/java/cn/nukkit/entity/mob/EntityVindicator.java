@@ -3,7 +3,7 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -11,16 +11,13 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public class EntityVindicator extends EntityMob implements EntityWalkable {
 
-    public static final int NETWORK_ID = 57;
+    
 
-    public EntityVindicator(FullChunk chunk, CompoundTag nbt) {
+    public EntityVindicator(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {

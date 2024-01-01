@@ -13,7 +13,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.GameRule;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
@@ -25,13 +25,13 @@ import cn.nukkit.network.protocol.LevelEventPacket;
  */
 public class EntityFallingBlock extends Entity {
 
-    public static final int NETWORK_ID = 66;
+    
     protected int blockId;
     protected int damage;
     protected boolean breakOnLava;
     protected boolean breakOnGround;
 
-    public EntityFallingBlock(FullChunk chunk, CompoundTag nbt) {
+    public EntityFallingBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -236,10 +236,7 @@ public class EntityFallingBlock extends Entity {
         return damage;
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public void saveNBT() {

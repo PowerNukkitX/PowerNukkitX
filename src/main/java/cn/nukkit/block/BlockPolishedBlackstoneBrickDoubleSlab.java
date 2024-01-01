@@ -3,8 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockPolishedBlackstoneBrickDoubleSlab extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:polished_blackstone_brick_double_slab", CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+public class BlockPolishedBlackstoneBrickDoubleSlab extends BlockPolishedBlackstoneDoubleSlab {
+    public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_BLACKSTONE_BRICK_DOUBLE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -17,5 +17,21 @@ public class BlockPolishedBlackstoneBrickDoubleSlab extends Block {
 
     public BlockPolishedBlackstoneBrickDoubleSlab(BlockState blockstate) {
         super(blockstate);
+    }
+
+
+    @Override
+    public String getSlabName() {
+        return "Polished Blackstone Brick";
+    }
+
+    @Override
+    public double getHardness() {
+        return 2;
+    }
+
+    @Override
+    public String getSingleSlabId() {
+        return POLISHED_BLACKSTONE_BRICK_SLAB;
     }
 }

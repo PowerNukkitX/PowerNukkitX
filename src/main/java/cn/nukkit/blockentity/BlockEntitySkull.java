@@ -1,7 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -10,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @since 2016/2/3
  */
 public class BlockEntitySkull extends BlockEntitySpawnable {
-    public BlockEntitySkull(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntitySkull(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
     

@@ -3,7 +3,7 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,16 +12,13 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityEnderDragon extends EntityMob implements EntityFlyable {
 
-    public static final int NETWORK_ID = 53;
+    
 
-    public EntityEnderDragon(FullChunk chunk, CompoundTag nbt) {
+    public EntityEnderDragon(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {

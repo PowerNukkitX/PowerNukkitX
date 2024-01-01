@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockSignPost;
 import cn.nukkit.event.block.SignChangeEvent;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
@@ -31,7 +31,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     private String[] frontText;
     private String[] backText;
 
-    public BlockEntitySign(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntitySign(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

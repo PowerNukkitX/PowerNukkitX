@@ -12,7 +12,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -41,7 +41,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
             ItemID.GLISTERING_MELON, ItemID.SUGAR, ItemID.RABBIT_FOOT, ItemID.PUFFERFISH, ItemID.TURTLE_SHELL, 
             ItemID.PHANTOM_MEMBRANE, 437));
 
-    public BlockEntityBrewingStand(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityBrewingStand(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

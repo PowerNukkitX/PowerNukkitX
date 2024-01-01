@@ -12,7 +12,7 @@ import cn.nukkit.event.vehicle.VehicleDamageByEntityEvent;
 import cn.nukkit.event.vehicle.VehicleDamageEvent;
 import cn.nukkit.event.vehicle.VehicleDestroyByEntityEvent;
 import cn.nukkit.event.vehicle.VehicleDestroyEvent;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -22,7 +22,7 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
 
     protected boolean rollingDirection = true;
 
-    public EntityVehicle(FullChunk chunk, CompoundTag nbt) {
+    public EntityVehicle(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

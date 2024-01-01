@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFlowingWater;
-import cn.nukkit.block.BlockWater;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityLiving;
@@ -19,7 +18,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
@@ -44,7 +43,7 @@ import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
  */
 public class EntityBoat extends EntityVehicle {
 
-    public static final int NETWORK_ID = 90;
+    
 
     public static final Vector3f RIDER_PLAYER_OFFSET = new Vector3f(0, 1.02001f, 0);
     public static final Vector3f RIDER_OFFSET = new Vector3f(0, -0.2f, 0);
@@ -67,7 +66,7 @@ public class EntityBoat extends EntityVehicle {
     protected boolean sinking = true;
     private int ticksInWater;
 
-    public EntityBoat(FullChunk chunk, CompoundTag nbt) {
+    public EntityBoat(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
 
         this.setMaxHealth(40);
@@ -127,10 +126,7 @@ public class EntityBoat extends EntityVehicle {
         return 0.375F;
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public String getInteractButtonText(Player player) {

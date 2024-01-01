@@ -1,6 +1,6 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -10,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public abstract class EntityHanging extends Entity {
     protected int direction;
 
-    public EntityHanging(FullChunk chunk, CompoundTag nbt) {
+    public EntityHanging(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

@@ -1,15 +1,15 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.entity.item.EntityMinecartHopper;
+import cn.nukkit.entity.item.EntityHopperMinecart;
 
 public class MinecartHopperInventory extends ContainerInventory {
 
-    public MinecartHopperInventory(EntityMinecartHopper minecart) {
+    public MinecartHopperInventory(EntityHopperMinecart minecart) {
         super(minecart, InventoryType.MINECART_HOPPER);
     }
 
     @Override
-    public EntityMinecartHopper getHolder() {
-        return (EntityMinecartHopper) super.getHolder();
+    public EntityHopperMinecart getHolder() {
+        return (EntityHopperMinecart) super.getHolder();
     }
 }

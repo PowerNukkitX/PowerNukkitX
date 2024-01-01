@@ -9,7 +9,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityMoveByPistonEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -51,7 +51,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
     public boolean finished = true;
 
-    public BlockEntityPistonArm(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityPistonArm(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

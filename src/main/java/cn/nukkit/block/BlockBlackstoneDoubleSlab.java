@@ -5,7 +5,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockBlackstoneDoubleSlab extends BlockDoubleSlabBase {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:blackstone_double_slab", CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BLACKSTONE_DOUBLE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -39,7 +39,6 @@ public class BlockBlackstoneDoubleSlab extends BlockDoubleSlabBase {
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
-
 
     @Override
     public String getSingleSlabId() {
