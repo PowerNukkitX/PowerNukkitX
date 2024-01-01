@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
 
 
-public class BlockStrippedBambooBlock extends BlockLog {
+public class BlockStrippedBambooBlock extends BlockWoodStripped {
     public static final BlockProperties PROPERTIES = new BlockProperties(STRIPPED_BAMBOO_BLOCK, PILLAR_AXIS);
 
     public BlockStrippedBambooBlock() {

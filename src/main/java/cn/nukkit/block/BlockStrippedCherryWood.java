@@ -5,7 +5,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockStrippedCherryWood extends BlockLog {
+public class BlockStrippedCherryWood extends BlockWoodStripped {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:stripped_cherry_wood", CommonBlockProperties.PILLAR_AXIS);
 
     @Override

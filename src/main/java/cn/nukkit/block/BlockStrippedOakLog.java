@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockStrippedOakLog extends BlockLog {
+public class BlockStrippedOakLog extends BlockWoodStripped {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:stripped_oak_log", CommonBlockProperties.PILLAR_AXIS);
 
     @Override
