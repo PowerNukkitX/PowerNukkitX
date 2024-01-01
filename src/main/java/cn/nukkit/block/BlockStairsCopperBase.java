@@ -1,8 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.value.OxidizationLevel;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.property.enums.OxidizationLevel;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
@@ -65,8 +64,8 @@ public abstract class BlockStairsCopperBase extends BlockStairs implements Waxab
 
 
     @Override
-    public BlockState getStateWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
-        return getBlockState().withBlockId(getCopperId(isWaxed(), oxidizationLevel));
+    public Block getStateWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
+        return Block.get(getCopperId(isWaxed(), oxidizationLevel)).setPropertyValues(getPropertyValues());
     }
 
 
@@ -75,7 +74,8 @@ public abstract class BlockStairsCopperBase extends BlockStairs implements Waxab
         if (getOxidizationLevel().equals(oxidizationLevel)) {
             return true;
         }
-        return getValidLevel().setBlock(this, getBlockState().withBlockId(getCopperId(isWaxed(), oxidizationLevel)).getBlock());
+
+        return getValidLevel().setBlock(this, Block.get(getCopperId(isWaxed(), oxidizationLevel)).setPropertyValues(getPropertyValues()));
     }
 
 
@@ -84,7 +84,7 @@ public abstract class BlockStairsCopperBase extends BlockStairs implements Waxab
         if (isWaxed() == waxed) {
             return true;
         }
-        return getValidLevel().setBlock(this, getBlockState().withBlockId(getCopperId(waxed, getOxidizationLevel())).getBlock());
+        return getValidLevel().setBlock(this, Block.get(getCopperId(isWaxed(), getOxidizationLevel())).setPropertyValues(getPropertyValues()));
     }
 
 
@@ -94,5 +94,5 @@ public abstract class BlockStairsCopperBase extends BlockStairs implements Waxab
     }
 
 
-    protected abstract int getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel);
+    protected abstract String getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel);
 }

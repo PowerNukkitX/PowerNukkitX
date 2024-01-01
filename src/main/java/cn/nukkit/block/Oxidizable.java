@@ -122,5 +122,5 @@ public interface Oxidizable {
     boolean setOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel);
 
 
-    BlockState getStateWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel);
+    Block getStateWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel);
 }

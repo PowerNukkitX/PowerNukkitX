@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockDarkOakStairs extends Block {
+public class BlockDarkOakStairs  extends BlockStairsWood {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:dark_oak_stairs", CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
 
     @Override
@@ -17,5 +17,10 @@ public class BlockDarkOakStairs extends Block {
 
     public BlockDarkOakStairs(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Dark Oak Wood Stairs";
     }
 }

@@ -65,7 +65,7 @@ public abstract class BlockSlabCopperBase extends BlockSlab implements Waxable, 
     }
 
     @Override
-    public BlockState getStateWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
+    public Block getStateWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
         return getBlockState().withBlockId(getCopperId(isWaxed(), oxidizationLevel));
     }
 
