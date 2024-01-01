@@ -13,6 +13,7 @@ import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.NPCRequestPacket;
@@ -38,7 +39,7 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
     protected int variant = 0;
 
 
-    public EntityNPCEntity(IChunk chunk, CompoundTag nbt) {
+    public EntityNpc(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

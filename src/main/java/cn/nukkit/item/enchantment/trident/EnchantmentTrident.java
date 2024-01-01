@@ -5,7 +5,6 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.EnchantmentType;
 
 public abstract class EnchantmentTrident extends Enchantment {
-    ("Re-added for backward compatibility")
     @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
             reason = "The signature was changed and it doesn't exists anymore in Cloudburst Nukkit",
             replaceWith = "EnchantmentTrident(int id, String name, Rarity rarity)")

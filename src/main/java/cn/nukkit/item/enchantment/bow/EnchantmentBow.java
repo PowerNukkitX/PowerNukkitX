@@ -11,7 +11,6 @@ import cn.nukkit.item.enchantment.EnchantmentType;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class EnchantmentBow extends Enchantment {
-    ("Re-added for backward compatibility")
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
             reason = "The signature was changed and it doesn't exists anymore in Cloudburst Nukkit",

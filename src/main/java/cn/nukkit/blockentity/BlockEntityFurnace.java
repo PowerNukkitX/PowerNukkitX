@@ -144,7 +144,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         }
     }
 
-    @
     @Override
     public void onBreak() {
         for (Item content : inventory.getContents().values()) {

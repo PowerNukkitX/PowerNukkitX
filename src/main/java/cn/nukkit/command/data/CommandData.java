@@ -2,7 +2,6 @@ package cn.nukkit.command.data;
 
 import java.util.*;
 
-@
 public class CommandData implements Cloneable {
 
     public String description = "description";

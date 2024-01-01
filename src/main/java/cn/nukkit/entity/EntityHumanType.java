@@ -156,9 +156,6 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
     public boolean applyNameTag(Item item) {
         return false;
     }
-
-
-    @
     protected Item damageArmor(Item armor, Entity damager, EntityDamageEvent event) {
         if (armor.hasEnchantments()) {
             if (damager != null) {

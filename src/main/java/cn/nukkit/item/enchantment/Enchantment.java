@@ -539,7 +539,6 @@ public abstract class Enchantment implements Cloneable {
      * @param weight How rare this enchantment is, from {@code 1} to {@code 10} both inclusive where {@code 1} is the rarest
      * @param type   Where the enchantment can be applied
      */
-    ("Was removed from Nukkit in 1.4.0.0-PN, keeping it in PowerNukkit for backward compatibility")
     @Deprecated
     @DeprecationDetails(by = "Cloudburst Nukkit", since = "1.4.0.0-PN", reason = "Changed the signature without backward compatibility",
             replaceWith = "Enchantment(int, String, Rarity, EnchantmentType)")
@@ -755,7 +754,6 @@ public abstract class Enchantment implements Cloneable {
      * @param attacker the attacker
      * @param entity   the entity
      */
-    @
     public void doPostAttack(Entity attacker, Entity entity) {
     }
 
@@ -790,11 +788,7 @@ public abstract class Enchantment implements Cloneable {
      * The right way to implement compatibility now is to override {@link #checkCompatibility(Enchantment)}
      * and also make sure to keep it protected! Some overrides was incorrectly made public, let's avoid this mistake
      */
-    
-            info = "Cloudburst Nukkit added the final modifier, we removed it to maintain backward compatibility. " +
-                    "The right way to implement compatibility now is to override checkCompatibility(Enchantment enchantment) " +
-                    "and also make sure to keep it protected! Some overrides was incorrectly made public, let's avoid this mistake."
-    )
+
     public boolean isCompatibleWith(@NotNull Enchantment enchantment) {
         return this.checkCompatibility(enchantment) && enchantment.checkCompatibility(this);
     }
@@ -882,7 +876,10 @@ public abstract class Enchantment implements Cloneable {
      */
 
     public enum Rarity {
-
+        COMMON(10),
+        UNCOMMON(5),
+        RARE(2),
+        VERY_RARE(1);
 
         private final int weight;
 
