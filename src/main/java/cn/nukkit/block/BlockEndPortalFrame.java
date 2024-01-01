@@ -3,9 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.CommonPropertyMap;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Sound;
@@ -191,7 +188,7 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
     }
 
     private boolean checkFrame(Block block, int x, int z) {
-        return block.getId().equals(this.getId()) && (block.getDamage() - 4) == (x == -2 ? 3 : x == 2 ? 1 : z == -2 ? 0 : z == 2 ? 2 : -1);
+        return block.getId().equals(this.getId()) && (block.blockstate.specialValue() - 4) == (x == -2 ? 3 : x == 2 ? 1 : z == -2 ? 0 : z == 2 ? 2 : -1);
     }
 
     @Override

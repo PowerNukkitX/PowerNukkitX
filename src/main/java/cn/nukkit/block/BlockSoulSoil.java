@@ -1,18 +1,25 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
+
+import static cn.nukkit.block.property.CommonBlockProperties.TORCH_FACING_DIRECTION;
 
 
 public class BlockSoulSoil extends BlockSolid {
-
-
-    public BlockSoulSoil() {
-        // Does nothing
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(SOUL_SOIL);
 
     @Override
-    public int getId() {
-        return SOUL_SOIL;
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockSoulSoil() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockSoulSoil(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

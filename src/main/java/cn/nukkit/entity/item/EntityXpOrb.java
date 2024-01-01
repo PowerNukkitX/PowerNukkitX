@@ -7,6 +7,7 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -15,6 +16,11 @@ import java.util.List;
  * @since 2015/12/26
  */
 public class EntityXpOrb extends Entity {
+    @Override
+    public @NotNull String getIdentifier() {
+        return XP_ORB;
+    }
+
     /**
      * Split sizes used for dropping experience orbs.
      */

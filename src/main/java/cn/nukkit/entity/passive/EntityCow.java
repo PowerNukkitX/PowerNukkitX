@@ -22,6 +22,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -29,7 +30,10 @@ import java.util.Set;
  * @author BeYkeRYkt (Nukkit Project)
  */
 public class EntityCow extends EntityAnimal implements EntityWalkable {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return COW;
+    }
     
 
     public EntityCow(IChunk chunk, CompoundTag nbt) {

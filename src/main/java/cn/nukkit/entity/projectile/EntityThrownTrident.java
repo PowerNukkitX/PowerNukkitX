@@ -27,6 +27,7 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -36,7 +37,10 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author GoodLucky777
  */
 public class EntityThrownTrident extends SlenderProjectile {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return THROWN_TRIDENT;
+    }
     
     private static final String TAG_PICKUP = "pickup";
     private static final String TAG_TRIDENT = "Trident";

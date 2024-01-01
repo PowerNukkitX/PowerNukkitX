@@ -72,7 +72,7 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (player != null) {
             if (!player.isCreative())
                 return false;

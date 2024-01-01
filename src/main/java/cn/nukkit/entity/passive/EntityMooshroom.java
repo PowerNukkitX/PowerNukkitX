@@ -24,6 +24,7 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -31,7 +32,10 @@ import java.util.Set;
  * @author BeYkeRYkt (Nukkit Project)
  */
 public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return MOOSHROOM;
+    }
     
 
     public EntityMooshroom(IChunk chunk, CompoundTag nbt) {

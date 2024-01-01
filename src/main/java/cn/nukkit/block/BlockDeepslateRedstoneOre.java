@@ -27,4 +27,14 @@ public class BlockDeepslateRedstoneOre extends BlockRedstoneOre {
     public double getHardness() {
         return 4.5;
     }
+
+    @Override
+    public Block getLitBlock() {
+        return new BlockLitDeepslateRedstoneOre();
+    }
+
+    @Override
+    public Block getUnlitBlock() {
+        return new BlockDeepslateRedstoneOre();
+    }
 }

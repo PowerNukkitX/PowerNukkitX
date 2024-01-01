@@ -9,14 +9,21 @@ import cn.nukkit.event.entity.EntityExplosionPrimeEvent;
 import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX
  */
 public class EntityTnt extends Entity implements EntityExplosive {
+    @Override
+    public @NotNull String getIdentifier() {
+        return TNT;
+    }
+
     protected int fuse;
     protected Entity source;
 

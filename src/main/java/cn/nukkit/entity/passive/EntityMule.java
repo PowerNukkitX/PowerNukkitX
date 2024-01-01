@@ -4,12 +4,16 @@ import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntityMule extends EntityAnimal implements EntityWalkable {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return MULE;
+    }
     
 
     public EntityMule(IChunk chunk, CompoundTag nbt) {

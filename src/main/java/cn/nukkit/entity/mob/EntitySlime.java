@@ -4,13 +4,17 @@ import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntitySlime extends EntityMob implements EntityWalkable {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return SLIME;
+    }
 
     public EntitySlime(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

@@ -8,14 +8,22 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
+import static cn.nukkit.block.property.CommonBlockProperties.TORCH_FACING_DIRECTION;
+
 /**
  * @author Angelic47 (Nukkit Project)
  */
 
 public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent {
+    public static final BlockProperties PROPERTIES = new BlockProperties(REDSTONE_TORCH, TORCH_FACING_DIRECTION);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockRedstoneTorch() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockRedstoneTorch(BlockState blockstate) {
@@ -25,11 +33,6 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
     @Override
     public String getName() {
         return "Redstone Torch";
-    }
-
-    @Override
-    public int getId() {
-        return REDSTONE_TORCH;
     }
 
     @Override
@@ -104,7 +107,7 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
 
     private boolean checkState() {
         if (isPoweredFromSide()) {
-            this.level.setBlock(getLocation(), Block.get(BlockID.UNLIT_REDSTONE_TORCH, getDamage()), false, true);
+            this.level.setBlock(getLocation(), Block.get(BlockID.UNLIT_REDSTONE_TORCH).setPropertyValues(getPropertyValues()), false, true);
 
             updateAllAroundRedstone(getBlockFace().getOpposite());
             return true;
@@ -113,8 +116,6 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
         return false;
     }
 
-
-            since = "1.4.0.0-PN")
     protected boolean isPoweredFromSide() {
         BlockFace face = getBlockFace().getOpposite();
         if (this.getSide(face) instanceof BlockPistonBase && this.getSide(face).isGettingPower()) {

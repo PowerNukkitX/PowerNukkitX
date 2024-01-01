@@ -3,10 +3,13 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.entity.EntityCreature;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 public class EntityTraderLlama extends EntityCreature implements IEntityNPC {
-
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return TRADER_LLAMA;
+    }
 
     public EntityTraderLlama(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

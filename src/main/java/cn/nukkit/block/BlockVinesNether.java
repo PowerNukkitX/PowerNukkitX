@@ -2,8 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
-import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
@@ -16,6 +14,7 @@ import cn.nukkit.utils.OptionalBoolean;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.concurrent.ThreadLocalRandom;
@@ -26,21 +25,10 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 
 
-public abstract class BlockVinesNether extends BlockTransparentMeta {
-    /**
-     * Creates a nether vine with age {@code 0}.
-     */
-
-
-    public BlockVinesNether() {
-    }
-
+public abstract class BlockVinesNether extends BlockTransparent {
     /**
      * Creates a nether vine from a meta compatible with {@link #getProperties()}.
-     * @throws InvalidBlockPropertyMetaException If the meta is incompatible
      */
-
-
     public BlockVinesNether(BlockState blockstate) {
         super(blockstate);
     }
@@ -50,8 +38,6 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      * may also add horizontal directions.
      * @return Normally, up or down.
      */
-
-
     @NotNull
     public abstract BlockFace getGrowthDirection();
 
@@ -62,21 +48,12 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
 
     public abstract int getVineAge();
 
-    /**
-     * Changes the age of this block.
-     * @param vineAge The new age
-     * @throws InvalidBlockPropertyValueException If the value is outside the accepted range from {@code 0} to {@link #getMaxVineAge()}, both inclusive.
-     */
-
-
-    public abstract void setVineAge(int vineAge) throws InvalidBlockPropertyValueException;
+    public abstract void setVineAge(int vineAge);
 
     /**
      * The maximum accepted age of this block.
      * @return Positive, inclusive value.
      */
-
-
     public abstract int getMaxVineAge();
 
     /**
@@ -110,7 +87,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
             return false;
         }
 
-        if (support.getId() == getId()) {
+        if (support.getId().equals(getId())) {
             setVineAge(Math.min(getMaxVineAge(), ((BlockVinesNether) support).getVineAge() + 1));
         } else {
             randomizeVineAge(true);
@@ -150,7 +127,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
 
     public boolean grow() {
         Block pos = getSide(getGrowthDirection());
-        if (pos.getId() != AIR || pos.y < 0 || 255 < pos.y) {
+        if (!pos.isAir() || pos.y < 0 || 255 < pos.y) {
             return false;
         }
 
@@ -267,11 +244,11 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
             supportFace = supportFace.getOpposite();
         }
         Position result = getLocation();
-        int id = getId();
+        String id = getId();
         int limit = 256;
         while (--limit > 0){
             Position next = result.getSide(supportFace);
-            if (next.getLevelBlockState().getBlockId() == id) {
+            if (Objects.equals(next.getLevelBlockState().getIdentifier(), id)) {
                 result = next;
             } else {
                 break;
@@ -294,11 +271,10 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
     @NotNull
     public OptionalBoolean increaseRootAge() {
         Block base = findVine(true).map(Position::getLevelBlock).orElse(null);
-        if (!(base instanceof BlockVinesNether)) {
+        if (!(base instanceof BlockVinesNether baseVine)) {
             return OptionalBoolean.EMPTY;
         }
-        
-        BlockVinesNether baseVine = (BlockVinesNether) base;
+
         int vineAge = baseVine.getVineAge();
         if (vineAge < baseVine.getMaxVineAge()) {
             baseVine.setVineAge(vineAge + 1);
@@ -350,7 +326,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
 
 
     protected boolean isSupportValid(@NotNull Block support) {
-        return support.getId() == getId() || !support.isTransparent();
+        return support.getId().equals(getId()) || !support.isTransparent();
     }
 
 

@@ -4,12 +4,16 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PetteriM1
  */
 public class EntitySalmon extends EntityFish {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return SALMON;
+    }
     
 
     public EntitySalmon(IChunk chunk, CompoundTag nbt) {

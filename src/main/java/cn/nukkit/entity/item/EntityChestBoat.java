@@ -14,13 +14,17 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.types.EntityLink;
+import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
 
 
 public class EntityChestBoat extends EntityBoat implements InventoryHolder {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return CHEST_BOAT;
+    }
 
     protected ChestBoatInventory inventory;
 

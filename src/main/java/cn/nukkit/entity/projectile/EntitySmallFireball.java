@@ -16,11 +16,15 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 
 public class EntitySmallFireball extends EntityProjectile {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return SMALL_FIREBALL;
+    }
 
     public EntitySmallFireball(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

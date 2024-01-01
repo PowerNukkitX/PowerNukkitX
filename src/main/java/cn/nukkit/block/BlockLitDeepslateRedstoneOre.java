@@ -1,8 +1,9 @@
 package cn.nukkit.block;
 
+import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockLitDeepslateRedstoneOre extends Block {
+public class BlockLitDeepslateRedstoneOre extends BlockDeepslateRedstoneOre implements IBlockOreRedstoneGlowing {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:lit_deepslate_redstone_ore");
 
     @Override
@@ -16,5 +17,25 @@ public class BlockLitDeepslateRedstoneOre extends Block {
 
     public BlockLitDeepslateRedstoneOre(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Glowing Deepslate Redstone Ore";
+    }
+
+    @Override
+    public int getLightLevel() {
+        return 9;
+    }
+
+    @Override
+    public Item toItem() {
+        return IBlockOreRedstoneGlowing.super.toItem();
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        return IBlockOreRedstoneGlowing.super.onUpdate(this, type);
     }
 }

@@ -17,6 +17,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MinecartType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -24,7 +25,10 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Adam Matthew [larryTheCoder] (Nukkit Project)
  */
 public class EntityTntMinecart extends EntityMinecartAbstract implements EntityExplosive {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return TNT_MINECART;
+    }
     
     private int fuse;
 

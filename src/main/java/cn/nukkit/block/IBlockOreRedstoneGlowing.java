@@ -1,39 +1,31 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.blockstate.IMutableBlockState;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 
-/**
- * @author joserobjr
- * @since 2021-06-14
- */
+
+public interface IBlockOreRedstoneGlowing{
 
 
-public interface IBlockOreRedstoneGlowing extends IMutableBlockState {
+    Block getUnlitBlock();
 
 
-    BlockState getUnlitState();
-
-
-    BlockState getLitState();
+    Block getLitBlock();
 
 
     Level getLevel();
 
 
     default Item toItem() {
-        return getUnlitState().asItemBlock();
+        return getUnlitBlock().toItem();
     }
 
 
-    default int onUpdate(int type) {
+    default int onUpdate(Block block, int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED || type == Level.BLOCK_UPDATE_RANDOM) {
-            Block block = getBlock();
             Level level = getLevel();
-            BlockFadeEvent event = new BlockFadeEvent(block, getUnlitState().getBlock());
+            BlockFadeEvent event = new BlockFadeEvent(block, getUnlitBlock());
             level.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 level.setBlock(block, event.getNewState(), false, true);
@@ -41,7 +33,6 @@ public interface IBlockOreRedstoneGlowing extends IMutableBlockState {
 
             return Level.BLOCK_UPDATE_WEAK;
         }
-
         return 0;
     }
 }

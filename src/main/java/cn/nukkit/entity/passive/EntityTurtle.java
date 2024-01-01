@@ -5,20 +5,22 @@ import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author PetteriM1
  */
 public class EntityTurtle extends EntityAnimal implements EntitySwimmable, EntityWalkable {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return TURTLE;
+    }
     
 
     public EntityTurtle(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
-    
-
 
     @Override
     public String getOriginalName() {

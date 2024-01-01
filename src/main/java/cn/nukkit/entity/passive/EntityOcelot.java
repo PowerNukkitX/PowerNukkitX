@@ -4,12 +4,16 @@ import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
 public class EntityOcelot extends EntityAnimal implements EntityWalkable {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return OCELOT;
+    }
     
 
     public EntityOcelot(IChunk chunk, CompoundTag nbt) {

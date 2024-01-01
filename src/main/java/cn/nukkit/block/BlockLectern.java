@@ -111,8 +111,6 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
     }
 
     @Override
-
-
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
     }

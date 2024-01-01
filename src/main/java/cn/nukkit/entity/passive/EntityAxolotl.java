@@ -3,9 +3,13 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 public class EntityAxolotl extends EntityAnimal implements EntitySwimmable {
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return AXOLOTL;
+    }
 
     public EntityAxolotl(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

@@ -8,12 +8,14 @@ import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
+import org.jetbrains.annotations.NotNull;
 
 
 public class EntityLingeringPotion extends EntitySplashPotion {
-
-
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return LINGERING_POTION;
+    }
 
 
     public EntityLingeringPotion(IChunk chunk, CompoundTag nbt) {

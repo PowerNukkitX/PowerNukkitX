@@ -3,13 +3,17 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntityGhast extends EntityMob implements EntityFlyable {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return GHAST;
+    }
 
     public EntityGhast(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

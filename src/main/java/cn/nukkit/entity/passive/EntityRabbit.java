@@ -4,12 +4,16 @@ import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
 public class EntityRabbit extends EntityAnimal implements EntityWalkable {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return RABBIT;
+    }
     
 
     public EntityRabbit(IChunk chunk, CompoundTag nbt) {

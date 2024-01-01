@@ -16,22 +16,9 @@ public class BlockGlassTinted extends BlockGlass {
     }
 
     @Override
-    public String getName() {
-        return "Tinted Glass";
-    }
-
-    @Override
     public int getId() {
         return TINTED_GLASS;
     }
 
-    @Override
-    public Item[] getDrops(Item item) {
-        return new Item[] { toItem() };
-    }
 
-    @Override
-    public boolean canSilkTouch() {
-        return false;
-    }
 }

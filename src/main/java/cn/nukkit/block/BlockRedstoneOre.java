@@ -2,11 +2,13 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemRedstone;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.Level;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -27,13 +29,13 @@ public class BlockRedstoneOre extends BlockOre {
     }
 
     @Override
-    public String getName() {
-        return "Redstone Ore";
+    public int getToolTier() {
+        return ItemTool.TIER_IRON;
     }
 
     @Override
-    public int getToolTier() {
-        return ItemTool.TIER_IRON;
+    public String getName() {
+        return "Redstone Ore";
     }
 
     @Override
@@ -45,18 +47,40 @@ public class BlockRedstoneOre extends BlockOre {
             if (fortune != null && fortune.getLevel() >= 1) {
                 count += new Random().nextInt(fortune.getLevel() + 1);
             }
-            Item itemRaw = Item.get(ItemID.REDSTONE);
-            itemRaw.setCount(count);
-            return new Item[]{itemRaw};
+
+            return new Item[]{
+                    new ItemRedstone(0, count)
+            };
         } else {
             return Item.EMPTY_ARRAY;
         }
     }
 
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_TOUCH) { //type == Level.BLOCK_UPDATE_NORMAL ||
+            this.getLevel().setBlock(this, getLitBlock(), false, true);
+
+            return Level.BLOCK_UPDATE_WEAK;
+        }
+
+        return 0;
+    }
+
+
     @Nullable
     @Override
     protected String getRawMaterial() {
         return ItemID.REDSTONE;
+    }
+
+
+    public Block getLitBlock() {
+        return new BlockLitRedstoneOre();
+    }
+
+    public Block getUnlitBlock() {
+        return new BlockRedstoneBlock();
     }
 
     @Override

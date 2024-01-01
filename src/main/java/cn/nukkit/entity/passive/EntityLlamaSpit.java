@@ -3,19 +3,21 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntityLlamaSpit extends EntityAnimal implements EntityWalkable {
-
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return LLAMA_SPIT;
+    }
 
     public EntityLlamaSpit(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    
 
     @Override
     public float getWidth() {

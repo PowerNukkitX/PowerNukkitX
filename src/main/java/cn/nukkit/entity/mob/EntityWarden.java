@@ -32,6 +32,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,10 @@ import java.util.Set;
 
 public class EntityWarden extends EntityMob implements EntityWalkable, VibrationListener {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return WARDEN;
+    }
     protected int lastDetectTime = Server.getInstance().getTick();
     protected int lastCollideTime = Server.getInstance().getTick();
     protected boolean waitForVibration = false;

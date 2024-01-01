@@ -5,12 +5,16 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntitySquid extends EntityAnimal implements EntitySwimmable {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return SQUID;
+    }
     
 
     public EntitySquid(IChunk chunk, CompoundTag nbt) {

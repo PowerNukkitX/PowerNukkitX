@@ -5,10 +5,14 @@ import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 public class EntityWither extends EntityMob implements EntityFlyable, EntitySmite {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return WITHER;
+    }
 
     public EntityWither(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

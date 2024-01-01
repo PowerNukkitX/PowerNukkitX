@@ -9,7 +9,7 @@ import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockFlowingWater extends BlockLiquid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:flowing_water", CommonBlockProperties.LIQUID_DEPTH);
+    public static final BlockProperties PROPERTIES = new BlockProperties(FLOWING_WATER, CommonBlockProperties.LIQUID_DEPTH);
 
     @Override
     public @NotNull BlockProperties getProperties() {

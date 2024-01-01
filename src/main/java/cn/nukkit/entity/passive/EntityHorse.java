@@ -46,6 +46,7 @@ import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -60,7 +61,10 @@ import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
  * @author PikyCZ
  */
 public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, EntityRideable, EntityOwnable, InventoryHolder, EntityAgeable {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return HORSE;
+    }
     
     private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6};
     private static final int[] MARK_VARIANTS = {0, 1, 2, 3, 4};

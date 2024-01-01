@@ -26,6 +26,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,10 @@ import java.util.Set;
  */
 public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, EntitySmite, EntityCanAttack {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return WITHER_SKELETON;
+    }
 
     public EntityWitherSkeleton(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

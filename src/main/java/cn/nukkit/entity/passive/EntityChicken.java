@@ -21,6 +21,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -28,7 +29,10 @@ import java.util.Set;
  * @author BeYkeRYkt (Nukkit Project)
  */
 public class EntityChicken extends EntityAnimal implements EntityWalkable {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return CHICKEN;
+    }
     
 
     public EntityChicken(IChunk chunk, CompoundTag nbt) {

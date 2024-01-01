@@ -5,6 +5,7 @@ import cn.nukkit.item.ItemEgg;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -13,7 +14,10 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityEgg extends EntityProjectile {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return EGG;
+    }
 
     public EntityEgg(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);

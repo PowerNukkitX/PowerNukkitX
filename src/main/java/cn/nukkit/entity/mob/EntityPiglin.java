@@ -5,20 +5,21 @@ import cn.nukkit.entity.EntityAgeable;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Erik Miller | EinBexiii
  */
 
 public class EntityPiglin extends EntityMob implements EntityWalkable, EntityAgeable {
-
-    public final static int NETWORK_ID = 123;
+    @Override
+    public @NotNull String getIdentifier() {
+        return PIGLIN;
+    }
 
     public EntityPiglin(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
-    
 
     @Override
     protected void initEntity() {

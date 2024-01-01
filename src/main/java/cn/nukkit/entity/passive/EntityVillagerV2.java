@@ -26,10 +26,15 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Set;
 
 public class EntityVillagerV2 extends EntityIntelligent implements InventoryHolder, IEntityNPC, EntityAgeable {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return VILLAGER_V2;
+    }
     
     /**
      * 代表交易配方

@@ -5,13 +5,17 @@ import cn.nukkit.entity.EntityArthropod;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Box.
  */
 public class EntityEndermite extends EntityMob implements EntityWalkable, EntityArthropod {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return ENDERMITE;
+    }
 
     public EntityEndermite(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

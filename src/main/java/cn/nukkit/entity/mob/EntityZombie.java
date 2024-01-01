@@ -19,6 +19,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -28,7 +29,10 @@ import java.util.concurrent.ThreadLocalRandom;
  * @since 4/23/2017
  */
 public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmite {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return ZOMBIE;
+    }
     
 
     public EntityZombie(IChunk chunk, CompoundTag nbt) {

@@ -4,13 +4,17 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return ELDER_GUARDIAN;
+    }
 
     public EntityElderGuardian(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

@@ -16,11 +16,17 @@ import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.NPCRequestPacket;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author good777LUCKY
  */
 public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInteractable {
+    @Override
+    public @NotNull String getIdentifier() {
+        return NPC;
+    }
+
     //todo: Implement automatic steering of NPC entities
     public static final String KEY_DIALOG_TITLE = "DialogTitle";
     public static final String KEY_DIALOG_CONTENT = "DialogContent";

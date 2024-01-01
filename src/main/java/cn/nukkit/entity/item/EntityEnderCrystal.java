@@ -12,12 +12,16 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PetteriM1
  */
 public class EntityEnderCrystal extends Entity implements EntityExplosive {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return ENDER_CRYSTAL;
+    }
     
 
     /**

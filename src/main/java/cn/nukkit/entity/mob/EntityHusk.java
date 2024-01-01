@@ -19,6 +19,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -27,7 +28,10 @@ import java.util.Set;
  */
 public class EntityHusk extends EntityZombie {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return HUSK;
+    }
 
     public EntityHusk(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

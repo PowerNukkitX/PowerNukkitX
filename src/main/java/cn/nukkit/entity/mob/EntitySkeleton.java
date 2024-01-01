@@ -19,6 +19,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -26,7 +27,10 @@ import java.util.Set;
  * @author PikyCZ
  */
 public class EntitySkeleton extends EntityMob implements EntityWalkable, EntitySmite {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return SKELETON;
+    }
     
 
     public EntitySkeleton(IChunk chunk, CompoundTag nbt) {

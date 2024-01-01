@@ -26,6 +26,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.concurrent.ThreadLocalRandom;
@@ -35,8 +36,10 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author PetteriM1
  */
 public class EntityFishingHook extends SlenderProjectile {
-
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return FISHING_HOOK;
+    }
 
     public int waitChance = 120;
     public int waitTimer = 240;

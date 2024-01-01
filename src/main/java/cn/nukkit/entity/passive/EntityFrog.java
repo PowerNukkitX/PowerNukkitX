@@ -3,9 +3,13 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 public class EntityFrog extends EntityAnimal implements EntityWalkable {
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return FROG;
+    }
 
     public EntityFrog(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

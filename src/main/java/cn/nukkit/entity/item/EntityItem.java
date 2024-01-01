@@ -20,7 +20,10 @@ import org.jetbrains.annotations.NotNull;
  * @author MagicDroidX
  */
 public class EntityItem extends Entity {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return ITEM;
+    }
     
     protected String owner;
     protected String thrower;

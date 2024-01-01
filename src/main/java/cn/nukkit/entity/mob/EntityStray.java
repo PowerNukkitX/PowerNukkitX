@@ -6,13 +6,17 @@ import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntityStray extends EntityMob implements EntityWalkable, EntitySmite {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return STRAY;
+    }
 
     public EntityStray(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

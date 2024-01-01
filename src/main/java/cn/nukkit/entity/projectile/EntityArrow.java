@@ -6,6 +6,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -14,7 +15,10 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityArrow extends SlenderProjectile {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return ARROW;
+    }
 
     protected int pickupMode;
 

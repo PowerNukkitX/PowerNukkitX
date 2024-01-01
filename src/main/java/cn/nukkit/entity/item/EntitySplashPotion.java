@@ -10,13 +10,17 @@ import cn.nukkit.level.particle.SpellParticle;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
  */
 public class EntitySplashPotion extends EntityProjectile {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return SPLASH_POTION;
+    }
 
     public static final int DATA_POTION_ID = 37;
 

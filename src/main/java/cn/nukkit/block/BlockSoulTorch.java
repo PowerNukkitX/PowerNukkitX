@@ -1,13 +1,21 @@
 package cn.nukkit.block;
 
 
+import org.jetbrains.annotations.NotNull;
+
+import static cn.nukkit.block.property.CommonBlockProperties.TORCH_FACING_DIRECTION;
+
 public class BlockSoulTorch extends BlockTorch {
+    public static final BlockProperties PROPERTIES = new BlockProperties(SOUL_TORCH, TORCH_FACING_DIRECTION);
 
-
-    public BlockSoulTorch() {
-        this(0);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
+    public BlockSoulTorch() {
+        this(PROPERTIES.getDefaultState());
+    }
 
     public BlockSoulTorch(BlockState blockstate) {
         super(blockstate);
@@ -19,13 +27,7 @@ public class BlockSoulTorch extends BlockTorch {
     }
 
     @Override
-    public int getId() {
-        return SOUL_TORCH;
-    }
-
-    @Override
     public int getLightLevel() {
         return 10;
     }
-    
 }

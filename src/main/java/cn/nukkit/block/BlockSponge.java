@@ -23,7 +23,9 @@ public class BlockSponge extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(SPONGE,
             SPONGE_TYPE);
 
-    public BlockSponge() { this(PROPERTIES.getDefaultState()); }
+    public BlockSponge() {
+        this(PROPERTIES.getDefaultState());
+    }
 
     public BlockSponge(BlockState state) {
         super(state);
@@ -60,7 +62,7 @@ public class BlockSponge extends BlockSolid {
 
     @Override
     public String getName() {
-        return switch(getSpongeType()) {
+        return switch (getSpongeType()) {
             case DRY -> "Sponge";
             case WET -> "Wet Sponge";
         };
@@ -82,7 +84,7 @@ public class BlockSponge extends BlockSolid {
         }
         if (this.getSpongeType() == DRY && (
                 block instanceof BlockFlowingWater ||
-                block.getLevelBlockAround().stream().anyMatch(b -> b instanceof BlockFlowingWater)
+                        block.getLevelBlockAround().stream().anyMatch(b -> b instanceof BlockFlowingWater)
         ) && performWaterAbsorb(block)) {
             this.setSpongeType(WET);
             level.setBlock(block, this, true, true);
@@ -93,7 +95,7 @@ public class BlockSponge extends BlockSolid {
                 packet.x = (float) block.getX() + 0.5f;
                 packet.y = (float) block.getY() + 1f;
                 packet.z = (float) block.getZ() + 0.5f;
-                packet.data = GlobalBlockPalette.getOrCreateRuntimeId(BlockID.FLOWING_WATER, 0);
+                packet.data = Block.get(BlockID.FLOWING_WATER).blockstate.blockStateHash();
                 level.addChunkPacket(getChunkX(), getChunkZ(), packet);
             }
 
@@ -114,10 +116,9 @@ public class BlockSponge extends BlockSolid {
             for (BlockFace face : BlockFace.values()) {
                 Block layer0 = entry.block.getSideAtLayer(0, face);
                 Block layer1 = layer0.getLevelBlockAtLayer(1);
-                
+
                 if (layer0 instanceof BlockFlowingWater) {
-                    this.getLevel().setBlockStateAt(layer0.getFloorX(), layer0.getFloorY(), layer0.getFloorZ(),
-                            BlockState.AIR);
+                    this.getLevel().setBlockStateAt(layer0.getFloorX(), layer0.getFloorY(), layer0.getFloorZ(), BlockAir.STATE);
                     this.getLevel().updateAround(layer0);
                     waterRemoved++;
                     if (entry.distance < 6) {
@@ -129,8 +130,7 @@ public class BlockSponge extends BlockSolid {
                             BlockID.SEA_PICKLE.equals(layer0.getId()) || layer0 instanceof BlockCoralFan) {
                         layer0.getLevel().useBreakOn(layer0);
                     }
-                    this.getLevel().setBlockStateAt(layer1.getFloorX(), layer1.getFloorY(), layer1.getFloorZ(),
-                            1, BlockState.AIR);
+                    this.getLevel().setBlockStateAt(layer1.getFloorX(), layer1.getFloorY(), layer1.getFloorZ(), 1, BlockAir.STATE);
                     this.getLevel().updateAround(layer1);
                     waterRemoved++;
                     if (entry.distance < 6) {
@@ -139,9 +139,10 @@ public class BlockSponge extends BlockSolid {
                 }
             }
         }
-        
+
         return waterRemoved > 0;
     }
 
-    private record Entry(Block block, int distance) { }
+    private record Entry(Block block, int distance) {
+    }
 }

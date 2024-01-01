@@ -3,12 +3,16 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntityBat extends EntityAnimal implements EntityFlyable {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return BAT;
+    }
     
 
     public EntityBat(IChunk chunk, CompoundTag nbt) {

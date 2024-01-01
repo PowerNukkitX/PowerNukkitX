@@ -15,12 +15,18 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.InstantEffect;
 import cn.nukkit.potion.Potion;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class EntityAreaEffectCloud extends Entity {
+
+    @Override
+    public @NotNull String getIdentifier() {
+        return AREA_EFFECT_CLOUD;
+    }
 
     public List<Effect> cloudEffects;
 

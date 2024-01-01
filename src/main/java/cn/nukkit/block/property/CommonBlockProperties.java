@@ -163,6 +163,7 @@ public interface CommonBlockProperties {
 
     EnumPropertyType<BlockFace> MINECRAFT_BLOCK_FACE = EnumPropertyType.of("minecraft:block_face", BlockFace.class, BlockFace.DOWN);
 
+    //CommonPropertyMap#CARDINAL_BLOCKFACE
     EnumPropertyType<MinecraftCardinalDirection> MINECRAFT_CARDINAL_DIRECTION = EnumPropertyType.of("minecraft:cardinal_direction", MinecraftCardinalDirection.class, MinecraftCardinalDirection.values()[0]);
 
     EnumPropertyType<BlockFace> MINECRAFT_FACING_DIRECTION = EnumPropertyType.of("minecraft:facing_direction", BlockFace.class, BlockFace.values()[0]);

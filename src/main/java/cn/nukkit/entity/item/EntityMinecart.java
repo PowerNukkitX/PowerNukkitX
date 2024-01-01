@@ -9,6 +9,7 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MinecartType;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Snake1999
@@ -16,13 +17,14 @@ import cn.nukkit.utils.MinecartType;
  */
 public class EntityMinecart extends EntityMinecartAbstract {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return MINECART;
+    }
 
     public EntityMinecart(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
-    
 
 
     @Override

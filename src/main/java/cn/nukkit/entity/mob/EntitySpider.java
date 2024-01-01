@@ -6,12 +6,16 @@ import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntitySpider extends EntityMob implements EntityWalkable, EntityArthropod {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return SPIDER;
+    }
     
 
     public EntitySpider(IChunk chunk, CompoundTag nbt) {

@@ -7,9 +7,11 @@ package cn.nukkit.block.property.enums;
  * @author daoge_cmd
  */
 public enum CrackedState {
+    NO_CRACKS,
     CRACKED,
+    MAX_CRACKED;
 
-    MAX_CRACKED,
-
-    NO_CRACKS
+    public CrackedState next() {
+        return CrackedState.values()[this.ordinal() + 1];
+    }
 }

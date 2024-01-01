@@ -5,13 +5,17 @@ import cn.nukkit.entity.EntityArthropod;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntityCaveSpider extends EntityMob implements EntityWalkable, EntityArthropod {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return CAVE_SPIDER;
+    }
 
     public EntityCaveSpider(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

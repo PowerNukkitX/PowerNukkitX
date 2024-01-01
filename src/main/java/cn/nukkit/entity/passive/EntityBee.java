@@ -5,6 +5,7 @@ import cn.nukkit.blockentity.BlockEntityBeehive;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -12,7 +13,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 public class EntityBee extends EntityAnimal implements EntityFlyable {
 
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return BEE;
+    }
     
 
     private final int beehiveTimer = 600;

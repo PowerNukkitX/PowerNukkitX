@@ -19,12 +19,16 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelEventPacket;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX
  */
 public class EntityFallingBlock extends Entity {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return FALLING_BLOCK;
+    }
     
     protected int blockId;
     protected int damage;

@@ -2,8 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -15,25 +14,19 @@ import java.util.concurrent.ThreadLocalRandom;
 
 
 public class BlockTorchflowerCrop extends BlockCrops {
-    public static final IntBlockProperty GROWTH = new IntBlockProperty("growth", false, 1);
-    public static final BlockProperties PROPERTIES = new BlockProperties(GROWTH);
+    public static final BlockProperties PROPERTIES = new BlockProperties(TORCHFLOWER_CROP, CommonBlockProperties.GROWTH);
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     public BlockTorchflowerCrop() {
-        super(0);
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockTorchflowerCrop(BlockState blockstate) {
         super(blockstate);
-    }
-
-    public int getId() {
-        return TORCHFLOWER_CROP;
     }
 
     public String getName() {
@@ -94,7 +87,7 @@ public class BlockTorchflowerCrop extends BlockCrops {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (this.down().getId() != FARMLAND) {
+            if (!this.down().getId().equals(FARMLAND)) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }

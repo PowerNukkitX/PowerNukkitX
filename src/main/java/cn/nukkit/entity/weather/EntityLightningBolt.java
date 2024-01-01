@@ -30,7 +30,10 @@ import java.util.function.Supplier;
  * @since 2016/2/27
  */
 public class EntityLightningBolt extends Entity implements EntityLightningStrike {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return LIGHTNING_BOLT;
+    }
     
     public int state;
     public int liveTime;

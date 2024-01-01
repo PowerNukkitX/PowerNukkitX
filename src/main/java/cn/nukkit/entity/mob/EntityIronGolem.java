@@ -24,6 +24,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -34,7 +35,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 
 public class EntityIronGolem extends EntityMob implements EntityWalkable {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return IRON_GOLEM;
+    }
 
     
 

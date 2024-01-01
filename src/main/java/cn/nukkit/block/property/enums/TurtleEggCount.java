@@ -7,11 +7,16 @@ package cn.nukkit.block.property.enums;
  * @author daoge_cmd
  */
 public enum TurtleEggCount {
-    FOUR_EGG,
-
     ONE_EGG,
-
+    TWO_EGG,
     THREE_EGG,
+    FOUR_EGG;
 
-    TWO_EGG
+    public TurtleEggCount before() {
+        return TurtleEggCount.values()[this.ordinal() - 1];
+    }
+
+    public TurtleEggCount next() {
+        return TurtleEggCount.values()[this.ordinal() + 1];
+    }
 }

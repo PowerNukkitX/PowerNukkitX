@@ -31,6 +31,7 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -39,7 +40,10 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author BeYkeRYkt (Nukkit Project)
  */
 public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityShearable {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return SHEEP;
+    }
     
     public boolean sheared = false;
     public int color = 0;

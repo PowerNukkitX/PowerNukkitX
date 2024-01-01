@@ -9,7 +9,6 @@ import cn.nukkit.entity.data.Vector3fEntityData;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemFirework;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
@@ -21,6 +20,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.DyeColor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -29,7 +29,10 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author CreeperFace
  */
 public class EntityFireworksRocket extends Entity {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return FIREWORKS_ROCKET;
+    }
     
     private final int lifetime;
     private int fireworkAge;

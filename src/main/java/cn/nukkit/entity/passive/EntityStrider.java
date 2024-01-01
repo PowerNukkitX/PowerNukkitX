@@ -3,6 +3,8 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import com.sun.jna.platform.unix.solaris.LibKstat;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Erik Miller | EinBexiii
@@ -10,7 +12,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 public class EntityStrider extends EntityAnimal implements EntityWalkable {
 
-    public final static int NETWORK_ID = 125;
+    @Override
+    public @NotNull String getIdentifier() {
+        return STRIDER;
+    }
 
     public EntityStrider(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

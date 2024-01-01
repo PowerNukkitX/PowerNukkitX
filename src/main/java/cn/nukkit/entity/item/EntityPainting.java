@@ -16,6 +16,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddPaintingPacket;
 import cn.nukkit.network.protocol.DataPacket;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +26,10 @@ import java.util.Map;
  */
 public class EntityPainting extends EntityHanging {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return PAINTING;
+    }
 
     public final static Motive[] motives = Motive.values();
     private Motive motive;

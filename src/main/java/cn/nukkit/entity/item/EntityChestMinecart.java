@@ -13,6 +13,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.MinecartType;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Snake1999
@@ -20,7 +21,10 @@ import cn.nukkit.utils.MinecartType;
  */
 public class EntityChestMinecart extends EntityMinecartAbstract implements InventoryHolder {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return CHEST_MINECART;
+    }
 
     protected MinecartChestInventory inventory;
 

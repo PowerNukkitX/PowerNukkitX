@@ -26,6 +26,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -34,7 +35,10 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Box.
  */
 public class EntityCreeper extends EntityMob implements EntityWalkable, EntityInteractable {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return CREEPER;
+    }
     
 
     public static final int DATA_SWELL_DIRECTION = 16;

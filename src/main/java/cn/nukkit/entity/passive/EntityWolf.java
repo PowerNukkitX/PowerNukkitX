@@ -37,6 +37,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Set;
@@ -47,7 +48,10 @@ import java.util.Set;
  * todo 野生狼不会被刷新
  */
 public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable, EntityColor {
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return WOLF;
+    }
     protected float[] diffHandDamage = new float[]{3, 4, 6};
 
     public EntityWolf(IChunk chunk, CompoundTag nbt) {

@@ -104,8 +104,6 @@ public class BlockTorch extends BlockFlowable implements Faceable {
     /**
      * Sets the direction that the flame is pointing.
      */
-
-
     @Override
     public void setBlockFace(BlockFace face) {
         TorchFacingDirection torchAttachment = TorchFacingDirection.getByTorchDirection(face);

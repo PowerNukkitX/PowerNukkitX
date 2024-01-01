@@ -3,10 +3,14 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 public class EntityGlowSquid extends EntityAnimal implements EntitySwimmable {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return GLOW_SQUID;
+    }
 
     public EntityGlowSquid(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

@@ -3,6 +3,7 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Kaooot
@@ -11,7 +12,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 public class EntityFox extends EntityAnimal implements EntityWalkable {
 
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return FOX;
+    }
     
 
 

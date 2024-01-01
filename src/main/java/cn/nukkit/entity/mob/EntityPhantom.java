@@ -6,13 +6,17 @@ import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PetteriM1
  */
 public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmite {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return PHANTOM;
+    }
 
     public EntityPhantom(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

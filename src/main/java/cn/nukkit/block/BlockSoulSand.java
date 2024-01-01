@@ -4,24 +4,31 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockFormEvent;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Pub4Game
  * @since 27.12.2015
  */
 public class BlockSoulSand extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties(SOUL_SAND);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockSoulSand() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockSoulSand(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
     public String getName() {
         return "Soul Sand";
-    }
-
-    @Override
-    public int getId() {
-        return SOUL_SAND;
     }
 
     @Override
@@ -66,8 +73,8 @@ public class BlockSoulSand extends BlockSolid {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block up = up();
-            if (up instanceof BlockFlowingWater && (up.getDamage() == 0 || up.getDamage() == 8)) {
-                BlockFormEvent event = new BlockFormEvent(up, new BlockBubbleColumn(0));
+            if (up instanceof BlockFlowingWater w && (w.getLiquidDepth() == 0 || w.getLiquidDepth() == 8)) {
+                BlockFormEvent event = new BlockFormEvent(up, new BlockBubbleColumn());
                 if (!event.isCancelled()) {
                     if (event.getNewState().getWaterloggingLevel() > 0) {
                         this.getLevel().setBlock(up, 1, new BlockWater(), true, false);

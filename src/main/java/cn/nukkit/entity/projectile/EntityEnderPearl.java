@@ -11,10 +11,14 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelEventPacket;
+import org.jetbrains.annotations.NotNull;
 
 public class EntityEnderPearl extends EntityProjectile {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return ENDER_PEARL;
+    }
 
     public EntityEnderPearl(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);

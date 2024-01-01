@@ -7,6 +7,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -15,7 +16,11 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityTropicalfish extends EntityFish {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return TROPICALFISH;
+    }
+
     private static final int[] VARIANTS = {0, 1};
     private static final int[] MARK_VARIANTS = {0, 1, 2, 3, 4, 5};
     private static final int[] COLOR2 = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};

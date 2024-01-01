@@ -30,12 +30,16 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.SetEntityDataPacket;
 import cn.nukkit.potion.Effect;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
 
 public class EntityArmorStand extends Entity implements EntityInventoryHolder, EntityInteractable, EntityNameable {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return ARMOR_STAND;
+    }
     private static final String TAG_MAINHAND = "Mainhand";
     private static final String TAG_POSE_INDEX = "PoseIndex";
     private static final String TAG_OFFHAND = "Offhand";

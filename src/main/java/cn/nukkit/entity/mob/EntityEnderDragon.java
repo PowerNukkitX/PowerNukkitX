@@ -12,7 +12,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityEnderDragon extends EntityMob implements EntityFlyable {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return ENDER_DRAGON;
+    }
 
     public EntityEnderDragon(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

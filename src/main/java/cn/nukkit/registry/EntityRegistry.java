@@ -13,6 +13,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.OK;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +26,7 @@ import java.util.*;
 @Slf4j
 public class EntityRegistry extends BaseRegistry<EntityRegistry.EntityDefinition, Class<? extends Entity>, Class<? extends Entity>> implements EntityID {
     private static final Object2ObjectOpenHashMap<String, Class<? extends Entity>> CLASS = new Object2ObjectOpenHashMap<>();
-    private static final Int2ObjectOpenHashMap<String> RID2ID = new Int2ObjectOpenHashMap<>();
+    private static final Object2IntOpenHashMap<String> ID2RID = new Object2IntOpenHashMap<>();
     private static final Object2ObjectOpenHashMap<String, EntityRegistry.EntityDefinition> DEFINITIONS = new Object2ObjectOpenHashMap<>();
 
     @Override
@@ -157,8 +159,8 @@ public class EntityRegistry extends BaseRegistry<EntityRegistry.EntityDefinition
         return CLASS.get(id);
     }
 
-    public String getEntityIdFromNetworkId(int networkId) {
-        return RID2ID.get(networkId);
+    public int getEntityNetworkId(String entityID) {
+        return ID2RID.getInt(entityID);
     }
 
     public EntityRegistry.EntityDefinition getEntityDefinition(String id) {
@@ -176,9 +178,8 @@ public class EntityRegistry extends BaseRegistry<EntityRegistry.EntityDefinition
      *
      * @return the known entity ids
      */
-    @UnmodifiableView
-    public Set<Integer> getKnownEntityIds() {
-        return Collections.unmodifiableSet(RID2ID.keySet());
+    public IntCollection getKnownEntityIds() {
+        return ID2RID.values();
     }
 
     /**
@@ -251,14 +252,14 @@ public class EntityRegistry extends BaseRegistry<EntityRegistry.EntityDefinition
     @Override
     public void trim() {
         CLASS.trim();
-        RID2ID.trim();
+        ID2RID.trim();
         DEFINITIONS.trim();
     }
 
     @Override
     public OK<?> register(EntityDefinition key, Class<? extends Entity> value) {
         if (CLASS.putIfAbsent(key.id(), value) == null) {
-            RID2ID.put(key.rid, key.id);
+            ID2RID.put(key.id, key.rid);
             DEFINITIONS.put(key.id, key);
             return OK.TRUE;
         } else {

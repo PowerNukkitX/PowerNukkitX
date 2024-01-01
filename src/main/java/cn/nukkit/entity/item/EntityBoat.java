@@ -29,6 +29,7 @@ import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
 import cn.nukkit.network.protocol.types.EntityLink;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,7 +44,10 @@ import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
  */
 public class EntityBoat extends EntityVehicle {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return BOAT;
+    }
 
     public static final Vector3f RIDER_PLAYER_OFFSET = new Vector3f(0, 1.02001f, 0);
     public static final Vector3f RIDER_OFFSET = new Vector3f(0, -0.2f, 0);

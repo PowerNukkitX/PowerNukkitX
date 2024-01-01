@@ -2,11 +2,11 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BlockProperty;
-import cn.nukkit.blockproperty.value.CrackState;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.CrackedState;
+import cn.nukkit.block.property.enums.TurtleEggCount;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.mob.EntityGhast;
 import cn.nukkit.entity.mob.EntityPhantom;
@@ -28,70 +28,47 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.*;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static cn.nukkit.block.property.CommonBlockProperties.CRACKED_STATE;
+import static cn.nukkit.block.property.CommonBlockProperties.TURTLE_EGG_COUNT;
+import static cn.nukkit.block.property.enums.TurtleEggCount.FOUR_EGG;
 
 
 public class BlockTurtleEgg extends BlockFlowable {
+    public static final BlockProperties PROPERTIES = new BlockProperties(TURTLE_EGG, CRACKED_STATE, TURTLE_EGG_COUNT);
 
-
-    public static final BlockProperty<Integer> EGG_COUNT = new ArrayBlockProperty<>("turtle_egg_count", false,
-            new Integer[]{1,2,3,4}, 2, "turtle_egg_count", false,
-            new String[]{"one_egg", "two_egg", "three_egg", "four_egg"});
-
-
-    public static final ArrayBlockProperty<CrackState> CRACK_STATE = new ArrayBlockProperty<>("cracked_state", false, CrackState.class);
-
-
-    public static final BlockProperties PROPERTIES = new BlockProperties(EGG_COUNT, CRACK_STATE);
-
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "New property system", replaceWith = "CrackState.NO_CRACKS")
-    public static final int CRACK_STATE_NO_CRACKS = 0;
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "New property system", replaceWith = "CrackState.CRACKED")
-    public static final int CRACK_STATE_CRACKED = 1;
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "New property system", replaceWith = "CrackState.MAX_CRACKED")
-    public static final int CRACK_STATE_MAX_CRACKED = 2;
-
-
-    public BlockTurtleEgg() {
-        this(0);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
+    public BlockTurtleEgg() {
+        this(PROPERTIES.getDefaultState());
+    }
 
     public BlockTurtleEgg(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
-    public int getId() {
-        return TURTLE_EGG;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-    
-    @Override
     public String getName() {
         return "Turtle Egg";
     }
 
 
-    public CrackState getCracks() {
-        return getPropertyValue(CRACK_STATE);
+    public CrackedState getCracks() {
+        return getPropertyValue(CRACKED_STATE);
     }
 
 
-    public void setCracks(@Nullable CrackState cracks) {
-        setPropertyValue(CRACK_STATE, cracks);
+    public void setCracks(@Nullable CrackedState cracks) {
+        setPropertyValue(CRACKED_STATE, cracks);
     }
 
 
@@ -106,28 +83,13 @@ public class BlockTurtleEgg extends BlockFlowable {
     }
 
 
-    public int getEggCount() {
-        return getPropertyValue(EGG_COUNT);
+    public TurtleEggCount getEggCount() {
+        return getPropertyValue(TURTLE_EGG_COUNT);
     }
 
 
-    public void setEggCount(int eggCount) {
-        setPropertyValue(EGG_COUNT, eggCount);
-    }
-
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic values", replaceWith = "getCracks()")
-
-    public int getCrackState() {
-        return Math.min(getDamage() >> 2 & 0b11, CRACK_STATE_MAX_CRACKED);
-    }
-
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic values", replaceWith = "setCracks(CrackState)")
-
-    public void setCrackState(int crackState) {
-        crackState = MathHelper.clamp(crackState, 0, 2);
-        setDamage(getDamage() & (DATA_MASK ^ 0b1100) | (crackState << 2));
+    public void setEggCount(TurtleEggCount eggCount) {
+        setPropertyValue(TURTLE_EGG_COUNT, eggCount);
     }
 
     @Override
@@ -137,12 +99,13 @@ public class BlockTurtleEgg extends BlockFlowable {
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-        if (Item.getItemBlock() != null && Item.getItemBlockId() == TURTLE_EGG && (player == null || !player.isSneaking())) {
-            int eggCount = getEggCount();
-            if (eggCount >= 4) {
+        if (item.getBlock() != null && Objects.equals(item.getBlockId(), TURTLE_EGG) && (player == null || !player.isSneaking())) {
+            TurtleEggCount eggCount = getEggCount();
+            if (eggCount == FOUR_EGG) {
                 return false;
             }
-            Block newState = getBlockState().withProperty(EGG_COUNT, eggCount + 1).getBlock(this);
+            BlockTurtleEgg newState = new BlockTurtleEgg();
+            newState.setEggCount(eggCount.next());
             BlockPlaceEvent placeEvent = new BlockPlaceEvent(
                     player,
                     newState,
@@ -162,7 +125,7 @@ public class BlockTurtleEgg extends BlockFlowable {
                     placeBlock.getRuntimeId());
             item.setCount(item.getCount() - 1);
 
-            if (down().getId() == SAND) {
+            if (down().getId().equals(SAND)) {
                 this.level.addParticle(new BoneMealParticle(this));
             }
 
@@ -179,27 +142,27 @@ public class BlockTurtleEgg extends BlockFlowable {
 
     @Override
     public double getMinX() {
-        return x + (3.0/16);
+        return x + (3.0 / 16);
     }
 
     @Override
     public double getMinZ() {
-        return z + (3.0/16);
+        return z + (3.0 / 16);
     }
 
     @Override
     public double getMaxX() {
-        return x + (12.0/16);
+        return x + (12.0 / 16);
     }
 
     @Override
     public double getMaxZ() {
-        return z + (12.0/16);
+        return z + (12.0 / 16);
     }
 
     @Override
     public double getMaxY() {
-        return y + (7.0/16);
+        return y + (7.0 / 16);
     }
 
     @Override
@@ -214,10 +177,10 @@ public class BlockTurtleEgg extends BlockFlowable {
                 float celestialAngle = level.calculateCelestialAngle(level.getTime(), 1);
                 ThreadLocalRandom random = ThreadLocalRandom.current();
                 if (0.70 > celestialAngle && celestialAngle > 0.65 || random.nextInt(500) == 0) {
-                    CrackState crackState = getCracks();
-                    if (crackState != CrackState.MAX_CRACKED) {
+                    CrackedState crackState = getCracks();
+                    if (crackState != CrackedState.MAX_CRACKED) {
                         BlockTurtleEgg newState = clone();
-                        newState.setCracks(crackState.getNext());
+                        newState.setCracks(crackState.next());
                         BlockGrowEvent event = new BlockGrowEvent(this, newState);
                         this.level.getServer().getPluginManager().callEvent(event);
                         if (!event.isCancelled()) {
@@ -240,14 +203,13 @@ public class BlockTurtleEgg extends BlockFlowable {
     }
 
 
-    public void hatch(int eggs) {
+    public void hatch(TurtleEggCount eggs) {
         hatch(eggs, new BlockAir());
     }
 
 
-
-    public void hatch(int eggs, Block newState) {
-        TurtleEggHatchEvent turtleEggHatchEvent = new TurtleEggHatchEvent(this, eggs, newState);
+    public void hatch(TurtleEggCount eggs, Block newState) {
+        TurtleEggHatchEvent turtleEggHatchEvent = new TurtleEggHatchEvent(this, eggs.ordinal() + 1, newState);
         //TODO Cancelled by default because EntityTurtle doesn't have AI yet, remove it when AI is added
         turtleEggHatchEvent.setCancelled(true);
         this.level.getServer().getPluginManager().callEvent(turtleEggHatchEvent);
@@ -261,7 +223,7 @@ public class BlockTurtleEgg extends BlockFlowable {
                 this.level.addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
 
                 CreatureSpawnEvent creatureSpawnEvent = new CreatureSpawnEvent(
-                        EntityTurtle.NETWORK_ID,
+                        Registries.ENTITY.getEntityNetworkId(EntityID.TURTLE),
                         add(0.3 + i * 0.2,
                                 0,
                                 0.3
@@ -328,14 +290,14 @@ public class BlockTurtleEgg extends BlockFlowable {
 
     @Override
     public boolean onBreak(Item item) {
-        int eggCount = getEggCount();
+        TurtleEggCount eggCount = getEggCount();
         if (item.getEnchantment(Enchantment.ID_SILK_TOUCH) == null) {
             this.level.addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
         }
-        if (eggCount == 1) {
+        if (eggCount == TurtleEggCount.ONE_EGG) {
             return super.onBreak(item);
         } else {
-            setEggCount(eggCount - 1);
+            setEggCount(eggCount.before());
             return this.level.setBlock(this, this, true, true);
         }
     }
@@ -347,7 +309,7 @@ public class BlockTurtleEgg extends BlockFlowable {
         }
 
         if (this.level.setBlock(this, this, true, true)) {
-            if (down().getId() == BlockID.SAND) {
+            if (down().getId().equals(BlockID.SAND)) {
                 this.level.addParticle(new BoneMealParticle(this));
             }
             return true;

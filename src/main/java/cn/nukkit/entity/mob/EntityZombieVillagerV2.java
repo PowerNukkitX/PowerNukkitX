@@ -5,9 +5,13 @@ import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 public class EntityZombieVillagerV2 extends EntityMob implements EntityWalkable, EntitySmite {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return ZOMBIE_VILLAGER_V2;
+    }
     
 
     public EntityZombieVillagerV2(IChunk chunk, CompoundTag nbt) {

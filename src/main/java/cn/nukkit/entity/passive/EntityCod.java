@@ -4,12 +4,16 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PetteriM1
  */
 public class EntityCod extends EntityFish {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return COD;
+    }
     
 
     public EntityCod(IChunk chunk, CompoundTag nbt) {

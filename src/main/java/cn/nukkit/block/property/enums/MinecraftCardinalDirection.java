@@ -7,11 +7,8 @@ package cn.nukkit.block.property.enums;
  * @author daoge_cmd
  */
 public enum MinecraftCardinalDirection {
-    EAST,
-
-    NORTH,
-
     SOUTH,
-
-    WEST
+    WEST,
+    NORTH,
+    EAST
 }

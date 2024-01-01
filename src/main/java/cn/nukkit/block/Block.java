@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
@@ -463,11 +462,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getId();
     }
 
-    public Map<BlockPropertyType<?>, BlockPropertyType.BlockPropertyValue<?, ?, ?>> getPropertyValues() {
-        return Collections.unmodifiableMap(this.blockstate.getBlockPropertyValues().stream().collect(
-                LinkedHashMap<BlockPropertyType<?>, BlockPropertyType.BlockPropertyValue<?, ?, ?>>::new,
-                (hashMap, blockPropertyValue) -> hashMap.put(blockPropertyValue.getPropertyType(), blockPropertyValue),
-                LinkedHashMap::putAll));
+    public List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> getPropertyValues() {
+        return this.blockstate.getBlockPropertyValues();
     }
 
     public boolean isAir() {
@@ -540,7 +536,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     private double customToolBreakTimeBonus(int toolType, @Nullable Integer speed) {
         if (speed != null) return speed;
         else if (toolType == ItemTool.TYPE_SWORD) {
-            if (this instanceof BlockCobweb) {
+            if (this instanceof BlockWeb) {
                 return 15.0;
             } else if (this instanceof BlockBamboo) {
                 return 30.0;
@@ -548,7 +544,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         } else if (toolType == ItemTool.TYPE_SHEARS) {
             if (this instanceof BlockWool || this instanceof BlockLeaves) {
                 return 5.0;
-            } else if (this instanceof BlockCobweb) {
+            } else if (this instanceof BlockWeb) {
                 return 15.0;
             } else return 1.0;
         } else if (toolType == ItemTool.TYPE_NONE) return 1.0;

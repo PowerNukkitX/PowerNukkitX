@@ -5,12 +5,16 @@ import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntityZombieHorse extends EntityAnimal implements EntityWalkable, EntitySmite {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return ZOMBIE_HORSE;
+    }
     
 
     public EntityZombieHorse(IChunk chunk, CompoundTag nbt) {

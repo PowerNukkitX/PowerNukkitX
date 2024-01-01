@@ -4,9 +4,13 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 public class EntityPillager extends EntityMob implements EntityWalkable {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return PILLAGER;
+    }
     
 
     public EntityPillager(IChunk chunk, CompoundTag nbt) {

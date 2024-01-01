@@ -1,8 +1,9 @@
 package cn.nukkit.block;
 
+import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockTintedGlass extends Block {
+public class BlockTintedGlass extends BlockGlass {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:tinted_glass");
 
     @Override
@@ -16,5 +17,20 @@ public class BlockTintedGlass extends Block {
 
     public BlockTintedGlass(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Tinted Glass";
+    }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        return new Item[] { toItem() };
+    }
+
+    @Override
+    public boolean canSilkTouch() {
+        return false;
     }
 }

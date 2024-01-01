@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static cn.nukkit.block.property.CommonBlockProperties.REDSTONE_SIGNAL;
@@ -164,7 +165,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
     }
 
     private int getMaxCurrentStrength(Vector3 pos, int maxStrength) {
-        if (this.level.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()) != this.getId()) {
+        if (!Objects.equals(this.level.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()), this.getId())) {
             return maxStrength;
         } else {
             int strength = this.level.getBlockStateAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()).getPropertyValue(REDSTONE_SIGNAL);
@@ -292,7 +293,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
 
 
     protected static boolean canConnectTo(Block block, BlockFace side) {
-        if (block.getId() == Block.REDSTONE_WIRE) {
+        if (block.getId().equals(Block.REDSTONE_WIRE)) {
             return true;
         } else if (BlockRedstoneDiode.isDiode(block)) {
             BlockFace face = ((BlockRedstoneDiode) block).getFacing();
@@ -336,7 +337,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
 
     private int getIndirectPower(Vector3 pos, BlockFace face) {
         Block block = this.level.getBlock(pos);
-        if (block.getId() == Block.REDSTONE_WIRE) {
+        if (block.getId().equals(Block.REDSTONE_WIRE)) {
             return 0;
         }
         return block.isNormalBlock() ? getStrongPower(pos) : block.getWeakPower(face);
@@ -357,7 +358,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
     private int getStrongPower(Vector3 pos, BlockFace direction) {
         Block block = this.level.getBlock(pos);
 
-        if (block.getId() == Block.REDSTONE_WIRE) {
+        if (block.getId().equals(Block.REDSTONE_WIRE)) {
             return 0;
         }
 

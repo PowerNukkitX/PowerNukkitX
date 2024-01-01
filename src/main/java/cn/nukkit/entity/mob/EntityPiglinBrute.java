@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -14,7 +15,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public class EntityPiglinBrute extends EntityMob implements EntityWalkable {
 
 
-    public final static int NETWORK_ID = 127;
+    @Override
+    public @NotNull String getIdentifier() {
+        return PIGLIN_BRUTE;
+    }
 
 
     public EntityPiglinBrute(IChunk chunk, CompoundTag nbt) {

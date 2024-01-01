@@ -4,13 +4,17 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntityVex extends EntityMob implements EntityFlyable {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return VEX;
+    }
 
     public EntityVex(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

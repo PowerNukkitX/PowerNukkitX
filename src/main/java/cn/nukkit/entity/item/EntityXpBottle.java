@@ -8,6 +8,7 @@ import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.particle.SpellParticle;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -15,7 +16,10 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author xtypr
  */
 public class EntityXpBottle extends EntityProjectile {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return XP_BOTTLE;
+    }
     
 
     public EntityXpBottle(IChunk chunk, CompoundTag nbt) {

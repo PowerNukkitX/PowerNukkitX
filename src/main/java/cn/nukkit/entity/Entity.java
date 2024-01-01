@@ -47,6 +47,7 @@ import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.PropertySyncData;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.*;
 import com.google.common.collect.Iterables;
@@ -66,12 +67,12 @@ import static cn.nukkit.utils.Utils.dynamic;
  * @author MagicDroidX
  */
 @Log4j2
-public abstract class Entity extends Location implements Metadatable {
+public abstract class Entity extends Location implements Metadatable, EntityID {
     public static final Entity[] EMPTY_ARRAY = new Entity[0];
     //region data
     //All DATA constants were made dynamic because they have tendency to change on Minecraft updates,
     //these dynamic calls will avoid the need of plugin recompilations after Minecraft updates that shifts the data values
-    
+
     public static final int DATA_TYPE_BYTE = 0;
     public static final int DATA_TYPE_SHORT = 1;
     public static final int DATA_TYPE_INT = 2;
@@ -970,10 +971,8 @@ public abstract class Entity extends Location implements Metadatable {
      *
      * @return the identifier
      */
-    @Nullable
-    public Identifier getIdentifier() {
-        return Entity.getIdentifier(this.getNetworkId());
-    }
+    @NotNull
+    public abstract String getIdentifier();
 
     /**
      * 实体高度
@@ -1785,6 +1784,10 @@ public abstract class Entity extends Location implements Metadatable {
 
     public int getAge() {
         return this.age;
+    }
+
+    public final int getNetworkId() {
+        return Registries.ENTITY.getEntityNetworkId(getIdentifier().toString());
     }
 
     public void heal(EntityRegainHealthEvent source) {
@@ -2660,7 +2663,9 @@ public abstract class Entity extends Location implements Metadatable {
         int y = this.getFloorY();
         int z = this.getFloorZ();
         for (int i = y + 1; i <= this.getLevel().getMaxHeight(); i++) {
-            if (!this.getLevel().getBlock(x, i, z).isAir()) { return true; }
+            if (!this.getLevel().getBlock(x, i, z).isAir()) {
+                return true;
+            }
         }
         return false;
     }

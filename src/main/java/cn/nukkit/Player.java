@@ -121,6 +121,11 @@ import static cn.nukkit.utils.Utils.dynamic;
  */
 @Log4j2
 public class Player extends EntityHuman implements CommandSender, InventoryHolder, ChunkLoader, IPlayer, IScoreboardViewer {
+    @Override
+    public @NotNull String getIdentifier() {
+        return PLAYER;
+    }
+
     /**
      * 一个承载玩家的空数组静态常量
      * <p>
@@ -487,7 +492,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @
-    @
+            @
+
     protected void onBlockBreakContinue(Vector3 pos, BlockFace face) {
         if (this.isBreakingBlock()) {
             var time = System.currentTimeMillis();
@@ -523,6 +529,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @
+
     protected void onBlockBreakStart(Vector3 pos, BlockFace face) {
         BlockVector3 blockPos = pos.asBlockVector3();
         long currentBreak = System.currentTimeMillis();
@@ -614,6 +621,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @
+
     protected void onBlockBreakAbort(Vector3 pos, BlockFace face) {
         if (pos.distanceSquared(this) < 100) {// same as with ACTION_START_BREAK
             LevelEventPacket pk = new LevelEventPacket();
@@ -630,6 +638,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @
+
     protected void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
         if (!this.spawned || !this.isAlive()) {
             return;
@@ -1532,7 +1541,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.loggedIn = true;
 
         //注册实体属性
-        for(SyncEntityPropertyPacket pk : EntityProperty.getPacketCache()) {
+        for (SyncEntityPropertyPacket pk : EntityProperty.getPacketCache()) {
             this.dataPacketImmediately(pk);
         }
 
@@ -2625,7 +2634,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @param pos 出生点位置
      */
-    
+
     public void setSpawn(@Nullable Vector3 pos) {
         if (pos != null) {
             Level level;
@@ -2770,9 +2779,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @DeprecationDetails(by = "Cloudburst Nukkit", since = "2019-05-08", replaceWith = "dataPacket(DataPacket)",
             reason = "ACKs are handled by the RakNet layer only")
-    
-            info = "Cloudburst changed the return values from 0/-1 to 1/0, breaking backward compatibility for no reason, " +
-                    "we reversed that.")
+    info ="Cloudburst changed the return values from 0/-1 to 1/0, breaking backward compatibility for no reason, "+
+            "we reversed that.")
+
     @Deprecated
     public int dataPacket(DataPacket packet, boolean needACK) {
         return dataPacket(packet) ? 0 : -1;
@@ -2795,9 +2804,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @DeprecationDetails(by = "Cloudburst Nukkit", since = "2019-05-08", replaceWith = "dataPacket(DataPacket)",
             reason = "ACK are handled by the RakNet layer and direct packets are no longer allowed")
-    
-            info = "Cloudburst changed the return values from 0/-1 to 1/0, breaking backward compatibility for no reason, " +
-                    "we reversed that.")
+    info ="Cloudburst changed the return values from 0/-1 to 1/0, breaking backward compatibility for no reason, "+
+            "we reversed that.")
+
     @Deprecated
     public int directDataPacket(DataPacket packet, boolean needACK) {
         return this.dataPacket(packet) ? 0 : -1;
@@ -3156,6 +3165,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @Override
     @
+
     public boolean onUpdate(int currentTick) {
         if (!this.loggedIn) {
             return false;
@@ -3440,6 +3450,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @
+
     public void handleDataPacket(DataPacket packet) {
         if (!connected) {
             return;
@@ -4542,7 +4553,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param level            等级
      */
     //todo something on performance, lots of exp orbs then lots of packets, could crash client
-
     public void setExperience(int exp, int level, boolean playLevelUpSound) {
         var expEvent = new PlayerExperienceChangeEvent(this, this.getExperience(), this.getExperienceLevel(), exp, level);
         this.server.getPluginManager().callEvent(expEvent);

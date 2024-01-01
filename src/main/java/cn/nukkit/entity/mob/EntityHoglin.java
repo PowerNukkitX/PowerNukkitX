@@ -4,6 +4,7 @@ import cn.nukkit.entity.EntityAgeable;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Erik Miller | EinBexiii
@@ -11,8 +12,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 
 public class EntityHoglin extends EntityMob implements EntityWalkable, EntityAgeable {
-
-    public final static int NETWORK_ID = 124;
+    @Override
+    public @NotNull String getIdentifier() {
+        return HOGLIN;
+    }
 
     public EntityHoglin(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

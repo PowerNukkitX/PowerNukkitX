@@ -18,10 +18,14 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.MinecartType;
+import org.jetbrains.annotations.NotNull;
 
 public class EntityHopperMinecart extends EntityMinecartAbstract implements InventoryHolder, BlockHopper.IHopper {
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return HOPPER_MINECART;
+    }
     private final BlockVector3 temporalVector = new BlockVector3();
     public int transferCooldown;
 
@@ -31,7 +35,7 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
 
     public EntityHopperMinecart(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        setDisplayBlock(Block.get(Block.HOPPER_BLOCK), false);
+        setDisplayBlock(Block.get(Block.HOPPER), false);
     }
 
 

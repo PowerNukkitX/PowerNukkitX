@@ -4,6 +4,7 @@ import cn.nukkit.entity.EntityAgeable;
 import cn.nukkit.entity.EntityCreature;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Pub4Game
@@ -11,7 +12,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 
 public class EntityVillager extends EntityCreature implements IEntityNPC, EntityAgeable {
-
+    @Override
+    public @NotNull String getIdentifier() {
+        return VILLAGER;
+    }
     public static final int PROFESSION_FARMER = 0;
     public static final int PROFESSION_LIBRARIAN = 1;
     public static final int PROFESSION_PRIEST = 2;

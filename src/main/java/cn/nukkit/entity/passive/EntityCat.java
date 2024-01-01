@@ -34,12 +34,18 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Set;
 
 public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanSit, EntityCanAttack, EntityHealable, EntityVariant, EntityColor {
-    
+
+    @Override
+    public @NotNull String getIdentifier() {
+        return CAT;
+    }
+
     //猫咪有11种颜色变种
     private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     protected float[] diffHandDamage = new float[]{4, 4, 4};
