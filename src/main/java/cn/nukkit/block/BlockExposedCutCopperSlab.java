@@ -20,6 +20,10 @@ public class BlockExposedCutCopperSlab extends BlockCutCopperSlab {
         super(blockstate);
     }
 
+    public BlockExposedCutCopperSlab(BlockState blockstate,String doubleSlabId) {
+        super(blockstate, doubleSlabId);
+    }
+
     @NotNull
     @Override
     public OxidizationLevel getOxidizationLevel() {

@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockStrippedCrimsonStem extends Block {
+public class BlockStrippedCrimsonStem extends BlockStemStripped {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:stripped_crimson_stem", CommonBlockProperties.PILLAR_AXIS);
 
     @Override
@@ -17,5 +17,11 @@ public class BlockStrippedCrimsonStem extends Block {
 
     public BlockStrippedCrimsonStem(BlockState blockstate) {
         super(blockstate);
+    }
+
+
+    @Override
+    public String getName() {
+        return "Stripped Crimson Stem";
     }
 }

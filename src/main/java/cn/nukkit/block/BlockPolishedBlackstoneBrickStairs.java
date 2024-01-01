@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockPolishedBlackstoneBrickStairs extends Block {
+public class BlockPolishedBlackstoneBrickStairs extends BlockPolishedBlackstoneStairs {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:polished_blackstone_brick_stairs", CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
 
     @Override
@@ -17,5 +17,15 @@ public class BlockPolishedBlackstoneBrickStairs extends Block {
 
     public BlockPolishedBlackstoneBrickStairs(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Polished Blackstone Brick Stairs";
+    }
+
+    @Override
+    public double getHardness() {
+        return 1.5;
     }
 }

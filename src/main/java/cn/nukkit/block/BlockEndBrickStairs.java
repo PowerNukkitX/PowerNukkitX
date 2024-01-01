@@ -4,7 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockEndBrickStairs extends Block {
+public class BlockEndBrickStairs extends BlockStairs {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:end_brick_stairs", CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
 
     @Override

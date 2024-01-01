@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockWaxedOxidizedCutCopperStairs extends Block {
+public class BlockWaxedOxidizedCutCopperStairs extends BlockOxidizedCutCopperStairs {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:waxed_oxidized_cut_copper_stairs", CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
 
     @Override
@@ -17,5 +17,11 @@ public class BlockWaxedOxidizedCutCopperStairs extends Block {
 
     public BlockWaxedOxidizedCutCopperStairs(BlockState blockstate) {
         super(blockstate);
+    }
+
+
+    @Override
+    public boolean isWaxed() {
+        return true;
     }
 }

@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockWaxedWeatheredDoubleCutCopperSlab extends Block {
+public class BlockWaxedWeatheredDoubleCutCopperSlab extends BlockWeatheredDoubleCutCopperSlab {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:waxed_weathered_double_cut_copper_slab", CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
@@ -17,5 +17,10 @@ public class BlockWaxedWeatheredDoubleCutCopperSlab extends Block {
 
     public BlockWaxedWeatheredDoubleCutCopperSlab(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public boolean isWaxed() {
+        return true;
     }
 }

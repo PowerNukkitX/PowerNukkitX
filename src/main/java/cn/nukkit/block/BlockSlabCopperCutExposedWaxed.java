@@ -24,8 +24,4 @@ public class BlockSlabCopperCutExposedWaxed extends BlockSlabCopperCutExposed {
     }
 
 
-    @Override
-    public boolean isWaxed() {
-        return true;
-    }
 }

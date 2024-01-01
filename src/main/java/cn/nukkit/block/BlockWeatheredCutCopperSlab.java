@@ -1,9 +1,10 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.OxidizationLevel;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockWeatheredCutCopperSlab extends Block {
+public class BlockWeatheredCutCopperSlab extends BlockCutCopperSlab {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:weathered_cut_copper_slab", CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
@@ -16,6 +17,16 @@ public class BlockWeatheredCutCopperSlab extends Block {
     }
 
     public BlockWeatheredCutCopperSlab(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, WEATHERED_DOUBLE_CUT_COPPER_SLAB);
+    }
+
+    protected BlockWeatheredCutCopperSlab(BlockState blockstate, String doubleSlab) {
+        super(blockstate, doubleSlab);
+    }
+
+    @NotNull
+    @Override
+    public OxidizationLevel getOxidizationLevel() {
+        return OxidizationLevel.WEATHERED;
     }
 }

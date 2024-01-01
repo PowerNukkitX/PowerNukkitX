@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockStrippedWarpedStem extends Block {
+public class BlockStrippedWarpedStem extends BlockStemStripped {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:stripped_warped_stem", CommonBlockProperties.PILLAR_AXIS);
 
     @Override
@@ -17,5 +17,21 @@ public class BlockStrippedWarpedStem extends Block {
 
     public BlockStrippedWarpedStem(BlockState blockstate) {
         super(blockstate);
+    }
+
+
+    @Override
+    public String getName() {
+        return "Stripped Warped Stem";
+    }
+
+    @Override
+    public int getBurnChance() {
+        return 0;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 0;
     }
 }

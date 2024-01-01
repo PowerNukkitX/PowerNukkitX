@@ -23,6 +23,10 @@ public class BlockCutCopperSlab extends BlockSlabCopperBase {
         super(blockstate, DOUBLE_CUT_COPPER_SLAB);
     }
 
+    public BlockCutCopperSlab(BlockState blockstate,String doubleSlabId) {
+        super(blockstate, doubleSlabId);
+    }
+
     @Override
     public String getSlabName() {
         StringBuilder sb = new StringBuilder(30);

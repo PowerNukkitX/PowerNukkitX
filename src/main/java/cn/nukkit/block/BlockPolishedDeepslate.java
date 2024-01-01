@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockPolishedDeepslate extends Block {
+public class BlockPolishedDeepslate extends BlockCobbledDeepslate {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:polished_deepslate");
 
     @Override
