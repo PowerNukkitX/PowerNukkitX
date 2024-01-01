@@ -4,11 +4,11 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -16,18 +16,19 @@ import java.util.concurrent.ThreadLocalRandom;
  * @since 2015/12/26
  */
 public class BlockNetherrack extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties(NETHERRACK);
 
     public BlockNetherrack() {
+        super(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return NETHERRACK;
+    public BlockNetherrack(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public double getResistance() {
-        return 2;
+        return 0.4;
     }
 
     @Override
@@ -46,6 +47,11 @@ public class BlockNetherrack extends BlockSolid {
     }
 
     @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
 
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
@@ -57,22 +63,22 @@ public class BlockNetherrack extends BlockSolid {
             return false;
         }
 
-        IntList options = new IntArrayList(2);
+        List<String> options = new ArrayList<String>();
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
-            int id = getSide(face).getId();
-            if ((id == CRIMSON_NYLIUM || id == WARPED_NYLIUM) && !options.contains(id)) {
+            String id = getSide(face).getId();
+            if ((id.equals(CRIMSON_NYLIUM) || id.equals(WARPED_NYLIUM)) && !options.contains(id)) {
                 options.add(id);
             }
         }
         
-        int nylium;
+        String nylium;
         int size = options.size();
         if (size == 0) {
             return false;
         } else if (size == 1) {
-            nylium = options.getInt(0);
+            nylium = options.get(0);
         } else {
-            nylium = options.getInt(ThreadLocalRandom.current().nextInt(size));
+            nylium = options.get(ThreadLocalRandom.current().nextInt(size));
         }
         
         if (level.setBlock(this, Block.get(nylium), true)) {

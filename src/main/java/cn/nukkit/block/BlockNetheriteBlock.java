@@ -1,22 +1,27 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 
 public class BlockNetheriteBlock extends BlockSolid {
-
-
+    public static final BlockProperties PROPERTIES = new BlockProperties(NETHERITE_BLOCK);
     public BlockNetheriteBlock() {
+        super(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return NETHERITE_BLOCK;
+    public BlockNetheriteBlock(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "Netherite Block";
+    }
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override
@@ -26,14 +31,13 @@ public class BlockNetheriteBlock extends BlockSolid {
 
     @Override
     public double getHardness() {
-        return 35; // TODO Should be 50, but the break time is glitchy (same with obsidian but less noticeable because of the texture)
+        return 50;
     }
 
     @Override
     public double getResistance() {
-        return 6000;
+        return 1200;
     }
-
 
     @Override
     public int getToolTier() {
@@ -44,7 +48,6 @@ public class BlockNetheriteBlock extends BlockSolid {
     public boolean canHarvestWithHand() {
         return false;
     }
-
 
     @Override
     public boolean isLavaResistant() {

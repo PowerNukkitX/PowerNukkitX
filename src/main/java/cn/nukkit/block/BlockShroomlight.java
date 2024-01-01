@@ -1,18 +1,18 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 
 public class BlockShroomlight extends BlockTransparent {
-
+    public static final BlockProperties PROPERTIES = new BlockProperties(SHROOMLIGHT);
 
     public BlockShroomlight() {
-        // Does nothing
+        super(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return SHROOMLIGHT;
+    public BlockShroomlight(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -21,8 +21,13 @@ public class BlockShroomlight extends BlockTransparent {
     }
 
     @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
     public int getToolType() {
-        return ItemTool.TYPE_HANDS_ONLY; //TODO Should be hoe, fix at https://github.com/PowerNukkit/PowerNukkit/pull/367
+        return ItemTool.TYPE_HOE;
     }
 
     @Override
