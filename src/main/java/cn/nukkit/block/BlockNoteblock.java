@@ -22,22 +22,26 @@ import javax.annotation.Nullable;
  * @author Snake1999
  * @since 2016/1/17
  */
-
-
 public class BlockNoteblock extends BlockSolid implements RedstoneComponent, BlockEntityHolder<BlockEntityMusic> {
 
+    public static final BlockProperties PROPERTIES = new BlockProperties(NOTEBLOCK);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockNoteblock() {
-        // Does nothing
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockNoteblock(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
     public String getName() {
         return "Note Block";
-    }
-
-    @Override
-    public int getId() {
-        return NOTEBLOCK;
     }
 
     @Override
@@ -100,151 +104,53 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     }
 
     public Instrument getInstrument() {
-        switch (this.down().getId()) {
-            case GOLD_BLOCK:
-                return Instrument.GLOCKENSPIEL;
-            case CLAY_BLOCK:
-            case HONEYCOMB_BLOCK:
-                return Instrument.FLUTE;
-            case PACKED_ICE:
-                return Instrument.CHIME;
-            case WOOL:
-                return Instrument.GUITAR;
-            case BONE_BLOCK:
-                return Instrument.XYLOPHONE;
-            case IRON_BLOCK:
-                return Instrument.VIBRAPHONE;
-            case SOUL_SAND:
-                return Instrument.COW_BELL;
-            case PUMPKIN:
-                return Instrument.DIDGERIDOO;
-            case EMERALD_BLOCK:
-                return Instrument.SQUARE_WAVE;
-            case HAY_BALE:
-                return Instrument.BANJO;
-            case GLOWSTONE:
-                return Instrument.ELECTRIC_PIANO;
-            case LOG:
-            case LOG2:
-            case PLANKS:
-            case DOUBLE_WOODEN_SLAB:
-            case WOODEN_SLAB:
-            case OAK_STAIRS:
-            case SPRUCE_STAIRS:
-            case BIRCH_STAIRS:
-            case JUNGLE_STAIRS:
-            case ACACIA_WOOD_STAIRS:
-            case DARK_OAK_WOOD_STAIRS:
-            case CRIMSON_STAIRS:
-            case WARPED_STAIRS:
-            case FENCE:
-            case FENCE_GATE:
-            case FENCE_GATE_SPRUCE:
-            case FENCE_GATE_BIRCH:
-            case FENCE_GATE_JUNGLE:
-            case FENCE_GATE_DARK_OAK:
-            case FENCE_GATE_ACACIA:
-            case CRIMSON_FENCE_GATE:
-            case WARPED_FENCE_GATE:
-            case OAK_DOOR_BLOCK:
-            case SPRUCE_DOOR_BLOCK:
-            case BIRCH_DOOR_BLOCK:
-            case JUNGLE_DOOR_BLOCK:
-            case ACACIA_DOOR_BLOCK:
-            case DARK_OAK_DOOR_BLOCK:
-            case CRIMSON_DOOR_BLOCK:
-            case WARPED_DOOR_BLOCK:
-            case WOODEN_PRESSURE_PLATE:
-            case TRAPDOOR:
-            case SIGN_POST:
-            case WALL_SIGN:
-            case NOTEBLOCK:
-            case BOOKSHELF:
-            case CHEST:
-            case TRAPPED_CHEST:
-            case CRAFTING_TABLE:
-            case JUKEBOX:
-            case BROWN_MUSHROOM_BLOCK:
-            case RED_MUSHROOM_BLOCK:
-            case DAYLIGHT_DETECTOR:
-            case DAYLIGHT_DETECTOR_INVERTED:
-            case STANDING_BANNER:
-            case WALL_BANNER:
-                return Instrument.BASS;
-            case SAND:
-            case GRAVEL:
-            case CONCRETE_POWDER:
-                return Instrument.DRUM;
-            case GLASS:
-            case GLASS_PANE:
-            case STAINED_GLASS_PANE:
-            case STAINED_GLASS:
-            case BEACON:
-            case SEA_LANTERN:
-                return Instrument.STICKS;
-            case STONE:
-            case SANDSTONE:
-            case RED_SANDSTONE:
-            case COBBLESTONE:
-            case MOSSY_COBBLESTONE:
-            case BRICKS_BLOCK:
-            case STONEBRICK:
-            case NETHER_BRICK_BLOCK:
-            case RED_NETHER_BRICK:
-            case QUARTZ_BLOCK:
-            case DOUBLE_STONE_SLAB:
-            case STONE_SLAB:
-            case DOUBLE_RED_SANDSTONE_SLAB:
-            case RED_SANDSTONE_SLAB:
-            case STONE_STAIRS:
-            case BRICK_STAIRS:
-            case STONE_BRICK_STAIRS:
-            case NETHER_BRICKS_STAIRS:
-            case SANDSTONE_STAIRS:
-            case QUARTZ_STAIRS:
-            case RED_SANDSTONE_STAIRS:
-            case PURPUR_STAIRS:
-            case COBBLE_WALL:
-            case NETHER_BRICK_FENCE:
-            case BEDROCK:
-            case GOLD_ORE:
-            case IRON_ORE:
-            case COAL_ORE:
-            case LAPIS_ORE:
-            case DIAMOND_ORE:
-            case REDSTONE_ORE:
-            case LIT_REDSTONE_ORE:
-            case EMERALD_ORE:
-            case DROPPER:
-            case DISPENSER:
-            case FURNACE:
-            case LIT_FURNACE:
-            case OBSIDIAN:
-            case GLOWING_OBSIDIAN:
-            case MOB_SPAWNER:
-            case STONE_PRESSURE_PLATE:
-            case NETHERRACK:
-            case QUARTZ_ORE:
-            case ENCHANTING_TABLE:
-            case END_PORTAL_FRAME:
-            case END_STONE:
-            case END_BRICKS:
-            case ENDER_CHEST:
-            case STAINED_TERRACOTTA:
-            case TERRACOTTA:
-            case PRISMARINE:
-            case COAL_BLOCK:
-            case PURPUR_BLOCK:
-            case MAGMA:
-            case CONCRETE:
-            case STONECUTTER:
-            case OBSERVER:
-            case CRIMSON_NYLIUM:
-            case WARPED_NYLIUM:
-                return Instrument.BASS_DRUM;
-            default:
-                return Instrument.PIANO;
+        Block down = this.down();
+        if (down instanceof BlockWool) {
+            return Instrument.GUITAR;
         }
+        if (down instanceof BlockConcretePowder) {
+            return Instrument.DRUM;
+        }
+        if (down instanceof BlockGlass || down instanceof BlockGlassPane) {
+            return Instrument.STICKS;
+        }
+        if (down instanceof BlockLog || down instanceof BlockPlanks || down instanceof BlockFence || down instanceof BlockFenceGate) {
+            return Instrument.BASS;
+        }
+        if (down instanceof BlockBrickBlock || down instanceof BlockNetherBrick || down instanceof BlockConcrete
+                || down instanceof BlockHardenedClay || down instanceof BlockDoubleStoneBlockSlab
+                || down instanceof BlockDoubleStoneBlockSlab2 || down instanceof BlockDoubleStoneBlockSlab3 || down instanceof BlockDoubleStoneBlockSlab4) {
+            return Instrument.BASS_DRUM;
+        }
+        return switch (down.getId()) {
+            case GOLD_BLOCK -> Instrument.GLOCKENSPIEL;
+            case CLAY, HONEYCOMB_BLOCK -> Instrument.FLUTE;
+            case PACKED_ICE -> Instrument.CHIME;
+            case BONE_BLOCK -> Instrument.XYLOPHONE;
+            case IRON_BLOCK -> Instrument.VIBRAPHONE;
+            case SOUL_SAND -> Instrument.COW_BELL;
+            case PUMPKIN -> Instrument.DIDGERIDOO;
+            case EMERALD_BLOCK -> Instrument.SQUARE_WAVE;
+            case HAY_BLOCK -> Instrument.BANJO;
+            case GLOWSTONE -> Instrument.ELECTRIC_PIANO;
+            case DOUBLE_WOODEN_SLAB, WOODEN_SLAB, OAK_STAIRS, SPRUCE_STAIRS, BIRCH_STAIRS, JUNGLE_STAIRS,
+                    ACACIA_STAIRS, DARK_OAK_STAIRS, CRIMSON_STAIRS, WARPED_STAIRS,
+                    WOODEN_DOOR, SPRUCE_DOOR, BIRCH_DOOR, JUNGLE_DOOR,
+                    ACACIA_DOOR, DARK_OAK_DOOR, CRIMSON_DOOR, WARPED_DOOR,
+                    WOODEN_PRESSURE_PLATE, TRAPDOOR, STANDING_SIGN, WALL_SIGN, NOTEBLOCK, BOOKSHELF, CHEST, TRAPPED_CHEST,
+                    CRAFTING_TABLE, JUKEBOX, BROWN_MUSHROOM_BLOCK, RED_MUSHROOM_BLOCK, DAYLIGHT_DETECTOR, DAYLIGHT_DETECTOR_INVERTED, STANDING_BANNER, WALL_BANNER ->
+                    Instrument.BASS;
+            case SAND, GRAVEL -> Instrument.DRUM;
+            case BEACON, SEA_LANTERN -> Instrument.STICKS;
+            case STONE, SANDSTONE, RED_SANDSTONE, COBBLESTONE, MOSSY_COBBLESTONE, STONEBRICK, RED_NETHER_BRICK, QUARTZ_BLOCK,
+                    STONE_STAIRS, BRICK_STAIRS, STONE_BRICK_STAIRS,
+                    NETHER_BRICK_STAIRS, SANDSTONE_STAIRS, QUARTZ_STAIRS, RED_SANDSTONE_STAIRS, PURPUR_STAIRS, COBBLESTONE_WALL, NETHER_BRICK_FENCE,
+                    BEDROCK, GOLD_ORE, IRON_ORE, COAL_ORE, LAPIS_ORE, DIAMOND_ORE, REDSTONE_ORE, LIT_REDSTONE_ORE, EMERALD_ORE, DROPPER, DISPENSER,
+                    FURNACE, LIT_FURNACE, OBSIDIAN, GLOWINGOBSIDIAN, MOB_SPAWNER, STONE_PRESSURE_PLATE, NETHERRACK, QUARTZ_ORE, ENCHANTING_TABLE,
+                    END_PORTAL_FRAME, END_STONE, END_BRICKS, ENDER_CHEST, PRISMARINE, COAL_BLOCK, PURPUR_BLOCK, MAGMA,
+                    STONECUTTER, OBSERVER, CRIMSON_NYLIUM, WARPED_NYLIUM -> Instrument.BASS_DRUM;
+            default -> Instrument.PIANO;
+        };
     }
 
     public void emitSound() {
@@ -278,7 +184,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     }
 
     @Override
-    
+
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_REDSTONE) {
             // We can't use getOrCreateBlockEntity(), because the update method is called on block place,

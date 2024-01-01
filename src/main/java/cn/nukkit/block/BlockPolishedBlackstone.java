@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockPolishedBlackstone extends Block {
+public class BlockPolishedBlackstone extends BlockBlackstone {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:polished_blackstone");
 
     @Override
@@ -16,5 +16,21 @@ public class BlockPolishedBlackstone extends Block {
 
     public BlockPolishedBlackstone(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Polished Blackstone";
+    }
+
+
+    @Override
+    public boolean canHarvestWithHand() {
+        return false;
+    }
+
+    @Override
+    public double getHardness() {
+        return 1.5;
     }
 }

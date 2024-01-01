@@ -11,18 +11,6 @@ import org.jetbrains.annotations.NotNull;
 public class BlockStone extends BlockSolid{
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:stone");
 
-    /*
-    public static final int GRANITE = 1;
-
-    public static final int POLISHED_GRANITE = 2;
-
-    public static final int DIORITE = 3;
-
-    public static final int POLISHED_DIORITE = 4;
-
-    public static final int POLISHED_ANDESITE = 6;
-    */
-
     public BlockStone() {
         this(PROPERTIES.getDefaultState());
     }

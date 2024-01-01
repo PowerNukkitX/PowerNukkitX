@@ -1,21 +1,28 @@
 package cn.nukkit.block;
 
 
+import org.jetbrains.annotations.NotNull;
+
+import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
+
 public class BlockPolishedBasalt extends BlockBasalt {
+    public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_BASALT, PILLAR_AXIS);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
-    public BlockPolishedBasalt() { this(0); }
+    public BlockPolishedBasalt() {
+        this(PROPERTIES.getDefaultState());
+    }
 
-
-    public BlockPolishedBasalt(int meta) { super(meta); }
+    public BlockPolishedBasalt(BlockState blockstate) {
+        super(blockstate);
+    }
 
     @Override
     public String getName() {
         return "Polished Basalt";
-    }
-
-    @Override
-    public int getId() {
-        return BlockID.POLISHED_BASALT;
     }
 }
