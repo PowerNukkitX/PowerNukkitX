@@ -1,8 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.value.OxidizationLevel;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.property.enums.OxidizationLevel;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
@@ -13,8 +12,6 @@ import javax.annotation.Nullable;
  * @author joserobjr
  * @since 2021-06-14
  */
-
-
 public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase implements Waxable, Oxidizable {
 
 
@@ -66,8 +63,8 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
 
 
     @Override
-    public BlockState getStateWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
-        return getBlockState().withBlockId(getCopperId(isWaxed(), oxidizationLevel));
+    public Block getBlockWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
+        return Block.get(getCopperId(isWaxed(), oxidizationLevel)).setPropertyValues(getPropertyValues());
     }
 
 
@@ -76,7 +73,7 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
         if (getOxidizationLevel().equals(oxidizationLevel)) {
             return true;
         }
-        return getValidLevel().setBlock(this, getBlockState().withBlockId(getCopperId(isWaxed(), oxidizationLevel)).getBlock());
+        return getValidLevel().setBlock(this, Block.get(getCopperId(isWaxed(), oxidizationLevel)).setPropertyValues(getPropertyValues()));
     }
 
 
@@ -85,7 +82,7 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
         if (isWaxed() == waxed) {
             return true;
         }
-        return getValidLevel().setBlock(this, getBlockState().withBlockId(getCopperId(waxed, getOxidizationLevel())).getBlock());
+        return getValidLevel().setBlock(this, Block.get(getCopperId(isWaxed(), getOxidizationLevel())).setPropertyValues(getPropertyValues()));
     }
 
 
@@ -95,5 +92,5 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
     }
 
 
-    protected abstract int getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel);
+    protected abstract String getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel);
 }

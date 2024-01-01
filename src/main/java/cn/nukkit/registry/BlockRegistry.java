@@ -247,7 +247,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(CRIMSON_WALL_SIGN, BlockCrimsonWallSign.class);// done.
         register(CRYING_OBSIDIAN, BlockCryingObsidian.class);// done.
         register(CUT_COPPER, BlockCutCopper.class);// done.
-        register(CUT_COPPER_SLAB, BlockCutCopperSlab.class);
+        register(CUT_COPPER_SLAB, BlockCutCopperSlab.class);// done.
         register(CUT_COPPER_STAIRS, BlockCutCopperStairs.class);// done.
         register(CYAN_CANDLE, BlockCyanCandle.class);// done.
         register(CYAN_CANDLE_CAKE, BlockCyanCandleCake.class);// done.
@@ -310,7 +310,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(DIRT, BlockDirt.class);// done.
         register(DIRT_WITH_ROOTS, BlockDirtWithRoots.class);// done.
         register(DISPENSER, BlockDispenser.class);// done.
-        register(DOUBLE_CUT_COPPER_SLAB, BlockDoubleCutCopperSlab.class);
+        register(DOUBLE_CUT_COPPER_SLAB, BlockDoubleCutCopperSlab.class);// done.
         register(DOUBLE_PLANT, BlockDoublePlant.class);// done.
         register(DOUBLE_STONE_BLOCK_SLAB, BlockDoubleStoneBlockSlab.class);// done.
         register(DOUBLE_STONE_BLOCK_SLAB2, BlockDoubleStoneBlockSlab2.class);// done.
@@ -458,8 +458,8 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
 //        register(EXPOSED_COPPER_GRATE, BlockExposedCopperGrate.class);//experiment
 //        register(EXPOSED_COPPER_TRAPDOOR, BlockExposedCopperTrapdoor.class);//experiment
         register(EXPOSED_CUT_COPPER, BlockExposedCutCopper.class);// done.
-        register(EXPOSED_CUT_COPPER_SLAB, BlockExposedCutCopperSlab.class);
-        register(EXPOSED_CUT_COPPER_STAIRS, BlockExposedCutCopperStairs.class);
+        register(EXPOSED_CUT_COPPER_SLAB, BlockExposedCutCopperSlab.class);;// done.
+        register(EXPOSED_CUT_COPPER_STAIRS, BlockExposedCutCopperStairs.class);// done.
         register(EXPOSED_DOUBLE_CUT_COPPER_SLAB, BlockExposedDoubleCutCopperSlab.class);
         register(FARMLAND, BlockFarmland.class);// done.
         register(FENCE_GATE, BlockFenceGate.class);// done.

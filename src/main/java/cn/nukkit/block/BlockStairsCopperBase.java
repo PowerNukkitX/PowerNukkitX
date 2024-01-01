@@ -12,8 +12,6 @@ import javax.annotation.Nullable;
  * @author joserobjr
  * @since 2021-06-15
  */
-
-
 public abstract class BlockStairsCopperBase extends BlockStairs implements Waxable, Oxidizable {
     public BlockStairsCopperBase(BlockState blockstate) {
         super(blockstate);
@@ -64,7 +62,7 @@ public abstract class BlockStairsCopperBase extends BlockStairs implements Waxab
 
 
     @Override
-    public Block getStateWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
+    public Block getBlockWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
         return Block.get(getCopperId(isWaxed(), oxidizationLevel)).setPropertyValues(getPropertyValues());
     }
 

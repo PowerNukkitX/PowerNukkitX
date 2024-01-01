@@ -170,7 +170,7 @@ public class EntityLightningBolt extends Entity implements EntityLightningStrike
 
                 for (Map.Entry<Position, OxidizationLevel> entry : changes.entrySet()) {
                     Block current = level.getBlock(entry.getKey());
-                    Block next = ((Oxidizable) current).getStateWithOxidizationLevel(entry.getValue()).getBlock(current);
+                    Block next = ((Oxidizable) current).getBlockWithOxidizationLevel(entry.getValue()).getBlock(current);
                     BlockFadeEvent event = new BlockFadeEvent(current, next);
                     getServer().getPluginManager().callEvent(event);
                     if (event.isCancelled()) {
