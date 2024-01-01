@@ -1,36 +1,33 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySculkShrieker;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 
 public class BlockSculkShrieker extends BlockSolid implements BlockEntityHolder<BlockEntitySculkShrieker> {
 
-    public static final BooleanBlockProperty ACTIVE = new BooleanBlockProperty("active", false);
-    public static final BooleanBlockProperty CAN_SUMMON = new BooleanBlockProperty("can_summon", false);
-    public static final BlockProperties PROPERTIES = new BlockProperties(ACTIVE, CAN_SUMMON);
+    public static final BlockProperties PROPERTIES = new BlockProperties(SCULK_SHRIEKER, CommonBlockProperties.ACTIVE, CommonBlockProperties.CAN_SUMMON);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockSculkShrieker() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockSculkShrieker(BlockState blockstate) {
+        super(blockstate);
+    }
 
     @Override
     public String getName() {
         return "Sculk Shrieker";
     }
-
-    @Override
-    public int getId() {
-        return SCULK_SHRIEKER;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
 
     @Override
     public boolean canBePulled() {

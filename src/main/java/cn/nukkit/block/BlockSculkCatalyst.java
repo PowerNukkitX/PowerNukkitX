@@ -1,32 +1,30 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySculkCatalyst;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
-
 public class BlockSculkCatalyst extends BlockSolid implements BlockEntityHolder<BlockEntitySculkCatalyst> {
+    public static final BlockProperties PROPERTIES = new BlockProperties(SCULK_CATALYST, CommonBlockProperties.BLOOM);
 
-    public static final BooleanBlockProperty BLOOM = new BooleanBlockProperty("bloom", false);
-    public static final BlockProperties PROPERTIES = new BlockProperties(BLOOM);
-
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
+    }
+
+    public BlockSculkCatalyst() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockSculkCatalyst(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
     public String getName() {
         return "Sculk Catalyst";
-    }
-
-    @Override
-    public int getId() {
-        return SCULK_CATALYST;
     }
 
     @Override

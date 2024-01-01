@@ -1,35 +1,34 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
+import static cn.nukkit.block.property.CommonBlockProperties.GROWTH;
+
 /**
  * PowerNukkitX Project 2023/7/15
  *
  * @author daoge_cmd
  */
-
-
 public class BlockPinkPetals extends BlockFlowable {
 
-    public static final IntBlockProperty GROWTH = new IntBlockProperty("growth", false, 7, 0);
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION, GROWTH);
+    public static final BlockProperties PROPERTIES = new BlockProperties(PINK_PETALS,
+            GROWTH, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
-    @Override
-    public String getName() {
-        return "Pink Petals";
+    public BlockPinkPetals() {
+        this(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return BlockID.PINK_PETALS;
+    public BlockPinkPetals(BlockState blockState) {
+        super(blockState);
     }
 
     @NotNull
@@ -39,26 +38,24 @@ public class BlockPinkPetals extends BlockFlowable {
     }
 
     @Override
+    public String getName() {
+        return "Pink Petals";
+    }
+
+    @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (!isSupportValid(block.down()))
             return false;
         if (player != null)
-            setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, player.getHorizontalFacing().getOpposite());
+            setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(player.getHorizontalFacing().getOpposite()));
         return this.getLevel().setBlock(this, this);
     }
 
     private static boolean isSupportValid(Block block) {
-        switch (block.getId()) {
-            case GRASS:
-            case DIRT:
-            case FARMLAND:
-            case PODZOL:
-            case DIRT_WITH_ROOTS:
-            case MOSS_BLOCK:
-                return true;
-            default:
-                return false;
-        }
+        return switch (block.getId()) {
+            case GRASS, DIRT, FARMLAND, PODZOL, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
+            default -> false;
+        };
     }
 
     @Override
@@ -73,13 +70,13 @@ public class BlockPinkPetals extends BlockFlowable {
                 setPropertyValue(GROWTH, getPropertyValue(GROWTH) + 1);
                 getLevel().setBlock(this, this);
             } else {
-                getLevel().dropItem(this, Block.get(Item.PINK_PETALS).toItem());
+                getLevel().dropItem(this, this.toItem());
             }
             this.level.addParticle(new BoneMealParticle(this));
             item.count--;
             return true;
         }
-        if (item.getId() == Item.fromString("minecraft:pink_petals").getId() && getPropertyValue(GROWTH) < 3) {
+        if (Objects.equals(item.getBlockId(), PINK_PETALS) && getPropertyValue(GROWTH) < 3) {
             setPropertyValue(GROWTH, getPropertyValue(GROWTH) + 1);
             getLevel().setBlock(this, this);
             item.count--;

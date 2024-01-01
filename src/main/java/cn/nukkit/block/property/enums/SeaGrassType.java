@@ -8,8 +8,6 @@ package cn.nukkit.block.property.enums;
  */
 public enum SeaGrassType {
     DEFAULT,
-
-    DOUBLE_BOT,
-
-    DOUBLE_TOP
+    DOUBLE_TOP,
+    DOUBLE_BOT
 }
