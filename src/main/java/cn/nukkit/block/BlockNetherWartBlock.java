@@ -1,23 +1,28 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 
 public class BlockNetherWartBlock extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties(NETHER_WART_BLOCK);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockNetherWartBlock() {
-        // Does nothing
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockNetherWartBlock(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
     public String getName() {
         return "Nether Wart Block";
-    }
-
-    @Override
-    public int getId() {
-        return BLOCK_NETHER_WART_BLOCK;
     }
 
     @Override

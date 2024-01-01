@@ -18,4 +18,10 @@ public class BlockBirchTrapdoor extends BlockTrapdoor {
     public BlockBirchTrapdoor(BlockState blockstate) {
         super(blockstate);
     }
+
+
+    @Override
+    public String getName() {
+        return "Birch Trapdoor";
+    }
 }

@@ -18,4 +18,9 @@ public class BlockDarkOakTrapdoor extends BlockTrapdoor {
     public BlockDarkOakTrapdoor(BlockState blockstate) {
         super(blockstate);
     }
+
+    @Override
+    public String getName() {
+        return "Dark Oak Trapdoor";
+    }
 }

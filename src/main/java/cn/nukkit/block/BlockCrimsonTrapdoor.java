@@ -18,4 +18,22 @@ public class BlockCrimsonTrapdoor extends BlockTrapdoor {
     public BlockCrimsonTrapdoor(BlockState blockstate) {
         super(blockstate);
     }
+
+
+
+    @Override
+    public String getName() {
+        return "Crimson Trapdoor";
+    }
+
+    @Override
+    public int getBurnChance() {
+        return 0;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 0;
+    }
+
 }

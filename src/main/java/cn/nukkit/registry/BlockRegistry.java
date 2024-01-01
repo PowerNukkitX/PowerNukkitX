@@ -533,7 +533,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(IRON_BLOCK, BlockIronBlock.class);// done.
         register(IRON_DOOR, BlockIronDoor.class);// done.
         register(IRON_ORE, BlockIronOre.class);// done.
-        register(IRON_TRAPDOOR, BlockIronTrapdoor.class);
+        register(IRON_TRAPDOOR, BlockIronTrapdoor.class);// done.
         register(JIGSAW, BlockJigsaw.class);// done.
         register(JUKEBOX, BlockJukebox.class);// done.
         register(JUNGLE_BUTTON, BlockJungleButton.class);// done.
@@ -641,9 +641,9 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(MOSS_BLOCK, BlockMossBlock.class);// done.
         register(MOSS_CARPET, BlockMossCarpet.class);// done.
         register(MOSSY_COBBLESTONE, BlockMossyCobblestone.class);// done.
-        register(MOSSY_COBBLESTONE_STAIRS, BlockMossyCobblestoneStairs.class);
-        register(MOSSY_STONE_BRICK_STAIRS, BlockMossyStoneBrickStairs.class);
-        register(MOVING_BLOCK, BlockMovingBlock.class);
+        register(MOSSY_COBBLESTONE_STAIRS, BlockMossyCobblestoneStairs.class);// done.
+        register(MOSSY_STONE_BRICK_STAIRS, BlockMossyStoneBrickStairs.class);// done.
+        register(MOVING_BLOCK, BlockMovingBlock.class);// done.
         register(MUD, BlockMud.class);// done.
         register(MUD_BRICK_DOUBLE_SLAB, BlockMudBrickDoubleSlab.class);// done.
         register(MUD_BRICK_SLAB, BlockMudBrickSlab.class);// done.
@@ -654,11 +654,11 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(MYCELIUM, BlockMycelium.class);// done.
         register(NETHER_BRICK, BlockNetherBrick.class);// done.
         register(NETHER_BRICK_FENCE, BlockNetherBrickFence.class);// done.
-        register(NETHER_BRICK_STAIRS, BlockNetherBrickStairs.class);
-        register(NETHER_GOLD_ORE, BlockNetherGoldOre.class);
-        register(NETHER_SPROUTS, BlockNetherSprouts.class);
-        register(NETHER_WART, BlockNetherWart.class);
-        register(NETHER_WART_BLOCK, BlockNetherWartBlock.class);
+        register(NETHER_BRICK_STAIRS, BlockNetherBrickStairs.class);// done.
+        register(NETHER_GOLD_ORE, BlockNetherGoldOre.class);// done.
+        register(NETHER_SPROUTS, BlockNetherSprouts.class);// done.
+        register(NETHER_WART, BlockNetherWart.class);// done.
+        register(NETHER_WART_BLOCK, BlockNetherWartBlock.class);// done.
         register(NETHERITE_BLOCK, BlockNetheriteBlock.class);// done.
         register(NETHERRACK, BlockNetherrack.class);// done.
         register(NETHERREACTOR, BlockNetherreactor.class);// done.
