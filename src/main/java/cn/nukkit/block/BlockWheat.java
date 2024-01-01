@@ -44,7 +44,7 @@ public class BlockWheat extends BlockCrops {
     public Item[] getDrops(Item item) {
         // https://minecraft.wiki/w/Fortune#Seeds
         if (!isFullyGrown()) {
-            return new Item[]{new ItemWheatSeeds()};
+            return new Item[]{ new ItemWheatSeeds() };
         }
 
         ThreadLocalRandom random = ThreadLocalRandom.current();

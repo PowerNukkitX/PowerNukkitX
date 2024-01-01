@@ -1,7 +1,9 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CreeperFace
@@ -9,8 +11,15 @@ import cn.nukkit.item.ItemBlock;
  */
 public class BlockRedSandstone extends BlockSandstone {
 
+    public static final BlockProperties PROPERTIES = new BlockProperties(RED_SANDSTONE, CommonBlockProperties.SAND_STONE_TYPE);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockRedSandstone() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockRedSandstone(BlockState blockstate) {
@@ -18,21 +27,13 @@ public class BlockRedSandstone extends BlockSandstone {
     }
 
     @Override
-    public int getId() {
-        return RED_SANDSTONE;
-    }
-
-    @Override
     public String getName() {
-        String[] names = new String[]{
-                "Red Sandstone",
-                "Chiseled Red Sandstone",
-                "Cut Red Sandstone",
-                "Smooth Red Sandstone",
-                ""
+        return switch(getSandstoneType()) {
+            case CUT -> "Cut Red Sandstone";
+            case DEFAULT -> "Red Sandstone";
+            case HEIROGLYPHS -> "Chiseled Red Sandstone";
+            case SMOOTH -> "Smooth Red Sandstone";
         };
-
-        return names[this.getDamage() & 0x03];
     }
 
     @Override

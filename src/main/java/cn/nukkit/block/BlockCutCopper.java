@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public class BlockCutCopper extends BlockCopperBase {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:cut_copper");
+    public static final BlockProperties PROPERTIES = new BlockProperties(CUT_COPPER);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -21,19 +21,15 @@ public class BlockCutCopper extends BlockCopperBase {
         super(blockstate);
     }
 
-
     @Override
     public String getName() {
         return "Cut Copper";
     }
 
-
-    @NotNull
     @Override
-    public OxidizationLevel getOxidizationLevel() {
+    public @NotNull OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.UNAFFECTED;
     }
-
 
     @Override
     protected String getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel) {

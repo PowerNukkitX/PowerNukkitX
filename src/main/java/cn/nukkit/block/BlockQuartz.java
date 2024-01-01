@@ -14,7 +14,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class BlockQuartz extends BlockSolidMeta {
+public class BlockQuartz extends BlockSolid {
 
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CHISEL_TYPE, PILLAR_AXIS);

@@ -1,8 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockproperty.value.OxidizationLevel;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.property.enums.OxidizationLevel;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
@@ -13,19 +12,15 @@ import javax.annotation.Nullable;
  * @author joserobjr
  * @since 2021-06-14
  */
-
-
 public abstract class BlockSlabCopperBase extends BlockSlab implements Waxable, Oxidizable {
 
-
-    public BlockSlabCopperBase(int meta, int doubleSlab) {
-        super(meta, doubleSlab);
+    public BlockSlabCopperBase(BlockState blockState, String doubleSlab) {
+        super(blockState, doubleSlab);
     }
-
 
     @Override
     public boolean isSameType(BlockSlab slab) {
-        return getId() == slab.getId();
+        return getId().equals(slab.getId());
     }
 
     @Override
@@ -59,7 +54,6 @@ public abstract class BlockSlabCopperBase extends BlockSlab implements Waxable, 
         return ItemTool.TYPE_PICKAXE;
     }
 
-
     @Override
     public int getToolTier() {
         return ItemTool.TIER_STONE;
@@ -70,12 +64,10 @@ public abstract class BlockSlabCopperBase extends BlockSlab implements Waxable, 
         return false;
     }
 
-
     @Override
     public BlockState getStateWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
         return getBlockState().withBlockId(getCopperId(isWaxed(), oxidizationLevel));
     }
-
 
     @Override
     public boolean setOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
@@ -85,7 +77,6 @@ public abstract class BlockSlabCopperBase extends BlockSlab implements Waxable, 
         return getValidLevel().setBlock(this, getBlockState().withBlockId(getCopperId(isWaxed(), oxidizationLevel)).getBlock());
     }
 
-
     @Override
     public boolean setWaxed(boolean waxed) {
         if (isWaxed() == waxed) {
@@ -94,12 +85,10 @@ public abstract class BlockSlabCopperBase extends BlockSlab implements Waxable, 
         return getValidLevel().setBlock(this, getBlockState().withBlockId(getCopperId(waxed, getOxidizationLevel())).getBlock());
     }
 
-
     @Override
     public boolean isWaxed() {
         return false;
     }
 
-
-    protected abstract int getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel);
+    protected abstract String getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel);
 }

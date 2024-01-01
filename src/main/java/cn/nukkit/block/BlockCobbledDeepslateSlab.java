@@ -3,8 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockCobbledDeepslateSlab extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:cobbled_deepslate_slab", CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+public class BlockCobbledDeepslateSlab extends BlockSlab {
+    public static final BlockProperties PROPERTIES = new BlockProperties(COBBLED_DEEPSLATE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -16,6 +16,17 @@ public class BlockCobbledDeepslateSlab extends Block {
     }
 
     public BlockCobbledDeepslateSlab(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, COBBLED_DEEPSLATE_DOUBLE_SLAB);
+    }
+
+    @Override
+    public String getSlabName() {
+        return "Cobbled Deepslate";
+    }
+
+
+    @Override
+    public boolean isSameType(BlockSlab slab) {
+        return getId().equals(slab.getId());
     }
 }

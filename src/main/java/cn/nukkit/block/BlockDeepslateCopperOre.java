@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockDeepslateCopperOre extends BlockCopperOre {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:deepslate_copper_ore");
+    public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_COPPER_ORE);
 
     @Override
     public @NotNull BlockProperties getProperties() {

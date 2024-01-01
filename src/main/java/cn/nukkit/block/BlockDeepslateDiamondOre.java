@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockDeepslateDiamondOre extends BlockDiamondOre {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:deepslate_diamond_ore");
+    public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_DIAMOND_ORE);
 
     @Override
     public @NotNull BlockProperties getProperties() {

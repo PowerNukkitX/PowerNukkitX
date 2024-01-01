@@ -138,7 +138,6 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
         return true;
     }
 
-
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (player != null) {
@@ -173,7 +172,6 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 
-
     @Override
     public int onUpdate(int type) {
         if (!this.level.getServer().isRedstoneEnabled()) {
@@ -201,7 +199,6 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
 
         return 0;
     }
-
 
     public void dispense() {
         InventoryHolder blockEntity = getBlockEntity();
@@ -271,7 +268,6 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
         }
     }
 
-
     protected DispenseBehavior getDispenseBehavior(Item item) {
         return DispenseBehaviorRegister.getBehavior(item.getId());
     }
@@ -287,7 +283,6 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

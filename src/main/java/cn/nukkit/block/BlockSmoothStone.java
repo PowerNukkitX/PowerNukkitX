@@ -1,19 +1,25 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.ItemTool;
-
+import org.jetbrains.annotations.NotNull;
 
 public class BlockSmoothStone extends BlockSolid {
 
+    public static final BlockProperties PROPERTIES = new BlockProperties(SMOOTH_STONE);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockSmoothStone() {
+        this(PROPERTIES.getDefaultState());
     }
-    
-    @Override
-    public int getId() {
-        return SMOOTH_STONE;
+
+    public BlockSmoothStone(BlockState blockState) {
+        super(blockState);
     }
-    
+
     @Override
     public String getName() {
         return "Smooth Stone";
