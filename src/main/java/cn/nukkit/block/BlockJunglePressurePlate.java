@@ -3,8 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockJunglePressurePlate extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:jungle_pressure_plate", CommonBlockProperties.REDSTONE_SIGNAL);
+public class BlockJunglePressurePlate extends BlockWoodenPressurePlate {
+    public static final BlockProperties PROPERTIES = new BlockProperties(JUNGLE_PRESSURE_PLATE, CommonBlockProperties.REDSTONE_SIGNAL);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -17,5 +17,10 @@ public class BlockJunglePressurePlate extends Block {
 
     public BlockJunglePressurePlate(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Jungle Pressure Plate";
     }
 }

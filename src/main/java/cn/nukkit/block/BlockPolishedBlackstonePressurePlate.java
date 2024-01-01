@@ -19,7 +19,6 @@ public class BlockPolishedBlackstonePressurePlate extends BlockStonePressurePlat
         super(blockstate);
     }
 
-
     @Override
     public String getName() {
         return "Polished Blackstone Pressure Plate";

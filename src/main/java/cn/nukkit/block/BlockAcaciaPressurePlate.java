@@ -4,7 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockAcaciaPressurePlate extends BlockWoodenPressurePlate {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:acacia_pressure_plate", CommonBlockProperties.REDSTONE_SIGNAL);
+    public static final BlockProperties PROPERTIES = new BlockProperties(ACACIA_PRESSURE_PLATE, CommonBlockProperties.REDSTONE_SIGNAL);
 
     @Override
     public @NotNull BlockProperties getProperties() {

@@ -24,11 +24,9 @@ public class BlockDoubleStoneBlockSlab2 extends BlockDoubleSlabBase {
         super(blockstate);
     }
 
-
     public StoneSlabType2 getSlabType() {
         return getPropertyValue(STONE_SLAB_TYPE_2);
     }
-
 
     public void setSlabType(StoneSlabType2 type) {
         setPropertyValue(STONE_SLAB_TYPE_2, type);
@@ -54,17 +52,16 @@ public class BlockDoubleStoneBlockSlab2 extends BlockDoubleSlabBase {
         return ItemTool.TYPE_PICKAXE;
     }
 
-
     @Override
     public String getSingleSlabId() {
         return STONE_BLOCK_SLAB2;
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
+
     @Override
     public boolean canHarvestWithHand() {
         return false;

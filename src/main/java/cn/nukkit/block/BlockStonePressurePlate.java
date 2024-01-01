@@ -25,7 +25,6 @@ public class BlockStonePressurePlate extends BlockPressurePlateBase {
         this.offPitch = 0.5f;
     }
 
-
     @Override
     public String getName() {
         return "Stone Pressure Plate";
@@ -47,7 +46,6 @@ public class BlockStonePressurePlate extends BlockPressurePlateBase {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
