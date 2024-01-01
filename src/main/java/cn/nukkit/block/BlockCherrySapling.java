@@ -9,7 +9,7 @@ import cn.nukkit.level.ListChunkManager;
 import cn.nukkit.level.generator.object.tree.ObjectCherryTree;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.utils.random.NukkitRandomSource;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
@@ -78,7 +78,7 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
         ListChunkManager chunkManager = new ListChunkManager(this.level);
         Vector3 vector3 = new Vector3(this.x, this.y - 1, this.z);
         var objectCherryTree = new ObjectCherryTree();
-        objectCherryTree.generate(chunkManager, new NukkitRandom(), this);
+        objectCherryTree.generate(chunkManager, new NukkitRandomSource(), this);
         StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
         this.level.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {

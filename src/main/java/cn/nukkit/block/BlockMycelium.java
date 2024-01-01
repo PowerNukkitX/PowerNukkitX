@@ -10,7 +10,7 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.utils.random.NukkitRandomSource;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
@@ -67,7 +67,7 @@ public class BlockMycelium extends BlockSolid {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (getLevel().getFullLight(add(0, 1, 0)) >= BlockCrops.MINIMUM_LIGHT_LEVEL) {
                 //TODO: light levels
-                NukkitRandom random = new NukkitRandom();
+                NukkitRandomSource random = new NukkitRandomSource();
                 x = random.nextRange((int) x - 1, (int) x + 1);
                 y = random.nextRange((int) y - 1, (int) y + 1);
                 z = random.nextRange((int) z - 1, (int) z + 1);

@@ -5,7 +5,7 @@ import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.utils.random.NukkitRandomSource;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -62,7 +62,7 @@ public class BlockHugeMushroomBrown extends BlockSolidMeta {
 
     @Override
     public Item[] getDrops(Item item) {
-        if (new NukkitRandom().nextRange(1, 20) == 1) {
+        if (new NukkitRandomSource().nextRange(1, 20) == 1) {
             return new Item[]{
                     new ItemBlock(Block.get(BlockID.BROWN_MUSHROOM))
             };

@@ -3,16 +3,16 @@ package cn.nukkit.level.format;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.palette.Palette;
 import cn.nukkit.level.util.NibbleArray;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.registry.BlockRegistry;
+import cn.nukkit.registry.Registries;
 import io.netty.buffer.ByteBuf;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiPredicate;
 
 import static cn.nukkit.level.format.IChunk.index;
@@ -27,26 +27,24 @@ public record ChunkSection(byte y,
                            Palette<BlockState>[] blockLayer,
                            Palette<Integer> biomes,
                            NibbleArray blockLights,
-                           NibbleArray skyLights,
-                           StampedLock lock) {
+                           NibbleArray skyLights) {
     public static final int SIZE = 16 * 16 * 16;
     public static final int LAYER_COUNT = 2;
     public static final int VERSION = 9;
+
     public ChunkSection(byte sectionY) {
         this(sectionY,
                 new Palette[]{new Palette<>(BlockAir.PROPERTIES.getDefaultState()), new Palette<>(BlockAir.PROPERTIES.getDefaultState())},
-                new Palette<>(1),
+                new Palette<>(BiomeID.PLAINS),
                 new NibbleArray(SIZE),
-                new NibbleArray(SIZE),
-                new StampedLock());
+                new NibbleArray(SIZE));
     }
 
     public ChunkSection(byte sectionY, Palette<BlockState>[] blockLayer) {
         this(sectionY, blockLayer,
                 new Palette<>(1),
                 new NibbleArray(SIZE),
-                new NibbleArray(SIZE),
-                new StampedLock());
+                new NibbleArray(SIZE));
     }
 
     public BlockState getBlockState(int x, int y, int z) {
@@ -54,37 +52,17 @@ public record ChunkSection(byte y,
     }
 
     public BlockState getBlockState(int x, int y, int z, int layer) {
-        long stamp = lock.tryOptimisticRead();
-        try {
-            for (; ; stamp = lock.readLock()) {
-                if (stamp == 0L) continue;
-                BlockState result = blockLayer[layer].get(index(x, y, z));
-                if (!lock.validate(stamp)) continue;
-                return result;
-            }
-        } finally {
-            if (StampedLock.isReadLockStamp(stamp)) lock.unlockRead(stamp);
-        }
+        return blockLayer[layer].get(index(x, y, z));
     }
 
     public void setBlockState(int x, int y, int z, BlockState blockState, int layer) {
-        long stamp = lock.writeLock();
-        try {
-            blockLayer[layer].set(index(x, y, z), blockState);
-        } finally {
-            lock.unlockWrite(stamp);
-        }
+        blockLayer[layer].set(index(x, y, z), blockState);
     }
 
     public BlockState getAndSetBlockState(int x, int y, int z, BlockState blockstate, int layer) {
-        long stamp = lock.writeLock();
-        try {
-            BlockState result = blockLayer[layer].get(index(x, y, z));
-            blockLayer[layer].set(index(x, y, z), blockstate);
-            return result;
-        } finally {
-            lock.unlockWrite(stamp);
-        }
+        BlockState result = blockLayer[layer].get(index(x, y, z));
+        blockLayer[layer].set(index(x, y, z), blockstate);
+        return result;
     }
 
     public void setBiomeId(int x, int y, int z, int biomeId) {
@@ -112,33 +90,28 @@ public record ChunkSection(byte y,
     }
 
     public List<Block> scanBlocks(LevelProvider provider, int offsetX, int offsetZ, BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition) {
-        long stamp = lock.writeLock();
-        try {
-            final List<Block> results = new ArrayList<>();
-            final BlockVector3 current = new BlockVector3();
-            int offsetY = y << 4;
-            int minX = Math.max(0, min.x - offsetX);
-            int minY = Math.max(0, min.y - offsetY);
-            int minZ = Math.max(0, min.z - offsetZ);
-            for (int x = Math.min(max.x - offsetX, 15); x >= minX; x--) {
-                current.x = offsetX + x;
-                for (int z = Math.min(max.z - offsetZ, 15); z >= minZ; z--) {
-                    current.z = offsetZ + z;
-                    for (int y = Math.min(max.y - offsetY, 15); y >= minY; y--) {
-                        current.y = offsetY + y;
-                        BlockState state = blockLayer[0].get(index(x, y, z));
-                        if (condition.test(current, state)) {
-                            current.y -= provider.getDimensionData().getMinHeight();
-                            results.add(BlockRegistry.get(state, current.x, current.y, current.z, provider.getLevel()));
-                            current.y += provider.getDimensionData().getMinHeight();
-                        }
+        final List<Block> results = new ArrayList<>();
+        final BlockVector3 current = new BlockVector3();
+        int offsetY = y << 4;
+        int minX = Math.max(0, min.x - offsetX);
+        int minY = Math.max(0, min.y - offsetY);
+        int minZ = Math.max(0, min.z - offsetZ);
+        for (int x = Math.min(max.x - offsetX, 15); x >= minX; x--) {
+            current.x = offsetX + x;
+            for (int z = Math.min(max.z - offsetZ, 15); z >= minZ; z--) {
+                current.z = offsetZ + z;
+                for (int y = Math.min(max.y - offsetY, 15); y >= minY; y--) {
+                    current.y = offsetY + y;
+                    BlockState state = blockLayer[0].get(index(x, y, z));
+                    if (condition.test(current, state)) {
+                        current.y -= provider.getDimensionData().getMinHeight();
+                        results.add(Registries.BLOCK.get(state, current.x, current.y, current.z, provider.getLevel()));
+                        current.y += provider.getDimensionData().getMinHeight();
                     }
                 }
             }
-            return results;
-        } finally {
-            lock.unlock(stamp);
         }
+        return results;
     }
 
     public boolean isEmpty() {
@@ -146,17 +119,12 @@ public record ChunkSection(byte y,
     }
 
     public void writeToNetwork(ByteBuf byteBuf) {
-        long stamp = lock.writeLock();
-        try {
-            byteBuf.writeByte(VERSION);
-            //block layer count
-            byteBuf.writeByte(LAYER_COUNT);
-            byteBuf.writeByte(y & 0xFF);
+        byteBuf.writeByte(VERSION);
+        //block layer count
+        byteBuf.writeByte(LAYER_COUNT);
+        byteBuf.writeByte(y);
 
-            blockLayer[0].writeToNetwork(byteBuf, BlockState::blockStateHash);
-            blockLayer[1].writeToNetwork(byteBuf, BlockState::blockStateHash);
-        } finally {
-            lock.unlockWrite(stamp);
-        }
+        blockLayer[0].writeToNetwork(byteBuf, BlockState::blockStateHash);
+        blockLayer[1].writeToNetwork(byteBuf, BlockState::blockStateHash);
     }
 }

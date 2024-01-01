@@ -5,13 +5,13 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
-import cn.nukkit.level.biome.Biome;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -54,9 +54,8 @@ public interface IChunk {
      *
      * @param fY      range -4 ~ 19 for Overworld
      * @param section the section
-     * @return the section
      */
-    boolean setSection(int fY, ChunkSection section);
+    void setSection(int fY, ChunkSection section);
 
     ChunkSection[] getSections();
 
@@ -144,17 +143,6 @@ public interface IChunk {
 
     void setBiomeId(int x, int y, int z, int biomeId);
 
-    Biome getBiome(int x, int y, int z);
-
-    /**
-     * 设置子区块中某个特定位置的生物群系id
-     *
-     * @param x [0, 16)
-     * @param y [0, 16)
-     * @param z [0, 16)
-     */
-    void setBiome(int x, int y, int z, Biome biome);
-
     boolean isLightPopulated();
 
     void setLightPopulated(boolean value);
@@ -178,6 +166,8 @@ public interface IChunk {
     Map<Long, BlockEntity> getBlockEntities();
 
     BlockEntity getTile(int x, int y, int z);
+
+    void batchProcess(Consumer<UnsafeChunk> unsafeChunkConsumer);
 
     boolean isLoaded();
 
@@ -206,7 +196,7 @@ public interface IChunk {
 
     void setChanged(boolean changed);
 
-    long getBlockChanges();
+    long getChanges();
 
     /**
      * Used to handle with deny and allow blocks

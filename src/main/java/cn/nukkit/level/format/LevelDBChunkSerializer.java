@@ -11,6 +11,7 @@ import cn.nukkit.level.util.LevelDBKeyUtil;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.BlockStateRegistry;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.Utils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -41,13 +42,19 @@ public class LevelDBChunkSerializer {
     private LevelDBChunkSerializer() {
     }
 
-    public void serialize(WriteBatch writeBatch, IChunk chunk) throws IOException {
-        writeBatch.put(LevelDBKeyUtil.VERSION.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData()), new byte[]{IChunk.VERSION});
-        writeBatch.put(LevelDBKeyUtil.CHUNK_FINALIZED_STATE.getKey(chunk.getX(), chunk.getZ(), chunk.getDimensionData()), Unpooled.buffer(4).writeIntLE(chunk.getChunkState().ordinal() - 1).array());
-        writeBatch.put(LevelDBKeyUtil.PNX_EXTRA_DATA.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData()), NBTIO.write(chunk.getExtraData()));
-        serializeBlock(writeBatch, chunk);
-        serializeHeightAndBiome(writeBatch, chunk);
-        serializeTileAndEntity(writeBatch, chunk);
+    public void serialize(WriteBatch writeBatch, IChunk chunk) {
+        chunk.batchProcess(unsafeChunk -> {
+            try {
+                writeBatch.put(LevelDBKeyUtil.VERSION.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getProvider().getDimensionData()), new byte[]{IChunk.VERSION});
+                writeBatch.put(LevelDBKeyUtil.CHUNK_FINALIZED_STATE.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getDimensionData()), Unpooled.buffer(4).writeIntLE(unsafeChunk.getChunkState().ordinal() - 1).array());
+                writeBatch.put(LevelDBKeyUtil.PNX_EXTRA_DATA.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getProvider().getDimensionData()), NBTIO.write(unsafeChunk.getExtraData()));
+                serializeBlock(writeBatch, unsafeChunk);
+                serializeHeightAndBiome(writeBatch, unsafeChunk);
+                serializeTileAndEntity(writeBatch, unsafeChunk);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     public void deserialize(DB db, IChunkBuilder builder) throws IOException {
@@ -74,13 +81,12 @@ public class LevelDBChunkSerializer {
     }
 
     //serialize chunk section
-    private void serializeBlock(WriteBatch writeBatch, IChunk chunk) {
+    private void serializeBlock(WriteBatch writeBatch, UnsafeChunk chunk) {
         for (int ySection = chunk.getProvider().getDimensionData().getMinSectionY(); ySection <= chunk.getProvider().getDimensionData().getMaxSectionY(); ySection++) {
             ChunkSection section = chunk.getSection(ySection);
             if (section == null) {
                 continue;
             }
-            long l = section.lock().writeLock();
             ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
             try {
                 buffer.writeByte(ChunkSection.VERSION);
@@ -92,7 +98,6 @@ public class LevelDBChunkSerializer {
                 writeBatch.put(LevelDBKeyUtil.CHUNK_SECTION_PREFIX.getKey(chunk.getX(), chunk.getZ(), ySection, chunk.getProvider().getDimensionData()), Utils.convertByteBuf2Array(buffer));
             } finally {
                 buffer.release();
-                section.lock().unlock(l);
             }
         }
     }
@@ -129,7 +134,7 @@ public class LevelDBChunkSerializer {
                             }
                             for (int layer = 0; layer < layers; layer++) {
                                 section.blockLayer()[layer].readFromStoragePersistent(byteBuf, hash -> {
-                                    BlockState blockState = BlockStateRegistry.get(hash);
+                                    BlockState blockState = Registries.BLOCKSTATE.get(hash);
                                     if (blockState == null) {
                                         log.error("missing block hash: " + hash);
                                     }
@@ -150,7 +155,7 @@ public class LevelDBChunkSerializer {
     }
 
     //write biomeAndHeight
-    private void serializeHeightAndBiome(WriteBatch writeBatch, IChunk chunk) {
+    private void serializeHeightAndBiome(WriteBatch writeBatch, UnsafeChunk chunk) {
         //Write biomeAndHeight
         ByteBuf heightAndBiomesBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
         try {
@@ -231,7 +236,7 @@ public class LevelDBChunkSerializer {
         builder.entities(entityTags);
     }
 
-    private void serializeTileAndEntity(WriteBatch writeBatch, IChunk chunk) {
+    private void serializeTileAndEntity(WriteBatch writeBatch, UnsafeChunk chunk) {
         //Write blockEntities
         Collection<BlockEntity> blockEntities = chunk.getBlockEntities().values();
         if (!blockEntities.isEmpty()) {

@@ -9,7 +9,7 @@ import cn.nukkit.level.ListChunkManager;
 import cn.nukkit.level.generator.object.mushroom.BigMushroom;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.utils.random.NukkitRandomSource;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
@@ -70,7 +70,7 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
         BigMushroom generator = new BigMushroom(getType());
 
         ListChunkManager chunkManager = new ListChunkManager(this.level);
-        if (generator.generate(chunkManager, new NukkitRandom(), this)) {
+        if (generator.generate(chunkManager, new NukkitRandomSource(), this)) {
             StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
             this.level.getServer().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {

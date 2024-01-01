@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.level.generator.object.tree.ObjectWarpedTree;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.utils.random.NukkitRandomSource;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -47,7 +47,7 @@ public class BlockWarpedFungus extends BlockFungus {
 
     @Override
     public boolean grow(@Nullable Player cause) {
-        NukkitRandom nukkitRandom = new NukkitRandom();
+        NukkitRandomSource nukkitRandom = new NukkitRandomSource();
         this.feature.placeObject(this.getLevel(), this.getFloorX(), this.getFloorY(), this.getFloorZ(), nukkitRandom);
         return true;
     }

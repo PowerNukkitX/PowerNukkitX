@@ -1,9 +1,8 @@
 package cn.nukkit.level.generator.task;
 
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.utils.random.NukkitRandomSource;
 import cn.nukkit.scheduler.AsyncTask;
 
 
@@ -23,7 +22,7 @@ public class ChunkPopulationTask extends AsyncTask {
     public void onRun() {
         int chunkX = this.chunk.getX();
         int chunkZ = this.chunk.getZ();
-        NukkitRandom random = new NukkitRandom(0xdeadbeef ^ ((long) chunkX << 8) ^ chunkZ ^ this.level.getSeed());
+        NukkitRandomSource random = new NukkitRandomSource(0xdeadbeef ^ ((long) chunkX << 8) ^ chunkZ ^ this.level.getSeed());
         for (var populator : this.populators) {
             populator.populate(this.level, chunkX, chunkZ, random, this.chunk);
         }

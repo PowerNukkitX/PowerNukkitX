@@ -33,9 +33,17 @@ public interface ChunkManager {
 
     long getSeed();
 
+    void setSeed(long seed);
+
     boolean isOverWorld();
 
     boolean isNether();
 
     boolean isTheEnd();
+
+    void cleanChunks(long seed);
+
+    static int ensureY(final int y, final IChunk chunk) {
+        return Math.max(Math.min(y, chunk.getDimensionData().getMaxHeight()), chunk.getDimensionData().getMinHeight());
+    }
 }

@@ -146,7 +146,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             Block up;
             while ((up = head.up()).getId() == BIG_DRIPLEAF)
                 head = up;
-            if (head.getFloorY() + 1 >= level.getMaxHeight())
+            if (head.getFloorY() + 1 > level.getMaxHeight())
                 return false;
             Block above = head.up();
             if (!above.isAir() && !(above instanceof BlockFlowingWater))

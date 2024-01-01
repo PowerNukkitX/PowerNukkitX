@@ -7,4 +7,6 @@ public final class Registries {
     public static final EntityRegistry ENTITY = new EntityRegistry();
     public static final ItemRuntimeIdRegistry ITEM_RUNTIMEID = new ItemRuntimeIdRegistry();
     public static final BlockState2ItemMetaRegistry BLOCKSTATE_ITEMMETA = new BlockState2ItemMetaRegistry();
+    public static final BiomeRegistry BIOME = new BiomeRegistry();
+    public static final GeneratorRegistry GENERATOR = new GeneratorRegistry();
 }

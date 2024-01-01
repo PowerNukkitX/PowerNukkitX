@@ -7,15 +7,16 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
-import cn.nukkit.level.biome.Biome;
+import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.NumberTag;
-import cn.nukkit.registry.BlockRegistry;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,8 +24,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -33,32 +36,35 @@ import java.util.stream.Stream;
  */
 @Slf4j
 public class Chunk implements IChunk {
+    private volatile int x;
+    private volatile int z;
+    private volatile long hash;
+    protected final AtomicReference<ChunkState> chunkState;
+    protected final ChunkSection[] sections;
+    protected final short[] heightMap;//256 size Values start at 0 and are 0-384 for the Overworld range
+    protected final AtomicLong changes;
+
     protected final Long2ObjectNonBlockingMap<Entity> entities;
     protected final Long2ObjectNonBlockingMap<BlockEntity> tiles;//block entity id -> block entity
     protected final Long2ObjectNonBlockingMap<BlockEntity> tileList;//block entity position hash index -> block entity
-    protected final ChunkSection[] sections;
-    protected final short[] heightMap;//256 size Values start at 0 and are 0-384 for the Overworld range
-    protected final CompoundTag extraData;
-    protected volatile ChunkState chunkState;
-    protected AtomicLong changes;
-    private int x;
-    private int z;
-    private long hash;
-    protected boolean isInit;
-    protected LevelProvider provider;
     //delay load block entity and entity
+    protected final CompoundTag extraData;
+    protected final StampedLock blockLock;
+    protected final StampedLock heightAndBiomeLock;
+    protected final StampedLock lightLock;
+    protected boolean isInit;
     protected List<CompoundTag> blockEntityNBT;
     protected List<CompoundTag> entityNBT;
-    protected final ReentrantReadWriteLock sectionLock = new ReentrantReadWriteLock();
+    protected LevelProvider provider;
 
     private Chunk(
             final int chunkX,
             final int chunkZ,
             final LevelProvider levelProvider
     ) {
-        this.chunkState = ChunkState.NEW;
+        this.chunkState = new AtomicReference<>(ChunkState.NEW);
         this.x = chunkX;
-        this.z = chunkZ;
+        setZ(chunkZ);
         this.provider = levelProvider;
         this.sections = new ChunkSection[levelProvider.getDimensionData().getChunkSectionCount()];
         this.heightMap = new short[256];
@@ -68,6 +74,10 @@ public class Chunk implements IChunk {
         this.entityNBT = new ArrayList<>();
         this.blockEntityNBT = new ArrayList<>();
         this.extraData = new CompoundTag();
+        this.changes = new AtomicLong();
+        this.blockLock = new StampedLock();
+        this.heightAndBiomeLock = new StampedLock();
+        this.lightLock = new StampedLock();
     }
 
     private Chunk(
@@ -81,9 +91,9 @@ public class Chunk implements IChunk {
             final List<CompoundTag> blockEntityNBT,
             final CompoundTag extraData
     ) {
-        this.chunkState = state;
+        this.chunkState = new AtomicReference<>(state);
         this.x = chunkX;
-        this.z = chunkZ;
+        setZ(chunkZ);
         this.provider = levelProvider;
         this.sections = sections;
         this.heightMap = heightMap;
@@ -93,42 +103,55 @@ public class Chunk implements IChunk {
         this.entityNBT = entityNBT;
         this.blockEntityNBT = blockEntityNBT;
         this.extraData = extraData;
+        this.changes = new AtomicLong();
+        this.blockLock = new StampedLock();
+        this.heightAndBiomeLock = new StampedLock();
+        this.lightLock = new StampedLock();
     }
 
     @Override
     public boolean isSectionEmpty(int fY) {
-        return this.sections[fY - getDimensionData().getMinSectionY()].isEmpty();
+        return this.getSection(fY - getDimensionData().getMinSectionY()).isEmpty();
     }
 
     @Override
     public ChunkSection getSection(int fY) {
+        long stamp = blockLock.tryOptimisticRead();
         try {
-            sectionLock.readLock().lock();
-            return this.sections[fY - getDimensionData().getMinSectionY()];
+            for (; ; stamp = blockLock.readLock()) {
+                if (stamp == 0L) continue;
+                ChunkSection section = this.sections[fY - getDimensionData().getMinSectionY()];
+                if (!blockLock.validate(stamp)) continue;
+                return section;
+            }
         } finally {
-            sectionLock.readLock().unlock();
+            if (StampedLock.isReadLockStamp(stamp)) blockLock.unlockRead(stamp);
         }
     }
 
+    private ChunkSection getSectionInternal(int fY) {
+        return this.sections[fY - getDimensionData().getMinSectionY()];
+    }
+
     @Override
-    public boolean setSection(int fY, ChunkSection section) {
+    public void setSection(int fY, ChunkSection section) {
+        long stamp = blockLock.writeLock();
         try {
-            sectionLock.writeLock().lock();
             this.sections[fY - getDimensionData().getMinSectionY()] = section;
             setChanged();
-            return true;
         } finally {
-            sectionLock.writeLock().unlock();
+            blockLock.unlockWrite(stamp);
         }
     }
 
     @Override
+    @ApiStatus.Internal
     public ChunkSection[] getSections() {
+        long stamp = blockLock.readLock();
         try {
-            sectionLock.readLock().lock();
             return this.sections;
         } finally {
-            sectionLock.readLock().unlock();
+            blockLock.unlockRead(stamp);
         }
     }
 
@@ -140,6 +163,7 @@ public class Chunk implements IChunk {
     @Override
     public void setX(int x) {
         this.x = x;
+        this.hash = Level.chunkHash(x, getZ());
     }
 
     @Override
@@ -150,10 +174,11 @@ public class Chunk implements IChunk {
     @Override
     public void setZ(int z) {
         this.z = z;
+        this.hash = Level.chunkHash(getX(), z);
     }
 
     @Override
-    public long getIndex() {
+    public final long getIndex() {
         return this.hash;
     }
 
@@ -164,71 +189,126 @@ public class Chunk implements IChunk {
 
     @Override
     public BlockState getBlockState(int x, int y, int z, int layer) {
-        return getSection(y >> 4).getBlockState(x, y & 0x0f, z, layer);
+        long stamp = blockLock.tryOptimisticRead();
+        try {
+            for (; ; stamp = blockLock.readLock()) {
+                if (stamp == 0L) continue;
+                BlockState result = getSectionInternal(y >> 4).getBlockState(x, y & 0x0f, z, layer);
+                if (!blockLock.validate(stamp)) continue;
+                return result;
+            }
+        } finally {
+            if (StampedLock.isReadLockStamp(stamp)) blockLock.unlockRead(stamp);
+        }
     }
 
     @Override
     public BlockState getAndSetBlockState(int x, int y, int z, BlockState blockstate, int layer) {
+        long stamp = blockLock.writeLock();
         try {
             setChanged();
             return getOrCreateSection(y >> 4).getAndSetBlockState(x, y & 0x0f, z, blockstate, layer);
         } finally {
             removeInvalidTile(x, y, z);
+            blockLock.unlockWrite(stamp);
         }
     }
 
     @Override
     public void setBlockState(int x, int y, int z, BlockState blockstate, int layer) {
+        long stamp = blockLock.writeLock();
         try {
             setChanged();
             getOrCreateSection(y >> 4).setBlockState(x, y & 0x0f, z, blockstate, layer);
         } finally {
             removeInvalidTile(x, y, z);
+            blockLock.unlockWrite(stamp);
         }
     }
 
     @Override
     public int getBlockSkyLight(int x, int y, int z) {
-        return getSection(y).getBlockSkyLight(x, y & 0x0f, z);
+        long stamp = lightLock.tryOptimisticRead();
+        try {
+            for (; ; stamp = lightLock.readLock()) {
+                if (stamp == 0L) continue;
+                int result = getSectionInternal(y).getBlockSkyLight(x, y & 0x0f, z);
+                if (!lightLock.validate(stamp)) continue;
+                return result;
+            }
+        } finally {
+            if (StampedLock.isReadLockStamp(stamp)) lightLock.unlockRead(stamp);
+        }
     }
 
     @Override
     public void setBlockSkyLight(int x, int y, int z, int level) {
-        setChanged();
-        getOrCreateSection(y >> 4).setBlockSkyLight(x, y & 0x0f, z, (byte) level);
+        long stamp = lightLock.writeLock();
+        try {
+            setChanged();
+            getOrCreateSection(y >> 4).setBlockSkyLight(x, y & 0x0f, z, (byte) level);
+        } finally {
+            lightLock.unlockWrite(stamp);
+        }
     }
 
     @Override
     public int getBlockLight(int x, int y, int z) {
-        return getSection(y).getBlockLight(x, y & 0x0f, z);
+        long stamp = lightLock.tryOptimisticRead();
+        try {
+            for (; ; stamp = lightLock.readLock()) {
+                if (stamp == 0L) continue;
+                int result = getSectionInternal(y).getBlockLight(x, y & 0x0f, z);
+                if (!lightLock.validate(stamp)) continue;
+                return result;
+            }
+        } finally {
+            if (StampedLock.isReadLockStamp(stamp)) lightLock.unlockRead(stamp);
+        }
     }
 
     @Override
     public void setBlockLight(int x, int y, int z, int level) {
-        setChanged();
-        getOrCreateSection(y >> 4).setBlockLight(x, y & 0x0f, z, (byte) level);
+        long stamp = lightLock.writeLock();
+        try {
+            setChanged();
+            getOrCreateSection(y >> 4).setBlockLight(x, y & 0x0f, z, (byte) level);
+        } finally {
+            lightLock.unlockWrite(stamp);
+        }
     }
 
     @Override
     public int getHighestBlockAt(int x, int z, boolean cache) {
         if (cache) {
             return this.getHeightMap(x, z);
-        }
-        for (int y = getDimensionData().getMaxHeight(); y >= getDimensionData().getMinHeight(); --y) {
-            if (getBlockState(x, y, z) != BlockAir.PROPERTIES.getBlockState()) {
-                this.setHeightMap(x, z, y);
-                return y;
+        } else {
+            for (int y = getDimensionData().getMaxHeight(); y >= getDimensionData().getMinHeight(); --y) {
+                if (getBlockState(x, y, z) != BlockAir.PROPERTIES.getBlockState()) {
+                    this.setHeightMap(x, z, y);
+                    return y;
+                }
             }
+            return getDimensionData().getMinHeight();
         }
-        return getDimensionData().getMinHeight();
     }
 
+    //基岩版3d-data保存heightMap是以0为索引保存的，所以这里需要减去世界最小值，详情查看
+    //Bedrock Edition 3d-data saves the height map start from index of 0, so need to subtract the world minimum height here, see for details:
+    //https://github.com/bedrock-dev/bedrock-level/blob/main/src/include/data_3d.h#L115
     @Override
     public int getHeightMap(int x, int z) {
-        //基岩版3d-data保存heightMap是以0为索引保存的，所以这里需要减去世界最小值，详情查看
-        //Bedrock Edition 3d-data saves the height map start from index of 0, so need to subtract the world minimum height here, see for details:
-        //https://github.com/bedrock-dev/bedrock-level/blob/main/src/include/data_3d.h#L115
-        return this.heightMap[(z << 4) | x] + getDimensionData().getMinHeight();
+        long stamp = heightAndBiomeLock.tryOptimisticRead();
+        try {
+            for (; ; stamp = heightAndBiomeLock.readLock()) {
+                if (stamp == 0L) continue;
+                int result = this.heightMap[(z << 4) | x] + getDimensionData().getMinHeight();
+                if (!heightAndBiomeLock.validate(stamp)) continue;
+                return result;
+            }
+        } finally {
+            if (StampedLock.isReadLockStamp(stamp)) heightAndBiomeLock.unlockRead(stamp);
+        }
     }
 
     @Override
@@ -236,116 +316,140 @@ public class Chunk implements IChunk {
         //基岩版3d-data保存heightMap是以0为索引保存的，所以这里需要减去世界最小值，详情查看
         //Bedrock Edition 3d-data saves the height map start from index of 0, so need to subtract the world minimum height here, see for details:
         //https://github.com/bedrock-dev/bedrock-level/blob/main/src/include/data_3d.h#L115
-        this.heightMap[(z << 4) | x] = (short) (value - getDimensionData().getMinHeight());
+        long stamp = heightAndBiomeLock.writeLock();
+        try {
+            this.heightMap[(z << 4) | x] = (short) (value - getDimensionData().getMinHeight());
+        } finally {
+            heightAndBiomeLock.unlockWrite(stamp);
+        }
     }
 
     @Override
     public void recalculateHeightMap() {
-        for (int z = 0; z < 16; ++z) {
-            for (int x = 0; x < 16; ++x) {
-                recalculateHeightMapColumn(x, z);
+        batchProcess(unsafeChunk -> {
+            for (int z = 0; z < 16; ++z) {
+                for (int x = 0; x < 16; ++x) {
+                    unsafeChunk.recalculateHeightMapColumn(x, z);
+                }
             }
-        }
+        });
     }
 
     @Override
     public int recalculateHeightMapColumn(int chunkX, int chunkZ) {
-        int max = getHighestBlockAt(x, z, false);
-        int y;
-        for (y = max; y >= 0; --y) {
-            BlockState blockState = getBlockState(x, y, z);
-            Block block = BlockRegistry.get(blockState);
-            if (block.getLightFilter() > 1 || block.diffusesSkyLight()) {
-                break;
+        long stamp1 = heightAndBiomeLock.writeLock();
+        long stamp2 = blockLock.writeLock();
+        try {
+            int max = getHighestBlockAt(x, z, false);
+            int y;
+            for (y = max; y >= 0; --y) {
+                BlockState blockState = getBlockState(x, y, z);
+                Block block = Block.get(blockState);
+                if (block.getLightFilter() > 1 || block.diffusesSkyLight()) {
+                    break;
+                }
             }
+            setHeightMap(x, z, y + 1);
+            return y + 1;
+        } finally {
+            blockLock.unlockWrite(stamp2);
+            heightAndBiomeLock.unlockWrite(stamp1);
         }
-
-        setHeightMap(x, z, y + 1);
-        return y + 1;
     }
 
     @Override
     public void populateSkyLight() {
-        // basic light calculation
-        for (int z = 0; z < 16; ++z) {
-            for (int x = 0; x < 16; ++x) { // iterating over all columns in chunk
-                int top = this.getHeightMap(x, z) - 1; // top-most block
+        batchProcess(unsafe -> {
+            // basic light calculation
+            for (int z = 0; z < 16; ++z) {
+                for (int x = 0; x < 16; ++x) { // iterating over all columns in chunk
+                    int top = unsafe.getHeightMap(x, z) - 1; // top-most block
 
-                int y;
+                    int y;
 
-                for (y = getDimensionData().getMaxHeight(); y > top; --y) {
-                    // all the blocks above & including the top-most block in a column are exposed to sun and
-                    // thus have a skylight value of 15
-                    this.setBlockSkyLight(x, y, z, 15);
-                }
-
-                int nextLight = 15; // light value that will be applied starting with the next block
-                int nextDecrease = 0; // decrease that that will be applied starting with the next block
-
-                // TODO: remove nextLight & nextDecrease, use only light & decrease variables
-                for (y = top; y >= 0; --y) { // going under the top-most block
-                    nextLight -= nextDecrease;
-                    int light = nextLight; // this light value will be applied for this block. The following checks are all about the next blocks
-
-                    if (light < 0) {
-                        light = 0;
+                    for (y = getDimensionData().getMaxHeight(); y > top; --y) {
+                        // all the blocks above & including the top-most block in a column are exposed to sun and
+                        // thus have a skylight value of 15
+                        unsafe.setBlockSkyLight(x, y, z, 15);
                     }
 
-                    this.setBlockSkyLight(x, y, z, light);
+                    int nextLight = 15; // light value that will be applied starting with the next block
+                    int nextDecrease = 0; // decrease that that will be applied starting with the next block
 
-                    if (light == 0) { // skipping block checks, because everything under a block that has a skylight value
-                        // of 0 also has a skylight value of 0
-                        continue;
+                    // TODO: remove nextLight & nextDecrease, use only light & decrease variables
+                    for (y = top; y >= 0; --y) { // going under the top-most block
+                        nextLight -= nextDecrease;
+                        int light = nextLight; // this light value will be applied for this block. The following checks are all about the next blocks
+
+                        if (light < 0) {
+                            light = 0;
+                        }
+
+                        unsafe.setBlockSkyLight(x, y, z, light);
+
+                        if (light == 0) { // skipping block checks, because everything under a block that has a skylight value
+                            // of 0 also has a skylight value of 0
+                            continue;
+                        }
+
+                        // START of checks for the next block
+                        BlockState blockState = getBlockState(x, y, z);
+                        Block block = Block.get(blockState);
+
+                        if (!block.isTransparent()) { // if we encounter an opaque block, all the blocks under it will
+                            // have a skylight value of 0 (the block itself has a value of 15, if it's a top-most block)
+                            nextLight = 0;
+                        } else if (block.diffusesSkyLight()) {
+                            nextDecrease += 1; // skylight value decreases by one for each block under a block
+                            // that diffuses skylight. The block itself has a value of 15 (if it's a top-most block)
+                        } else {
+                            nextDecrease -= block.getLightFilter(); // blocks under a light filtering block will have a skylight value
+                            // decreased by the lightFilter value of that block. The block itself
+                            // has a value of 15 (if it's a top-most block)
+                        }
+                        // END of checks for the next block
                     }
-
-                    // START of checks for the next block
-                    BlockState blockState = getBlockState(x, y, z);
-                    Block block = BlockRegistry.get(blockState);
-
-                    if (!block.isTransparent()) { // if we encounter an opaque block, all the blocks under it will
-                        // have a skylight value of 0 (the block itself has a value of 15, if it's a top-most block)
-                        nextLight = 0;
-                    } else if (block.diffusesSkyLight()) {
-                        nextDecrease += 1; // skylight value decreases by one for each block under a block
-                        // that diffuses skylight. The block itself has a value of 15 (if it's a top-most block)
-                    } else {
-                        nextDecrease -= block.getLightFilter(); // blocks under a light filtering block will have a skylight value
-                        // decreased by the lightFilter value of that block. The block itself
-                        // has a value of 15 (if it's a top-most block)
-                    }
-                    // END of checks for the next block
                 }
             }
+        });
+    }
+
+    public void batchProcess(Consumer<UnsafeChunk> unsafeChunkConsumer) {
+        long stamp1 = blockLock.writeLock();
+        long stamp2 = heightAndBiomeLock.writeLock();
+        long stamp3 = lightLock.writeLock();
+        try {
+            unsafeChunkConsumer.accept(new UnsafeChunk(changes, sections, heightMap, getDimensionData(), tiles));
+        } finally {
+            lightLock.unlockWrite(stamp3);
+            heightAndBiomeLock.unlockWrite(stamp2);
+            blockLock.unlockWrite(stamp1);
         }
     }
 
     @Override
     public int getBiomeId(int x, int y, int z) {
-        return getSection(y >> 4).getBiomeId(x, y & 0x0f, z);
-    }
-
-    @Override
-    public void setBiomeId(int x, int y, int z, int biomeId) {
+        long stamp = heightAndBiomeLock.tryOptimisticRead();
         try {
-            setChanged();
-            getOrCreateSection(y >> 4).setBiomeId(x, y & 0x0f, z, biomeId);
+            for (; ; stamp = heightAndBiomeLock.readLock()) {
+                if (stamp == 0L) continue;
+                int result = getSection(y >> 4).getBiomeId(x, y & 0x0f, z);
+                if (!heightAndBiomeLock.validate(stamp)) continue;
+                return result;
+            }
         } finally {
-            removeInvalidTile(x, y, z);
+            if (StampedLock.isReadLockStamp(stamp)) heightAndBiomeLock.unlockRead(stamp);
         }
     }
 
     @Override
-    public Biome getBiome(int x, int y, int z) {
-        return Biome.getBiome(getSection(y >> 4).getBiomeId(x, y & 0x0f, z));
-    }
-
-    @Override
-    public void setBiome(int x, int y, int z, Biome biome) {
+    public void setBiomeId(int x, int y, int z, int biomeId) {
+        long stamp = heightAndBiomeLock.writeLock();
         try {
             setChanged();
-            getOrCreateSection(y >> 4).setBiomeId(x, y & 0x0f, z, biome.getId());
+            getOrCreateSection(y >> 4).setBiomeId(x, y & 0x0f, z, biomeId);
         } finally {
-            removeInvalidTile(x, y, z);
+            heightAndBiomeLock.unlockWrite(stamp);
         }
     }
 
@@ -366,12 +470,12 @@ public class Chunk implements IChunk {
 
     @Override
     public ChunkState getChunkState() {
-        return this.chunkState;
+        return this.chunkState.get();
     }
 
     @Override
     public void setChunkState(ChunkState chunkState) {
-        this.chunkState = chunkState;
+        this.chunkState.set(chunkState);
     }
 
     @Override
@@ -499,8 +603,8 @@ public class Chunk implements IChunk {
                         this.setChanged();
                         continue;
                     }
-                    ListTag pos = nbt.getList("Pos");
-                    if ((((NumberTag) pos.get(0)).getData().intValue() >> 4) != this.getX() || ((((NumberTag) pos.get(2)).getData().intValue() >> 4) != this.getZ())) {
+                    ListTag<? extends Tag> pos = nbt.getList("Pos");
+                    if ((((NumberTag<?>) pos.get(0)).getData().intValue() >> 4) != this.getX() || ((((NumberTag) pos.get(2)).getData().intValue() >> 4) != this.getZ())) {
                         changed = true;
                         continue;
                     }
@@ -570,7 +674,7 @@ public class Chunk implements IChunk {
     }
 
     @Override
-    public long getBlockChanges() {
+    public long getChanges() {
         return changes.get();
     }
 

@@ -8,7 +8,7 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.utils.random.NukkitRandomSource;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
@@ -123,7 +123,7 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         if (item.isFertilizer()) {
-            NukkitRandom random = new NukkitRandom();
+            NukkitRandomSource random = new NukkitRandomSource();
             int height = random.nextBoundedInt(4) + 2;
 
             BlockBigDripleaf blockBigDripleafDown = new BlockBigDripleaf();
