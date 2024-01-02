@@ -21,6 +21,7 @@ public enum EnchantmentType {
     BOW,
     WEARABLE,
     TRIDENT,
+    CROSSBOW;
 
 
     public boolean canEnchantItem(@NotNull Item item) {
@@ -59,7 +60,7 @@ public enum EnchantmentType {
                 case FISHING_ROD:
                     return item instanceof ItemFishingRod;
                 case WEARABLE:
-                    return item instanceof ItemSkull || Item.getItemBlock() instanceof BlockCarvedPumpkin;
+                    return item instanceof ItemSkull || item.getBlock() instanceof BlockCarvedPumpkin;
                 case TRIDENT:
                     return item instanceof ItemTrident;
                 case CROSSBOW:

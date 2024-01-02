@@ -153,7 +153,6 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
         this.raknet.send(socketAddress, payload);
     }
 
-    @
     @Override
     public void setName(String name) {
         QueryRegenerateEvent info = this.server.getQueryInformation();

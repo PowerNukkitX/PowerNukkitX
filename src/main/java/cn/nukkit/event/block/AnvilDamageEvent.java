@@ -102,8 +102,6 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
         return newState;
     }
 
-    ("Used to be inherited from BlockFadeEvent")
-
     @NotNull
     public Block getNewState() {
         return newState.getBlockRepairing(block);

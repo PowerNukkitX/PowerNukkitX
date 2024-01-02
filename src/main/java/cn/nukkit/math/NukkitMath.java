@@ -1,5 +1,7 @@
 package cn.nukkit.math;
 
+import cn.nukkit.utils.random.NukkitRandomSource;
+
 import java.math.BigInteger;
 
 /**
@@ -42,15 +44,15 @@ public class NukkitMath {
         return n > i ? i + 1 : i;
     }
 
-    public static int randomRange(NukkitRandom random) {
+    public static int randomRange(NukkitRandomSource random) {
         return randomRange(random, 0);
     }
 
-    public static int randomRange(NukkitRandom random, int start) {
+    public static int randomRange(NukkitRandomSource random, int start) {
         return randomRange(random, 0, 0x7fffffff);
     }
 
-    public static int randomRange(NukkitRandom random, int start, int end) {
+    public static int randomRange(NukkitRandomSource random, int start, int end) {
         return start + (random.nextInt() % (end + 1 - start));
     }
 

@@ -6,7 +6,7 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.object.ObjectNyliumVegetation;
 import cn.nukkit.level.particle.BoneMealParticle;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.utils.random.NukkitRandomSource;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -55,7 +55,7 @@ public abstract class BlockNylium extends BlockSolid {
     }
 
     public boolean grow() {
-        ObjectNyliumVegetation.growVegetation(level, this, new NukkitRandom());
+        ObjectNyliumVegetation.growVegetation(level, this, new NukkitRandomSource());
         return true;
     }
 

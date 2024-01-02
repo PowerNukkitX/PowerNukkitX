@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator;
 
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.IChunk;
 
@@ -16,126 +16,29 @@ public abstract class SimpleChunkManager implements ChunkManager {
         this.seed = seed;
     }
 
-    @Override
-    public int getBlockIdAt(int x, int y, int z) {
-        return getBlockIdAt(x, y, z, 0);
-    }
-
-
-    @Override
-    public int getBlockIdAt(int x, int y, int z, int layer) {
-        FullChunk chunk = this.getChunk(x >> 4, z >> 4);
-        if (chunk != null) {
-            return chunk.getBlockId(x & 0xf, ensureY(y, chunk), z & 0xf, layer);
-        }
-        return 0;
-    }
-
 
     @Override
     public BlockState getBlockStateAt(int x, int y, int z, int layer) {
-        FullChunk chunk = this.getChunk(x >> 4, z >> 4);
+        IChunk chunk = this.getChunk(x >> 4, z >> 4);
         if (chunk != null) {
-            return chunk.getBlockState(x & 0xf, ensureY(y, chunk), z & 0xf, layer);
+            return chunk.getBlockState(x & 0xf, ChunkManager.ensureY(y, chunk), z & 0xf, layer);
         }
-        return BlockState.AIR;
+        return BlockAir.STATE;
     }
 
     @Override
-    public void setBlockIdAt(int x, int y, int z, int id) {
-        setBlockIdAt(x, y, z, 0, id);
-    }
-
-
-    @Override
-    public void setBlockIdAt(int x, int y, int z, int layer, int id) {
-        FullChunk chunk = this.getChunk(x >> 4, z >> 4);
+    public void setBlockStateAt(int x, int y, int z, BlockState state) {
+        IChunk chunk = this.getChunk(x >> 4, z >> 4);
         if (chunk != null) {
-            chunk.setBlockId(x & 0xf, ensureY(y, chunk), z & 0xf, layer, id);
+            chunk.setBlockState(x & 0xf, ChunkManager.ensureY(y, chunk), z & 0xf, state);
         }
     }
 
-    @Deprecated
-    @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
     @Override
-    public void setBlockAt(int x, int y, int z, int id, int data) {
-        setBlockAtLayer(x, y, z, 0, id, data);
-    }
-
-    @Deprecated
-    @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
-
-    @Override
-    public boolean setBlockAtLayer(int x, int y, int z, int layer, int id, int data) {
-        FullChunk chunk = this.getChunk(x >> 4, z >> 4);
+    public void setBlockStateAt(int x, int y, int z, int layer, BlockState state) {
+        IChunk chunk = this.getChunk(x >> 4, z >> 4);
         if (chunk != null) {
-            return chunk.setBlockAtLayer(x & 0xf, ensureY(y, chunk), z & 0xf, layer, id, data);
-        }
-        return false;
-    }
-
-    @Deprecated
-    @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
-    @Override
-    public void setBlockFullIdAt(int x, int y, int z, int fullId) {
-        setBlockFullIdAt(x, y, z, 0, fullId);
-    }
-
-    @Deprecated
-    @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
-
-    @Override
-    public void setBlockFullIdAt(int x, int y, int z, int layer, int fullId) {
-        FullChunk chunk = this.getChunk(x >> 4, z >> 4);
-        if (chunk != null) {
-            chunk.setFullBlockId(x & 0xf, ensureY(y, chunk), z & 0xf, layer, fullId);
-        }
-    }
-
-
-    @Override
-    public boolean setBlockStateAt(int x, int y, int z, int layer, BlockState state) {
-        FullChunk chunk = this.getChunk(x >> 4, z >> 4);
-        if (chunk != null) {
-            return chunk.setBlockStateAtLayer(x & 0xf, ensureY(y, chunk), z & 0xf, layer, state);
-        }
-        return false;
-    }
-
-    @Deprecated
-    @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
-    @Override
-    public int getBlockDataAt(int x, int y, int z) {
-        return getBlockDataAt(x, y, z, 0);
-    }
-
-    @Deprecated
-    @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
-
-    @Override
-    public int getBlockDataAt(int x, int y, int z, int layer) {
-        FullChunk chunk = this.getChunk(x >> 4, z >> 4);
-        if (chunk != null) {
-            return chunk.getBlockData(x & 0xf, ensureY(y, chunk), z & 0xf, layer);
-        }
-        return 0;
-    }
-
-    @Deprecated
-    @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
-    @Override
-    public void setBlockDataAt(int x, int y, int z, int data) {
-        setBlockDataAt(x, y, z, data, 0);
-    }
-
-    @Deprecated
-    @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
-
-    @Override
-    public void setBlockDataAt(int x, int y, int z, int layer, int data) {
-        FullChunk chunk = this.getChunk(x >> 4, z >> 4);
-        if (chunk != null) {
-            chunk.setBlockData(x & 0xf, ensureY(y, chunk), z & 0xf, layer, data);
+            chunk.setBlockState(x & 0xf, ChunkManager.ensureY(y, chunk), z & 0xf, state, layer);
         }
     }
 
@@ -149,20 +52,13 @@ public abstract class SimpleChunkManager implements ChunkManager {
         return seed;
     }
 
+    @Override
     public void setSeed(long seed) {
         this.seed = seed;
     }
 
+    @Override
     public void cleanChunks(long seed) {
         this.seed = seed;
-    }
-
-
-    private int ensureY(final int y, final FullChunk chunk) {
-        if (chunk.isOverWorld()) {
-            return Math.max(Math.min(y, 319), -64);
-        } else {
-            return y & 0xff;
-        }
     }
 }

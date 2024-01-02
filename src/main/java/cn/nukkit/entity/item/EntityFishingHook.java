@@ -29,6 +29,7 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 
@@ -176,9 +177,9 @@ public class EntityFishingHook extends SlenderProjectile {
     }
 
     public int getWaterHeight() {
-        for (int y = this.getFloorY(); y < level.getMaxHeight(); y++) {
-            int id = this.level.getBlockIdAt(this.getFloorX(), y, this.getFloorZ());
-            if (id == Block.AIR) {
+        for (int y = this.getFloorY(); y <= level.getMaxHeight(); y++) {
+            String id = this.level.getBlockIdAt(this.getFloorX(), y, this.getFloorZ());
+            if (Objects.equals(id, Block.AIR)) {
                 return y;
             }
         }

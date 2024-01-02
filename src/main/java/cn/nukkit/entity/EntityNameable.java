@@ -11,16 +11,12 @@ import org.jetbrains.annotations.NotNull;
  */
 
 public interface EntityNameable {
-    ("The Entity implementations are not PowerNukkit only")
     String getNameTag();
 
-    ("The Entity implementations are not PowerNukkit only")
     void setNameTag(String nameTag);
 
-    ("The Entity implementations are not PowerNukkit only")
     boolean isNameTagVisible();
 
-    ("The Entity implementations are not PowerNukkit only")
     void setNameTagVisible(boolean visible);
 
 
@@ -29,7 +25,6 @@ public interface EntityNameable {
 
     void setPersistent(boolean persistent);
 
-    ("The Entity implementations are not PowerNukkit only")
     default boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (item.getId() == Item.NAME_TAG) {
             if (!player.isSpectator()) {

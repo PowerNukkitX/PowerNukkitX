@@ -18,7 +18,6 @@ public class ProjectileLaunchEvent extends EntityEvent implements Cancellable {
         this(entity, entity.shootingEntity);
     }
 
-    @
     public ProjectileLaunchEvent(EntityProjectile entity, Entity shooter) {
         this.shooter = shooter;
         this.entity = entity;

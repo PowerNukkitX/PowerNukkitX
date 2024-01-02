@@ -4,7 +4,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.utils.random.NukkitRandomSource;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -54,7 +54,7 @@ public class BlockGravel extends BlockFallable {
             fortune = enchantment.getLevel();
         }
         
-        NukkitRandom nukkitRandom = new NukkitRandom();
+        NukkitRandomSource nukkitRandom = new NukkitRandomSource();
         switch (fortune) {
             case 0 -> {
                 if (nukkitRandom.nextRange(0, 9) == 0) {

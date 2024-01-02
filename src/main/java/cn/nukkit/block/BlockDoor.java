@@ -217,7 +217,7 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (this.y > this.level.getMaxHeight() - 2 || face != BlockFace.UP) {
+        if (this.y > this.level.getMaxHeight() - 1 || face != BlockFace.UP) {
             return false;
         }
 

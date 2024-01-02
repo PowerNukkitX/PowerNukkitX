@@ -14,6 +14,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.GameType;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
@@ -37,7 +38,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
-import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiConsumer;
 
 /**
@@ -90,7 +90,7 @@ public class LevelDBProvider implements LevelProvider {
             throw new IOException("Could not create the directory " + dataDir);
         }
         LevelDat levelData = LevelDat.builder()
-                .generatorName(Generator.getGeneratorName(generator))
+                .generatorName(Registries.GENERATOR.getGeneratorName(generator))
                 .randomSeed(seed)
                 .name(name)
                 .lastPlayed(System.currentTimeMillis() / 1000)
@@ -183,7 +183,7 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public Map<String, Object> getGeneratorOptions() {
-        return new HashMap<String, Object>() {
+        return new HashMap<>() {
             {
                 put("preset", LevelDBProvider.this.levelDat.getGeneratorOptions());
             }
@@ -241,28 +241,27 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public AsyncTask requestChunkTask(int X, int Z) {
-        Chunk chunk = (Chunk) this.getChunk(X, Z, false);
+        IChunk chunk = this.getChunk(X, Z, false);
         if (chunk == null) {
             throw new ChunkException("Invalid Chunk Set");
         }
-        long timestamp = chunk.getBlockChanges();
+        long timestamp = chunk.getChanges();
         BiConsumer<BinaryStream, Integer> callback = (stream, subchunks) ->
                 this.getLevel().chunkRequestCallback(timestamp, X, Z, subchunks, stream.getBuffer());
         return new AsyncTask() {
             @Override
             public void onRun() {
-                serialize(chunk, callback);
+                serializeToNetwork(chunk, callback);
             }
         };
     }
 
-    public final void serialize(Chunk chunk, BiConsumer<BinaryStream, Integer> callback) {
+    public final void serializeToNetwork(IChunk chunk, BiConsumer<BinaryStream, Integer> callback) {
         final var byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
-        try {
-            chunk.sectionLock.writeLock().lock();
-            final ChunkSection[] sections = chunk.getSections();
+        chunk.batchProcess(unsafeChunk -> {
+            final ChunkSection[] sections = unsafeChunk.getSections();
 
-            int subChunkCount = chunk.getDimensionData().getChunkSectionCount() - 1; // index
+            int subChunkCount = unsafeChunk.getDimensionData().getChunkSectionCount() - 1; // index
             while (subChunkCount >= 0 && (sections[subChunkCount] == null || sections[subChunkCount].isEmpty())) {
                 subChunkCount--;
             }
@@ -270,13 +269,7 @@ public class LevelDBProvider implements LevelProvider {
 
             //write block
             for (int i = 0; i < subChunkCount; i++) {
-                StampedLock lock = sections[i].lock();
-                long l = lock.writeLock();
-                try {
-                    sections[i].writeToNetwork(byteBuf);
-                } finally {
-                    lock.unlock(l);
-                }
+                sections[i].writeToNetwork(byteBuf);
             }
             // Write biomes
             Palette<Integer> lastBiomes = null;
@@ -289,7 +282,7 @@ public class LevelDBProvider implements LevelProvider {
             VarInts.writeUnsignedInt(byteBuf, 0);
 
             // Block entities
-            final Collection<BlockEntity> tiles = chunk.getBlockEntities().values();
+            final Collection<BlockEntity> tiles = unsafeChunk.getBlockEntities().values();
             final List<CompoundTag> tagList = new ObjectArrayList<>();
             for (BlockEntity blockEntity : tiles) {
                 if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
@@ -304,9 +297,7 @@ public class LevelDBProvider implements LevelProvider {
             byte[] data = new byte[byteBuf.readableBytes()];
             byteBuf.getBytes(byteBuf.readableBytes(), data);
             callback.accept(new BinaryStream(data), subChunkCount);
-        } finally {
-            chunk.sectionLock.writeLock().unlock();
-        }
+        });
     }
 
     @Override
@@ -412,7 +403,7 @@ public class LevelDBProvider implements LevelProvider {
     @Override
     public void saveChunks() {
         for (IChunk chunk : this.chunks.values()) {
-            if (chunk.getBlockChanges() != 0) {
+            if (chunk.getChanges() != 0) {
                 chunk.setChanged(false);
                 this.saveChunk(chunk.getX(), chunk.getZ());
             }

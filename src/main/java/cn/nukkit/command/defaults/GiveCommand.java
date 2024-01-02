@@ -51,7 +51,7 @@ public class GiveCommand extends VanillaCommand {
             log.addError("commands.give.item.notFound", item.getDisplayName()).output();
             return 0;
         }
-        if (item instanceof ItemBlock && Item.getItemBlock() instanceof BlockUnknown) {
+        if (item instanceof ItemBlock && item.getBlock() instanceof BlockUnknown) {
             log.addError("commands.give.block.notFound", item.getDisplayName()).output();
             return 0;
         }

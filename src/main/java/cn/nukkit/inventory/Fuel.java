@@ -13,7 +13,6 @@ import java.util.TreeMap;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@
 public abstract class Fuel {
     public static final Map<Integer, Short> duration = new TreeMap<>();
     public static final Object2IntMap<String> durationByStringId = new Object2IntAVLTreeMap<>();

@@ -3,13 +3,13 @@ package cn.nukkit.block;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.utils.random.NukkitRandomSource;
 import org.jetbrains.annotations.NotNull;
 
 
 public class BlockBuddingAmethyst extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(BUDDING_AMETHYST);
-    private static final NukkitRandom RANDOM = new NukkitRandom();
+    private static final NukkitRandomSource RANDOM = new NukkitRandomSource();
 
     public BlockBuddingAmethyst() {
         super(PROPERTIES.getDefaultState());

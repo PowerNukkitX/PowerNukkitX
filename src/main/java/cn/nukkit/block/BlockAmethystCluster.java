@@ -5,7 +5,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.utils.random.NukkitRandomSource;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockAmethystCluster extends BlockAmethystBud {
@@ -24,7 +24,7 @@ public class BlockAmethystCluster extends BlockAmethystBud {
         return PROPERTIES;
     }
 
-    private static final NukkitRandom RANDOM = new NukkitRandom();
+    private static final NukkitRandomSource RANDOM = new NukkitRandomSource();
 
     @Override
     protected String getNamePrefix() {

@@ -10,7 +10,7 @@ import cn.nukkit.level.generator.object.BasicGenerator;
 import cn.nukkit.level.generator.object.tree.ObjectAzaleaTree;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.utils.random.NukkitRandomSource;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
@@ -155,7 +155,7 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
         vector3 = this.add(0, 0, 0);
 
         ListChunkManager chunkManager = new ListChunkManager(this.level);
-        boolean success = generator.generate(chunkManager, new NukkitRandom(), vector3);
+        boolean success = generator.generate(chunkManager, new NukkitRandomSource(), vector3);
         StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
         this.level.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled() || !success) {

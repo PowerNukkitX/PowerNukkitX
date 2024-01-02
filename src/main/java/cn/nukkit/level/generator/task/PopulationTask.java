@@ -1,8 +1,10 @@
 package cn.nukkit.level.generator.task;
 
 import cn.nukkit.Server;
+import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.generator.SimpleChunkManager;
@@ -63,7 +65,7 @@ public class PopulationTask extends AsyncTask {
             return;
         }
 
-        SimpleChunkManager manager = (SimpleChunkManager) generator.getChunkManager();
+        ChunkManager manager = generator.getChunkManager();
 
         if (manager == null) {
             this.state = false;
@@ -86,7 +88,7 @@ public class PopulationTask extends AsyncTask {
                         if (ck == centerChunk) continue;
                         if (ck == null) {
                             try {
-                                this.chunks[index] = (IChunk) centerChunk.getClass().getMethod("getEmptyChunk", int.class, int.class, DimensionData.class).invoke(null, centerChunk.getX() + x, centerChunk.getZ() + z, level.getDimensionData());
+                                this.chunks[index] = Chunk.builder().levelProvider(level.getProvider()).emptyChunk(centerChunk.getX() + x, centerChunk.getZ() + z);
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
@@ -160,13 +162,6 @@ public class PopulationTask extends AsyncTask {
             }
 
             level.generateChunkCallback(centerChunk.getX(), centerChunk.getZ(), centerChunk, isPopulated);
-
-            //需要在全部地形生成完毕后再尝试生成结构
-            //todo: 不应该写在这里，往前放更合理，但是会有NPE:(
-            var generator = level.getGenerator();
-            if (generator.shouldGenerateStructures()) {
-                generator.populateStructure(centerChunk.getX(), centerChunk.getZ());
-            }
 
             // 如果区块有修改就重新计算高度图
             for (IChunk chunk : this.chunks) {

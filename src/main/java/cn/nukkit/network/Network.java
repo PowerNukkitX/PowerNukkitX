@@ -77,8 +77,6 @@ public class Network {
 
 
     private final List<NetworkIF> hardWareNetworkInterfaces;
-
-    @
     public Network(Server server) {
         this.registerPackets();
         DataPacketManager.registerDefaultProcessors();
@@ -120,8 +118,6 @@ public class Network {
         }
     }
 
-
-    @
     public static byte[] deflateRaw(byte[] data, int level) throws IOException {
         if (libDeflateAvailable) {
             var deflater = level == 7 ? PNX_DEFLATER_RAW.get() : new LibdeflateCompressor(level);
@@ -154,8 +150,6 @@ public class Network {
         }
     }
 
-
-    @
     public static byte[] deflateRaw(byte[][] datas, int level) throws IOException {
         if (libDeflateAvailable) {
             var deflater = level == 7 ? PNX_DEFLATER_RAW.get() : new LibdeflateCompressor(level);

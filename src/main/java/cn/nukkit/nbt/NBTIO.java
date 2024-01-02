@@ -63,8 +63,6 @@ public class NBTIO {
         return tag;
     }
 
-    @
-
     public static Item getItemHelper(CompoundTag tag) {
         if (!tag.containsByte("Count")) {
             return Item.get(0);

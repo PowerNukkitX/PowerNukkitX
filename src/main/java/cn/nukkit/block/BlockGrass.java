@@ -11,7 +11,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.generator.object.ObjectTallGrass;
 import cn.nukkit.level.particle.BoneMealParticle;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.utils.random.NukkitRandomSource;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
@@ -82,7 +82,7 @@ public class BlockGrass extends BlockDirt {
                 item.count--;
             }
             this.level.addParticle(new BoneMealParticle(this));
-            ObjectTallGrass.growGrass(this.getLevel(), this, new NukkitRandom());
+            ObjectTallGrass.growGrass(this.getLevel(), this, new NukkitRandomSource());
             return true;
         } else if (item.isHoe()) {
             item.useOn(this);

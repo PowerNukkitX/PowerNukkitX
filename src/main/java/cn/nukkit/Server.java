@@ -67,6 +67,7 @@ import cn.nukkit.plugin.service.ServiceManager;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.resourcepacks.ResourcePackManager;
 import cn.nukkit.resourcepacks.loader.JarPluginResourcePackLoader;
 import cn.nukkit.resourcepacks.loader.ZippedResourcePackLoader;
@@ -632,7 +633,7 @@ public class Server {
                 put("generator-settings", "");
                 put("level-name", "world");
                 put("level-seed", "");
-                put("level-type", "DEFAULT");
+                put("level-type", "flat");
                 put("allow-nether", true);
                 put("allow-the_end", true);
                 put("use-terra", false);
@@ -856,17 +857,6 @@ public class Server {
 
         LevelProviderManager.addProvider(this, Anvil.class);
 
-        Generator.addGenerator(Flat.class, "flat", Generator.TYPE_FLAT);
-        Generator.addGenerator(Normal.class, "normal", Generator.TYPE_INFINITE);
-        if (useTerra) {
-            Generator.addGenerator(TerraGeneratorWrapper.class, "terra");
-            PNXPlatform.getInstance();
-        }
-        Generator.addGenerator(Normal.class, "default", Generator.TYPE_INFINITE);
-        Generator.addGenerator(Nether.class, "nether", Generator.TYPE_NETHER);
-        Generator.addGenerator(TheEnd.class, "the_end", Generator.TYPE_THE_END);
-        //todo: add old generator and hell generator
-
         for (String name : this.getConfig("worlds", new HashMap<String, Object>()).keySet()) {
             if (!this.loadLevel(name)) {
                 long seed;
@@ -883,8 +873,8 @@ public class Server {
                 }
 
                 Map<String, Object> options = new HashMap<>();
-                String[] opts = (this.getConfig("worlds." + name + ".generator", Generator.getGenerator("default").getSimpleName())).split(":");
-                Class<? extends Generator> generator = Generator.getGenerator(opts[0]);
+                String[] opts = (this.getConfig("worlds." + name + ".generator", Registries.GENERATOR.get("flat").getSimpleName())).split(":");
+                Class<? extends Generator> generator =  Registries.GENERATOR.get(opts[0]);
                 if (opts.length > 1) {
                     StringBuilder preset = new StringBuilder();
                     for (int i = 1; i < opts.length; i++) {
@@ -1192,7 +1182,7 @@ public class Server {
             try {
                 long levelTime = System.currentTimeMillis();
                 //Ensures that the server won't try to tick a level without providers.
-                if(level.getProvider().getLevel() == null) {
+                if (level.getProvider().getLevel() == null) {
                     log.warn("Tried to tick Level " + level.getName() + " without a provider!");
                     continue;
                 }
@@ -2734,7 +2724,7 @@ public class Server {
         }
 
         if (generator == null) {
-            generator = Generator.getGenerator(this.getLevelType());
+            generator = Registries.GENERATOR.get(this.getLevelType());
         }
 
         if (provider == null) {
@@ -2910,7 +2900,7 @@ public class Server {
     }
 
     public String getLevelType() {
-        return this.getPropertyString("level-type", "DEFAULT");
+        return this.getPropertyString("level-type", "flat");
     }
 
     /**

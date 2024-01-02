@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator.task;
 
 import cn.nukkit.Server;
+import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.Generator;
@@ -30,7 +31,7 @@ public class GenerationTask extends AsyncTask {
             return;
         }
 
-        SimpleChunkManager manager = (SimpleChunkManager) generator.getChunkManager();
+        ChunkManager manager = generator.getChunkManager();
 
         if (manager == null) {
             this.state = false;

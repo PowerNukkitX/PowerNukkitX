@@ -66,7 +66,6 @@ public class CraftingManager {
     @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.", replaceWith = "getPacket()")
 
     public static DataPacket packet = null;
-    @
     private static int RECIPE_COUNT = 0;
     private final VanillaRecipeParser vanillaRecipeParser;
     private final Int2ObjectMap<Map<UUID, ShapedRecipe>> shapedRecipeMap = new Int2ObjectOpenHashMap<>();
@@ -129,7 +128,6 @@ public class CraftingManager {
     private final Map<String, Recipe> recipeList = new Object2ObjectOpenHashMap<>();
     @Deprecated
     @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
-    @
     public final Collection<Recipe> recipes = recipeList.values();
     //</editor-fold>
 
@@ -181,7 +179,6 @@ public class CraftingManager {
         return UUID.nameUUIDFromBytes(stream.getBuffer());
     }
 
-    ("Public only in PowerNukkit")
     public static UUID getMultiItemHash(Collection<Item> items) {
         BinaryStream stream = new BinaryStream();
         for (Item item : items) {
@@ -197,12 +194,10 @@ public class CraftingManager {
         return UUID.nameUUIDFromBytes(stream.getBuffer());
     }
 
-    ("Public only in PowerNukkit")
     public static int getFullItemHash(Item item) {
         return 31 * getItemHash(item) + item.getCount();
     }
 
-    ("Public only in PowerNukkit")
     public static int getItemHash(Item item) {
         return getItemHash(item, item.getAux());
     }
@@ -217,7 +212,6 @@ public class CraftingManager {
         return hash;
     }
 
-    ("Public only in PowerNukkit")
     public static int getPotionHash(Item ingredient, Item potion) {
         int ingredientId = ingredient.getId();
         int potionId = potion.getId();
@@ -1011,7 +1005,6 @@ public class CraftingManager {
         return new ShapedRecipe(id.toString(), priority, primaryResult, shape, ingredients, extraResults);
     }
 
-    @
     private Item parseRecipeItem(Map<String, Object> data) {
         Item item;
 

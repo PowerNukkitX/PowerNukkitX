@@ -19,8 +19,6 @@ public abstract class Zlib {
         providers[2] = new ZlibThreadLocal();
         provider = providers[2];
     }
-
-    @
     public static void setProvider(int providerIndex) {
         var lang = Server.getInstance() == null ? new BaseLang("eng") : Server.getInstance().getLanguage();
         switch (providerIndex) {

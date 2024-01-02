@@ -5,12 +5,12 @@ import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.ListChunkManager;
-import cn.nukkit.level.generator.object.tree.ObjectCherryTree;
+import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.ObjectCherryTree;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.utils.random.RandomSource;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -72,21 +72,20 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
     }
 
     private void grow() {
-        ListChunkManager chunkManager = new ListChunkManager(this.level);
+        BlockManager blockManager = new BlockManager(this.level);
         Vector3 vector3 = new Vector3(this.x, this.y - 1, this.z);
         var objectCherryTree = new ObjectCherryTree();
-        objectCherryTree.generate(chunkManager, new NukkitRandom(), this);
-        StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
-        this.level.getServer().getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
-            return;
-        }
-        if (this.level.getBlock(vector3).getId().equals(BlockID.DIRT_WITH_ROOTS)) {
-            this.level.setBlock(vector3, Block.get(BlockID.DIRT));
-        }
-        for (Block block : ev.getBlockList()) {
-            if (block.isAir()) continue;
-            this.level.setBlock(block, block);
+        boolean generate = objectCherryTree.generate(blockManager, RandomSource.create(), this);
+        if (generate) {
+            StructureGrowEvent ev = new StructureGrowEvent(this, blockManager.getBlocks());
+            this.level.getServer().getPluginManager().callEvent(ev);
+            if (ev.isCancelled()) {
+                return;
+            }
+            if (this.level.getBlock(vector3).getId().equals(BlockID.DIRT_WITH_ROOTS)) {
+                this.level.setBlock(vector3, Block.get(BlockID.DIRT));
+            }
+            blockManager.apply(ev.getBlockList(), block -> !block.isAir());
         }
     }
 

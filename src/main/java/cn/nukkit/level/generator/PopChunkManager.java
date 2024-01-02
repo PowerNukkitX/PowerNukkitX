@@ -1,11 +1,11 @@
 package cn.nukkit.level.generator;
 
-import cn.nukkit.level.format.generic.BaseFullChunk;
+import cn.nukkit.level.format.IChunk;
 
 import java.util.Arrays;
 
 public class PopChunkManager extends SimpleChunkManager {
-    private final BaseFullChunk[] chunks = new BaseFullChunk[9];
+    private final IChunk[] chunks = new IChunk[9];
     private boolean clean = true;
     private int CX = Integer.MAX_VALUE;
     private int CZ = Integer.MAX_VALUE;
@@ -26,7 +26,7 @@ public class PopChunkManager extends SimpleChunkManager {
     }
 
     @Override
-    public BaseFullChunk getChunk(int chunkX, int chunkZ) {
+    public IChunk getChunk(int chunkX, int chunkZ) {
         int index;
         switch (chunkX - CX) {
             case 0:
@@ -57,25 +57,17 @@ public class PopChunkManager extends SimpleChunkManager {
     }
 
     @Override
-    public void setChunk(int chunkX, int chunkZ, BaseFullChunk chunk) {
+    public void setChunk(int chunkX, int chunkZ, IChunk chunk) {
         if (CX == Integer.MAX_VALUE) {
             CX = chunkX;
             CZ = chunkZ;
         }
-        int index;
-        switch (chunkX - CX) {
-            case 0:
-                index = 0;
-                break;
-            case 1:
-                index = 1;
-                break;
-            case 2:
-                index = 2;
-                break;
-            default:
-                throw new UnsupportedOperationException("Chunk is outside population area");
-        }
+        int index = switch (chunkX - CX) {
+            case 0 -> 0;
+            case 1 -> 1;
+            case 2 -> 2;
+            default -> throw new UnsupportedOperationException("Chunk is outside population area");
+        };
         switch (chunkZ - CZ) {
             case 0:
                 break;

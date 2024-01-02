@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.OldLeafType;
 import cn.nukkit.block.property.enums.SaplingType;
@@ -11,11 +10,11 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.ListChunkManager;
-import cn.nukkit.level.generator.object.BasicGenerator;
-import cn.nukkit.level.generator.object.tree.*;
+import cn.nukkit.level.generator.object.HugeTreesGenerator;
+import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.utils.random.NukkitRandomSource;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
@@ -126,7 +125,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
     }
 
     private void grow() {
-        BasicGenerator generator = null;
+        ObjectGenerator generator = null;
         boolean bigTree = false;
 
         Vector3 vector3 = new Vector3(this.x, this.y - 1, this.z);
@@ -168,7 +167,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
                     vector3 = this.add(vector2.getFloorX(), 0, vector2.getFloorY());
                     generator = new HugeTreesGenerator(0, 0, null, null) {
                         @Override
-                        public boolean generate(ChunkManager level, NukkitRandom rand, Vector3 position) {
+                        public boolean generate(ChunkManager level, NukkitRandomSource rand, Vector3 position) {
                             var object = new ObjectBigSpruceTree(0.75f, 4);
                             object.setRandomTreeHeight(rand);
                             if (!this.ensureGrowable(level, rand, position, object.getTreeHeight())) {
@@ -186,7 +185,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
                 }
             default:
                 ListChunkManager chunkManager = new ListChunkManager(this.level);
-                ObjectTree.growTree(chunkManager, this.getFloorX(), this.getFloorY(), this.getFloorZ(), new NukkitRandom(), getWoodType(), false);
+                ObjectTree.growTree(chunkManager, this.getFloorX(), this.getFloorY(), this.getFloorZ(), new NukkitRandomSource(), getWoodType(), false);
                 StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
                 this.level.getServer().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
@@ -211,7 +210,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
         }
 
         ListChunkManager chunkManager = new ListChunkManager(this.level);
-        boolean success = generator.generate(chunkManager, new NukkitRandom(), vector3);
+        boolean success = generator.generate(chunkManager, new NukkitRandomSource(), vector3);
         StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
         this.level.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled() || !success) {
