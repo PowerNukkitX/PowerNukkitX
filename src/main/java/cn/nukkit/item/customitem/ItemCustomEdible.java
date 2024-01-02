@@ -45,7 +45,6 @@ public abstract class ItemCustomEdible extends ItemEdible implements CustomItem 
         return textureName;
     }
 
-
     @Override
     public String getNamespaceId() {
         return id;
@@ -55,7 +54,6 @@ public abstract class ItemCustomEdible extends ItemEdible implements CustomItem 
     public final int getId() {
         return CustomItem.super.getId();
     }
-
 
     public abstract Map.Entry<Plugin, Food> getFood();
 

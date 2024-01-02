@@ -55,7 +55,6 @@ public class PlayerTeleportEvent extends PlayerEvent implements Cancellable {
         return new Location(vector.getX(), vector.getY(), vector.getZ(), 0, 0, baseLevel);
     }
 
-
     public enum TeleportCause {
         COMMAND,       // For Nukkit tp command only
         PLUGIN,        // Every plugin

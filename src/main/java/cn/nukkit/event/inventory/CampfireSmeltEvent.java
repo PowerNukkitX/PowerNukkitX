@@ -33,31 +33,25 @@ public class CampfireSmeltEvent extends BlockEvent implements Cancellable {
         this.campfire = campfire;
     }
 
-
     public BlockEntityCampfire getCampfire() {
         return campfire;
     }
-
 
     public Item getSource() {
         return source;
     }
 
-
     public Item getResult() {
         return result;
     }
-
 
     public void setResult(Item result) {
         this.result = result;
     }
 
-
     public boolean getKeepItem() {
         return keepItem;
     }
-
 
     public void setKeepItem(boolean keepItem) {
         this.keepItem = keepItem;

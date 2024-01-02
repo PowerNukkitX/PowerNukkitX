@@ -253,7 +253,6 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         return false;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;

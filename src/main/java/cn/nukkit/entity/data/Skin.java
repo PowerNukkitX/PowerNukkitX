@@ -262,21 +262,17 @@ public class Skin {
         this.capeOnClassic = capeOnClassic;
     }
 
-
     public boolean isPrimaryUser() {
         return primaryUser;
     }
-
 
     public void setPrimaryUser(boolean primaryUser) {
         this.primaryUser = primaryUser;
     }
 
-
     public String getGeometryDataEngineVersion() {
         return geometryDataEngineVersion;
     }
-
 
     public void setGeometryDataEngineVersion(String geometryDataEngineVersion) {
         this.geometryDataEngineVersion = geometryDataEngineVersion;
@@ -315,7 +311,6 @@ public class Skin {
         this.fullSkinId = fullSkinId;
     }
 
-
     public String getPlayFabId() {
         if (this.persona && (this.playFabId == null || this.playFabId.isEmpty())) {
             try {
@@ -326,7 +321,6 @@ public class Skin {
         }
         return this.playFabId;
     }
-
 
     public void setPlayFabId(String playFabId) {
         this.playFabId = playFabId;

@@ -47,7 +47,6 @@ public class CreativeItemRegistry extends BaseRegistry<Integer, Item, Item> impl
         }
     }
 
-
     /**
      * 获取指定物品在{@link CreativeItemRegistry}中的索引
      * <p>

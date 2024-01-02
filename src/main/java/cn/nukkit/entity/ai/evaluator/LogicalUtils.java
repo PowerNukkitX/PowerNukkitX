@@ -29,5 +29,4 @@ public interface LogicalUtils {
         return new AllMatchEvaluator(evaluators);
     }
 
-
 }

@@ -2,7 +2,7 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.MinecraftItemID;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
@@ -15,13 +15,10 @@ public class EntitySquid extends EntityAnimal implements EntitySwimmable {
     public @NotNull String getIdentifier() {
         return SQUID;
     }
-    
 
     public EntitySquid(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
-    
 
     @Override
     public float getWidth() {
@@ -41,9 +38,8 @@ public class EntitySquid extends EntityAnimal implements EntitySwimmable {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{MinecraftItemID.INK_SAC.get(1)};
+        return new Item[]{ Item.get(ItemID.INK_SAC, 0, 1) };
     }
-
 
     @Override
     public String getOriginalName() {

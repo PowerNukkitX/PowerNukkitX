@@ -63,11 +63,9 @@ public class GrindstoneItemAction extends InventoryAction {
         // Does nothing
     }
 
-
     public int getExperience() {
         return experience;
     }
-
 
     public int getType() {
         return type;

@@ -11,7 +11,6 @@ public class CampfireInventory extends ContainerInventory {
         super(campfire, InventoryType.CAMPFIRE);
     }
 
-
     public CampfireInventory(BlockEntityCampfire furnace, InventoryType inventoryType) {
         super(furnace, inventoryType);
     }

@@ -34,24 +34,20 @@ public class ResourcePackChunkDataPacket extends AbstractResourcePackDataPacket 
         this.putByteArray(this.data);
     }
 
-
     @Override
     public Version getPackVersion() {
         return packVersion;
     }
-
 
     @Override
     public void setPackVersion(Version packVersion) {
         this.packVersion = packVersion;
     }
 
-
     @Override
     public UUID getPackId() {
         return packId;
     }
-
 
     @Override
     public void setPackId(UUID packId) {

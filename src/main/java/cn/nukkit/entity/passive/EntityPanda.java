@@ -34,7 +34,6 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable {
         super.initEntity();
     }
 
-
     @Override
     public String getOriginalName() {
         return "Panda";

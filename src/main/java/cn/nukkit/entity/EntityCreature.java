@@ -27,7 +27,6 @@ public abstract class EntityCreature extends EntityLiving implements EntityNamea
         return false;
     }
 
-
     @Override
     public final boolean playerApplyNameTag(@NotNull Player player, @NotNull Item item) {
         return applyNameTag(player, item);

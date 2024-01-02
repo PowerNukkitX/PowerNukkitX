@@ -33,12 +33,10 @@ public class PacketViolationWarningPacket extends DataPacket {
         this.putString(this.context);
     }
 
-
     public enum PacketViolationType {
         UNKNOWN,
         MALFORMED_PACKET
     }
-
 
     public enum PacketViolationSeverity {
         UNKNOWN,

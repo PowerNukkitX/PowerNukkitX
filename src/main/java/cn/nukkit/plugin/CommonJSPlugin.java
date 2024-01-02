@@ -233,7 +233,6 @@ public class CommonJSPlugin implements Plugin, Listener {
         return jsPluginLoader;
     }
 
-
     @Override
     public File getFile() {
         return pluginDir;

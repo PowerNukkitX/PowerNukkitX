@@ -106,7 +106,7 @@ public class ObjectCherryTree extends TreeGenerator {
             var tmpX = x - leftSideTrunkLength * xMultiplier;
             var tmpY = y + leftSideTrunkStartY;
             var tmpZ = z - leftSideTrunkLength * zMultiplier;
-            level.setBlockStateAt(tmpX, tmpY, tmpZ, BlockAir.STATE);
+            level.setBlockStateAt(tmpX, tmpY, tmpZ, BlockAir.PROPERTIES.getDefaultState());
             tmpX += xMultiplier;
             tmpY += 1;
             tmpZ += zMultiplier;
@@ -134,7 +134,7 @@ public class ObjectCherryTree extends TreeGenerator {
             var tmpX = x + rightSideTrunkLength * xMultiplier;
             var tmpY = y + rightSideTrunkStartY;
             var tmpZ = z + rightSideTrunkLength * zMultiplier;
-            level.setBlockStateAt(tmpX, tmpY, tmpZ, BlockAir.STATE);
+            level.setBlockStateAt(tmpX, tmpY, tmpZ, BlockAir.PROPERTIES.getDefaultState());
             tmpX -= xMultiplier;
             tmpY += 1;
             tmpZ -= zMultiplier;
@@ -189,7 +189,6 @@ public class ObjectCherryTree extends TreeGenerator {
         if (!canPlace) {
             return false;
         }
-
 
         final var sideBlockState = xMultiplier == 0 ? LOG_Z_AXIS : LOG_X_AXIS;
         // Generate main trunk

@@ -120,7 +120,6 @@ public abstract class EntityProjectile extends Entity {
         }
     }
 
-
     protected void afterCollisionWithEntity(Entity entity) {
 
     }
@@ -149,7 +148,6 @@ public abstract class EntityProjectile extends Entity {
             this.namedTag.putShort("Age", this.age);
         }
     }
-
 
     protected void updateMotion() {
         this.motionY -= this.getGravity();
@@ -253,13 +251,11 @@ public abstract class EntityProjectile extends Entity {
         return hasUpdate;
     }
 
-
     public void updateRotation() {
         double f = Math.sqrt((this.motionX * this.motionX) + (this.motionZ * this.motionZ));
         this.yaw = Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI;
         this.pitch = Math.atan2(this.motionY, f) * 180 / Math.PI;
     }
-
 
     public void inaccurate(float modifier) {
         Random rand = ThreadLocalRandom.current();
@@ -269,7 +265,6 @@ public abstract class EntityProjectile extends Entity {
         this.motionZ += rand.nextGaussian() * 0.007499999832361937 * modifier;
     }
 
-
     protected void onCollideWithBlock(Position position, Vector3 motion) {
         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
         for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
@@ -277,16 +272,13 @@ public abstract class EntityProjectile extends Entity {
         }
     }
 
-
     protected boolean onCollideWithBlock(Position position, Vector3 motion, Block collisionBlock) {
         return collisionBlock.onProjectileHit(this, position, motion);
     }
 
-
     protected void addHitEffect() {
 
     }
-
 
     @Deprecated
     @DeprecationDetails(
@@ -295,7 +287,6 @@ public abstract class EntityProjectile extends Entity {
     public boolean hasAge() {
         return getHasAge();
     }
-
 
     @Deprecated
     @DeprecationDetails(
@@ -308,7 +299,6 @@ public abstract class EntityProjectile extends Entity {
     public boolean getHasAge() {
         return !this.noAge;
     }
-
 
     public void setHasAge(boolean hasAge) {
         this.noAge = !hasAge;

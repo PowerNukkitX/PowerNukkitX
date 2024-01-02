@@ -34,7 +34,6 @@ public class ItemStoneAxe extends ItemTool {
         return 4;
     }
 
-
     @Override
     public boolean canBreakShield() {
         return true;

@@ -26,26 +26,21 @@ public class EntityDamageBlockedEvent extends EntityEvent implements Cancellable
         this.animation = animation;
     }
 
-
     public EntityDamageEvent.DamageCause getCause() {
         return damage.getCause();
     }
-
 
     public Entity getAttacker() {
         return damage.getEntity();
     }
 
-
     public EntityDamageEvent getDamage() {
         return damage;
     }
 
-
     public boolean getKnockBackAttacker() {
         return knockBackAttacker;
     }
-
 
     public boolean getAnimation() {
         return animation;

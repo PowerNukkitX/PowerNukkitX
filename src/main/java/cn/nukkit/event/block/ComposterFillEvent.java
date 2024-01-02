@@ -25,31 +25,25 @@ public class ComposterFillEvent extends BlockEvent implements Cancellable {
         this.success = success;
     }
 
-
     public Player getPlayer() {
         return player;
     }
-
 
     public Item getItem() {
         return item;
     }
 
-
     public int getChance() {
         return chance;
     }
-
 
     public boolean isSuccess() {
         return success;
     }
 
-
     public void setSuccess(boolean success) {
         this.success = success;
     }
-
 
     public static HandlerList getHandlers() {
         return handlers;

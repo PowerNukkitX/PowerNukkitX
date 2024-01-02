@@ -108,11 +108,9 @@ public class QueryRegenerateEvent extends ServerEvent {
         this.players = players;
     }
 
-
     public String getVersion() {
         return this.version;
     }
-
 
     public void setVersion(String version) {
         this.version = version;

@@ -15,7 +15,6 @@ public class BlockEntityComparator extends BlockEntity {
         super(chunk, nbt);
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();

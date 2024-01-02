@@ -24,7 +24,6 @@ public class EntityMetadata {
         return this.getOrDefault(id, null);
     }
 
-
     public EntityData<?> getOrDefault(int id, EntityData<?> defaultValue) {
         var data = this.map.getOrDefault(id, defaultValue);
         if (data == null) {

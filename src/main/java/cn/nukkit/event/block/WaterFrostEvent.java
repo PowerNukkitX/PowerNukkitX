@@ -15,7 +15,6 @@ public class WaterFrostEvent extends BlockEvent implements Cancellable {
         return handlers;
     }
 
-
     protected final Entity entity;
 
 
@@ -23,7 +22,6 @@ public class WaterFrostEvent extends BlockEvent implements Cancellable {
         super(block);
         this.entity = entity;
     }
-
 
     public Entity getEntity() {
         return entity;

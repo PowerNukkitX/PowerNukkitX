@@ -113,7 +113,6 @@ public class RuntimeItemMapping {
             throw new RuntimeException(e);
         }
 
-
         try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("block_mappings.json")) {
             if (stream == null) {
                 throw new AssertionError("Unable to load block_mappings.json");
@@ -199,7 +198,6 @@ public class RuntimeItemMapping {
         return this.itemPalette;
     }
 
-
     public void registerCustomItem(CustomItem customItem, Supplier<Item> constructor) {
         var runtimeId = CustomItemDefinition.getRuntimeId(customItem.getNamespaceId());
         RuntimeEntry entry = new RuntimeEntry(
@@ -215,14 +213,12 @@ public class RuntimeItemMapping {
         this.generatePalette();
     }
 
-
     public void deleteCustomItem(CustomItem customItem) {
         this.runtimeId2Name.remove(customItem.getId());
         this.name2RuntimeId.removeInt(customItem.getNamespaceId());
         this.itemPaletteEntries.removeIf(next -> next.identifier().equals(customItem.getNamespaceId()));
         this.generatePalette();
     }
-
 
     public void registerCustomBlock(List<CustomBlock> blocks) {
         for (var block : blocks) {
@@ -246,7 +242,6 @@ public class RuntimeItemMapping {
         }
         this.generatePalette();
     }
-
 
     public void deleteCustomBlock(List<CustomBlock> blocks) {
         for (var block : blocks) {
@@ -317,7 +312,6 @@ public class RuntimeItemMapping {
         return legacyEntry.fullID();
     }
 
-
     public byte[] getItemDataPalette() {
         return this.itemPalette;
     }
@@ -330,8 +324,7 @@ public class RuntimeItemMapping {
      */
 
 
-    @Nullable
-    public String getNamespacedIdByNetworkId(int networkId) {
+    public @Nullable String getNamespacedIdByNetworkId(int networkId) {
         return runtimeId2Name.get(networkId);
     }
 
@@ -394,7 +387,6 @@ public class RuntimeItemMapping {
         return Item.get(id, data, amount);
     }
 
-
     @SneakyThrows
 
 
@@ -403,7 +395,6 @@ public class RuntimeItemMapping {
         var Item = declaredConstructor.newInstance();
         registerNamespacedIdItem(Item.getNamespaceId(), stringItemSupplier(declaredConstructor));
     }
-
 
     public void registerNamespacedIdItem(@NotNull String namespacedId, @NotNull Constructor<? extends Item> constructor) {
         Preconditions.checkNotNull(namespacedId, "namespacedId is null");
@@ -436,7 +427,6 @@ public class RuntimeItemMapping {
             }
         };
     }
-
 
     @NotNull
     private static Supplier<Item> stringItemSupplier(@NotNull Constructor<? extends StringItem> constructor) {

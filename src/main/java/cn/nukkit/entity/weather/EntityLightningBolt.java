@@ -2,7 +2,7 @@ package cn.nukkit.entity.weather;
 
 import cn.nukkit.block.*;
 import cn.nukkit.block.Block;
-import cn.nukkit.blockproperty.value.OxidizationLevel;
+import cn.nukkit.block.property.enums.OxidizationLevel;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.event.block.BlockIgniteEvent;
@@ -39,7 +39,6 @@ public class EntityLightningBolt extends Entity implements EntityLightningStrike
     public int liveTime;
     protected boolean isEffect = true;
 
-
     public EntityLightningBolt(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -47,8 +46,6 @@ public class EntityLightningBolt extends Entity implements EntityLightningStrike
     private static boolean isVulnerableOxidizable(@NotNull Block block) {
         return block instanceof Oxidizable && (!(block instanceof Waxable) || !((Waxable) block).isWaxed());
     }
-
-    
 
     @Override
     protected void initEntity() {
@@ -62,7 +59,7 @@ public class EntityLightningBolt extends Entity implements EntityLightningStrike
 
         if (isEffect && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK) && (this.server.getDifficulty() >= 2)) {
             Block block = this.getLevelBlock();
-            if (block.getId() == 0 || block.getId() == Block.TALL_GRASS) {
+            if (block.isAir() || block.getId().equals(BlockID.TALLGRASS)) {
                 BlockFire fire = (BlockFire) Block.get(BlockID.FIRE);
                 fire.x = block.x;
                 fire.y = block.y;
@@ -99,7 +96,6 @@ public class EntityLightningBolt extends Entity implements EntityLightningStrike
         source.setDamage(0);
         return super.attack(source);
     }
-
 
     @Override
     public boolean onUpdate(int currentTick) {
@@ -195,11 +191,11 @@ public class EntityLightningBolt extends Entity implements EntityLightningStrike
                 if (this.isEffect && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
                     Block block = this.getLevelBlock();
 
-                    if (block.getId() == Block.AIR || block.getId() == Block.TALL_GRASS) {
-                        BlockIgniteEvent e = new BlockIgniteEvent(block, null, this, BlockIgniteEvent.BlockIgniteCause.LIGHTNING);
-                        getServer().getPluginManager().callEvent(e);
+                    if (block.isAir() || block.getId().equals(Block.TALLGRASS)) {
+                        BlockIgniteEvent event = new BlockIgniteEvent(block, null, this, BlockIgniteEvent.BlockIgniteCause.LIGHTNING);
+                        getServer().getPluginManager().callEvent(event);
 
-                        if (!e.isCancelled()) {
+                        if (!event.isCancelled()) {
                             Block fire = Block.get(BlockID.FIRE);
                             this.level.setBlock(block, fire);
                             this.getLevel().scheduleUpdate(fire, fire.tickRate());
@@ -222,7 +218,6 @@ public class EntityLightningBolt extends Entity implements EntityLightningStrike
 
         return true;
     }
-
 
     @Override
     public String getOriginalName() {

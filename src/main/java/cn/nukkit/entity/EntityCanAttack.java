@@ -34,6 +34,5 @@ public interface EntityCanAttack {
         return difficulty != 0 ? getDiffHandDamage()[difficulty - 1] : 0;
     }
 
-
     boolean attackTarget(Entity entity);
 }

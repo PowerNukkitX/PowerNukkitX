@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockBrainCoral extends BlockCoral {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:brain_coral");
+    public static final BlockProperties PROPERTIES = new BlockProperties(BRAIN_CORAL);
 
     @Override
     public @NotNull BlockProperties getProperties() {

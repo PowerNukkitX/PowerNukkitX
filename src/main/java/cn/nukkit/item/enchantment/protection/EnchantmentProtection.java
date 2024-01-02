@@ -29,7 +29,6 @@ public abstract class EnchantmentProtection extends Enchantment {
         this(id, name, Rarity.fromWeight(weight), type);
     }
 
-
     protected EnchantmentProtection(int id, String name, Rarity rarity, EnchantmentProtection.TYPE type) {
         super(id, name, rarity, EnchantmentType.ARMOR);
         this.protectionType = type;

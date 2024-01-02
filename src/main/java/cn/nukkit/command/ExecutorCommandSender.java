@@ -45,7 +45,6 @@ public class ExecutorCommandSender implements CommandSender {
         executor.sendMessage(message);
     }
 
-
     public void sendCommandOutput(CommandOutputContainer container) {
         executor.sendCommandOutput(container);
     }
@@ -55,9 +54,8 @@ public class ExecutorCommandSender implements CommandSender {
         return executor.getServer();
     }
 
-    @NotNull
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return entity.getName();
     }
 
@@ -81,16 +79,13 @@ public class ExecutorCommandSender implements CommandSender {
         return isPlayer() ? (Player) this.entity : null;
     }
 
-    @NotNull
     @Override
-    public Position getPosition() {
+    public @NotNull Position getPosition() {
         return (executeLocation == null ? entity : executeLocation).clone();
     }
 
-
-    @NotNull
     @Override
-    public Location getLocation() {
+    public @NotNull Location getLocation() {
         return (executeLocation == null ? entity : executeLocation).clone();
     }
 

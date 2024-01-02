@@ -31,16 +31,13 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
         super(blockstate);
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntityBeacon> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityBeacon> getBlockEntityClass() {
         return BlockEntityBeacon.class;
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.BEACON;
     }
 
@@ -49,15 +46,11 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
         return 3;
     }
 
-
-    @NotNull
     @Override
     public double calculateBreakTime(@NotNull Item item) {
         return calculateBreakTime(item, null);
     }
 
-
-    @NotNull
     @Override
     public double calculateBreakTime(@NotNull Item item, @org.jetbrains.annotations.Nullable Player player) {
         return 4.5;
@@ -88,7 +81,6 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
         return true;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -116,7 +108,6 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
     }
 
     @Override
-
     public  boolean canBePulled() {
         return false;
     }

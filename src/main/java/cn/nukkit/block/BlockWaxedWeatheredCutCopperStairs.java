@@ -19,7 +19,6 @@ public class BlockWaxedWeatheredCutCopperStairs extends BlockWeatheredCutCopperS
         super(blockstate);
     }
 
-
     @Override
     public boolean isWaxed() {
         return true;

@@ -11,7 +11,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.INFINIBURN_BIT;
  */
 
 public class BlockBedrock extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:bedrock", INFINIBURN_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BEDROCK, INFINIBURN_BIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -26,11 +26,9 @@ public class BlockBedrock extends BlockSolid {
         super(blockstate);
     }
 
-
     public boolean getBurnIndefinitely() {
         return getPropertyValue(INFINIBURN_BIT);
     }
-
 
     public void setBurnIndefinitely(boolean infiniburn) {
         setPropertyValue(INFINIBURN_BIT, infiniburn);
@@ -62,7 +60,6 @@ public class BlockBedrock extends BlockSolid {
     }
 
     @Override
-
     public boolean canBePulled() {
         return false;
     }

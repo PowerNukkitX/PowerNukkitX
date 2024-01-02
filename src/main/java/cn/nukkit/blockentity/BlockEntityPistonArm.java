@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockPistonHead;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityMoveByPistonEvent;
 import cn.nukkit.level.Level;
@@ -36,9 +35,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     public boolean extending;
     public boolean sticky;
 
-
     public byte state;
-
 
     public byte newState = 1;
 
@@ -181,7 +178,6 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         return super.onUpdate() || hasUpdate;
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -234,7 +230,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     @Override
     public boolean isBlockEntityValid() {
         var blockId = getBlock().getId();
-        return blockId == BlockID.PISTON || blockId == BlockID.STICKY_PISTON;
+        return blockId.equals(BlockID.PISTON) || blockId.equals(BlockID.STICKY_PISTON);
     }
 
     public CompoundTag getSpawnCompound() {

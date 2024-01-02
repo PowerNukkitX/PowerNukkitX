@@ -20,7 +20,6 @@ public final class AtomicIntIncrementSupplier implements IntSupplier {
         return next.getAndAdd(increment);
     }
 
-
     public IntStream stream() {
         return IntStream.generate(this); 
     }

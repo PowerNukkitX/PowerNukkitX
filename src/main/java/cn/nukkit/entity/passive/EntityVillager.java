@@ -44,7 +44,6 @@ public class EntityVillager extends EntityCreature implements IEntityNPC, Entity
         return 1.9f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Villager";

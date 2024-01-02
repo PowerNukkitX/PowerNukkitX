@@ -53,7 +53,6 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         }
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -404,12 +403,10 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         return nbt;
     }
 
-
     @Override
     public Inventory getIngredientView() {
         return new InventorySlice(this.inventory, 0, 1);
     }
-
 
     @Override
     public Inventory getProductView() {

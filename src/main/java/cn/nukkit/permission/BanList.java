@@ -87,7 +87,6 @@ public class BanList {
         }
     }
 
-
     public void removeExpired() {
         for (String name : new ArrayList<>(this.list.keySet())) {
             BanEntry entry = this.list.get(name);

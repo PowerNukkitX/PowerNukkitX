@@ -31,26 +31,21 @@ public enum OptionalBoolean {
         this.value = value;
     }
 
-
     public static OptionalBoolean of(Boolean value) {
         return of(Objects.requireNonNull(value).booleanValue());
     }
-
 
     public static OptionalBoolean of(boolean value) {
         return value ? TRUE : FALSE;
     }
 
-
     public static OptionalBoolean ofNullable(Boolean value) {
         return value == null ? EMPTY : of(value);
     }
 
-
     public static OptionalBoolean empty() {
         return EMPTY;
     }
-
 
     public boolean getAsBoolean() {
         if (value == null) {
@@ -59,11 +54,9 @@ public enum OptionalBoolean {
         return value;
     }
 
-
     public boolean isPresent() {
         return value != null;
     }
-
 
     public void ifPresent(BooleanConsumer consumer) {
         if (value != null) {
@@ -71,16 +64,13 @@ public enum OptionalBoolean {
         }
     }
 
-
     public boolean orElse(boolean other) {
         return value != null ? value : other;
     }
 
-
     public boolean orElseGet(BooleanSupplier other) {
         return value != null ? value : other.getAsBoolean();
     }
-
 
     public <X extends Throwable> boolean orElseThrow(Supplier<X> exceptionSupplier) throws X {
         if (value != null) {

@@ -27,7 +27,6 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         super(chunk, nbt);
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -47,15 +46,12 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         }
     }
 
-
     @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN", reason = "renamed", replaceWith = "getMovingBlockEntityCompound()")
     public CompoundTag getBlockEntity() {
         return getMovingBlockEntityCompound();
     }
 
-
-    @Nullable
-    public CompoundTag getMovingBlockEntityCompound() {
+    public @Nullable CompoundTag getMovingBlockEntityCompound() {
         if (this.namedTag.contains("movingEntity")) {
             return this.namedTag.getCompound("movingEntity");
         }
@@ -63,16 +59,13 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         return null;
     }
 
-
     public Block getMovingBlock() {
         return this.block;
     }
 
-
     public String getMovingBlockString() {
         return this.blockString;
     }
-
 
     public void moveCollidedEntities(BlockEntityPistonArm piston, BlockFace moveDirection) {
         var bb = block.getBoundingBox();

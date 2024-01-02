@@ -186,7 +186,6 @@ public class Config {
         return correct;
     }
 
-
     public boolean loadAsJson(@Nullable InputStream inputStream, @NotNull Gson gson) {
         if (inputStream == null) return false;
         if (this.correct) {
@@ -227,7 +226,6 @@ public class Config {
         return save();
     }
 
-
     public boolean saveAsJson(@NotNull File file, boolean async, @NotNull Gson gson) {
         this.file = file;
         return saveAsJson(async, gson);
@@ -236,7 +234,6 @@ public class Config {
     public boolean save() {
         return this.save(false);
     }
-
 
     public boolean saveAsJson(boolean async, @NotNull Gson gson) {
         if (!this.correct) {
@@ -471,7 +468,6 @@ public class Config {
         this.config = this.fillDefaults(map, this.config);
         return this.config.size() - size;
     }
-
 
     private ConfigSection fillDefaults(ConfigSection defaultMap, ConfigSection data) {
         for (String key : defaultMap.keySet()) {

@@ -92,7 +92,6 @@ public class MathHelper {
         return check > max ? max : (check < min ? min : check);
     }
 
-
     public static float clamp(float num, float min, float max) {
         return num > max ? max : (num < min ? min : num);
     }

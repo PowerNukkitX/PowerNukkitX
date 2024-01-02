@@ -47,18 +47,15 @@ public class EntityZoglin extends EntityMob implements EntityWalkable, EntityAge
         return 0.9f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Zoglin";
     }
 
-
     @Override
     public boolean isUndead() {
         return true;
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {

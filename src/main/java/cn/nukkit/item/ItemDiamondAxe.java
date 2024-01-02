@@ -25,7 +25,6 @@ public class ItemDiamondAxe extends ItemTool {
         return 6;
     }
 
-
     @Override
     public boolean canBreakShield() {
         return true;

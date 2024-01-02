@@ -34,7 +34,6 @@ public interface BlockPositionConsumer {
         }
     }
 
-
     static void xzy(int fromX, int fromY, int fromZ, int toX, int toY, int toZ, int xInc, int yInc, int zInc, BlockPositionConsumer iterator) {
         validate(fromX, fromY, fromZ, toX, toY, toZ, xInc, yInc, zInc);
 
@@ -49,11 +48,9 @@ public interface BlockPositionConsumer {
                         )));
     }
 
-
     static void xzy(int fromX, int fromY, int fromZ, int toX, int toY, int toZ, BlockPositionConsumer iterator) {
         xzy(fromX, fromY, fromZ, toX, toY, toZ, fromX <= toX ? 1 : -1, fromY <= toY ? 1 : -1, fromZ <= toZ ? 1 : -1, iterator);
     }
-
 
     static void xzy(int toX, int toY, int toZ, BlockPositionConsumer iterator) {
         xzy(0, 0, 0, toX, toY, toZ, iterator);

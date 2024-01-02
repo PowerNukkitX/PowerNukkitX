@@ -26,7 +26,6 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
         updateTotalPages();
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -49,7 +48,7 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
                 .putBoolean("isMovable", this.movable);
 
         Item book = getBook();
-        if (book.getId() != Item.AIR) {
+        if (!book.isNull()) {
             c.putCompound("book", NBTIO.putItemHelper(book));
             c.putBoolean("hasBook", true);
             c.putInt("page", getRawPage());
@@ -71,11 +70,9 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
         level.dropItem(this, getBook());
     }
 
-
     public boolean hasBook() {
         return this.namedTag.contains("book") && this.namedTag.get("book") instanceof CompoundTag;
     }
-
 
     public Item getBook() {
         if (!hasBook()) {
@@ -85,9 +82,8 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
         }
     }
 
-
     public void setBook(Item item) {
-        if (item.getId() == Item.WRITTEN_BOOK || item.getId() == Item.BOOK_AND_QUILL) {
+        if (item.getId().equals(Item.WRITTEN_BOOK) || item.getId().equals(Item.WRITABLE_BOOK)) {
             this.namedTag.putCompound("book", NBTIO.putItemHelper(item));
         } else {
             this.namedTag.remove("book");
@@ -96,37 +92,30 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
         updateTotalPages();
     }
 
-
     public int getLeftPage() {
         return (getRawPage() * 2) + 1;
     }
-
 
     public int getRightPage() {
         return getLeftPage() + 1;
     }
 
-
     public void setLeftPage(int newLeftPage) {
         setRawPage((newLeftPage - 1) /2);
     }
 
-
     public void setRightPage(int newRightPage) {
         setLeftPage(newRightPage -1);
     }
-
 
     public void setRawPage(int page) {
         this.namedTag.putInt("page", Math.min(page, totalPages));
         this.getLevel().updateAround(this);
     }
 
-
     public int getRawPage() {
         return this.namedTag.getInt("page");
     }
-
 
     public int getTotalPages() {
         return totalPages;
@@ -135,7 +124,7 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     
     private void updateTotalPages() {
         Item book = getBook();
-        if (book.getId() == Item.AIR || !book.hasCompoundTag()) {
+        if (book.isNull() || !book.hasCompoundTag()) {
             totalPages = 0;
         } else {
             totalPages = book.getNamedTag().getList("pages", CompoundTag.class).size();

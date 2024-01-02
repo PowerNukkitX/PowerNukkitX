@@ -219,7 +219,6 @@ public class HumanStringComparator implements Comparator<String> {
         return list;
     }
 
-
     public static HumanStringComparator getInstance() {
         return INSTANCE;
     }

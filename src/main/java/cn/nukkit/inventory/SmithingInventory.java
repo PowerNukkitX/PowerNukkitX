@@ -50,9 +50,7 @@ public class SmithingInventory extends FakeBlockUIComponent {
         super(playerUI, InventoryType.SMITHING_TABLE, 51, position);
     }
 
-
-    @Nullable
-    public SmithingRecipe matchRecipe() {
+    public @Nullable SmithingRecipe matchRecipe() {
         return Server.getInstance().getCraftingManager().matchSmithingRecipe(getEquipment(), getIngredient());
     }
 
@@ -63,7 +61,6 @@ public class SmithingInventory extends FakeBlockUIComponent {
         }
         super.onSlotChange(index, before, send);
     }
-
 
     public void updateResult() {
         Item result;
@@ -82,7 +79,6 @@ public class SmithingInventory extends FakeBlockUIComponent {
         this.currentResult = result;
     }
 
-
     @NotNull
     public Item getResult() {
         SmithingRecipe recipe = matchRecipe();
@@ -92,21 +88,17 @@ public class SmithingInventory extends FakeBlockUIComponent {
         return recipe.getFinalResult(getEquipment());
     }
 
-
     public Item getEquipment() {
         return getItem(EQUIPMENT);
     }
-
 
     public void setEquipment(Item equipment) {
         setItem(EQUIPMENT, equipment);
     }
 
-
     public Item getIngredient() {
         return getItem(INGREDIENT);
     }
-
 
     public void setIngredient(Item ingredient) {
         setItem(INGREDIENT, ingredient);
@@ -129,7 +121,6 @@ public class SmithingInventory extends FakeBlockUIComponent {
         this.clear(INGREDIENT);
         playerUI.clear(50);
     }
-
 
     public @NotNull Item getCurrentResult() {
         return currentResult;

@@ -121,11 +121,9 @@ public class ItemFilledMap extends Item {
         return true;
     }
 
-
     public void renderMap(Level level, int startX, int startZ) {
         renderMap(level, startX, startZ, 1);
     }
-
 
     public void renderMap(Level level, int startX, int startZ, int zoom) {
         if (zoom < 1)

@@ -179,7 +179,6 @@ public class EntityFireworksRocket extends Entity {
         return 0.25f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Firework Rocket";

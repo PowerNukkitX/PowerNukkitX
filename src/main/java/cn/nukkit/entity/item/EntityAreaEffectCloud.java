@@ -46,41 +46,33 @@ public class EntityAreaEffectCloud extends Entity {
         super(chunk, nbt);
     }
 
-
     public int getWaitTime() {
         return this.getDataPropertyInt(DATA_AREA_EFFECT_CLOUD_WAITING);
     }
-
 
     public void setWaitTime(int waitTime) {
         setWaitTime(waitTime, true);
     }
 
-
     public void setWaitTime(int waitTime, boolean send) {
         this.setDataProperty(new IntEntityData(DATA_AREA_EFFECT_CLOUD_WAITING, waitTime), send);
     }
-
 
     public int getPotionId() {
         return this.getDataPropertyShort(DATA_POTION_AUX_VALUE);
     }
 
-
     public void setPotionId(int potionId) {
         setPotionId(potionId, true);
     }
-
 
     public void setPotionId(int potionId, boolean send) {
         this.setDataProperty(new ShortEntityData(DATA_POTION_AUX_VALUE, potionId & 0xFFFF), send);
     }
 
-
     public void recalculatePotionColor() {
         recalculatePotionColor(true);
     }
-
 
     public void recalculatePotionColor(boolean send) {
         int a;
@@ -113,126 +105,101 @@ public class EntityAreaEffectCloud extends Entity {
         setPotionColor(a, r, g, b, send);
     }
 
-
     public int getPotionColor() {
         return this.getDataPropertyInt(DATA_POTION_COLOR);
     }
-
 
     public void setPotionColor(int argp) {
         setPotionColor(argp, true);
     }
 
-
     public void setPotionColor(int alpha, int red, int green, int blue, boolean send) {
         setPotionColor(((alpha & 0xff) << 24) | ((red & 0xff) << 16) | ((green & 0xff) << 8) | (blue & 0xff), send);
     }
-
 
     public void setPotionColor(int argp, boolean send) {
         this.setDataProperty(new IntEntityData(DATA_POTION_COLOR, argp), send);
     }
 
-
     public int getPickupCount() {
         return this.getDataPropertyInt(DATA_PICKUP_COUNT);
     }
-
 
     public void setPickupCount(int pickupCount) {
         setPickupCount(pickupCount, true);
     }
 
-
     public void setPickupCount(int pickupCount, boolean send) {
         this.setDataProperty(new IntEntityData(DATA_PICKUP_COUNT, pickupCount), send);
     }
-
 
     public float getRadiusChangeOnPickup() {
         return this.getDataPropertyFloat(DATA_CHANGE_ON_PICKUP);
     }
 
-
     public void setRadiusChangeOnPickup(float radiusChangeOnPickup) {
         setRadiusChangeOnPickup(radiusChangeOnPickup, true);
     }
-
 
     public void setRadiusChangeOnPickup(float radiusChangeOnPickup, boolean send) {
         this.setDataProperty(new FloatEntityData(DATA_CHANGE_ON_PICKUP, radiusChangeOnPickup), send);
     }
 
-
     public float getRadiusPerTick() {
         return this.getDataPropertyFloat(DATA_CHANGE_RATE);
     }
-
 
     public void setRadiusPerTick(float radiusPerTick) {
         setRadiusPerTick(radiusPerTick, true);
     }
 
-
     public void setRadiusPerTick(float radiusPerTick, boolean send) {
         this.setDataProperty(new FloatEntityData(DATA_CHANGE_RATE, radiusPerTick), send);
     }
-
 
     public long getSpawnTime() {
         return this.getDataPropertyInt(DATA_SPAWN_TIME);
     }
 
-
     public void setSpawnTime(long spawnTime) {
         setSpawnTime(spawnTime, true);
     }
-
 
     public void setSpawnTime(long spawnTime, boolean send) {
         this.setDataProperty(new LongEntityData(DATA_SPAWN_TIME, spawnTime), send);
     }
 
-
     public int getDuration() {
         return this.getDataPropertyInt(DATA_DURATION);
     }
-
 
     public void setDuration(int duration) {
         setDuration(duration, true);
     }
 
-
     public void setDuration(int duration, boolean send) {
         this.setDataProperty(new IntEntityData(DATA_DURATION, duration), send);
     }
-
 
     public float getRadius() {
         return this.getDataPropertyFloat(DATA_AREA_EFFECT_CLOUD_RADIUS);
     }
 
-
     public void setRadius(float radius) {
         setRadius(radius, true);
     }
-
 
     public void setRadius(float radius, boolean send) {
         this.setDataProperty(new FloatEntityData(DATA_AREA_EFFECT_CLOUD_RADIUS, radius), send);
     }
 
-
     public int getParticleId() {
         return this.getDataPropertyInt(DATA_AREA_EFFECT_CLOUD_PARTICLE_ID);
     }
 
-
     public void setParticleId(int particleId) {
         setParticleId(particleId, true);
     }
-
 
     public void setParticleId(int particleId, boolean send) {
         this.setDataProperty(new IntEntityData(DATA_AREA_EFFECT_CLOUD_PARTICLE_ID, particleId), send);

@@ -28,7 +28,6 @@ public class EntityGuardian extends EntityMob implements EntitySwimmable {
         super.initEntity();
     }
 
-
     @Override
     public String getOriginalName() {
         return "Guardian";
@@ -43,7 +42,6 @@ public class EntityGuardian extends EntityMob implements EntitySwimmable {
     public float getHeight() {
         return 0.85f;
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {

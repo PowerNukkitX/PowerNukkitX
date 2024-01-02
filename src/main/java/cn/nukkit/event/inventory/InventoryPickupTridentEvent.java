@@ -23,7 +23,6 @@ public class InventoryPickupTridentEvent extends InventoryEvent implements Cance
         this.trident = trident;
     }
 
-
     public EntityThrownTrident getTrident() {
         return trident;
     }

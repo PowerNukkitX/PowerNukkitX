@@ -38,7 +38,6 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
         scheduleUpdate();
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -110,14 +109,12 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
         return needsUpdate;
     }
 
-
     public boolean getKeepItem(int slot) {
         if (slot < 0 || slot >= keepItem.length) {
             return false;
         }
         return keepItem[slot];
     }
-
 
     public void setKeepItem(int slot, boolean keep) {
         if (slot < 0 || slot >= keepItem.length) {
@@ -144,7 +141,6 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
 
         super.saveNBT();
     }
-
 
     public void setRecipe(int index, CampfireRecipe recipe) {
         this.recipes[index] = recipe;

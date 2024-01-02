@@ -20,7 +20,6 @@ public class EntityPiglinBrute extends EntityMob implements EntityWalkable {
         return PIGLIN_BRUTE;
     }
 
-
     public EntityPiglinBrute(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -43,12 +42,10 @@ public class EntityPiglinBrute extends EntityMob implements EntityWalkable {
         return 1.9f;
     }
 
-
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }
-
 
     @Override
     public String getOriginalName() {

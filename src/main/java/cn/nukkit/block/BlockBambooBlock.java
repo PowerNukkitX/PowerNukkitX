@@ -1,10 +1,8 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.*;
-
 
 public class BlockBambooBlock extends BlockLog {
     public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_BLOCK, PILLAR_AXIS);
@@ -17,20 +15,14 @@ public class BlockBambooBlock extends BlockLog {
         super(blockState);
     }
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull  BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @Override
     public String getName() {
         return "Bamboo Block";
-    }
-
-    @Override
-    public double getHardness() {
-        return 2;
     }
 
     @Override
@@ -41,16 +33,6 @@ public class BlockBambooBlock extends BlockLog {
     @Override
     public int getBurnAbility() {
         return 20;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 5;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
     }
 
     @Override

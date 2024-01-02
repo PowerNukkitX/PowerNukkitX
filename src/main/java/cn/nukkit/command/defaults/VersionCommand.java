@@ -170,7 +170,6 @@ public class VersionCommand extends Command implements CoreCommand {
         return true;
     }
 
-
     private CompletableFuture<JsonArray> listVersion() {
         return CompletableFuture.supplyAsync(() -> {
             if (this.listVersionCache != null) {

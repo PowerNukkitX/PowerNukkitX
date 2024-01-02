@@ -53,7 +53,6 @@ public class DummyBossBar {
             return this;
         }
 
-
         public Builder color(BossBarColor color) {
             this.color = color;
             return this;
@@ -96,7 +95,6 @@ public class DummyBossBar {
         }
     }
 
-
     public void setColor(@Nullable BossBarColor color) {
         final BossBarColor currentColor = this.color;
         if (currentColor == null || !currentColor.equals(color)) {
@@ -105,9 +103,7 @@ public class DummyBossBar {
         }
     }
 
-
-    @Nullable
-    public BossBarColor getColor() {
+    public @Nullable BossBarColor getColor() {
         return this.color;
     }
 

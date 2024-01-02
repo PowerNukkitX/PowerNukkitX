@@ -159,7 +159,6 @@ public class EntityFishingHook extends SlenderProjectile {
         return hasUpdate;
     }
 
-
     @Override
     protected void updateMotion() {
         //正确的浮力
@@ -236,7 +235,6 @@ public class EntityFishingHook extends SlenderProjectile {
         double dist = Math.abs(Math.sqrt(this.x * this.x + this.z * this.z) - Math.sqrt(this.fish.x * this.fish.x + this.fish.z * this.fish.z));
         return dist < 0.15;
     }
-
 
     public void reelLine() {
         if (this.shootingEntity instanceof Player player && this.caught) {
@@ -316,7 +314,6 @@ public class EntityFishingHook extends SlenderProjectile {
         }
     }
 
-
     public void checkLure() {
         if (rod != null) {
             Enchantment ench = rod.getEnchantment(Enchantment.ID_LURE);
@@ -326,12 +323,10 @@ public class EntityFishingHook extends SlenderProjectile {
         }
     }
 
-
     public void setTarget(long eid) {
         this.setDataProperty(new LongEntityData(DATA_TARGET_EID, eid));
         this.canCollide = eid == 0;
     }
-
 
     @Override
     public String getOriginalName() {

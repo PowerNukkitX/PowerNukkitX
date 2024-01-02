@@ -21,7 +21,6 @@ public class BlockBambooDoubleSlab extends BlockDoubleSlabBase {
         super(blockstate);
     }
 
-
     @Override
     public String getSlabName() {
         return "Bamboo";

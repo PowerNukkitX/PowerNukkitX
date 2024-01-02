@@ -44,12 +44,10 @@ public class EntityZombieHorse extends EntityAnimal implements EntityWalkable, E
         return new Item[]{Item.get(Item.ROTTEN_FLESH, 1, 1)};
     }
 
-
     @Override
     public boolean isUndead() {
         return true;
     }
-
 
     @Override
     public String getOriginalName() {

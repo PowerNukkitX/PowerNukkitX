@@ -1,19 +1,15 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockComposter;
-import cn.nukkit.block.BlockHopper;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.*;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.HopperSearchItemEvent;
 import cn.nukkit.event.inventory.InventoryMoveItemEvent;
 import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemPotion;
-import cn.nukkit.item.ItemPotionSplash;
+import cn.nukkit.item.ItemSplashPotion;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.AxisAlignedBB;
@@ -41,6 +37,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
     private AxisAlignedBB pickupArea;
 
+    @Getter
     private boolean disabled;
 
     private final BlockVector3 temporalVector = new BlockVector3();
@@ -48,13 +45,9 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
     //由容器矿车检测漏斗并通知更新，这样子能大幅优化性能
     @Getter
     @Setter
-
-
     private InventoryHolder minecartInvPickupFrom = null;
     @Getter
     @Setter
-
-
     private InventoryHolder minecartInvPushTo = null;
 
     public BlockEntityHopper(IChunk chunk, CompoundTag nbt) {
@@ -66,7 +59,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         super.initBlockEntity();
         this.scheduleUpdate();
     }
-
 
     @Override
     public void loadNBT() {
@@ -92,11 +84,9 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         checkDisabled();
     }
 
-
     protected SimpleAxisAlignedBB generatePickupArea() {
         return new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 2, this.z + 1);
     }
-
 
     protected void checkDisabled() {
         if (getBlock() instanceof BlockHopper blockHopper) {
@@ -113,14 +103,13 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         return 8;
     }
 
-
     protected boolean checkBlockStateValid(@NotNull BlockState levelBlockState) {
-        return levelBlockState.getBlockId() == BlockID.HOPPER_BLOCK;
+        return levelBlockState.getIdentifier().equals(BlockID.HOPPER);
     }
 
     @Override
     public boolean isBlockEntityValid() {
-        return this.level.getBlockIdAt(this.getFloorX(), this.getFloorY(), this.getFloorZ()) == Block.HOPPER_BLOCK;
+        return this.level.getBlockIdAt(this.getFloorX(), this.getFloorY(), this.getFloorZ()).equals(Block.HOPPER);
     }
 
     @Override
@@ -135,7 +124,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
     @Override
     public void setName(String name) {
-        if (name == null || name.equals("")) {
+        if (name == null || name.isEmpty()) {
             this.namedTag.remove("CustomName");
             return;
         }
@@ -184,7 +173,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
         CompoundTag d = NBTIO.putItemHelper(item, index);
 
-        if (item.getId() == Item.AIR || item.getCount() <= 0) {
+        if (item.isNull() || item.getCount() <= 0) {
             if (i >= 0) {
                 this.namedTag.getList("Items").getAll().remove(i);
             }
@@ -210,12 +199,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
     public HopperInventory getInventory() {
         return inventory;
     }
-
-
-    public boolean isDisabled() {
-        return disabled;
-    }
-
 
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
@@ -261,12 +244,10 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         return true;
     }
 
-
     @Override
     public boolean isObservable() {
         return false;
     }
-
 
     public boolean pullItemsFromMinecart() {
         if (this.inventory.isFull()) {
@@ -325,7 +306,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         this.inventory.clearAll();
     }
 
-
     public boolean pushItemsIntoMinecart() {
         if (getMinecartInvPushTo() != null) {
             Inventory holderInventory = getMinecartInvPushTo().getInventory();
@@ -378,10 +358,10 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
             return false;
         }
 
-        BlockFace side = levelBlockState.getPropertyValue(CommonBlockProperties.FACING_DIRECTION);
+        BlockFace side = BlockFace.fromIndex(levelBlockState.getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
         Position sidePos = this.getSide(side);
         Block blockSide = sidePos.getLevelBlock(false);
-        if(blockSide.getId() == Block.AIR) return false;
+        if(blockSide.isAir()) return false;
         BlockEntity be = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, side));
 
         //漏斗应该有主动向被锁住的漏斗推送物品的能力
@@ -392,8 +372,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         InventoryMoveItemEvent event;
 
         //Fix for furnace inputs
-        if (be instanceof BlockEntityFurnace) {
-            BlockEntityFurnace furnace = (BlockEntityFurnace) be;
+        if (be instanceof BlockEntityFurnace furnace) {
             FurnaceInventory inventory = furnace.getInventory();
             if (inventory.isFull()) {
                 return false;
@@ -408,7 +387,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                     itemToAdd.setCount(1);
 
                     //Check direction of hopper
-                    if (this.getBlock().getDamage() == 0) {
+                    if (this.getBlock().getPropertyValue(CommonBlockProperties.FACING_DIRECTION) == 0) {
                         Item smelting = inventory.getSmelting();
                         if (smelting.isNull()) {
                             event = new InventoryMoveItemEvent(this.inventory, inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
@@ -419,7 +398,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                                 item.count--;
                                 pushedItem = true;
                             }
-                        } else if (inventory.getSmelting().getId() == itemToAdd.getId() && inventory.getSmelting().getAux() == itemToAdd.getAux() && inventory.getSmelting().getNamespaceId().equals(itemToAdd.getNamespaceId()) && smelting.count < smelting.getMaxStackSize()) {
+                        } else if (inventory.getSmelting().getId().equals(itemToAdd.getId()) && inventory.getSmelting().getAux() == itemToAdd.getAux() && inventory.getSmelting().getId().equals(itemToAdd.getId()) && smelting.count < smelting.getMaxStackSize()) {
                             event = new InventoryMoveItemEvent(this.inventory, inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
                             this.server.getPluginManager().callEvent(event);
 
@@ -441,7 +420,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                                 item.count--;
                                 pushedItem = true;
                             }
-                        } else if (fuel.getId() == itemToAdd.getId() && fuel.getAux() == itemToAdd.getAux() && fuel.getNamespaceId().equals(itemToAdd.getNamespaceId()) && fuel.count < fuel.getMaxStackSize()) {
+                        } else if (fuel.getId().equals(itemToAdd.getId()) && fuel.getAux() == itemToAdd.getAux() && fuel.getId().equals(itemToAdd.getId()) && fuel.count < fuel.getMaxStackSize()) {
                             event = new InventoryMoveItemEvent(this.inventory, inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
                             this.server.getPluginManager().callEvent(event);
 
@@ -461,8 +440,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
             }
 
             return pushedItem;
-        } else if (be instanceof BlockEntityBrewingStand) {
-            BlockEntityBrewingStand brewingstand = (BlockEntityBrewingStand) be;
+        } else if (be instanceof BlockEntityBrewingStand brewingstand) {
             BrewingInventory inventory = brewingstand.getInventory();
             if (inventory.isFull()) {
                 return false;
@@ -477,7 +455,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                     itemToAdd.setCount(1);
 
                     //Check direction of hopper
-                    if (this.getBlock().getDamage() == 0) {
+                    if (this.getBlock().getPropertyValue(CommonBlockProperties.FACING_DIRECTION) == 0) {
                         Item ingredient = inventory.getIngredient();
                         if (ingredient.isNull()) {
                             event = new InventoryMoveItemEvent(this.inventory, inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
@@ -488,7 +466,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                                 item.count--;
                                 pushedItem = true;
                             }
-                        } else if (ingredient.getId() == itemToAdd.getId() && ingredient.getAux() == itemToAdd.getAux() && ingredient.getNamespaceId().equals(itemToAdd.getNamespaceId()) && ingredient.count < ingredient.getMaxStackSize()) {
+                        } else if (ingredient.getId().equals(itemToAdd.getId()) && ingredient.getAux() == itemToAdd.getAux() && ingredient.getId().equals(itemToAdd.getId()) && ingredient.count < ingredient.getMaxStackSize()) {
                             event = new InventoryMoveItemEvent(this.inventory, inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
                             this.server.getPluginManager().callEvent(event);
 
@@ -499,7 +477,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                                 pushedItem = true;
                             }
                         }
-                    } else if (itemToAdd instanceof ItemPotion || itemToAdd instanceof ItemPotionSplash) {
+                    } else if (itemToAdd instanceof ItemPotion || itemToAdd instanceof ItemSplashPotion) {
                         Inventory productView = brewingstand.getProductView();
                         if(productView.canAddItem(itemToAdd)) {
                             for(int j = 1; j < 4; j++) {
@@ -520,8 +498,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
             }
 
             return pushedItem;
-        } else if (blockSide instanceof BlockComposter) {
-            BlockComposter composter = (BlockComposter) blockSide;
+        } else if (blockSide instanceof BlockComposter composter) {
             if (composter.isFull()) {
                 return false;
             }

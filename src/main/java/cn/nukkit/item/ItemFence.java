@@ -17,7 +17,6 @@ public class ItemFence extends Item {
         adjust();
     }
 
-
     private void adjust() {
         switch (getAux()) {
             case 0:

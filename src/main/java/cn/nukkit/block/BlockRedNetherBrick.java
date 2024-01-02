@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockRedNetherBrick extends Block {
+public class BlockRedNetherBrick extends BlockNetherBrick {
     public static final BlockProperties PROPERTIES = new BlockProperties(RED_NETHER_BRICK);
 
     @Override
@@ -16,5 +16,10 @@ public class BlockRedNetherBrick extends Block {
 
     public BlockRedNetherBrick(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Red Nether Bricks";
     }
 }

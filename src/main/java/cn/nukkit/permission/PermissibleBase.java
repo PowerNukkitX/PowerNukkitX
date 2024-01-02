@@ -138,7 +138,6 @@ public class PermissibleBase implements Permissible {
             Server.getInstance().getPluginManager().unsubscribeFromPermission(name, this.parent != null ? this.parent : this);
         }
 
-
         Server.getInstance().getPluginManager().unsubscribeFromDefaultPerms(false, this.parent != null ? this.parent : this);
         Server.getInstance().getPluginManager().unsubscribeFromDefaultPerms(true, this.parent != null ? this.parent : this);
 

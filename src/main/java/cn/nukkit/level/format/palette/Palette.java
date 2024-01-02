@@ -220,7 +220,6 @@ public final class Palette<V> {
         for (V value : this.palette) VarInts.writeInt(byteBuf, serializer.serialize(value));
     }
 
-
     private BitArrayVersion readBitArrayVersion(ByteBuf byteBuf) {
         short header = byteBuf.readUnsignedByte();
         return Palette.getVersionFromPaletteHeader(header);

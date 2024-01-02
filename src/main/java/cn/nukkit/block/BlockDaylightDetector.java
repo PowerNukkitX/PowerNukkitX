@@ -4,8 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityDaylightDetector;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
@@ -19,8 +17,6 @@ import org.jetbrains.annotations.NotNull;
  * @author CreeperFace
  * @since 2015/11/22
  */
-
-
 public class BlockDaylightDetector extends BlockTransparent implements RedstoneComponent, BlockEntityHolder<BlockEntityDaylightDetector> {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(DAYLIGHT_DETECTOR, CommonBlockProperties.REDSTONE_SIGNAL);
@@ -130,7 +126,7 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
 
     @Override
     public int getWeakPower(BlockFace face) {
-        return getLevel().getBlockDataAt(getFloorX(), getFloorY(), getFloorZ());
+        return getLevel().getBlockStateAt(getFloorX(), getFloorY(), getFloorZ()).getPropertyValue(CommonBlockProperties.REDSTONE_SIGNAL);
     }
 
     @Override
@@ -138,11 +134,9 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
         return true;
     }
 
-
     public boolean isInverted() {
         return false;
     }
-
 
     public void updatePower() {
         int i;
@@ -163,8 +157,11 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
             i = MathHelper.clamp(i, 0, 15);
         } else i = 0;
 
-        if (i != getLevel().getBlockDataAt(getFloorX(), getFloorY(), getFloorZ())) {
-            getLevel().setBlockDataAt(getFloorX(), getFloorY(), getFloorZ(), i);
+        if (i != getLevel().getBlockStateAt(getFloorX(), getFloorY(), getFloorZ()).getPropertyValue(CommonBlockProperties.REDSTONE_SIGNAL)) {
+            BlockState blockState;
+            this.setPropertyValue(CommonBlockProperties.REDSTONE_SIGNAL, i);
+            blockState = this.getBlockState();
+            getLevel().setBlockStateAt(getFloorX(), getFloorY(), getFloorZ(), blockState);
             updateAroundRedstone();
         }
     }

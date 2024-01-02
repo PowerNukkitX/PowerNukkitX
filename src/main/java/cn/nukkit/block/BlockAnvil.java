@@ -16,14 +16,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-import static cn.nukkit.block.property.CommonBlockProperties.DAMAGE;
+import static cn.nukkit.block.property.CommonBlockProperties.*;
 
 /**
  * @author Pub4Game
  * @since 27.12.2015
  */
 public class BlockAnvil extends BlockFallable implements Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:anvil", DAMAGE, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(ANVIL, DAMAGE, MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -42,7 +42,6 @@ public class BlockAnvil extends BlockFallable implements Faceable {
         return getPropertyValue(DAMAGE);
     }
 
-
     public void setAnvilDamage(Damage anvilDamage) {
         setPropertyValue(DAMAGE, anvilDamage);
     }
@@ -51,7 +50,6 @@ public class BlockAnvil extends BlockFallable implements Faceable {
     public boolean canBeActivated() {
         return true;
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -83,7 +81,6 @@ public class BlockAnvil extends BlockFallable implements Faceable {
         return getAnvilDamage().name();
     }
 
-
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         setBlockFace(player != null ? player.getDirection().rotateY() : BlockFace.SOUTH);
@@ -109,7 +106,6 @@ public class BlockAnvil extends BlockFallable implements Faceable {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -118,7 +114,6 @@ public class BlockAnvil extends BlockFallable implements Faceable {
     public boolean canHarvestWithHand() {
         return false;
     }
-
 
     @Override
     public void setBlockFace(BlockFace face) {
@@ -129,7 +124,6 @@ public class BlockAnvil extends BlockFallable implements Faceable {
     public BlockFace getBlockFace() {
         return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));
     }
-
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {

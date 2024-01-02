@@ -28,41 +28,33 @@ public class EnchantItemEvent extends InventoryEvent implements Cancellable {
         this.enchanter = p;
     }
 
-
     public Item getOldItem() {
         return oldItem;
     }
-
 
     public void setOldItem(Item oldItem) {
         this.oldItem = oldItem;
     }
 
-
     public Item getNewItem() {
         return newItem;
     }
-
 
     public void setNewItem(Item newItem) {
         this.newItem = newItem;
     }
 
-
     public int getXpCost() {
         return xpCost;
     }
-
 
     public void setXpCost(int xpCost) {
         this.xpCost = xpCost;
     }
 
-
     public Player getEnchanter() {
         return enchanter;
     }
-
 
     public void setEnchanter(Player enchanter) {
         this.enchanter = enchanter;

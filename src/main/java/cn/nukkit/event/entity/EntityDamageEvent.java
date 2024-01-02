@@ -122,21 +122,17 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         };
     }
 
-
     public boolean isBreakShield() {
         return breakShield;
     }
-
 
     public void setBreakShield(boolean breakShield) {
         this.breakShield = breakShield;
     }
 
-
     public int getShieldBreakCoolDown() {
         return ShieldBreakCoolDown;
     }
-
 
     public void setShieldBreakCoolDown(int shieldBreakCoolDown) {
         ShieldBreakCoolDown = shieldBreakCoolDown;

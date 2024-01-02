@@ -43,18 +43,15 @@ public class ItemLingeringPotion extends ProjectileItem {
         return true;
     }
 
-
     @Override
     public String getProjectileEntityType() {
         return "LingeringPotion";
     }
 
-
     @Override
     public float getThrowForce() {
         return 0.5f;
     }
-
 
     @Override
     protected void correctNBT(CompoundTag nbt) {

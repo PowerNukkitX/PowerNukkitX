@@ -29,18 +29,15 @@ public class BlockStateRepairFinishEvent extends BlockStateRepairEvent {
         this.result = result;
     }
 
-
     @NotNull
     public List<BlockStateRepair> getAllRepairs() {
         return allRepairs;
     }
 
-
     @NotNull
     public Block getResult() {
         return result;
     }
-
 
     public void setResult(@NotNull Block result) {
         this.result = Preconditions.checkNotNull(result);

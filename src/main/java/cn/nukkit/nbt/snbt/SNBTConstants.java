@@ -14,7 +14,6 @@ public interface SNBTConstants {
         EOF, WHITESPACE, COLON, COMMA, OPEN_BRACKET, CLOSE_BRACKET, OPEN_BRACE, CLOSE_BRACE, BOOLEAN, FLOAT, DOUBLE, INTEGER, LONG, BYTE, SHORT, STRING, B, _TOKEN_17, I, INVALID
     }
 
-
     /**
      * Lexical States
      */

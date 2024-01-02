@@ -40,13 +40,11 @@ public class PlayerDeathEvent extends EntityDeathEvent implements Cancellable {
         return deathMessage;
     }
 
-
     public TranslationContainer getTranslationDeathMessage() {
         return this.deathMessage instanceof TranslationContainer ?
                 (TranslationContainer) this.deathMessage :
                 new TranslationContainer(this.deathMessage.getText());
     }
-
 
     public void setDeathMessage(TranslationContainer deathMessage) {
         this.deathMessage = deathMessage;

@@ -2,11 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.generator.populator.impl.structure.utils.block.state.Direction;
 import org.jetbrains.annotations.NotNull;
-
-import static cn.nukkit.block.BlockID.BEE_NEST;
-
 
 public class BlockBeeNest extends BlockBeehive {
     public static final BlockProperties PROPERTIES = new BlockProperties(BEE_NEST, CommonBlockProperties.DIRECTION, CommonBlockProperties.HONEY_LEVEL);

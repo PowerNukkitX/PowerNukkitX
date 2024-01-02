@@ -137,7 +137,6 @@ public record CommandLogger(Command command,
         return this;
     }
 
-
     /**
      * 添加一条默认的命令格式错误信息,会提示命令发送者在指定索引处发生错误
      * <p>

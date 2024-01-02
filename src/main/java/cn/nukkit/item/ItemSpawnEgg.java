@@ -14,7 +14,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.registry.Registries;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -114,14 +113,11 @@ public class ItemSpawnEgg extends Item {
         return false;
     }
 
-
     public int getEntityNetworkId() {
         return this.aux;
     }
 
-
-    @Nullable
-    public String getEntityName() {
+    public @Nullable String getEntityName() {
         String saveId = Entity.getSaveId(getEntityNetworkId());
         if (saveId == null) {
             return null;

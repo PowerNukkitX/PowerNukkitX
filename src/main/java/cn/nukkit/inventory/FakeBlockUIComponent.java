@@ -20,7 +20,6 @@ public class FakeBlockUIComponent extends PlayerUIComponent {
         this.holder = new FakeBlockMenu(this, position);
     }
 
-
     @Override
     public FakeBlockMenu getHolder() {
         return (FakeBlockMenu) this.holder;

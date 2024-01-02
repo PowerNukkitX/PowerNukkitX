@@ -83,7 +83,6 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
         super.setDirty();
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();

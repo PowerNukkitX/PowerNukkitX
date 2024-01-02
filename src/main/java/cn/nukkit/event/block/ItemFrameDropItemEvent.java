@@ -26,8 +26,7 @@ public class ItemFrameDropItemEvent extends ItemFrameUseEvent implements Cancell
         super(player, block, itemFrame, item, Action.DROP);
     }
 
-    @Nullable
-    public Player getPlayer() {
+    public @Nullable Player getPlayer() {
         return player;
     }
 

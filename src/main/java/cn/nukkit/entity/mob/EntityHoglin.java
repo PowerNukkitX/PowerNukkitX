@@ -45,7 +45,6 @@ public class EntityHoglin extends EntityMob implements EntityWalkable, EntityAge
         return 0.9f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Hoglin";

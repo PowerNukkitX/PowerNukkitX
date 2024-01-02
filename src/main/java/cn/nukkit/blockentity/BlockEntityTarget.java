@@ -22,11 +22,9 @@ public class BlockEntityTarget extends BlockEntity {
         return getLevelBlock().getId() == BlockID.TARGET;
     }
 
-
     public void setActivePower(int power) {
         namedTag.putInt("activePower", power);
     }
-
 
     public int getActivePower() {
         return NukkitMath.clamp(namedTag.getInt("activePower"), 0, 15);

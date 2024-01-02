@@ -163,7 +163,6 @@ public class BaseLang {
         return baseText;
     }
 
-
     public String tr(TextContainer c) {
         String baseText = this.parseLanguageText(c.getText());
         if (c instanceof TranslationContainer cc) {

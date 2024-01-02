@@ -94,7 +94,6 @@ public interface AxisAlignedBB extends Cloneable {
         return this;
     }
 
-
     default AxisAlignedBB getOffsetBoundingBox(BlockFace face, double x, double y, double z) {
         return getOffsetBoundingBox(face.getXOffset() * x, face.getYOffset() * y, face.getZOffset() * z);
     }
@@ -185,7 +184,6 @@ public interface AxisAlignedBB extends Cloneable {
     default boolean isVectorInside(Vector3 vector) {
         return vector.x >= this.getMinX() && vector.x <= this.getMaxX() && vector.y >= this.getMinY() && vector.y <= this.getMaxY() && vector.z >= this.getMinZ() && vector.z <= this.getMaxZ();
     }
-
 
     default boolean isVectorInside(double x, double y, double z) {
         return x >= this.getMinX() && x <= this.getMaxX() && y >= this.getMinY() && y <= this.getMaxY() && z >= this.getMinZ() && z <= this.getMaxZ();
@@ -313,7 +311,6 @@ public interface AxisAlignedBB extends Cloneable {
         throw new UnsupportedOperationException("Not mutable");
     }
 
-
     double getMinX();
     double getMinY();
     double getMinZ();
@@ -340,7 +337,6 @@ public interface AxisAlignedBB extends Cloneable {
             }
         }
     }
-
 
     interface BBConsumer<T> {
 

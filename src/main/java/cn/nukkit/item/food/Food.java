@@ -204,7 +204,6 @@ public abstract class Food {
         return addRelative(node);
     }
 
-
     public Food addRelative(String stringID, int meta, Plugin plugin) {
         var node = new NodeStringIDMeta(stringID, meta, plugin);
         return addRelative(node);
@@ -233,7 +232,6 @@ public abstract class Food {
         return this;
     }
 
-
     protected int eatingTick = 31;
 
 
@@ -243,7 +241,6 @@ public abstract class Food {
     public int getEatingTick() {
         return eatingTick;
     }
-
 
     public Food setEatingTick(int eatingTick) {
         this.eatingTick = eatingTick;
@@ -256,7 +253,6 @@ public abstract class Food {
     public IntSupplier getEatingTickSupplier() {
         return eatingTickSupplier;
     }
-
 
     public Food setEatingTickSupplier(IntSupplier eatingTickSupplier) {
         this.eatingTickSupplier = eatingTickSupplier;

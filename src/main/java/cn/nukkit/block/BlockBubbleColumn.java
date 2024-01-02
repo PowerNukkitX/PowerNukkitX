@@ -89,7 +89,6 @@ public class BlockBubbleColumn extends BlockTransparent {
         return false;
     }
 
-
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
@@ -222,7 +221,6 @@ public class BlockBubbleColumn extends BlockTransparent {
     public void setDragDown(boolean dragDown){
         setPropertyValue(CommonBlockProperties.DRAG_DOWN,dragDown);
     }
-
 
     private void fadeOut(Block water) {
         BlockFadeEvent event = new BlockFadeEvent(this, water.clone());

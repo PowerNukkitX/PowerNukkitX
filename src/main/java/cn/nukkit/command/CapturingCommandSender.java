@@ -34,12 +34,10 @@ public class CapturingCommandSender implements CommandSender {
         this("System");
     }
 
-
     public CapturingCommandSender(@NotNull String name) {
         this.name = name;
         this.perms = new PermissibleBase(this);
     }
-
 
     public CapturingCommandSender(@NotNull String name, boolean isOp) {
         this.name = name;
@@ -47,19 +45,16 @@ public class CapturingCommandSender implements CommandSender {
         this.perms = new PermissibleBase(this);
     }
 
-
     public CapturingCommandSender(@NotNull String name, boolean isOp, @NotNull Function<ServerOperator, Permissible> permissibleFactory) {
         this.name = name;
         this.isOp = isOp;
         this.perms = permissibleFactory.apply(this);
     }
 
-    @NotNull
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return name;
     }
-
 
     public void setName(@NotNull String name) {
         this.name = name;
@@ -75,16 +70,13 @@ public class CapturingCommandSender implements CommandSender {
         isOp = op;
     }
 
-
     public void resetCapture() {
         captured.setLength(0);
     }
 
-
     public synchronized String getRawCapture() {
         return captured.toString();
     }
-
 
     public synchronized String getCleanCapture() {
         return TextFormat.clean(captured.toString());
@@ -106,7 +98,6 @@ public class CapturingCommandSender implements CommandSender {
     public void sendMessage(TextContainer message) {
         sendMessage(message.toString());
     }
-
 
     @Override
     public void sendCommandOutput(CommandOutputContainer container) {

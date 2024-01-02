@@ -389,7 +389,6 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
             }
         }
 
-
         return true;
     }
 

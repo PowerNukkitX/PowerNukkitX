@@ -125,7 +125,6 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         this.move(this.motionX, this.motionY, this.motionZ);
     }
 
-
     public boolean isFalling() {
         return !this.onGround && this.y < this.highestPosition;
     }
@@ -275,7 +274,6 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     public float getFloatingHeight() {
         return this.getEyeHeight();
     }
-
 
     protected void handleCollideMovement(int currentTick) {
         var selfAABB = getOffsetBoundingBox().getOffsetBoundingBox(this.motionX, this.motionY, this.motionZ);

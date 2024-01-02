@@ -130,7 +130,6 @@ public interface CommandSender extends Permissible {
         return null;
     }
 
-
     /**
      * @return 返回发送者的Position<br>return the sender's position.
      */
@@ -140,7 +139,6 @@ public interface CommandSender extends Permissible {
     default Position getPosition() {
         return new Position(0, 0, 0, Server.getInstance().getDefaultLevel());
     }
-
 
     /**
      * @return 返回发送者克隆过的Location<br>return the sender's location.

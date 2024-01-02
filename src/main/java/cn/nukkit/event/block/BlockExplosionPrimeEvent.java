@@ -52,16 +52,13 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
         this(block, force, 0);
     }
 
-
     public BlockExplosionPrimeEvent(Block block, double force, double fireChance) {
         this(block, null, force, fireChance);
     }
 
-
     public BlockExplosionPrimeEvent(Block block, @Nullable Player player, double force) {
         this(block, player, force, 0);
     }
-
 
     public BlockExplosionPrimeEvent(Block block, @Nullable Player player, double force, double fireChance) {
         super(block);
@@ -71,31 +68,25 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
         this.player = player;
     }
 
-
     public double getForce() {
         return force;
     }
-
 
     public void setForce(double force) {
         this.force = force;
     }
 
-
     public boolean isBlockBreaking() {
         return blockBreaking;
     }
-
 
     public void setBlockBreaking(boolean blockBreaking) {
         this.blockBreaking = blockBreaking;
     }
 
-
     public boolean isIncendiary() {
         return fireChance > 0;
     }
-
 
     public void setIncendiary(boolean incendiary) {
         if (!incendiary) {
@@ -105,11 +96,9 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
         }
     }
 
-
     public double getFireChance() {
         return fireChance;
     }
-
 
     public void setFireChance(double fireChance) {
         this.fireChance = fireChance;

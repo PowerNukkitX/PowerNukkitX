@@ -79,29 +79,23 @@ public class ItemBucket extends Item {
         };
     }
 
-
     public boolean isEmpty() {
         return Objects.equals(getId(), BUCKET) && getBucketType() == 0;
     }
-
 
     public boolean isWater() {
         return getTargetBlock().getId().equals(BlockID.FLOWING_WATER);
     }
 
-
     public boolean isLava() {
         return getTargetBlock().getId().equals(BlockID.FLOWING_LAVA);
     }
-
 
     public boolean isPowderSnow() {
         return getTargetBlock().getId().equals(BlockID.POWDER_SNOW);
     }
 
-
-    @Nullable
-    public String getFishEntityId() {
+    public @Nullable String getFishEntityId() {
         if (!Objects.equals(getId(), BUCKET)) {
             return null;
         }
@@ -126,11 +120,9 @@ public class ItemBucket extends Item {
         return true;
     }
 
-
     public Block getTargetBlock() {
         return Objects.equals(getId(), BUCKET) ? Block.get(getDamageByTarget(getBucketType())) : Block.get(BlockID.AIR);
     }
-
 
     @SuppressWarnings("DuplicatedCode")
     @Override
@@ -309,7 +301,6 @@ public class ItemBucket extends Item {
         return false;
     }
 
-
     protected boolean canBeUsedOnDimension(int dimension) {
         if (!Objects.equals(getId(), BUCKET)) {
             return true;
@@ -317,7 +308,6 @@ public class ItemBucket extends Item {
 
         return dimension != Level.DIMENSION_NETHER || (getBucketType() == 10 || getBucketType() == 1);
     }
-
 
     protected void afterUse(Level level, Block block) {
         if (!Objects.equals(getId(), BUCKET)) {
@@ -333,7 +323,6 @@ public class ItemBucket extends Item {
         spawnFishEntity(block.add(0.5, 0.5, 0.5));
     }
 
-
     public void spawnFishEntity(Position spawnPos) {
         var fishEntityId = getFishEntityId();
         if (fishEntityId != null) {
@@ -343,12 +332,10 @@ public class ItemBucket extends Item {
         }
     }
 
-
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         return Objects.equals(getId(), BUCKET) && this.getBucketType() == 1; // Milk
     }
-
 
     @Override
     public boolean onUse(Player player, int ticksUsed) {

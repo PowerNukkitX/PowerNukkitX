@@ -27,7 +27,6 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
         scheduleUpdate();
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -232,7 +231,6 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
             this.spawnToAll();
         }
     }
-
 
     @Override
     public boolean updateCompoundTag(CompoundTag nbt, Player player) {

@@ -33,7 +33,6 @@ public class ItemWoodenAxe extends ItemTool {
         return 3;
     }
 
-
     @Override
     public boolean canBreakShield() {
         return true;

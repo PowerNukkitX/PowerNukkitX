@@ -35,5 +35,4 @@ public class DisconnectPacket_v618 extends DataPacket {
         }
     }
 
-
 }

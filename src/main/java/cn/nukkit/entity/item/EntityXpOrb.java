@@ -263,7 +263,6 @@ public class EntityXpOrb extends Entity {
         this.pickupDelay = pickupDelay;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Experience Orb";

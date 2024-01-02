@@ -16,7 +16,6 @@ public class ShulkerBoxDispenseBehavior extends DefaultDispenseBehavior {
         super();
     }
 
-
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);

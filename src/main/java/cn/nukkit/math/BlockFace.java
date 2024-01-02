@@ -153,21 +153,14 @@ public enum BlockFace {
 
 
     public int getDUNESWIndex() {
-        switch (getIndex()) {
-            case 1:
-                return 1;
-            case 2:
-                return 2;
-            case 3:
-                return 4;
-            case 4:
-                return 5;
-            case 5:
-                return 3;
-            case 0:
-            default:
-                return 0;
-        }
+        return switch (getIndex()) {
+            case 1 -> 1;
+            case 2 -> 2;
+            case 3 -> 4;
+            case 4 -> 5;
+            case 5 -> 3;
+            default -> 0;
+        };
     }
 
     /**
@@ -178,21 +171,14 @@ public enum BlockFace {
 
 
     public int getDUSWNEIndex() {
-        switch (getIndex()) {
-            case 1:
-                return 1;
-            case 2:
-                return 4;
-            case 3:
-                return 2;
-            case 4:
-                return 3;
-            case 5:
-                return 5;
-            case 0:
-            default:
-                return 0;
-        }
+        return switch (getIndex()) {
+            case 1 -> 1;
+            case 2 -> 4;
+            case 3 -> 2;
+            case 4 -> 3;
+            case 5 -> 5;
+            default -> 0;
+        };
     }
 
     /**
@@ -291,18 +277,13 @@ public enum BlockFace {
      * @return block face
      */
     public BlockFace rotateY() {
-        switch (this) {
-            case NORTH:
-                return EAST;
-            case EAST:
-                return SOUTH;
-            case SOUTH:
-                return WEST;
-            case WEST:
-                return NORTH;
-            default:
-                throw new RuntimeException("Unable to get Y-rotated face of " + this);
-        }
+        return switch (this) {
+            case NORTH -> EAST;
+            case EAST -> SOUTH;
+            case SOUTH -> WEST;
+            case WEST -> NORTH;
+            default -> throw new RuntimeException("Unable to get Y-rotated face of " + this);
+        };
     }
 
     /**
@@ -311,20 +292,14 @@ public enum BlockFace {
      * @return block face
      */
     public BlockFace rotateYCCW() {
-        switch (this) {
-            case NORTH:
-                return WEST;
-            case EAST:
-                return NORTH;
-            case SOUTH:
-                return EAST;
-            case WEST:
-                return SOUTH;
-            default:
-                throw new RuntimeException("Unable to get counter-clockwise Y-rotated face of " + this);
-        }
+        return switch (this) {
+            case NORTH -> WEST;
+            case EAST -> NORTH;
+            case SOUTH -> EAST;
+            case WEST -> SOUTH;
+            default -> throw new RuntimeException("Unable to get counter-clockwise Y-rotated face of " + this);
+        };
     }
-
 
     public CompassRoseDirection getCompassRoseDirection() {
         return switch (this) {
@@ -335,7 +310,6 @@ public enum BlockFace {
             default -> null;
         };
     }
-
 
     public Set<BlockFace> getEdges() {
         EnumSet<BlockFace> blockFaces = EnumSet.noneOf(BlockFace.class);

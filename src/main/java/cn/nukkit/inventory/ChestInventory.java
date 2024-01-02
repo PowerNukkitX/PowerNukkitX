@@ -26,7 +26,6 @@ public class ChestInventory extends ContainerInventory {
         return (BlockEntityChest) this.holder;
     }
 
-
     @Override
     public void onOpen(Player who) {
         super.onOpen(who);
@@ -55,7 +54,6 @@ public class ChestInventory extends ContainerInventory {
             }
         } catch (LevelException ignored) {}
     }
-
 
     @Override
     public void onClose(Player who) {

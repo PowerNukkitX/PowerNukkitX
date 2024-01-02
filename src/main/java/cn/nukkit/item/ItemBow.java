@@ -55,7 +55,6 @@ public class ItemBow extends ItemTool {
                         .anyMatch(inv -> inv.contains(Item.get(ItemID.ARROW)));
     }
 
-
     @Override
     public boolean onRelease(Player player, int ticksUsed) {
         Item itemArrow = Item.get(Item.ARROW, 0, 1);

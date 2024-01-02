@@ -751,7 +751,6 @@ public class BinaryStream {
         this.putVarInt(ingredient.getCount());
     }
 
-
     public void putRecipeIngredient(ItemDescriptor itemDescriptor) {
         ItemDescriptorType type = itemDescriptor.getType();
         this.putByte((byte) type.ordinal());
@@ -903,16 +902,13 @@ public class BinaryStream {
         this.putLFloat(z);
     }
 
-
     public Vector2f getVector2f() {
         return new Vector2f(this.getLFloat(4), this.getLFloat(4));
     }
 
-
     public void putVector2f(Vector2f v) {
         this.putVector2f(v.x, v.y);
     }
-
 
     public void putVector2f(float x, float y) {
         this.putLFloat(x);
@@ -987,7 +983,6 @@ public class BinaryStream {
         );
     }
 
-
     public <T> void putArray(Collection<T> collection, Consumer<T> writer) {
         if (collection == null) {
             putUnsignedVarInt(0);
@@ -996,7 +991,6 @@ public class BinaryStream {
         putUnsignedVarInt(collection.size());
         collection.forEach(writer);
     }
-
 
     public <T> void putArray(T[] collection, Consumer<T> writer) {
         if (collection == null) {
@@ -1008,7 +1002,6 @@ public class BinaryStream {
             writer.accept(t);
         }
     }
-
 
     public <T> void putArray(Collection<T> array, BiConsumer<BinaryStream, T> biConsumer) {
         this.putUnsignedVarInt(array.size());

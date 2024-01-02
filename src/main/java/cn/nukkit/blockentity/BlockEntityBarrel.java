@@ -14,7 +14,6 @@ public class BlockEntityBarrel extends BlockEntitySpawnableContainer implements 
         super(chunk, nbt);
     }
 
-
     @Override
     protected ContainerInventory requireContainerInventory() {
         return new BarrelInventory(this);

@@ -48,18 +48,15 @@ public class Vector3 implements Cloneable {
         return this.z;
     }
 
-
     public Vector3 setX(double x) {
         this.x = x;
         return this;
     }
 
-
     public Vector3 setY(double y) {
         this.y = y;
         return this;
     }
-
 
     public Vector3 setZ(double z) {
         this.z = z;
@@ -85,11 +82,9 @@ public class Vector3 implements Cloneable {
         return getFloorZ() >> 4;
     }
 
-
     public int getChunkSectionY() {
         return getFloorY() >> 4;
     }
-
 
     public ChunkVector2 getChunkVector() {
         return new ChunkVector2(getChunkX(), getChunkZ());
@@ -238,7 +233,6 @@ public class Vector3 implements Cloneable {
         return getSide(BlockFace.WEST, step);
     }
 
-
     public int distanceManhattan(Vector3 pos) {
         double x = Math.abs(pos.getX() - this.getX());
         double y = Math.abs(pos.getY() - this.getY());
@@ -254,11 +248,9 @@ public class Vector3 implements Cloneable {
         return distanceSquared(pos.x, pos.y, pos.z);
     }
 
-
     public double distance(double x, double y, double z) {
         return Math.sqrt(distanceSquared(x, y, z));
     }
-
 
     public double distanceSquared(double x, double y, double z) {
         double ex = this.x - x;
@@ -350,8 +342,7 @@ public class Vector3 implements Cloneable {
      * @param x x value
      * @return intermediate vector
      */
-    @Nullable
-    public Vector3 getIntermediateWithXValue(@NotNull Vector3 v, double x) {
+    public @Nullable Vector3 getIntermediateWithXValue(@NotNull Vector3 v, double x) {
         double xDiff = v.x - this.x;
         double yDiff = v.y - this.y;
         double zDiff = v.z - this.z;
@@ -374,8 +365,7 @@ public class Vector3 implements Cloneable {
      * @param y y value
      * @return intermediate vector
      */
-    @Nullable
-    public Vector3 getIntermediateWithYValue(@NotNull Vector3 v, double y) {
+    public @Nullable Vector3 getIntermediateWithYValue(@NotNull Vector3 v, double y) {
         double xDiff = v.x - this.x;
         double yDiff = v.y - this.y;
         double zDiff = v.z - this.z;
@@ -398,8 +388,7 @@ public class Vector3 implements Cloneable {
      * @param z z value
      * @return intermediate vector
      */
-    @Nullable
-    public Vector3 getIntermediateWithZValue(@NotNull Vector3 v, double z) {
+    public @Nullable Vector3 getIntermediateWithZValue(@NotNull Vector3 v, double z) {
         double xDiff = v.x - this.x;
         double yDiff = v.y - this.y;
         double zDiff = v.z - this.z;
@@ -421,7 +410,6 @@ public class Vector3 implements Cloneable {
         return this;
     }
 
-
     @NotNull
     public Vector3 setComponentsAdding(double x, double y, double z, double ax, double ay, double az) {
         this.x = x + ax;
@@ -430,12 +418,10 @@ public class Vector3 implements Cloneable {
         return this;
     }
 
-
     @NotNull
     public Vector3 setComponentsAdding(@NotNull Vector3 pos, @NotNull BlockFace face) {
         return setComponentsAdding(pos.x, pos.y, pos.z, face.getXOffset(), face.getYOffset(), face.getZOffset());
     }
-
 
     @NotNull
     public Vector3 setComponents(@NotNull Vector3 pos) {
@@ -444,7 +430,6 @@ public class Vector3 implements Cloneable {
         this.z = pos.z;
         return this;
     }
-
 
     public double getAxis(BlockFace.Axis axis) {
         switch (axis) {

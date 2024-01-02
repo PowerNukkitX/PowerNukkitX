@@ -46,7 +46,6 @@ public class PlayerAsyncPreLoginEvent extends PlayerEvent {
         this(name, uuid, ClientChainData.of(EmptyArrays.EMPTY_BYTES), null, address, port);
     }
 
-
     public PlayerAsyncPreLoginEvent(String name, UUID uuid, LoginChainData chainData, Skin skin, String address, int port) {
         this.name = name;
         this.uuid = uuid;
@@ -69,11 +68,9 @@ public class PlayerAsyncPreLoginEvent extends PlayerEvent {
         return this.uuid;
     }
 
-
     public LoginChainData getChainData() {
         return this.chainData;
     }
-
 
     public String getXuid() {
         return this.chainData.getXUID();

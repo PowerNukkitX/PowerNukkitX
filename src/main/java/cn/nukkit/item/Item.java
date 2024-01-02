@@ -125,16 +125,13 @@ public abstract class Item implements Cloneable, ItemID {
         return getItemBlock(id, 0);
     }
 
-
     public static ItemBlock getItemBlock(String id, Integer meta) {
         return getItemBlock(id, meta, 1);
     }
 
-
     public static ItemBlock getItemBlock(String id, Integer meta, int count) {
         return getItemBlock(id, meta, count, EmptyArrays.EMPTY_BYTES);
     }
-
 
     /**
      * Gets ItemBlock.
@@ -311,7 +308,6 @@ public abstract class Item implements Cloneable, ItemID {
         return 0;
     }
 
-
     /**
      * 通过附魔id来查找对应附魔的等级
      * <p>
@@ -333,7 +329,6 @@ public abstract class Item implements Cloneable, ItemID {
         }
         return 0;
     }
-
 
     /**
      * @param id 要查询的附魔标识符
@@ -555,7 +550,6 @@ public abstract class Item implements Cloneable, ItemID {
         return this.getEnchantmentLevel(id) > 0;
     }
 
-
     public int getRepairCost() {
         if (this.hasCompoundTag()) {
             CompoundTag tag = this.getNamedTag();
@@ -568,7 +562,6 @@ public abstract class Item implements Cloneable, ItemID {
         }
         return 0;
     }
-
 
     public Item setRepairCost(int cost) {
         if (cost <= 0 && this.hasCompoundTag()) {
@@ -805,8 +798,7 @@ public abstract class Item implements Cloneable, ItemID {
         return this.count <= 0 || Objects.equals(this.id, Block.AIR);
     }
 
-    @Nullable
-    public final String getName() {
+    public @Nullable final String getName() {
         return this.hasCustomName() ? this.getCustomName() : idConvertToName();
     }
 
@@ -836,7 +828,6 @@ public abstract class Item implements Cloneable, ItemID {
     public final String getId() {
         return id;
     }
-
 
     public final int getRuntimeId() {
         try {
@@ -1176,11 +1167,9 @@ public abstract class Item implements Cloneable, ItemID {
         return false;
     }
 
-
     public final Item decrement(int amount) {
         return increment(-amount);
     }
-
 
     public final Item increment(int amount) {
         if (count + amount <= 0) {
@@ -1358,13 +1347,11 @@ public abstract class Item implements Cloneable, ItemID {
         this.setCompoundTag(tag);
     }
 
-
     public void addCanPlaceOn(Block[] blocks) {
         for (Block block : blocks) {
             addCanPlaceOn(block);
         }
     }
-
 
     public void setCanPlaceOn(Block[] blocks) {
         CompoundTag tag = getOrCreateNamedTag();
@@ -1375,7 +1362,6 @@ public abstract class Item implements Cloneable, ItemID {
         tag.putList(canPlaceOn);
         this.setCompoundTag(tag);
     }
-
 
     public ListTag<StringTag> getCanPlaceOn() {
         CompoundTag tag = getOrCreateNamedTag();
@@ -1396,13 +1382,11 @@ public abstract class Item implements Cloneable, ItemID {
         this.setCompoundTag(tag);
     }
 
-
     public void addCanDestroy(Block[] blocks) {
         for (Block block : blocks) {
             addCanDestroy(block);
         }
     }
-
 
     public void setCanDestroy(Block[] blocks) {
         CompoundTag tag = getOrCreateNamedTag();
@@ -1413,7 +1397,6 @@ public abstract class Item implements Cloneable, ItemID {
         tag.putList(canDestroy);
         this.setCompoundTag(tag);
     }
-
 
     public ListTag<StringTag> getCanDestroy() {
         CompoundTag tag = getOrCreateNamedTag();
@@ -1436,7 +1419,6 @@ public abstract class Item implements Cloneable, ItemID {
         LOCK_IN_SLOT,
         LOCK_IN_INVENTORY
     }
-
 
     public void setItemLockMode(ItemLockMode mode) {
         CompoundTag tag = getOrCreateNamedTag();
@@ -1464,7 +1446,6 @@ public abstract class Item implements Cloneable, ItemID {
         }
         return ItemLockMode.NONE;
     }
-
 
     public void setKeepOnDeath(boolean keepOnDeath) {
         CompoundTag tag = getOrCreateNamedTag();
@@ -1496,7 +1477,6 @@ public abstract class Item implements Cloneable, ItemID {
         }
         return Registries.BLOCKSTATE.get(i);
     }
-
 
     public static class ItemJsonComponents {
         private static final Gson gson = new Gson();

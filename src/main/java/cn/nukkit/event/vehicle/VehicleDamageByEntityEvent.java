@@ -32,7 +32,6 @@ public final class VehicleDamageByEntityEvent extends VehicleDamageEvent impleme
         this.attacker = attacker;
     }
 
-
     public static HandlerList getHandlers() {
         return handlers;
     }

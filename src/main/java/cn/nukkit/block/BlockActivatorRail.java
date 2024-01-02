@@ -12,7 +12,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.ACTIVE;
 import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DATA_BIT;
 
 public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:activator_rail", RAIL_DATA_BIT, CommonBlockProperties.RAIL_DIRECTION_6);
+    public static final BlockProperties PROPERTIES = new BlockProperties(ACTIVATOR_RAIL, RAIL_DATA_BIT, CommonBlockProperties.RAIL_DIRECTION_6);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -42,6 +42,7 @@ public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
             if (!this.level.getServer().isRedstoneEnabled()) {
                 return 0;
             }
+
             boolean wasPowered = isActive();
             boolean isPowered = this.isGettingPower()
                     || checkSurrounding(this, true, 0)
@@ -72,6 +73,7 @@ public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
         if (power >= 8) {
             return false;
         }
+
         int dx = pos.getFloorX();
         int dy = pos.getFloorY();
         int dz = pos.getFloorZ();
@@ -89,21 +91,21 @@ public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
         boolean onStraight = true;
 
         switch (block.getOrientation()) {
-            case STRAIGHT_NORTH_SOUTH:
+            case STRAIGHT_NORTH_SOUTH -> {
                 if (relative) {
                     dz++;
                 } else {
                     dz--;
                 }
-                break;
-            case STRAIGHT_EAST_WEST:
+            }
+            case STRAIGHT_EAST_WEST -> {
                 if (relative) {
                     dx--;
                 } else {
                     dx++;
                 }
-                break;
-            case ASCENDING_EAST:
+            }
+            case ASCENDING_EAST -> {
                 if (relative) {
                     dx--;
                 } else {
@@ -112,8 +114,8 @@ public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
                     onStraight = false;
                 }
                 base = Rail.Orientation.STRAIGHT_EAST_WEST;
-                break;
-            case ASCENDING_WEST:
+            }
+            case ASCENDING_WEST -> {
                 if (relative) {
                     dx--;
                     dy++;
@@ -122,8 +124,8 @@ public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
                     dx++;
                 }
                 base = Rail.Orientation.STRAIGHT_EAST_WEST;
-                break;
-            case ASCENDING_NORTH:
+            }
+            case ASCENDING_NORTH -> {
                 if (relative) {
                     dz++;
                 } else {
@@ -132,8 +134,8 @@ public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
                     onStraight = false;
                 }
                 base = Rail.Orientation.STRAIGHT_NORTH_SOUTH;
-                break;
-            case ASCENDING_SOUTH:
+            }
+            case ASCENDING_SOUTH -> {
                 if (relative) {
                     dz++;
                     dy++;
@@ -142,15 +144,15 @@ public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
                     dz--;
                 }
                 base = Rail.Orientation.STRAIGHT_NORTH_SOUTH;
-                break;
-            default:
+            }
+            default -> {
                 return false;
+            }
         }
 
         return canPowered(new Vector3(dx, dy, dz), base, power, relative)
                 || onStraight && canPowered(new Vector3(dx, dy - 1., dz), base, power, relative);
     }
-
 
     protected boolean canPowered(Vector3 pos, Rail.Orientation state, int power, boolean relative) {
         Block block = level.getBlock(pos);
@@ -177,12 +179,10 @@ public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
         return getPropertyValue(RAIL_DATA_BIT);
     }
 
-
     @Override
     public OptionalBoolean isRailActive() {
         return OptionalBoolean.of(getPropertyValue(RAIL_DATA_BIT));
     }
-
 
     @Override
     public void setRailActive(boolean active) {

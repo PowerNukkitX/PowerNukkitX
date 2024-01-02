@@ -22,7 +22,6 @@ public class RepairItemAction extends NoOpIventoryAction {
         return source.getWindowById(Player.ANVIL_WINDOW_ID) != null;
     }
 
-
     public int getType() {
         return this.type;
     }

@@ -19,7 +19,6 @@ public abstract class EnchantmentBow extends Enchantment {
         this(id, name, Rarity.fromWeight(weight));
     }
 
-
     protected EnchantmentBow(int id, String name, Rarity rarity) {
         super(id, name, rarity, EnchantmentType.BOW);
     }

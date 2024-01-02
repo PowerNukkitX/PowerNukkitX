@@ -37,8 +37,7 @@ public class SimpleTickingAreaManager extends TickingAreaManager {
     }
 
     @Override
-    @Nullable
-    public TickingArea getTickingArea(String name) {
+    public @Nullable TickingArea getTickingArea(String name) {
         return areaMap.get(name);
     }
 
@@ -53,8 +52,7 @@ public class SimpleTickingAreaManager extends TickingAreaManager {
     }
 
     @Override
-    @Nullable
-    public TickingArea getTickingAreaByChunk(String levelName, TickingArea.ChunkPos chunkPos) {
+    public @Nullable TickingArea getTickingAreaByChunk(String levelName, TickingArea.ChunkPos chunkPos) {
         TickingArea matchedArea = null;
         for (var area : areaMap.values()) {
             boolean matched = area.getLevelName().equals(levelName) && area.getChunks().stream().anyMatch(pos -> pos.equals(chunkPos));

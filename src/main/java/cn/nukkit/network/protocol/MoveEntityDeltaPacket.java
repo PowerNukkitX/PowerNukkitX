@@ -96,7 +96,6 @@ public class MoveEntityDeltaPacket extends DataPacket {
         this.putByte((byte) (value / (360F / 256F)));
     }
 
-
     public boolean hasFlag(int flag) {
         return (this.flags & flag) != 0;
     }

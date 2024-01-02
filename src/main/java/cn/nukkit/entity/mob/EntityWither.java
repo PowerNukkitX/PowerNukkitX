@@ -36,24 +36,20 @@ public class EntityWither extends EntityMob implements EntityFlyable, EntitySmit
         super.initEntity();
     }
 
-
     @Override
     public String getOriginalName() {
         return "Wither";
     }
-
 
     @Override
     public boolean isUndead() {
         return true;
     }
 
-
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }
-
 
     @Override
     public boolean isBoss() {

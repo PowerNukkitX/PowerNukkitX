@@ -24,7 +24,6 @@ public class StonecutterRecipe implements Recipe {
         this(null, 10, result, ingredient);
     }
 
-
     public StonecutterRecipe(String recipeId, int priority, Item result, Item ingredient) {
         this.recipeId = recipeId;
         this.priority = priority;
@@ -40,16 +39,13 @@ public class StonecutterRecipe implements Recipe {
         return this.output.clone();
     }
 
-
     public String getRecipeId() {
         return this.recipeId;
     }
 
-
     public UUID getId() {
         return new UUID(least, most);
     }
-
 
     public void setId(UUID uuid) {
         this.least = uuid.getLeastSignificantBits();
@@ -59,7 +55,6 @@ public class StonecutterRecipe implements Recipe {
             this.recipeId = this.getId().toString();
         }
     }
-
 
     public Item getIngredient() {
         return ingredient.clone();
@@ -74,7 +69,6 @@ public class StonecutterRecipe implements Recipe {
     public RecipeType getType() {
         return RecipeType.STONECUTTER;
     }
-
 
     public int getPriority() {
         return this.priority;

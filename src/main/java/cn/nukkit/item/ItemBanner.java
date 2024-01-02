@@ -54,7 +54,6 @@ public class ItemBanner extends Item {
         this.setAux(color.getDyeData() & 0x0f);
     }
 
-
     @NotNull
     public DyeColor getBaseDyeColor() {
         return Objects.requireNonNull(DyeColor.getByDyeData(getBaseColor()));
@@ -97,7 +96,6 @@ public class ItemBanner extends Item {
     public int getPatternsSize() {
         return (this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag()).getList("Patterns").size();
     }
-
 
     public boolean hasPattern() {
         return (this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag()).contains("Patterns");

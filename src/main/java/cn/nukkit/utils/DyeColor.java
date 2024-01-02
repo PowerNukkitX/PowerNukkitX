@@ -91,7 +91,6 @@ public enum DyeColor {
         return itemDyeMeta;
     }
 
-
     public BlockColor getLeatherColor() {
         return leatherColor;
     }

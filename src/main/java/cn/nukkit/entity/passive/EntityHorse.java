@@ -193,7 +193,6 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         return new Item[]{Item.get(Item.LEATHER), getHorseArmor(), getSaddle()};
     }
 
-
     @Override
     public String getOriginalName() {
         return "Horse";
@@ -355,9 +354,8 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         broadcastMovement();
     }
 
-    @Nullable
     @Override
-    public String getOwnerName() {
+    public @Nullable String getOwnerName() {
         String ownerName = EntityOwnable.super.getOwnerName();
         if (ownerName == null) {
             this.setDataProperty(new ByteEntityData(Entity.DATA_CONTAINER_TYPE, 0));
@@ -399,8 +397,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         return horseInventory;
     }
 
-    @Nullable
-    public Entity getRider() {
+    public @Nullable Entity getRider() {
         String name = getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME);
         if (name != null) {
             return Server.getInstance().getPlayerExact(name);

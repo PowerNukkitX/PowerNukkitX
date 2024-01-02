@@ -17,11 +17,9 @@ public class EntityLingeringPotion extends EntitySplashPotion {
         return LINGERING_POTION;
     }
 
-
     public EntityLingeringPotion(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
 
     public EntityLingeringPotion(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
@@ -32,7 +30,6 @@ public class EntityLingeringPotion extends EntitySplashPotion {
         super.initEntity();
         setDataFlag(DATA_FLAGS, DATA_FLAG_LINGER, true);
     }
-
 
     @Override
     protected void splash(Entity collidedWith) {
@@ -60,7 +57,6 @@ public class EntityLingeringPotion extends EntitySplashPotion {
             entity.spawnToAll();
         }
     }
-
 
     @Override
     public String getOriginalName() {

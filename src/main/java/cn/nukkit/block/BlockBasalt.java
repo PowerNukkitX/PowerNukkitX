@@ -46,16 +46,13 @@ public class BlockBasalt extends BlockSolid {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
 
-
     public BlockFace.Axis getPillarAxis() {
         return getPropertyValue(PILLAR_AXIS);
     }
-
 
     public void setPillarAxis(BlockFace.Axis axis) {
         setPropertyValue(PILLAR_AXIS, axis);

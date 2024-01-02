@@ -46,11 +46,9 @@ public final class OptionalValue<T> {
         return value != null ? value : other;
     }
 
-
     public T orElseGet(Supplier<T> other) {
         return value != null ? value : other.get();
     }
-
 
     public <X extends Throwable> T orElseThrow(Supplier<X> exceptionSupplier) throws X {
         if (value != null) {

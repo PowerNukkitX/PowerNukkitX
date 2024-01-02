@@ -26,7 +26,6 @@ public class EntityMinecart extends EntityMinecartAbstract {
         super(chunk, nbt);
     }
 
-
     @Override
     public String getOriginalName() {
         return getType().getName();

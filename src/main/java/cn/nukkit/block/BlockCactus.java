@@ -31,9 +31,8 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
         this(PROPERTIES.getDefaultState());
     }
   
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -46,7 +45,6 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     public double getResistance() {
         return 2;
     }
-
 
     @Override
     public int getWaterloggingLevel() {

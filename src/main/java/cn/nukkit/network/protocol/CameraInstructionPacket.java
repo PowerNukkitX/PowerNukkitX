@@ -60,7 +60,6 @@ public class CameraInstructionPacket extends DataPacket {
         });
     }
 
-
     public void setInstruction(CameraInstruction instruction) {
         if (instruction instanceof SetInstruction se) {
             this.setInstruction = se;

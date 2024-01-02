@@ -40,7 +40,6 @@ public class EntityStray extends EntityMob implements EntityWalkable, EntitySmit
         return 1.9f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Stray";
@@ -51,12 +50,10 @@ public class EntityStray extends EntityMob implements EntityWalkable, EntitySmit
         return new Item[]{Item.get(Item.BONE, Item.ARROW)};
     }
 
-
     @Override
     public boolean isUndead() {
         return true;
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {

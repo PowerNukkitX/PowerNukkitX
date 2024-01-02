@@ -27,7 +27,6 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
         super(chunk, nbt);
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -36,7 +35,6 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
         }
     }
 
-
     @NotNull
     public OptionalInt getTrackingHandler() {
         if (namedTag.containsInt("trackingHandle")) {
@@ -44,7 +42,6 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
         }
         return OptionalInt.empty();
     }
-
 
     public int requestTrackingHandler() throws IOException {
         OptionalInt opt = getTrackingHandler();

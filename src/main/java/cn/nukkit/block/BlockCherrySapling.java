@@ -103,7 +103,6 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
         return true;
     }
 
-
     @Override
     public boolean canBeActivated() {
         return true;

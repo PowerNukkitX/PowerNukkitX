@@ -1,16 +1,11 @@
 package cn.nukkit.block;
 
-
-import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
+import static cn.nukkit.block.property.CommonBlockProperties.*;
+
 public class BlockAcaciaHangingSign extends BlockHangingSign {
-    public static final BlockProperties PROPERTIES = new BlockProperties(ACACIA_HANGING_SIGN,
-            CommonBlockProperties.ATTACHED_BIT,
-            CommonBlockProperties.FACING_DIRECTION,
-            CommonBlockProperties.GROUND_SIGN_DIRECTION,
-            CommonBlockProperties.HANGING
-    );
+    public static final BlockProperties PROPERTIES = new BlockProperties(ACACIA_HANGING_SIGN, ATTACHED_BIT, FACING_DIRECTION, GROUND_SIGN_DIRECTION, HANGING);
     public BlockAcaciaHangingSign() {
         super(PROPERTIES.getDefaultState());
     }

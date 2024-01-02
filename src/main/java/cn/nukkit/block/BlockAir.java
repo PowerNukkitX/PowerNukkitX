@@ -10,8 +10,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockAir extends BlockTransparent {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:air");
-    public static final BlockState STATE = PROPERTIES.getDefaultState();
+    public static final BlockProperties PROPERTIES = new BlockProperties(AIR);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockAir() {
         super(PROPERTIES.getDefaultState());
@@ -24,12 +28,6 @@ public class BlockAir extends BlockTransparent {
     @Override
     public String getName() {
         return "Air";
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -61,7 +59,6 @@ public class BlockAir extends BlockTransparent {
     public boolean isSolid() {
         return false;
     }
-
 
     @Override
     public boolean isSolid(BlockFace side) {

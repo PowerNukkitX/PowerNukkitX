@@ -45,7 +45,6 @@ public class EntitySilverfish extends EntityMob implements EntityWalkable, Entit
         super.initEntity();
     }
 
-
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

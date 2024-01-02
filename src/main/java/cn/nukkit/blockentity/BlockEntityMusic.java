@@ -10,7 +10,6 @@ public class BlockEntityMusic extends BlockEntity {
         super(chunk, nbt);
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();

@@ -28,7 +28,6 @@ public class Materials implements NBTData {
         return new Materials();
     }
 
-
     /**
      * ambientOcclusion=true, faceDimming=true
      *
@@ -239,7 +238,6 @@ public class Materials implements NBTData {
     public CompoundTag toCompoundTag() {
         return tag;
     }
-
 
     /**
      * 渲染方法枚举

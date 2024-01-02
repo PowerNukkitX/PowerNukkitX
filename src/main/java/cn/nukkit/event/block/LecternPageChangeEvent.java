@@ -21,51 +21,41 @@ public class LecternPageChangeEvent extends BlockEvent implements Cancellable {
         this.newRawPage = newPage;
     }
 
-
     public static HandlerList getHandlers() {
         return handlers;
     }
-
 
     public BlockEntityLectern getLectern() {
         return lectern;
     }
 
-
     public int getLeftPage() {
         return (newRawPage * 2) + 1;
     }
-
 
     public int getRightPage() {
         return getLeftPage() + 1;
     }
 
-
     public void setLeftPage(int newLeftPage) {
         this.newRawPage = (newLeftPage - 1) / 2;
     }
-
 
     public void setRightPage(int newRightPage) {
         this.setLeftPage(newRightPage - 1);
     }
 
-
     public int getNewRawPage() {
         return newRawPage;
     }
-
 
     public void setNewRawPage(int newRawPage) {
         this.newRawPage = newRawPage;
     }
 
-
     public int getMaxPage() {
         return lectern.getTotalPages();
     }
-
 
     public Player getPlayer() {
         return player;

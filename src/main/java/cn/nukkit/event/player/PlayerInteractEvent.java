@@ -44,7 +44,7 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
             this.touchVector = new Vector3(0, 0, 0);
         } else {
             this.touchVector = block;
-            this.blockTouched = Block.get(Block.AIR, 0, new Position(0, 0, 0, player.level));
+            this.blockTouched = Block.get(Block.AIR, new Position(0, 0, 0, player.level));
         }
 
         this.player = player;
@@ -57,13 +57,11 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
         return action;
     }
 
-    @Nullable
-    public Item getItem() {
+    public @Nullable Item getItem() {
         return item;
     }
 
-    @Nullable
-    public Block getBlock() {
+    public @Nullable Block getBlock() {
         return blockTouched;
     }
 
@@ -71,8 +69,7 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
         return touchVector;
     }
 
-    @Nullable
-    public BlockFace getFace() {
+    public @Nullable BlockFace getFace() {
         return blockFace;
     }
 

@@ -9,7 +9,6 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.MathHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -86,7 +85,6 @@ public class BlockBambooSapling extends BlockFlowable {
         return true;
     }
 
-
     @Override
     public boolean canBeActivated() {
         return true;
@@ -115,7 +113,6 @@ public class BlockBambooSapling extends BlockFlowable {
         return false;
     }
 
-
     public boolean grow(Block up) {
         BlockBamboo bamboo = new BlockBamboo();
         bamboo.x = x;
@@ -137,14 +134,12 @@ public class BlockBambooSapling extends BlockFlowable {
         return 5;
     }
 
-
     /**
      * Alias age == 0 | age == false | !age
      */
     public boolean isAge() {
         return getPropertyValue(CommonBlockProperties.AGE_BIT);
     }
-
 
     public void setAge(boolean isAge) {
         setPropertyValue(CommonBlockProperties.AGE_BIT, isAge);

@@ -46,7 +46,6 @@ public class ItemTrident extends ItemTool {
         return true;
     }
 
-
     @Override
     @SuppressWarnings("java:S3516")
     public boolean onRelease(Player player, int ticksUsed) {

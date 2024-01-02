@@ -22,26 +22,21 @@ public class LecternDropBookEvent extends BlockEvent implements Cancellable {
         this.book = book;
     }
 
-
     public static HandlerList getHandlers() {
         return handlers;
     }
-
 
     public BlockEntityLectern getLectern() {
         return lectern;
     }
 
-
     public Player getPlayer() {
         return player;
     }
 
-
     public Item getBook() {
         return book.clone();
     }
-
 
     public void setBook(Item book) {
         this.book = book;

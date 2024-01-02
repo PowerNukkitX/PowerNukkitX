@@ -12,8 +12,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public class BlockAllow extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:allow");
-    public static final BlockState STATE = PROPERTIES.getDefaultState();
+    public static final BlockProperties PROPERTIES = new BlockProperties(ALLOW);
 
     public BlockAllow() {
         super(PROPERTIES.getDefaultState());
@@ -53,7 +52,6 @@ public class BlockAllow extends BlockSolid {
         return false;
     }
 
-
     @Override
     public boolean canBePulled() {
         return false;
@@ -69,15 +67,16 @@ public class BlockAllow extends BlockSolid {
         if (player != null && (!player.isCreative() || !player.isOp())) {
             return false;
         }
+
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
-
 
     @Override
     public boolean isBreakable(Vector3 vector, int layer, BlockFace face, Item item, @Nullable Player player, boolean setBlockDestroy) {
         if (player != null && (!player.isCreative() || !player.isOp())) {
             return false;
         }
+
         return super.isBreakable(vector, layer, face, item, player, setBlockDestroy);
     }
 

@@ -42,7 +42,6 @@ public class PlayerArmorDamagePacket extends DataPacket {
         }
     }
 
-
     public enum PlayerArmorDamageFlag {
         HELMET,
         CHESTPLATE,

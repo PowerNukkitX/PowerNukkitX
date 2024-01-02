@@ -105,16 +105,13 @@ public class CraftingTransaction extends InventoryTransaction {
     @DeprecationDetails(since = "FUTURE", reason = "When the recipe is not a CraftingRecipe, returns null instead of the recipe",
         by = "PowerNukkit", replaceWith = "getTransactionRecipe()")
 
-    @Nullable
-    public CraftingRecipe getRecipe() {
+    public @Nullable CraftingRecipe getRecipe() {
         return recipe;
     }
-
 
     public Recipe getTransactionRecipe() {
         return transactionRecipe;
     }
-
 
     protected void setTransactionRecipe(Recipe recipe) {
         this.transactionRecipe = recipe;
@@ -204,7 +201,6 @@ public class CraftingTransaction extends InventoryTransaction {
     }
 
     @Override
-
     protected void sendInventories() {
         super.sendInventories();
     }
@@ -251,7 +247,6 @@ public class CraftingTransaction extends InventoryTransaction {
         return false;
     }
 
-
     public boolean checkForCraftingPart(List<InventoryAction> actions) {
         for (InventoryAction action : actions) {
             if (action instanceof SlotChangeAction) {
@@ -265,11 +260,9 @@ public class CraftingTransaction extends InventoryTransaction {
         return false;
     }
 
-
     public void setReadyToExecute(boolean readyToExecute) {
         this.readyToExecute = readyToExecute;
     }
-
 
     public boolean isReadyToExecute() {
         return readyToExecute;

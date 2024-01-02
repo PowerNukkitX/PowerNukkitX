@@ -12,9 +12,8 @@ import java.util.function.Predicate;
 
 
 public class DZ extends ScopeArgument {
-    @Nullable
     @Override
-    public Predicate<Entity> getPredicate(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
+    public @Nullable Predicate<Entity> getPredicate(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
         ParseUtils.singleArgument(arguments, getKeyName());
         ParseUtils.cannotReversed(arguments[0]);
         var z = basePos.getZ();

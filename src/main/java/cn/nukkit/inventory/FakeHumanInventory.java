@@ -390,7 +390,6 @@ public class FakeHumanInventory extends BaseInventory {
         }
     }
 
-
     /**
      * @see #sendArmorContents(Player[])
      */
@@ -426,7 +425,6 @@ public class FakeHumanInventory extends BaseInventory {
             player.dataPacket(pk);
         }
     }
-
 
     /**
      * @see #sendArmorSlot(int, Player[])

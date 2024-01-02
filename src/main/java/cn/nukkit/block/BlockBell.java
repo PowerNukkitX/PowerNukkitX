@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.Attachment;
 import cn.nukkit.blockentity.BlockEntity;
@@ -27,15 +26,17 @@ import javax.annotation.Nullable;
 
 import static cn.nukkit.block.property.CommonBlockProperties.*;
 
-
 public class BlockBell extends BlockTransparent implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityBell> {
     public static final BlockProperties PROPERTIES = new BlockProperties(BELL, ATTACHMENT, DIRECTION, CommonBlockProperties.TOGGLE_BIT);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockBell() {
         this(PROPERTIES.getDefaultState());
     }
-
 
     public BlockBell(BlockState blockState) {
         super(blockState);
@@ -46,43 +47,37 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
         return "Bell";
     }
 
-
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-
-    @NotNull
-    @Override
-    public Class<? extends BlockEntityBell> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityBell> getBlockEntityClass() {
         return BlockEntityBell.class;
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.BELL;
     }
 
     private boolean isConnectedTo(BlockFace connectedFace, Attachment attachmentType, BlockFace blockFace) {
         BlockFace.Axis faceAxis = connectedFace.getAxis();
         switch (attachmentType) {
-            case STANDING:
+            case STANDING -> {
                 if (faceAxis == BlockFace.Axis.Y) {
                     return connectedFace == BlockFace.DOWN;
                 } else {
                     return blockFace.getAxis() != faceAxis;
                 }
-            case HANGING:
+            }
+            case HANGING -> {
                 return connectedFace == BlockFace.UP;
-            case SIDE:
+            }
+            case SIDE -> {
                 return connectedFace == blockFace.getOpposite();
-            case MULTIPLE:
+            }
+            case MULTIPLE -> {
                 return connectedFace == blockFace || connectedFace == blockFace.getOpposite();
-            default:
+            }
+            default -> {
+            }
         }
         return false;
     }
@@ -169,11 +164,9 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
         return ring(player, player != null ? BellRingEvent.RingCause.HUMAN_INTERACTION : BellRingEvent.RingCause.UNKNOWN);
     }
 
-
     public boolean ring(Entity causeEntity, BellRingEvent.RingCause cause) {
         return ring(causeEntity, cause, null);
     }
-
 
     public boolean ring(Entity causeEntity, BellRingEvent.RingCause cause, BlockFace hitFace) {
         BlockEntityBell bell = getOrCreateBlockEntity();
@@ -208,22 +201,23 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
             }
         }
         switch (getAttachment()) {
-            case STANDING:
+            case STANDING -> {
                 if (hitFace.getAxis() != blockFace.getAxis()) {
                     return false;
                 }
-                break;
-            case MULTIPLE:
+            }
+            case MULTIPLE -> {
                 if (hitFace.getAxis() == blockFace.getAxis()) {
                     return false;
                 }
-                break;
-            case SIDE:
+            }
+            case SIDE -> {
                 if (hitFace.getAxis() == blockFace.getAxis()) {
                     addException = false;
                 }
-                break;
-            default:
+            }
+            default -> {
+            }
         }
 
         BellRingEvent event = new BellRingEvent(this, cause, causeEntity);
@@ -340,33 +334,35 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
         }
         BlockFace playerDirection = player != null ? player.getDirection() : BlockFace.EAST;
         switch (face) {
-            case UP:
+            case UP -> {
                 setAttachment(Attachment.STANDING);
                 setBlockFace(playerDirection.getOpposite());
-                break;
-            case DOWN:
+            }
+            case DOWN -> {
                 setAttachment(Attachment.HANGING);
                 setBlockFace(playerDirection.getOpposite());
-                break;
-            default:
+            }
+            default -> {
                 setBlockFace(face);
                 if (checkSupport(block.getSide(face), face.getOpposite())) {
                     setAttachment(Attachment.MULTIPLE);
                 } else {
                     setAttachment(Attachment.SIDE);
                 }
+            }
         }
+
         if (!checkSupport()) {
             return false;
         }
+
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
-
 
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         ring(projectile, BellRingEvent.RingCause.PROJECTILE);
-        if (projectile.isOnFire() && projectile instanceof EntityArrow && level.getBlock(projectile).getId() == BlockID.AIR) {
+        if (projectile.isOnFire() && projectile instanceof EntityArrow && level.getBlock(projectile).isAir()) {
             level.setBlock(projectile, Block.get(BlockID.FIRE), true);
         }
         return true;
@@ -377,17 +373,14 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
         return BlockFace.fromHorizontalIndex(getPropertyValue(DIRECTION));
     }
 
-
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(DIRECTION, face.getHorizontalIndex());
     }
 
-
     public Attachment getAttachment() {
         return getPropertyValue(ATTACHMENT);
     }
-
 
     public void setAttachment(Attachment attachmentType) {
         setPropertyValue(ATTACHMENT, attachmentType);
@@ -405,7 +398,6 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
     public Item toItem() {
         return new ItemBlock(new BlockBell());
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -433,7 +425,6 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

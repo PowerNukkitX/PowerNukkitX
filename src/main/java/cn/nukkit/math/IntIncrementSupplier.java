@@ -21,7 +21,6 @@ public final class IntIncrementSupplier implements IntSupplier {
         return current;
     }
 
-
     public IntStream stream() {
         return IntStream.generate(this); 
     }

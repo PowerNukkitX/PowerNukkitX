@@ -39,7 +39,6 @@ public class EntityVindicator extends EntityMob implements EntityWalkable {
         return 1.9f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Vindicator";
@@ -49,7 +48,6 @@ public class EntityVindicator extends EntityMob implements EntityWalkable {
     public Item[] getDrops() {
         return new Item[]{Item.get(Item.IRON_AXE)};
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {

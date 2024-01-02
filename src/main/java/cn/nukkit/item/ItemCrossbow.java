@@ -37,7 +37,6 @@ public class ItemCrossbow extends ItemTool {
         return ItemTool.DURABILITY_CROSSBOW;
     }
 
-
     public boolean onUse(Player player, int ticksUsed) {
         int needTickUsed = 20;
         Enchantment enchantment = this.getEnchantment(Enchantment.ID_CROSSBOW_QUICK_CHARGE);
@@ -92,7 +91,6 @@ public class ItemCrossbow extends ItemTool {
         return true;
     }
 
-
     protected boolean canLoad(Item item) {
         return switch (item.getId()) {
             case Item.ARROW, Item.FIREWORK_ROCKET -> true;
@@ -100,16 +98,13 @@ public class ItemCrossbow extends ItemTool {
         };
     }
 
-
     public boolean onClickAir(Player player, Vector3 directionVector) {
         return !this.launchArrow(player);
     }
 
-
     public boolean onRelease(Player player, int ticksUsed) {
         return true;
     }
-
 
     public void loadArrow(Player player, Item arrow) {
         if (arrow != null) {
@@ -122,12 +117,10 @@ public class ItemCrossbow extends ItemTool {
         }
     }
 
-
     public void useArrow(Player player) {
         this.setCompoundTag(this.getNamedTag().putBoolean("Charged", false).remove("chargedItem"));
         player.getInventory().setItemInHand(this);
     }
-
 
     public boolean isLoaded() {
         Tag itemInfo = this.getNamedTagEntry("chargedItem");
@@ -138,7 +131,6 @@ public class ItemCrossbow extends ItemTool {
             return tag.getByte("Count") > 0 && tag.getString("Name") != null;
         }
     }
-
 
     public boolean launchArrow(Player player) {
         if (this.isLoaded() && Server.getInstance().getTick() - this.loadTick > 20) {

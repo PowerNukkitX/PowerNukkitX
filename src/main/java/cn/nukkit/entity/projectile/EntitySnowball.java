@@ -92,12 +92,10 @@ public class EntitySnowball extends EntityProjectile {
         return hasUpdate;
     }
 
-
     @Override
     public int getResultDamage(@Nullable Entity entity) {
         return entity instanceof EntityBlaze ? 3 : super.getResultDamage(entity);
     }
-
 
     @Override
     protected void addHitEffect() {
@@ -113,7 +111,6 @@ public class EntitySnowball extends EntityProjectile {
         Level level = this.level;
         level.getServer().batchPackets(level.getChunkPlayers(chunkX, chunkZ).values().toArray(Player.EMPTY_ARRAY), allPackets);
     }
-
 
     @Override
     public String getOriginalName() {

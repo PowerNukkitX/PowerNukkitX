@@ -3,11 +3,10 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.ListChunkManager;
-import cn.nukkit.level.generator.object.BasicGenerator;
-import cn.nukkit.level.generator.object.tree.ObjectAzaleaTree;
+import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.ObjectAzaleaTree;
+import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.random.NukkitRandomSource;
@@ -21,7 +20,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @since 13/06/2021
  */
 public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:azalea");
+    public static final BlockProperties PROPERTIES = new BlockProperties(AZALEA);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -45,27 +44,6 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
     public int getWaterloggingLevel() {
         return 1;
     }
-
-    @Override
-    public double getHardness() {
-        return 0;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_NONE;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return true;
-    }
-
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
@@ -118,16 +96,6 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
     }
 
     @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
-    }
-
-    @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
@@ -148,13 +116,13 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
     }
 
     private void grow() {
-        BasicGenerator generator = null;
-        Vector3 vector3 = new Vector3();
+        ObjectGenerator generator;
+        Vector3 vector3;
 
         generator = new ObjectAzaleaTree();
         vector3 = this.add(0, 0, 0);
 
-        ListChunkManager chunkManager = new ListChunkManager(this.level);
+        BlockManager chunkManager = new BlockManager(this.level);
         boolean success = generator.generate(chunkManager, new NukkitRandomSource(), vector3);
         StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
         this.level.getServer().getPluginManager().callEvent(ev);
@@ -165,6 +133,7 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
         for (Block block : ev.getBlockList()) {
             this.level.setBlock(block, block);
         }
+
         this.level.setBlock(this, Block.get(OAK_LOG));
     }
 }

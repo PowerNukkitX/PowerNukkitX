@@ -85,7 +85,6 @@ public class EntityCow extends EntityAnimal implements EntityWalkable {
         return 1.3f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Cow";

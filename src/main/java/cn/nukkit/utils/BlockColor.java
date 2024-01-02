@@ -186,7 +186,6 @@ public class BlockColor {
         return this.alpha << 24 | this.red << 16 | this.green << 8 | this.blue;
     }
 
-
     public Color toAwtColor() {
         return new Color(this.red, this.green, this.blue, this.alpha);
     }

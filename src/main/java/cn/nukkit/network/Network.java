@@ -95,7 +95,6 @@ public class Network {
 
     }
 
-
     public static byte[] inflateRaw(byte[] data) throws IOException, DataFormatException {
         Inflater inflater = INFLATER_RAW.get();
         try {
@@ -298,8 +297,7 @@ public class Network {
         return server;
     }
 
-    @Nullable
-    public List<NetworkIF> getHardWareNetworkInterfaces() {
+    public @Nullable List<NetworkIF> getHardWareNetworkInterfaces() {
         return hardWareNetworkInterfaces;
     }
 
@@ -312,13 +310,11 @@ public class Network {
         }
     }
 
-
     public List<DataPacket> unpackBatchedPackets(BatchPacket packet, CompressionProvider compression) throws ProtocolException {
         List<DataPacket> packets = new ObjectArrayList<>();
         processBatch(packet.payload, packets, compression);
         return packets;
     }
-
 
     public void processBatch(byte[] payload, Collection<DataPacket> packets, CompressionProvider compression) throws ProtocolException {
         byte[] data;

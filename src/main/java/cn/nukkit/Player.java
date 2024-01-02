@@ -1173,7 +1173,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-
     //NK原始处理移动的方法
     @Deprecated
     @DeprecationDetails(since = "1.19.60-r1", reason = "use handleMovement")
@@ -1761,7 +1760,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-
     protected void removeWindow(Inventory inventory, boolean isResponse) {
         inventory.close(this);
         if (isResponse && !this.permanentWindows.contains(this.getWindowId(inventory))) {
@@ -1787,7 +1785,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected float getBaseOffset() {
         return super.getBaseOffset();
     }
-
 
     @Override
     protected void onBlock(Entity entity, EntityDamageEvent e, boolean animate) {
@@ -1838,7 +1835,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.soulSpeedMultiplier;
     }
 
-
     /**
      * 返回{@link Player#startAction}的值
      * <p>
@@ -1858,7 +1854,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void startAction() {
         this.startAction = this.server.getTick();
     }
-
 
     /**
      * 设置{@link Player#startAction}值为-1
@@ -1930,7 +1925,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public BlockEnderChest getViewingEnderChest() {
         return viewingEnderChest;
     }
-
 
     /**
      * 设置{@link Player#viewingEnderChest}值为chest
@@ -2042,7 +2036,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.adventureSettings.update();
     }
 
-
     /**
      * 设置{@link #inAirTicks}为0
      * <p>
@@ -2060,7 +2053,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public boolean getAllowFlight() {
         return this.getAdventureSettings().get(Type.ALLOW_FLIGHT);
     }
-
 
     /**
      * 设置允许修改世界(未知原因设置完成之后，玩家不允许挖掘方块，但是可以放置方块)
@@ -2479,7 +2471,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.sleeping != null;
     }
 
-
     /**
      * @return {@link #inAirTicks}
      */
@@ -2621,7 +2612,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-
     /**
      * 设置保存玩家重生位置的方块的位置。当未知时可能为空。
      * <p>
@@ -2691,11 +2681,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.sendChunk(x, z, pk);
     }
 
-
     public void updateTrackingPositions() {
         updateTrackingPositions(false);
     }
-
 
     public void updateTrackingPositions(boolean delayed) {
         Server server = getServer();
@@ -2769,7 +2757,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public int directDataPacket(DataPacket packet, boolean needACK) {
         return this.dataPacket(packet) ? 0 : -1;
     }
-
 
     public void forceDataPacket(DataPacket packet, Runnable callback) {
         this.networkSession.sendImmediatePacket(packet, (callback == null ? () -> {
@@ -3044,7 +3031,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
-
     public AxisAlignedBB reCalcOffsetBoundingBox() {
         float dx = this.getWidth() / 2;
         float dz = this.getWidth() / 2;
@@ -3113,7 +3099,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.encode();
         this.dataPacket(pk);
     }
-
 
     public void sendCameraPresets() {
         var pk = new CameraPresetsPacket();
@@ -3420,7 +3405,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-
         DataPacketReceiveEvent ev = new DataPacketReceiveEvent(this, packet);
         this.server.getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
@@ -3601,7 +3585,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
         this.sendMessage(message.getText());
     }
-
 
     public void sendCommandOutput(CommandOutputContainer container) {
         if (this.level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
@@ -3807,7 +3790,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
-
     /**
      * {@code subtitle=null,fadeIn=20,stay=20,fadeOut=5}
      *
@@ -3845,7 +3827,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         // title won't send if an empty string is used.
         this.setTitle(Strings.isNullOrEmpty(title) ? " " : title);
     }
-
 
     /**
      * fadein=1,duration=0,fadeout=1
@@ -3908,7 +3889,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.fadeOutTime = fadeout;
         this.dataPacket(pk);
     }
-
 
     @Override
     public void close() {
@@ -4153,18 +4133,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-
     @Override
     public String getOriginalName() {
         return "Player";
     }
 
-    @NotNull
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return this.username;
     }
-
 
     public LangCode getLanguageCode() {
         return LangCode.valueOf(this.getLoginChainData().getLanguageCode());
@@ -4426,7 +4403,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.expLevel;
     }
 
-
     /**
      * playLevelUpSound=false
      *
@@ -4477,7 +4453,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-
     /**
      * {@code level = this.getExperienceLevel(),playLevelUpSound=false}
      *
@@ -4486,7 +4461,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void setExperience(int exp) {
         setExperience(exp, this.getExperienceLevel());
     }
-
 
     /**
      * playLevelUpSound=false
@@ -4556,7 +4530,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-
     /**
      * @see #sendExperienceLevel(int)
      */
@@ -4615,7 +4588,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.sendMovementSpeed(speed);
         }
     }
-
 
     /**
      * 发送{@link Attribute#MOVEMENT_SPEED}属性到客户端
@@ -4719,8 +4691,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return 如果物品被丢弃成功，则返回EntityItem；如果物品为空，则为null<br>EntityItem if the item was dropped or null if the item was null
      */
 
-    @Nullable
-    public EntityItem dropAndGetItem(@NotNull Item item) {
+    public @Nullable EntityItem dropAndGetItem(@NotNull Item item) {
         if (!this.spawned || !this.isAlive()) {
             return null;
         }
@@ -4897,7 +4868,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(packet);
         return id;
     }
-
 
     /**
      * book=true
@@ -5764,11 +5734,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.gamemode != SPECTATOR;
     }
 
-
     public int getNoShieldTicks() {
         return noShieldTicks;
     }
-
 
     public void setNoShieldTicks(int noShieldTicks) {
         this.noShieldTicks = noShieldTicks;
@@ -5796,16 +5764,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-
     public int getTimeSinceRest() {
         return timeSinceRest;
     }
 
-
     public void setTimeSinceRest(int timeSinceRest) {
         this.timeSinceRest = timeSinceRest;
     }
-
 
     public NetworkPlayerSession getNetworkSession() {
         return this.networkSession;
@@ -5821,7 +5786,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
-
     public void sendSystem(String message) {
         TextPacket pk = new TextPacket();
         pk.type = TextPacket.TYPE_SYSTEM;
@@ -5829,11 +5793,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
-
     public void sendWhisper(String message) {
         this.sendWhisper("", message);
     }
-
 
     public void sendWhisper(String source, String message) {
         TextPacket pk = new TextPacket();
@@ -5843,11 +5805,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
-
     public void sendAnnouncement(String message) {
         this.sendAnnouncement("", message);
     }
-
 
     public void sendAnnouncement(String source, String message) {
         TextPacket pk = new TextPacket();
@@ -5857,7 +5817,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
-
     public void completeUsingItem(int itemId, int action) {
         CompletedUsingItemPacket pk = new CompletedUsingItemPacket();
         pk.itemId = itemId;
@@ -5865,11 +5824,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
-
     public boolean isShowingCredits() {
         return showingCredits;
     }
-
 
     public void setShowingCredits(boolean showingCredits) {
         this.showingCredits = showingCredits;
@@ -5881,21 +5838,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-
     public void showCredits() {
         this.setShowingCredits(true);
     }
-
 
     public boolean hasSeenCredits() {
         return showingCredits;
     }
 
-
     public void setHasSeenCredits(boolean hasSeenCredits) {
         this.hasSeenCredits = hasSeenCredits;
     }
-
 
     public boolean dataPacketImmediately(DataPacket packet) {
         if (!this.connected) {
@@ -5912,7 +5865,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.getNetworkSession().sendImmediatePacket(packet);
         return true;
     }
-
 
     public boolean dataResourcePacket(DataPacket packet) {
         if (!this.connected) {
@@ -5983,7 +5935,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
-
     @Override
     public void removeLine(IScoreboardLine line) {
         SetScorePacket packet = new SetScorePacket();
@@ -5999,7 +5950,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-
     @Override
     public void updateScore(IScoreboardLine line) {
         SetScorePacket packet = new SetScorePacket();
@@ -6014,7 +5964,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.setScoreTag(line.getScore() + " " + line.getScoreboard().getDisplayName());
         }
     }
-
 
     @Override
     public void display(IScoreboard scoreboard, DisplaySlot slot) {
@@ -6039,7 +5988,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-
     @Override
     public void hide(DisplaySlot slot) {
         SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();
@@ -6063,11 +6011,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
-
     public Boolean isOpenSignFront() {
         return openSignFront;
     }
-
 
     public void setOpenSignFront(Boolean frontSide) {
         openSignFront = frontSide;
@@ -6096,11 +6042,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-
     public void setFlySneaking(boolean sneaking) {
         this.flySneaking = sneaking;
     }
-
 
     public boolean isFlySneaking() {
         return this.flySneaking;

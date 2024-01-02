@@ -25,10 +25,8 @@ public class BlockDoubleSlabRedSandstone extends BlockDoubleSlabBase {
         return DOUBLE_RED_SANDSTONE_SLAB;
     }
 
-
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return BlockSlabRedSandstone.PROPERTIES;
     }
 

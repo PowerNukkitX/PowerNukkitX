@@ -76,7 +76,6 @@ public class BugReportGenerator extends Thread {
             pluginError = !throwable.getStackTrace()[0].getClassName().startsWith("cn.nukkit");
         }
 
-
         File mdReport = new File(reports, date + "_" + throwable.getClass().getSimpleName() + ".md");
         mdReport.createNewFile();
         String content = Utils.readFile(this.getClass().getModule().getResourceAsStream("report_template.md"));

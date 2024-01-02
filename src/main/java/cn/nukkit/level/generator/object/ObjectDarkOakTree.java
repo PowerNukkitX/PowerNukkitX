@@ -36,7 +36,7 @@ public class ObjectDarkOakTree extends TreeGenerator {
             Vector3 blockpos = position.down();
             String block = level.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
 
-            if (block != Block.GRASS && block != Block.DIRT) {
+            if (!block.equals(Block.GRASS) && !block.equals(Block.DIRT)) {
                 return false;
             } else if (!this.placeTreeOfHeight(level, position, i)) {
                 return false;
@@ -63,7 +63,7 @@ public class ObjectDarkOakTree extends TreeGenerator {
                     Vector3 blockpos1 = new Vector3(k1, k2, l1);
                     String material = level.getBlockIdAt(blockpos1.getFloorX(), blockpos1.getFloorY(), blockpos1.getFloorZ());
 
-                    if (material == Block.AIR || material == Block.LEAVES) {
+                    if (material.equals(Block.AIR) || material.equals(Block.LEAVES)) {
                         this.placeLogAt(level, blockpos1);
                         this.placeLogAt(level, blockpos1.east());
                         this.placeLogAt(level, blockpos1.south());
@@ -176,7 +176,7 @@ public class ObjectDarkOakTree extends TreeGenerator {
     private void placeLeafAt(BlockManager worldIn, int x, int y, int z) {
         Vector3 blockpos = new Vector3(x, y, z);
         String material = worldIn.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
-        if (material == Block.AIR) {
+        if (material.equals(Block.AIR)) {
             worldIn.setBlockAt(blockpos, DARK_OAK_LEAVES);
         }
     }

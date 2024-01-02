@@ -57,7 +57,6 @@ public class SmithingItemAction extends InventoryAction {
         // Does nothing
     }
 
-
     public int getType() {
         return type;
     }

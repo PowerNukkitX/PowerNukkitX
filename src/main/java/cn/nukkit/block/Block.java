@@ -177,14 +177,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 0;
     }
 
-
     public void onPlayerRightClick(@NotNull Player player, Item item, BlockFace face, Vector3 clickPoint) {
     }
 
-
     public void onNeighborChange(@NotNull BlockFace side) {
     }
-
 
     public boolean isBreakable(@Nonnull Vector3 vector, int layer, @Nonnull BlockFace face, @Nonnull Item item, @Nonnull Player player, boolean setBlockDestroy) {
         return true;
@@ -198,10 +195,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
-
     public void afterRemoval(Block newBlock, boolean update) {
     }
-
 
     public boolean isSoulSpeedCompatible() {
         return false;
@@ -268,8 +263,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * 控制方块的通过阻力因素（0-1）。此值越小阻力越大<p/>
      * 对于不可穿过的方块，若未覆写，此值始终为1（无效）<p/>
      */
-
-
     public double getPassableBlockFrictionFactor() {
         if (!this.canPassThrough()) return 1;
         return DEFAULT_AIR_FLUID_FRICTION;
@@ -280,8 +273,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      *
      * @return 走过这个方块所需要的额外代价
      */
-
-
     public int getWalkThroughExtraCost() {
         return 0;
     }
@@ -319,8 +310,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     /**
      * Check if blocks can be attached in the given side.
      */
-
-
     public boolean isSolid(BlockFace side) {
         return isSideFull(side);
     }
@@ -335,11 +324,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
-
     public int getWaterloggingLevel() {
         return 0;
     }
-
 
     public final boolean canWaterloggingFlowInto() {
         return canBeFlowedInto() || getWaterloggingLevel() > 1;
@@ -367,7 +354,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     /**
      * @return 方块是否可以被活塞拉动
      */
-
     public boolean canBePulled() {
         return true;
     }
@@ -375,7 +361,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     /**
      * @return 当被活塞移动时是否会被破坏
      */
-
     public boolean breaksWhenMoved() {
         return false;
     }
@@ -383,7 +368,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     /**
      * @return 是否可以粘在粘性活塞上
      */
-
     public boolean sticksToPiston() {
         return true;
     }
@@ -391,8 +375,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     /**
      * @return 被活塞移动的时候是否可以粘住其他方块。eg:粘液块，蜂蜜块
      */
-
-
     public boolean canSticksBlock() {
         return false;
     }
@@ -404,7 +386,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public int getComparatorInputOverride() {
         return 0;
     }
-
 
     public boolean canHarvest(Item item) {
         return getToolTier() == 0 || getToolType() == 0 || correctTool0(getToolType(), item, getId()) && item.getTier() >= getToolTier();
@@ -467,7 +448,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public boolean isAir() {
-        return this.blockstate == BlockAir.STATE;
+        return this.blockstate == BlockAir.PROPERTIES.getDefaultState();
     }
 
     public BlockState getBlockState() {
@@ -551,7 +532,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 0;
     }
 
-
     private int customToolType(Item item) {
         if (this instanceof BlockLeaves && item.isHoe()) return ItemTool.TYPE_SHEARS;
         if (item.isSword()) return ItemTool.TYPE_SWORD;
@@ -562,7 +542,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         if (item.isShears()) return ItemTool.TYPE_SHEARS;
         return ItemTool.TYPE_NONE;
     }
-
 
     private double toolBreakTimeBonus0(int toolType, int toolTier, String blockId) {
         if (toolType == ItemTool.TYPE_SWORD) {
@@ -608,7 +587,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 1.0 + (0.2 * hasteLoreLevel);
     }
 
-
     private static int toolType0(Item item, String blockId) {
         if ((blockId.equals(LEAVES) && item.isHoe()) || (blockId.equals(LEAVES2) && item.isHoe()))
             return ItemTool.TYPE_SHEARS;
@@ -620,7 +598,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         if (item.isShears()) return ItemTool.TYPE_SHEARS;
         return ItemTool.TYPE_NONE;
     }
-
 
     private static boolean correctTool0(int blockToolType, Item item, String blockId) {
         if ((blockId.equals(LEAVES) && item.isHoe()) || (blockId.equals(LEAVES2) && item.isHoe())) {
@@ -644,7 +621,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public double getBreakTime(Item item) {
         return this.calculateBreakTime(item);
     }
-
 
     /**
      * @link calculateBreakTime(@ Nonnull Item item, @ Nullable Player player)
@@ -680,8 +656,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @param player 挖掘该方块的玩家
      * @return 方块的挖掘时间
      */
-
-
     public double calculateBreakTimeNotInAir(@NotNull Item item, @Nullable Player player) {
         double seconds;
         double blockHardness = getHardness();
@@ -745,16 +719,13 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return this.getHardness() != -1;
     }
 
-
     public Block getTickCachedSide(BlockFace face) {
         return getTickCachedSideAtLayer(layer, face);
     }
 
-
     public Block getTickCachedSide(BlockFace face, int step) {
         return getTickCachedSideAtLayer(layer, face, step);
     }
-
 
     public Block getTickCachedSideAtLayer(int layer, BlockFace face) {
         if (this.isValid()) {
@@ -762,7 +733,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
         return this.getTickCachedSide(face, 1);
     }
-
 
     public Block getTickCachedSideAtLayer(int layer, BlockFace face, int step) {
         if (this.isValid()) {
@@ -790,14 +760,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getSideAtLayer(layer, face, step);
     }
 
-
     public Block getSideAtLayer(int layer, BlockFace face) {
         if (this.isValid()) {
             return this.getLevel().getBlock((int) x + face.getXOffset(), (int) y + face.getYOffset(), (int) z + face.getZOffset(), layer);
         }
         return this.getSide(face, 1);
     }
-
 
     public Block getSideAtLayer(int layer, BlockFace face, int step) {
         if (this.isValid()) {
@@ -825,7 +793,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getSide(BlockFace.UP, step);
     }
 
-
     public Block up(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.UP, step);
     }
@@ -839,7 +806,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public Block down(int step) {
         return getSide(BlockFace.DOWN, step);
     }
-
 
     public Block down(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.DOWN, step);
@@ -855,7 +821,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getSide(BlockFace.NORTH, step);
     }
 
-
     public Block north(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.NORTH, step);
     }
@@ -869,7 +834,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public Block south(int step) {
         return getSide(BlockFace.SOUTH, step);
     }
-
 
     public Block south(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.SOUTH, step);
@@ -885,7 +849,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getSide(BlockFace.EAST, step);
     }
 
-
     public Block east(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.EAST, step);
     }
@@ -899,7 +862,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public Block west(int step) {
         return getSide(BlockFace.WEST, step);
     }
-
 
     public Block west(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.WEST, step);
@@ -923,11 +885,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     }
 
-
     public void onEntityFallOn(Entity entity, float fallDistance) {
 
     }
-
 
     public boolean useDefaultFallDamage() {
         return true;
@@ -1130,8 +1090,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     /**
      * Check if the block is not transparent, is solid and is a full cube like a stone block.
      */
-
-
     public boolean isSimpleBlock() {
         return !isTransparent() && isSolid() && isFullBlock();
     }
@@ -1142,8 +1100,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @param face The face to be checked
      * @return If and only if the bounding box completely cover the face
      */
-
-
     public boolean isSideFull(BlockFace face) {
         AxisAlignedBB boundingBox = getBoundingBox();
         if (boundingBox == null) {
@@ -1185,7 +1141,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return boundingBox.getMaxY() == getY() + 1;
     }
 
-
     public boolean isFertilizable() {
         return false;
     }
@@ -1193,8 +1148,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     /**
      * Check if the block occupies the entire block space, like a stone and normal glass blocks
      */
-
-
     public boolean isFullBlock() {
         AxisAlignedBB boundingBox = getBoundingBox();
         if (boundingBox == null) {
@@ -1248,7 +1201,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
-
     public boolean isDefaultState() {
         return this.blockstate == getProperties().getDefaultState();
     }
@@ -1262,8 +1214,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      *
      * @since 1.4.0.0-PN
      */
-
-
     public boolean isLavaResistant() {
         return false;
     }
@@ -1272,21 +1222,17 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
-
     public boolean mustSilkTouch(Vector3 vector, int layer, BlockFace face, Item item, Player player) {
         return false;
     }
-
 
     public boolean mustDrop(Vector3 vector, int layer, BlockFace face, Item item, Player player) {
         return false;
     }
 
-
     public Optional<Block> firstInLayers(Predicate<Block> condition) {
         return firstInLayers(0, condition);
     }
-
 
     public Optional<Block> firstInLayers(int startingLayer, Predicate<Block> condition) {
         int maximumLayer = this.level.requireProvider().getMaximumLayer();
@@ -1300,11 +1246,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return Optional.empty();
     }
 
-
     public final boolean isBlockChangeAllowed() {
         return getChunk().isBlockChangeAllowed(getFloorX() & 0xF, getFloorY(), getFloorZ() & 0xF);
     }
-
 
     public final boolean isBlockChangeAllowed(@Nullable Player player) {
         if (isBlockChangeAllowed()) {
@@ -1318,22 +1262,17 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      *
      * @return 方块吸收的光亮
      */
-
-
     public int getLightFilter() {
         return isSolid() && !isTransparent() ? 15 : 1;
     }
-
 
     public final boolean canRandomTick() {
         return Level.canRandomTick(getId());
     }
 
-
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         return false;
     }
-
 
     public int getItemMaxStackSize() {
         return 64;
@@ -1344,8 +1283,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      *
      * @return if the gets powered.
      */
-
-
     public boolean isGettingPower() {
         if (!this.level.getServer().isRedstoneEnabled()) return false;
 
@@ -1358,7 +1295,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
         return this.level.isBlockPowered(this.getLocation());
     }
-
 
     public boolean cloneTo(Position pos) {
         return cloneTo(pos, true);
@@ -1373,8 +1309,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @param update 是否需要更新克隆的方块
      * @return 是否克隆成功
      */
-
-
     public boolean cloneTo(Position pos, boolean update) {
         //清除旧方块
         level.setBlock(pos, this.layer, Block.get(Block.AIR), false, false);

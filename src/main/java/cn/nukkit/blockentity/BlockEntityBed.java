@@ -17,7 +17,6 @@ public class BlockEntityBed extends BlockEntitySpawnable {
         super(chunk, nbt);
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();

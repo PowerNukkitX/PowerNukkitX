@@ -127,18 +127,15 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
         return 2.4f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Wither Skeleton";
     }
 
-
     @Override
     public boolean isUndead() {
         return true;
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {

@@ -17,7 +17,6 @@ public class FurnaceRecipe implements SmeltingRecipe {
         this(null, result, ingredient);
     }
 
-
     public FurnaceRecipe(@Nullable String recipeId, Item result, Item ingredient) {
         this.recipeId = recipeId == null ? CraftingManager.getMultiItemHash(List.of(ingredient, result)).toString() : recipeId;
         this.output = result.clone();

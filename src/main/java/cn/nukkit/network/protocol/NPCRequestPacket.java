@@ -28,51 +28,41 @@ public class NPCRequestPacket extends DataPacket {
         return entityRuntimeId;
     }
 
-
     public void setRequestedEntityRuntimeId(long entityRuntimeId) {
         this.entityRuntimeId = entityRuntimeId;
     }
-
 
     public RequestType getRequestType() {
         return requestType;
     }
 
-
     public void setRequestType(RequestType requestType) {
         this.requestType = requestType;
     }
-
 
     public String getData() {
         return data;
     }
 
-
     public void setData(String data) {
         this.data = data;
     }
-
 
     public int getSkinType() {
         return skinType;
     }
 
-
     public void setSkinType(int skinType) {
         this.skinType = skinType;
     }
-
 
     public String getSceneName() {
         return sceneName;
     }
 
-
     public void setSceneName(String sceneName) {
         this.sceneName = sceneName;
     }
-
 
     public enum RequestType {
 

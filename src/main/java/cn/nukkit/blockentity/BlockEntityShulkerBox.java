@@ -26,7 +26,6 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
         super(chunk, nbt);
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -104,7 +103,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
 
         CompoundTag d = NBTIO.putItemHelper(item, index);
 
-        if (item.getId() == Item.AIR || item.getCount() <= 0) {
+        if (item.isNull() || item.getCount() <= 0) {
             if (i >= 0) {
                 this.namedTag.getList("Items").remove(i);
             }

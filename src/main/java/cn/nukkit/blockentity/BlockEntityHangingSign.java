@@ -18,7 +18,6 @@ public class BlockEntityHangingSign extends BlockEntitySign {
         return namedTag.contains("CustomName");
     }
 
-
     @Override
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound().putString("id", BlockEntity.HANGING_SIGN);

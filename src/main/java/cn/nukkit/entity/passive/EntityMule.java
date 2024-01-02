@@ -49,7 +49,6 @@ public class EntityMule extends EntityAnimal implements EntityWalkable {
         super.initEntity();
     }
 
-
     @Override
     public String getOriginalName() {
         return "Mule";

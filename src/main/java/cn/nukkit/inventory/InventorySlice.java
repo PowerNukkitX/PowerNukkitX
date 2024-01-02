@@ -65,9 +65,8 @@ public class InventorySlice implements Inventory {
         return rawInv.getTitle();
     }
 
-    @NotNull
     @Override
-    public Item getItem(int index) {
+    public @NotNull Item getItem(int index) {
         // check whether the index is in the range
         if (index < 0 || index >= getSize()) {
             return AIR_ITEM;
@@ -117,9 +116,8 @@ public class InventorySlice implements Inventory {
         return rawInv.removeItem(slots);
     }
 
-    @NotNull
     @Override
-    public Map<Integer, Item> getContents() {
+    public @NotNull Map<Integer, Item> getContents() {
         var map = new HashMap<Integer, Item>();
         for (int i = startSlot; i < endSlot; i++) {
             map.put(i - startSlot, rawInv.getItem(i));
@@ -329,12 +327,10 @@ public class InventorySlice implements Inventory {
         rawInv.onSlotChange(index + startSlot, before, send);
     }
 
-
     @Override
     public void addListener(InventoryListener listener) {
         rawInv.addListener(((inventory, oldItem, slot) -> listener.onInventoryChanged(this, oldItem, slot - startSlot)));
     }
-
 
     @Override
     public void removeListener(InventoryListener listener) {

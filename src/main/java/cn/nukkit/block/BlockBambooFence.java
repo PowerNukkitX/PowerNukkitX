@@ -4,7 +4,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockBambooFence extends BlockFence {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:bamboo_fence");
+    public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_FENCE);
 
     @Override
     public @NotNull BlockProperties getProperties() {

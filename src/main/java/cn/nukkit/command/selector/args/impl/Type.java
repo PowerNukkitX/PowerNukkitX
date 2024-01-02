@@ -43,9 +43,8 @@ public class Type extends CachedSimpleSelectorArgument {
         return entity -> have.stream().allMatch(type -> isType(entity, type)) && dontHave.stream().noneMatch(type ->isType(entity, type));
     }
 
-    @Nullable
     @Override
-    public String getDefaultValue(Map<String, List<String>> values, SelectorType selectorType, CommandSender sender) {
+    public @Nullable String getDefaultValue(Map<String, List<String>> values, SelectorType selectorType, CommandSender sender) {
         return selectorType == SelectorType.RANDOM_PLAYER ? "minecraft:player" : null;
     }
 

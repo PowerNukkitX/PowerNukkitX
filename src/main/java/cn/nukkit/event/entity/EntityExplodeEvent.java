@@ -55,11 +55,9 @@ public class EntityExplodeEvent extends EntityEvent implements Cancellable {
         this.yield = yield;
     }
 
-
     public Set<Block> getIgnitions() {
         return ignitions;
     }
-
 
     public void setIgnitions(Set<Block> ignitions) {
         this.ignitions = ignitions;

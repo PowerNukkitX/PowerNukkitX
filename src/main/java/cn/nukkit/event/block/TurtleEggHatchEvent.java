@@ -23,7 +23,6 @@ public class TurtleEggHatchEvent extends BlockEvent implements Cancellable {
         this.newState = newState;
     }
 
-
     public void recalculateNewState() {
         BlockTurtleEgg turtleEgg = getBlock();
         int eggCount = turtleEgg.getEggCount().ordinal() + 1;
@@ -37,11 +36,9 @@ public class TurtleEggHatchEvent extends BlockEvent implements Cancellable {
         }
     }
 
-
     public Block getNewState() {
         return newState;
     }
-
 
     public void setNewState(Block newState) {
         this.newState = newState;
@@ -52,26 +49,21 @@ public class TurtleEggHatchEvent extends BlockEvent implements Cancellable {
         return (BlockTurtleEgg) super.getBlock();
     }
 
-
     public int getEggsHatching() {
         return eggsHatching;
     }
-
 
     public void setEggsHatching(int eggsHatching) {
         this.eggsHatching = eggsHatching;
     }
 
-
     public boolean isRecalculateOnFailure() {
         return recalculateOnFailure;
     }
 
-
     public void setRecalculateOnFailure(boolean recalculateOnFailure) {
         this.recalculateOnFailure = recalculateOnFailure;
     }
-
 
     public static HandlerList getHandlers() {
         return handlers;

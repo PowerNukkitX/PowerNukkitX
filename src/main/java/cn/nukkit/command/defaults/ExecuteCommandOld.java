@@ -38,7 +38,6 @@ public class ExecuteCommandOld extends VanillaCommand {
         this.enableParamTree();
     }
 
-
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         int num = 0;

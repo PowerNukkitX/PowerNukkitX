@@ -6,11 +6,9 @@ public class ItemNetheriteHoe extends ItemTool {
         this(0, 1);
     }
 
-
     public ItemNetheriteHoe(Integer meta) {
         this(meta, 1);
     }
-
 
     public ItemNetheriteHoe(Integer meta, int count) {
         super(NETHERITE_HOE, meta, count, "Netherite Hoe");
@@ -35,7 +33,6 @@ public class ItemNetheriteHoe extends ItemTool {
     public int getMaxDurability() {
         return ItemTool.DURABILITY_NETHERITE;
     }
-
 
     @Override
     public boolean isLavaResistant() {

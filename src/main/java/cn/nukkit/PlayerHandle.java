@@ -49,7 +49,6 @@ public final class PlayerHandle {
         return player.networkSession;
     }
 
-
     public void sendPlayStatus(int status) {
         player.sendPlayStatus(status);
     }
@@ -62,7 +61,6 @@ public final class PlayerHandle {
         player.forceSendEmptyChunks();
     }
 
-
     public void removeWindow(Inventory inventory, boolean isResponse) {
         player.removeWindow(inventory, isResponse);
     }
@@ -71,11 +69,9 @@ public final class PlayerHandle {
         player.addDefaultWindows();
     }
 
-
     public void onBlock(Entity entity, EntityDamageEvent e, boolean animate) {
         player.onBlock(entity, e, animate);
     }
-
 
     public long getBreakingBlockTime() {
         return player.breakingBlockTime;
@@ -485,11 +481,9 @@ public final class PlayerHandle {
         player.completeLoginSequence();
     }
 
-
     public void onPlayerLocallyInitialized() {
         player.onPlayerLocallyInitialized();
     }
-
 
     public boolean isValidRespawnBlock(Block block) {
         return player.isValidRespawnBlock(block);

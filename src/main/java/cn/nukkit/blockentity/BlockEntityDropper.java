@@ -13,13 +13,11 @@ public class BlockEntityDropper extends BlockEntityEjectable {
         super(chunk, nbt);
     }
 
-
     @Override
     protected DropperInventory createInventory() {
         inventory = new DropperInventory(this);
         return getInventory();
     }
-
 
     @Override
     protected String getBlockEntityName() {

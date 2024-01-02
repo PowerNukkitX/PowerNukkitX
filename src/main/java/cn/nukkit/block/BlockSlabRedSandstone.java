@@ -48,29 +48,23 @@ public class BlockSlabRedSandstone extends BlockSlab {
         return RED_SANDSTONE_SLAB;
     }
 
-
     @Override
     public String getSlabName() {
         return getSlabType().getEnglishName();
     }
 
-
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
-
 
     public StoneSlab2Type getSlabType() {
         return getPropertyValue(StoneSlab2Type.PROPERTY);
     }
 
-
     public void setSlabType(StoneSlab2Type type) {
         setPropertyValue(StoneSlab2Type.PROPERTY, type);
     }
-
 
     @Override
     public boolean isSameType(BlockSlab slab) {
@@ -83,7 +77,6 @@ public class BlockSlabRedSandstone extends BlockSlab {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

@@ -182,7 +182,6 @@ public class Long2ObjectNonBlockingMap<TypeV>
         return r;
     }
 
-
     // --- reprobe_limit -----------------------------------------------------
     // Heuristic to decide if we have reprobed toooo many times.  Running over
     // the reprobe limit on a 'get' call acts as a 'miss'; on a 'put' call it
@@ -506,7 +505,6 @@ public class Long2ObjectNonBlockingMap<TypeV>
         h += h << 7; // smear low bits up high, for hashcodes that only differ by 1
         return (int) h;
     }
-
 
     // --- CHM -----------------------------------------------------------------
     // The control structure for the Long2ObjectNonBlockingMap
@@ -908,7 +906,6 @@ public class Long2ObjectNonBlockingMap<TypeV>
             return newchm;
         }
 
-
         // The next part of the table to copy.  It monotonically transits from zero
         // to _keys.length.  Visitors to the table can claim 'work chunks' by
         // CAS'ing this field up, then copying the indicated indices from the old
@@ -980,7 +977,6 @@ public class Long2ObjectNonBlockingMap<TypeV>
             // then got stalled before promoting.
             copy_check_and_promote(0); // See if we can promote
         }
-
 
         // --- copy_slot_and_check -----------------------------------------------
         // Copy slot 'idx' from the old table to the new table.  If this thread

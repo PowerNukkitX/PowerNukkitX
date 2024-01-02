@@ -30,7 +30,6 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                     continue;
                 }
 
-
                 BlockVector3 blockPos = action.getPosition();
                 BlockFace blockFace = BlockFace.fromIndex(action.getFacing());
                 if (playerHandle.getLastBlockAction() != null && playerHandle.getLastBlockAction().getAction() == PlayerActionType.PREDICT_DESTROY_BLOCK &&

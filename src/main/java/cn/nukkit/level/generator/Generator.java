@@ -4,14 +4,11 @@ import cn.nukkit.Server;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.DimensionData;
-import cn.nukkit.level.DimensionEnum;
 import cn.nukkit.level.Level;
 import cn.nukkit.utils.random.NukkitRandomSource;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.random.RandomSource;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -39,7 +36,6 @@ public abstract class Generator implements BlockID {
         return chunkManager;
     }
 
-
     public Map<String, Object> getSettings() {
         return this.options;
     }
@@ -48,11 +44,9 @@ public abstract class Generator implements BlockID {
         this.level = level;
     }
 
-
     public void setChunkManager(ChunkManager chunkManager) {
         this.chunkManager = chunkManager;
     }
-
 
     public void setRandom(NukkitRandomSource random) {
         this.random = random;

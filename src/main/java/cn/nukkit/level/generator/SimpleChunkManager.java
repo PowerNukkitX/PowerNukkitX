@@ -16,14 +16,13 @@ public abstract class SimpleChunkManager implements ChunkManager {
         this.seed = seed;
     }
 
-
     @Override
     public BlockState getBlockStateAt(int x, int y, int z, int layer) {
         IChunk chunk = this.getChunk(x >> 4, z >> 4);
         if (chunk != null) {
             return chunk.getBlockState(x & 0xf, ChunkManager.ensureY(y, chunk), z & 0xf, layer);
         }
-        return BlockAir.STATE;
+        return BlockAir.PROPERTIES.getDefaultState();
     }
 
     @Override

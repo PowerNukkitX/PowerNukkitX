@@ -30,9 +30,8 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         super(blockstate);
     }
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -71,71 +71,58 @@ public class NPCDialoguePacket extends DataPacket {
         putString(actionJson);
     }
 
-
     public long getRuntimeEntityId() {
         return runtimeEntityId;
     }
 
-
     public void setRuntimeEntityId(long runtimeEntityId) {
         this.runtimeEntityId = runtimeEntityId;
     }
-
 
     @NotNull
     public NPCDialogAction getAction() {
         return action;
     }
 
-
     public void setAction(@NotNull NPCDialogAction action) {
         this.action = action;
     }
-
 
     @NotNull
     public String getDialogue() {
         return dialogue;
     }
 
-
     public void setDialogue(@NotNull String dialogue) {
         this.dialogue = dialogue;
     }
-
 
     @NotNull
     public String getSceneName() {
         return sceneName;
     }
 
-
     public void setSceneName(@NotNull String sceneName) {
         this.sceneName = sceneName;
     }
-
 
     @NotNull
     public String getNpcName() {
         return npcName;
     }
 
-
     public void setNpcName(@NotNull String npcName) {
         this.npcName = npcName;
     }
-
 
     @NotNull
     public String getActionJson() {
         return actionJson;
     }
 
-
     public void setActionJson(@NotNull String actionJson) {
         this.actionJson = actionJson;
     }
-
 
     public enum NPCDialogAction {
         OPEN,

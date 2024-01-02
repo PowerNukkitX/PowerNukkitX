@@ -275,7 +275,6 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
         return Item.EMPTY_ARRAY;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Cat";

@@ -35,12 +35,10 @@ public class EntityPillager extends EntityMob implements EntityWalkable {
         return 1.9f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Pillager";
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {

@@ -5,11 +5,10 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockBoneBlock extends BlockSolid{
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:bone_block", CommonBlockProperties.DEPRECATED, CommonBlockProperties.PILLAR_AXIS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BONE_BLOCK, CommonBlockProperties.DEPRECATED, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -38,7 +37,6 @@ public class BlockBoneBlock extends BlockSolid{
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
-
 
     @Override
     public int getToolTier() {

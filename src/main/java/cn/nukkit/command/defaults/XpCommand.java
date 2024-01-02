@@ -34,7 +34,6 @@ public class XpCommand extends Command {
         this.enableParamTree();
     }
 
-
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         //  "/xp <amount> [player]"  for adding exp

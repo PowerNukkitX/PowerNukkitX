@@ -53,24 +53,20 @@ public class SmithingTableEvent extends InventoryEvent implements Cancellable {
         this.player = player;
     }
 
-
     @NotNull
     public Item getEquipmentItem() {
         return this.equipmentItem;
     }
-
 
     @NotNull
     public Item getResultItem() {
         return this.resultItem;
     }
 
-
     @NotNull
     public Item getIngredientItem() {
         return this.ingredientItem;
     }
-
 
     @NotNull
     public Player getPlayer() {

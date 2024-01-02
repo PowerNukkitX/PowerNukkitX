@@ -21,7 +21,6 @@ public class SkinAnimation {
         this(image, type, frames, 0);
     }
 
-
     public SkinAnimation(SerializedImage image, int type, float frames, int expression) {
         this.image = image;
         this.type = type;

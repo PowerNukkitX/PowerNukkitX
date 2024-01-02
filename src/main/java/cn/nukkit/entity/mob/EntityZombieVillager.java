@@ -38,12 +38,10 @@ public class EntityZombieVillager extends EntityMob implements EntityWalkable, E
         return 1.9f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Zombie Villager";
     }
-
 
     @Override
     public boolean isUndead() {

@@ -32,11 +32,9 @@ public interface EntityOwnable extends EntityComponent {
         return owner;
     }
 
-
     default boolean hasOwner() {
         return hasOwner(true);
     }
-
 
     default boolean hasOwner(boolean checkOnline) {
         if (checkOnline) {

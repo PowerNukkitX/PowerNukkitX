@@ -22,11 +22,9 @@ public class CompoundTag extends Tag implements Cloneable {
         this(name, new HashMap<>());
     }
 
-
     public CompoundTag(Map<String, Tag> tags) {
         this("", tags);
     }
-
 
     public CompoundTag(String name, Map<String, Tag> tags) {
         super(name);
@@ -116,12 +114,10 @@ public class CompoundTag extends Tag implements Cloneable {
         return this;
     }
 
-
     public CompoundTag putList(String name, ListTag<? extends Tag> listTag) {
         tags.put(name, listTag.setName(name));
         return this;
     }
-
 
     public CompoundTag putCompound(CompoundTag value) {
         tags.put(value.getName(), value);
@@ -146,36 +142,29 @@ public class CompoundTag extends Tag implements Cloneable {
         return tags.containsKey(name);
     }
 
-
     public boolean containsCompound(String name) {
         return tags.get(name) instanceof CompoundTag;
     }
-
 
     public boolean containsString(String name) {
         return tags.get(name) instanceof StringTag;
     }
 
-
     public boolean containsIntArray(String name) {
         return tags.get(name) instanceof IntArrayTag;
     }
-
 
     public boolean containsByteArray(String name) {
         return tags.get(name) instanceof ByteArrayTag;
     }
 
-
     public boolean containsNumber(String name) {
         return tags.get(name) instanceof NumberTag;
     }
 
-
     public boolean containsList(String name) {
         return tags.get(name) instanceof ListTag;
     }
-
 
     public boolean containsList(String name, byte type) {
         Tag tag = tags.get(name);
@@ -187,26 +176,21 @@ public class CompoundTag extends Tag implements Cloneable {
         return listType == 0 || listType == type;
     }
 
-
     public boolean containsByte(String name) {
         return tags.get(name) instanceof ByteTag;
     }
-
 
     public boolean containsShort(String name) {
         return tags.get(name) instanceof ShortTag;
     }
 
-
     public boolean containsInt(String name) {
         return tags.get(name) instanceof IntTag;
     }
 
-
     public boolean containsDouble(String name) {
         return tags.get(name) instanceof DoubleTag;
     }
-
 
     public boolean containsFloat(String name) {
         return tags.get(name) instanceof FloatTag;
@@ -220,7 +204,6 @@ public class CompoundTag extends Tag implements Cloneable {
     public <T extends Tag> T removeAndGet(String name) {
         return (T) tags.remove(name);
     }
-
 
     public int getByte(String name) {
         if (!tags.containsKey(name)) return (byte) 0;

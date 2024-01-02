@@ -32,31 +32,25 @@ public class RepairItemEvent extends InventoryEvent implements Cancellable {
         this.player = player;
     }
 
-
     public Item getOldItem() {
         return this.oldItem;
     }
-
 
     public Item getNewItem() {
         return this.newItem;
     }
 
-
     public Item getMaterialItem() {
         return this.materialItem;
     }
-
 
     public int getCost() {
         return this.cost;
     }
 
-
     public void setCost(int cost) {
         this.cost = cost;
     }
-
 
     public Player getPlayer() {
         return this.player;

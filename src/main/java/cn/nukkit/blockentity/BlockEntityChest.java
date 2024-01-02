@@ -23,7 +23,6 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
         super(chunk, nbt);
     }
 
-
     @Override
     protected ContainerInventory requireContainerInventory() {
         return new ChestInventory(this);
@@ -186,7 +185,6 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
 
         return c;
     }
-
 
     @Override
     public CompoundTag getCleanedNBT() {

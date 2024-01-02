@@ -65,12 +65,10 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
         return player.isCreative() ? "action.interact.edit" : "action.interact.talk";
     }
 
-
     @Override
     public String getOriginalName() {
         return "NPC";
     }
-
 
     @Override
     public void initEntity() {
@@ -132,7 +130,6 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
         this.dialog.setBindEntity(this);
     }
 
-
     @Override
     public void saveNBT() {
         super.saveNBT();
@@ -143,7 +140,6 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
         this.namedTag.putInt("Variant", this.variant);
     }
 
-
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         //对于创造模式玩家，NPC发送过去的dialog的sceneName必须为空，否则客户端会不允许修改对话框内容
@@ -151,7 +147,6 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
         player.showDialogWindow(this.dialog, !player.isCreative());
         return true;
     }
-
 
     @Override
     public boolean attack(EntityDamageEvent source) {
@@ -161,17 +156,14 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
         return false;
     }
 
-
     public int getVariant() {
         return this.variant;
     }
-
 
     public void setVariant(int variant) {
         this.variant = variant;
         this.setDataProperty(new IntEntityData(DATA_VARIANT, variant));
     }
-
 
     public FormWindowDialog getDialog() {
         return dialog;

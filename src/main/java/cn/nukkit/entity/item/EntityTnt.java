@@ -95,7 +95,6 @@ public class EntityTnt extends Entity implements EntityExplosive {
         this.getLevel().addSound(this, Sound.RANDOM_FUSE);
     }
 
-
     @Override
     public boolean canCollideWith(Entity entity) {
         return false;
@@ -180,7 +179,6 @@ public class EntityTnt extends Entity implements EntityExplosive {
     public Entity getSource() {
         return source;
     }
-
 
     @Override
     public String getOriginalName() {

@@ -21,7 +21,6 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         super(chunk, nbt);
     }
 
-
     protected abstract EjectableInventory createInventory();
 
 
@@ -46,7 +45,6 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
     public int getSize() {
         return 9;
     }
-
 
     protected int getSlotIndex(int index) {
         ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
@@ -76,7 +74,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
 
         CompoundTag d = NBTIO.putItemHelper(item, index);
 
-        if (item.getId() == Item.AIR || item.getCount() <= 0) {
+        if (item.isNull() || item.getCount() <= 0) {
             if (i >= 0) {
                 this.namedTag.getList("Items").getAll().remove(i);
             }

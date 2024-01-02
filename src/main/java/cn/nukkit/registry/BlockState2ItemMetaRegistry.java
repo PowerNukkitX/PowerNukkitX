@@ -38,7 +38,6 @@ public class BlockState2ItemMetaRegistry extends BaseRegistry<String, Integer, I
         return MAP.getInt(key + "#" + meta);
     }
 
-
     @Override
     public void trim() {
         MAP.trim();

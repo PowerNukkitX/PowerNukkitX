@@ -104,7 +104,6 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         return 1.8f;
     }
 
-
     @Override
     public float getFloatingHeight() {
         return 0.6f;
@@ -149,7 +148,6 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         }
     }
 
-
     @Override
     public String getOriginalName() {
         return "Creeper";
@@ -162,7 +160,6 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         }
         return Item.EMPTY_ARRAY;
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {
@@ -180,7 +177,6 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         }
         return super.onInteract(player, item, clickedPos);
     }
-
 
     @Override
     public String getInteractButtonText(Player player) {

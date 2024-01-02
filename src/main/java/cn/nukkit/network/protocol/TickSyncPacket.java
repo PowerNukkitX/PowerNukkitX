@@ -37,21 +37,17 @@ public class TickSyncPacket extends DataPacket {
         this.putLLong(this.responseTimestamp);
     }
 
-
     public long getRequestTimestamp() {
         return requestTimestamp;
     }
-
 
     public void setRequestTimestamp(long requestTimestamp) {
         this.requestTimestamp = requestTimestamp;
     }
 
-
     public long getResponseTimestamp() {
         return responseTimestamp;
     }
-
 
     public void setResponseTimestamp(long responseTimestamp) {
         this.responseTimestamp = responseTimestamp;

@@ -1,7 +1,6 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -13,7 +12,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 
 import java.util.Map;
-
 
 public class SetBlockCommand extends VanillaCommand {
 
@@ -29,7 +27,6 @@ public class SetBlockCommand extends VanillaCommand {
         });
         this.enableParamTree();
     }
-
 
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {

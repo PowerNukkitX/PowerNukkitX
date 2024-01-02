@@ -43,8 +43,7 @@ public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
      *
      * @return the player
      */
-    @Nullable
-    public Player getPlayer() {
+    public @Nullable Player getPlayer() {
         return player;
     }
 
@@ -67,8 +66,7 @@ public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
      *
      * @return the item
      */
-    @Nullable
-    public Item getItem() {
+    public @Nullable Item getItem() {
         return item;
     }
 

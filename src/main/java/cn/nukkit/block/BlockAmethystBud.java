@@ -48,7 +48,6 @@ public abstract class BlockAmethystBud extends BlockTransparent implements Facea
         return ItemTool.TYPE_PICKAXE;
     }
 
-
     @Override
     public int getToolTier() {
         return ItemTool.TIER_IRON;
@@ -69,7 +68,6 @@ public abstract class BlockAmethystBud extends BlockTransparent implements Facea
         return getPropertyValue(MINECRAFT_BLOCK_FACE);
     }
 
-
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(MINECRAFT_BLOCK_FACE, face);
@@ -77,8 +75,10 @@ public abstract class BlockAmethystBud extends BlockTransparent implements Facea
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (!target.isSolid())
+        if (!target.isSolid()) {
             return false;
+        }
+
         setBlockFace(face);
         this.level.setBlock(block, this, true, true);
         return true;
@@ -86,19 +86,22 @@ public abstract class BlockAmethystBud extends BlockTransparent implements Facea
 
     @Override
     public boolean onBreak(Item item) {
-        if (item.isPickaxe()){
+        if (item.isPickaxe()) {
             Arrays.stream(this.getDrops(item)).forEach(item1 -> this.level.dropItem(this.add(0.5,0,0.5), item1));
             this.getLevel().setBlock(this, layer, Block.get(BlockID.AIR), true, true);
-        }else {
+        } else {
             this.getLevel().setBlock(this, layer, Block.get(BlockID.AIR), true, true);
         }
+
         return true;
     }
 
     @Override
     public int onUpdate(int type) {
-        if ((this.getSide(this.getBlockFace().getOpposite()).isAir()))
+        if ((this.getSide(this.getBlockFace().getOpposite()).isAir())) {
             this.onBreak(Item.get(ItemID.DIAMOND_PICKAXE));
+        }
+
         return 0;
     }
 }

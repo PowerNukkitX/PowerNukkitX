@@ -26,7 +26,6 @@ public class PlayerToggleSpinAttackEvent extends PlayerEvent implements Cancella
         this.isSpinAttacking = isSpinAttacking;
     }
 
-
     public boolean isSpinAttacking() {
         return this.isSpinAttacking;
     }

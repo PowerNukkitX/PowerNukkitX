@@ -49,11 +49,9 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
         super.initEntity();
     }
 
-
     public void setBreedingAge(int ticks) {
 
     }
-
 
     public void setHomePos(Vector3 pos) {
 

@@ -58,7 +58,6 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
         return 1.9f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Skeleton";
@@ -69,12 +68,10 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
         return new Item[]{Item.get(Item.BONE, Item.ARROW)};
     }
 
-
     @Override
     public boolean isUndead() {
         return true;
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {
@@ -86,7 +83,6 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
         burn(this);
         return super.onUpdate(currentTick);
     }
-
 
     @Override
     protected IBehaviorGroup requireBehaviorGroup() {

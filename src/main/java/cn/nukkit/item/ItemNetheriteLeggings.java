@@ -34,12 +34,10 @@ public class ItemNetheriteLeggings extends ItemArmor {
         return 555;
     }
 
-
     @Override
     public int getToughness() {
         return 3;
     }
-
 
     @Override
     public boolean isLavaResistant() {

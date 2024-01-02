@@ -64,61 +64,49 @@ public class ResourcePacksInfoPacket extends DataPacket {
         return NETWORK_ID;
     }
 
-
     public boolean isForcedToAccept() {
         return mustAccept;
     }
-
 
     public void setForcedToAccept(boolean mustAccept) {
         this.mustAccept = mustAccept;
     }
 
-
     public boolean isScriptingEnabled() {
         return scripting;
     }
-
 
     public void setScriptingEnabled(boolean scripting) {
         this.scripting = scripting;
     }
 
-
     public ResourcePack[] getBehaviourPackEntries() {
         return behaviourPackEntries;
     }
-
 
     public void setBehaviourPackEntries(ResourcePack[] behaviourPackEntries) {
         this.behaviourPackEntries = behaviourPackEntries;
     }
 
-
     public ResourcePack[] getResourcePackEntries() {
         return resourcePackEntries;
     }
-
 
     public void setResourcePackEntries(ResourcePack[] resourcePackEntries) {
         this.resourcePackEntries = resourcePackEntries;
     }
 
-
     public boolean isForcingServerPacksEnabled() {
         return forceServerPacks;
     }
-
 
     public void setForcingServerPacksEnabled(boolean forcingServerPacksEnabled) {
         this.forceServerPacks = forcingServerPacksEnabled;
     }
 
-
     public void setCDNEntries(List<CDNEntry> CDNEntries) {
         this.CDNEntries = CDNEntries;
     }
-
 
     public List<CDNEntry> getCDNEntries() {
         return CDNEntries;

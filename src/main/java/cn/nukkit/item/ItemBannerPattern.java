@@ -43,7 +43,6 @@ public class ItemBannerPattern extends Item {
         updateName();
     }
 
-
     public BannerPattern.Type getPatternType() {
         if (!Objects.equals(getId(), BANNER_PATTERN)) {
             return BannerPattern.Type.PATTERN_CREEPER;
@@ -59,7 +58,6 @@ public class ItemBannerPattern extends Item {
             case PATTERN_GLOBE -> BannerPattern.Type.PATTERN_GLOBE;
         };
     }
-
 
     protected void updateName() {
         if (!Objects.equals(getId(), BANNER_PATTERN)) {

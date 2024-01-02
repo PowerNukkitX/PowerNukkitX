@@ -15,7 +15,6 @@ public class DefaultPlayerDataSerializer implements PlayerDataSerializer {
         this(server.getDataPath());
     }
 
-
     public DefaultPlayerDataSerializer(String dataPath) {
         this.dataPath = dataPath;
     }

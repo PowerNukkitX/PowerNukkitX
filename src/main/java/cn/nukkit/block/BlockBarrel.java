@@ -37,23 +37,18 @@ public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHold
         return "Barrel";
     }
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.BARREL;
     }
 
-
-    @NotNull
     @Override
-    public Class<? extends BlockEntityBarrel> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityBarrel> getBlockEntityClass() {
         return BlockEntityBarrel.class;
     }
 
@@ -140,17 +135,14 @@ public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHold
         return BlockFace.fromIndex(getPropertyValue(FACING_DIRECTION));
     }
 
-
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(FACING_DIRECTION, face.getIndex());
     }
 
-
     public boolean isOpen() {
         return getPropertyValue(OPEN_BIT);
     }
-
 
     public void setOpen(boolean open) {
         setPropertyValue(OPEN_BIT, open);

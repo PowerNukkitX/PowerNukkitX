@@ -38,7 +38,6 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
         super(chunk, nbt);
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();

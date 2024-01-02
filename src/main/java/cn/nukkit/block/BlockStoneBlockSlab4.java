@@ -21,24 +21,6 @@ public class BlockStoneBlockSlab4 extends BlockSlab {
         super(blockstate, DOUBLE_STONE_BLOCK_SLAB4);
     }
 
-    public StoneSlabType4 getSlabType() {
-        return getPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE_4);
-    }
-
-    public void setSlabType(StoneSlabType4 type) {
-        setPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE_4, type);
-    }
-
-    @Override
-    public String getSlabName() {
-        return getSlabType().name();
-    }
-
-    @Override
-    public boolean isSameType(BlockSlab slab) {
-        return slab.getId().equals(getId()) && getSlabType().equals(slab.getPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE_4));
-    }
-
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
@@ -52,6 +34,24 @@ public class BlockStoneBlockSlab4 extends BlockSlab {
     @Override
     public boolean canHarvestWithHand() {
         return false;
+    }
+
+    @Override
+    public String getSlabName() {
+        return getSlabType().name();
+    }
+
+    @Override
+    public boolean isSameType(BlockSlab slab) {
+        return slab.getId().equals(getId()) && getSlabType().equals(slab.getPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE_4));
+    }
+
+    public StoneSlabType4 getSlabType() {
+        return getPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE_4);
+    }
+
+    public void setSlabType(StoneSlabType4 type) {
+        setPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE_4, type);
     }
 
 }

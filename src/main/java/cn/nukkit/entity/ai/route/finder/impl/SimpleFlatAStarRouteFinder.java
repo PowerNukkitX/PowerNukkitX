@@ -376,7 +376,6 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         return closeHashSet.contains(vector2);
     }
 
-
     /**
      * 计算当前点到终点的代价H
      * 默认使用对角线+直线距离

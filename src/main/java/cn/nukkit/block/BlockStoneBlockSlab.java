@@ -27,11 +27,6 @@ public class BlockStoneBlockSlab extends BlockSlab {
     }
 
     @Override
-    public boolean isSameType(BlockSlab slab) {
-        return slab.getId().equals(getId()) && getSlabType().equals(slab.getPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE));
-    }
-
-    @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -41,17 +36,22 @@ public class BlockStoneBlockSlab extends BlockSlab {
         return ItemTool.TYPE_PICKAXE;
     }
 
+    @Override
+    public boolean canHarvestWithHand() {
+        return false;
+    }
+
+    @Override
+    public boolean isSameType(BlockSlab slab) {
+        return slab.getId().equals(getId()) && getSlabType().equals(slab.getPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE));
+    }
+
     public StoneSlabType getSlabType() {
         return getPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE);
     }
 
     public void setSlabType(StoneSlabType type) {
         setPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE, type);
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 
 }

@@ -33,21 +33,17 @@ public class BlockPistonEvent extends BlockEvent implements Cancellable {
         this.extending = extending;
     }
 
-
     public BlockFace getDirection() {
         return direction;
     }
-
 
     public List<Block> getBlocks() {
         return new ArrayList<>(blocks);
     }
 
-
     public List<Block> getDestroyedBlocks() {
         return destroyedBlocks;
     }
-
 
     public boolean isExtending() {
         return extending;

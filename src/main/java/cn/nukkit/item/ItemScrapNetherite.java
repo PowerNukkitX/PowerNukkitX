@@ -8,16 +8,13 @@ public class ItemScrapNetherite extends Item {
         this(0, 1);
     }
 
-
     public ItemScrapNetherite(Integer meta) {
         this(meta, 1);
     }
 
-
     public ItemScrapNetherite(Integer meta, int count) {
         super(NETHERITE_SCRAP, 0, count, "Netherite Scrap");
     }
-
 
     @Override
     public boolean isLavaResistant() {

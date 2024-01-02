@@ -50,8 +50,7 @@ public class Identifier {
         return new Identifier(Identifier.split(id, delimiter));
     }
 
-    @Nullable
-    public static Identifier tryParse(String id) {
+    public @Nullable static Identifier tryParse(String id) {
         try {
             return new Identifier(id);
         } catch (InvalidIdentifierException lv) {
@@ -59,8 +58,7 @@ public class Identifier {
         }
     }
 
-    @Nullable
-    public static Identifier of(String namespace, String path) {
+    public @Nullable static Identifier of(String namespace, String path) {
         try {
             return new Identifier(namespace, path);
         } catch (InvalidIdentifierException lv) {
@@ -112,7 +110,6 @@ public class Identifier {
         String[] strings = Identifier.split(id, ':');
         return Identifier.isNamespaceValid(strings[0].isEmpty() ? DEFAULT_NAMESPACE : strings[0]) && Identifier.isPathValid(strings[1]);
     }
-
 
     public static void assertValid(String id) {
         String[] strings = Identifier.split(id, ':');

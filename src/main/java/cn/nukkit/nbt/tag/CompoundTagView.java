@@ -23,7 +23,6 @@ public class CompoundTagView extends CompoundTag {
         this.delegate = delegate;
     }
 
-
     @Override
     public void write(NBTOutputStream dos) throws IOException {
         delegate.write(dos);
@@ -99,12 +98,10 @@ public class CompoundTagView extends CompoundTag {
         throw new UnsupportedOperationException();
     }
 
-
     @Override
     public CompoundTag putList(String name, ListTag<? extends Tag> listTag) {
         throw new UnsupportedOperationException();
     }
-
 
     @Override
     public CompoundTag putCompound(CompoundTag value) {
@@ -131,72 +128,60 @@ public class CompoundTagView extends CompoundTag {
         return delegate.contains(name);
     }
 
-
     @Override
     public boolean containsCompound(String name) {
         return delegate.containsCompound(name);
     }
-
 
     @Override
     public boolean containsString(String name) {
         return delegate.containsString(name);
     }
 
-
     @Override
     public boolean containsIntArray(String name) {
         return delegate.containsIntArray(name);
     }
-
 
     @Override
     public boolean containsByteArray(String name) {
         return delegate.containsByteArray(name);
     }
 
-
     @Override
     public boolean containsNumber(String name) {
         return delegate.containsNumber(name);
     }
-
 
     @Override
     public boolean containsList(String name) {
         return delegate.containsList(name);
     }
 
-
     @Override
     public boolean containsList(String name, byte type) {
         return delegate.containsList(name, type);
     }
-
 
     @Override
     public boolean containsByte(String name) {
         return delegate.containsByte(name);
     }
 
-
     @Override
     public boolean containsShort(String name) {
         return delegate.containsShort(name);
     }
-
 
     @Override
     public boolean containsInt(String name) {
         return delegate.containsInt(name);
     }
 
-
     @Override
     public boolean containsDouble(String name) {
         return delegate.containsDouble(name);
     }
-
 
     @Override
     public boolean containsFloat(String name) {

@@ -33,7 +33,6 @@ public abstract class AbstractResourcePackDataPacket extends DataPacket {
         setPackVersion((packInfoParts.length > 1)? new Version(packInfoParts[1]) : null);
     }
 
-
     protected void encodePackInfo() {
         UUID packId = getPackId();
         Version packVersion = getPackVersion();

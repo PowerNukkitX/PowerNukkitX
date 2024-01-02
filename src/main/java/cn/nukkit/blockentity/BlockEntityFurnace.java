@@ -40,7 +40,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         super(chunk, nbt);
     }
 
-
     protected InventoryType getInventoryType() {
         return InventoryType.FURNACE;
     }
@@ -52,7 +51,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
             this.scheduleUpdate();
         }
     }
-
 
     @Override
     public void loadNBT() {
@@ -104,11 +102,9 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         }
     }
 
-
     protected String getFurnaceName() {
         return "Furnace";
     }
-
 
     protected String getClientName() {
         return FURNACE;
@@ -226,16 +222,13 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         return inventory;
     }
 
-
     protected int getIdleBlockId() {
         return Block.FURNACE;
     }
 
-
     protected int getBurningBlockId() {
         return Block.LIT_FURNACE;
     }
-
 
     protected void setBurning(boolean burning) {
         if (burning) {
@@ -273,11 +266,9 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         }
     }
 
-
     protected SmeltingRecipe matchRecipe(Item raw) {
         return this.server.getCraftingManager().matchFurnaceRecipe(raw);
     }
-
 
     protected int getSpeedMultiplier() {
         return 1;
@@ -425,16 +416,13 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         this.maxTime = maxTime;
     }
 
-
     public float getStoredXP() {
         return storedXP;
     }
 
-
     public void setStoredXP(float storedXP) {
         this.storedXP = storedXP;
     }
-
 
     public short calculateXpDrop() {
         return (short) (Math.floor(this.storedXP) + (ThreadLocalRandom.current().nextFloat() < (this.storedXP % 1) ? 1 : 0));
