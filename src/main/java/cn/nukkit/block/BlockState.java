@@ -35,4 +35,8 @@ public interface BlockState {
     BlockState setPropertyValue(BlockProperties properties, BlockPropertyType.BlockPropertyValue<?, ?, ?> propertyValue);
 
     BlockState setPropertyValues(BlockProperties properties, BlockPropertyType.BlockPropertyValue<?, ?, ?>... values);
+
+    default Block toBlock() {
+        return Block.get(this);
+    }
 }

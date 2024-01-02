@@ -4,6 +4,8 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.Vector3;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 import java.util.*;
@@ -34,6 +36,14 @@ public class BlockManager {
         return block.getId();
     }
 
+    public void setBlockStateAt(Vector3 blockVector3, BlockState blockState) {
+        this.setBlockStateAt(blockVector3.getFloorX(), blockVector3.getFloorY(), blockVector3.getFloorZ(), blockState);
+    }
+
+    public void setBlockStateAt(BlockVector3 blockVector3, BlockState blockState) {
+        this.setBlockStateAt(blockVector3.getX(), blockVector3.getY(), blockVector3.getZ(), blockState);
+    }
+
     public void setBlockStateAt(int x, int y, int z, BlockState state) {
         blocks.put(hashXYZ(x, y, z, 0), Block.get(state, level, x, y, z, 0));
     }
@@ -42,11 +52,29 @@ public class BlockManager {
         blocks.put(hashXYZ(x, y, z, layer), Block.get(state, level, x, y, z, layer));
     }
 
+    public void setBlockAt(Vector3 vector3, Block block) {
+        block.x = vector3.x;
+        block.y = vector3.y;
+        block.z = vector3.z;
+        blocks.put(hashXYZ(vector3.getFloorX(), vector3.getFloorY(), vector3.getFloorZ(), 0), block);
+    }
+
+    public void setBlockAt(BlockVector3 blockVector3, Block block) {
+        block.x = blockVector3.x;
+        block.y = blockVector3.y;
+        block.z = blockVector3.z;
+        blocks.put(hashXYZ(blockVector3.x, blockVector3.y, blockVector3.z, 0), block);
+    }
+
+
     public void setBlockAt(int x, int y, int z, Block block) {
+        block.x = x;
+        block.y = y;
+        block.z = z;
         blocks.put(hashXYZ(x, y, z, 0), block);
     }
 
-    public Block getBlockStateAt(int x, int y, int z) {
+    public Block getBlockAt(int x, int y, int z) {
         return blocks.get(hashXYZ(x, y, z, 0));
     }
 

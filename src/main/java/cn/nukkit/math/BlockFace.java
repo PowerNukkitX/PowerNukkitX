@@ -1,6 +1,7 @@
 package cn.nukkit.math;
 
 import cn.nukkit.utils.random.NukkitRandomSource;
+import cn.nukkit.utils.random.RandomSource;
 import com.google.common.collect.Iterators;
 
 import java.util.*;
@@ -81,7 +82,7 @@ public enum BlockFace {
         this.unitVector = unitVector;
     }
 
-    public static BlockFace[] getHorizontals(){
+    public static BlockFace[] getHorizontals() {
         return HORIZONTALS.clone();
     }
 
@@ -439,8 +440,8 @@ public enum BlockFace {
             return faces[ThreadLocalRandom.current().nextInt(faces.length)];
         }
 
-        public BlockFace random(NukkitRandomSource rand) {
-            return faces[rand.nextBoundedInt(faces.length)];
+        public BlockFace random(RandomSource rand) {
+            return faces[rand.nextInt(faces.length)];
         }
 
         @Override
