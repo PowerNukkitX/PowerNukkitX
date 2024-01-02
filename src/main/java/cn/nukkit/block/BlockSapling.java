@@ -10,8 +10,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.ListChunkManager;
-import cn.nukkit.level.generator.object.BasicGenerator;
-import cn.nukkit.level.generator.object.tree.*;
+import cn.nukkit.level.generator.object.HugeTreesGenerator;
+import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.random.NukkitRandomSource;
@@ -130,7 +130,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
     }
 
     private void grow() {
-        BasicGenerator generator = null;
+        ObjectGenerator generator = null;
         boolean bigTree = false;
 
         Vector3 vector3 = new Vector3(this.x, this.y - 1, this.z);

@@ -1,8 +1,7 @@
-package cn.nukkit.level.generator.point;
+package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 

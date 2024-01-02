@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.point;
+package cn.nukkit.level.generator.object;
 
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.RandomSource;

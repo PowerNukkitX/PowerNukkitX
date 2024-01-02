@@ -1,7 +1,6 @@
-package cn.nukkit.level.generator.point;
+package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.*;
-import cn.nukkit.level.ChunkManager;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;

@@ -1,14 +1,9 @@
-package cn.nukkit.level.generator.point;
+package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
-import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.math.BlockVector3;
-import cn.nukkit.utils.HashUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 import java.util.*;
