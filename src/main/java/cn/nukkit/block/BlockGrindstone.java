@@ -57,7 +57,6 @@ public class BlockGrindstone extends BlockTransparent implements Faceable {
         return new ItemBlock(new BlockGrindstone());
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -86,11 +85,9 @@ public class BlockGrindstone extends BlockTransparent implements Faceable {
         setPropertyValue(CommonBlockProperties.DIRECTION, face.getHorizontalIndex());
     }
 
-
     public Attachment getAttachmentType() {
         return getPropertyValue(CommonBlockProperties.ATTACHMENT);
     }
-
 
     public void setAttachmentType(Attachment attachmentType) {
         setPropertyValue(CommonBlockProperties.ATTACHMENT, attachmentType);
@@ -99,17 +96,19 @@ public class BlockGrindstone extends BlockTransparent implements Faceable {
     private boolean isConnectedTo(BlockFace connectedFace, Attachment attachmentType, BlockFace blockFace) {
         BlockFace.Axis faceAxis = connectedFace.getAxis();
         switch (attachmentType) {
-            case STANDING:
+            case STANDING -> {
                 if (faceAxis == BlockFace.Axis.Y) {
                     return connectedFace == BlockFace.DOWN;
                 } else {
                     return false;
                 }
-            case HANGING:
+            }
+            case HANGING -> {
                 return connectedFace == BlockFace.UP;
-            case SIDE:
-            case MULTIPLE:
+            }
+            case SIDE, MULTIPLE -> {
                 return connectedFace == blockFace.getOpposite();
+            }
         }
         return false;
     }
@@ -131,17 +130,18 @@ public class BlockGrindstone extends BlockTransparent implements Faceable {
             face = BlockFace.UP;
         }
         switch (face) {
-            case UP:
+            case UP -> {
                 setAttachmentType(Attachment.STANDING);
                 setBlockFace(player.getDirection().getOpposite());
-                break;
-            case DOWN:
+            }
+            case DOWN -> {
                 setAttachmentType(Attachment.HANGING);
                 setBlockFace(player.getDirection().getOpposite());
-                break;
-            default:
+            }
+            default -> {
                 setBlockFace(face);
                 setAttachmentType(Attachment.SIDE);
+            }
         }
         if (!checkSupport()) {
             return false;
@@ -153,22 +153,22 @@ public class BlockGrindstone extends BlockTransparent implements Faceable {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean checkSupport() {
         switch (getAttachmentType()) {
-            case STANDING:
+            case STANDING -> {
                 if (checkSupport(down())) {
                     return true;
                 }
-                break;
-            case HANGING:
+            }
+            case HANGING -> {
                 if (checkSupport(up())) {
                     return true;
                 }
-                break;
-            case SIDE:
+            }
+            case SIDE -> {
                 BlockFace blockFace = getBlockFace();
                 if (checkSupport(getSide(blockFace.getOpposite()))) {
                     return true;
                 }
-                break;
+            }
         }
 
         return false;

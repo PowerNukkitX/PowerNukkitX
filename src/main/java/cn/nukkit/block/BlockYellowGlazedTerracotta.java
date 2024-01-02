@@ -4,7 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockYellowGlazedTerracotta extends BlockGlazedTerracotta {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:yellow_glazed_terracotta", CommonBlockProperties.FACING_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(YELLOW_GLAZED_TERRACOTTA, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {

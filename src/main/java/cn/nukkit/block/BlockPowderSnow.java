@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class BlockPowderSnow extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:powder_snow");
+    public static final BlockProperties PROPERTIES = new BlockProperties(POWDER_SNOW);
 
     public BlockPowderSnow() {
         super(PROPERTIES.getDefaultState());
@@ -40,7 +40,6 @@ public class BlockPowderSnow extends BlockTransparent {
         return false;
     }
 
-
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
@@ -56,10 +55,8 @@ public class BlockPowderSnow extends BlockTransparent {
         return true;
     }
 
-
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -67,7 +64,6 @@ public class BlockPowderSnow extends BlockTransparent {
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;
     }
-
 
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {

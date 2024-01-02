@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockLapisOre extends BlockOre {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:lapis_ore");
+    public static final BlockProperties PROPERTIES = new BlockProperties(LAPIS_ORE);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -58,9 +58,8 @@ public class BlockLapisOre extends BlockOre {
         return ItemTool.TIER_STONE;
     }
 
-    @Nullable
     @Override
-    protected String getRawMaterial() {
+    protected @Nullable String getRawMaterial() {
         return ItemID.LAPIS_LAZULI;
     }
 

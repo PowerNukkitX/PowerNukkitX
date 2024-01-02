@@ -4,7 +4,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockMud extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:mud");
+    public static final BlockProperties PROPERTIES = new BlockProperties(MUD);
 
     public BlockMud() {
         super(PROPERTIES.getDefaultState());
@@ -40,7 +40,6 @@ public class BlockMud extends BlockSolid {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

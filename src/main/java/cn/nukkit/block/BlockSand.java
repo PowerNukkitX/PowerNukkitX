@@ -10,19 +10,18 @@ import org.jetbrains.annotations.NotNull;
  */
 
 public class BlockSand extends BlockFallable {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:sand", CommonBlockProperties.SAND_TYPE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(SAND, CommonBlockProperties.SAND_TYPE);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockSand() {
         super(PROPERTIES.getDefaultState());
     }
 
     public BlockSand(BlockState blockState) {
         super(blockState);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

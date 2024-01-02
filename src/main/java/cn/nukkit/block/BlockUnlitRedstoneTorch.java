@@ -10,7 +10,7 @@ import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockUnlitRedstoneTorch  extends BlockTorch implements RedstoneComponent {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:unlit_redstone_torch", CommonBlockProperties.TORCH_FACING_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(UNLIT_REDSTONE_TORCH, CommonBlockProperties.TORCH_FACING_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -84,7 +84,6 @@ public class BlockUnlitRedstoneTorch  extends BlockTorch implements RedstoneComp
 
         return false;
     }
-
 
     protected boolean isPoweredFromSide() {
         BlockFace face = getBlockFace().getOpposite();

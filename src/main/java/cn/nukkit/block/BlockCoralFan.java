@@ -18,19 +18,17 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
     //                                                                              3bit         1bit
     public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_FAN, CORAL_COLOR, CORAL_FAN_DIRECTION);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockCoralFan() {
         this(PROPERTIES.getDefaultState());
     }
 
-
     public BlockCoralFan(BlockState blockstate) {
         super(blockstate);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     static final String[] names = new String[]{
@@ -51,11 +49,9 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
         return 2;
     }
 
-
     public boolean isDead() {
         return false;
     }
-
 
     public int getType() {
         //                                 color(3bit)
@@ -66,7 +62,6 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
     public BlockFace getBlockFace() {
         return BlockFace.fromHorizontalIndex(((blockstate.specialValue() & 0x8) >> 3) + 1);
     }
-
 
     public BlockFace getRootsFace() {
         return BlockFace.DOWN;

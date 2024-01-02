@@ -16,11 +16,9 @@ public abstract class BlockLog extends BlockSolid implements IBlockWood {
 
     public abstract BlockState getStrippedState();
 
-
     public BlockFace.Axis getPillarAxis() {
         return getPropertyValue(PILLAR_AXIS);
     }
-
 
     public void setPillarAxis(BlockFace.Axis axis) {
         setPropertyValue(PILLAR_AXIS, axis);

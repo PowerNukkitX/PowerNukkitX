@@ -75,7 +75,6 @@ public class BlockVine extends BlockTransparent {
         return true;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -96,7 +95,6 @@ public class BlockVine extends BlockTransparent {
     public boolean isSolid() {
         return false;
     }
-
 
     @Override
     public boolean isSolid(BlockFace side) {
@@ -359,13 +357,11 @@ public class BlockVine extends BlockTransparent {
     }
 
     @Override
-
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-
     public boolean sticksToPiston() {
         return false;
     }

@@ -14,7 +14,6 @@ import javax.annotation.Nullable;
  */
 public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase implements Waxable, Oxidizable {
 
-
     public BlockDoubleSlabCopperBase(BlockState blockstate) {
         super(blockstate);
     }
@@ -33,7 +32,6 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
-
 
     @Override
     public int getToolTier() {
@@ -61,12 +59,10 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
         return true;
     }
 
-
     @Override
     public Block getBlockWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
         return Block.get(getCopperId(isWaxed(), oxidizationLevel)).setPropertyValues(getPropertyValues());
     }
-
 
     @Override
     public boolean setOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
@@ -76,7 +72,6 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
         return getValidLevel().setBlock(this, Block.get(getCopperId(isWaxed(), oxidizationLevel)).setPropertyValues(getPropertyValues()));
     }
 
-
     @Override
     public boolean setWaxed(boolean waxed) {
         if (isWaxed() == waxed) {
@@ -85,12 +80,10 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
         return getValidLevel().setBlock(this, Block.get(getCopperId(isWaxed(), getOxidizationLevel())).setPropertyValues(getPropertyValues()));
     }
 
-
     @Override
     public boolean isWaxed() {
         return false;
     }
-
 
     protected abstract String getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel);
 }

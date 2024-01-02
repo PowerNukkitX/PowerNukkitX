@@ -34,21 +34,17 @@ public class BlockDoublePlant extends BlockFlowable {
         super(blockstate);
     }
 
-    @NotNull
-    public DoublePlantType getDoublePlantType() {
+    public @NotNull DoublePlantType getDoublePlantType() {
         return getPropertyValue(DOUBLE_PLANT_TYPE);
     }
-
 
     public void setDoublePlantType(@NotNull DoublePlantType type) {
         setPropertyValue(DOUBLE_PLANT_TYPE, type);
     }
 
-
     public boolean isTopHalf() {
         return getPropertyValue(UPPER_BLOCK_BIT);
     }
-
 
     public void setTopHalf(boolean topHalf) {
         setPropertyValue(UPPER_BLOCK_BIT, topHalf);
@@ -63,7 +59,6 @@ public class BlockDoublePlant extends BlockFlowable {
     public String getName() {
         return getDoublePlantType().name();
     }
-
 
     @Override
     public int onUpdate(int type) {
@@ -103,18 +98,10 @@ public class BlockDoublePlant extends BlockFlowable {
     }
 
     private boolean isSupportValid(Block support) {
-        switch (support.getId()) {
-            case GRASS:
-            case DIRT:
-            case PODZOL:
-            case FARMLAND:
-            case MYCELIUM:
-            case DIRT_WITH_ROOTS:
-            case MOSS_BLOCK:
-                return true;
-            default:
-                return false;
-        }
+        return switch (support.getId()) {
+            case GRASS, DIRT, PODZOL, FARMLAND, MYCELIUM, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
+            default -> false;
+        };
     }
 
     @Override
@@ -137,8 +124,7 @@ public class BlockDoublePlant extends BlockFlowable {
         }
 
         switch (getDoublePlantType()) {
-            case GRASS:
-            case FERN:
+            case GRASS, FERN -> {
                 boolean dropSeeds = ThreadLocalRandom.current().nextInt(10) == 0;
                 if (item.isShears()) {
                     //todo enchantment
@@ -153,7 +139,6 @@ public class BlockDoublePlant extends BlockFlowable {
                         };
                     }
                 }
-
                 if (dropSeeds) {
                     return new Item[]{
                             Item.get(ItemID.WHEAT_SEEDS)
@@ -161,6 +146,7 @@ public class BlockDoublePlant extends BlockFlowable {
                 } else {
                     return Item.EMPTY_ARRAY;
                 }
+            }
         }
 
         return new Item[]{toItem()};

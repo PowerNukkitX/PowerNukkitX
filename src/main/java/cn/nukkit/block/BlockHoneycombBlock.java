@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 public class BlockHoneycombBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(HONEYCOMB_BLOCK);
 
-
     public BlockHoneycombBlock() {
         super(PROPERTIES.getDefaultState());
     }

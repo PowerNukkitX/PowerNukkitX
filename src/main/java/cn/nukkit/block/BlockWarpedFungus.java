@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public class BlockWarpedFungus extends BlockFungus {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:warped_fungus");
+    public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_FUNGUS);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -30,7 +30,6 @@ public class BlockWarpedFungus extends BlockFungus {
         return "Warped Fungus";
     }
 
-
     @Override
     protected boolean canGrowOn(Block support) {
         if (support.getId().equals(WARPED_NYLIUM)) {
@@ -43,7 +42,6 @@ public class BlockWarpedFungus extends BlockFungus {
         }
         return false;
     }
-
 
     @Override
     public boolean grow(@Nullable Player cause) {

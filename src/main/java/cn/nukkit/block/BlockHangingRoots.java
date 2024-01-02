@@ -6,7 +6,7 @@ import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockHangingRoots extends BlockRoots {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:hanging_roots");
+    public static final BlockProperties PROPERTIES = new BlockProperties(HANGING_ROOTS);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -28,9 +28,6 @@ public class BlockHangingRoots extends BlockRoots {
 
     @Override
     protected boolean isSupportValid() {
-        if (this.up().isSolid()) {
-            return true;
-        }
-        return false;
+        return this.up().isSolid();
     }
 }

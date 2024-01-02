@@ -5,7 +5,7 @@ import cn.nukkit.item.ItemID;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockNetherSprouts extends BlockRoots {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:nether_sprouts");
+    public static final BlockProperties PROPERTIES = new BlockProperties(NETHER_SPROUTS);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -19,7 +19,6 @@ public class BlockNetherSprouts extends BlockRoots {
     public BlockNetherSprouts(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {

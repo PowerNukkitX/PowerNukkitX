@@ -34,7 +34,6 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
         return this.y + (isUpsideDown() ? 1 : 0.5);
     }
 
-
     @Override
     public boolean isSolid(BlockFace side) {
         return side == BlockFace.UP && isUpsideDown() || side == BlockFace.DOWN && !isUpsideDown();
@@ -80,7 +79,6 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
             return true;
         }
 
-
         return switch (face) {
             case EAST -> bb.intersectsWith(new SimpleAxisAlignedBB(
                     this.x + 0.5,
@@ -118,28 +116,23 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
         };
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;
     }
 
-
     public void setUpsideDown(boolean upsideDown) {
         setPropertyValue(UPSIDE_DOWN_BIT, upsideDown);
     }
-
 
     public boolean isUpsideDown() {
         return getPropertyValue(UPSIDE_DOWN_BIT);
     }
 
-    
     @Override
     public BlockFace getBlockFace() {
         return CommonPropertyMap.EWSN_DIRECTION.inverse().get(getPropertyValue(WEIRDO_DIRECTION));
     }
-
 
     @Override
     public void setBlockFace(BlockFace face) {

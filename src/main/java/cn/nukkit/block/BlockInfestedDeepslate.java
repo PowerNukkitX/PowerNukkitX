@@ -6,24 +6,21 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockInfestedDeepslate extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:infested_deepslate", CommonBlockProperties.PILLAR_AXIS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(INFESTED_DEEPSLATE, CommonBlockProperties.PILLAR_AXIS);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockInfestedDeepslate() {
         this(PROPERTIES.getDefaultState());
     }
 
-
     public BlockInfestedDeepslate(BlockState blockState) {
         super(blockState);
     }
 
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-    
     @Override
     public String getName() {
         return "Infested Deepslate";

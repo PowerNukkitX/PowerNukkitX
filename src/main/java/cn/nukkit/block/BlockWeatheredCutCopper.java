@@ -4,7 +4,7 @@ import cn.nukkit.block.property.enums.OxidizationLevel;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockWeatheredCutCopper extends BlockCutCopper {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:weathered_cut_copper");
+    public static final BlockProperties PROPERTIES = new BlockProperties(WEATHERED_CUT_COPPER);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -19,9 +19,8 @@ public class BlockWeatheredCutCopper extends BlockCutCopper {
         super(blockstate);
     }
 
-    @NotNull
     @Override
-    public OxidizationLevel getOxidizationLevel() {
+    public @NotNull OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.WEATHERED;
     }
 }

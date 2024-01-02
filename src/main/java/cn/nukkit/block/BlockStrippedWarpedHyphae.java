@@ -4,7 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockStrippedWarpedHyphae extends BlockStemStripped {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:stripped_warped_hyphae", CommonBlockProperties.PILLAR_AXIS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(STRIPPED_WARPED_HYPHAE, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
     public @NotNull BlockProperties getProperties() {

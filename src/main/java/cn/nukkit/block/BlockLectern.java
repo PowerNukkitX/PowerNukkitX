@@ -42,19 +42,15 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
         return "Lectern";
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntityLectern> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityLectern> getBlockEntityClass() {
         return BlockEntityLectern.class;
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.LECTERN;
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -149,16 +145,13 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
         return true;
     }
 
-
     public boolean isActivated() {
         return getPropertyValue(CommonBlockProperties.POWERED_BIT);
     }
 
-
     public void setActivated(boolean activated) {
         setPropertyValue(CommonBlockProperties.POWERED_BIT, activated);
     }
-
 
     public void executeRedstonePulse() {
         if (isActivated()) {
@@ -182,13 +175,11 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
     }
 
     @Override
-
     public int getStrongPower(BlockFace face) {
         return face == BlockFace.DOWN ? this.getWeakPower(face) : 0;
     }
 
     @Override
-
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (isActivated()) {
@@ -205,7 +196,6 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
 
         return 0;
     }
-
 
     public void dropBook(Player player) {
         BlockEntityLectern lectern = getBlockEntity();

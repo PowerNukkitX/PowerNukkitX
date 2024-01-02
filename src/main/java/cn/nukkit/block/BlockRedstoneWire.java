@@ -28,30 +28,26 @@ import static cn.nukkit.block.property.CommonBlockProperties.REDSTONE_SIGNAL;
 public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponent {
     public static final BlockProperties PROPERTIES = new BlockProperties(REDSTONE_WIRE, REDSTONE_SIGNAL);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockRedstoneWire() {
         this(PROPERTIES.getDefaultState());
     }
 
-
     public BlockRedstoneWire(BlockState blockState) {
         super(blockState);
     }
-
     private boolean canProvidePower = true;
+
     private final Set<Vector3> blocksNeedingUpdate = new HashSet<>();
 
     @Override
     public String getName() {
         return "Redstone Wire";
     }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
@@ -89,7 +85,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
     }
 
     private void updateAround(Position pos, BlockFace face) {
-        if (this.level.getBlock(pos).getId() == Block.REDSTONE_WIRE) {
+        if (this.level.getBlock(pos).getId().equals(Block.REDSTONE_WIRE)) {
             updateAroundRedstone(face);
 
             for (BlockFace side : BlockFace.values()) {
@@ -101,7 +97,6 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
     private void updateSurroundingRedstone(boolean force) {
         this.calculateCurrentChanges(force);
     }
-
 
     private void calculateCurrentChanges(boolean force) {
         Vector3 pos = this.getLocation();
@@ -233,7 +228,6 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         return Level.BLOCK_UPDATE_NORMAL;
     }
 
-
     public boolean canBePlacedOn(Block support) {
         return support.isSolid(BlockFace.UP);
     }
@@ -290,7 +284,6 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
     protected static boolean canConnectUpwardsTo(Block block) {
         return canConnectTo(block, null);
     }
-
 
     protected static boolean canConnectTo(Block block, BlockFace side) {
         if (block.getId().equals(Block.REDSTONE_WIRE)) {

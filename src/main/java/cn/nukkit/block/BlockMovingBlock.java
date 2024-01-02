@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public class BlockMovingBlock extends BlockTransparent implements BlockEntityHolder<BlockEntityMovingBlock> {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:moving_block");
+    public static final BlockProperties PROPERTIES = new BlockProperties(MOVING_BLOCK);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -30,17 +30,13 @@ public class BlockMovingBlock extends BlockTransparent implements BlockEntityHol
         return "MovingBlock";
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.MOVING_BLOCK;
     }
 
-
-    @NotNull
     @Override
-    public Class<? extends BlockEntityMovingBlock> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityMovingBlock> getBlockEntityClass() {
         return BlockEntityMovingBlock.class;
     }
 
@@ -55,7 +51,6 @@ public class BlockMovingBlock extends BlockTransparent implements BlockEntityHol
     }
 
     @Override
-
     public  boolean canBePulled() {
         return false;
     }

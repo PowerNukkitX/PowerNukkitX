@@ -5,7 +5,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockSmoothSandstoneStairs extends BlockStairs {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:smooth_sandstone_stairs", CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(SMOOTH_SANDSTONE_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -20,6 +20,10 @@ public class BlockSmoothSandstoneStairs extends BlockStairs {
         super(blockstate);
     }
 
+    @Override
+    public String getName() {
+        return "Smooth Sandstone Stairs";
+    }
 
     @Override
     public double getHardness() {
@@ -37,14 +41,8 @@ public class BlockSmoothSandstoneStairs extends BlockStairs {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public String getName() {
-        return "Smooth Sandstone Stairs";
     }
 
     @Override

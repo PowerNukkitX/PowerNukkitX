@@ -28,15 +28,13 @@ public class BlockLitBlastFurnace extends BlockLitFurnace {
         return "Burning Blast Furnace";
     }
 
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.BLAST_FURNACE;
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntityBlastFurnace> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityBlastFurnace> getBlockEntityClass() {
         return BlockEntityBlastFurnace.class;
     }
 

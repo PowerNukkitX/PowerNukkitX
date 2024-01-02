@@ -35,14 +35,12 @@ public abstract class BlockFallable extends BlockSolid {
         return 0;
     }
 
-
     public void drop(CompoundTag customNbt) {
         this.level.setBlock(this, Block.get(Block.AIR), true, true);
         EntityFallingBlock fall = createFallingEntity(customNbt);
 
         fall.spawnToAll();
     }
-
 
     protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {
         CompoundTag nbt = new CompoundTag()
@@ -58,7 +56,7 @@ public abstract class BlockFallable extends BlockSolid {
                 .putList(new ListTag<FloatTag>("Rotation")
                         .add(new FloatTag("", 0))
                         .add(new FloatTag("", 0)))
-                .putInt("TileID", this.getId())
+                .putString("TileID", this.getId())
                 .putByte("Data", this.getDamage());
 
         for (Tag customTag : customNbt.getAllTags()) {

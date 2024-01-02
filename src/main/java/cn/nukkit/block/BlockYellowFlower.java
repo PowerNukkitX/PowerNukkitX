@@ -4,7 +4,7 @@ import cn.nukkit.block.property.enums.FlowerType;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockYellowFlower extends BlockRedFlower {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:yellow_flower");
+    public static final BlockProperties PROPERTIES = new BlockProperties(YELLOW_FLOWER);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -24,12 +24,10 @@ public class BlockYellowFlower extends BlockRedFlower {
         return get(RED_FLOWER);
     }
 
-
     @Override
     public void setFlowerType(FlowerType flowerType) {
         throw new UnsupportedOperationException();
     }
-
 
     @Override
     public FlowerType getFlowerType() {

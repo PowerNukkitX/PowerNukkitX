@@ -4,7 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockWarpedPressurePlate extends BlockWoodenPressurePlate {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:warped_pressure_plate", CommonBlockProperties.REDSTONE_SIGNAL);
+    public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_PRESSURE_PLATE, CommonBlockProperties.REDSTONE_SIGNAL);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -18,7 +18,6 @@ public class BlockWarpedPressurePlate extends BlockWoodenPressurePlate {
     public BlockWarpedPressurePlate(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {

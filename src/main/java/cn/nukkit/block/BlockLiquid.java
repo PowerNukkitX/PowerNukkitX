@@ -67,7 +67,6 @@ public abstract class BlockLiquid extends BlockTransparent {
         return false;
     }
 
-
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
@@ -92,7 +91,6 @@ public abstract class BlockLiquid extends BlockTransparent {
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return this;
     }
-
 
     public boolean usesWaterLogging() {
         return false;
@@ -324,7 +322,7 @@ public abstract class BlockLiquid extends BlockTransparent {
             level.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 if (block.layer == 0 && !block.isAir()) {
-                    this.level.useBreakOn(block, block instanceof BlockCobweb ? Item.get(Item.WOODEN_SWORD) : null);
+                    this.level.useBreakOn(block, block instanceof BlockWeb ? Item.get(Item.WOODEN_SWORD) : null);
                 }
                 this.level.setBlock(block, block.layer, getBlock(), true, true);
                 this.level.scheduleUpdate(block, this.tickRate());
@@ -505,32 +503,26 @@ public abstract class BlockLiquid extends BlockTransparent {
     }
 
     @Override
-
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-
     public boolean sticksToPiston() {
         return false;
     }
-
 
     public int getLiquidDepth() {
         return getPropertyValue(LIQUID_DEPTH);
     }
 
-
     public void setLiquidDepth(int liquidDepth) {
         setPropertyValue(LIQUID_DEPTH, liquidDepth);
     }
 
-
     public boolean isSource() {
         return getLiquidDepth() == 0;
     }
-
 
     public int getDepthOnTop() {
         int liquidDepth = getLiquidDepth();
@@ -540,23 +532,19 @@ public abstract class BlockLiquid extends BlockTransparent {
         return liquidDepth;
     }
 
-
     public boolean isFlowingDown() {
         return getLiquidDepth() >= 8;
     }
-
 
     public boolean isSourceOrFlowingDown() {
         int liquidDepth = getLiquidDepth();
         return liquidDepth == 0 || liquidDepth == 8;
     }
 
-
     @Override
     public int getLightFilter() {
         return 2;
     }
-
 
     @Override
     public int getWalkThroughExtraCost() {

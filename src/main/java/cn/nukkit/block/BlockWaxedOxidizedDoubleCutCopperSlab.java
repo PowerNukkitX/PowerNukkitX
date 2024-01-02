@@ -4,7 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockWaxedOxidizedDoubleCutCopperSlab extends BlockOxidizedDoubleCutCopperSlab {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:waxed_oxidized_double_cut_copper_slab", CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+    public static final BlockProperties PROPERTIES = new BlockProperties(WAXED_OXIDIZED_DOUBLE_CUT_COPPER_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
     public @NotNull BlockProperties getProperties() {

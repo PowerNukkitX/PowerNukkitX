@@ -101,7 +101,6 @@ public class BlockEndRod extends BlockTransparent implements Faceable {
         return new ItemBlock(this, 0);
     }
 
-
     @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION) & 0x07);

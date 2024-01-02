@@ -14,7 +14,7 @@ import java.util.Objects;
 
 
 public class BlockConduit extends BlockTransparent implements BlockEntityHolder<BlockEntityConduit> {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:conduit");
+    public static final BlockProperties PROPERTIES = new BlockProperties(CONDUIT);
 
     public BlockConduit() {
         super(PROPERTIES.getDefaultState());
@@ -34,20 +34,15 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
         return PROPERTIES;
     }
 
-
-    @NotNull
     @Override
-    public Class<? extends BlockEntityConduit> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityConduit> getBlockEntityClass() {
         return BlockEntityConduit.class;
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.CONDUIT;
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -66,7 +61,7 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (Item.getItemBlock() != null && Objects.equals(Item.getItemBlockId(), CONDUIT) && target.getId().equals(CONDUIT)) {
+        if (Item.getItemBlock(getId()) != null && Objects.equals(Item.getItemBlock(getId()).getId(), CONDUIT) && target.getId().equals(CONDUIT)) {
             return false;
         }
 

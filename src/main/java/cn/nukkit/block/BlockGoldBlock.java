@@ -40,7 +40,6 @@ public class BlockGoldBlock extends BlockSolid {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_IRON;
     }

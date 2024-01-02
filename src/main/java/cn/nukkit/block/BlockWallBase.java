@@ -52,7 +52,6 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         return 30;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -110,7 +109,6 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         return false;
     }
 
-
     public boolean autoConfigureState() {
         final short previousMeta = blockstate.specialValue();
 
@@ -137,7 +135,6 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         return  blockstate.specialValue() != previousMeta;
     }
 
-    
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -149,23 +146,19 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         return 0;
     }
 
-    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         autoConfigureState();
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
 
-
     public boolean isWallPost() {
         return getPropertyValue(WALL_POST_BIT);
     }
 
-
     public void setWallPost(boolean wallPost) {
         setPropertyValue(WALL_POST_BIT, wallPost);
     }
-
 
     public void clearConnections() {
         setPropertyValue(WALL_CONNECTION_TYPE_EAST, WallConnectionType.NONE);
@@ -173,7 +166,6 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         setPropertyValue(WALL_CONNECTION_TYPE_NORTH, WallConnectionType.NONE);
         setPropertyValue(WALL_CONNECTION_TYPE_SOUTH, WallConnectionType.NONE);
     }
-
 
     public Map<BlockFace, WallConnectionType> getWallConnections() {
         EnumMap<BlockFace, WallConnectionType> connections = new EnumMap<>(BlockFace.class);
@@ -186,7 +178,6 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         return connections;
     }
 
-
     public WallConnectionType getConnectionType(BlockFace blockFace) {
         return switch (blockFace) {
             case NORTH -> getPropertyValue(WALL_CONNECTION_TYPE_NORTH);
@@ -196,7 +187,6 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
             default -> WallConnectionType.NONE;
         };
     }
-
 
     public boolean setConnection(BlockFace blockFace, WallConnectionType type) {
         return switch (blockFace) {
@@ -226,7 +216,6 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
     public void autoUpdatePostFlag() {
         setWallPost(recheckPostConditions(up(1, 0)));
     }
-
 
     public boolean hasConnections() {
         return getPropertyValue(WALL_CONNECTION_TYPE_EAST) != WallConnectionType.NONE 
@@ -258,38 +247,33 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
 
         switch (above.getId()) {
             // These special blocks forces walls to become a post
-            case FLOWER_POT:
-            case SKULL:
-            case CONDUIT:
-            case STANDING_BANNER:
-            case TURTLE_EGG:
+            case FLOWER_POT, SKULL, CONDUIT, STANDING_BANNER, TURTLE_EGG -> {
                 return true;
+            }
 
             // End rods make it become a post if it's placed on the wall
-            case END_ROD:
+            case END_ROD -> {
                 if (((Faceable) above).getBlockFace() == BlockFace.UP) {
                     return true;
                 }
-                break;
+            }
 
             // If the bell is standing and don't follow the path, make it a post
-            case BELL:
+            case BELL -> {
                 BlockBell bell = (BlockBell) above;
                 if (bell.getAttachment() == Attachment.STANDING
                         && bell.getBlockFace().getAxis() == axis) {
                     return true;
                 }
-
-                break;
-
-            default:
+            }
+            default -> {
                 if (above instanceof BlockWallBase) {
                     // If the wall above is a post, it should also be a post
-                    
+
                     if (((BlockWallBase) above).isWallPost()) {
                         return true;
                     }
-                    
+
                 } else if (above instanceof BlockLantern) {
                     // Lanterns makes this become a post if they are not hanging
 
@@ -297,7 +281,7 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
                         return true;
                     }
 
-                } else if (above.getId() == LEVER || above instanceof BlockTorch || above instanceof BlockButton) {
+                } else if (above.getId().equals(LEVER) || above instanceof BlockTorch || above instanceof BlockButton) {
                     // These blocks make this become a post if they are placed down (facing up)
 
                     if (((Faceable) above).getBlockFace() == BlockFace.UP) {
@@ -326,12 +310,12 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
                     }
 
                 }
+            }
         }
 
         // Sign posts always makes the wall become a post
         return above instanceof BlockStandingSign;
     }
-
 
     public boolean isSameHeightStraight() {
         Map<BlockFace, WallConnectionType> connections = getWallConnections();
@@ -345,11 +329,9 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         return a.getValue() == b.getValue() && a.getKey().getOpposite() == b.getKey();
     }
 
-
     public boolean connect(BlockFace blockFace) {
         return connect(blockFace, true);
     }
-
 
     public boolean connect(BlockFace blockFace, boolean recheckPost) {
         if (blockFace.getHorizontalIndex() < 0) {
@@ -370,7 +352,6 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         }
         return false;
     }
-
 
     public boolean disconnect(BlockFace blockFace) {
         if (blockFace.getHorizontalIndex() < 0) {
@@ -415,33 +396,29 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         );
     }
 
-
     @Override
     public boolean canConnect(Block block) {
         switch (block.getId()) {
-            case GLASS_PANE:
-            case IRON_BARS:
-            case GLASS:
+            case GLASS_PANE, IRON_BARS, GLASS -> {
                 return true;
-            default:
+            }
+            default -> {
                 if (block instanceof BlockGlassStained || block instanceof BlockGlassPaneStained || block instanceof BlockWallBase) {
                     return true;
                 }
-                if (block instanceof BlockFenceGate) {
-                    BlockFenceGate fenceGate = (BlockFenceGate) block;
+                if (block instanceof BlockFenceGate fenceGate) {
                     return fenceGate.getBlockFace().getAxis() != calculateAxis(this, block);
-                } 
+                }
                 if (block instanceof BlockStairs) {
                     return ((BlockStairs) block).getBlockFace().getOpposite() == calculateFace(this, block);
                 }
-                if (block instanceof BlockTrapdoor) {
-                    BlockTrapdoor trapdoor = (BlockTrapdoor) block;
+                if (block instanceof BlockTrapdoor trapdoor) {
                     return trapdoor.isOpen() && trapdoor.getBlockFace() == calculateFace(this, trapdoor);
                 }
                 return block.isSolid() && !block.isTransparent();
+            }
         }
     }
-
 
     @Override
     public boolean isConnected(BlockFace face) {

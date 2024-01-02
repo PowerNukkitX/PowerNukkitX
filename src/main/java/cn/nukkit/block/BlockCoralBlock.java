@@ -19,19 +19,17 @@ import static cn.nukkit.block.property.CommonBlockProperties.DEAD_BIT;
 public class BlockCoralBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_BLOCK, CORAL_COLOR, DEAD_BIT);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockCoralBlock() {
         this(PROPERTIES.getDefaultState());
     }
 
-
     public BlockCoralBlock(BlockState blockstate) {
         super(blockstate);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     public boolean isDead() {

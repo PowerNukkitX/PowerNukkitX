@@ -71,18 +71,15 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntityChiseledBookshelf> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityChiseledBookshelf> getBlockEntityClass() {
         return BlockEntityChiseledBookshelf.class;
     }
 
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.CHISELED_BOOKSHELF;
     }
-
 
     @Override
     public void onPlayerRightClick(@NotNull Player player, Item item, BlockFace face, Vector3 clickPoint) {

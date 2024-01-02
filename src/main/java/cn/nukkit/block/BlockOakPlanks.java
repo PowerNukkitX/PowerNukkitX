@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockOakPlanks extends BlockPlanks {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:oak_planks");
+    public static final BlockProperties PROPERTIES = new BlockProperties(OAK_PLANKS);
 
     @Override
     public @NotNull BlockProperties getProperties() {

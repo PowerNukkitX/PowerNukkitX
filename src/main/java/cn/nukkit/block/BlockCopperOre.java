@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockCopperOre extends BlockOre {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:copper_ore");
+    public static final BlockProperties PROPERTIES = new BlockProperties(COPPER_ORE);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -31,9 +31,8 @@ public class BlockCopperOre extends BlockOre {
         return ItemTool.TIER_STONE;
     }
 
-    @Nullable
     @Override
-    protected String getRawMaterial() {
+    protected @Nullable String getRawMaterial() {
         return ItemID.RAW_COPPER;
     }
 

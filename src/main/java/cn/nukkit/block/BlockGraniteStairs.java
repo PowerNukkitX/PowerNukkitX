@@ -5,7 +5,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockGraniteStairs extends BlockStairs {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:granite_stairs", CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(GRANITE_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -18,6 +18,11 @@ public class BlockGraniteStairs extends BlockStairs {
 
     public BlockGraniteStairs(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Granite Stairs";
     }
 
     @Override
@@ -36,14 +41,8 @@ public class BlockGraniteStairs extends BlockStairs {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public String getName() {
-        return "Granite Stairs";
     }
 
     @Override

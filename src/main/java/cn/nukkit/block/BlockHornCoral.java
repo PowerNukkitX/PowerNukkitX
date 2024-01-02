@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockHornCoral extends BlockCoral {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:horn_coral");
+    public static final BlockProperties PROPERTIES = new BlockProperties(HORN_CORAL);
 
     @Override
     public @NotNull BlockProperties getProperties() {

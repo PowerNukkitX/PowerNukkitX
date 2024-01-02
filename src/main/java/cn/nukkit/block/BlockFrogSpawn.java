@@ -10,7 +10,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockFrogSpawn extends BlockFlowable {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:frog_spawn");
+    public static final BlockProperties PROPERTIES = new BlockProperties(FROG_SPAWN);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockFrogSpawn() {
         super(PROPERTIES.getDefaultState());
@@ -23,12 +28,6 @@ public class BlockFrogSpawn extends BlockFlowable {
     @Override
     public String getName() {
         return "Frog Spawn";
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

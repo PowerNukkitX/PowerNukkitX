@@ -24,7 +24,6 @@ public class BlockMudBrickDoubleSlab extends BlockDoubleSlabBase {
         return "Double Mud Brick Slab";
     }
 
-
     @Override
     public String getSingleSlabId() {
         return MUD_BRICK_SLAB;

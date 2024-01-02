@@ -24,7 +24,6 @@ public class BlockCobbledDeepslateSlab extends BlockSlab {
         return "Cobbled Deepslate";
     }
 
-
     @Override
     public boolean isSameType(BlockSlab slab) {
         return getId().equals(slab.getId());

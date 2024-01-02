@@ -6,7 +6,7 @@ import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockLitPumpkin extends BlockPumpkin {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:lit_pumpkin", CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(LIT_PUMPKIN, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {

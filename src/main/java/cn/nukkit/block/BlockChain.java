@@ -13,8 +13,12 @@ import javax.annotation.Nullable;
 
 
 public class BlockChain extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:chain", CommonBlockProperties.PILLAR_AXIS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CHAIN, CommonBlockProperties.PILLAR_AXIS);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockChain() {
         super(PROPERTIES.getDefaultState());
@@ -29,18 +33,9 @@ public class BlockChain extends BlockTransparent {
         return "Chain";
     }
 
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-
     public BlockFace.Axis getPillarAxis() {
         return getPropertyValue(CommonBlockProperties.PILLAR_AXIS);
     }
-
 
     public void setPillarAxis(BlockFace.Axis axis) {
         setPropertyValue(CommonBlockProperties.PILLAR_AXIS, axis);
@@ -56,7 +51,6 @@ public class BlockChain extends BlockTransparent {
     public double getHardness() {
         return 5;
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -97,7 +91,6 @@ public class BlockChain extends BlockTransparent {
     public Item toItem() {
         return new ItemChain();
     }
-
 
     @Override
     public int getToolTier() {

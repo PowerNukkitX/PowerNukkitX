@@ -26,7 +26,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.GROUND_SIGN_DIRECTI
 
 @Slf4j
 public class BlockStandingBanner extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityBanner> {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:standing_banner", GROUND_SIGN_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(STANDING_BANNER, GROUND_SIGN_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -41,15 +41,13 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
         super(blockstate);
     }
 
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.BANNER;
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntityBanner> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityBanner> getBlockEntityClass() {
         return BlockEntityBanner.class;
     }
 
@@ -82,7 +80,6 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
     public boolean canPassThrough() {
         return true;
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -170,22 +167,18 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
         return item;
     }
 
-
     public CompassRoseDirection getDirection() {
         return CompassRoseDirection.from(getPropertyValue(GROUND_SIGN_DIRECTION));
     }
-
 
     public void setDirection(CompassRoseDirection direction) {
         setPropertyValue(GROUND_SIGN_DIRECTION, direction.getIndex());
     }
 
-
     @Override
     public BlockFace getBlockFace() {
         return getDirection().getClosestBlockFace();
     }
-
 
     @Override
     public void setBlockFace(BlockFace face) {
@@ -193,7 +186,6 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
     }
 
     @Override
-
     public boolean breaksWhenMoved() {
         return true;
     }

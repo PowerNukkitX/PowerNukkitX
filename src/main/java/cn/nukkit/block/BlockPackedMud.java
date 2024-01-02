@@ -3,7 +3,12 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockPackedMud extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:packed_mud");
+    public static final BlockProperties PROPERTIES = new BlockProperties(PACKED_MUD);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockPackedMud() {
         super(PROPERTIES.getDefaultState());
@@ -16,11 +21,6 @@ public class BlockPackedMud extends BlockSolid {
     @Override
     public String getName() {
         return "Packed Mud";
-    }
-
-    @Override
-    public @NotNull BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

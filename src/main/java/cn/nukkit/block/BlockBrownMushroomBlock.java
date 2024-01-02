@@ -7,7 +7,7 @@ import cn.nukkit.math.NukkitRandom;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockBrownMushroomBlock extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:brown_mushroom_block", CommonBlockProperties.HUGE_MUSHROOM_BITS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BROWN_MUSHROOM_BLOCK, CommonBlockProperties.HUGE_MUSHROOM_BITS);
 
     @Override
     public @NotNull BlockProperties getProperties() {

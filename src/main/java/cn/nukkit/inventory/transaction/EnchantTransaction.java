@@ -19,7 +19,6 @@ public class EnchantTransaction extends InventoryTransaction {
     private Item outputItem;
     private int cost = -1;
 
-
     public EnchantTransaction(Player source, List<InventoryAction> actions) {
         super(source, actions);
         for (InventoryAction action : actions) {
@@ -51,7 +50,6 @@ public class EnchantTransaction extends InventoryTransaction {
     }
 
     @Override
-    @
     public boolean execute() {
         // This will validate the enchant conditions
         if (this.hasExecuted || !this.canExecute()) {
@@ -95,24 +93,21 @@ public class EnchantTransaction extends InventoryTransaction {
         super.addAction(action);
         if (action instanceof EnchantingAction) {
             switch (((EnchantingAction) action).getType()) {
-                case NetworkInventoryAction.SOURCE_TYPE_ENCHANT_INPUT:
-                    this.inputItem = action.getTargetItem(); // Input sent as newItem
-                    break;
-                case NetworkInventoryAction.SOURCE_TYPE_ENCHANT_OUTPUT:
-                    this.outputItem = action.getSourceItem(); // Output sent as oldItem
-                    break;
-                case NetworkInventoryAction.SOURCE_TYPE_ENCHANT_MATERIAL:
-                    if (action.getTargetItem().equals(Item.get(Item.AIR), false, false)) {
+                case NetworkInventoryAction.SOURCE_TYPE_ENCHANT_INPUT ->
+                        this.inputItem = action.getTargetItem(); // Input sent as newItem
+                case NetworkInventoryAction.SOURCE_TYPE_ENCHANT_OUTPUT ->
+                        this.outputItem = action.getSourceItem(); // Output sent as oldItem
+                case NetworkInventoryAction.SOURCE_TYPE_ENCHANT_MATERIAL -> {
+                    if (action.getTargetItem().equals(Item.AIR_ITEM, false, false)) {
                         this.cost = action.getSourceItem().count;
                     } else {
                         this.cost = action.getSourceItem().count - action.getTargetItem().count;
                     }
-                    break;
+                }
             }
 
         }
     }
-
 
     public boolean checkForEnchantPart(List<InventoryAction> actions) {
         for (InventoryAction action : actions) {
@@ -121,31 +116,25 @@ public class EnchantTransaction extends InventoryTransaction {
         return false;
     }
 
-
     public Item getInputItem() {
         return inputItem;
     }
-
 
     public void setInputItem(Item inputItem) {
         this.inputItem = inputItem;
     }
 
-
     public Item getOutputItem() {
         return outputItem;
     }
-
 
     public void setOutputItem(Item outputItem) {
         this.outputItem = outputItem;
     }
 
-
     public int getCost() {
         return cost;
     }
-
 
     public void setCost(int cost) {
         this.cost = cost;

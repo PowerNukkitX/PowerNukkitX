@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockMuddyMangroveRoots extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:muddy_mangrove_roots", CommonBlockProperties.PILLAR_AXIS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(MUDDY_MANGROVE_ROOTS, CommonBlockProperties.PILLAR_AXIS);
 
     public BlockMuddyMangroveRoots() {
         super(PROPERTIES.getDefaultState());
@@ -24,9 +24,8 @@ public class BlockMuddyMangroveRoots extends BlockSolid {
         return "Muddy Mangrove Roots";
     }
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 

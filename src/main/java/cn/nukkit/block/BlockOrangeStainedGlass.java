@@ -4,7 +4,7 @@ import cn.nukkit.utils.DyeColor;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockOrangeStainedGlass extends BlockGlassStained {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:orange_stained_glass");
+    public static final BlockProperties PROPERTIES = new BlockProperties(ORANGE_STAINED_GLASS);
 
     @Override
     public @NotNull BlockProperties getProperties() {

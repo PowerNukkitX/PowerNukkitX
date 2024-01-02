@@ -28,16 +28,13 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
         super(blockstate);
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntityComparator> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityComparator> getBlockEntityClass() {
         return BlockEntityComparator.class;
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.COMPARATOR;
     }
 
@@ -124,7 +121,6 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
         return getMode() == Mode.SUBTRACT ? Math.max(this.calculateInputStrength() - this.getPowerOnSides(), 0) : this.calculateInputStrength();
     }
 
-
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         if (getMode() == Mode.SUBTRACT) {
@@ -151,7 +147,6 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
 
         return super.onUpdate(type);
     }
-
 
     private void onChange() {
         if (!this.level.getServer().isRedstoneEnabled()) {

@@ -54,15 +54,13 @@ public class BlockSculkShrieker extends BlockSolid implements BlockEntityHolder<
         return ItemTool.TYPE_HOE;
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntitySculkShrieker> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntitySculkShrieker> getBlockEntityClass() {
         return BlockEntitySculkShrieker.class;
     }
 
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.SCULK_SHRIEKER;
     }
 

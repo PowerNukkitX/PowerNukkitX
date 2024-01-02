@@ -7,7 +7,7 @@ import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockPumpkinStem extends BlockCropsStem implements Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:pumpkin_stem", CommonBlockProperties.FACING_DIRECTION, CommonBlockProperties.GROWTH);
+    public static final BlockProperties PROPERTIES = new BlockProperties(PUMPKIN_STEM, CommonBlockProperties.FACING_DIRECTION, CommonBlockProperties.GROWTH);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -23,6 +23,11 @@ public class BlockPumpkinStem extends BlockCropsStem implements Faceable {
     }
 
     @Override
+    public String getName() {
+        return "Pumpkin Stem";
+    }
+
+    @Override
     public String getFruitId() {
         return PUMPKIN;
     }
@@ -30,11 +35,6 @@ public class BlockPumpkinStem extends BlockCropsStem implements Faceable {
     @Override
     public String getSeedsId() {
         return ItemID.PUMPKIN_SEEDS;
-    }
-
-    @Override
-    public String getName() {
-        return "Pumpkin Stem";
     }
 
     @Override

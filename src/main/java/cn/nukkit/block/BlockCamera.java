@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCamera extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:camera");
+    public static final BlockProperties PROPERTIES = new BlockProperties(CAMERA);
 
     @Override
     public @NotNull BlockProperties getProperties() {

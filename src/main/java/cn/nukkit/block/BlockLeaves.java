@@ -29,11 +29,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.*;
  * @author Angelic47 (Nukkit Project)
  */
 public class BlockLeaves extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:leaves",
-            OLD_LEAF_TYPE,
-            PERSISTENT_BIT,
-            UPDATE_BIT
-    );
+    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:leaves", OLD_LEAF_TYPE, PERSISTENT_BIT, UPDATE_BIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -62,7 +58,6 @@ public class BlockLeaves extends BlockTransparent {
         return ItemTool.TYPE_HOE;
     }
 
-
     public WoodType getType() {
         return WoodType.valueOf(getPropertyValue(OLD_LEAF_TYPE).name().toUpperCase());
     }
@@ -80,7 +75,6 @@ public class BlockLeaves extends BlockTransparent {
     public int getBurnChance() {
         return 30;
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -246,13 +240,11 @@ public class BlockLeaves extends BlockTransparent {
     }
 
     @Override
-
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-
     public boolean sticksToPiston() {
         return false;
     }

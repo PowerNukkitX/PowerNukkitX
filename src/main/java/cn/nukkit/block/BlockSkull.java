@@ -3,7 +3,6 @@ package cn.nukkit.block;
 /**
  * @author Justin
  */
-
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
@@ -24,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-
 public class BlockSkull extends BlockTransparent implements RedstoneComponent, BlockEntityHolder<BlockEntitySkull>, Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(SKULL, CommonBlockProperties.FACING_DIRECTION);
 
@@ -41,15 +39,13 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
         super(blockstate);
     }
 
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.SKULL;
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntitySkull> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntitySkull> getBlockEntityClass() {
         return BlockEntitySkull.class;
     }
 
@@ -68,12 +64,10 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
         return false;
     }
 
-
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -102,16 +96,10 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         switch (face) {
-            case NORTH:
-            case SOUTH:
-            case EAST:
-            case WEST:
-            case UP:
-                setBlockFace(face);
-                break;
-            case DOWN:
-            default:
+            case NORTH, SOUTH, EAST, WEST, UP -> setBlockFace(face);
+            default -> {
                 return false;
+            }
         }
         CompoundTag nbt = new CompoundTag()
                 .putByte("SkullType", item.getAux())
@@ -126,7 +114,6 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
     }
 
     @Override
-
     public int onUpdate(int type) {
         if ((type != Level.BLOCK_UPDATE_REDSTONE && type != Level.BLOCK_UPDATE_NORMAL) || !level.getServer().isRedstoneEnabled()) {
             return 0;

@@ -22,20 +22,17 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_SAPLING, AGE_BIT);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockCherrySapling() {
         this(PROPERTIES.getDefaultState());
     }
 
-
     public BlockCherrySapling(BlockState blockstate) {
         super(blockstate);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -44,11 +41,11 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
     }
 
     public boolean isAged() {
-        return getPropertyValue(BlockSapling.AGED);
+        return getPropertyValue(AGE_BIT);
     }
 
     public void setAged(boolean aged) {
-        setPropertyValue(BlockSapling.AGED, aged);
+        setPropertyValue(AGE_BIT, aged);
     }
 
     @Override
@@ -138,11 +135,11 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
     }
 
     public boolean isAge() {
-        return this.getPropertyValue(BlockSapling.AGED);
+        return this.getPropertyValue(AGE_BIT);
     }
 
     public void setAge(boolean age) {
-        this.setPropertyValue(BlockSapling.AGED, age);
+        this.setPropertyValue(AGE_BIT, age);
     }
 
     @Override

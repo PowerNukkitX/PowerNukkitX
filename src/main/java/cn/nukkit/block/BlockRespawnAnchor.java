@@ -42,20 +42,17 @@ import java.util.Objects;
 public class BlockRespawnAnchor extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(RESPAWN_ANCHOR, CommonBlockProperties.RESPAWN_ANCHOR_CHARGE);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockRespawnAnchor() {
         super(PROPERTIES.getDefaultState());
     }
 
-
     public BlockRespawnAnchor(BlockState blockState) {
         super(blockState);
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -88,7 +85,6 @@ public class BlockRespawnAnchor extends Block {
         }
     }
 
-
     protected boolean attemptToSetSpawn(@NotNull Player player) {
         if (this.level.getDimension() != Level.DIMENSION_NETHER) {
             if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
@@ -107,12 +103,9 @@ public class BlockRespawnAnchor extends Block {
     }
 
     @Deprecated
-
-
     public void explode() {
         explode(null);
     }
-
 
     public void explode(Player player) {
         BlockExplosionPrimeEvent event = new BlockExplosionPrimeEvent(this, player, 5);
@@ -130,11 +123,9 @@ public class BlockRespawnAnchor extends Block {
         explosion.explodeB();
     }
 
-
     public int getCharge() {
         return getPropertyValue(CommonBlockProperties.RESPAWN_ANCHOR_CHARGE);
     }
-
 
     public void setCharge(int charge) {
         setPropertyValue(CommonBlockProperties.RESPAWN_ANCHOR_CHARGE, charge);
@@ -144,7 +135,6 @@ public class BlockRespawnAnchor extends Block {
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
-
 
     @Override
     public int getToolTier() {
@@ -201,7 +191,6 @@ public class BlockRespawnAnchor extends Block {
     }
 
     @Override
-
     public boolean canBePulled() {
         return false;
     }
@@ -213,5 +202,4 @@ public class BlockRespawnAnchor extends Block {
         }
         return Item.EMPTY_ARRAY;
     }
-
 }

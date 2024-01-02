@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockBrownMushroom extends BlockMushroom {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:brown_mushroom");
+    public static final BlockProperties PROPERTIES = new BlockProperties(BROWN_MUSHROOM);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -16,6 +16,11 @@ public class BlockBrownMushroom extends BlockMushroom {
 
     public BlockBrownMushroom(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Brown Mushroom";
     }
 
     @Override

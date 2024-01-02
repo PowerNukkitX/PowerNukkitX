@@ -10,6 +10,11 @@ import static cn.nukkit.block.property.CommonBlockProperties.GROWING_PLANT_AGE;
 public class BlockCaveVinesHeadWithBerries extends BlockCaveVines {
     public static final BlockProperties PROPERTIES = new BlockProperties(CAVE_VINES_HEAD_WITH_BERRIES, GROWING_PLANT_AGE);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockCaveVinesHeadWithBerries() {
         this(PROPERTIES.getDefaultState());
     }
@@ -21,12 +26,6 @@ public class BlockCaveVinesHeadWithBerries extends BlockCaveVines {
     @Override
     public String getName() {
         return "Cave Vines Head With Berries";
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

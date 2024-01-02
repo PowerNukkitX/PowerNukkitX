@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockRawCopperBlock extends BlockRaw {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:raw_copper_block");
+    public static final BlockProperties PROPERTIES = new BlockProperties(RAW_COPPER_BLOCK);
 
     @Override
     public @NotNull BlockProperties getProperties() {

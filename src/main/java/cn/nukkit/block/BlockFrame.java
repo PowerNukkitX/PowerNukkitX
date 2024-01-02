@@ -28,7 +28,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.*;
 import static cn.nukkit.math.BlockFace.AxisDirection.POSITIVE;
 
 public class BlockFrame extends BlockTransparent implements BlockEntityHolder<BlockEntityItemFrame>, Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:frame", FACING_DIRECTION, ITEM_FRAME_MAP_BIT, ITEM_FRAME_PHOTO_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(FRAME, FACING_DIRECTION, ITEM_FRAME_MAP_BIT, ITEM_FRAME_PHOTO_BIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -43,50 +43,39 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
         super(blockstate);
     }
 
-
-    @NotNull
     @Override
-    public BlockFace getBlockFace() {
+    public @NotNull BlockFace getBlockFace() {
         return BlockFace.fromIndex(getPropertyValue(FACING_DIRECTION));
     }
-
 
     @Override
     public void setBlockFace(@NotNull BlockFace face) {
         setPropertyValue(FACING_DIRECTION, face.getIndex());
     }
 
-
     public boolean isStoringMap() {
         return getPropertyValue(ITEM_FRAME_MAP_BIT);
     }
-
 
     public void setStoringMap(boolean map) {
         setPropertyValue(ITEM_FRAME_MAP_BIT, map);
     }
 
-
     public boolean isStoringPhoto() {
         return getPropertyValue(ITEM_FRAME_PHOTO_BIT);
     }
-
 
     public void setStoringPhoto(boolean hasPhoto) {
         setPropertyValue(ITEM_FRAME_PHOTO_BIT, hasPhoto);
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.ITEM_FRAME;
     }
 
-
-    @NotNull
     @Override
-    public Class<? extends BlockEntityItemFrame> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityItemFrame> getBlockEntityClass() {
         return BlockEntityItemFrame.class;
     }
 
@@ -94,7 +83,6 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     public String getName() {
         return "Item Frame";
     }
-
 
     @Override
     public int onUpdate(int type) {
@@ -114,12 +102,10 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
         return true;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;
     }
-
 
     @Override
     public int onTouch(@Nullable Player player, PlayerInteractEvent.Action action) {
@@ -163,17 +149,16 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
         return true;
     }
 
-
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if ((!(target.isSolid() || target instanceof BlockWall) && !target.equals(block) || (block.isSolid() && !block.canBeReplaced()))) {
+        if ((!(target.isSolid() || target instanceof BlockWallBase) && !target.equals(block) || (block.isSolid() && !block.canBeReplaced()))) {
             return false;
         }
 
         if (target.equals(block) && block.canBeReplaced()) {
             face = BlockFace.UP;
             target = block.down();
-            if (!target.isSolid() && !(target instanceof BlockWall)) {
+            if (!target.isSolid() && !(target instanceof BlockWallBase)) {
                 return false;
             }
         }
@@ -254,17 +239,14 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     }
 
     @Override
-
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-
     public boolean sticksToPiston() {
         return false;
     }
-
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {

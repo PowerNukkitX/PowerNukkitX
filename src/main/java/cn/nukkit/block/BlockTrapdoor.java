@@ -30,7 +30,7 @@ import java.util.Set;
  * @since 26.12.2015
  */
 public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent, Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:trapdoor", CommonBlockProperties.DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPSIDE_DOWN_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(TRAPDOOR, CommonBlockProperties.DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPSIDE_DOWN_BIT);
 
     private static final double THICKNESS = 0.1875;
 
@@ -169,7 +169,6 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
         return this.z + getRelativeBoundingBox().getMaxZ();
     }
 
-
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.getServer().isRedstoneEnabled()) {
@@ -188,7 +187,6 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
         return 0;
     }
 
-
     public void setManualOverride(boolean val) {
         if (val) {
             manualOverrides.add(this.getLocation());
@@ -196,7 +194,6 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
             manualOverrides.remove(this.getLocation());
         }
     }
-
 
     public boolean getManualOverride() {
         return manualOverrides.contains(this.getLocation());
@@ -207,7 +204,6 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
         this.setManualOverride(false);
         return super.onBreak(item);
     }
-
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
@@ -234,7 +230,6 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
     public boolean onActivate(@NotNull Item item, Player player) {
         return toggle(player);
     }
-
 
     public boolean toggle(Player player) {
         if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
@@ -272,7 +267,6 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
         return true;
     }
 
-
     public void playOpenCloseSound() {
         if (isOpen()) {
             playOpenSound();
@@ -281,11 +275,9 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
         }
     }
 
-
     public void playOpenSound() {
         this.level.addSound(this, Sound.RANDOM_DOOR_OPEN);
     }
-
 
     public void playCloseSound() {
         this.level.addSound(this, Sound.RANDOM_DOOR_CLOSE);
@@ -295,7 +287,6 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
         return getPropertyValue(CommonBlockProperties.OPEN_BIT);
     }
 
-
     public void setOpen(boolean open) {
         setPropertyValue(CommonBlockProperties.OPEN_BIT, open);
     }
@@ -304,17 +295,14 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
         return getPropertyValue(CommonBlockProperties.UPSIDE_DOWN_BIT);
     }
 
-
     public void setTop(boolean top) {
         setPropertyValue(CommonBlockProperties.UPSIDE_DOWN_BIT, top);
     }
-
 
     @Override
     public BlockFace getBlockFace() {
         return CommonPropertyMap.EWSN_DIRECTION.inverse().get(getPropertyValue(CommonBlockProperties.DIRECTION));
     }
-
 
     @Override
     public void setBlockFace(BlockFace face) {

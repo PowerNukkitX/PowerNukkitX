@@ -6,8 +6,12 @@ import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
 
 public class BlockPearlescentFroglight extends BlockFroglight {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(PEARLESCENT_FROGLIGHT,
-            PILLAR_AXIS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(PEARLESCENT_FROGLIGHT, PILLAR_AXIS);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockPearlescentFroglight() {
         this(PROPERTIES.getDefaultState());
@@ -15,12 +19,6 @@ public class BlockPearlescentFroglight extends BlockFroglight {
 
     public BlockPearlescentFroglight(BlockState blockState) {
         super(blockState);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

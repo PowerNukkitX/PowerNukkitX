@@ -16,7 +16,7 @@ import java.util.Random;
 import static cn.nukkit.block.property.CommonBlockProperties.TALL_GRASS_TYPE;
 
 public class BlockMossBlock extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:moss_block");
+    public static final BlockProperties PROPERTIES = new BlockProperties(MOSS_BLOCK);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -30,7 +30,6 @@ public class BlockMossBlock extends BlockSolid {
     public BlockMossBlock(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {

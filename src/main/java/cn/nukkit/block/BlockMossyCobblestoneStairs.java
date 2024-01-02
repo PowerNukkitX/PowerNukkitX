@@ -5,7 +5,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockMossyCobblestoneStairs extends BlockStairs {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:mossy_cobblestone_stairs", CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(MOSSY_COBBLESTONE_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -20,6 +20,10 @@ public class BlockMossyCobblestoneStairs extends BlockStairs {
         super(blockstate);
     }
 
+    @Override
+    public String getName() {
+        return "Mossy Cobblestone Stairs";
+    }
 
     @Override
     public double getHardness() {
@@ -37,14 +41,8 @@ public class BlockMossyCobblestoneStairs extends BlockStairs {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public String getName() {
-        return "Mossy Cobblestone Stairs";
     }
 
     @Override

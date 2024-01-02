@@ -7,6 +7,11 @@ import org.jetbrains.annotations.NotNull;
 public class BlockShroomlight extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(SHROOMLIGHT);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockShroomlight() {
         super(PROPERTIES.getDefaultState());
     }
@@ -18,11 +23,6 @@ public class BlockShroomlight extends BlockTransparent {
     @Override
     public String getName() {
         return "Shroomlight";
-    }
-
-    @Override
-    public @NotNull BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

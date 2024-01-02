@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockWarpedNylium extends BlockNylium {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:warped_nylium");
+    public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_NYLIUM);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -17,7 +17,6 @@ public class BlockWarpedNylium extends BlockNylium {
     public BlockWarpedNylium(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {

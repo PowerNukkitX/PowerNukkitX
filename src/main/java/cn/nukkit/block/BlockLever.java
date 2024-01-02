@@ -69,16 +69,13 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         return getPropertyValue(OPEN_BIT);
     }
 
-
     public void setPowerOn(boolean powerOn) {
         setPropertyValue(OPEN_BIT, powerOn);
     }
 
-
     public LeverDirection getLeverOrientation() {
         return getPropertyValue(LEVER_DIRECTION);
     }
-
 
     public void setLeverOrientation(@Nullable LeverDirection value) {
         setPropertyValue(LEVER_DIRECTION, value);
@@ -109,7 +106,6 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         return true;
     }
 
-
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -121,7 +117,6 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         }
         return 0;
     }
-
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
@@ -146,10 +141,11 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
      */
     public static boolean isSupportValid(Block support, BlockFace face) {
         switch (support.getId()) {
-            case FARMLAND:
-            case GRASS_PATH:
+            case FARMLAND, GRASS_PATH -> {
                 return true;
-            default:
+            }
+            default -> {
+            }
         }
 
         if (face == BlockFace.DOWN) {
@@ -168,7 +164,6 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
     }
 
     @Override
-
     public boolean onBreak(Item item) {
         this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
 
@@ -199,7 +194,6 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         return true;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 2;
@@ -210,12 +204,10 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         return false;
     }
 
-
     @Override
     public BlockFace getBlockFace() {
         return getLeverOrientation().getFacing();
     }
-
 
     @Override
     public boolean breaksWhenMoved() {

@@ -14,6 +14,11 @@ import java.util.Random;
  */
 public class BlockGlowstone extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(GLOWSTONE);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockGlowstone() {
         super(PROPERTIES.getDefaultState());
     }
@@ -25,11 +30,6 @@ public class BlockGlowstone extends BlockTransparent {
     @Override
     public String getName() {
         return "Glowstone";
-    }
-
-    @Override
-    public @NotNull BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

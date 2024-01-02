@@ -9,9 +9,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 //todo complete
-
 public class BlockSnifferEgg extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(SNIFFER_EGG, CommonBlockProperties.CRACKED_STATE);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockSnifferEgg() {
         super(PROPERTIES.getDefaultState());
@@ -19,12 +23,6 @@ public class BlockSnifferEgg extends BlockTransparent {
 
     public BlockSnifferEgg(BlockState blockstate) {
         super(blockstate);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     public String getName() {

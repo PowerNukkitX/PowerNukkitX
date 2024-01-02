@@ -41,7 +41,6 @@ public class BlockSmoothStone extends BlockSolid {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

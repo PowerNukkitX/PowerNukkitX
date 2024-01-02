@@ -51,23 +51,18 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         super(blockstate);
     }
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.CAMPFIRE;
     }
 
-
-    @NotNull
     @Override
-    public Class<? extends BlockEntityCampfire> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityCampfire> getBlockEntityClass() {
         return BlockEntityCampfire.class;
     }
 
@@ -178,7 +173,6 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         }
     }
 
-
     protected EntityDamageEvent getDamageEvent(Entity entity) {
         return new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.FIRE, 1);
     }
@@ -244,7 +238,6 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         return itemUsed;
     }
 
-
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         if ((projectile instanceof EntitySmallFireball || (projectile.isOnFire() && projectile instanceof EntityArrow)) && isExtinguished()) {
@@ -276,11 +269,9 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
     }
 
-
     public boolean isExtinguished() {
         return getPropertyValue(EXTINGUISHED);
     }
-
 
     public void setExtinguished(boolean extinguished) {
         setPropertyValue(EXTINGUISHED, extinguished);
@@ -292,8 +283,6 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
     }
 
     @Override
-
-
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.MINECRAFT_BLOCK_FACE, face);
     }
@@ -325,13 +314,11 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
     }
 
     @Override
-
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-
     public boolean canBePulled() {
         return false;
     }

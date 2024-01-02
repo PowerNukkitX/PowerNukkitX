@@ -50,15 +50,13 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
         super(blockstate);
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntityHopper> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityHopper> getBlockEntityClass() {
         return BlockEntityHopper.class;
     }
 
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.HOPPER;
     }
 
@@ -77,12 +75,10 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
         return 24;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;
     }
-
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
@@ -185,7 +181,6 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -200,7 +195,6 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
         return false;
     }
 
-
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
@@ -211,12 +205,10 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
         return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
     }
 
-
     @Override
     public boolean isSolid(BlockFace side) {
         return side == BlockFace.UP;
     }
-
 
     public interface IHopper {
         Position getPosition();

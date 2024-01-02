@@ -7,6 +7,11 @@ import org.jetbrains.annotations.NotNull;
 public class BlockMangroveLog extends BlockLog {
     public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_LOG, CommonBlockProperties.PILLAR_AXIS);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockMangroveLog() {
         super(PROPERTIES.getDefaultState());
     }
@@ -18,12 +23,6 @@ public class BlockMangroveLog extends BlockLog {
     @Override
     public String getName() {
         return "Mangrove Log";
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

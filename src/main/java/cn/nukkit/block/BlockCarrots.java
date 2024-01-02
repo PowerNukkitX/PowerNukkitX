@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockCarrots extends BlockCrops {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:carrots", CommonBlockProperties.GROWTH);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CARROTS, CommonBlockProperties.GROWTH);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -28,7 +28,6 @@ public class BlockCarrots extends BlockCrops {
     public String getName() {
         return "Carrot Block";
     }
-
 
     @Override
     public Item[] getDrops(Item item) {

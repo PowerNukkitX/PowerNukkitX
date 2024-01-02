@@ -22,16 +22,14 @@ public class BlockGlowFrame extends BlockFrame {
         super(blockstate);
     }
 
-
     @Override
     public String getName() {
         return "Glow Item Frame";
     }
 
 
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.GLOW_ITEM_FRAME;
     }
 

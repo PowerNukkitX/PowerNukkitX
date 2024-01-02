@@ -4,7 +4,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockRawGoldBlock extends BlockRaw {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:raw_gold_block");
+    public static final BlockProperties PROPERTIES = new BlockProperties(RAW_GOLD_BLOCK);
 
     @Override
     public @NotNull BlockProperties getProperties() {

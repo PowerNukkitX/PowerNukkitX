@@ -4,7 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockWaxedExposedCopperTrapdoor extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:waxed_exposed_copper_trapdoor", CommonBlockProperties.DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPSIDE_DOWN_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(WAXED_EXPOSED_COPPER_TRAPDOOR, CommonBlockProperties.DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPSIDE_DOWN_BIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {

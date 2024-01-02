@@ -17,6 +17,11 @@ import java.util.*;
 public class BlockGlowLichen extends BlockLichen {
     public static final BlockProperties PROPERTIES = new BlockProperties(GLOW_LICHEN, CommonBlockProperties.MULTI_FACE_DIRECTION_BITS);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockGlowLichen() {
         super(PROPERTIES.getDefaultState());
     }
@@ -31,13 +36,7 @@ public class BlockGlowLichen extends BlockLichen {
     }
 
     @Override
-    public @NotNull BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
-
         if (!item.isFertilizer()) {
             return false;
         }
@@ -58,7 +57,7 @@ public class BlockGlowLichen extends BlockLichen {
         Block random = keyList.get(rand);
         Block newLichen;
 
-        if (random.getId() == BlockID.GLOW_LICHEN) {
+        if (random.getId().equals(BlockID.GLOW_LICHEN)) {
             newLichen = random;
         } else {
             newLichen = Block.get(GLOW_LICHEN);
@@ -71,8 +70,7 @@ public class BlockGlowLichen extends BlockLichen {
         return true;
     }
 
-    @NotNull
-    private Map<Block, BlockFace> getCandidates() {
+    private @NotNull Map<Block, BlockFace> getCandidates() {
         Map<Block, BlockFace> candidates = new HashMap<>();
         for (BlockFace side : BlockFace.values()) {
             Block support = this.getSide(side);

@@ -28,9 +28,8 @@ public class BlockCoalOre extends BlockOre {
         return "Coal Ore";
     }
 
-    @Nullable
     @Override
-    protected String getRawMaterial() {
+    protected @Nullable String getRawMaterial() {
         return ItemID.COAL;
     }
 

@@ -4,7 +4,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCobbledDeepslate extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:cobbled_deepslate");
+    public static final BlockProperties PROPERTIES = new BlockProperties(COBBLED_DEEPSLATE);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -38,7 +38,6 @@ public class BlockCobbledDeepslate extends BlockSolid {
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
-
 
     @Override
     public int getToolTier() {

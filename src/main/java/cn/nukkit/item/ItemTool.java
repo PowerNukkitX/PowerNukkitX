@@ -57,18 +57,22 @@ public abstract class ItemTool extends Item implements ItemDurable {
     @NotNull
     public static Item getBestTool(int toolType) {
         switch (toolType) {
-            case TYPE_NONE:
-            case TYPE_PICKAXE:
+            case TYPE_NONE, TYPE_PICKAXE -> {
                 return Item.get(ItemID.NETHERITE_PICKAXE);
-            case TYPE_AXE:
+            }
+            case TYPE_AXE -> {
                 return Item.get(ItemID.NETHERITE_AXE);
-            case TYPE_SHOVEL:
+            }
+            case TYPE_SHOVEL -> {
                 return Item.get(ItemID.NETHERITE_SHOVEL);
-            case TYPE_SHEARS:
+            }
+            case TYPE_SHEARS -> {
                 return Item.get(ItemID.SHEARS);
-            case TYPE_SWORD:
+            }
+            case TYPE_SWORD -> {
                 return Item.get(ItemID.NETHERITE_SWORD);
-            default:
+            }
+            default -> {
                 // Can't use the switch-case syntax because they are dynamic types
                 if (toolType == TYPE_HOE) {
                     return Item.get(ItemID.NETHERITE_HOE);
@@ -77,6 +81,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
                     return Item.getItemBlock(BlockID.AIR);
                 }
                 return Item.get(ItemID.NETHERITE_PICKAXE);
+            }
         }
     }
 
@@ -196,15 +201,18 @@ public abstract class ItemTool extends Item implements ItemDurable {
     public int getEnchantAbility() {
         int tier = this.getTier();
         switch (tier) {
-            case TIER_STONE:
+            case TIER_STONE -> {
                 return 5;
-            case TIER_WOODEN:
-            case TIER_DIAMOND:
+            }
+            case TIER_WOODEN, TIER_DIAMOND -> {
                 return 10;
-            case TIER_GOLD:
+            }
+            case TIER_GOLD -> {
                 return 22;
-            case TIER_IRON:
+            }
+            case TIER_IRON -> {
                 return 14;
+            }
         }
 
         if (tier == TIER_NETHERITE) {
@@ -217,7 +225,6 @@ public abstract class ItemTool extends Item implements ItemDurable {
      * No damage to item when it's used to attack entities
      * @return whether the item should take damage when used to attack entities
      */
-
     public boolean noDamageOnAttack() {
         return false;
     }
@@ -226,7 +233,6 @@ public abstract class ItemTool extends Item implements ItemDurable {
      * No damage to item when it's used to break blocks
      * @return whether the item should take damage when used to break blocks
      */
-
     public boolean noDamageOnBreak() {
         return false;
     }

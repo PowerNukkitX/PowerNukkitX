@@ -13,6 +13,11 @@ import org.jetbrains.annotations.NotNull;
 public class BlockFarmland extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(FARMLAND, CommonBlockProperties.MOISTURIZED_AMOUNT);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockFarmland() {
         this(PROPERTIES.getDefaultState());
     }
@@ -24,12 +29,6 @@ public class BlockFarmland extends BlockTransparent {
     @Override
     public String getName() {
         return "Farmland";
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -85,12 +84,12 @@ public class BlockFarmland extends BlockTransparent {
                             v.setComponents(x, y, z);
                             String block = this.level.getBlockIdAt(v.getFloorX(), v.getFloorY(), v.getFloorZ());
 
-                            if (block == FLOWING_WATER || block == WATER || block == FROSTED_ICE) {
+                            if (block.equals(FLOWING_WATER) || block.equals(WATER) || block.equals(FROSTED_ICE)) {
                                 found = true;
                                 break;
                             } else {
                                 block = this.level.getBlockIdAt(v.getFloorX(), v.getFloorY(), v.getFloorZ(), 1);
-                                if (block == FLOWING_WATER || block == WATER || block == FROSTED_ICE) {
+                                if (block.equals(FLOWING_WATER) || block.equals(WATER) || block.equals(FROSTED_ICE)) {
                                     found = true;
                                     break;
                                 }

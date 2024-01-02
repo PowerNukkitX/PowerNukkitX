@@ -18,7 +18,12 @@ import static cn.nukkit.block.property.CommonBlockProperties.AGE_16;
 import static cn.nukkit.block.property.CommonBlockProperties.AGE_BIT;
 
 public class BlockReeds extends BlockFlowable {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:reeds", AGE_16);
+    public static final BlockProperties PROPERTIES = new BlockProperties(REEDS, AGE_16);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockReeds() {
         this(PROPERTIES.getDefaultState());
@@ -26,12 +31,6 @@ public class BlockReeds extends BlockFlowable {
 
     public BlockReeds(BlockState blockstate) {
         super(blockstate);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -52,7 +51,6 @@ public class BlockReeds extends BlockFlowable {
     public int getAge() {
         return getPropertyValue(AGE_16);
     }
-
 
     public void setAge(int age) {
         setPropertyValue(AGE_16, age);

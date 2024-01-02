@@ -29,6 +29,11 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent {
     public static final BlockProperties PROPERTIES = new BlockProperties(TNT,
             EXPLODE_BIT, ALLOW_UNDERWATER_BIT);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockTnt() {
         this(PROPERTIES.getDefaultState());
     }
@@ -40,12 +45,6 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent {
     @Override
     public String getName() {
         return "TNT";
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

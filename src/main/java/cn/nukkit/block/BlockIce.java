@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockIce extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:ice");
+    public static final BlockProperties PROPERTIES = new BlockProperties(ICE);
 
     public BlockIce() {
         super(PROPERTIES.getDefaultState());
@@ -51,12 +51,11 @@ public class BlockIce extends BlockTransparent {
         return ItemTool.TYPE_PICKAXE;
     }
 
-
     @Override
     public boolean onBreak(Item item) {
         if (level.getDimension() == Level.DIMENSION_NETHER 
                 || item.getEnchantmentLevel(Enchantment.ID_SILK_TOUCH) > 0 
-                || down().getId() == BlockID.AIR) {
+                || down().isAir()) {
             return super.onBreak(item);
         }
         
@@ -92,7 +91,6 @@ public class BlockIce extends BlockTransparent {
     public int getBurnChance() {
         return -1;
     }
-
 
     @Override
     public int getLightFilter() {

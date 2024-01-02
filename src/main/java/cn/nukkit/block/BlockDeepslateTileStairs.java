@@ -5,7 +5,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockDeepslateTileStairs extends BlockStairs {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:deepslate_tile_stairs", CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_TILE_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -19,7 +19,6 @@ public class BlockDeepslateTileStairs extends BlockStairs {
     public BlockDeepslateTileStairs(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {

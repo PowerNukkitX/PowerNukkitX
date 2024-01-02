@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockPolishedTuff extends BlockTuff {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:polished_tuff");
+    public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_TUFF);
 
     @Override
     public @NotNull BlockProperties getProperties() {

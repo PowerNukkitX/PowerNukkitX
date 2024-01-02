@@ -6,7 +6,7 @@ import cn.nukkit.item.ItemJungleDoor;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockJungleDoor extends BlockWoodenDoor {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:jungle_door", CommonBlockProperties.DIRECTION, CommonBlockProperties.DOOR_HINGE_BIT, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPPER_BLOCK_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(JUNGLE_DOOR, CommonBlockProperties.DIRECTION, CommonBlockProperties.DOOR_HINGE_BIT, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPPER_BLOCK_BIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {

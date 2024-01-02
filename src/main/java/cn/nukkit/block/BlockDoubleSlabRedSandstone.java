@@ -32,6 +32,4 @@ public class BlockDoubleSlabRedSandstone extends BlockDoubleSlabBase {
         return BlockSlabRedSandstone.PROPERTIES;
     }
 
-
-
 }

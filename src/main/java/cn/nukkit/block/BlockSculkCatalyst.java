@@ -57,15 +57,13 @@ public class BlockSculkCatalyst extends BlockSolid implements BlockEntityHolder<
         return ItemTool.TYPE_HOE;
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntitySculkCatalyst> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntitySculkCatalyst> getBlockEntityClass() {
         return BlockEntitySculkCatalyst.class;
     }
 
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.SCULK_CATALYST;
     }
 

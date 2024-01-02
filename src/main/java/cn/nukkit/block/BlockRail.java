@@ -28,7 +28,12 @@ import static cn.nukkit.utils.Rail.Orientation.*;
  * @since 2016/1/11
  */
 public class BlockRail extends BlockFlowable implements Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:rail", RAIL_DIRECTION_10);
+    public static final BlockProperties PROPERTIES = new BlockProperties(RAIL, RAIL_DIRECTION_10);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     // 0x8: Set the block active
     // 0x7: Reset the block to normal
@@ -46,12 +51,6 @@ public class BlockRail extends BlockFlowable implements Faceable {
     @Override
     public String getName() {
         return "Rail";
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -174,7 +173,6 @@ public class BlockRail extends BlockFlowable implements Faceable {
         return true;
     }
 
-
     private boolean checkCanBePlace(Block check) {
         if (check == null) {
             return false;
@@ -257,9 +255,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
         return this.canBePowered;
     }
 
-
-    @NotNull
-    public final Orientation getRailDirection() {
+    public @NotNull final Orientation getRailDirection() {
         return getOrientation();
     }
 
@@ -325,7 +321,6 @@ public class BlockRail extends BlockFlowable implements Faceable {
         level.setBlock(this, this, true, true);
     }
 
-
     public OptionalBoolean isRailActive() {
         return getProperties().containProperty(CommonBlockProperties.ACTIVE) ?
                 OptionalBoolean.of(getPropertyValue(CommonBlockProperties.ACTIVE)) :
@@ -361,7 +356,6 @@ public class BlockRail extends BlockFlowable implements Faceable {
     public boolean canBePulled() {
         return true;
     }
-
 
     @Override
     public boolean breaksWhenMoved() {

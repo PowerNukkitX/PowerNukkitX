@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCrimsonRoots extends BlockRoots implements BlockFlowerPot.FlowerPotBlock {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:crimson_roots");
+    public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_ROOTS);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -17,7 +17,6 @@ public class BlockCrimsonRoots extends BlockRoots implements BlockFlowerPot.Flow
     public BlockCrimsonRoots(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {

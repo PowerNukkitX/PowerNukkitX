@@ -83,19 +83,15 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
         return getRedstonePower() == 0;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;
     }
 
-
     public static boolean isSupportValid(Block block, BlockFace blockFace) {
         return BlockLever.isSupportValid(block, blockFace) || block instanceof BlockFence;
     }
 
-    
-    
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -113,8 +109,6 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
         return 0;
     }
 
-    
-    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!isSupportValid(down(), BlockFace.UP)) {

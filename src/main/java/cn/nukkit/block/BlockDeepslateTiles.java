@@ -4,7 +4,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockDeepslateTiles extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:deepslate_tiles");
+    public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_TILES);
 
     @Override
     public @NotNull BlockProperties getProperties() {

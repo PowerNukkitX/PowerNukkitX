@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-
 public class BlockTorchflowerCrop extends BlockCrops {
     public static final BlockProperties PROPERTIES = new BlockProperties(TORCHFLOWER_CROP, CommonBlockProperties.GROWTH);
 

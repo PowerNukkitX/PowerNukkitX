@@ -37,11 +37,9 @@ public class BlockKelp extends BlockFlowable {
         return "Kelp";
     }
 
-
     public int getAge() {
         return getPropertyValue(KELP_AGE);
     }
-
 
     public void setAge(int age) {
         setPropertyValue(KELP_AGE, age);
@@ -101,7 +99,6 @@ public class BlockKelp extends BlockFlowable {
         }
         return super.onUpdate(type);
     }
-
 
     public boolean grow() {
         int age = getAge();
@@ -173,7 +170,6 @@ public class BlockKelp extends BlockFlowable {
     public Item toItem() {
         return new ItemKelp();
     }
-
 
     @Override
     public int getWaterloggingLevel() {

@@ -54,7 +54,6 @@ public abstract class BlockNylium extends BlockSolid {
         return true;
     }
 
-
     public boolean grow() {
         ObjectNyliumVegetation.growVegetation(level, this, new NukkitRandom());
         return true;

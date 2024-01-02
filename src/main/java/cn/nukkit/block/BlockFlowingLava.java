@@ -25,7 +25,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockFlowingLava extends BlockLiquid {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:flowing_lava", CommonBlockProperties.LIQUID_DEPTH);
+    public static final BlockProperties PROPERTIES = new BlockProperties(FLOWING_LAVA, CommonBlockProperties.LIQUID_DEPTH);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -205,7 +205,6 @@ public class BlockFlowingLava extends BlockLiquid {
             super.addVelocityToEntity(entity, vector);
         }
     }
-
 
     @Override
     public double getPassableBlockFrictionFactor() {

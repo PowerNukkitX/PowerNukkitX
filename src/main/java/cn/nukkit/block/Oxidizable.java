@@ -90,7 +90,6 @@ public interface Oxidizable {
         return type;
     }
 
-
     default boolean onActivate(@NotNull Item item, @Nullable Player player) {
         if (!item.isAxe()) {
             return false;
@@ -114,13 +113,9 @@ public interface Oxidizable {
         return true;
     }
 
-
-    @NotNull
-    OxidizationLevel getOxidizationLevel();
-
+    @NotNull OxidizationLevel getOxidizationLevel();
 
     boolean setOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel);
-
 
     Block getBlockWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel);
 }

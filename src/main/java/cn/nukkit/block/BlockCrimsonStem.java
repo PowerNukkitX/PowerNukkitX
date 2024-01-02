@@ -4,7 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCrimsonStem extends BlockStem {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:crimson_stem", CommonBlockProperties.PILLAR_AXIS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_STEM, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
     public @NotNull BlockProperties getProperties() {

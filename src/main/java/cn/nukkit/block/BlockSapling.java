@@ -47,21 +47,17 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
         super(blockstate);
     }
 
-
     public WoodType getWoodType() {
         return WoodType.valueOf(getPropertyValue(SAPLING_TYPE).name().toUpperCase());
     }
-
 
     public void setWoodType(WoodType woodType) {
         setPropertyValue(SAPLING_TYPE, SaplingType.valueOf(woodType.name().toUpperCase()));
     }
 
-
     public boolean isAged() {
         return getPropertyValue(AGE_BIT);
     }
-
 
     public void setAged(boolean aged) {
         setPropertyValue(AGE_BIT, aged);
@@ -105,7 +101,6 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
         }
         return false;
     }
-
 
     @Override
     public int onUpdate(int type) {
@@ -265,7 +260,6 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
         }
         return null;
     }
-
 
     public boolean isSameType(Vector3 pos, WoodType type) {
         Block block = this.level.getBlock(pos);

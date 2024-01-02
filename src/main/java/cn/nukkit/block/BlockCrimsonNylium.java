@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCrimsonNylium extends BlockNylium {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:crimson_nylium");
+    public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_NYLIUM);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -17,7 +17,6 @@ public class BlockCrimsonNylium extends BlockNylium {
     public BlockCrimsonNylium(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {

@@ -8,18 +8,17 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockMangroveRoots extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_ROOTS);
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockMangroveRoots() {
         super(PROPERTIES.getDefaultState());
     }
 
     public BlockMangroveRoots(BlockState blockState) {
         super(blockState);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

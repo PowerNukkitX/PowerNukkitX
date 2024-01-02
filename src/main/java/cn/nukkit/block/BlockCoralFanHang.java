@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
@@ -10,26 +9,20 @@ import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.*;
 
-
 public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_FAN_HANG,
-            CORAL_FAN_DIRECTION,
-            CORAL_HANG_TYPE_BIT,
-            DEAD_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_FAN_HANG, CORAL_FAN_DIRECTION, CORAL_HANG_TYPE_BIT, DEAD_BIT);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockCoralFanHang() {
         this(PROPERTIES.getDefaultState());
     }
 
-
     public BlockCoralFanHang(BlockState blockstate) {
         super(blockstate);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -42,7 +35,6 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
             return name + " Wall Fan";
         }
     }
-
 
     @Override
     public boolean isDead() {
@@ -57,7 +49,6 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
             return super.onUpdate(type);
         }
     }
-
 
     @Override
     public int getType() {
@@ -78,7 +69,6 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
             default -> BlockFace.SOUTH;
         };
     }
-
 
     @Override
     public BlockFace getRootsFace() {

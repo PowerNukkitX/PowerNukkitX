@@ -4,7 +4,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockChiseledNetherBricks extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:chiseled_nether_bricks");
+    public static final BlockProperties PROPERTIES = new BlockProperties(CHISELED_NETHER_BRICKS);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -30,7 +30,6 @@ public class BlockChiseledNetherBricks extends Block {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

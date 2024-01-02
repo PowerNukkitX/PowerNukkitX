@@ -43,7 +43,6 @@ public class BlockWallBanner extends BlockStandingBanner {
         return 0;
     }
 
-
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(FACING_DIRECTION, face.getIndex());
@@ -54,12 +53,10 @@ public class BlockWallBanner extends BlockStandingBanner {
         return BlockFace.fromIndex(getPropertyValue(FACING_DIRECTION));
     }
 
-
     @Override
     public void setDirection(CompassRoseDirection direction) {
         setBlockFace(direction.getClosestBlockFace());
     }
-
 
     @Override
     public CompassRoseDirection getDirection() {

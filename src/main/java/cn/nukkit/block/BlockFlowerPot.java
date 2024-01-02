@@ -46,16 +46,13 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         return "Flower Pot";
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntityFlowerPot> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityFlowerPot> getBlockEntityClass() {
         return BlockEntityFlowerPot.class;
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.FLOWER_POT;
     }
 
@@ -68,7 +65,6 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     public double getResistance() {
         return 0;
     }
-
 
     @Override
     public int onUpdate(int type) {
@@ -97,9 +93,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 
-
-    @NotNull
-    public Item getFlower() {
+    public @NotNull Item getFlower() {
         BlockEntityFlowerPot blockEntity = getBlockEntity();
         if (blockEntity == null || !blockEntity.namedTag.containsCompound("PlantBlock")) {
             return Item.AIR_ITEM;
@@ -109,7 +103,6 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         var meta = plantBlockTag.getInt("itemMeta");
         return Item.get(id, meta);
     }
-
 
     public boolean setFlower(@Nullable Item item) {
         if (item!=null && item.isNull()) {
@@ -129,7 +122,6 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
         return false;
     }
-
 
     public void removeFlower() {
         BlockEntityFlowerPot blockEntity = getOrCreateBlockEntity();

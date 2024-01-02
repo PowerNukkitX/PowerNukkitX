@@ -45,7 +45,6 @@ public class BlockTorch extends BlockFlowable implements Faceable {
         return 14;
     }
 
-
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -74,7 +73,6 @@ public class BlockTorch extends BlockFlowable implements Faceable {
         }
         return null;
     }
-
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
@@ -113,11 +111,9 @@ public class BlockTorch extends BlockFlowable implements Faceable {
         setTorchAttachment(torchAttachment);
     }
 
-
     public TorchFacingDirection getTorchAttachment() {
         return getPropertyValue(TORCH_FACING_DIRECTION);
     }
-
 
     public void setTorchAttachment(TorchFacingDirection face) {
         setPropertyValue(TORCH_FACING_DIRECTION, face);

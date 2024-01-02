@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 
 public class BlockDoubleCutCopperSlab extends BlockDoubleSlabCopperBase {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:double_cut_copper_slab", CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+    public static final BlockProperties PROPERTIES = new BlockProperties(DOUBLE_CUT_COPPER_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -22,7 +22,6 @@ public class BlockDoubleCutCopperSlab extends BlockDoubleSlabCopperBase {
     public BlockDoubleCutCopperSlab(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getSlabName() {
@@ -38,12 +37,10 @@ public class BlockDoubleCutCopperSlab extends BlockDoubleSlabCopperBase {
         return sb.append("Cut Copper").toString();
     }
 
-
     @Override
     public String getSingleSlabId() {
         return CUT_COPPER_SLAB;
     }
-
 
     @Override
     protected String getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel) {
@@ -58,10 +55,8 @@ public class BlockDoubleCutCopperSlab extends BlockDoubleSlabCopperBase {
         };
     }
 
-
-    @NotNull
     @Override
-    public OxidizationLevel getOxidizationLevel() {
+    public @NotNull OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.UNAFFECTED;
     }
 }

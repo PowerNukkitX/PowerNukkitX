@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockReserved6 extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:reserved6");
+    public static final BlockProperties PROPERTIES = new BlockProperties(RESERVED6);
 
     @Override
     public @NotNull BlockProperties getProperties() {

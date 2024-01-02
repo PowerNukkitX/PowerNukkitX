@@ -9,9 +9,7 @@ import org.jetbrains.annotations.NotNull;
 //todo complete
 public class BlockSuspiciousGravel extends BlockFallable {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(SUSPICIOUS_GRAVEL,
-            CommonBlockProperties.HANGING,
-            CommonBlockProperties.BRUSHED_PROGRESS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(SUSPICIOUS_GRAVEL, CommonBlockProperties.HANGING, CommonBlockProperties.BRUSHED_PROGRESS);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -38,7 +36,6 @@ public class BlockSuspiciousGravel extends BlockFallable {
     public double getResistance() {
         return 1.25;
     }
-
 
     @Override
     protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {

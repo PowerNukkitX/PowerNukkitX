@@ -23,26 +23,21 @@ public abstract class BlockCrops extends BlockFlowable {
         super(blockState);
     }
 
-
     public int getMinimumLightLevel() {
         return MINIMUM_LIGHT_LEVEL;
     }
-
 
     public int getMaxGrowth() {
         return GROWTH.getMax();
     }
 
-
     public int getGrowth() {
         return getPropertyValue(GROWTH);
     }
 
-
     public void setGrowth(int growth) {
         setPropertyValue(GROWTH, growth);
     }
-
 
     public boolean isFullyGrown() {
         return getGrowth() >= getMaxGrowth();
@@ -52,7 +47,6 @@ public abstract class BlockCrops extends BlockFlowable {
     public boolean canBeActivated() {
         return true;
     }
-
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {

@@ -6,7 +6,7 @@ import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockStrippedCherryWood extends BlockWoodStripped {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:stripped_cherry_wood", CommonBlockProperties.PILLAR_AXIS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(STRIPPED_CHERRY_WOOD, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -20,7 +20,6 @@ public class BlockStrippedCherryWood extends BlockWoodStripped {
     public BlockStrippedCherryWood(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {

@@ -22,16 +22,13 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
         super(blockState);
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntityHangingSign> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityHangingSign> getBlockEntityClass() {
         return BlockEntityHangingSign.class;
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.HANGING_SIGN;
     }
 
@@ -133,8 +130,7 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
         }
     }
 
-    @Nullable
-    private BlockFace checkGroundBlock() {
+    private @Nullable BlockFace checkGroundBlock() {
         if (getSide(BlockFace.NORTH, 1).canBePlaced()) return BlockFace.NORTH;
         if (getSide(BlockFace.SOUTH, 1).canBePlaced()) return BlockFace.SOUTH;
         if (getSide(BlockFace.WEST, 1).canBePlaced()) return BlockFace.WEST;

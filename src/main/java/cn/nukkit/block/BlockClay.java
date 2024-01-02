@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Nukkit Project Team
  */
 public class BlockClay extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:clay");
+    public static final BlockProperties PROPERTIES = new BlockProperties(CLAY);
 
     public BlockClay() {
         super(PROPERTIES.getDefaultState());

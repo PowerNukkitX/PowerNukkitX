@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockInfoUpdate2 extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:info_update2");
+    public static final BlockProperties PROPERTIES = new BlockProperties(INFO_UPDATE2);
 
     @Override
     public @NotNull BlockProperties getProperties() {

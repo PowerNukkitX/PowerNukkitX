@@ -1,31 +1,24 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.block.property.CommonBlockProperties.CORAL_HANG_TYPE_BIT;
-import static cn.nukkit.block.property.CommonBlockProperties.DEAD_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.*;
 
 
 public class BlockCoralFanHang2 extends BlockCoralFanHang {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_FAN_HANG2,
-            CommonBlockProperties.CORAL_FAN_DIRECTION,
-            CORAL_HANG_TYPE_BIT,
-            DEAD_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_FAN_HANG2, CORAL_FAN_DIRECTION, CORAL_HANG_TYPE_BIT, DEAD_BIT);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockCoralFanHang2() {
         this(PROPERTIES.getDefaultState());
     }
 
-
     public BlockCoralFanHang2(BlockState blockstate) {
         super(blockstate);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

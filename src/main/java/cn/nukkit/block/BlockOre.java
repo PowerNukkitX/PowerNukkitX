@@ -16,7 +16,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class BlockOre extends BlockSolid {
 
-
     public BlockOre(BlockState blockState) {
         super(blockState);
     }
@@ -26,6 +25,7 @@ public abstract class BlockOre extends BlockSolid {
         if (!canHarvest(item)) {
             return Item.EMPTY_ARRAY;
         }
+
         String rawMaterial = getRawMaterial();
         if (rawMaterial == null) {
             return super.getDrops(item);
@@ -36,20 +36,19 @@ public abstract class BlockOre extends BlockSolid {
         if (amount > 1) {
             amount = 1 + ThreadLocalRandom.current().nextInt(amount);
         }
+
         int fortuneLevel = NukkitMath.clamp(item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING), 0, 3);
         if (fortuneLevel > 0) {
             int increase = ThreadLocalRandom.current().nextInt((int)(multiplier * fortuneLevel) + 1);
             amount += increase;
         }
+
         Item itemRaw = Item.get(rawMaterial);
         itemRaw.setCount(amount);
         return new Item[]{itemRaw};
     }
 
-
-    @Nullable
-    protected abstract String getRawMaterial();
-
+    protected @Nullable abstract String getRawMaterial();
 
     protected float getDropMultiplier() {
         return 1;

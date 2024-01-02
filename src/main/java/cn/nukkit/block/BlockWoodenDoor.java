@@ -7,7 +7,7 @@ import cn.nukkit.item.ItemWoodenDoor;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockWoodenDoor extends BlockDoor {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:wooden_door", CommonBlockProperties.DIRECTION, CommonBlockProperties.DOOR_HINGE_BIT, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPPER_BLOCK_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(WOODEN_DOOR, CommonBlockProperties.DIRECTION, CommonBlockProperties.DOOR_HINGE_BIT, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPPER_BLOCK_BIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {

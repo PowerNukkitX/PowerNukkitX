@@ -13,7 +13,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockRedstoneOre extends BlockOre {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:redstone_ore");
+    public static final BlockProperties PROPERTIES = new BlockProperties(REDSTONE_ORE);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -67,13 +67,10 @@ public class BlockRedstoneOre extends BlockOre {
         return 0;
     }
 
-
-    @Nullable
     @Override
-    protected String getRawMaterial() {
+    protected @Nullable String getRawMaterial() {
         return ItemID.REDSTONE;
     }
-
 
     public Block getLitBlock() {
         return new BlockLitRedstoneOre();

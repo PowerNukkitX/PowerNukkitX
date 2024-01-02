@@ -4,7 +4,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockNetherBrickFence extends BlockFence {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:nether_brick_fence");
+    public static final BlockProperties PROPERTIES = new BlockProperties(NETHER_BRICK_FENCE);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -19,15 +19,14 @@ public class BlockNetherBrickFence extends BlockFence {
         super(blockstate);
     }
 
+    @Override
+    public String getName() {
+        return "Nether Brick Fence";
+    }
 
     @Override
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public String getName() {
-        return "Nether Brick Fence";
     }
 
     @Override
@@ -41,7 +40,6 @@ public class BlockNetherBrickFence extends BlockFence {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -51,12 +49,10 @@ public class BlockNetherBrickFence extends BlockFence {
         return false;
     }
 
-
     @Override
     public int getBurnChance() {
         return 0;
     }
-
 
     @Override
     public int getBurnAbility() {

@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockChiseledTuff extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:chiseled_tuff");
+    public static final BlockProperties PROPERTIES = new BlockProperties(CHISELED_TUFF);
 
     @Override
     public @NotNull BlockProperties getProperties() {

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
  * @author GoodLucky777
  */
 public class BlockTuff extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:tuff");
+    public static final BlockProperties PROPERTIES = new BlockProperties(TUFF);
 
     public BlockTuff() {
         super(PROPERTIES.getDefaultState());

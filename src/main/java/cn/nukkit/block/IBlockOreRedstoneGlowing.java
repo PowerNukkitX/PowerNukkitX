@@ -4,23 +4,17 @@ import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 
-
 public interface IBlockOreRedstoneGlowing{
-
 
     Block getUnlitBlock();
 
-
     Block getLitBlock();
 
-
     Level getLevel();
-
 
     default Item toItem() {
         return getUnlitBlock().toItem();
     }
-
 
     default int onUpdate(Block block, int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED || type == Level.BLOCK_UPDATE_RANDOM) {

@@ -4,7 +4,7 @@ import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockTintedGlass extends BlockGlass {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:tinted_glass");
+    public static final BlockProperties PROPERTIES = new BlockProperties(TINTED_GLASS);
 
     @Override
     public @NotNull BlockProperties getProperties() {

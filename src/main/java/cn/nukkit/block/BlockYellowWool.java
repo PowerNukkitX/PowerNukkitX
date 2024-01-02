@@ -4,7 +4,7 @@ import cn.nukkit.utils.DyeColor;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockYellowWool extends BlockWool {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:yellow_wool");
+    public static final BlockProperties PROPERTIES = new BlockProperties(YELLOW_WOOL);
 
     @Override
     public @NotNull BlockProperties getProperties() {

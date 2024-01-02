@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockFormEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
@@ -14,7 +15,7 @@ import cn.nukkit.potion.Effect;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockMagma extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:magma");
+    public static final BlockProperties PROPERTIES = new BlockProperties(MAGMA);
 
     public BlockMagma(){
         super(PROPERTIES.getDefaultState());
@@ -85,8 +86,8 @@ public class BlockMagma extends BlockSolid {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block up = up();
-            if (up instanceof BlockFlowingWater && (up.getDamage() == 0 || up.getDamage() == 8)) {
-                BlockFormEvent event = new BlockFormEvent(up, new BlockBubbleColumn(1));
+            if (up instanceof BlockFlowingWater blockFlowingWater && (blockFlowingWater.getLiquidDepth() == 0 || blockFlowingWater.getLiquidDepth() == 8)) {
+                BlockFormEvent event = new BlockFormEvent(up, new BlockBubbleColumn().setPropertyValue(CommonBlockProperties.LIQUID_DEPTH, 1));
                 if (!event.isCancelled()) {
                     if (event.getNewState().getWaterloggingLevel() > 0) {
                         this.getLevel().setBlock(up, 1, new BlockWater(), true, false);

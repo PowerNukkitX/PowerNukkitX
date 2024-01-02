@@ -56,31 +56,25 @@ public class BlockSnowLayer extends BlockFallable {
         return getPropertyValue(HEIGHT);
     }
 
-
     public void setSnowHeight(int snowHeight) {
         setPropertyValue(HEIGHT, snowHeight);
     }
-
 
     public boolean isCovered() {
         return getPropertyValue(COVERED_BIT);
     }
 
-
     public void setCovered(boolean covered) {
         setPropertyValue(COVERED_BIT, covered);
     }
-
 
     @Override
     public double getMaxY() {
         return y + (Math.min(16, getSnowHeight() + 1) * 2) / 16.0;
     }
 
-
     @Override
-    @Nullable
-    protected AxisAlignedBB recalculateBoundingBox() {
+    protected @Nullable AxisAlignedBB recalculateBoundingBox() {
         int snowHeight = getSnowHeight();
         if (snowHeight < 3) {
             return null;
@@ -90,7 +84,6 @@ public class BlockSnowLayer extends BlockFallable {
         }
         return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 8 / 16.0, z + 1);
     }
-
 
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
@@ -102,7 +95,6 @@ public class BlockSnowLayer extends BlockFallable {
         return 0.2;
     }
 
-
     @Override
     public double getResistance() {
         return 0.1;
@@ -113,12 +105,10 @@ public class BlockSnowLayer extends BlockFallable {
         return ItemTool.TYPE_SHOVEL;
     }
 
-
     @Override
     public boolean canBeReplaced() {
         return getSnowHeight() < HEIGHT.getMax();
     }
-
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
@@ -145,24 +135,23 @@ public class BlockSnowLayer extends BlockFallable {
         }
 
         switch (down.getId()) {
-            case BARRIER:
-            case STRUCTURE_VOID:
+            case BARRIER, STRUCTURE_VOID -> {
                 return false;
-            case GRASS:
-                setCovered(true);
-                break;
-            case TALLGRASS:
+            }
+            case GRASS -> setCovered(true);
+            case TALLGRASS -> {
                 if (!level.setBlock(this, 0, this, true)) {
                     return false;
                 }
                 level.setBlock(block, 1, block, true, false);
                 return true;
-            default:
+            }
+            default -> {
+            }
         }
 
         return this.getLevel().setBlock(block, this, true);
     }
-
 
     @Override
     public boolean onBreak(Item item) {
@@ -171,7 +160,6 @@ public class BlockSnowLayer extends BlockFallable {
         }
         return this.getLevel().setBlock(this, 0, getLevelBlockAtLayer(1), true, true);
     }
-
 
     @Override
     public void afterRemoval(Block newBlock, boolean update) {
@@ -202,7 +190,6 @@ public class BlockSnowLayer extends BlockFallable {
         level.sendBlocks(target, blocks, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1, false);
     }
 
-
     @Override
     public int onUpdate(int type) {
         super.onUpdate(type);
@@ -213,7 +200,7 @@ public class BlockSnowLayer extends BlockFallable {
                 return Level.BLOCK_UPDATE_RANDOM;
             }
         } else if (type == Level.BLOCK_UPDATE_NORMAL) {
-            boolean covered = down().getId() == GRASS;
+            boolean covered = down().getId().equals(GRASS);
             if (isCovered() != covered) {
                 setCovered(covered);
                 level.setBlock(this, this, true);
@@ -223,11 +210,9 @@ public class BlockSnowLayer extends BlockFallable {
         return 0;
     }
 
-
     public boolean melt() {
         return melt(2);
     }
-
 
     public boolean melt(int layers) {
         Preconditions.checkArgument(layers > 0, "Layers must be positive, got {}", layers);
@@ -282,12 +267,10 @@ public class BlockSnowLayer extends BlockFallable {
         return true;
     }
 
-
     @Override
     public boolean canPassThrough() {
         return getSnowHeight() < 3;
     }
-
 
     @Override
     public boolean isSolid(BlockFace side) {

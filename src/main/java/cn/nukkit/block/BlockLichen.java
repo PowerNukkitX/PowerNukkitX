@@ -103,7 +103,6 @@ public abstract class BlockLichen extends BlockTransparent {
         return true;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -119,12 +118,10 @@ public abstract class BlockLichen extends BlockTransparent {
         return ItemTool.TYPE_AXE;
     }
 
-
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
-
 
     @Override
     public boolean canHarvest(Item item) {
@@ -161,13 +158,11 @@ public abstract class BlockLichen extends BlockTransparent {
         return false;
     }
 
-
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
-    
     @Override
     public Item toItem() {
         return new ItemBlock(this);

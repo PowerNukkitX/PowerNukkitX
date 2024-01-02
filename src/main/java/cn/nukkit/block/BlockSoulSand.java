@@ -46,7 +46,6 @@ public class BlockSoulSand extends BlockSolid {
         return ItemTool.TYPE_SHOVEL;
     }
 
-
     @Override
     public double getMaxY() {
         return this.y + 1;
@@ -56,7 +55,6 @@ public class BlockSoulSand extends BlockSolid {
     public boolean hasEntityCollision() {
         return true;
     }
-
 
     @Override
     public boolean isSoulSpeedCompatible() {

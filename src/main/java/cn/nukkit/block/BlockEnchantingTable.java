@@ -132,7 +132,6 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
         return false;
     }
 
-
     @Override
     public boolean isSolid(BlockFace side) {
         return false;

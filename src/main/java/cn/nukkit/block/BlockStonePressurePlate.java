@@ -8,7 +8,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockStonePressurePlate extends BlockPressurePlateBase {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:stone_pressure_plate", CommonBlockProperties.REDSTONE_SIGNAL);
+    public static final BlockProperties PROPERTIES = new BlockProperties(STONE_PRESSURE_PLATE, CommonBlockProperties.REDSTONE_SIGNAL);
 
     @Override
     public @NotNull BlockProperties getProperties() {

@@ -4,7 +4,7 @@ import cn.nukkit.block.property.enums.StoneType;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockPolishedGranite extends BlockStone {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:polished_granite");
+    public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_GRANITE);
 
     @Override
     public @NotNull BlockProperties getProperties() {

@@ -97,7 +97,6 @@ public class BlockFire extends BlockFlowable {
         return Item.EMPTY_ARRAY;
     }
 
-
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_RANDOM) {

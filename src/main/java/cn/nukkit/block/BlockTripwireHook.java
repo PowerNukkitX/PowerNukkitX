@@ -29,6 +29,11 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
     public static final BlockProperties PROPERTIES = new BlockProperties(TRIPWIRE_HOOK,
             DIRECTION, ATTACHED_BIT, POWERED_BIT);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockTripwireHook() {
         this(PROPERTIES.getDefaultState());
     }
@@ -40,12 +45,6 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
     @Override
     public String getName() {
         return "Tripwire Hook";
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

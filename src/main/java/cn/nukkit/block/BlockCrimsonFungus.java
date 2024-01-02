@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 public class BlockCrimsonFungus extends BlockFungus {
     private final ObjectCrimsonTree feature = new ObjectCrimsonTree();
 
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:crimson_fungus");
+    public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_FUNGUS);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -25,12 +25,10 @@ public class BlockCrimsonFungus extends BlockFungus {
         super(blockstate);
     }
 
-
     @Override
     public String getName() {
         return "Crimson Fungus";
     }
-
 
     @Override
     protected boolean canGrowOn(Block support) {
@@ -44,7 +42,6 @@ public class BlockCrimsonFungus extends BlockFungus {
         }
         return false;
     }
-
 
     @Override
     public boolean grow(@Nullable Player cause) {

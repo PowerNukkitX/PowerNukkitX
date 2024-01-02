@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.DoorToggleEvent;
 import cn.nukkit.item.Item;
@@ -21,15 +20,14 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.Set;
 
+import static cn.nukkit.block.property.CommonBlockProperties.*;
+
 /**
  * @author xtypr
  * @since 2015/11/23
  */
 public class BlockFenceGate extends BlockTransparent implements RedstoneComponent, Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(FENCE_GATE,
-            CommonBlockProperties.DIRECTION,
-            CommonBlockProperties.IN_WALL_BIT,
-            CommonBlockProperties.OPEN_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(FENCE_GATE, DIRECTION, IN_WALL_BIT, OPEN_BIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -204,7 +202,7 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
         }
         
         setBlockFace(direction);
-        setPropertyValue(CommonBlockProperties.OPEN_BIT,!getPropertyValue(CommonBlockProperties.OPEN_BIT));
+        setPropertyValue(OPEN_BIT, !getPropertyValue(OPEN_BIT));
         this.level.setBlock(this, this, false, false);
 
         if (player != null) {
@@ -236,11 +234,11 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
     }
 
     public boolean isOpen() {
-        return getPropertyValue(CommonBlockProperties.OPEN_BIT);
+        return getPropertyValue(OPEN_BIT);
     }
 
     public void setOpen(boolean open) {
-        setPropertyValue(CommonBlockProperties.OPEN_BIT,open);
+        setPropertyValue(OPEN_BIT,open);
     }
 
     @Override
@@ -292,21 +290,21 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
     }
 
     public boolean isInWall() {
-        return getPropertyValue(CommonBlockProperties.IN_WALL_BIT);
+        return getPropertyValue(IN_WALL_BIT);
     }
 
     public void setInWall(boolean inWall) {
-        setPropertyValue(CommonBlockProperties.IN_WALL_BIT,inWall);
+        setPropertyValue(IN_WALL_BIT, inWall);
     }
     
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(getPropertyValue(CommonBlockProperties.DIRECTION));
+        return BlockFace.fromHorizontalIndex(getPropertyValue(DIRECTION));
     }
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(CommonBlockProperties.DIRECTION,face.getHorizontalIndex());
+        setPropertyValue(DIRECTION,face.getHorizontalIndex());
     }
 
     @Override

@@ -16,9 +16,8 @@ public class BlockUnknown extends Block {
         super(blockstate);
     }
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 

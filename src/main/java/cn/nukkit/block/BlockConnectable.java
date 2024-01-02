@@ -9,12 +9,9 @@ import java.util.Set;
 
 public interface BlockConnectable {
 
-
     Block getSideAtLayer(int layer, BlockFace face);
 
-
     boolean canConnect(Block block);
-
 
     default boolean isStraight() {
         Set<BlockFace> connections = getConnections();
@@ -28,7 +25,6 @@ public interface BlockConnectable {
         return a.getOpposite() == b;
     }
 
-
     default Set<BlockFace> getConnections() {
         EnumSet<BlockFace> connections = EnumSet.noneOf(BlockFace.class);
         for (BlockFace blockFace : BlockFace.Plane.HORIZONTAL) {
@@ -38,7 +34,6 @@ public interface BlockConnectable {
         }
         return connections;
     }
-
 
     default boolean isConnected(BlockFace face) {
         return canConnect(getSideAtLayer(0, face));

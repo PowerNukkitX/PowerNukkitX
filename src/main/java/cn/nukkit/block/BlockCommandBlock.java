@@ -17,18 +17,17 @@ import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEntityHolder<BlockEntityCommandBlock> {
     public static final BlockProperties PROPERTIES = new BlockProperties(COMMAND_BLOCK, CONDITIONAL_BIT, FACING_DIRECTION);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockCommandBlock() {
         this(PROPERTIES.getDefaultState());
     }
 
     public BlockCommandBlock(BlockState blockstate) {
         super(blockstate);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -137,17 +136,13 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
         return Math.min(this.getOrCreateBlockEntity().getSuccessCount(), 0xf);
     }
 
-
-    @NotNull
     @Override
-    public Class<? extends BlockEntityCommandBlock> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityCommandBlock> getBlockEntityClass() {
         return BlockEntityCommandBlock.class;
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.COMMAND_BLOCK;
     }
 }

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
 
 public class BlockMangroveWood extends BlockWood {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:mangrove_wood", CommonBlockProperties.PILLAR_AXIS, CommonBlockProperties.STRIPPED_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_WOOD, CommonBlockProperties.PILLAR_AXIS, CommonBlockProperties.STRIPPED_BIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {

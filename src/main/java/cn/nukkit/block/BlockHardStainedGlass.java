@@ -4,7 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockHardStainedGlass extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:hard_stained_glass", CommonBlockProperties.COLOR);
+    public static final BlockProperties PROPERTIES = new BlockProperties(HARD_STAINED_GLASS, CommonBlockProperties.COLOR);
 
     @Override
     public @NotNull BlockProperties getProperties() {

@@ -28,7 +28,6 @@ public abstract class BlockCoral extends BlockFlowable {
 
     public abstract Block getDeadCoral();
 
-
     public void setDead(Block deadBlock) {
         this.getLevel().setBlock(this, deadBlock, true, true);
     }

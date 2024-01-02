@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockPackedIce extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:packed_ice");
+    public static final BlockProperties PROPERTIES = new BlockProperties(PACKED_ICE);
 
     @Override
     public @NotNull BlockProperties getProperties() {

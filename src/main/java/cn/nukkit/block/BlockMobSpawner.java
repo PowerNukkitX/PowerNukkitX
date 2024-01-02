@@ -5,7 +5,12 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockMobSpawner extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:mob_spawner");
+    public static final BlockProperties PROPERTIES = new BlockProperties(MOB_SPAWNER);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockMobSpawner() {
         super(PROPERTIES.getDefaultState());
@@ -21,17 +26,11 @@ public class BlockMobSpawner extends BlockSolid {
     }
 
     @Override
-    public @NotNull BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    @Override
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -56,14 +55,12 @@ public class BlockMobSpawner extends BlockSolid {
         return false;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
-
     public  boolean canBePulled() {
         return false;
     }

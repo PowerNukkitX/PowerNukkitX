@@ -39,15 +39,13 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         return PROPERTIES;
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntityShulkerBox> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityShulkerBox> getBlockEntityClass() {
         return BlockEntityShulkerBox.class;
     }
 
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.SHULKER_BOX;
     }
 
@@ -70,7 +68,6 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -186,13 +183,11 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
     }
 
     @Override
-
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-
     public boolean sticksToPiston() {
         return false;
     }
@@ -202,12 +197,10 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         return false;
     }
 
-
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
-
 
     @Override
     public int getItemMaxStackSize() {

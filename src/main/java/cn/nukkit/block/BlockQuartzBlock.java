@@ -28,7 +28,6 @@ public class BlockQuartzBlock extends BlockSolid {
         super(blockstate);
     }
 
-
     @Override
     public double getHardness() {
         return 0.8;
@@ -62,7 +61,6 @@ public class BlockQuartzBlock extends BlockSolid {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -86,7 +84,6 @@ public class BlockQuartzBlock extends BlockSolid {
         return getPropertyValue(PILLAR_AXIS);
     }
 
-
     public void setPillarAxis(BlockFace.Axis axis) {
         setPropertyValue(PILLAR_AXIS, axis);
     }
@@ -94,7 +91,6 @@ public class BlockQuartzBlock extends BlockSolid {
     public ChiselType getChiselType() {
         return getPropertyValue(CHISEL_TYPE);
     }
-
 
     public void setChiselType(ChiselType type) {
         setPropertyValue(CHISEL_TYPE, type);

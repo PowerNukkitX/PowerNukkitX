@@ -8,9 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import static cn.nukkit.block.property.CommonBlockProperties.*;
 
 public class BlockSuspiciousSand extends BlockFallable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(SUSPICIOUS_SAND,
-            HANGING,
-            BRUSHED_PROGRESS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(SUSPICIOUS_SAND, HANGING, BRUSHED_PROGRESS);
 
     public BlockSuspiciousSand() {
         this(PROPERTIES.getDefaultState());
@@ -20,9 +18,8 @@ public class BlockSuspiciousSand extends BlockFallable {
         super(blockstate);
     }
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -39,7 +36,6 @@ public class BlockSuspiciousSand extends BlockFallable {
     public double getResistance() {
         return 1.25;
     }
-
 
     @Override
     protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {

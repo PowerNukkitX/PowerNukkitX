@@ -24,7 +24,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.GROUND_SIGN_DIRECTI
  */
 @Slf4j
 public class BlockStandingSign extends BlockSignBase implements BlockEntityHolder<BlockEntitySign>{
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:standing_sign", GROUND_SIGN_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(STANDING_SIGN, GROUND_SIGN_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -47,15 +47,13 @@ public class BlockStandingSign extends BlockSignBase implements BlockEntityHolde
         return WALL_SIGN;
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntitySign> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntitySign> getBlockEntityClass() {
         return BlockEntitySign.class;
     }
 
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.SIGN;
     }
 

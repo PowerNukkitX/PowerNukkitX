@@ -4,7 +4,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockHardenedClay extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:hardened_clay");
+    public static final BlockProperties PROPERTIES = new BlockProperties(HARDENED_CLAY);
 
     @Override
     public @NotNull BlockProperties getProperties() {

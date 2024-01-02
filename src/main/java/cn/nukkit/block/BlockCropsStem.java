@@ -108,7 +108,6 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
         return Level.BLOCK_UPDATE_RANDOM;
     }
 
-
     public boolean growFruit() {
         String fruitId = getFruitId();
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
