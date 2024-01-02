@@ -2,8 +2,6 @@ package cn.nukkit.level.generator.point;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.item.Item;
-import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
@@ -11,7 +9,7 @@ import cn.nukkit.math.Vector3;
 import java.util.Objects;
 import java.util.Random;
 
-public abstract class TreeGenerator extends PointGenerator {
+public abstract class TreeGenerator extends ObjectGenerator {
 
     /*
      * returns whether or not a tree can grow into a block
@@ -28,19 +26,19 @@ public abstract class TreeGenerator extends PointGenerator {
         };
     }
 
-    public void generateSaplings(Level level, Random random, Vector3 pos) {
+    public void generateSaplings(BlockManager level, Random random, Vector3 pos) {
     }
 
-    protected void setDirtAt(Level level, BlockVector3 pos) {
+    protected void setDirtAt(BlockManager level, BlockVector3 pos) {
         setDirtAt(level, new Vector3(pos.x, pos.y, pos.z));
     }
 
     /*
      * sets dirt at a specific location if it isn't already dirt
      */
-    protected void setDirtAt(Level level, Vector3 pos) {
+    protected void setDirtAt(BlockManager level, Vector3 pos) {
         if (!Objects.equals(level.getBlockIdAt((int) pos.x, (int) pos.y, (int) pos.z), Block.DIRT)) {
-            level.setBlock(pos, Block.get(BlockID.DIRT));
+            level.setBlockAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), Block.get(BlockID.DIRT));
         }
     }
 }

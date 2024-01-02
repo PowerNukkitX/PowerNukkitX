@@ -1,14 +1,14 @@
 package cn.nukkit.level.generator.point;
 
-import cn.nukkit.block.BlockCherryLeaves;
-import cn.nukkit.block.BlockCherryLog;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockState;
+import cn.nukkit.block.*;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.utils.random.RandomSource;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public class ObjectCherryTree extends TreeGenerator {
     protected BlockState LOG_Y_AXIS;
@@ -19,21 +19,21 @@ public class ObjectCherryTree extends TreeGenerator {
     public ObjectCherryTree() {
         var logY = new BlockCherryLog();
         logY.setPillarAxis(BlockFace.Axis.Y);
-        this.LOG_Y_AXIS = logY.getCurrentState();
+        this.LOG_Y_AXIS = logY.getBlockState();
         var logX = new BlockCherryLog();
         logX.setPillarAxis(BlockFace.Axis.X);
-        this.LOG_X_AXIS = logX.getCurrentState();
+        this.LOG_X_AXIS = logX.getBlockState();
         var logZ = new BlockCherryLog();
         logZ.setPillarAxis(BlockFace.Axis.Z);
-        this.LOG_Z_AXIS = logZ.getCurrentState();
-        this.LEAVES = new BlockCherryLeaves().getCurrentState();
+        this.LOG_Z_AXIS = logZ.getBlockState();
+        this.LEAVES = new BlockCherryLeaves().getBlockState();
     }
 
     @Override
-    public boolean generate(ChunkManager level, NukkitRandom rand, Vector3 position) {
-        final int x = position.getFloorX();
-        final int y = position.getFloorY();
-        final int z = position.getFloorZ();
+    public boolean generate(BlockManager level, RandomSource rand, Vector3 pos) {
+        final int x = pos.getFloorX();
+        final int y = pos.getFloorY();
+        final int z = pos.getFloorZ();
 
         final var isBigTree = rand.nextBoolean();
         if (isBigTree) {
@@ -43,7 +43,7 @@ public class ObjectCherryTree extends TreeGenerator {
         return generateSmallTree(level, rand, x, y, z);
     }
 
-    protected boolean generateBigTree(ChunkManager level, @NotNull NukkitRandom rand, final int x, final int y, final int z) {
+    protected boolean generateBigTree(BlockManager level, @NotNull RandomSource rand, final int x, final int y, final int z) {
         final int mainTrunkHeight = (rand.nextBoolean() ? 1 : 0) + 10;
 
         if (!canPlaceObject(level, mainTrunkHeight, x, y, z)) return false;
@@ -52,9 +52,9 @@ public class ObjectCherryTree extends TreeGenerator {
         int xMultiplier = growOnXAxis ? 1 : 0;
         int zMultiplier = growOnXAxis ? 0 : 1;
 
-        final int leftSideTrunkLength = rand.nextRange(2, 4);
-        final int leftSideTrunkHeight = rand.nextRange(3, 5);
-        final int leftSideTrunkStartY = rand.nextRange(4, 5);
+        final int leftSideTrunkLength = rand.nextInt(2, 4);
+        final int leftSideTrunkHeight = rand.nextInt(3, 5);
+        final int leftSideTrunkStartY = rand.nextInt(4, 5);
 
         if (!canPlaceObject(level, leftSideTrunkHeight, x - leftSideTrunkLength * xMultiplier,
                 y + leftSideTrunkStartY, z - leftSideTrunkLength * zMultiplier)) {
@@ -67,9 +67,9 @@ public class ObjectCherryTree extends TreeGenerator {
             }
         }
 
-        final int rightSideTrunkLength = rand.nextRange(2, 4);
-        final int rightSideTrunkHeight = rand.nextRange(3, 5);
-        final int rightSideTrunkStartY = rand.nextRange(4, 5);
+        final int rightSideTrunkLength = rand.nextInt(2, 4);
+        final int rightSideTrunkHeight = rand.nextInt(3, 5);
+        final int rightSideTrunkStartY = rand.nextInt(4, 5);
 
         if (!canPlaceObject(level, rightSideTrunkHeight, x + rightSideTrunkLength * xMultiplier,
                 y + rightSideTrunkStartY, z + rightSideTrunkLength * zMultiplier)) return false;
@@ -107,7 +107,7 @@ public class ObjectCherryTree extends TreeGenerator {
             var tmpX = x - leftSideTrunkLength * xMultiplier;
             var tmpY = y + leftSideTrunkStartY;
             var tmpZ = z - leftSideTrunkLength * zMultiplier;
-            level.setBlockIdAt(tmpX, tmpY, tmpZ, 0);
+            level.setBlockStateAt(tmpX, tmpY, tmpZ, BlockAir.STATE);
             tmpX += xMultiplier;
             tmpY += 1;
             tmpZ += zMultiplier;
@@ -135,7 +135,7 @@ public class ObjectCherryTree extends TreeGenerator {
             var tmpX = x + rightSideTrunkLength * xMultiplier;
             var tmpY = y + rightSideTrunkStartY;
             var tmpZ = z + rightSideTrunkLength * zMultiplier;
-            level.setBlockIdAt(tmpX, tmpY, tmpZ, 0);
+            level.setBlockStateAt(tmpX, tmpY, tmpZ, BlockAir.STATE);
             tmpX -= xMultiplier;
             tmpY += 1;
             tmpZ -= zMultiplier;
@@ -159,13 +159,13 @@ public class ObjectCherryTree extends TreeGenerator {
         return true;
     }
 
-    protected boolean generateSmallTree(ChunkManager level, @NotNull NukkitRandom rand, final int x, final int y, final int z) {
+    protected boolean generateSmallTree(BlockManager level, @NotNull RandomSource rand, final int x, final int y, final int z) {
         final int mainTrunkHeight = (rand.nextBoolean() ? 1 : 0) + 4;
-        final int sideTrunkHeight = rand.nextRange(3, 5);
+        final int sideTrunkHeight = rand.nextInt(3, 5);
 
         if (!canPlaceObject(level, mainTrunkHeight + 1, x, y, z)) return false;
 
-        var growDirection = rand.nextRange(0, 3);
+        var growDirection = rand.nextInt(0, 3);
         int xMultiplier = 0;
         int zMultiplier = 0;
         var canPlace = false;
@@ -230,21 +230,27 @@ public class ObjectCherryTree extends TreeGenerator {
 
     static final int LEAVES_RADIUS = 4;
 
-    public void generateLeaves(ChunkManager level, NukkitRandom rand, final int x, final int y, final int z) {
+    public void generateLeaves(BlockManager level, RandomSource rand, final int x, final int y, final int z) {
         for (int dy = -2; dy <= 2; dy++) {
             for (int dx = -LEAVES_RADIUS; dx <= LEAVES_RADIUS; dx++) {
                 for (int dz = -LEAVES_RADIUS; dz <= LEAVES_RADIUS; dz++) {
                     var currentRadius = LEAVES_RADIUS - (Math.max(1, Math.abs(dy)));
                     if (dx * dx + dz * dz > currentRadius * currentRadius) continue;
                     var blockId = level.getBlockIdAt(x + dx, y + dy, z + dz);
-                    if (blockId == 0 || blockId == BlockID.LEAVES || blockId == BlockID.LEAVES2 ||
-                            blockId == BlockID.AZALEA_LEAVES || blockId == BlockID.AZALEA_LEAVES_FLOWERED) {
+                    if (Objects.equals(blockId, BlockID.AIR) ||
+                            Objects.equals(blockId, BlockID.LEAVES) ||
+                            Objects.equals(blockId, BlockID.LEAVES2) ||
+                            Objects.equals(blockId, BlockID.AZALEA_LEAVES) ||
+                            Objects.equals(blockId, BlockID.AZALEA_LEAVES_FLOWERED)) {
                         level.setBlockStateAt(x + dx, y + dy, z + dz, LEAVES);
                     }
-                    if (dy == -2 && rand.nextRange(0, 2) == 0) {
+                    if (dy == -2 && rand.nextInt(0, 2) == 0) {
                         blockId = level.getBlockIdAt(x + dx, y + dy - 1, z + dz);
-                        if (blockId == 0 || blockId == BlockID.LEAVES || blockId == BlockID.LEAVES2 ||
-                                blockId == BlockID.AZALEA_LEAVES || blockId == BlockID.AZALEA_LEAVES_FLOWERED) {
+                        if (Objects.equals(blockId, BlockID.AIR) ||
+                                Objects.equals(blockId, BlockID.LEAVES) ||
+                                Objects.equals(blockId, BlockID.LEAVES2) ||
+                                Objects.equals(blockId, BlockID.AZALEA_LEAVES) ||
+                                Objects.equals(blockId, BlockID.AZALEA_LEAVES_FLOWERED)) {
                             level.setBlockStateAt(x + dx, y + dy - 1, z + dz, LEAVES);
                         }
                     }
@@ -253,7 +259,7 @@ public class ObjectCherryTree extends TreeGenerator {
         }
     }
 
-    public boolean canPlaceObject(ChunkManager level, int treeHeight, int x, int y, int z) {
+    public boolean canPlaceObject(BlockManager level, int treeHeight, int x, int y, int z) {
         int radiusToCheck = 0;
         for (int yy = 0; yy < treeHeight + 3; ++yy) {
             if (yy == 1 || yy == treeHeight) {
