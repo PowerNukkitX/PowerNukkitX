@@ -60,12 +60,10 @@ public class BlockWitherRose extends BlockRedFlower {
         return true;
     }
 
-
     @Override
     public void setFlowerType(FlowerType flowerType) {
         throw new UnsupportedOperationException();
     }
-
 
     @Override
     public FlowerType getFlowerType() {

@@ -17,9 +17,8 @@ public class BlockVerdantFroglight extends BlockFroglight {
         super(blockState);
     }
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -4,9 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockUnpoweredRepeater extends BlockRedstoneRepeater {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:unpowered_repeater",
-            CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION,
-            CommonBlockProperties.REPEATER_DELAY);
+    public static final BlockProperties PROPERTIES = new BlockProperties(UNPOWERED_REPEATER, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.REPEATER_DELAY);
 
     @Override
     public @NotNull BlockProperties getProperties() {

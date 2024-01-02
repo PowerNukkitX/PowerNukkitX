@@ -49,7 +49,6 @@ public class BlockSculk extends BlockSolid {
         return ItemTool.TIER_WOODEN;
     }
 
-    @NotNull
     @Override
     public double calculateBreakTime(@NotNull Item item, @Nullable Player player) {
         if (canHarvest(item)) {
@@ -67,5 +66,4 @@ public class BlockSculk extends BlockSolid {
             return Item.EMPTY_ARRAY;
         }
     }
-
 }

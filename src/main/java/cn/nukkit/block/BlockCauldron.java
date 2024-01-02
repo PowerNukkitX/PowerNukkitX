@@ -40,6 +40,11 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CAULDRON, CAULDRON_LIQUID, FILL_LEVEL);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockCauldron() {
         super(PROPERTIES.getDefaultState());
     }
@@ -48,23 +53,13 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
         super(blockstate);
     }
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-
-    @NotNull
-    @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.CAULDRON;
     }
 
-
-    @NotNull
     @Override
-    public Class<? extends BlockEntityCauldron> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityCauldron> getBlockEntityClass() {
         return BlockEntityCauldron.class;
     }
 
@@ -101,16 +96,13 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
         return getFillLevel() == FILL_LEVEL.getMin();
     }
 
-
     public int getFillLevel() {
         return getPropertyValue(FILL_LEVEL);
     }
 
-
     public void setFillLevel(int fillLevel) {
         this.setFillLevel(fillLevel, null);
     }
-
 
     public void setFillLevel(int fillLevel, @Nullable Player player) {
         if (fillLevel == getFillLevel()) return;
@@ -122,11 +114,9 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
         }
     }
 
-
     public CauldronLiquid getCauldronLiquid() {
         return this.getPropertyValue(CAULDRON_LIQUID);
     }
-
 
     public void setCauldronLiquid(CauldronLiquid liquid) {
         this.setPropertyValue(CAULDRON_LIQUID, liquid);
@@ -519,7 +509,6 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
         }
     }
 
-
     public void clearWithFizz(BlockEntityCauldron cauldron) {
         clearWithFizz(cauldron, null);
     }
@@ -553,7 +542,6 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -578,18 +566,15 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
         return false;
     }
 
-
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
-
     @Override
     public boolean isTransparent() {
         return true;
     }
-
 
     @Override
     public int getLightFilter() {

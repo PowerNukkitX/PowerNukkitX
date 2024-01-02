@@ -4,7 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockChainCommandBlock extends BlockCommandBlock {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:chain_command_block", CommonBlockProperties.CONDITIONAL_BIT, CommonBlockProperties.FACING_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CHAIN_COMMAND_BLOCK, CommonBlockProperties.CONDITIONAL_BIT, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -18,7 +18,6 @@ public class BlockChainCommandBlock extends BlockCommandBlock {
     public BlockChainCommandBlock(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {

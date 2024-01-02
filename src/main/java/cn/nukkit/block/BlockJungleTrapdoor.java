@@ -4,7 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockJungleTrapdoor extends BlockTrapdoor {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:jungle_trapdoor", CommonBlockProperties.DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPSIDE_DOWN_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(JUNGLE_TRAPDOOR, CommonBlockProperties.DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPSIDE_DOWN_BIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {

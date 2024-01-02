@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 
 public class BlockCutCopperStairs extends BlockStairsCopperBase {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:cut_copper_stairs", CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CUT_COPPER_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -22,7 +22,6 @@ public class BlockCutCopperStairs extends BlockStairsCopperBase {
     public BlockCutCopperStairs(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {
@@ -51,10 +50,8 @@ public class BlockCutCopperStairs extends BlockStairsCopperBase {
         };
     }
 
-
-    @NotNull
     @Override
-    public OxidizationLevel getOxidizationLevel() {
+    public @NotNull OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.UNAFFECTED;
     }
 }

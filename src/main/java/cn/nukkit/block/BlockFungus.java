@@ -60,9 +60,7 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
         return true;
     }
 
-
     protected abstract boolean canGrowOn(Block support);
-
 
     protected boolean isValidSupport(@NotNull Block support) {
         return switch (support.getId()) {
@@ -75,7 +73,6 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
     public boolean canBeActivated() {
         return true;
     }
-
 
     public abstract boolean grow(@Nullable Player cause);
 }

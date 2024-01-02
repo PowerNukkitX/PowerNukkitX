@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockChemicalHeat extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:chemical_heat");
+    public static final BlockProperties PROPERTIES = new BlockProperties(CHEMICAL_HEAT);
 
     @Override
     public @NotNull BlockProperties getProperties() {

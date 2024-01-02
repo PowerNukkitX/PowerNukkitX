@@ -61,12 +61,10 @@ public class BlockLightningRod extends BlockTransparent implements Faceable {
         return true;
     }
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
-
 
     @Override
     public BlockFace getBlockFace() {

@@ -25,8 +25,6 @@ import org.apache.logging.log4j.Logger;
  * @author joserobjr
  * @since 2021-01-15
  */
-
-
 final class Loggers {
     private Loggers(){ throw new UnsupportedOperationException(); }
 

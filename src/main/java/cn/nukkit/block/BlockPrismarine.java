@@ -7,7 +7,12 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class BlockPrismarine extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:barrier", CommonBlockProperties.PRISMARINE_BLOCK_TYPE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(PRISMARINE, CommonBlockProperties.PRISMARINE_BLOCK_TYPE);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockPrismarine() {
         super(PROPERTIES.getDefaultState());
@@ -15,12 +20,6 @@ public class BlockPrismarine extends BlockSolid {
 
     public BlockPrismarine(BlockState blockState) {
         super(blockState);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -47,18 +46,15 @@ public class BlockPrismarine extends BlockSolid {
         };
     }
 
-
     public void setPrismarineBlockType(PrismarineBlockType prismarineBlockType) {
         setPropertyValue(CommonBlockProperties.PRISMARINE_BLOCK_TYPE, prismarineBlockType);
     }
-
 
     public PrismarineBlockType getPrismarineBlockType() {
         return getPropertyValue(CommonBlockProperties.PRISMARINE_BLOCK_TYPE);
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

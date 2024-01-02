@@ -9,6 +9,11 @@ import org.jetbrains.annotations.NotNull;
 public class BlockGlass extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(GLASS);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockGlass() {
         super(PROPERTIES.getDefaultState());
     }
@@ -20,11 +25,6 @@ public class BlockGlass extends BlockTransparent {
     @Override
     public String getName() {
         return "Glass";
-    }
-
-    @Override
-    public @NotNull BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

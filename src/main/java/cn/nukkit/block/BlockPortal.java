@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
@@ -11,13 +10,11 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.block.property.CommonBlockProperties.PORTAL_AXIS;
-
 /**
  * Alias NetherPortal
  */
 public class BlockPortal extends BlockFlowable implements Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:portal", PORTAL_AXIS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(PORTAL, CommonBlockProperties.PORTAL_AXIS);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -32,15 +29,14 @@ public class BlockPortal extends BlockFlowable implements Faceable {
         super(blockstate);
     }
 
+    @Override
+    public String getName() {
+        return "Nether Portal Block";
+    }
 
     @Override
     public boolean canBeFlowedInto() {
         return false;
-    }
-
-    @Override
-    public String getName() {
-        return "Nether Portal Block";
     }
 
     @Override
@@ -72,7 +68,6 @@ public class BlockPortal extends BlockFlowable implements Faceable {
     public boolean canBePushed() {
         return false;
     }
-
 
     @Override
     public boolean canBePulled() {

@@ -41,7 +41,6 @@ public class BlockCutCopperSlab extends BlockSlabCopperBase {
         return sb.append("Cut Copper").toString();
     }
 
-
     @Override
     protected String getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel) {
         if (oxidizationLevel == null) {
@@ -55,10 +54,8 @@ public class BlockCutCopperSlab extends BlockSlabCopperBase {
         };
     }
 
-
-    @NotNull
     @Override
-    public OxidizationLevel getOxidizationLevel() {
+    public @NotNull OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.UNAFFECTED;
     }
 }

@@ -60,7 +60,6 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
         return 7;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -155,7 +154,6 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

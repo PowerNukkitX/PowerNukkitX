@@ -5,7 +5,7 @@ import cn.nukkit.item.ItemShulkerBox;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockGrayShulkerBox extends BlockUndyedShulkerBox {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:gray_shulker_box");
+    public static final BlockProperties PROPERTIES = new BlockProperties(GRAY_SHULKER_BOX);
 
     @Override
     public @NotNull BlockProperties getProperties() {

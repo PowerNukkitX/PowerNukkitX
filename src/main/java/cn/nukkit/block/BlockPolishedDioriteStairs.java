@@ -5,7 +5,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockPolishedDioriteStairs extends BlockStairs {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:polished_diorite_stairs", CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_DIORITE_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -20,6 +20,10 @@ public class BlockPolishedDioriteStairs extends BlockStairs {
         super(blockstate);
     }
 
+    @Override
+    public String getName() {
+        return "Polished Diorite Stairs";
+    }
 
     @Override
     public double getHardness() {
@@ -34,11 +38,6 @@ public class BlockPolishedDioriteStairs extends BlockStairs {
     @Override
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public String getName() {
-        return "Polished Diorite Stairs";
     }
 
     @Override

@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockWarpedFence extends BlockFence {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:warped_fence");
+    public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_FENCE);
 
     @Override
     public @NotNull BlockProperties getProperties() {

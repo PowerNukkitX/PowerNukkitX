@@ -4,7 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCrimsonTrapdoor extends BlockTrapdoor {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:crimson_trapdoor", CommonBlockProperties.DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPSIDE_DOWN_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_TRAPDOOR, CommonBlockProperties.DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPSIDE_DOWN_BIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -18,8 +18,6 @@ public class BlockCrimsonTrapdoor extends BlockTrapdoor {
     public BlockCrimsonTrapdoor(BlockState blockstate) {
         super(blockstate);
     }
-
-
 
     @Override
     public String getName() {

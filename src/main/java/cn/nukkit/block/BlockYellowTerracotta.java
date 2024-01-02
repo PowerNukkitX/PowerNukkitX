@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockYellowTerracotta extends BlockHardenedClay {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:yellow_terracotta");
+    public static final BlockProperties PROPERTIES = new BlockProperties(YELLOW_TERRACOTTA);
 
     @Override
     public @NotNull BlockProperties getProperties() {

@@ -5,7 +5,7 @@ import cn.nukkit.item.ItemBlock;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockInvisibleBedrock extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:invisible_bedrock");
+    public static final BlockProperties PROPERTIES = new BlockProperties(INVISIBLE_BEDROCK);
 
     @Override
     public @NotNull BlockProperties getProperties() {

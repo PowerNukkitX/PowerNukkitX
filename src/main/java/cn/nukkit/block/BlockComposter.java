@@ -27,18 +27,14 @@ public class BlockComposter extends BlockSolid {
         registerDefaults();
     }
 
-
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
-
 
     public BlockComposter() {
         this(PROPERTIES.getDefaultState());
     }
-
 
     public BlockComposter(BlockState blockstate) {
         super(blockstate);
@@ -69,7 +65,6 @@ public class BlockComposter extends BlockSolid {
         return true;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -90,7 +85,6 @@ public class BlockComposter extends BlockSolid {
         return getPropertyValue(COMPOSTER_FILL_LEVEL);
     }
 
-
     public boolean incrementLevel() {
         int fillLevel = getPropertyValue(COMPOSTER_FILL_LEVEL) + 1;
         setPropertyValue(COMPOSTER_FILL_LEVEL, fillLevel);
@@ -98,16 +92,13 @@ public class BlockComposter extends BlockSolid {
         return fillLevel == 8;
     }
 
-
     public boolean isFull() {
         return getPropertyValue(COMPOSTER_FILL_LEVEL) == 8;
     }
 
-
     public boolean isEmpty() {
         return getPropertyValue(COMPOSTER_FILL_LEVEL) == 0;
     }
-
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
@@ -157,11 +148,9 @@ public class BlockComposter extends BlockSolid {
         return true;
     }
 
-
     public Item empty() {
         return empty(null, null);
     }
-
 
     public Item empty(@Nullable Item item, @Nullable Player player) {
         ComposterEmptyEvent event = new ComposterEmptyEvent(this, player, item, new ItemDye(DyeColor.BONE_MEAL), 0);
@@ -178,7 +167,6 @@ public class BlockComposter extends BlockSolid {
         return null;
     }
 
-
     public Item getOutPutItem() {
         return OUTPUT_ITEM.clone();
     }
@@ -186,7 +174,6 @@ public class BlockComposter extends BlockSolid {
     public static void registerItem(int chance, @NotNull String itemId) {
         compostableItems.put(itemId, chance);
     }
-
 
     public static void registerItems(int chance, @NotNull String... itemId) {
         for (String minecraftItemID : itemId) {
@@ -200,12 +187,10 @@ public class BlockComposter extends BlockSolid {
         }
     }
 
-
     public static void registerBlock(int chance, String blockId) {
         BlockState blockState = Registries.BLOCK.get(blockId).getBlockState();
         compostableBlocks.put(blockState, chance);
     }
-
 
     public static void registerBlock(int chance, String blockId, int meta) {
         int i = Registries.BLOCKSTATE_ITEMMETA.get(blockId, meta);
@@ -218,7 +203,6 @@ public class BlockComposter extends BlockSolid {
         }
         compostableBlocks.put(blockState, chance);
     }
-
 
     public static int getChance(Item item) {
         if (item instanceof ItemBlock) {

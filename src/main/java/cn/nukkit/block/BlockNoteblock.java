@@ -49,17 +49,13 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
         return ItemTool.TYPE_AXE;
     }
 
-
-    @NotNull
     @Override
-    public Class<? extends BlockEntityMusic> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityMusic> getBlockEntityClass() {
         return BlockEntityMusic.class;
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.MUSIC;
     }
 
@@ -82,7 +78,6 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
-
 
     @Override
     public int onTouch(@Nullable Player player, Action action) {
@@ -108,20 +103,25 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
         if (down instanceof BlockWool) {
             return Instrument.GUITAR;
         }
+
         if (down instanceof BlockConcretePowder) {
             return Instrument.DRUM;
         }
+
         if (down instanceof BlockGlass || down instanceof BlockGlassPane) {
             return Instrument.STICKS;
         }
+
         if (down instanceof BlockLog || down instanceof BlockPlanks || down instanceof BlockFence || down instanceof BlockFenceGate) {
             return Instrument.BASS;
         }
+
         if (down instanceof BlockBrickBlock || down instanceof BlockNetherBrick || down instanceof BlockConcrete
                 || down instanceof BlockHardenedClay || down instanceof BlockDoubleStoneBlockSlab
                 || down instanceof BlockDoubleStoneBlockSlab2 || down instanceof BlockDoubleStoneBlockSlab3 || down instanceof BlockDoubleStoneBlockSlab4) {
             return Instrument.BASS_DRUM;
         }
+
         return switch (down.getId()) {
             case GOLD_BLOCK -> Instrument.GLOCKENSPIEL;
             case CLAY, HONEYCOMB_BLOCK -> Instrument.FLUTE;
@@ -157,9 +157,8 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
         emitSound(null);
     }
 
-
     public void emitSound(@Nullable Player player) {
-        if (this.up().getId() != AIR) return;
+        if (!this.up().isAir()) return;
 
         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player != null ? player : this, this.add(0.5, 0.5, 0.5).clone(), VibrationType.BLOCK_CHANGE));
 
@@ -184,7 +183,6 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     }
 
     @Override
-
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_REDSTONE) {
             // We can't use getOrCreateBlockEntity(), because the update method is called on block place,

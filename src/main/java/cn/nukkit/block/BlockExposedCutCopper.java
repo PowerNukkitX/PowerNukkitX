@@ -4,7 +4,7 @@ import cn.nukkit.block.property.enums.OxidizationLevel;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockExposedCutCopper extends BlockCutCopper {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:exposed_cut_copper");
+    public static final BlockProperties PROPERTIES = new BlockProperties(EXPOSED_CUT_COPPER);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -24,9 +24,8 @@ public class BlockExposedCutCopper extends BlockCutCopper {
         return "Exposed Cut Copper";
     }
 
-    @NotNull
     @Override
-    public OxidizationLevel getOxidizationLevel() {
+    public @NotNull OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.EXPOSED;
     }
 }

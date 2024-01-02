@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockBrownConcretePowder extends BlockConcretePowder {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:brown_concrete_powder");
+    public static final BlockProperties PROPERTIES = new BlockProperties(BROWN_CONCRETE_POWDER);
 
     @Override
     public @NotNull BlockProperties getProperties() {

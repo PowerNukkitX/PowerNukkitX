@@ -12,7 +12,12 @@ import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
  * @since 26.12.2015
  */
 public class BlockWallSign extends BlockStandingSign {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:wall_sign", FACING_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(WALL_SIGN, FACING_DIRECTION);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockWallSign() {
         this(PROPERTIES.getDefaultState());
@@ -21,13 +26,6 @@ public class BlockWallSign extends BlockStandingSign {
     public BlockWallSign(BlockState blockState) {
         super(blockState);
     }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
 
     @Override
     public String getWallSignId() {
@@ -55,7 +53,6 @@ public class BlockWallSign extends BlockStandingSign {
         return 0;
     }
 
-
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(FACING_DIRECTION, face.getIndex());
@@ -66,12 +63,10 @@ public class BlockWallSign extends BlockStandingSign {
         return BlockFace.fromIndex(getPropertyValue(FACING_DIRECTION));
     }
 
-
     @Override
     public void setSignDirection(CompassRoseDirection direction) {
         setBlockFace(direction.getClosestBlockFace());
     }
-
 
     @Override
     public CompassRoseDirection getSignDirection() {

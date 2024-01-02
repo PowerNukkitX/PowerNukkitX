@@ -40,7 +40,6 @@ public class BlockLapisBlock extends BlockSolid {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_STONE;
     }

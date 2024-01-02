@@ -34,7 +34,6 @@ public abstract class BlockGlazedTerracotta extends BlockSolid implements Faceab
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -55,7 +54,6 @@ public abstract class BlockGlazedTerracotta extends BlockSolid implements Faceab
     public BlockFace getBlockFace() {
         return BlockFace.fromIndex(getPropertyValue(FACING_DIRECTION));
     }
-
 
     @Override
     public void setBlockFace(BlockFace face) {

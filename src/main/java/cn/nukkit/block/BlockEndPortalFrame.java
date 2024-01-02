@@ -100,7 +100,6 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
         return true;
     }
 
-    
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         if (!this.isEndPortalEye() && player != null && item.getId().equals(Item.ENDER_EYE)) {
@@ -112,7 +111,6 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
         }
         return false;
     }
-
 
     public void createPortal() {
         Vector3 centerSpot = this.searchCenter(new ArrayList<>());
@@ -222,11 +220,9 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
         return true;
     }
 
-
     public boolean isEndPortalEye() {
         return getPropertyValue(END_PORTAL_EYE_BIT);
     }
-
 
     public void setEndPortalEye(boolean endPortalEye) {
         setPropertyValue(END_PORTAL_EYE_BIT, endPortalEye);

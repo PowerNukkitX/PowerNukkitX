@@ -34,18 +34,17 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
     protected static final AxisAlignedBB[] SOUTH = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.375D, 0.4375D, 0.6875D, 0.625D, 0.75D, 0.9375D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.5625D, 0.6875D, 0.75D, 0.9375D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.5625D, 0.6875D, 0.75D, 0.9375D)};
     protected static final Object2ObjectArrayMap<BlockFace, AxisAlignedBB[]> ALL = new Object2ObjectArrayMap<>(4);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockCocoa() {
         this(PROPERTIES.getDefaultState());
     }
 
     public BlockCocoa(BlockState blockstate) {
         super(blockstate);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -186,7 +185,6 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
         return ItemTool.TYPE_AXE;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 2;
@@ -235,7 +233,6 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
     }
 
     @Override
-
     public boolean sticksToPiston() {
         return false;
     }

@@ -14,21 +14,19 @@ import org.jetbrains.annotations.NotNull;
  */
 
 public class BlockLoom extends BlockSolid implements Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:loom", CommonBlockProperties.DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(LOOM, CommonBlockProperties.DIRECTION);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockLoom() {
         this(PROPERTIES.getDefaultState());
     }
 
-
     public BlockLoom(BlockState blockState) {
         super(blockState);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -81,12 +79,10 @@ public class BlockLoom extends BlockSolid implements Faceable {
         return true;
     }
 
-
     @Override
     public BlockFace getBlockFace() {
         return BlockFace.getHorizontals()[getPropertyValue(CommonBlockProperties.DIRECTION)];
     }
-
 
     @Override
     public void setBlockFace(BlockFace face) {

@@ -61,16 +61,13 @@ public class BlockTurtleEgg extends BlockFlowable {
         return "Turtle Egg";
     }
 
-
     public CrackedState getCracks() {
         return getPropertyValue(CRACKED_STATE);
     }
 
-
     public void setCracks(@Nullable CrackedState cracks) {
         setPropertyValue(CRACKED_STATE, cracks);
     }
-
 
     @Override
     public double getHardness() {
@@ -82,11 +79,9 @@ public class BlockTurtleEgg extends BlockFlowable {
         return 2.5;
     }
 
-
     public TurtleEggCount getEggCount() {
         return getPropertyValue(TURTLE_EGG_COUNT);
     }
-
 
     public void setEggCount(TurtleEggCount eggCount) {
         setPropertyValue(TURTLE_EGG_COUNT, eggCount);
@@ -173,7 +168,7 @@ public class BlockTurtleEgg extends BlockFlowable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
-            if (down().getId() == BlockID.SAND) {
+            if (down().getId().equals(BlockID.SAND)) {
                 float celestialAngle = level.calculateCelestialAngle(level.getTime(), 1);
                 ThreadLocalRandom random = ThreadLocalRandom.current();
                 if (0.70 > celestialAngle && celestialAngle > 0.65 || random.nextInt(500) == 0) {
@@ -197,16 +192,13 @@ public class BlockTurtleEgg extends BlockFlowable {
         return 0;
     }
 
-
     public void hatch() {
         hatch(getEggCount());
     }
 
-
     public void hatch(TurtleEggCount eggs) {
         hatch(eggs, new BlockAir());
     }
-
 
     public void hatch(TurtleEggCount eggs, Block newState) {
         TurtleEggHatchEvent turtleEggHatchEvent = new TurtleEggHatchEvent(this, eggs.ordinal() + 1, newState);
@@ -318,7 +310,6 @@ public class BlockTurtleEgg extends BlockFlowable {
         }
     }
 
-
     public boolean isValidSupport(Block support) {
         return support.isSolid(BlockFace.UP) || support instanceof BlockWallBase;
     }
@@ -332,7 +323,6 @@ public class BlockTurtleEgg extends BlockFlowable {
     public boolean canSilkTouch() {
         return true;
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -353,5 +343,4 @@ public class BlockTurtleEgg extends BlockFlowable {
     public BlockTurtleEgg clone() {
         return (BlockTurtleEgg) super.clone();
     }
-
 }

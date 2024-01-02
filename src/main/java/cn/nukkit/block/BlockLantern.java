@@ -27,7 +27,6 @@ public class BlockLantern extends BlockFlowable {
         super(blockstate);
     }
 
-
     @Override
     public String getName() {
         return "Lantern";
@@ -36,11 +35,10 @@ public class BlockLantern extends BlockFlowable {
     private boolean isBlockAboveValid() {
         Block support = up();
         switch (support.getId()) {
-            case CHAIN:
-            case IRON_BARS:
-            case HOPPER:
+            case CHAIN, IRON_BARS, HOPPER -> {
                 return true;
-            default:
+            }
+            default -> {
                 if (support instanceof BlockWallBase || support instanceof BlockFence) {
                     return true;
                 }
@@ -51,6 +49,7 @@ public class BlockLantern extends BlockFlowable {
                     return true;
                 }
                 return BlockLever.isSupportValid(support, BlockFace.DOWN);
+            }
         }
     }
 
@@ -167,16 +166,13 @@ public class BlockLantern extends BlockFlowable {
         return ItemTool.TIER_WOODEN;
     }
 
-
     public boolean isHanging() {
         return getPropertyValue(HANGING);
     }
 
-
     public void setHanging(boolean hanging) {
         setPropertyValue(HANGING, hanging);
     }
-
 
     @Override
     public int getWaterloggingLevel() {

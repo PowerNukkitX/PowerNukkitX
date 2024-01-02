@@ -27,9 +27,13 @@ public class BlockMonsterEgg extends BlockSolid {
         return getPropertyValue(MONSTER_EGG_STONE_TYPE);
     }
 
-
     public void setMonsterEggStoneType(@NotNull MonsterEggStoneType value) {
         setPropertyValue(MONSTER_EGG_STONE_TYPE, value);
+    }
+
+    @Override
+    public String getName() {
+        return getMonsterEggStoneType().name() + " Monster Egg";
     }
 
     @Override
@@ -40,11 +44,6 @@ public class BlockMonsterEgg extends BlockSolid {
     @Override
     public double getResistance() {
         return 0.75;
-    }
-
-    @Override
-    public String getName() {
-        return getMonsterEggStoneType().name() + " Monster Egg";
     }
 
     @Override

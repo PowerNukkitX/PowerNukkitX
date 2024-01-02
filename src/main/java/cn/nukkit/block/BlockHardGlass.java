@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockHardGlass extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:hard_glass");
+    public static final BlockProperties PROPERTIES = new BlockProperties(HARD_GLASS);
 
     @Override
     public @NotNull BlockProperties getProperties() {

@@ -192,17 +192,14 @@ public class BlockChorusFlower extends BlockTransparent {
     }
 
     @Override
-
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-
     public  boolean sticksToPiston() {
         return false;
     }
-
 
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
@@ -213,26 +210,21 @@ public class BlockChorusFlower extends BlockTransparent {
         return super.onProjectileHit(projectile, position, motion);
     }
 
-
     public int getMaxAge() {
         return AGE_6.getMax();
     }
-
 
     public int getAge() {
         return getPropertyValue(AGE_6);
     }
 
-
     public void setAge(int age) {
         setPropertyValue(AGE_6, age);
     }
 
-
     public boolean isFullyAged() {
         return getAge() >= getMaxAge();
     }
-
 
     private boolean isHorizontalAir(Block block) {
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
@@ -242,7 +234,6 @@ public class BlockChorusFlower extends BlockTransparent {
         }
         return true;
     }
-
 
     private boolean isHorizontalAirExcept(Block block, BlockFace except) {
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {

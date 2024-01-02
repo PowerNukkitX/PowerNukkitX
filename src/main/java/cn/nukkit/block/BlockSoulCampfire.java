@@ -10,7 +10,7 @@ import cn.nukkit.item.ItemSoulCampfire;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockSoulCampfire extends BlockCampfire {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:soul_campfire", CommonBlockProperties.EXTINGUISHED, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(SOUL_CAMPFIRE, CommonBlockProperties.EXTINGUISHED, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -24,7 +24,6 @@ public class BlockSoulCampfire extends BlockCampfire {
     public BlockSoulCampfire(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {
@@ -45,7 +44,6 @@ public class BlockSoulCampfire extends BlockCampfire {
     public Item[] getDrops(Item item) {
         return new Item[]{toItem()};
     }
-
 
     @Override
     protected EntityDamageEvent getDamageEvent(Entity entity) {

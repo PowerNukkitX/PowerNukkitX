@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockBubbleCoral extends BlockCoral {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:bubble_coral");
+    public static final BlockProperties PROPERTIES = new BlockProperties(BUBBLE_CORAL);
 
     @Override
     public @NotNull BlockProperties getProperties() {

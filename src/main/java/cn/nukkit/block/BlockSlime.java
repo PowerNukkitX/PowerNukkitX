@@ -8,7 +8,12 @@ import org.jetbrains.annotations.NotNull;
  * @since 21.02.2016
  */
 public class BlockSlime extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:slime");
+    public static final BlockProperties PROPERTIES = new BlockProperties(SLIME);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockSlime() {
         super(PROPERTIES.getDefaultState());
@@ -29,21 +34,14 @@ public class BlockSlime extends BlockTransparent {
     }
 
     @Override
-    public @NotNull BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    @Override
     public double getResistance() {
         return 0;
     }
-
 
     @Override
     public int getLightFilter() {
         return 1;
     }
-
 
     @Override
     public boolean canSticksBlock() {

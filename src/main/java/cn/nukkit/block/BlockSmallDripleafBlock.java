@@ -15,9 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(SMALL_DRIPLEAF_BLOCK,
-            CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION,
-            CommonBlockProperties.UPPER_BLOCK_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(SMALL_DRIPLEAF_BLOCK, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.UPPER_BLOCK_BIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -32,7 +30,6 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
         super(blockstate);
     }
 
-
     @Override
     public String getName() {
         return "Small Dripleaf";
@@ -42,7 +39,6 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
     public BlockFace getBlockFace() {
         return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));
     }
-
 
     @Override
     public void setBlockFace(BlockFace face) {
@@ -56,7 +52,6 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
     public void setUpperBlock(boolean isUpperBlock) {
         this.setPropertyValue(CommonBlockProperties.UPPER_BLOCK_BIT, isUpperBlock);
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -159,7 +154,7 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
         if (this.level.getBlock(blockDown) instanceof BlockSmallDripleafBlock && !((BlockSmallDripleafBlock) this.level.getBlock(blockDown)).isUpperBlock()) {
             return true;
         }
-        if (blockHere instanceof BlockFlowingWater && (blockUp instanceof BlockAir || blockUp instanceof BlockSmallDripleafBlock) && (blockDown instanceof BlockGrass || blockDown instanceof BlockDirt || blockDown instanceof BlockDirtWithRoots || blockDown instanceof BlockMoss)) {
+        if (blockHere instanceof BlockFlowingWater && (blockUp instanceof BlockAir || blockUp instanceof BlockSmallDripleafBlock) && (blockDown instanceof BlockGrass || blockDown instanceof BlockDirt || blockDown instanceof BlockDirtWithRoots || blockDown instanceof BlockMossBlock)) {
             return true;
         }
         return false;

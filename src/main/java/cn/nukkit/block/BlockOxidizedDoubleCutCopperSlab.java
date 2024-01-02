@@ -5,7 +5,7 @@ import cn.nukkit.block.property.enums.OxidizationLevel;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockOxidizedDoubleCutCopperSlab extends BlockDoubleCutCopperSlab {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:oxidized_double_cut_copper_slab", CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+    public static final BlockProperties PROPERTIES = new BlockProperties(OXIDIZED_DOUBLE_CUT_COPPER_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -20,16 +20,13 @@ public class BlockOxidizedDoubleCutCopperSlab extends BlockDoubleCutCopperSlab {
         super(blockstate);
     }
 
-
     @Override
     public String getSingleSlabId() {
         return OXIDIZED_CUT_COPPER_SLAB;
     }
 
-
-    @NotNull
     @Override
-    public OxidizationLevel getOxidizationLevel() {
+    public @NotNull OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.OXIDIZED;
     }
 }

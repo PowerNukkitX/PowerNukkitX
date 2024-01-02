@@ -12,7 +12,12 @@ import javax.annotation.Nullable;
  * @since 2015/11/22
  */
 public class BlockPodzol extends BlockDirt {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:podzol");
+    public static final BlockProperties PROPERTIES = new BlockProperties(PODZOL);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockPodzol() {
         super(PROPERTIES.getDefaultState());
@@ -22,25 +27,15 @@ public class BlockPodzol extends BlockDirt {
         super(blockState);
     }
 
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
     @Override
     public String getName() {
         return "Podzol";
     }
 
-
-    @NotNull
     @Override
-    public DirtType getDirtType() {
+    public @NotNull DirtType getDirtType() {
         return DirtType.NORMAL;
     }
-
 
     @Override
     public void setDirtType(@Nullable DirtType dirtType) throws Exception {

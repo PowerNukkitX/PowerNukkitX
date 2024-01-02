@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockWeatheredCopperGrate extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:weathered_copper_grate");
+    public static final BlockProperties PROPERTIES = new BlockProperties(WEATHERED_COPPER_GRATE);
 
     @Override
     public @NotNull BlockProperties getProperties() {

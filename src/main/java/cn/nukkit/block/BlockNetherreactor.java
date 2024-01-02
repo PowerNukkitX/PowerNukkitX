@@ -30,16 +30,13 @@ public class BlockNetherreactor extends BlockSolid implements BlockEntityHolder<
         super(blockstate);
     }
 
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.NETHER_REACTOR;
     }
 
-
-    @NotNull
     @Override
-    public Class<? extends BlockEntityNetherReactor> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityNetherReactor> getBlockEntityClass() {
         return BlockEntityNetherReactor.class;
     }
 
@@ -67,7 +64,6 @@ public class BlockNetherreactor extends BlockSolid implements BlockEntityHolder<
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
-
 
     @Override
     public int getToolTier() {

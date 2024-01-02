@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 2015/12/2
  */
 public class BlockObsidian extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:obsidian");
+    public static final BlockProperties PROPERTIES = new BlockProperties(OBSIDIAN);
 
     public BlockObsidian() {
         super(PROPERTIES.getDefaultState());
@@ -66,7 +66,6 @@ public class BlockObsidian extends BlockSolid {
         return super.onBreak(item);
     }
 
-
     @Override
     public void afterRemoval(Block newBlock, boolean update) {
         if (update) {
@@ -80,7 +79,6 @@ public class BlockObsidian extends BlockSolid {
     }
 
     @Override
-
     public  boolean canBePulled() {
         return false;
     }

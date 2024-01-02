@@ -23,8 +23,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * Implements the main logic of all nether vines.
  * @author joserobjr
  */
-
-
 public abstract class BlockVinesNether extends BlockTransparent {
     /**
      * Creates a nether vine from a meta compatible with {@link #getProperties()}.
@@ -44,8 +42,6 @@ public abstract class BlockVinesNether extends BlockTransparent {
     /**
      * The current age of this block.
      */
-
-
     public abstract int getVineAge();
 
     public abstract void setVineAge(int vineAge);
@@ -61,8 +57,6 @@ public abstract class BlockVinesNether extends BlockTransparent {
      * 
      * @param pseudorandom If the the randomization should be pseudorandom.
      */
-
-
     public void randomizeVineAge(boolean pseudorandom) {
         if (pseudorandom) {
             setVineAge(ThreadLocalRandom.current().nextInt(getMaxVineAge()));
@@ -99,23 +93,27 @@ public abstract class BlockVinesNether extends BlockTransparent {
     @Override
     public int onUpdate(int type) {
         switch (type) {
-            case Level.BLOCK_UPDATE_RANDOM:
+            case Level.BLOCK_UPDATE_RANDOM -> {
                 int maxVineAge = getMaxVineAge();
-                if (getVineAge() < maxVineAge && ThreadLocalRandom.current().nextInt(10) == 0 
+                if (getVineAge() < maxVineAge && ThreadLocalRandom.current().nextInt(10) == 0
                         && findVineAge(true).orElse(maxVineAge) < maxVineAge) {
                     grow();
                 }
                 return Level.BLOCK_UPDATE_RANDOM;
-            case Level.BLOCK_UPDATE_SCHEDULED:
+            }
+            case Level.BLOCK_UPDATE_SCHEDULED -> {
                 getLevel().useBreakOn(this, null, null, true);
                 return Level.BLOCK_UPDATE_SCHEDULED;
-            case Level.BLOCK_UPDATE_NORMAL:
+            }
+            case Level.BLOCK_UPDATE_NORMAL -> {
                 if (!isSupportValid()) {
                     getLevel().scheduleUpdate(this, 1);
                 }
                 return Level.BLOCK_UPDATE_NORMAL;
-            default:
+            }
+            default -> {
                 return 0;
+            }
         }
     }
 
@@ -123,8 +121,6 @@ public abstract class BlockVinesNether extends BlockTransparent {
      * Grow a single vine if possible. Calls {@link BlockGrowEvent} passing the positioned new state and the source block.
      * @return If the vine grew successfully.
      */
-
-
     public boolean grow() {
         Block pos = getSide(getGrowthDirection());
         if (!pos.isAir() || pos.y < 0 || 255 < pos.y) {
@@ -157,8 +153,6 @@ public abstract class BlockVinesNether extends BlockTransparent {
      * to the world, if one of the events gets cancelled the growth gets interrupted.
      * @return How many vines grew 
      */
-
-
     public int growMultiple() {
         BlockFace growthDirection = getGrowthDirection();
         int age = getVineAge() + 1;
@@ -170,7 +164,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
         int grew = 0;
         for (int distance = 1; distance <= blocksToGrow; distance++) {
             Block pos = getSide(growthDirection, distance);
-            if (pos.getId() != AIR || pos.y < 0 || 255 < pos.y) {
+            if (!pos.isAir() || pos.y < 0 || 255 < pos.y) {
                 break;
             }
 
@@ -205,10 +199,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
      * @param base True to get the age of the base (oldest block), false to get the age of the head (newest block)
      * @return Empty if the target could not be reached. The age of the target if it was found.
      */
-
-
-    @NotNull
-    public OptionalInt findVineAge(boolean base) {
+    public @NotNull OptionalInt findVineAge(boolean base) {
         return findVineBlock(base)
                 .map(vine-> OptionalInt.of(vine.getVineAge()))
                 .orElse(OptionalInt.empty());
@@ -220,10 +211,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
      * @return Empty if the target could not be reached or the block there isn't an instance of {@link BlockVinesNether}.
      *          The positioned block of the target if it was found.
      */
-
-
-    @NotNull
-    public Optional<BlockVinesNether> findVineBlock(boolean base) {
+    public @NotNull Optional<BlockVinesNether> findVineBlock(boolean base) {
         return findVine(base)
                 .map(Position::getLevelBlock)
                 .filter(BlockVinesNether.class::isInstance)
@@ -235,10 +223,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
      * @param base True to find the base (oldest block), false to find the head (newest block)
      * @return Empty if the target could not be reached. The position of the target if it was found.
      */
-
-
-    @NotNull
-    public Optional<Position> findVine(boolean base) {
+    public @NotNull Optional<Position> findVine(boolean base) {
         BlockFace supportFace = getGrowthDirection();
         if (base) {
             supportFace = supportFace.getOpposite();
@@ -255,7 +240,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
             }
         }
         
-        return limit == -1? Optional.empty() : Optional.of(result);
+        return limit == -1 ? Optional.empty() : Optional.of(result);
     }
 
     /**
@@ -266,10 +251,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
      *     <li>{@code FALSE} if the base was already in the max age or the block change was refused 
      *     </ul>
      */
-
-
-    @NotNull
-    public OptionalBoolean increaseRootAge() {
+    public @NotNull OptionalBoolean increaseRootAge() {
         Block base = findVine(true).map(Position::getLevelBlock).orElse(null);
         if (!(base instanceof BlockVinesNether baseVine)) {
             return OptionalBoolean.EMPTY;
@@ -324,11 +306,9 @@ public abstract class BlockVinesNether extends BlockTransparent {
         return Item.EMPTY_ARRAY;
     }
 
-
     protected boolean isSupportValid(@NotNull Block support) {
         return support.getId().equals(getId()) || !support.isTransparent();
     }
-
 
     public boolean isSupportValid() {
         return isSupportValid(getSide(getGrowthDirection().getOpposite()));
@@ -400,13 +380,11 @@ public abstract class BlockVinesNether extends BlockTransparent {
     }
 
     @Override
-
     public  boolean sticksToPiston() {
         return false;
     }
 
     @Override
-
     public boolean breaksWhenMoved() {
         return true;
     }

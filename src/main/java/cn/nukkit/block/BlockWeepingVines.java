@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import static cn.nukkit.block.property.CommonBlockProperties.WEEPING_VINES_AGE;
 
 public class BlockWeepingVines extends BlockVinesNether {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:weeping_vines", WEEPING_VINES_AGE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(WEEPING_VINES, WEEPING_VINES_AGE);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -21,30 +21,25 @@ public class BlockWeepingVines extends BlockVinesNether {
         super(blockstate);
     }
 
-
     @Override
     public String getName() {
         return "Weeping Vines";
     }
 
-    @NotNull
     @Override
-    public BlockFace getGrowthDirection() {
+    public @NotNull BlockFace getGrowthDirection() {
         return BlockFace.DOWN;
     }
-
 
     @Override
     public int getVineAge() {
         return getPropertyValue(WEEPING_VINES_AGE);
     }
 
-
     @Override
     public void setVineAge(int vineAge) {
         setPropertyValue(WEEPING_VINES_AGE, vineAge);
     }
-
 
     @Override
     public int getMaxVineAge() {

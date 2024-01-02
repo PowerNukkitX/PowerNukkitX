@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockClientRequestPlaceholderBlock extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:client_request_placeholder_block");
+    public static final BlockProperties PROPERTIES = new BlockProperties(CLIENT_REQUEST_PLACEHOLDER_BLOCK);
 
     @Override
     public @NotNull BlockProperties getProperties() {

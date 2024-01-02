@@ -1,10 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
-import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityFallingBlock;
 import cn.nukkit.item.Item;
@@ -16,12 +12,10 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.block.property.CommonBlockProperties.STABILITY;
-import static cn.nukkit.block.property.CommonBlockProperties.STABILITY_CHECK;
-
+import static cn.nukkit.block.property.CommonBlockProperties.*;
 
 public class BlockScaffolding extends BlockFallable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(SCAFFOLDING, STABILITY, CommonBlockProperties.STABILITY_CHECK);
+    public static final BlockProperties PROPERTIES = new BlockProperties(SCAFFOLDING, STABILITY, STABILITY_CHECK);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -41,16 +35,13 @@ public class BlockScaffolding extends BlockFallable {
         return "Scaffolding";
     }
 
-
     public int getStability() {
         return getPropertyValue(STABILITY);
     }
 
-
     public void setStability(int stability) {
         setPropertyValue(STABILITY, stability);
     }
-
 
     public boolean getStabilityCheck() {
         return getPropertyValue(STABILITY_CHECK);
@@ -113,7 +104,7 @@ public class BlockScaffolding extends BlockFallable {
                 }
 
                 Block otherBlock = getSide(face);
-                if (otherBlock.getId() == SCAFFOLDING) {
+                if (otherBlock.getId().equals(SCAFFOLDING)) {
                     BlockScaffolding other = (BlockScaffolding) otherBlock;
                     int otherStability = other.getStability();
                     if (otherStability < stability) {
@@ -147,7 +138,6 @@ public class BlockScaffolding extends BlockFallable {
         return 0;
     }
 
-
     @Override
     protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {
         setPropertyValues(STABILITY.createValue(0), STABILITY_CHECK.createValue(false));
@@ -174,7 +164,6 @@ public class BlockScaffolding extends BlockFallable {
     public int getBurnAbility() {
         return 60;
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -245,7 +234,6 @@ public class BlockScaffolding extends BlockFallable {
     public boolean isSolid() {
         return false;
     }
-
 
     @Override
     public boolean isSolid(BlockFace side) {

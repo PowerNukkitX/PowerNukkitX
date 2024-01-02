@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCrackedDeepslateTiles extends BlockDeepslateTiles {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:cracked_deepslate_tiles");
+    public static final BlockProperties PROPERTIES = new BlockProperties(CRACKED_DEEPSLATE_TILES);
 
     @Override
     public @NotNull BlockProperties getProperties() {

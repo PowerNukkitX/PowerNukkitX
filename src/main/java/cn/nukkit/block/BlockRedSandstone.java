@@ -5,15 +5,11 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.block.property.CommonBlockProperties.SAND_STONE_TYPE;
-
 /**
  * @author CreeperFace
  * @since 26. 11. 2016
  */
 public class BlockRedSandstone extends BlockSandstone {
-    public static final BlockProperties PROPERTIES = new BlockProperties(RED_SANDSTONE, SAND_STONE_TYPE);
-
     public static final BlockProperties PROPERTIES = new BlockProperties(RED_SANDSTONE, CommonBlockProperties.SAND_STONE_TYPE);
 
     @Override

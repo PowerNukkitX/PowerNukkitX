@@ -19,7 +19,6 @@ public class BlockCryingObsidian extends BlockSolid {
         super(blockstate);
     }
 
-
     @Override
     public String getName() {
         return "Crying Obsidian";
@@ -52,7 +51,6 @@ public class BlockCryingObsidian extends BlockSolid {
     }
 
     @Override
-
     public boolean canBePulled() {
         return false;
     }

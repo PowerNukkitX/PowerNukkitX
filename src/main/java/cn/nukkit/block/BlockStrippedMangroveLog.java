@@ -4,7 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockStrippedMangroveLog extends BlockWoodStripped {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:stripped_mangrove_log", CommonBlockProperties.PILLAR_AXIS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(STRIPPED_MANGROVE_LOG, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
     public @NotNull BlockProperties getProperties() {

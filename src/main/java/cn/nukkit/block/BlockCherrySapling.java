@@ -22,20 +22,17 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_SAPLING, AGE_BIT);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockCherrySapling() {
         this(PROPERTIES.getDefaultState());
     }
 
-
     public BlockCherrySapling(BlockState blockstate) {
         super(blockstate);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

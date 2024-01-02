@@ -4,7 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockPinkCandleCake extends BlockCandleCake {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:pink_candle_cake", CommonBlockProperties.LIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(PINK_CANDLE_CAKE, CommonBlockProperties.LIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {

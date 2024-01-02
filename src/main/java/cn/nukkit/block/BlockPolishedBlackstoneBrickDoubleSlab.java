@@ -19,7 +19,6 @@ public class BlockPolishedBlackstoneBrickDoubleSlab extends BlockPolishedBlackst
         super(blockstate);
     }
 
-
     @Override
     public String getSlabName() {
         return "Polished Blackstone Brick";

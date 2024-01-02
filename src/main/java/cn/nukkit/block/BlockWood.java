@@ -15,18 +15,17 @@ import static cn.nukkit.block.property.CommonBlockProperties.WOOD_TYPE;
 public class BlockWood extends BlockLog {
     public static final BlockProperties PROPERTIES = new BlockProperties(WOOD, PILLAR_AXIS, CommonBlockProperties.STRIPPED_BIT, WOOD_TYPE);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockWood() {
         this(PROPERTIES.getDefaultState());
     }
 
     public BlockWood(BlockState blockstate) {
         super(blockstate);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -39,11 +38,9 @@ public class BlockWood extends BlockLog {
         return 2;
     }
 
-
     public WoodType getWoodType() {
         return getPropertyValue(WOOD_TYPE);
     }
-
 
     public void setWoodType(WoodType woodType) {
         setPropertyValue(WOOD_TYPE, woodType);
@@ -63,7 +60,6 @@ public class BlockWood extends BlockLog {
     public int getBurnAbility() {
         return 10;
     }
-
 
     @Override
     public BlockState getStrippedState() {

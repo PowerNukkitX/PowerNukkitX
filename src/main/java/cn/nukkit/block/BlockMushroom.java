@@ -102,7 +102,6 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

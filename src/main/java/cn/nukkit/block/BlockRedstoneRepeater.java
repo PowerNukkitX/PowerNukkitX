@@ -29,7 +29,6 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
         return true;
     }
 
-
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!isSupportValid(down())) {

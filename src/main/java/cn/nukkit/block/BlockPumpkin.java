@@ -29,9 +29,8 @@ public class BlockPumpkin extends BlockSolid implements Faceable {
         return "Pumpkin";
     }
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -90,13 +89,11 @@ public class BlockPumpkin extends BlockSolid implements Faceable {
     }
 
     @Override
-
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-
     public boolean sticksToPiston() {
         return false;
     }
@@ -105,7 +102,6 @@ public class BlockPumpkin extends BlockSolid implements Faceable {
     public BlockFace getBlockFace() {
         return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));
     }
-
 
     @Override
     public void setBlockFace(BlockFace face) {

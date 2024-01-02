@@ -6,7 +6,7 @@ import cn.nukkit.math.NukkitMath;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockHeavyWeightedPressurePlate extends BlockPressurePlateBase {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:heavy_weighted_pressure_plate", CommonBlockProperties.REDSTONE_SIGNAL);
+    public static final BlockProperties PROPERTIES = new BlockProperties(HEAVY_WEIGHTED_PRESSURE_PLATE, CommonBlockProperties.REDSTONE_SIGNAL);
 
     @Override
     public @NotNull BlockProperties getProperties() {

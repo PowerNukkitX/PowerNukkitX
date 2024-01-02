@@ -15,14 +15,9 @@ import javax.annotation.Nullable;
  * @author joserobjr
  * @since 2021-06-14
  */
-
-
 public interface Waxable {
 
-
-    @NotNull
-    Location getLocation();
-
+    @NotNull Location getLocation();
 
     default boolean onActivate(@NotNull Item item, @Nullable Player player) {
         boolean waxed = isWaxed();
@@ -47,9 +42,7 @@ public interface Waxable {
         return true;
     }
 
-
     boolean isWaxed();
-
 
     boolean setWaxed(boolean waxed);
 }

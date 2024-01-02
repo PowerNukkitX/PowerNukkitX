@@ -18,7 +18,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.BITE_COUNTER;
  * @author Nukkit Project Team
  */
 public class BlockCake extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:cake", BITE_COUNTER);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CAKE, BITE_COUNTER);
 
     public BlockCake(BlockState blockState) {
         super(blockState);
@@ -53,7 +53,6 @@ public class BlockCake extends BlockTransparent {
     public double getResistance() {
         return 0.5;
     }
-
 
     @Override
     public int getWaterloggingLevel() {

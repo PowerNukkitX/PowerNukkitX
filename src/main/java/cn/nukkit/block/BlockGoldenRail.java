@@ -11,8 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DATA_BIT;
 
 public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:golden_rail", RAIL_DATA_BIT,
-            CommonBlockProperties.RAIL_DIRECTION_6);
+    public static final BlockProperties PROPERTIES = new BlockProperties(GOLDEN_RAIL, RAIL_DATA_BIT, CommonBlockProperties.RAIL_DIRECTION_6);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -34,9 +33,8 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
     }
 
     @Override
-
     public int onUpdate(int type) {
-        // Warning: I din't recommended this on slow networks server or slow client
+        // Warning: I didn't recommend this on slow networks server or slow client
         //          Network below 86Kb/s. This will became unresponsive to clients
         //          When updating the block state. Espicially on the world with many rails.
         //          Trust me, I tested this on my server.
@@ -65,7 +63,6 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
         }
         return 0;
     }
-
 
     @Override
     public void afterRemoval(Block newBlock, boolean update) {
@@ -109,21 +106,21 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
         boolean onStraight = true;
         // Third: Recalculate the base position
         switch (base) {
-            case STRAIGHT_NORTH_SOUTH:
+            case STRAIGHT_NORTH_SOUTH -> {
                 if (relative) {
                     dz++;
                 } else {
                     dz--;
                 }
-                break;
-            case STRAIGHT_EAST_WEST:
+            }
+            case STRAIGHT_EAST_WEST -> {
                 if (relative) {
                     dx--;
                 } else {
                     dx++;
                 }
-                break;
-            case ASCENDING_EAST:
+            }
+            case ASCENDING_EAST -> {
                 if (relative) {
                     dx--;
                 } else {
@@ -131,8 +128,8 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
                     dy++;
                     onStraight = false;
                 }
-                break;
-            case ASCENDING_WEST:
+            }
+            case ASCENDING_WEST -> {
                 if (relative) {
                     dx--;
                     dy++;
@@ -140,8 +137,8 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
                 } else {
                     dx++;
                 }
-                break;
-            case ASCENDING_NORTH:
+            }
+            case ASCENDING_NORTH -> {
                 if (relative) {
                     dz++;
                 } else {
@@ -149,8 +146,8 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
                     dy++;
                     onStraight = false;
                 }
-                break;
-            case ASCENDING_SOUTH:
+            }
+            case ASCENDING_SOUTH -> {
                 if (relative) {
                     dz++;
                     dy++;
@@ -158,17 +155,17 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
                 } else {
                     dz--;
                 }
-                break;
-            default:
+            }
+            default -> {
                 // Unable to determinate the rail orientation
                 // Wrong rail?
                 return false;
+            }
         }
         // Next check the if rail is on power state
         return canPowered(new Vector3(dx, dy, dz), base, power, relative)
                 || onStraight && canPowered(new Vector3(dx, dy - 1.0D, dz), base, power, relative);
     }
-
 
     protected boolean canPowered(Vector3 pos, Rail.Orientation state, int power, boolean relative) {
         Block block = level.getBlock(pos);
@@ -199,12 +196,10 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
         return getPropertyValue(RAIL_DATA_BIT);
     }
 
-
     @Override
     public OptionalBoolean isRailActive() {
         return OptionalBoolean.of(getPropertyValue(RAIL_DATA_BIT));
     }
-
 
     @Override
     public void setRailActive(boolean active) {

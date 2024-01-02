@@ -7,7 +7,7 @@ import cn.nukkit.item.ItemTool;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockIcePacked extends BlockIce {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:packed_ice");
+    public static final BlockProperties PROPERTIES = new BlockProperties(PACKED_ICE);
 
     public BlockIcePacked() {
         super(PROPERTIES.getDefaultState());
@@ -48,7 +48,6 @@ public class BlockIcePacked extends BlockIce {
         return true;
     }
 
-
     @Override
     public boolean isTransparent() {
         return false;
@@ -58,7 +57,6 @@ public class BlockIcePacked extends BlockIce {
     public int getBurnChance() {
         return 0;
     }
-
 
     @Override
     public int getLightFilter() {

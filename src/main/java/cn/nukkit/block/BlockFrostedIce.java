@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockFrostedIce extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:frosted_ice", CommonBlockProperties.AGE_4);
+    public static final BlockProperties PROPERTIES = new BlockProperties(FROSTED_ICE, CommonBlockProperties.AGE_4);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -85,7 +85,6 @@ public class BlockFrostedIce extends BlockTransparent {
     public boolean canHarvestWithHand() {
         return false;
     }
-
 
     protected void slightlyMelt(boolean isSource) {
         int age = getAge();

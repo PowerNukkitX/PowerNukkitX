@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockWaxedWeatheredChiseledCopper extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:waxed_weathered_chiseled_copper");
+    public static final BlockProperties PROPERTIES = new BlockProperties(WAXED_WEATHERED_CHISELED_COPPER);
 
     @Override
     public @NotNull BlockProperties getProperties() {

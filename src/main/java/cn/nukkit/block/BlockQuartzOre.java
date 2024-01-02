@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockQuartzOre extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:quartz_ore");
+    public static final BlockProperties PROPERTIES = new BlockProperties(QUARTZ_ORE);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -24,7 +24,6 @@ public class BlockQuartzOre extends BlockSolid {
     public BlockQuartzOre(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {
@@ -47,7 +46,6 @@ public class BlockQuartzOre extends BlockSolid {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

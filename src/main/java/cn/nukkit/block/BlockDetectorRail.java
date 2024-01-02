@@ -18,7 +18,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.ACTIVE;
 import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DATA_BIT;
 
 public class BlockDetectorRail extends BlockRail implements RedstoneComponent {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:detector_rail", RAIL_DATA_BIT, CommonBlockProperties.RAIL_DIRECTION_6);
+    public static final BlockProperties PROPERTIES = new BlockProperties(DETECTOR_RAIL, RAIL_DATA_BIT, CommonBlockProperties.RAIL_DIRECTION_6);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -32,7 +32,6 @@ public class BlockDetectorRail extends BlockRail implements RedstoneComponent {
     public BlockDetectorRail(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {
@@ -74,12 +73,10 @@ public class BlockDetectorRail extends BlockRail implements RedstoneComponent {
     }
 
     public void checkMinecart() {
-        if (findMinecart() != null) updateState(true);
-        else updateState(false);
+        updateState(findMinecart() != null);
     }
 
-    @Nullable
-    public EntityMinecartAbstract findMinecart() {
+    public @Nullable EntityMinecartAbstract findMinecart() {
         for (Entity entity : level.getNearbyEntities(new SimpleAxisAlignedBB(
                 getFloorX() + 0.2,
                 getFloorY(),

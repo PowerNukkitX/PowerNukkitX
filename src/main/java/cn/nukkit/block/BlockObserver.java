@@ -23,7 +23,6 @@ import static cn.nukkit.block.property.CommonBlockProperties.POWERED_BIT;
  * @author Leonidius20, joserobjr
  * @since 18.08.18
  */
-
 public class BlockObserver extends BlockSolid implements RedstoneComponent, Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(OBSERVER, CommonBlockProperties.MINECRAFT_FACING_DIRECTION, POWERED_BIT);
 
@@ -66,24 +65,20 @@ public class BlockObserver extends BlockSolid implements RedstoneComponent, Face
         return true;
     }
 
-
     @Override
     public boolean isPowerSource() {
         return true;
     }
-
 
     @Override
     public int getStrongPower(BlockFace side) {
         return isPowered() && side == getBlockFace() ? 15 : 0;
     }
 
-
     @Override
     public int getWeakPower(BlockFace face) {
         return getStrongPower(face);
     }
-
 
     @Override
     public int onUpdate(int type) {
@@ -117,7 +112,6 @@ public class BlockObserver extends BlockSolid implements RedstoneComponent, Face
         return 0;
     }
 
-
     @Override
     public void onNeighborChange(@NotNull BlockFace side) {
         Server server = level.getServer();
@@ -146,7 +140,6 @@ public class BlockObserver extends BlockSolid implements RedstoneComponent, Face
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -161,11 +154,9 @@ public class BlockObserver extends BlockSolid implements RedstoneComponent, Face
         return 17.5;
     }
 
-
     public boolean isPowered() {
         return getPropertyValue(POWERED_BIT);
     }
-
 
     public void setPowered(boolean powered) {
         setPropertyValue(POWERED_BIT, powered);
@@ -175,7 +166,6 @@ public class BlockObserver extends BlockSolid implements RedstoneComponent, Face
     public BlockFace getBlockFace() {
         return getPropertyValue(MINECRAFT_FACING_DIRECTION);
     }
-
 
     @Override
     public void setBlockFace(BlockFace face) {

@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockWaxedOxidizedCutCopper extends BlockOxidizedCutCopper {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:waxed_oxidized_cut_copper");
+    public static final BlockProperties PROPERTIES = new BlockProperties(WAXED_OXIDIZED_CUT_COPPER);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -22,7 +22,6 @@ public class BlockWaxedOxidizedCutCopper extends BlockOxidizedCutCopper {
     public String getName() {
         return "Waxed Oxidized Cut Copper";
     }
-
 
     @Override
     public boolean isWaxed() {

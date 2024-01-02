@@ -56,6 +56,7 @@ public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.Flowe
     }
     
     private boolean isSupportValid() {
+        //TODO IMPLEMENT ALL TERRACOTTA
         switch (down().getId()) {
             case SAND:
             case TERRACOTTA:
@@ -71,7 +72,6 @@ public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.Flowe
         }
     }
 
-    
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {

@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Random;
 
 public class BlockMelonBlock extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:melon_block");
+    public static final BlockProperties PROPERTIES = new BlockProperties(MELON_BLOCK);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -23,7 +23,6 @@ public class BlockMelonBlock extends BlockSolid {
     public BlockMelonBlock(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {
@@ -66,13 +65,11 @@ public class BlockMelonBlock extends BlockSolid {
     }
 
     @Override
-
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-
     public  boolean sticksToPiston() {
         return false;
     }

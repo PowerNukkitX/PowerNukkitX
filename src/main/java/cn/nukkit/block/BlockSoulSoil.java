@@ -47,7 +47,6 @@ public class BlockSoulSoil extends BlockSolid {
         return true;
     }
 
-
     @Override
     public boolean isSoulSpeedCompatible() {
         return true;

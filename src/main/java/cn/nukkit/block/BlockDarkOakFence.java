@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockDarkOakFence extends BlockFence {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:dark_oak_fence");
+    public static final BlockProperties PROPERTIES = new BlockProperties(DARK_OAK_FENCE);
 
     @Override
     public @NotNull BlockProperties getProperties() {

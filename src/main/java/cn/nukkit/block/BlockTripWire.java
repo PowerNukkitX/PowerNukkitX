@@ -21,17 +21,16 @@ public class BlockTripWire extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(TRIP_WIRE,
             POWERED_BIT, SUSPENDED_BIT, ATTACHED_BIT, DISARMED_BIT);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockTripWire() {
         this(PROPERTIES.getDefaultState());
     }
 
     public BlockTripWire(BlockState state) { super(state); }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
 
     @Override
     public String getName() {
@@ -146,7 +145,6 @@ public class BlockTripWire extends BlockTransparent {
         }
     }
 
-    
     @Override
     public int onUpdate(int type) {
         if (!this.level.getServer().isRedstoneEnabled()) { return 0; }

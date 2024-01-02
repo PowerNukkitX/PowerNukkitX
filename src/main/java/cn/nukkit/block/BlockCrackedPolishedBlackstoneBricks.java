@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCrackedPolishedBlackstoneBricks extends BlockBlackstone {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:cracked_polished_blackstone_bricks");
+    public static final BlockProperties PROPERTIES = new BlockProperties(CRACKED_POLISHED_BLACKSTONE_BRICKS);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -22,7 +22,6 @@ public class BlockCrackedPolishedBlackstoneBricks extends BlockBlackstone {
     public String getName() {
         return "Cracked Polished Blackstone Bricks";
     }
-
 
     @Override
     public boolean canHarvestWithHand() {

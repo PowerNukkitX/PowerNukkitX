@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-import static cn.nukkit.block.property.CommonBlockProperties.GROWTH;
+import static cn.nukkit.block.property.CommonBlockProperties.*;
 
 /**
  * PowerNukkitX Project 2023/7/15
@@ -21,7 +21,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.GROWTH;
 public class BlockPinkPetals extends BlockFlowable {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(PINK_PETALS,
-            GROWTH, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+            GROWTH, MINECRAFT_CARDINAL_DIRECTION);
 
     public BlockPinkPetals() {
         this(PROPERTIES.getDefaultState());
@@ -44,10 +44,14 @@ public class BlockPinkPetals extends BlockFlowable {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (!isSupportValid(block.down()))
+        if (!isSupportValid(block.down())) {
             return false;
-        if (player != null)
+        }
+
+        if (player != null) {
             setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(player.getHorizontalFacing().getOpposite()));
+        }
+
         return this.getLevel().setBlock(this, this);
     }
 
@@ -72,16 +76,19 @@ public class BlockPinkPetals extends BlockFlowable {
             } else {
                 getLevel().dropItem(this, this.toItem());
             }
+
             this.level.addParticle(new BoneMealParticle(this));
             item.count--;
             return true;
         }
+
         if (Objects.equals(item.getBlockId(), PINK_PETALS) && getPropertyValue(GROWTH) < 3) {
             setPropertyValue(GROWTH, getPropertyValue(GROWTH) + 1);
             getLevel().setBlock(this, this);
             item.count--;
             return true;
         }
+
         return false;
     }
 }

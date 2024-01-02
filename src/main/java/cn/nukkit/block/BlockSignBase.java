@@ -41,18 +41,15 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
         return false;
     }
 
-
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;
     }
-
 
     @Override
     public void onPlayerRightClick(@NotNull Player player, Item item, BlockFace face, Vector3 clickPoint) {
@@ -135,22 +132,18 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
         return ItemTool.TYPE_AXE;
     }
 
-
     public CompassRoseDirection getSignDirection() {
         return CompassRoseDirection.from(getPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION));
     }
-
 
     public void setSignDirection(CompassRoseDirection direction) {
         setPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION, direction.getIndex());
     }
 
-    
     @Override
     public BlockFace getBlockFace() {
         return getSignDirection().getClosestBlockFace();
     }
-
 
     @Override
     public void setBlockFace(BlockFace face) {
@@ -158,7 +151,6 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
     }
 
     @Override
-
     public boolean breaksWhenMoved() {
         return true;
     }

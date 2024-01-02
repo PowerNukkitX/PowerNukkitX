@@ -15,8 +15,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.CHISEL_TYPE;
 import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
 
 public class BlockPurpurBlock extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:purpur_block",
-            CHISEL_TYPE, PILLAR_AXIS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(PURPUR_BLOCK, CHISEL_TYPE, PILLAR_AXIS);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -30,7 +29,6 @@ public class BlockPurpurBlock extends BlockSolid {
     public BlockPurpurBlock(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {
@@ -68,7 +66,6 @@ public class BlockPurpurBlock extends BlockSolid {
         return true;
     }
 
-
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
@@ -83,7 +80,6 @@ public class BlockPurpurBlock extends BlockSolid {
         return getPropertyValue(PILLAR_AXIS);
     }
 
-
     public void setPillarAxis(BlockFace.Axis axis) {
         setPropertyValue(PILLAR_AXIS, axis);
     }
@@ -91,7 +87,6 @@ public class BlockPurpurBlock extends BlockSolid {
     public ChiselType getChiselType() {
         return getPropertyValue(CHISEL_TYPE);
     }
-
 
     public void setChiselType(ChiselType type) {
         setPropertyValue(CHISEL_TYPE, type);

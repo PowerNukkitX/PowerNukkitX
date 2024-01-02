@@ -5,7 +5,7 @@ import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockStickyPiston extends BlockPistonBase {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:sticky_piston", CommonBlockProperties.FACING_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(STICKY_PISTON, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {

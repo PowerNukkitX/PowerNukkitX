@@ -22,7 +22,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.LIT;
 
 
 public class BlockCandle extends BlockFlowable {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:black_candle", CANDLES, LIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BLACK_CANDLE, CANDLES, LIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -36,7 +36,6 @@ public class BlockCandle extends BlockFlowable {
     public BlockCandle(BlockState blockstate) {
         super(blockstate);
     }
-
 
     protected Block toCakeForm() {
         return new BlockCandleCake();

@@ -48,28 +48,25 @@ public class BlockPointedDripstone extends BlockFallable {
         super(blockstate);
     }
 
+    @Override
+    public String getName() {
+        return "Pointed Drip Stone";
+    }
+
     public boolean isHanging() {
         return getPropertyValue(HANGING);
     }
-
 
     public void setHanging(boolean value) {
         setPropertyValue(HANGING, value);
     }
 
-
     public void setThickness(DripstoneThickness value) {
         setPropertyValue(DRIPSTONE_THICKNESS, value);
     }
 
-
     public DripstoneThickness getThickness() {
         return getPropertyValue(DRIPSTONE_THICKNESS);
-    }
-
-    @Override
-    public String getName() {
-        return "Pointed Drip Stone";
     }
 
     @Override
@@ -92,7 +89,6 @@ public class BlockPointedDripstone extends BlockFallable {
         return 3;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -102,7 +98,6 @@ public class BlockPointedDripstone extends BlockFallable {
     public boolean canBePushed() {
         return false;
     }
-
 
     @Override
     public boolean canBePulled() {
@@ -130,7 +125,6 @@ public class BlockPointedDripstone extends BlockFallable {
         tryDrop(hanging);
         return 0;
     }
-
 
     public void tryDrop(boolean hanging) {
         if (!hanging) return;
@@ -269,12 +263,10 @@ public class BlockPointedDripstone extends BlockFallable {
         }
     }
 
-
     @Override
     public boolean useDefaultFallDamage() {
         return false;
     }
-
 
     protected void setTipBlock(int x, int y, int z, boolean hanging) {
         this.setPropertyValue(DRIPSTONE_THICKNESS, DripstoneThickness.TIP);
@@ -282,13 +274,11 @@ public class BlockPointedDripstone extends BlockFallable {
         this.getLevel().setBlock(x, y, z, this, true, true);
     }
 
-
     protected void setMergeBlock(int x, int y, int z, boolean hanging) {
         this.setPropertyValue(DRIPSTONE_THICKNESS, DripstoneThickness.MERGE);
         this.setPropertyValue(HANGING, hanging);
         this.getLevel().setBlock(x, y, z, this, true, true);
     }
-
 
     protected void setBlockThicknessStateAt(int x, int y, int z, boolean hanging, DripstoneThickness thickness) {
         BlockState blockState;
@@ -297,7 +287,6 @@ public class BlockPointedDripstone extends BlockFallable {
         blockState = this.getBlockState();
         level.setBlockStateAt(x, y, z, blockState);
     }
-
 
     protected int getPointedDripStoneLength(int x, int y, int z, boolean hanging) {
         if (hanging) {
@@ -318,7 +307,6 @@ public class BlockPointedDripstone extends BlockFallable {
         return 0;
     }
 
-
     protected void setAddChange(int x, int y, int z, boolean hanging) {
         int length = getPointedDripStoneLength(x, y, z, hanging);
         int k2 = !hanging ? -2 : 2;
@@ -336,7 +324,6 @@ public class BlockPointedDripstone extends BlockFallable {
         }
     }
 
-
     public void grow() {
         BlockFace face = this.isHanging() ? BlockFace.DOWN : BlockFace.UP;
         Block target = this.getSide(face);
@@ -344,7 +331,6 @@ public class BlockPointedDripstone extends BlockFallable {
             this.place(null, target, null, face, 0, 0, 0, null);
         }
     }
-
 
     public void drippingLiquid() {//features according to https://zh.minecraft.wiki/w/%E6%BB%B4%E6%B0%B4%E7%9F%B3%E9%94%A5
         if (this.getLevelBlock(1) instanceof BlockLiquid || this.getThickness() != DripstoneThickness.TIP || !this.isHanging()) {

@@ -59,11 +59,9 @@ public class BlockPistonArmCollision extends BlockTransparent implements Faceabl
         return true;
     }
 
-
     public BlockFace getFacing() {
         return getBlockFace();
     }
-
 
     @Override
     public BlockFace getBlockFace() {
@@ -82,7 +80,6 @@ public class BlockPistonArmCollision extends BlockTransparent implements Faceabl
     }
 
     @Override
-
     public boolean canBePulled() {
         return false;
     }
@@ -91,7 +88,6 @@ public class BlockPistonArmCollision extends BlockTransparent implements Faceabl
     public boolean isSolid() {
         return false;
     }
-
 
     @Override
     public boolean isSolid(BlockFace side) {

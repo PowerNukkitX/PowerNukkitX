@@ -37,7 +37,6 @@ public class BlockTallgrass extends BlockFlowable implements BlockFlowerPot.Flow
         super(blockstate);
     }
 
-
     @Override
     public String getName() {
         return getPropertyValue(TALL_GRASS_TYPE).name() + "Tallgrass";

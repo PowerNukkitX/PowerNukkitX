@@ -40,16 +40,13 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
         return "Burning Furnace";
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntityFurnace> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityFurnace> getBlockEntityClass() {
         return BlockEntityFurnace.class;
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.FURNACE;
     }
 
@@ -127,7 +124,6 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

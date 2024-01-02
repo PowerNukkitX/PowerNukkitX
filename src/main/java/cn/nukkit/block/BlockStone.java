@@ -9,7 +9,12 @@ import org.jetbrains.annotations.NotNull;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockStone extends BlockSolid{
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:stone");
+    public static final BlockProperties PROPERTIES = new BlockProperties(STONE);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockStone() {
         this(PROPERTIES.getDefaultState());
@@ -17,12 +22,6 @@ public class BlockStone extends BlockSolid{
 
     public BlockStone(BlockState blockState) {
         super(blockState);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -39,7 +38,6 @@ public class BlockStone extends BlockSolid{
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
-
 
     public StoneType stoneType() {
         return StoneType.STONE;

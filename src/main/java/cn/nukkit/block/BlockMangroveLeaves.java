@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -10,19 +9,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.block.property.CommonBlockProperties.*;
 
 public class BlockMangroveLeaves extends BlockLeaves {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(PERSISTENT, UPDATE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_LEAVES, PERSISTENT_BIT, UPDATE_BIT);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockMangroveLeaves() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockMangroveLeaves(BlockState blockstate) {
+        super(blockstate);
+    }
 
     @Override
     public String getName() {
         return "Mangrove Leaves";
-    }
-
-    @Override
-    public int getId() {
-        return MANGROVE_LEAVES;
     }
 
     @Override
@@ -39,18 +47,10 @@ public class BlockMangroveLeaves extends BlockLeaves {
         int fortune = fortuneEnchantment != null ? fortuneEnchantment.getLevel() : 0;
         int stickOdds;
         switch (fortune) {
-            case 0 -> {
-                stickOdds = 50;
-            }
-            case 1 -> {
-                stickOdds = 45;
-            }
-            case 2 -> {
-                stickOdds = 40;
-            }
-            default -> {
-                stickOdds = 30;
-            }
+            case 0 -> stickOdds = 50;
+            case 1 -> stickOdds = 45;
+            case 2 -> stickOdds = 40;
+            default -> stickOdds = 30;
         }
         ThreadLocalRandom random = ThreadLocalRandom.current();
         if (random.nextInt(stickOdds) == 0) {
@@ -68,12 +68,5 @@ public class BlockMangroveLeaves extends BlockLeaves {
     public boolean onActivate(@NotNull Item item) {
         //todo: 实现红树树叶催化
         return true;
-    }
-
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 }

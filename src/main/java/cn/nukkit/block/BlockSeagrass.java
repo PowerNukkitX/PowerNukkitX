@@ -126,7 +126,6 @@ public class BlockSeagrass extends BlockFlowable {
         return true;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 2;

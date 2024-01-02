@@ -34,15 +34,13 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
         return "Sculk Sensor";
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntitySculkSensor> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntitySculkSensor> getBlockEntityClass() {
         return BlockEntitySculkSensor.class;
     }
 
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.SCULK_SENSOR;
     }
 
@@ -91,7 +89,6 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
     public boolean isSolid() {
         return false;
     }
-
 
     @Override
     public boolean isSolid(BlockFace side) {

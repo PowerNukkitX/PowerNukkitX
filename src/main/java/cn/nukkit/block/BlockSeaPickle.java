@@ -42,11 +42,9 @@ public class BlockSeaPickle extends BlockFlowable {
         return "Sea Pickle";
     }
 
-
     public boolean isDead() {
         return getPropertyValue(DEAD_BIT);
     }
-
 
     public void setDead(boolean dead) {
         setPropertyValue(DEAD_BIT, dead);

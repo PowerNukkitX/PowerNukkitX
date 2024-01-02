@@ -48,24 +48,20 @@ public abstract class BlockStairsCopperBase extends BlockStairs implements Waxab
         return ItemTool.TYPE_PICKAXE;
     }
 
-
     @Override
     public int getToolTier() {
         return ItemTool.TIER_STONE;
     }
-
 
     @Override
     public boolean canHarvestWithHand() {
         return false;
     }
 
-
     @Override
     public Block getBlockWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
         return Block.get(getCopperId(isWaxed(), oxidizationLevel)).setPropertyValues(getPropertyValues());
     }
-
 
     @Override
     public boolean setOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
@@ -76,7 +72,6 @@ public abstract class BlockStairsCopperBase extends BlockStairs implements Waxab
         return getValidLevel().setBlock(this, Block.get(getCopperId(isWaxed(), oxidizationLevel)).setPropertyValues(getPropertyValues()));
     }
 
-
     @Override
     public boolean setWaxed(boolean waxed) {
         if (isWaxed() == waxed) {
@@ -85,12 +80,10 @@ public abstract class BlockStairsCopperBase extends BlockStairs implements Waxab
         return getValidLevel().setBlock(this, Block.get(getCopperId(isWaxed(), getOxidizationLevel())).setPropertyValues(getPropertyValues()));
     }
 
-
     @Override
     public boolean isWaxed() {
         return false;
     }
-
 
     protected abstract String getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel);
 }

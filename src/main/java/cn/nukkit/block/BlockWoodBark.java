@@ -11,7 +11,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 public class BlockWoodBark extends BlockWood {
 
 
-    public static final String STRIPPED_BIT = "stripped_bit";
+    public static final String STRIPPED_BIT = "stripped_bit";z
 
 
     public static final BlockProperties PROPERTIES = new BlockProperties(

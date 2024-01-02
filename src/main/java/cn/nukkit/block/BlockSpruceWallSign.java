@@ -10,6 +10,11 @@ import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 public class BlockSpruceWallSign extends BlockWallSign {
     public static final BlockProperties PROPERTIES = new BlockProperties(SPRUCE_WALL_SIGN, FACING_DIRECTION);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockSpruceWallSign() {
         this(PROPERTIES.getDefaultState());
     }
@@ -19,8 +24,8 @@ public class BlockSpruceWallSign extends BlockWallSign {
     }
 
     @Override
-    public @NotNull BlockProperties getProperties() {
-        return PROPERTIES;
+    public String getName() {
+        return "Spruce Wall Sign";
     }
 
     @Override
@@ -31,11 +36,6 @@ public class BlockSpruceWallSign extends BlockWallSign {
     @Override
     public String getStandingSignId() {
         return SPRUCE_STANDING_SIGN;
-    }
-
-    @Override
-    public String getName() {
-        return "Spruce Wall Sign";
     }
 
     @Override

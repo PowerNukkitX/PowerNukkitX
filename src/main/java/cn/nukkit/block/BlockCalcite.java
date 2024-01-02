@@ -5,8 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockCalcite extends BlockSolid {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:calcite");
-
+    public static final BlockProperties PROPERTIES = new BlockProperties(CALCITE);
 
     public BlockCalcite() {
         super(PROPERTIES.getDefaultState());

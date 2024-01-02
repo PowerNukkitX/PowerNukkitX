@@ -67,8 +67,6 @@ public class EntityFishingHook extends SlenderProjectile {
         }
     }
 
-    
-
     @Override
     public float getLength() {
         return 0.2f;

@@ -4,7 +4,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockMudBricks extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:mud_bricks");
+    public static final BlockProperties PROPERTIES = new BlockProperties(MUD_BRICKS);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -17,6 +17,11 @@ public class BlockMudBricks extends Block {
 
     public BlockMudBricks(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Mud Bricks";
     }
 
     @Override

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 2015/12/7
  */
 public class BlockNetherBrick extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:nether_brick");
+    public static final BlockProperties PROPERTIES = new BlockProperties(NETHER_BRICK);
 
     public BlockNetherBrick() {
         super(PROPERTIES.getDefaultState());
@@ -34,7 +34,6 @@ public class BlockNetherBrick extends BlockSolid {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -48,7 +47,6 @@ public class BlockNetherBrick extends BlockSolid {
     public double getResistance() {
         return 6;
     }
-
 
     @Override
     public boolean canHarvestWithHand() {

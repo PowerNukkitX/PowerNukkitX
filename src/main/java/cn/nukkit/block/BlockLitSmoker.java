@@ -8,7 +8,7 @@ import cn.nukkit.item.ItemBlock;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockLitSmoker extends BlockLitFurnace {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:lit_smoker", CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(LIT_SMOKER, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -28,15 +28,13 @@ public class BlockLitSmoker extends BlockLitFurnace {
         return "Burning Smoker";
     }
 
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.SMOKER;
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntitySmoker> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntitySmoker> getBlockEntityClass() {
         return BlockEntitySmoker.class;
     }
 

@@ -4,7 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockStrippedAcaciaLog extends BlockWoodStripped {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:stripped_acacia_log", CommonBlockProperties.PILLAR_AXIS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(STRIPPED_ACACIA_LOG, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
     public @NotNull BlockProperties getProperties() {

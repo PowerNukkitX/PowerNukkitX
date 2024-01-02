@@ -19,8 +19,12 @@ import org.jetbrains.annotations.NotNull;
  * @since 03.01.2016
  */
 public class BlockMycelium extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:mycelium");
+    public static final BlockProperties PROPERTIES = new BlockProperties(MYCELIUM);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockMycelium() {
         super(PROPERTIES.getDefaultState());
@@ -33,11 +37,6 @@ public class BlockMycelium extends BlockSolid {
     @Override
     public String getName() {
         return "Mycelium";
-    }
-
-    @Override
-    public @NotNull BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

@@ -4,7 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockStickyPistonArmCollision extends BlockPistonArmCollision {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:sticky_piston_arm_collision", CommonBlockProperties.FACING_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(STICKY_PISTON_ARM_COLLISION, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {

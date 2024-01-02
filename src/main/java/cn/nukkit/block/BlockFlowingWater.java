@@ -36,7 +36,6 @@ public class BlockFlowingWater extends BlockLiquid {
         return ret;
     }
 
-
     @Override
     public void afterRemoval(Block newBlock, boolean update) {
         if (!update) {
@@ -76,12 +75,10 @@ public class BlockFlowingWater extends BlockLiquid {
         return 5;
     }
 
-
     @Override
     public boolean usesWaterLogging() {
         return true;
     }
-
 
     @Override
     public double getPassableBlockFrictionFactor() {

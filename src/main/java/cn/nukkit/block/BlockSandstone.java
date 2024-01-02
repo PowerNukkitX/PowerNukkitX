@@ -10,17 +10,17 @@ public class BlockSandstone extends BlockSolid {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(SANDSTONE, SAND_STONE_TYPE);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockSandstone() {
         this(PROPERTIES.getDefaultState());
     }
 
     public BlockSandstone(BlockState state) {
         super(state);
-    }
-
-    @Override
-    public @NotNull BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     public void setSandstoneType(SandStoneType sandStoneType) {

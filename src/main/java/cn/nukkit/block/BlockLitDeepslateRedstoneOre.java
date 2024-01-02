@@ -4,7 +4,7 @@ import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockLitDeepslateRedstoneOre extends BlockDeepslateRedstoneOre implements IBlockOreRedstoneGlowing {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:lit_deepslate_redstone_ore");
+    public static final BlockProperties PROPERTIES = new BlockProperties(LIT_DEEPSLATE_REDSTONE_ORE);
 
     @Override
     public @NotNull BlockProperties getProperties() {

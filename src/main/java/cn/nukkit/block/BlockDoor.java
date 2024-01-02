@@ -57,7 +57,6 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
         return true;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -108,7 +107,6 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
         }
     }
 
-
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -146,7 +144,6 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
         }
     }
 
-
     private void onRedstoneUpdate() {
         if ((this.isOpen() != this.isGettingPower()) && !this.getManualOverride()) {
             if (this.isOpen() != this.isGettingPower()) {
@@ -158,7 +155,6 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
             this.setManualOverride(false);
         }
     }
-
 
     public void setManualOverride(boolean val) {
         Location down;
@@ -179,7 +175,6 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
             manualOverrides.remove(down);
         }
     }
-
 
     public boolean getManualOverride() {
         Location down;
@@ -219,7 +214,6 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
 
         return this.level.isBlockPowered(down) || this.level.isBlockPowered(up);
     }
-
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
@@ -288,7 +282,6 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
         return toggle(player);
     }
 
-
     public void playOpenCloseSound() {
         if (this.isTop() && down() instanceof BlockDoor) {
             if (((BlockDoor) down()).isOpen()) {
@@ -305,16 +298,13 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
         }
     }
 
-
     public void playOpenSound() {
         level.addSound(this, Sound.RANDOM_DOOR_OPEN);
     }
 
-
     public void playCloseSound() {
         level.addSound(this, Sound.RANDOM_DOOR_CLOSE);
     }
-
 
     public boolean toggle(Player player) {
         if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
@@ -377,7 +367,6 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
         return getPropertyValue(CommonBlockProperties.UPPER_BLOCK_BIT);
     }
 
-
     public void setTop(boolean top) {
         setPropertyValue(CommonBlockProperties.UPPER_BLOCK_BIT, top);
     }
@@ -385,7 +374,6 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
     public boolean isRightHinged() {
         return getPropertyValue(CommonBlockProperties.DOOR_HINGE_BIT);
     }
-
 
     public void setRightHinged(boolean rightHinged) {
         setPropertyValue(CommonBlockProperties.DOOR_HINGE_BIT, rightHinged);
@@ -396,20 +384,17 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
         return DOOR_DIRECTION.inverse().get(getPropertyValue(CommonBlockProperties.DIRECTION));
     }
 
-
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.DIRECTION, DOOR_DIRECTION.get(face));
     }
 
     @Override
-
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-
     public boolean sticksToPiston() {
         return false;
     }

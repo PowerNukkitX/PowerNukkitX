@@ -46,13 +46,11 @@ public class BlockRedstoneBlock extends BlockSolid implements RedstoneComponent 
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
 
     @Override
-
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (super.place(item, block, target, face, fx, fy, fz, player)) {
             updateAroundRedstone();
@@ -63,7 +61,6 @@ public class BlockRedstoneBlock extends BlockSolid implements RedstoneComponent 
     }
 
     @Override
-
     public boolean onBreak(Item item) {
         if (!super.onBreak(item)) {
             return false;

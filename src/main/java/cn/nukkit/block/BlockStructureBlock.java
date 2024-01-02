@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import static cn.nukkit.block.property.CommonBlockProperties.STRUCTURE_BLOCK_TYPE;
 
 public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder<BlockEntityStructBlock> {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:structure_block", STRUCTURE_BLOCK_TYPE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(STRUCTURE_BLOCK, STRUCTURE_BLOCK_TYPE);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -27,11 +27,9 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
         super(blockstate);
     }
 
-
     public StructureBlockType getStructureBlockType() {
         return getPropertyValue(STRUCTURE_BLOCK_TYPE);
     }
-
 
     public void setStructureBlockType(StructureBlockType type) {
         setPropertyValue(STRUCTURE_BLOCK_TYPE, type);
@@ -93,22 +91,17 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
     }
 
     @Override
-
     public boolean canBePulled() {
         return false;
     }
 
-
-    @NotNull
     @Override
-    public Class<? extends BlockEntityStructBlock> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityStructBlock> getBlockEntityClass() {
         return BlockEntityStructBlock.class;
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.STRUCTURE_BLOCK;
     }
 }

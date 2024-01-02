@@ -7,6 +7,11 @@ import org.jetbrains.annotations.NotNull;
 public class BlockCherryLog extends BlockLog {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_LOG, CommonBlockProperties.PILLAR_AXIS);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockCherryLog() {
         super(PROPERTIES.getDefaultState());
     }
@@ -38,12 +43,6 @@ public class BlockCherryLog extends BlockLog {
     @Override
     public String getName() {
         return "Cherry log";
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

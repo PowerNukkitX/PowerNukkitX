@@ -7,7 +7,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockWeb extends BlockFlowable {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:web");
+    public static final BlockProperties PROPERTIES = new BlockProperties(WEB);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -21,7 +21,6 @@ public class BlockWeb extends BlockFlowable {
     public BlockWeb(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public double getHardness() {
@@ -37,7 +36,6 @@ public class BlockWeb extends BlockFlowable {
     public int getToolType() {
         return ItemTool.TYPE_SWORD;
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -68,7 +66,6 @@ public class BlockWeb extends BlockFlowable {
     public boolean canHarvestWithHand() {
         return false;
     }
-
 
     @Override
     public boolean diffusesSkyLight() {

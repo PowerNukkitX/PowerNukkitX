@@ -18,7 +18,7 @@ import static cn.nukkit.potion.Effect.getEffect;
 public class BlockHoneyBlock extends BlockSolid {
     private static final Random RANDOM = new Random();
 
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:honey_block");
+    public static final BlockProperties PROPERTIES = new BlockProperties(HONEY_BLOCK);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -107,18 +107,15 @@ public class BlockHoneyBlock extends BlockSolid {
         return z + 0.9;
     }
 
-
     @Override
     public int getLightFilter() {
         return 1;
     }
 
-
     @Override
     public boolean useDefaultFallDamage() {
         return false;
     }
-
 
     @Override
     public void onEntityFallOn(Entity entity, float fallDistance) {
@@ -131,7 +128,6 @@ public class BlockHoneyBlock extends BlockSolid {
             entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.FALL, damage));
         }
     }
-
 
     @Override
     public boolean canSticksBlock() {

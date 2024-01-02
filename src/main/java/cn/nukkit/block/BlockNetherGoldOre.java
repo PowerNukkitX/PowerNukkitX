@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public class BlockNetherGoldOre extends BlockGoldOre {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:nether_gold_ore");
+    public static final BlockProperties PROPERTIES = new BlockProperties(NETHER_GOLD_ORE);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -24,7 +24,6 @@ public class BlockNetherGoldOre extends BlockGoldOre {
     public BlockNetherGoldOre(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public int getToolTier() {
@@ -51,34 +50,31 @@ public class BlockNetherGoldOre extends BlockGoldOre {
         NukkitRandomSource nukkitRandom = new NukkitRandomSource();
         int count = nukkitRandom.nextRange(2, 6);
         switch (fortune) {
-            case 0:
+            case 0 -> {
                 // Does nothing
-                break;
-            case 1:
+            }
+            case 1 -> {
                 if (nukkitRandom.nextRange(0, 2) == 0) {
                     count *= 2;
                 }
-                break;
-            case 2:
+            }
+            case 2 -> {
                 if (nukkitRandom.nextRange(0, 1) == 0) {
                     count *= nukkitRandom.nextRange(2, 3);
                 }
-                break;
-            default:
-            case 3:
+            }
+            default -> {
                 if (nukkitRandom.nextRange(0, 4) < 3) {
                     count *= nukkitRandom.nextRange(2, 4);
                 }
-                break;
+            }
         }
 
         return new Item[]{Item.get(ItemID.GOLD_NUGGET, 0, count)};
     }
 
-
-    @Nullable
     @Override
-    protected String getRawMaterial() {
+    protected @Nullable String getRawMaterial() {
         return ItemID.GOLD_NUGGET;
     }
 }

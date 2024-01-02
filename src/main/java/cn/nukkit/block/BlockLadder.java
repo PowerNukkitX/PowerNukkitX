@@ -50,12 +50,10 @@ public class BlockLadder extends BlockTransparent implements Faceable {
         return false;
     }
 
-
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -80,36 +78,36 @@ public class BlockLadder extends BlockTransparent implements Faceable {
     private void calculateOffsets() {
         double f = 0.1875;
         switch (this.getBlockFace()) {
-            case NORTH:
+            case NORTH -> {
                 this.offMinX = 0;
                 this.offMinZ = 1 - f;
                 this.offMaxX = 1;
                 this.offMaxZ = 1;
-                break;
-            case SOUTH:
+            }
+            case SOUTH -> {
                 this.offMinX = 0;
                 this.offMinZ = 0;
                 this.offMaxX = 1;
                 this.offMaxZ = f;
-                break;
-            case WEST:
+            }
+            case WEST -> {
                 this.offMinX = 1 - f;
                 this.offMinZ = 0;
                 this.offMaxX = 1;
                 this.offMaxZ = 1;
-                break;
-            case EAST:
+            }
+            case EAST -> {
                 this.offMinX = 0;
                 this.offMinZ = 0;
                 this.offMaxX = f;
                 this.offMaxZ = 1;
-                break;
-            default:
+            }
+            default -> {
                 this.offMinX = 0;
                 this.offMinZ = 1;
                 this.offMaxX = 1;
                 this.offMaxZ = 1;
-                break;
+            }
         }
     }
 
@@ -166,7 +164,6 @@ public class BlockLadder extends BlockTransparent implements Faceable {
         };
     }
 
-
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -203,13 +200,11 @@ public class BlockLadder extends BlockTransparent implements Faceable {
     }
 
     @Override
-
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-
     public boolean sticksToPiston() {
         return false;
     }

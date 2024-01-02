@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockPolishedBlackstoneBricks extends BlockPolishedBlackstone {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:polished_blackstone_bricks");
+    public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_BLACKSTONE_BRICKS);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -17,7 +17,6 @@ public class BlockPolishedBlackstoneBricks extends BlockPolishedBlackstone {
     public BlockPolishedBlackstoneBricks(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {

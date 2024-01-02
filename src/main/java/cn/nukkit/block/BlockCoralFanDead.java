@@ -10,26 +10,23 @@ import static cn.nukkit.block.property.CommonBlockProperties.CORAL_FAN_DIRECTION
 public class BlockCoralFanDead extends BlockCoralFan {
     public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_FAN_DEAD, CORAL_COLOR, CORAL_FAN_DIRECTION);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockCoralFanDead() {
         this(PROPERTIES.getDefaultState());
     }
 
-
     public BlockCoralFanDead(BlockState blockstate) {
         super(blockstate);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
     public String getName() {
         return "Dead " + super.getName();
     }
-
 
     @Override
     public boolean isDead() {

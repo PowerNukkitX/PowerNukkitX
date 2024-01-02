@@ -11,7 +11,7 @@ import cn.nukkit.potion.Effect;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockHayBlock extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:hay_block", CommonBlockProperties.DEPRECATED, CommonBlockProperties.PILLAR_AXIS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(HAY_BLOCK, CommonBlockProperties.DEPRECATED, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
     public @NotNull BlockProperties getProperties() {

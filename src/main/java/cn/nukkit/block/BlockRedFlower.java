@@ -15,18 +15,17 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockRedFlower extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
     public static final BlockProperties PROPERTIES = new BlockProperties(RED_FLOWER, CommonBlockProperties.FLOWER_TYPE);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockRedFlower() {
         super(PROPERTIES.getDefaultState());
     }
 
     public BlockRedFlower(BlockState blockstate) {
         super(blockstate);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     public FlowerType getFlowerType() {
@@ -37,14 +36,12 @@ public class BlockRedFlower extends BlockFlowable implements BlockFlowerPot.Flow
         setPropertyValue(CommonBlockProperties.FLOWER_TYPE, flowerType);
     }
 
-
     public static boolean isSupportValid(Block block) {
         return switch (block.getId()) {
             case GRASS, DIRT, FARMLAND, PODZOL, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
             default -> false;
         };
     }
-
 
     public boolean canPlantOn(Block block) {
         return isSupportValid(block);
@@ -60,7 +57,6 @@ public class BlockRedFlower extends BlockFlowable implements BlockFlowerPot.Flow
         }
         return false;
     }
-
 
     @Override
     public int onUpdate(int type) {

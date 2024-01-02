@@ -20,7 +20,6 @@ public class BlockDeepslateBrickStairs extends BlockStairs {
         super(blockstate);
     }
 
-
     @Override
     public String getName() {
         return "Deepslate Brick Stairs";

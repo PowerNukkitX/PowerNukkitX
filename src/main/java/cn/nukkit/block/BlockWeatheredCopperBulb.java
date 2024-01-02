@@ -4,7 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockWeatheredCopperBulb extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:weathered_copper_bulb", CommonBlockProperties.LIT, CommonBlockProperties.POWERED_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(WEATHERED_COPPER_BULB, CommonBlockProperties.LIT, CommonBlockProperties.POWERED_BIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {

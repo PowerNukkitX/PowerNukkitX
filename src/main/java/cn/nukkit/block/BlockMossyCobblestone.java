@@ -4,7 +4,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockMossyCobblestone extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:mossy_cobblestone");
+    public static final BlockProperties PROPERTIES = new BlockProperties(MOSSY_COBBLESTONE);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -18,7 +18,6 @@ public class BlockMossyCobblestone extends BlockSolid {
     public BlockMossyCobblestone(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {
@@ -41,7 +40,6 @@ public class BlockMossyCobblestone extends BlockSolid {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

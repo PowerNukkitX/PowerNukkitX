@@ -6,7 +6,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockStoneButton extends BlockButton {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:stone_button", CommonBlockProperties.BUTTON_PRESSED_BIT, CommonBlockProperties.FACING_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(STONE_BUTTON, CommonBlockProperties.BUTTON_PRESSED_BIT, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -21,7 +21,6 @@ public class BlockStoneButton extends BlockButton {
         super(blockstate);
     }
 
-
     @Override
     public String getName() {
         return "Stone Button";
@@ -33,17 +32,14 @@ public class BlockStoneButton extends BlockButton {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
-
 
     @Override
     public boolean canHarvestWithHand() {
         return false;
     }
-
 
     @Override
     public Item[] getDrops(Item item) {

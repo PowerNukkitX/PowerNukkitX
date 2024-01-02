@@ -19,6 +19,11 @@ import static cn.nukkit.block.property.CommonBlockProperties.GROWING_PLANT_AGE;
 public class BlockCaveVines extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(CAVE_VINES, GROWING_PLANT_AGE);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockCaveVines() {
         this(PROPERTIES.getDefaultState());
     }
@@ -30,12 +35,6 @@ public class BlockCaveVines extends BlockTransparent {
     @Override
     public String getName() {
         return "Cave Vines";
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

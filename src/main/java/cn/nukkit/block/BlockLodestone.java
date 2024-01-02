@@ -31,15 +31,13 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
         super(blockState);
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntityLodestone> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityLodestone> getBlockEntityClass() {
         return BlockEntityLodestone.class;
     }
 
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.LODESTONE;
     }
 
@@ -126,7 +124,6 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
         return ItemTool.TYPE_PICKAXE;
     }
 
-
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
@@ -138,7 +135,6 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
     }
 
     @Override
-
     public  boolean sticksToPiston() {
         return false;
     }

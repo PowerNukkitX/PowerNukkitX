@@ -23,18 +23,17 @@ public class BlockSponge extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(SPONGE,
             SPONGE_TYPE);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockSponge() {
         this(PROPERTIES.getDefaultState());
     }
 
     public BlockSponge(BlockState state) {
         super(state);
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -143,6 +142,5 @@ public class BlockSponge extends BlockSolid {
         return waterRemoved > 0;
     }
 
-    private record Entry(Block block, int distance) {
-    }
+    private record Entry(Block block, int distance) {}
 }

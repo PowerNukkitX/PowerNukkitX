@@ -27,7 +27,6 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
         super(blockstate);
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 2;
@@ -40,7 +39,6 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
 
     @Override
     public boolean onBreak(Item item) {
-        Vector3 pos = getLocation();
         this.level.setBlock(this, Block.get(BlockID.AIR), true, true);
 
         if (this.level.getServer().isRedstoneEnabled()) {
@@ -48,7 +46,6 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
         }
         return true;
     }
-
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
@@ -69,11 +66,9 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
         return true;
     }
 
-
     protected boolean isSupportValid(Block support) {
         return BlockLever.isSupportValid(support, BlockFace.UP) || support instanceof BlockCauldron;
     }
-
 
     @Override
     public int onUpdate(int type) {

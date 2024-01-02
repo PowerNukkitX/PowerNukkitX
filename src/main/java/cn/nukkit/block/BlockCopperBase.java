@@ -33,7 +33,6 @@ public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, 
         return ItemTool.TYPE_PICKAXE;
     }
 
-
     @Override
     public int getToolTier() {
         return ItemTool.TIER_STONE;
@@ -60,12 +59,10 @@ public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, 
         return false;
     }
 
-
     @Override
     public Block getBlockWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
         return Registries.BLOCK.getBlockProperties(getCopperId(isWaxed(), oxidizationLevel)).getDefaultState();
     }
-
 
     @Override
     public boolean setOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
@@ -75,7 +72,6 @@ public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, 
         return getValidLevel().setBlock(this, Block.get(getCopperId(isWaxed(), oxidizationLevel)));
     }
 
-
     @Override
     public boolean setWaxed(boolean waxed) {
         if (isWaxed() == waxed) {
@@ -84,12 +80,10 @@ public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, 
         return getValidLevel().setBlock(this, Block.get(getCopperId(waxed, getOxidizationLevel())));
     }
 
-
     @Override
     public boolean isWaxed() {
         return false;
     }
-
 
     protected String getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel) {
         if (oxidizationLevel == null) {

@@ -7,7 +7,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockIronTrapdoor extends BlockTrapdoor {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:iron_trapdoor", CommonBlockProperties.DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPSIDE_DOWN_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(IRON_TRAPDOOR, CommonBlockProperties.DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPSIDE_DOWN_BIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -21,7 +21,6 @@ public class BlockIronTrapdoor extends BlockTrapdoor {
     public BlockIronTrapdoor(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {
@@ -54,7 +53,6 @@ public class BlockIronTrapdoor extends BlockTrapdoor {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

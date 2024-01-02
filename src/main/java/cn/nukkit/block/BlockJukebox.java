@@ -15,7 +15,6 @@ import javax.annotation.Nullable;
  * @author CreeperFace
  * @since 7.8.2017
  */
-
 public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockEntityJukebox> {
     public static final BlockProperties PROPERTIES = new BlockProperties(JUKEBOX);
 
@@ -37,16 +36,13 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
         return "Jukebox";
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntityJukebox> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityJukebox> getBlockEntityClass() {
         return BlockEntityJukebox.class;
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.JUKEBOX;
     }
 
@@ -68,7 +64,7 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         BlockEntityJukebox jukebox = getOrCreateBlockEntity();
-        if (jukebox.getRecordItem().getId() != 0) {
+        if (!jukebox.getRecordItem().isNull()) {
             jukebox.dropItem();
             return true;
         }

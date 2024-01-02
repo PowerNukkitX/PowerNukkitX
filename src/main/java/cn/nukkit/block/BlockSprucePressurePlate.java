@@ -3,8 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockSprucePressurePlate extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:spruce_pressure_plate", CommonBlockProperties.REDSTONE_SIGNAL);
+public class BlockSprucePressurePlate extends BlockWoodenPressurePlate {
+    public static final BlockProperties PROPERTIES = new BlockProperties(SPRUCE_PRESSURE_PLATE, CommonBlockProperties.REDSTONE_SIGNAL);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -18,4 +18,10 @@ public class BlockSprucePressurePlate extends Block {
     public BlockSprucePressurePlate(BlockState blockstate) {
         super(blockstate);
     }
+
+    @Override
+    public String getName() {
+        return "Spruce Pressure Plate";
+    }
+
 }

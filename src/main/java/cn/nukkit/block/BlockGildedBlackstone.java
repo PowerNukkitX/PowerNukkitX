@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockGildedBlackstone extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:gilded_blackstone");
+    public static final BlockProperties PROPERTIES = new BlockProperties(GILDED_BLACKSTONE);
 
     @Override
     public @NotNull BlockProperties getProperties() {

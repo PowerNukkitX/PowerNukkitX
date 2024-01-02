@@ -10,6 +10,11 @@ import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
 public class BlockStrippedBambooBlock extends BlockWoodStripped {
     public static final BlockProperties PROPERTIES = new BlockProperties(STRIPPED_BAMBOO_BLOCK, PILLAR_AXIS);
 
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockStrippedBambooBlock() {
         this(PROPERTIES.getDefaultState());
     }
@@ -20,12 +25,6 @@ public class BlockStrippedBambooBlock extends BlockWoodStripped {
 
     public String getName() {
         return "Stripped Bamboo Block";
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
