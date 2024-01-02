@@ -138,7 +138,7 @@ public class NPCDialoguePacket extends DataPacket {
 
 
     public enum NPCDialogAction {
-
-
+        OPEN,
+        CLOSE
     }
 }

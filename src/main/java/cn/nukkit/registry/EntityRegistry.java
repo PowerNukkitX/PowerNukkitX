@@ -263,7 +263,7 @@ public class EntityRegistry extends BaseRegistry<EntityRegistry.EntityDefinition
             DEFINITIONS.put(key.id, key);
             return OK.TRUE;
         } else {
-            return new OK<>(false, new IllegalArgumentException("This block has already been registered with the identifier: " + key.id));
+            return new OK<>(false, new IllegalArgumentException("This Entity has already been registered with the identifier: " + key.id));
         }
     }
 
