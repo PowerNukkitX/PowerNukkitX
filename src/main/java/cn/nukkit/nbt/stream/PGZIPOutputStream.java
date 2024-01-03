@@ -27,7 +27,6 @@ public class PGZIPOutputStream extends FilterOutputStream {
         return EXECUTOR;
     }
 
-
     // private static final Logger LOG = LoggerFactory.getLogger(PGZIPOutputStream.class);
     private final static int GZIP_MAGIC = 0x8b1f;
 
@@ -212,7 +211,6 @@ public class PGZIPOutputStream extends FilterOutputStream {
         emitUntil(0);
         super.flush();
     }
-
 
     public void finish() throws IOException {
         if (bytesWritten >= 0) {

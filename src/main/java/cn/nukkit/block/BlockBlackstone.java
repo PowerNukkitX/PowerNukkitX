@@ -5,7 +5,12 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class BlockBlackstone extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:blackstone");
+    public static final BlockProperties PROPERTIES = new BlockProperties(BLACKSTONE);
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockBlackstone() {
         super(PROPERTIES.getDefaultState());
@@ -21,15 +26,9 @@ public class BlockBlackstone extends BlockSolid {
     }
 
     @Override
-    public @NotNull BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    @Override
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
-
 
     @Override
     public int getToolTier() {

@@ -258,7 +258,6 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
         return canMove();
     }
 
-
     @Override
     public boolean canBePulled() {
         return canMove();

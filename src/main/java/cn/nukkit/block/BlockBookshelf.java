@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Nukkit Project Team
  */
 public class BlockBookshelf extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:bookshelf");
+    public static final BlockProperties PROPERTIES = new BlockProperties(BOOKSHELF);
 
     public BlockBookshelf() {
         super(PROPERTIES.getDefaultState());
@@ -19,9 +19,8 @@ public class BlockBookshelf extends BlockSolid {
         super(blockState);
     }
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 

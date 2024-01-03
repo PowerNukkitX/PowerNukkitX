@@ -129,7 +129,6 @@ public class BlockFarmland extends BlockTransparent {
         return new ItemBlock(Block.get(BlockID.DIRT));
     }
 
-
     @Override
     public boolean isSolid(BlockFace side) {
         return true;

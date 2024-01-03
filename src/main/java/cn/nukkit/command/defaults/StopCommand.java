@@ -20,7 +20,6 @@ public class StopCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         log.addSuccess("commands.stop.start").output(true);

@@ -50,7 +50,6 @@ public class EntityAllay extends EntityAnimal implements EntityFlyable {
         );
     }
 
-
     @Override
     public float getHeight() {
         return 0.6f;

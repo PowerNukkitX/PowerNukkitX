@@ -22,8 +22,7 @@ public class DigProperty {
         this.speed = speed;
     }
 
-    @Nullable
-    public Integer getSpeed() {
+    public @Nullable Integer getSpeed() {
         return speed;
     }
 

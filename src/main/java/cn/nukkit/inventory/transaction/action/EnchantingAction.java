@@ -21,7 +21,6 @@ public class EnchantingAction extends NoOpIventoryAction {
         return source.getWindowById(Player.ENCHANT_WINDOW_ID) != null;
     }
 
-
     public int getType() {
         return type;
     }

@@ -85,7 +85,6 @@ public class SmithingRecipe extends ShapelessRecipe {
         return result;
     }
 
-
     public Item getFinalResult(Item equip) {
         Item finalResult = getResult().clone();
 
@@ -117,31 +116,25 @@ public class SmithingRecipe extends ShapelessRecipe {
         return RecipeType.SMITHING_TRANSFORM;
     }
 
-
     public Item getTemplate() {
         return template;
     }
-
 
     public Item getEquipment() {
         return base;
     }
 
-
     public Item getIngredient() {
         return addition;
     }
-
 
     public List<Item> getIngredientsAggregate() {
         return ingredientsAggregate;
     }
 
-
     public boolean matchItems(List<Item> inputList) {
         return matchItems(inputList, 1);
     }
-
 
     public boolean matchItems(List<Item> inputList, int multiplier) {
         List<Item> haveInputs = new ArrayList<>();

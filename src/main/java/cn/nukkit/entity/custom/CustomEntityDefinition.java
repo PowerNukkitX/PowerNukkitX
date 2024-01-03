@@ -76,6 +76,5 @@ public record CustomEntityDefinition(CompoundTag nbt) {
         }
     }
 
-
 }
 

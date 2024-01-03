@@ -36,7 +36,6 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
         return 0.67f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Rabbit";

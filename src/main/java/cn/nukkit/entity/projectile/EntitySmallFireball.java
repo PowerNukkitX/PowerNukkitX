@@ -87,7 +87,6 @@ public class EntitySmallFireball extends EntityProjectile {
         this.close();
     }
 
-
     @Override
     protected void onCollideWithBlock(Position position, Vector3 motion) {
         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));

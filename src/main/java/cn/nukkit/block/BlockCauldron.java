@@ -415,7 +415,6 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                         break;
                     }
 
-
                     PlayerBucketFillEvent ev = new PlayerBucketFillEvent(player, this, null, this, item, Item.get(ItemID.LAVA_BUCKET, 0, 1, bucket.getCompoundTag()));
                     this.level.getServer().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {

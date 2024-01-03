@@ -16,18 +16,15 @@ public class BlastFurnaceRecipe implements SmeltingRecipe {
         this(null, result, ingredient);
     }
 
-
     public BlastFurnaceRecipe(@Nullable String recipeId, Item result, Item ingredient) {
         this.recipeId = recipeId == null ? CraftingManager.getMultiItemHash(List.of(ingredient, result)).toString() : recipeId;
         this.output = result.clone();
         this.ingredient = ingredient.clone();
     }
 
-
     public void setInput(Item item) {
         this.ingredient = item.clone();
     }
-
 
     @Override
     public Item getInput() {

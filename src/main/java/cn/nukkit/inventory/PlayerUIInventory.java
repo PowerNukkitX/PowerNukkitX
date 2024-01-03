@@ -109,7 +109,6 @@ public class PlayerUIInventory extends BaseInventory {
         }
     }
 
-
     public void onSlotChangeBase(int index, Item before, boolean send) {
         super.onSlotChange(index, before, send);
     }

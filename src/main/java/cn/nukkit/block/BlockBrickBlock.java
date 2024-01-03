@@ -4,7 +4,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockBrickBlock extends BlockSolid {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:brick_block");
+    public static final BlockProperties PROPERTIES = new BlockProperties(BRICK_BLOCK);
 
     @Override
     public @NotNull BlockProperties getProperties() {

@@ -32,7 +32,6 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         this(PROPERTIES.getDefaultState());
     }
 
-
     public BlockBigDripleaf(BlockState blockState) {
         super(blockState);
     }
@@ -42,9 +41,8 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         return "Big Dripleaf";
     }
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -77,7 +75,6 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         this.setPropertyValue(BIG_DRIPLEAF_TILT, tilt);
         return true;
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -183,7 +180,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             }
 
             if (!isHead()) {
-                if (up().getId() == BIG_DRIPLEAF) {
+                if (up().getId().equals(BIG_DRIPLEAF)) {
                     return 0;
                 }
 
@@ -247,9 +244,8 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{new BlockSmallDripleaf().toItem()};
+        return new Item[]{new BlockSmallDripleafBlock().toItem()};
     }
-
 
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
@@ -299,7 +295,6 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             bb.setMaxY(Math.ceil(bb.getMaxY()));
         return bb;
     }
-
 
     @Override
     public boolean isSolid(BlockFace side) {

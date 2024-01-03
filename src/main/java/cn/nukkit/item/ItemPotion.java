@@ -151,12 +151,9 @@ public class ItemPotion extends Item {
         return true;
     }
 
-
-    @Nullable
-    public Potion getPotion() {
+    public @Nullable Potion getPotion() {
         return getPotion(getAux());
     }
-
 
     public static ItemPotion fromPotion(Potion potion) {
         return new ItemPotion(potion.getId());

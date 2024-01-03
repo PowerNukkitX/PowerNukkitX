@@ -2,13 +2,13 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockFrame;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockItemFrame;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.event.block.ItemFrameDropItemEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.item.MinecraftItemID;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
@@ -27,7 +27,6 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     public BlockEntityItemFrame(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
 
     @Override
     public void loadNBT() {
@@ -51,7 +50,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
 
     @Override
     public boolean isBlockEntityValid() {
-        return this.getBlock() instanceof BlockItemFrame;
+        return this.getBlock() instanceof BlockFrame;
     }
 
     public int getItemRotation() {
@@ -109,7 +108,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         if (!item.isNull()) {
             CompoundTag itemTag = NBTIO.putItemHelper(item);
             int networkDamage = item.getAux();
-            String namespacedId = item.getNamespaceId();
+            String namespacedId = item.getId();
             if (namespacedId != null) {
                 itemTag.remove("id");
                 itemTag.putShort("Damage", networkDamage);
@@ -125,9 +124,8 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     public int getAnalogOutput() {
-        return this.getItem() == null || this.getItem().getId() == 0 ? 0 : this.getItemRotation() % 8 + 1;
+        return this.getItem() == null || this.getItem().isNull() ? 0 : this.getItemRotation() % 8 + 1;
     }
-
 
     public boolean dropItem(Player player) {
         Item before = this.getItem();
@@ -142,9 +140,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         return after == null || after.isNull();
     }
 
-
-    @Nullable
-    public EntityItem dropItemAndGetEntity(@Nullable Player player) {
+    public @Nullable EntityItem dropItemAndGetEntity(@Nullable Player player) {
         Level level = getValidLevel();
         Item drop = getItem();
         if (drop.isNull()) {
@@ -174,7 +170,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
             }
         }
 
-        setItem(MinecraftItemID.AIR.get(0), true);
+        setItem(Item.get(BlockID.AIR, 0, 1), true);
         setItemRotation(0);
         spawnToAll();
         level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEM_FRAME_REMOVED);

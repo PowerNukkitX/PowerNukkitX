@@ -87,18 +87,15 @@ public class EntityHusk extends EntityZombie {
         return this.isBaby() ? 0.95f : 1.9f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Husk";
     }
 
-
     @Override
     public boolean isUndead() {
         return true;
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {

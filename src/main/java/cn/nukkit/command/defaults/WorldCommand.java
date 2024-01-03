@@ -29,7 +29,6 @@ public class WorldCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         switch (result.getKey()) {

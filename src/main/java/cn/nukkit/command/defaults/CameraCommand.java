@@ -152,7 +152,6 @@ public class CameraCommand extends VanillaCommand {
         return list.get(index).get();
     }
 
-
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();

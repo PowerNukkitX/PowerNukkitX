@@ -115,7 +115,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         );
     }
 
-
     //todo 实现不同群系的村民
     
 
@@ -135,12 +134,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         return 1.9f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "VillagerV2";
     }
-
 
     @Override
     public void initEntity() {
@@ -350,7 +347,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         this.namedTag.putInt("tradeExp", this.tradeTier);
     }
 
-
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (this.getCanTrade()) {
@@ -360,23 +356,19 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         } else return false;
     }
 
-
     @Override
     public TradeInventory getInventory() {
         return inventory;
     }
 
-
     public int getTradeSeed() {
         return tradeSeed;
     }
-
 
     protected void setTradeSeed(int tradeSeed) {
         this.tradeSeed = tradeSeed;
         this.namedTag.putInt("tradeSeed", tradeSeed);
     }
-
 
     public void addExperience(int xp) {
         this.tradeExp += xp;
@@ -431,7 +423,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         }
         return super.onUpdate(tick);
     }
-
 
     public void applyProfession(Profession profession) {
         setDisplayName(profession.getName());

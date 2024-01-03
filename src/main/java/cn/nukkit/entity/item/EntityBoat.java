@@ -568,7 +568,6 @@ public class EntityBoat extends EntityVehicle {
         }
     }
 
-
     protected void dropItem() {
         this.level.dropItem(this, Item.get(ItemID.BOAT, this.woodID));
     }
@@ -580,17 +579,14 @@ public class EntityBoat extends EntityVehicle {
         this.namedTag.putByte("woodID", this.woodID); // Compatibility with Cloudburst Nukkit
     }
 
-
     public int getVariant() {
         return this.woodID;
     }
-
 
     public void setVariant(int variant) {
         this.woodID = variant;
         this.dataProperties.putInt(DATA_VARIANT, variant);
     }
-
 
     @Override
     public String getOriginalName() {

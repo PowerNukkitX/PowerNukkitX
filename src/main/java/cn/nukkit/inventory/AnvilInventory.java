@@ -303,11 +303,9 @@ public class AnvilInventory extends FakeBlockUIComponent {
         return getItem(TARGET);
     }
 
-
     public Item getInputSlot() {
         return this.getItem(TARGET);
     }
-
 
     @Deprecated @DeprecationDetails(
             reason = "NukkitX added the samething with other name.",
@@ -318,11 +316,9 @@ public class AnvilInventory extends FakeBlockUIComponent {
         return getItem(SACRIFICE);
     }
 
-
     public Item getMaterialSlot() {
         return this.getItem(SACRIFICE);
     }
-
 
     @Deprecated @DeprecationDetails(
             reason = "NukkitX added the samething with other name.",
@@ -333,7 +329,6 @@ public class AnvilInventory extends FakeBlockUIComponent {
         //return currentResult.clone();
         return getOutputSlot();
     }
-
 
     public Item getOutputSlot() {
         return this.getItem(RESULT);
@@ -355,16 +350,13 @@ public class AnvilInventory extends FakeBlockUIComponent {
         return setItem(SACRIFICE, item, send);
     }
 
-
     public boolean setFirstItem(Item item) {
         return setFirstItem(item, true);
     }
 
-
     public boolean setSecondItem(Item item, boolean send) {
         return setItem(SACRIFICE, item, send);
     }
-
 
     public boolean setSecondItem(Item item) {
         return setSecondItem(item, true);
@@ -387,7 +379,6 @@ public class AnvilInventory extends FakeBlockUIComponent {
         return item.hasCompoundTag() && item.getNamedTag().contains("RepairCost") ? item.getNamedTag().getInt("RepairCost") : 0;
     }
 
-
     @Deprecated @DeprecationDetails(
             reason = "NukkitX added the samething with other name.",
             by = "PowerNukkit", since = "1.4.0.0-PN",
@@ -396,7 +387,6 @@ public class AnvilInventory extends FakeBlockUIComponent {
     public int getLevelCost() {
         return getCost();
     }
-
 
     @Deprecated @DeprecationDetails(
             reason = "NukkitX added the samething with other name.",
@@ -407,21 +397,17 @@ public class AnvilInventory extends FakeBlockUIComponent {
         setCost(levelCost);
     }
 
-
     public int getCost() {
         return this.cost;
     }
-
 
     public void setCost(int cost) {
         this.cost = cost;
     }
 
-
     public String getNewItemName() {
         return newItemName;
     }
-
 
     public void setNewItemName(String newItemName) {
         this.newItemName = newItemName;

@@ -19,10 +19,7 @@ import java.util.Map;
 
 public class BlockBrewingStand extends BlockTransparent implements BlockEntityHolder<BlockEntityBrewingStand> {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(BREWING_STAND ,
-            CommonBlockProperties.BREWING_STAND_SLOT_A_BIT,
-            CommonBlockProperties.BREWING_STAND_SLOT_B_BIT,
-            CommonBlockProperties.BREWING_STAND_SLOT_C_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BREWING_STAND , CommonBlockProperties.BREWING_STAND_SLOT_A_BIT, CommonBlockProperties.BREWING_STAND_SLOT_B_BIT, CommonBlockProperties.BREWING_STAND_SLOT_C_BIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -57,7 +54,6 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
         return 2.5;
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -72,7 +68,6 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
     public int getLightLevel() {
         return 1;
     }
-
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
@@ -138,7 +133,6 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -194,17 +188,13 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
         return false;
     }
 
-
-    @NotNull
     @Override
-    public Class<? extends BlockEntityBrewingStand> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityBrewingStand> getBlockEntityClass() {
         return BlockEntityBrewingStand.class;
     }
 
-
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.BREWING_STAND;
     }
 }

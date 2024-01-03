@@ -2,9 +2,9 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockActivatorRail;
 import cn.nukkit.block.BlockComposter;
 import cn.nukkit.block.BlockHopper;
-import cn.nukkit.block.BlockRailActivator;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.HopperSearchItemEvent;
@@ -37,7 +37,6 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
         super(chunk, nbt);
         setDisplayBlock(Block.get(Block.HOPPER), false);
     }
-
 
     @Override
     public boolean onUpdate(int currentTick) {
@@ -80,16 +79,13 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
         return true;
     }
 
-
     public boolean isOnTransferCooldown() {
         return this.transferCooldown > 0;
     }
 
-
     public void setTransferCooldown(int transferCooldown) {
         this.transferCooldown = transferCooldown;
     }
-
 
     @Override
     public String getOriginalName() {
@@ -105,8 +101,6 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     public boolean isRideable() {
         return false;
     }
-
-    
 
     @Override
     public void dropItem() {
@@ -168,23 +162,19 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
         checkDisabled();
     }
 
-
     public void updatePickupArea() {
         this.pickupArea = new SimpleAxisAlignedBB(this.x - 0.5, this.y - 0.5, this.z - 0.5, this.x + 1, this.y + 2.5, this.z + 1).expand(0.25, 0, 0.25);
     }
 
-
     public void checkDisabled() {
-        if (getLevelBlock() instanceof BlockRailActivator rail) {
+        if (getLevelBlock() instanceof BlockActivatorRail rail) {
             setDisabled(rail.isActive());
         }
     }
 
-
     public boolean isDisabled() {
         return disabled;
     }
-
 
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
@@ -198,7 +188,7 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
         if (this.inventory != null) {
             for (int slot = 0; slot < 5; ++slot) {
                 Item item = this.inventory.getItem(slot);
-                if (item != null && item.getId() != Item.AIR) {
+                if (item != null && !item.isNull()) {
                     this.namedTag.getList("Items", CompoundTag.class)
                             .add(NBTIO.putItemHelper(item, slot));
                 }

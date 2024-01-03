@@ -38,7 +38,6 @@ public class EntitySlime extends EntityMob implements EntityWalkable {
         return 2.04f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Slime";

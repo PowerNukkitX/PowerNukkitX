@@ -5,11 +5,9 @@ public class ItemNetheriteChestplate extends ItemArmor {
         this(0, 1);
     }
 
-
     public ItemNetheriteChestplate(Integer meta) {
         this(meta, 1);
     }
-
 
     public ItemNetheriteChestplate(Integer meta, int count) {
         super(NETHERITE_CHESTPLATE, meta, count, "Netherite Chestplate");
@@ -39,7 +37,6 @@ public class ItemNetheriteChestplate extends ItemArmor {
     public int getToughness() {
         return 3;
     }
-
 
     @Override
     public boolean isLavaResistant() {

@@ -36,7 +36,6 @@ public class PlayerAnimationEvent extends PlayerEvent implements Cancellable {
         return this.animationType;
     }
 
-
     public float getRowingTime() {
         return rowingTime;
     }

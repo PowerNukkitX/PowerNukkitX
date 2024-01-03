@@ -7,7 +7,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.PERSISTENT_BIT;
 import static cn.nukkit.block.property.CommonBlockProperties.UPDATE_BIT;
 
 public class BlockAzaleaLeavesFlowered extends BlockAzaleaLeaves {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:azalea_leaves_flowered",PERSISTENT_BIT, UPDATE_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(AZALEA_LEAVES_FLOWERED,PERSISTENT_BIT, UPDATE_BIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {

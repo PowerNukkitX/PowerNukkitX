@@ -48,7 +48,6 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         this.scheduleUpdate();
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -125,11 +124,9 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         return getBlock().getId() == BlockID.CONDUIT;
     }
 
-
     public void setTargetEntity(Entity targetEntity) {
         this.targetEntity = targetEntity;
     }
-
 
     public Entity getTargetEntity() {
         return targetEntity;
@@ -144,7 +141,6 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     public boolean isActive() {
         return active;
     }
-
 
     public void addEffectToPlayers() {
         int radius = getPlayerRadius();
@@ -166,7 +162,6 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
                     )
                 );
     }
-
 
     public void attackMob() {
         int radius = getAttackRadius();
@@ -209,11 +204,9 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         }
     }
 
-
     public boolean canAttack(Entity target) {
         return target instanceof EntityMob && canAffect(target);
     }
-
 
     public boolean canAffect(Entity target) {
         return target.isTouchingWater()
@@ -300,7 +293,6 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         return validBlocks;
     }
 
-
     public List<Block> scanEdgeBlock() {
         List<Block> validBlocks = new ArrayList<>();
         int x = getFloorX();
@@ -332,7 +324,6 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         return validBlocks;
     }
 
-
     public boolean scanStructure() {
         if(!scanWater()) {
             this.validBlocks = 0;
@@ -350,17 +341,14 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         return true;
     }
 
-
     public int getValidBlocks() {
         return validBlocks;
     }
-
 
     public int getPlayerRadius() {
         int radius = validBlocks / 7;
         return radius * 16;
     }
-
 
     public int getAttackRadius() {
         if (validBlocks >= 42) {

@@ -307,7 +307,6 @@ public abstract class Enchantment implements Cloneable {
         customEnchantments.put(new Identifier("minecraft", NAME_SWIFT_SNEAK), enchantments[37]);
     }
 
-
     private static String getLevelString(int level) {
         return switch (level) {
             case 1 -> "I";
@@ -323,7 +322,6 @@ public abstract class Enchantment implements Cloneable {
             default -> "∞";
         };
     }
-
 
     public static OK<?> register(Enchantment enchantment, boolean registerItem) {
         Objects.requireNonNull(enchantment);
@@ -341,7 +339,6 @@ public abstract class Enchantment implements Cloneable {
         return OK.TRUE;
     }
 
-
     public static OK<?> register(Enchantment... enchantments) {
         for (var ench : enchantments) {
             var msg = register(ench, true);
@@ -351,7 +348,6 @@ public abstract class Enchantment implements Cloneable {
         }
         return OK.TRUE;
     }
-
 
     private static int BOOK_NUMBER = 1;
 
@@ -399,7 +395,6 @@ public abstract class Enchantment implements Cloneable {
         }
         return OK.TRUE;
     }
-
 
     private static WeakReference<Method> defineClassMethodRef = new WeakReference<>(null);
 
@@ -473,7 +468,6 @@ public abstract class Enchantment implements Cloneable {
         } else return customEnchantments.get(new Identifier(Identifier.DEFAULT_NAMESPACE, name));
     }
 
-
     public static Enchantment getEnchantment(@NotNull Identifier name) {
         return customEnchantments.get(name);
     }
@@ -498,7 +492,6 @@ public abstract class Enchantment implements Cloneable {
     public static Collection<Enchantment> getRegisteredEnchantments() {
         return new ArrayList<>(customEnchantments.values());
     }
-
 
     public static Map<String, Integer> getEnchantmentName2IDMap() {
         return customEnchantments.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().getId()));
@@ -587,8 +580,7 @@ public abstract class Enchantment implements Cloneable {
      */
 
 
-    @Nullable
-    public Identifier getIdentifier() {
+    public @Nullable Identifier getIdentifier() {
         return identifier;
     }
 
@@ -810,7 +802,6 @@ public abstract class Enchantment implements Cloneable {
         else return this.name;
     }
 
-
     public String getOriginalName() {
         return this.name;
     }
@@ -886,7 +877,6 @@ public abstract class Enchantment implements Cloneable {
         Rarity(int weight) {
             this.weight = weight;
         }
-
 
         public int getWeight() {
             return this.weight;

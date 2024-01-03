@@ -28,11 +28,9 @@ public class ItemStackRequestPacket extends DataPacket {
 
     }
 
-
     public record Request(int requestId, List<ItemStackAction> actions) {
 
     }
-
 
     public record ItemStackAction(byte type, boolean bool0, byte byte0, int varInt0, int varInt1, byte baseByte0,
                                   byte baseByte1, byte baseByte2, int baseVarInt0, byte flagsByte0, byte flagsByte1,

@@ -68,46 +68,37 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
         who.craftingType = Player.CRAFTING_GRINDSTONE;
     }
 
-
     public Item getFirstItem() {
         return getItem(SLOT_FIRST_ITEM);
     }
-
 
     public Item getSecondItem() {
         return getItem(SLOT_SECOND_ITEM);
     }
 
-
     public Item getResult() {
         return getItem(2);
     }
-
 
     public boolean setFirstItem(Item item, boolean send) {
         return setItem(SLOT_FIRST_ITEM, item, send);
     }
 
-
     public boolean setFirstItem(Item item) {
         return setFirstItem(item, true);
     }
-
 
     public boolean setSecondItem(Item item, boolean send) {
         return setItem(SLOT_SECOND_ITEM, item, send);
     }
 
-
     public boolean setSecondItem(Item item) {
         return setSecondItem(item, true);
     }
 
-
     public boolean setResult(Item item, boolean send) {
         return setItem(2, item, send);
     }
-
 
     public boolean setResult(Item item) {
         return setResult(item, true);
@@ -125,12 +116,11 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
         }
     }
 
-
     public boolean updateResult(boolean send) {
         Item firstItem = getFirstItem();
         Item secondItem = getSecondItem();
-        if (!firstItem.isNull() && !secondItem.isNull() && firstItem.getId() != secondItem.getId()) {
-            setResult(Item.get(0), send);
+        if (!firstItem.isNull() && !secondItem.isNull() && !firstItem.getId().equals(secondItem.getId())) {
+            setResult(Item.AIR_ITEM, send);
             setResultExperience(0);
             return false;
         }
@@ -142,18 +132,18 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
         }
 
         if (firstItem.isNull()) {
-            setResult(Item.get(0), send);
+            setResult(Item.AIR_ITEM, send);
             setResultExperience(0);
             return false;
         }
 
-        if (firstItem.getId() == ItemID.ENCHANTED_BOOK) {
+        if (firstItem.getId().equals(ItemID.ENCHANTED_BOOK)) {
             if (secondItem.isNull()) {
                 setResult(Item.get(ItemID.BOOK, 0, firstItem.getCount()), send);
                 recalculateResultExperience();
             } else {
                 setResultExperience(0);
-                setResult(Item.get(0), send);
+                setResult(Item.AIR_ITEM, send);
             }
             return false;
         }
@@ -171,11 +161,11 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
             int resultingDamage = Math.max(firstItem.getMaxDurability() - reduction + 1, 0);
             result.setAux(resultingDamage);
         }
+
         setResult(result, send);
         recalculateResultExperience();
         return true;
     }
-
 
     public void recalculateResultExperience() {
         if (getResult().isNull()) {
@@ -214,11 +204,10 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
         setResultExperience(resultExperience);
     }
 
-    @NotNull
     @Override
-    public Item getItem(int index) {
+    public @NotNull Item getItem(int index) {
         if (index < 0 || index > 3) {
-            return Item.get(0);
+            return Item.AIR_ITEM;
         }
         if (index == 2) {
             index = SLOT_RESULT;
@@ -227,11 +216,10 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
         return super.getItem(index);
     }
 
-
     @Override
     public Item getUnclonedItem(int index) {
         if (index < 0 || index > 3) {
-            return Item.get(0);
+            return Item.AIR_ITEM;
         }
         if (index == 2) {
             index = SLOT_RESULT;
@@ -253,11 +241,9 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
         return super.setItem(index, item, send);
     }
 
-
     public int getResultExperience() {
         return resultExperience;
     }
-
 
     public void setResultExperience(int returnLevels) {
         this.resultExperience = returnLevels;

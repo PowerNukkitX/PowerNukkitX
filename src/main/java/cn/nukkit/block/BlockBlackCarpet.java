@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockBlackCarpet extends BlockCarpet {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:black_carpet");
+    public static final BlockProperties PROPERTIES = new BlockProperties(BLACK_CARPET);
 
     @Override
     public @NotNull BlockProperties getProperties() {

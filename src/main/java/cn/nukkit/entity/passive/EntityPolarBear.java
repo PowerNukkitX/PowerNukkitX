@@ -49,7 +49,6 @@ public class EntityPolarBear extends EntityAnimal implements EntityWalkable {
         return new Item[]{Item.get(Item.RAW_FISH), Item.get(Item.RAW_SALMON)};
     }
 
-
     @Override
     public String getOriginalName() {
         return "Polar Bear";

@@ -37,7 +37,6 @@ public class CraftingDataPacket extends DataPacket {
         Collections.addAll(entries, recipe);
     }
 
-
     public void addStonecutterRecipe(StonecutterRecipe... recipes) {
         Collections.addAll(entries, recipes);
     }
@@ -45,7 +44,6 @@ public class CraftingDataPacket extends DataPacket {
     public void addShapedRecipe(ShapedRecipe... recipe) {
         Collections.addAll(entries, recipe);
     }
-
 
     public void addCartographyRecipe(CartographyRecipe... recipe) {
         Stream.of(recipe).filter(r -> r.getRecipeId() != null).forEachOrdered(r -> entries.add(r));
@@ -55,21 +53,17 @@ public class CraftingDataPacket extends DataPacket {
         Collections.addAll(entries, recipe);
     }
 
-
     public void addSmokerRecipe(SmokerRecipe... recipe) {
         Collections.addAll(entries, recipe);
     }
-
 
     public void addBlastFurnaceRecipe(BlastFurnaceRecipe... recipe) {
         Collections.addAll(entries, recipe);
     }
 
-
     public void addCampfireRecipeRecipe(CampfireRecipe... recipe) {
         Collections.addAll(entries, recipe);
     }
-
 
     public void addMultiRecipe(MultiRecipe... recipe) {
         Collections.addAll(entries, recipe);

@@ -2,6 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockFlowingWater;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityChestBoat;
@@ -40,38 +41,18 @@ public class ItemChestBoat extends Item {
 
     private void adjustName() {
         switch (getAux()) {
-            case 0:
-                name = "Oak Chest Boat";
-                return;
-            case 1:
-                name = "Spruce Chest Boat";
-                return;
-            case 2:
-                name = "Birch Chest Boat";
-                return;
-            case 3:
-                name = "Jungle Chest Boat";
-                return;
-            case 4:
-                name = "Acacia Chest Boat";
-                return;
-            case 5:
-                name = "Dark Oak Chest Boat";
-                return;
-            case 6:
-                name = "Mangrove Chest Boat";
-                return;
-            case 7:
-                name = "Bamboo Chest Raft";
-                return;
-            case 8:
-                name = "Cherry Chest Boat";
-                return;
-            default:
-                name = "Chest Boat";
+            case 0 -> name = "Oak Chest Boat";
+            case 1 -> name = "Spruce Chest Boat";
+            case 2 -> name = "Birch Chest Boat";
+            case 3 -> name = "Jungle Chest Boat";
+            case 4 -> name = "Acacia Chest Boat";
+            case 5 -> name = "Dark Oak Chest Boat";
+            case 6 -> name = "Mangrove Chest Boat";
+            case 7 -> name = "Bamboo Chest Raft";
+            case 8 -> name = "Cherry Chest Boat";
+            default -> name = "Chest Boat";
         }
     }
-
 
     @Override
     public boolean canBeActivated() {

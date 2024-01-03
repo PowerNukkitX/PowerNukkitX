@@ -55,34 +55,28 @@ public class GrindstoneEvent extends InventoryEvent implements Cancellable {
         this.player = player;
     }
 
-
     @NotNull
     public Item getFirstItem() {
         return this.firstItem;
     }
-
 
     @NotNull
     public Item getResultItem() {
         return this.resultItem;
     }
 
-
     @NotNull
     public Item getSecondItem() {
         return this.secondItem;
     }
 
-
     public int getExperienceDropped() {
         return this.experienceDropped;
     }
 
-
     public void setExperienceDropped(int experienceDropped) {
         this.experienceDropped = experienceDropped;
     }
-
 
     @NotNull
     public Player getPlayer() {

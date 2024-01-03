@@ -125,7 +125,6 @@ public class HandlerList {
         return handlers;
     }
 
-
     public static ArrayList<RegisteredListener> getRegisteredListeners(Plugin plugin) {
         ArrayList<RegisteredListener> listeners = new ArrayList<>();
         synchronized (allLists) {
@@ -149,7 +148,6 @@ public class HandlerList {
             return new ArrayList<>(allLists);
         }
     }
-
 
     public boolean isEmpty() {
         RegisteredListener[] handlers = this.handlers;

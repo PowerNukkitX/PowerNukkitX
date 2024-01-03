@@ -39,18 +39,15 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
         return 1.9f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Zombified Piglin";
     }
 
-
     @Override
     public boolean isUndead() {
         return true;
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {

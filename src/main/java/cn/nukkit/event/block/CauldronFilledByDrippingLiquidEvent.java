@@ -36,7 +36,6 @@ public class CauldronFilledByDrippingLiquidEvent extends BlockEvent implements C
         this.liquidLevelIncrement = liquidLevelIncrement;
     }
 
-
     public static HandlerList getHandlers() {
         return handlers;
     }

@@ -52,9 +52,8 @@ public class CommandBlockInventory implements Inventory {
         return this.getName();
     }
 
-    @NotNull
     @Override
-    public Item getItem(int index) {
+    public @NotNull Item getItem(int index) {
         return Item.get(Item.AIR);
     }
 

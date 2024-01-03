@@ -40,7 +40,6 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         return 0.9f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Spider";
@@ -50,7 +49,6 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
     public Item[] getDrops() {
         return new Item[]{Item.get(Item.STRING, Item.SPIDER_EYE)};
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {

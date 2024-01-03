@@ -40,7 +40,6 @@ public class BlockExplodeEvent extends BlockEvent implements Cancellable {
         return handlers;
     }
 
-
     protected final Position position;
 
 
@@ -65,41 +64,33 @@ public class BlockExplodeEvent extends BlockEvent implements Cancellable {
         this.fireChance = fireChance;
     }
 
-
     public Position getPosition() {
         return this.position;
     }
-
 
     public Set<Block> getAffectedBlocks() {
         return this.blocks;
     }
 
-
     public void setAffectedBlocks(Set<Block> blocks) {
         this.blocks = blocks;
     }
-
 
     public double getYield() {
         return this.yield;
     }
 
-
     public void setYield(double yield) {
         this.yield = yield;
     }
-
 
     public Set<Block> getIgnitions() {
         return ignitions;
     }
 
-
     public void setIgnitions(Set<Block> ignitions) {
         this.ignitions = ignitions;
     }
-
 
     public double getFireChance() {
         return fireChance;

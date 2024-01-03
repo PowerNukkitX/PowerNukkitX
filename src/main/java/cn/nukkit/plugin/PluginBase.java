@@ -172,8 +172,7 @@ abstract public class PluginBase implements Plugin {
     /**
      * TODO: FINISH JAVADOC
      */
-    @Nullable
-    public PluginIdentifiableCommand getCommand(String name) {
+    public @Nullable PluginIdentifiableCommand getCommand(String name) {
         PluginIdentifiableCommand command = this.getServer().getPluginCommand(name);
         if (command == null || !command.getPlugin().equals(this)) {
             command = this.getServer().getPluginCommand(this.description.getName().toLowerCase() + ":" + name);
@@ -186,9 +185,7 @@ abstract public class PluginBase implements Plugin {
         }
     }
 
-
-    @Nullable
-    public PluginCommand<?> getPluginCommand(@NotNull String name) {
+    public @Nullable PluginCommand<?> getPluginCommand(@NotNull String name) {
         PluginIdentifiableCommand command = getCommand(name);
         if (command instanceof PluginCommand<?>) {
             return (PluginCommand<?>) command;

@@ -128,7 +128,6 @@ public class LevelDBProvider implements LevelProvider {
         return isValid;
     }
 
-
     public IChunk loadChunk(long index, int chunkX, int chunkZ, boolean create) {
         IChunk chunk;
         try {

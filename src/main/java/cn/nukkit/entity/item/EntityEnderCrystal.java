@@ -120,16 +120,13 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHOWBASE, value);
     }
 
-
     public Vector3 getBeamTarget() {
         return this.getDataPropertyPos(DATA_BLOCK_TARGET);
     }
 
-
     public void setBeamTarget(Vector3 beamTarget) {
         this.setDataProperty(new IntPositionEntityData(DATA_BLOCK_TARGET, beamTarget));
     }
-
 
     @Override
     public String getOriginalName() {

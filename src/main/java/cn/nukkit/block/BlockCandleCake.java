@@ -13,9 +13,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-
 public class BlockCandleCake extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:candle_cake", CommonBlockProperties.LIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CANDLE_CAKE, CommonBlockProperties.LIT);
 
     public BlockCandleCake(BlockState blockState) {
         super(blockState);
@@ -34,9 +33,8 @@ public class BlockCandleCake extends BlockTransparent {
         return "Simple";
     }
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -54,7 +52,6 @@ public class BlockCandleCake extends BlockTransparent {
     public double getResistance() {
         return 0.5;
     }
-
 
     @Override
     public int getWaterloggingLevel() {
@@ -159,13 +156,11 @@ public class BlockCandleCake extends BlockTransparent {
     }
 
     @Override
-
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-
     public boolean sticksToPiston() {
         return false;
     }

@@ -37,12 +37,10 @@ public class EntityPiglin extends EntityMob implements EntityWalkable, EntityAge
         return 1.9f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Piglin";
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {

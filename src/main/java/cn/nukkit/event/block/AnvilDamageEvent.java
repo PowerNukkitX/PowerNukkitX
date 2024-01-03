@@ -4,8 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAnvil;
-import cn.nukkit.blockproperty.value.AnvilDamage;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.transaction.CraftingTransaction;
@@ -44,11 +43,9 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
         this(adjustBlock(block, oldDamage), block.getBlockState().withData(newDamage), player, null, cause);
     }
 
-
     public AnvilDamageEvent(@NotNull Block block, @NotNull Block newState, @Nullable Player player, @Nullable CraftingTransaction transaction, @NotNull DamageCause cause) {
         this(block, newState.getBlockState(), player, transaction, cause);
     }
-
 
     public AnvilDamageEvent(@NotNull Block block, @NotNull BlockState newState, @Nullable Player player, @Nullable CraftingTransaction transaction, @NotNull DamageCause cause) {
         super(Preconditions.checkNotNull(block, "block").clone());
@@ -59,12 +56,9 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
         this.newState = Preconditions.checkNotNull(newState, "newState");
     }
 
-
-    @Nullable
-    public CraftingTransaction getTransaction() {
+    public @Nullable CraftingTransaction getTransaction() {
         return transaction;
     }
-
 
     @NotNull
     public DamageCause getDamageCause() {
@@ -81,21 +75,17 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
         return block.getIntValue(BlockAnvil.DAMAGE);
     }
 
-
-    @Nullable
-    public AnvilDamage getOldAnvilDamage() {
+    public @Nullable AnvilDamage getOldAnvilDamage() {
         if (oldState.getProperties().contains(BlockAnvil.DAMAGE)) {
             return oldState.getPropertyValue(BlockAnvil.DAMAGE);
         }
         return null;
     }
 
-
     @NotNull
     public BlockState getOldBlockState() {
         return oldState;
     }
-
 
     @NotNull
     public BlockState getNewBlockState() {
@@ -115,7 +105,6 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
         return newBlockState.getProperties().contains(BlockAnvil.DAMAGE)? newBlockState.getIntValue(BlockAnvil.DAMAGE) : 0;
     }
 
-
     public void setNewBlockState(@NotNull BlockState state) {
         this.newState = Preconditions.checkNotNull(state);
     }
@@ -131,23 +120,18 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
         }
     }
 
-
     public void setNewState(@NotNull Block block) {
         this.newState = block.getBlockState();
     }
-
 
     @NotNull
     public DamageCause getCause() {
         return this.cause;
     }
 
-
-    @Nullable
-    public Player getPlayer() {
+    public @Nullable Player getPlayer() {
         return this.player;
     }
-
 
     public enum DamageCause {
 

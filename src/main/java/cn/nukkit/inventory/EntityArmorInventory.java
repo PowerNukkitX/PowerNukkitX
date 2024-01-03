@@ -30,7 +30,6 @@ public class EntityArmorInventory extends BaseInventory {
         this.entity = entity;
     }
 
-
     public Entity getEntity() {
         return entity;
     }
@@ -50,26 +49,21 @@ public class EntityArmorInventory extends BaseInventory {
         return 4;
     }
 
-
     public Item getHelmet(){
         return this.getItem(SLOT_HEAD);
     }
-
 
     public Item getChestplate(){
         return this.getItem(SLOT_CHEST);
     }
 
-
     public Item getLeggings(){
         return this.getItem(SLOT_LEGS);
     }
 
-
     public Item getBoots(){
         return this.getItem(SLOT_FEET);
     }
-
 
 
     public boolean setHelmet(Item item) {
@@ -77,17 +71,14 @@ public class EntityArmorInventory extends BaseInventory {
     }
 
 
-
     public boolean setChestplate(Item item) {
         return this.setItem(SLOT_CHEST, item);
     }
 
 
-
     public boolean setLeggings(Item item) {
         return this.setItem(SLOT_LEGS, item);
     }
-
 
 
     public boolean setBoots(Item item) {

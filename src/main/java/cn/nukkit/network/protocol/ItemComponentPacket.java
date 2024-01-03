@@ -29,7 +29,6 @@ public class ItemComponentPacket extends DataPacket {
         this.entries = entries == null? null : entries.length == 0? Entry.EMPTY_ARRAY : entries.clone();
     }
 
-
     public Entry[] getEntries() {
         return entries == null? null : entries.length == 0? Entry.EMPTY_ARRAY : entries.clone();
     }
@@ -75,11 +74,9 @@ public class ItemComponentPacket extends DataPacket {
             this.data = data;
         }
 
-
         public String getName() {
             return name;
         }
-
 
         public CompoundTag getData() {
             return data;

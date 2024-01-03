@@ -56,18 +56,15 @@ public class AdventureSettings implements Cloneable {
         init(null);
     }
 
-
     public AdventureSettings(Player player, CompoundTag nbt) {
         this.player = player;
         init(nbt);
     }
 
-
     public void setPlayerPermission(PlayerPermission playerPermission) {
         this.playerPermission = playerPermission;
         this.player.setOp(playerPermission == PlayerPermission.OPERATOR);
     }
-
 
     public void init(@Nullable CompoundTag nbt) {
         if (nbt == null || !nbt.contains(KEY_ABILITIES)) {
@@ -103,7 +100,6 @@ public class AdventureSettings implements Cloneable {
         }
     }
 
-
     public AdventureSettings set(PlayerAbility ability, boolean value) {
         this.values.put(ability2TypeMap.get(ability), value);
         return this;
@@ -113,7 +109,6 @@ public class AdventureSettings implements Cloneable {
         this.values.put(type, value);
         return this;
     }
-
 
     public boolean get(PlayerAbility ability) {
         var type = ability2TypeMap.get(ability);
@@ -140,7 +135,6 @@ public class AdventureSettings implements Cloneable {
     }
 
 
-
     /**
      * 当玩家OP身份变动时此方法将被调用
      * 注意此方法并不会向客户端发包刷新权限信息，你需要手动调用update()方法刷新
@@ -162,7 +156,6 @@ public class AdventureSettings implements Cloneable {
         if (op && playerPermission != PlayerPermission.OPERATOR) playerPermission = PlayerPermission.OPERATOR;
         if (!op && playerPermission == PlayerPermission.OPERATOR) playerPermission = PlayerPermission.MEMBER;
     }
-
 
     public void sendAbilities(Collection<Player> players) {
         UpdateAbilitiesPacket packet = new UpdateAbilitiesPacket();
@@ -225,7 +218,6 @@ public class AdventureSettings implements Cloneable {
         playerPermission = PlayerPermission.valueOf(nbt.getString(KEY_PLAYER_PERMISSION));
         commandPermission = CommandPermission.valueOf(nbt.getString(KEY_COMMAND_PERMISSION));
     }
-
 
     public void updateAdventureSettings() {
         UpdateAdventureSettingsPacket adventurePacket = new UpdateAdventureSettingsPacket();

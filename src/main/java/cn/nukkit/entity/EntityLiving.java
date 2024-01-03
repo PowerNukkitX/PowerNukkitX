@@ -409,7 +409,6 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         this.setDataProperty(new ShortEntityData(DATA_AIR, ticks));
     }
 
-
     protected boolean blockedByShield(EntityDamageEvent source) {
         Entity damager = null;
         if (source instanceof EntityDamageByChildEntityEvent) {
@@ -457,7 +456,6 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     public boolean isBlocking() {
         return this.getDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_BLOCKING);
     }
-
 
     public void setBlocking(boolean value) {
         this.setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_BLOCKING, value);

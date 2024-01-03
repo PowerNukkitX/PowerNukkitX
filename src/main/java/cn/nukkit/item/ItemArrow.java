@@ -54,9 +54,7 @@ public class ItemArrow extends Item {
         }
     }
 
-
-    @Nullable
-    public Potion getTippedArrowPotion() {
+    public @Nullable Potion getTippedArrowPotion() {
         final int damage = getAux();
         if (damage > 0) {
             try {

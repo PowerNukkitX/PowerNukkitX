@@ -71,8 +71,7 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
         this.knockBack = knockBack;
     }
 
-    @Nullable
-    public Enchantment[] getWeaponEnchantments() {
+    public @Nullable Enchantment[] getWeaponEnchantments() {
         if (enchantments == null) {
             return null;
         }

@@ -341,11 +341,9 @@ public class Level implements Metadatable {
         this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
     }
 
-
     public static boolean canRandomTick(String blockId) {
         return randomTickBlocks.contains(blockId);
     }
-
 
     public static void setCanRandomTick(String blockId, boolean newValue) {
         if (newValue) {
@@ -372,7 +370,6 @@ public class Level implements Metadatable {
         return (hi & 0xFF) << 16 | lo;
     }
 
-
     public static int localBlockHash(int x, int y, int z, int layer, Level level) {
         byte hi = (byte) ((x & 15) + ((z & 15) << 4));
         short lo = (short) (level.ensureY(y) + 64);
@@ -387,7 +384,6 @@ public class Level implements Metadatable {
         int z = ((hi >> 4) & 0xF) + (getHashZ(chunkHash) << 4);
         return new Vector3(x, y, z);
     }
-
 
     public static int chunkBlockHash(int x, int y, int z) {
         return (x << 13) | (z << 9) | (y + 64); // 为适配384世界，y需要额外的1bit来存储
@@ -551,11 +547,9 @@ public class Level implements Metadatable {
         }
     }
 
-
     public void addLevelEvent(int type, int data) {
         addLevelEvent(type, data, null);
     }
-
 
     public void addLevelEvent(int type, int data, Vector3 pos) {
         if (pos == null) {
@@ -564,7 +558,6 @@ public class Level implements Metadatable {
             addLevelEvent(type, data, (float) pos.x, (float) pos.y, (float) pos.z);
         }
     }
-
 
     public void addLevelEvent(int type, int data, float x, float y, float z) {
         LevelEventPacket packet = new LevelEventPacket();
@@ -581,7 +574,6 @@ public class Level implements Metadatable {
         this.addLevelEvent(pos, event, 0);
     }
 
-
     public void addLevelEvent(Vector3 pos, int event, int data) {
         LevelEventPacket pk = new LevelEventPacket();
         pk.evid = event;
@@ -592,7 +584,6 @@ public class Level implements Metadatable {
 
         addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
     }
-
 
     public void addLevelEvent(Vector3 pos, int event, CompoundTag data) {
         LevelEventGenericPacket pk = new LevelEventGenericPacket();
@@ -866,7 +857,6 @@ public class Level implements Metadatable {
     public GameRules getGameRules() {
         return gameRules;
     }
-
 
     public void releaseTickCachedBlocks() {
         synchronized (this.tickCachedBlocks) {
@@ -1373,7 +1363,6 @@ public class Level implements Metadatable {
         updateComparatorOutputLevelSelective(v, true);
     }
 
-
     public void updateComparatorOutputLevelSelective(Vector3 v, boolean observer) {
         for (BlockFace face : Plane.HORIZONTAL) {
             temporalVector.setComponentsAdding(v, face);
@@ -1420,7 +1409,6 @@ public class Level implements Metadatable {
         }
     }
 
-
     public void neighborChangeAroundImmediately(int x, int y, int z) {
         neighborChangeAroundImmediately(new Vector3(x, y, z));
     }
@@ -1439,7 +1427,6 @@ public class Level implements Metadatable {
         }
     }
 
-
     public void updateAroundObserver(Vector3 pos) {
         for (var face : BlockFace.values()) {
             var neighborBlock = getBlock(pos.getSide(face));
@@ -1456,7 +1443,6 @@ public class Level implements Metadatable {
         this.scheduleUpdate(pos, pos, delay, 0, true);
     }
 
-
     public void scheduleUpdate(Block pos, int delay, boolean checkBlockWhenUpdate) {
         this.scheduleUpdate(pos, pos, delay, 0, true, checkBlockWhenUpdate);
     }
@@ -1472,7 +1458,6 @@ public class Level implements Metadatable {
     public void scheduleUpdate(Block block, Vector3 pos, int delay, int priority, boolean checkArea) {
         this.scheduleUpdate(block, pos, delay, priority, checkArea, true);
     }
-
 
     public void scheduleUpdate(Block block, Vector3 pos, int delay, int priority, boolean checkArea, boolean checkBlockWhenUpdate) {
         if (block.getId().equals(BlockID.AIR) || (checkArea && !this.isChunkLoaded(block.getFloorX() >> 4, block.getFloorZ() >> 4))) {
@@ -1511,7 +1496,6 @@ public class Level implements Metadatable {
         return updateQueue.getPendingBlockUpdates(boundingBox);
     }
 
-
     public List<Block> scanBlocks(@NotNull AxisAlignedBB bb, @NotNull BiPredicate<BlockVector3, BlockState> condition) {
         BlockVector3 min = new BlockVector3(NukkitMath.floorDouble(bb.getMinX()), NukkitMath.floorDouble(bb.getMinY()), NukkitMath.floorDouble(bb.getMinZ()));
         BlockVector3 max = new BlockVector3(NukkitMath.floorDouble(bb.getMaxX()), NukkitMath.floorDouble(bb.getMaxY()), NukkitMath.floorDouble(bb.getMaxZ()));
@@ -1533,11 +1517,9 @@ public class Level implements Metadatable {
         return getCollisionBlocks(bb, targetFirst, false);
     }
 
-
     public Block[] getCollisionBlocks(AxisAlignedBB bb, boolean targetFirst, boolean ignoreCollidesCheck) {
         return getCollisionBlocks(bb, targetFirst, ignoreCollidesCheck, block -> !block.getId().equals(BlockID.AIR));
     }
-
 
     public Block[] getCollisionBlocks(AxisAlignedBB bb, boolean targetFirst, boolean ignoreCollidesCheck, Predicate<Block> condition) {
         int minX = NukkitMath.floorDouble(bb.getMinX());
@@ -1590,21 +1572,17 @@ public class Level implements Metadatable {
         return bb != null && bb.getAverageEdgeLength() >= 1;
     }
 
-
     public Block[] getTickCachedCollisionBlocks(AxisAlignedBB bb) {
         return this.getTickCachedCollisionBlocks(bb, false);
     }
-
 
     public Block[] getTickCachedCollisionBlocks(AxisAlignedBB bb, boolean targetFirst) {
         return getTickCachedCollisionBlocks(bb, targetFirst, false);
     }
 
-
     public Block[] getTickCachedCollisionBlocks(AxisAlignedBB bb, boolean targetFirst, boolean ignoreCollidesCheck) {
         return getTickCachedCollisionBlocks(bb, targetFirst, ignoreCollidesCheck, block -> !block.getId().equals(BlockID.AIR));
     }
-
 
     public Block[] getTickCachedCollisionBlocks(AxisAlignedBB bb, boolean targetFirst, boolean ignoreCollidesCheck, Predicate<Block> condition) {
         int minX = NukkitMath.floorDouble(bb.getMinX());
@@ -1721,7 +1699,6 @@ public class Level implements Metadatable {
         return collides;
     }
 
-
     public boolean hasCollision(Entity entity, AxisAlignedBB bb, boolean entities) {
         int minX = NukkitMath.floorDouble(NukkitMath.round(bb.getMinX(), 4));
         int minY = NukkitMath.floorDouble(NukkitMath.round(bb.getMinY(), 4));
@@ -1780,16 +1757,13 @@ public class Level implements Metadatable {
          */
     }
 
-
     public float getRainStrength(float tickDiff) {
         return isRaining() ? 1 : 0; // TODO: real implementation
     }
 
-
     public float getThunderStrength(float tickDiff) {
         return isThundering() ? 1 : 0; // TODO: real implementation
     }
-
 
     public float getCelestialAngle(float tickDiff) {
         return calculateCelestialAngle(getTime(), tickDiff);
@@ -1838,41 +1812,33 @@ public class Level implements Metadatable {
         return around;
     }
 
-
     public Block getTickCachedBlock(Vector3 pos) {
         return getTickCachedBlock(pos, 0);
     }
-
 
     public Block getTickCachedBlock(Vector3 pos, int layer) {
         return this.getTickCachedBlock(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), layer);
     }
 
-
     public Block getTickCachedBlock(Vector3 pos, boolean load) {
         return getTickCachedBlock(pos, 0, load);
     }
-
 
     public Block getTickCachedBlock(Vector3 pos, int layer, boolean load) {
         return this.getTickCachedBlock(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), layer, load);
     }
 
-
     public Block getTickCachedBlock(int x, int y, int z) {
         return getTickCachedBlock(x, y, z, 0);
     }
-
 
     public Block getTickCachedBlock(int x, int y, int z, int layer) {
         return getTickCachedBlock(x, y, z, layer, true);
     }
 
-
     public Block getTickCachedBlock(int x, int y, int z, boolean load) {
         return getTickCachedBlock(x, y, z, 0, load);
     }
-
 
     public Block getTickCachedBlock(int x, int y, int z, int layer, boolean load) {
         return tickCachedBlocks.computeIfAbsent(Level.chunkHash(x >> 4, z >> 4), key -> new SimpleTickCachedBlockStore(this))
@@ -1921,10 +1887,10 @@ public class Level implements Metadatable {
             if (chunk != null) {
                 fullState = chunk.getBlockState(x & 0xF, y, z & 0xF, layer);
             } else {
-                fullState = BlockAir.STATE;
+                fullState = BlockAir.PROPERTIES.getDefaultState();
             }
         } else {
-            fullState = BlockAir.STATE;
+            fullState = BlockAir.PROPERTIES.getDefaultState();
         }
         Block block = Registries.BLOCK.get(fullState, x, y, z, layer, this);
         setBlock(x, y, z, layer, block, false, false); // Update set to false to fix PowerNukkit#650
@@ -2152,7 +2118,6 @@ public class Level implements Metadatable {
         return this.setBlock(pos, 0, block, direct);
     }
 
-
     public boolean setBlock(Vector3 pos, int layer, Block block, boolean direct) {
         return this.setBlock(pos, layer, block, direct, true);
     }
@@ -2160,7 +2125,6 @@ public class Level implements Metadatable {
     public boolean setBlock(Vector3 pos, Block block, boolean direct, boolean update) {
         return setBlock(pos, 0, block, direct, update);
     }
-
 
     public boolean setBlock(Vector3 pos, int layer, Block block, boolean direct, boolean update) {
         return setBlock(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), layer, block, direct, update);
@@ -2290,27 +2254,19 @@ public class Level implements Metadatable {
         }
     }
 
-
-    @Nullable
-    public EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item) {
+    public @Nullable EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item) {
         return this.dropAndGetItem(source, item, null);
     }
 
-
-    @Nullable
-    public EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion) {
+    public @Nullable EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion) {
         return this.dropAndGetItem(source, item, motion, 10);
     }
 
-
-    @Nullable
-    public EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion, int delay) {
+    public @Nullable EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion, int delay) {
         return this.dropAndGetItem(source, item, motion, false, delay);
     }
 
-
-    @Nullable
-    public EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion, boolean dropAround, int delay) {
+    public @Nullable EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion, boolean dropAround, int delay) {
         if (item.isNull()) {
             return null;
         }
@@ -2370,7 +2326,6 @@ public class Level implements Metadatable {
         return useBreakOn(vector, face, item, player, createParticles, false);
     }
 
-
     public Item useBreakOn(Vector3 vector, BlockFace face, Item item, Player player, boolean createParticles, boolean setBlockDestroy) {
         if (vector instanceof Block) {
             return useBreakOn(vector, ((Block) vector).layer, face, item, player, createParticles, setBlockDestroy);
@@ -2378,7 +2333,6 @@ public class Level implements Metadatable {
             return useBreakOn(vector, 0, face, item, player, createParticles, setBlockDestroy);
         }
     }
-
 
     public Item useBreakOn(Vector3 vector, int layer, BlockFace face, Item item, Player player, boolean createParticles, boolean setBlockDestroy) {
         if (player != null && player.getGamemode() > 2) {
@@ -2560,16 +2514,13 @@ public class Level implements Metadatable {
         dropExpOrbAndGetEntities(source, exp, motion, delay);
     }
 
-
     public List<EntityXpOrb> dropExpOrbAndGetEntities(Vector3 source, int exp) {
         return dropExpOrbAndGetEntities(source, exp, null);
     }
 
-
     public List<EntityXpOrb> dropExpOrbAndGetEntities(Vector3 source, int exp, Vector3 motion) {
         return dropExpOrbAndGetEntities(source, exp, motion, 10);
     }
-
 
     public List<EntityXpOrb> dropExpOrbAndGetEntities(Vector3 source, int exp, Vector3 motion, int delay) {
         Random rand = ThreadLocalRandom.current();
@@ -3001,7 +2952,6 @@ public class Level implements Metadatable {
         return getBlockEntity(pos.asBlockVector3());
     }
 
-
     public BlockEntity getBlockEntity(BlockVector3 pos) {
         IChunk chunk = this.getChunk(pos.x >> 4, pos.z >> 4, false);
 
@@ -3366,7 +3316,6 @@ public class Level implements Metadatable {
         }
     }
 
-
     public Position getFuzzySpawnLocation() {
         Position spawn = getSpawnLocation();
         int radius = gameRules.getInteger(GameRule.SPAWN_RADIUS);
@@ -3405,7 +3354,6 @@ public class Level implements Metadatable {
         }
         this.chunkSendQueue.remove(index);
     }
-
 
     private final ArrayList<CompletableFuture<?>> allChunkRequestTask = new ArrayList<>(
             Server.getInstance().getConfig("chunk-sending.per-tick", 8) * Server.getInstance().getMaxPlayers()
@@ -3705,11 +3653,9 @@ public class Level implements Metadatable {
         return Position.fromObject(spawn, this);
     }
 
-
     public boolean standable(Vector3 vec) {
         return standable(vec, false);
     }
-
 
     public boolean standable(Vector3 vec, boolean allowWaterUnder) {
         Position pos = Position.fromObject(vec, this);
@@ -4099,7 +4045,6 @@ public class Level implements Metadatable {
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 
-
     public void addEntityMovement(Entity entity, double x, double y, double z, double yaw, double pitch, double headYaw) {
 //        MoveEntityAbsolutePacket pk = new MoveEntityAbsolutePacket();
 //        pk.eid = entity.getId();
@@ -4272,21 +4217,17 @@ public class Level implements Metadatable {
         return getDimensionData().getDimensionId();
     }
 
-
     public final boolean isOverWorld() {
         return getDimension() == 0;
     }
-
 
     public final boolean isNether() {
         return getDimension() == 1;
     }
 
-
     public final boolean isTheEnd() {
         return getDimension() == 2;
     }
-
 
     public final boolean isYInRange(int y) {
         return y >= getMinHeight() && y <= getMaxHeight();
@@ -4313,7 +4254,6 @@ public class Level implements Metadatable {
     public int getStrongPower(Vector3 pos, BlockFace direction) {
         return this.getBlock(pos).getStrongPower(direction);
     }
-
 
     public int getStrongPower(Vector3 pos) {
         if (pos instanceof BlockPistonBase || this.getBlock(pos) instanceof BlockPistonBase) return 0;
@@ -4430,7 +4370,6 @@ public class Level implements Metadatable {
     public int getUpdateLCG() {
         return (this.updateLCG = (this.updateLCG * 3) ^ LCG_CONSTANT);
     }
-
 
     public boolean createPortal(Block target) {
         if (this.getDimension() == DIMENSION_THE_END) return false;
@@ -4654,7 +4593,6 @@ public class Level implements Metadatable {
         return false;
     }
 
-
     public boolean isRayCollidingWithBlocks(double srcX, double srcY, double srcZ, double dstX, double dstY, double dstZ, double stepSize) {
         Vector3 direction = new Vector3(dstX - srcX, dstY - srcY, dstZ - srcZ);
         double length = direction.length();
@@ -4676,7 +4614,6 @@ public class Level implements Metadatable {
 
         return false; // No collision with any blocks
     }
-
 
     public float getBlockDensity(Vector3 source, AxisAlignedBB boundingBox) {
         double xInterval = 1 / ((boundingBox.getMaxX() - boundingBox.getMinX()) * 2 + 1);
@@ -4711,11 +4648,9 @@ public class Level implements Metadatable {
         }
     }
 
-
     public VibrationManager getVibrationManager() {
         return this.vibrationManager;
     }
-
 
     private int ensureY(final int y) {
         return Math.max(Math.min(y, getDimensionData().getMaxHeight()), getDimensionData().getMinHeight());

@@ -18,7 +18,6 @@ public class EntityLlamaSpit extends EntityAnimal implements EntityWalkable {
         super(chunk, nbt);
     }
 
-
     @Override
     public float getWidth() {
         if (this.isBaby()) {
@@ -48,7 +47,6 @@ public class EntityLlamaSpit extends EntityAnimal implements EntityWalkable {
         this.setMaxHealth(15);
         super.initEntity();
     }
-
 
     @Override
     public String getOriginalName() {

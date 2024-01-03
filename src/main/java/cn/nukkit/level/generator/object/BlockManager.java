@@ -66,7 +66,6 @@ public class BlockManager {
         blocks.put(hashXYZ(blockVector3.x, blockVector3.y, blockVector3.z, 0), block);
     }
 
-
     public void setBlockAt(int x, int y, int z, Block block) {
         block.x = x;
         block.y = y;

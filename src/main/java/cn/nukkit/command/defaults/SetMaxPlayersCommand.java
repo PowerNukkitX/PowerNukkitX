@@ -22,7 +22,6 @@ public class SetMaxPlayersCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         int maxPlayers = result.getValue().getResult(0);

@@ -38,7 +38,6 @@ public class ItemShield extends ItemTool {
                 this.getNamedTag().containsInt("Type") || this.getNamedTag().containsList("Patterns"));
     }
 
-
     public @Nullable ItemBanner getBannerPattern() {
         if (!this.hasBannerPattern()) {
             return null;
@@ -53,7 +52,6 @@ public class ItemShield extends ItemTool {
         }
         return item;
     }
-
 
     public void setBannerPattern(@Nullable ItemBanner banner) {
         if (banner == null) {

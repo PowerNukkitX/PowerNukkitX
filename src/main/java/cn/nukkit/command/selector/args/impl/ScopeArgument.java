@@ -19,9 +19,8 @@ public abstract class ScopeArgument implements ISelectorArgument {
         return 2;
     }
 
-    @Nullable
     @Override
-    public String getDefaultValue(Map<String, List<String>> values, SelectorType selectorType, CommandSender sender) {
+    public @Nullable String getDefaultValue(Map<String, List<String>> values, SelectorType selectorType, CommandSender sender) {
         if (values.containsKey("dx") || values.containsKey("dy") || values.containsKey("dz"))
             return "0";
         return null;

@@ -107,7 +107,6 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         prepareDataProperty();
     }
 
-
     @Override
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
@@ -263,7 +262,6 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         level.dropItem(this, new ItemMinecart());
     }
 
-
     @Override
     public void kill() {
         if (!isAlive()) {
@@ -275,7 +273,6 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             dropItem();
         }
     }
-
 
     @Override
     public void close() {

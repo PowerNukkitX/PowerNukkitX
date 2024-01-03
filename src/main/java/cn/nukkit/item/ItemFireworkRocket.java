@@ -27,7 +27,6 @@ public class ItemFireworkRocket extends Item {
         this(meta, 1);
     }
 
-
     public ItemFireworkRocket(Integer meta, int count) {
         super(FIREWORK_ROCKET, meta, count, "Firework Rocket");
     }

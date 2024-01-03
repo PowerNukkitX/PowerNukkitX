@@ -58,7 +58,6 @@ public class SetTitlePacket extends DataPacket {
         this.putString(platformOnlineId);
     }
 
-
     @NotNull
     public TitleAction getTitleAction() {
         int currentType = this.type;
@@ -68,72 +67,58 @@ public class SetTitlePacket extends DataPacket {
         throw new UnsupportedOperationException("Bad type: "+currentType);
     }
 
-
     public void setTitleAction(@NotNull TitleAction type) {
         this.type = type.ordinal();
     }
-
 
     @NotNull
     public String getText() {
         return text;
     }
 
-
     public void setText(@NotNull String text) {
         this.text = text;
     }
-
 
     public int getFadeInTime() {
         return fadeInTime;
     }
 
-
     public void setFadeInTime(int fadeInTime) {
         this.fadeInTime = fadeInTime;
     }
-
 
     public int getStayTime() {
         return stayTime;
     }
 
-
     public void setStayTime(int stayTime) {
         this.stayTime = stayTime;
     }
-
 
     public int getFadeOutTime() {
         return fadeOutTime;
     }
 
-
     public void setFadeOutTime(int fadeOutTime) {
         this.fadeOutTime = fadeOutTime;
     }
-
 
     public String getXuid() {
         return xuid;
     }
 
-
     public void setXuid(String xuid) {
         this.xuid = xuid;
     }
-
 
     public String getPlatformOnlineId() {
         return platformOnlineId;
     }
 
-
     public void setPlatformOnlineId(String platformOnlineId) {
         this.platformOnlineId = platformOnlineId;
     }
-
 
     public enum TitleAction {
         CLEAR,

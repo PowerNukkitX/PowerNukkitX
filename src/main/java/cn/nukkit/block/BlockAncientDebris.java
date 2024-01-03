@@ -25,7 +25,6 @@ public class BlockAncientDebris extends BlockSolid {
         return "Ancient Derbris";
     }
 
-
     @Override
     public int getToolTier() {
         return ItemTool.TIER_DIAMOND;
@@ -45,7 +44,6 @@ public class BlockAncientDebris extends BlockSolid {
     public double getHardness() {
         return 30;
     }
-
 
     @Override
     public boolean isLavaResistant() {

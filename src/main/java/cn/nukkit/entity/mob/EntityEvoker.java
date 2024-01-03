@@ -34,12 +34,10 @@ public class EntityEvoker extends EntityMob implements EntityWalkable {
         return 1.9f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Evoker";
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {

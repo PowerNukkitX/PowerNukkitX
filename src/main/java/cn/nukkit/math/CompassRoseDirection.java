@@ -106,7 +106,6 @@ public enum CompassRoseDirection {
         return getClosestFromYaw(yaw, Precision.SECONDARY_INTER_CARDINAL);
     }
 
-
     public CompassRoseDirection getOppositeFace() {
         switch (this) {
             case NORTH:
@@ -173,7 +172,6 @@ public enum CompassRoseDirection {
     public float getYaw() {
         return yaw;
     }
-
 
     public static CompassRoseDirection from(int index) {
         return VALUES[index];

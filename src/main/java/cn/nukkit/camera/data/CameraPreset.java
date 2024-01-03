@@ -33,8 +33,7 @@ public final class CameraPreset {
         return PRESETS;
     }
 
-    @Nullable
-    public static CameraPreset getPreset(String identifier) {
+    public @Nullable static CameraPreset getPreset(String identifier) {
         return getPresets().get(identifier);
     }
 

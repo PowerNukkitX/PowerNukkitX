@@ -37,12 +37,10 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable {
         return 2.04f;
     }
 
-
     @Override
     public int getFrostbiteInjury() {
         return 5;
     }
-
 
     @Override
     public String getOriginalName() {

@@ -52,51 +52,41 @@ public class AddVolumeEntityPacket extends DataPacket {
         putString(instanceName);
     }
 
-
     public long getId() {
         return id;
     }
-
 
     public void setId(long id) {
         this.id = id;
     }
 
-
     public CompoundTag getData() {
         return data;
     }
-
 
     public void setData(CompoundTag data) {
         this.data = data;
     }
 
-
     public String getEngineVersion() {
         return engineVersion;
     }
-
 
     public void setEngineVersion(String engineVersion) {
         this.engineVersion = engineVersion;
     }
 
-
     public String getIdentifier() {
         return identifier;
     }
-
 
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
 
-
     public String getInstanceName() {
         return instanceName;
     }
-
 
     public void setInstanceName(String instanceName) {
         this.instanceName = instanceName;

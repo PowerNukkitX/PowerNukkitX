@@ -20,7 +20,6 @@ public class GameRules {
     private GameRules() {
     }
 
-
     public static GameRules getDefault() {
         GameRules gameRules = new GameRules();
 
@@ -223,11 +222,9 @@ public class GameRules {
             this.value = value;
         }
 
-
         public boolean isCanBeChanged() {
             return this.canBeChanged;
         }
-
 
         public void setCanBeChanged(boolean canBeChanged) {
             this.canBeChanged = canBeChanged;
@@ -272,7 +269,6 @@ public class GameRules {
             }
             return (Float) value;
         }
-
 
         public void write(BinaryStream stream) {
             stream.putBoolean(this.canBeChanged);

@@ -27,7 +27,6 @@ public class NukkitMath {
         return n >= i ? i : i - 1;
     }
 
-
     public static int ceilDouble(double n) {
         int i = (int) n;
         return n > i ? i + 1 : i;
@@ -37,7 +36,6 @@ public class NukkitMath {
         int i = (int) n;
         return n >= i ? i : i - 1;
     }
-
 
     public static int ceilFloat(float n) {
         int i = (int) n;
@@ -60,7 +58,6 @@ public class NukkitMath {
         return round(d, 0);
     }
 
-
     public static double round(double d, int precision) {
         double pow = Math.pow(10, precision);
         return ((double) Math.round(d * pow)) / pow;
@@ -74,7 +71,6 @@ public class NukkitMath {
         return value < min ? min : (value > max ? max : value);
     }
 
-
     public static float clamp(float value, float min, float max) {
         return value < min ? min : (value > max ? max : value);
     }
@@ -85,7 +81,6 @@ public class NukkitMath {
 
         return Math.max(diffX, diffZ);
     }
-
 
     public static int bitLength(byte data) {
         if (data < 0) {
@@ -105,7 +100,6 @@ public class NukkitMath {
         return bits;
     }
 
-
     public static int bitLength(int data) {
         if (data < 0) {
             return 32;
@@ -124,7 +118,6 @@ public class NukkitMath {
         return bits;
     }
 
-
     public static int bitLength(long data) {
         if (data < 0) {
             return 64;
@@ -142,7 +135,6 @@ public class NukkitMath {
 
         return bits;
     }
-
 
     public static int bitLength(BigInteger data) {
         if (data.compareTo(BigInteger.ZERO) < 0) {

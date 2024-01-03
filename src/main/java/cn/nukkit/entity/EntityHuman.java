@@ -43,7 +43,6 @@ public class EntityHuman extends EntityHumanType {
         return 1.8f;
     }
 
-
     @Override
     public float getSwimmingHeight() {
         return getWidth();
@@ -105,9 +104,8 @@ public class EntityHuman extends EntityHumanType {
         return "Human";
     }
 
-    @NotNull
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return this.getNameTag();
     }
 
@@ -225,7 +223,6 @@ public class EntityHuman extends EntityHumanType {
             super.close();
         }
     }
-
 
     @Override
     protected void onBlock(Entity entity, EntityDamageEvent event, boolean animate) {

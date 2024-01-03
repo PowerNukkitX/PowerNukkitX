@@ -5,11 +5,9 @@ public class ItemNetheriteAxe extends ItemTool {
         this(0, 1);
     }
 
-
     public ItemNetheriteAxe(Integer meta) {
         this(meta, 1);
     }
-
 
     public ItemNetheriteAxe(Integer meta, int count) {
         super(NETHERITE_AXE, meta, count, "Netherite Axe");
@@ -35,12 +33,10 @@ public class ItemNetheriteAxe extends ItemTool {
         return 8;
     }
 
-
     @Override
     public boolean isLavaResistant() {
         return true;
     }
-
 
     @Override
     public boolean canBreakShield() {

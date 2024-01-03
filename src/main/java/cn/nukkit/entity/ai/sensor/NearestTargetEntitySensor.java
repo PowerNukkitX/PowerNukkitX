@@ -117,7 +117,6 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
         }
     }
 
-
     @Override
     public int getPeriod() {
         return period;

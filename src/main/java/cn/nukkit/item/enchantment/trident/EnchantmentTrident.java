@@ -12,7 +12,6 @@ public abstract class EnchantmentTrident extends Enchantment {
         this(id, name, Rarity.fromWeight(weight));
     }
 
-
     protected EnchantmentTrident(int id, String name, Rarity rarity) {
         super(id, name, rarity, EnchantmentType.TRIDENT);
     }

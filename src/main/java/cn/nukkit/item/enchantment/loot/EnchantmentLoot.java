@@ -16,7 +16,6 @@ public abstract class EnchantmentLoot extends Enchantment {
         this(id, name, Rarity.fromWeight(weight), type);
     }
 
-
     protected EnchantmentLoot(int id, String name, Rarity rarity, EnchantmentType type) {
         super(id, name, rarity, type);
     }

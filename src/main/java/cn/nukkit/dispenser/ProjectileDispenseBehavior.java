@@ -21,7 +21,6 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
     }
 
     @Override
-
     public Item dispense(BlockDispenser source, BlockFace face, Item item) {
         Vector3 dispensePos = source.getDispensePosition();
 
@@ -49,22 +48,18 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
         return null;
     }
 
-
     protected Sound getShootingSound() {
         return Sound.RANDOM_BOW;
     }
-
 
     protected Vector3 initMotion(BlockFace face) {
         return new Vector3(face.getXOffset(), face.getYOffset() + 0.1f, face.getZOffset())
                 .normalize();
     }
 
-
     protected double getMotion() {
         return 1.1;
     }
-
 
     protected float getAccuracy() {
         return 6;

@@ -16,7 +16,6 @@ public class SmokerRecipe implements SmeltingRecipe {
         this(null, result, ingredient);
     }
 
-
     public SmokerRecipe(@Nullable String recipeId, Item result, Item ingredient) {
         this.recipeId = recipeId == null ? CraftingManager.getMultiItemHash(List.of(ingredient, result)).toString() : recipeId;
         this.output = result.clone();
@@ -28,11 +27,9 @@ public class SmokerRecipe implements SmeltingRecipe {
         return recipeId;
     }
 
-
     public void setInput(Item item) {
         this.ingredient = item.clone();
     }
-
 
     @Override
     public Item getInput() {

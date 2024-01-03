@@ -3,7 +3,6 @@ package cn.nukkit;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.command.*;
 import cn.nukkit.command.function.FunctionManager;
 import cn.nukkit.console.NukkitConsole;
@@ -26,12 +25,9 @@ import cn.nukkit.lang.BaseLang;
 import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.level.*;
-import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.LevelProviderManager;
-import cn.nukkit.level.format.anvil.Anvil;
 import cn.nukkit.level.generator.*;
-import cn.nukkit.level.terra.PNXPlatform;
 import cn.nukkit.level.tickingarea.manager.SimpleTickingAreaManager;
 import cn.nukkit.level.tickingarea.manager.TickingAreaManager;
 import cn.nukkit.level.tickingarea.storage.JSONTickingAreaStorage;
@@ -1002,7 +998,6 @@ public class Server {
         getPluginManager().callEvent(serverStartedEvent);
     }
 
-
     /**
      * 关闭服务器
      * <p>
@@ -1435,7 +1430,6 @@ public class Server {
         return tickingAreaManager;
     }
 
-
     public long getLaunchTime() {
         return launchTime;
     }
@@ -1462,7 +1456,6 @@ public class Server {
         return this.broadcast(message, BROADCAST_CHANNEL_USERS);
     }
 
-
     /**
      * @see #broadcastMessage(String)
      */
@@ -1483,7 +1476,6 @@ public class Server {
 
         return recipients.length;
     }
-
 
     /**
      * @see #broadcastMessage(String, CommandSender[])
@@ -1506,7 +1498,6 @@ public class Server {
 
         return recipients.size();
     }
-
 
     /**
      * 从指定的许可名获取发送者们，广播一条消息给他们.可以指定多个许可名，以<b> ; </b>分割.<br>
@@ -1536,7 +1527,6 @@ public class Server {
         return recipients.size();
     }
 
-
     /**
      * @see #broadcast(String, String)
      */
@@ -1557,7 +1547,6 @@ public class Server {
 
         return recipients.size();
     }
-
 
     @Deprecated
     @DeprecationDetails(since = "1.19.60-r1", reason = "use Server#executeCommand")
@@ -1922,7 +1911,6 @@ public class Server {
         this.updatePlayerListData(uuid, entityId, name, skin, "", players);
     }
 
-
     /**
      * 更新指定玩家们(players)的{@link PlayerListPacket}数据包(即玩家列表数据)
      * <p>
@@ -2042,7 +2030,6 @@ public class Server {
         ByteBuffer buffer = ByteBuffer.wrap(uuidBytes);
         return Optional.of(new UUID(buffer.getLong(), buffer.getLong()));
     }
-
 
     /**
      * 更新数据库中指定玩家名的UUID，若不存在则添加.
@@ -2183,7 +2170,6 @@ public class Server {
         return nbt;
     }
 
-
     /**
      * @see #saveOfflinePlayerData(String, CompoundTag, boolean)
      */
@@ -2204,7 +2190,6 @@ public class Server {
     public void saveOfflinePlayerData(UUID uuid, CompoundTag tag, boolean async) {
         this.saveOfflinePlayerData(uuid.toString(), tag, async);
     }
-
 
     /**
      * 保存玩家数据，玩家在线离线都行.
@@ -2305,7 +2290,6 @@ public class Server {
         }
     }
 
-
     /**
      * 从玩家名获得一个在线玩家，这个方法是模糊匹配，只要玩家名带有name前缀就会被返回.
      * <p>
@@ -2375,7 +2359,6 @@ public class Server {
         return matchedPlayer.toArray(Player.EMPTY_ARRAY);
     }
 
-
     /**
      * 删除一个玩家，可以让一个玩家离线.
      * <p>
@@ -2436,7 +2419,6 @@ public class Server {
         return Nukkit.VERSION;
     }
 
-
     public String getGitCommit() {
         return Nukkit.GIT_COMMIT;
     }
@@ -2495,7 +2477,6 @@ public class Server {
         return levelMetadata;
     }
 
-
     public ResourcePackManager getResourcePackManager() {
         return resourcePackManager;
     }
@@ -2518,7 +2499,6 @@ public class Server {
     private void registerBlockEntities() {
         BlockEntity.init();
     }
-
 
     @NotNull
     public PositionTrackingService getPositionTrackingService() {
@@ -2570,7 +2550,6 @@ public class Server {
         return defaultLevel;
     }
 
-
     /**
      * 设置默认游戏世界
      * <p>
@@ -2591,7 +2570,6 @@ public class Server {
     public boolean isLevelLoaded(String name) {
         return this.getLevelByName(name) != null;
     }
-
 
     /**
      * 从世界id得到世界,0主世界 1 地狱 2 末地
@@ -2708,7 +2686,6 @@ public class Server {
     public boolean generateLevel(String name, long seed, Class<? extends Generator> generator, Map<String, Object> options) {
         return generateLevel(name, seed, generator, options, null);
     }
-
 
     public boolean generateLevel(String name, long seed, Class<? extends Generator> generator, Map<String, Object> options, DimensionData givenDimensionData) {
         return generateLevel(name, seed, generator, options, null, null);
@@ -2928,7 +2905,6 @@ public class Server {
     public boolean getForceGamemode() {
         return this.getPropertyBoolean("force-gamemode", false);
     }
-
 
     /**
      * 默认{@code direct=false}
@@ -3168,11 +3144,9 @@ public class Server {
         return forceLanguage;
     }
 
-
     public boolean isRedstoneEnabled() {
         return redstoneEnabled;
     }
-
 
     public void setRedstoneEnabled(boolean redstoneEnabled) {
         this.redstoneEnabled = redstoneEnabled;
@@ -3267,56 +3241,45 @@ public class Server {
         return this.allowNether;
     }
 
-
     public boolean isIgnoredPacket(Class<? extends DataPacket> clazz) {
         return this.ignoredPackets.contains(clazz.getSimpleName());
     }
-
 
     public boolean isSafeSpawn() {
         return safeSpawn;
     }
 
-
     public boolean isForceSkinTrusted() {
         return forceSkinTrusted;
     }
-
 
     public boolean isCheckMovement() {
         return checkMovement;
     }
 
-
     public boolean isTheEndAllowed() {
         return this.allowTheEnd;
     }
-
 
     public boolean isEnableExperimentMode() {
         return this.enableExperimentMode;
     }
 
-
     public boolean isWaterdogCapable() {
         return this.getConfig("settings.waterdogpe", false);
     }
-
 
     public int getMaximumStaleDatagrams() {
         return this.maximumStaleDatagrams;
     }
 
-
     public int getMaximumSizePerChunk() {
         return maximumSizePerChunk;
     }
 
-
     public int getServerAuthoritativeMovement() {
         return serverAuthoritativeMovementMode;
     }
-
 
     public boolean isEnableSnappy() {
         return this.getConfig("network.snappy", false);

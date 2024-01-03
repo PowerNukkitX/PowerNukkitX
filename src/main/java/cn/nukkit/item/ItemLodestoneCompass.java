@@ -12,11 +12,9 @@ public class ItemLodestoneCompass extends Item {
         this(0, 1);
     }
 
-
     public ItemLodestoneCompass(Integer meta) {
         this(meta, 1);
     }
-
 
     public ItemLodestoneCompass(Integer meta, int count) {
         super(LODESTONE_COMPASS, meta, count, "Lodestone Compass");
@@ -27,7 +25,6 @@ public class ItemLodestoneCompass extends Item {
         return 1;
     }
 
-
     public void setTrackingPosition(@Nullable NamedPosition position) throws IOException {
         if (position == null) {
             setTrackingHandle(0);
@@ -36,9 +33,7 @@ public class ItemLodestoneCompass extends Item {
         setTrackingHandle(Server.getInstance().getPositionTrackingService().addOrReusePosition(position));
     }
 
-
-    @Nullable
-    public NamedPosition getTrackingPosition() throws IOException {
+    public @Nullable NamedPosition getTrackingPosition() throws IOException {
         int trackingHandle = getTrackingHandle();
         if (trackingHandle == 0) {
             return null;
@@ -46,11 +41,9 @@ public class ItemLodestoneCompass extends Item {
         return Server.getInstance().getPositionTrackingService().getPosition(trackingHandle);
     }
 
-
     public int getTrackingHandle() {
         return hasCompoundTag() ? getNamedTag().getInt("trackingHandle") : 0;
     }
-
 
     public void setTrackingHandle(int trackingHandle) {
         CompoundTag tag = getNamedTag();

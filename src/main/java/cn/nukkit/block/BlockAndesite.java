@@ -4,7 +4,7 @@ import cn.nukkit.block.property.enums.StoneType;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockAndesite extends BlockStone {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:andesite");
+    public static final BlockProperties PROPERTIES = new BlockProperties(ANDESITE);
 
     @Override
     public @NotNull BlockProperties getProperties() {

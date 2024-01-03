@@ -98,7 +98,6 @@ public class EntityPig extends EntityAnimal implements EntityWalkable {
         super.initEntity();
     }
 
-
     @Override
     public String getOriginalName() {
         return "Pig";

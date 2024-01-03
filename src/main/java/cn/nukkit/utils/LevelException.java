@@ -8,7 +8,6 @@ public class LevelException extends ServerException {
         super(message);
     }
 
-
     public LevelException(String message, Throwable cause) {
         super(message, cause);
     }

@@ -18,12 +18,10 @@ public class BlockWaxedCutCopper extends BlockCutCopper {
         super(blockstate);
     }
 
-
     @Override
     public String getName() {
         return "Waxed Cut Copper";
     }
-
 
     @Override
     public boolean isWaxed() {

@@ -49,7 +49,6 @@ public class EntityDonkey extends EntityAnimal implements EntityWalkable {
         return new Item[]{Item.get(Item.LEATHER)};
     }
 
-
     @Override
     public String getOriginalName() {
         return "Donkey";

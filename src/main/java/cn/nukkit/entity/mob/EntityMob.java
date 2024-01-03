@@ -197,7 +197,6 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
         return epf;
     }
 
-
     protected Item damageArmor(Item armor, Entity damager) {
         if (armor.hasEnchantments()) {
             if (damager != null) {

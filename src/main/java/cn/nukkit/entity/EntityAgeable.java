@@ -8,7 +8,6 @@ public interface EntityAgeable {
         return ((Entity) this).getDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_BABY);
     }
 
-
     default void setBaby(boolean flag) {
         var entity = (Entity) this;
         entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_BABY, flag);

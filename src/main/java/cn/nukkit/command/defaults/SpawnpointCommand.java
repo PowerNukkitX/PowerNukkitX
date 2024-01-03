@@ -34,7 +34,6 @@ public class SpawnpointCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();

@@ -154,7 +154,6 @@ public abstract class Command implements GenericParameter {
         return this.commandData.overloads;
     }
 
-
     protected double parseTilde(String arg, double pos) {
         if (arg.equals("~")) {
             return pos;
@@ -280,11 +279,9 @@ public abstract class Command implements GenericParameter {
         return usageMessage;
     }
 
-
     public boolean isServerSideOnly() {
         return serverSideOnly;
     }
-
 
     public String getCommandFormatTips() {
         StringBuilder builder = new StringBuilder();
@@ -330,7 +327,6 @@ public abstract class Command implements GenericParameter {
         this.usageMessage = usageMessage;
     }
 
-
     public boolean hasParamTree() {
         return this.paramTree != null;
     }
@@ -343,7 +339,6 @@ public abstract class Command implements GenericParameter {
     public void enableParamTree() {
         this.paramTree = new ParamTree(this);
     }
-
 
     public ParamTree getParamTree() {
         return paramTree;

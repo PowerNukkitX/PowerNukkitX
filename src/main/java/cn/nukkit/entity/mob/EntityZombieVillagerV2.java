@@ -36,18 +36,15 @@ public class EntityZombieVillagerV2 extends EntityMob implements EntityWalkable,
         return 1.9f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Zombie VillagerV2";
     }
 
-
     @Override
     public boolean isUndead() {
         return true;
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {

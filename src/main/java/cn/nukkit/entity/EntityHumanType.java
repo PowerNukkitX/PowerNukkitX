@@ -150,7 +150,6 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
         return false;
     }
 
-
     @Deprecated
     @Override
     public boolean applyNameTag(Item item) {

@@ -22,8 +22,7 @@ public class FarmLandDecayEvent extends BlockEvent implements Cancellable {
         this.entity = entity;
     }
 
-    @Nullable
-    public Entity getEntity() {
+    public @Nullable Entity getEntity() {
         return entity;
     }
 }

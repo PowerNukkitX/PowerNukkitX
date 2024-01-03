@@ -180,7 +180,6 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
         return 0.8f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Wolf";
@@ -266,7 +265,6 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
 
         return false;
     }
-
 
     @Override
     public boolean isBreedingItem(Item item) {

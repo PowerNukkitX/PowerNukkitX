@@ -195,7 +195,6 @@ public class ConcurrentAutoLongTable implements Serializable {
             return old;
         }
 
-
         // Return the current sum of all things in the table.  Writers can be
         // updating the table furiously, so the sum is only locally accurate.
         public long sum() {

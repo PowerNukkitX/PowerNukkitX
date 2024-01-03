@@ -8,11 +8,9 @@ public class ItemKelp extends Item {
         this(0, 1);
     }
 
-
     public ItemKelp(Integer meta) {
         this(meta, 1);
     }
-
 
     public ItemKelp(Integer meta, int count) {
         super(KELP, meta, count, "Kelp");

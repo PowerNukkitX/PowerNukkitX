@@ -44,18 +44,15 @@ public class Vector3f implements Cloneable {
         return this.z;
     }
 
-
     public Vector3f setX(float x) {
         this.x = x;
         return this;
     }
 
-
     public Vector3f setY(float y) {
         this.y = y;
         return this;
     }
-
 
     public Vector3f setZ(float z) {
         this.z = z;
@@ -354,7 +351,6 @@ public class Vector3f implements Cloneable {
         this.z = z;
         return this;
     }
-
 
     public float getAxis(BlockFace.Axis axis) {
         switch (axis) {

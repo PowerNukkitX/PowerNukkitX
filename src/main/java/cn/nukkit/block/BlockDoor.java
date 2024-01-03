@@ -354,7 +354,6 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
         return true;
     }
 
-
     public void setOpen(boolean open) {
         setPropertyValue(CommonBlockProperties.OPEN_BIT, open);
     }

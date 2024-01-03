@@ -24,7 +24,6 @@ public class CommandBlockExecuteEvent extends BlockEvent implements Cancellable 
         this.command = command;
     }
 
-
     public static HandlerList getHandlers() {
         return handlers;
     }

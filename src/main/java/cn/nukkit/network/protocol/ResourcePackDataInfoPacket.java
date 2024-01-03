@@ -73,12 +73,10 @@ public class ResourcePackDataInfoPacket extends AbstractResourcePackDataPacket {
         this.packVersion = packVersion;
     }
 
-
     @Override
     public UUID getPackId() {
         return packId;
     }
-
 
     @Override
     public void setPackId(UUID packId) {

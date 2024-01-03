@@ -37,7 +37,6 @@ public class EntityBat extends EntityAnimal implements EntityFlyable {
         super.initEntity();
     }
 
-
     @Override
     public String getOriginalName() {
         return "Bat";

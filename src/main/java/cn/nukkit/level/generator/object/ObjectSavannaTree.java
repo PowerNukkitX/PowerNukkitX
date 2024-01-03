@@ -59,7 +59,7 @@ public class ObjectSavannaTree extends TreeGenerator {
                 Vector3 down = position.down();
                 String block = level.getBlockIdAt(down.getFloorX(), down.getFloorY(), down.getFloorZ());
 
-                if ((block == Block.GRASS || block == Block.DIRT) && position.getY() < 256 - i - 1) {
+                if ((block.equals(Block.GRASS) || block.equals(Block.DIRT)) && position.getY() < 256 - i - 1) {
                     this.setDirtAt(level, position.down());
                     BlockFace face = BlockFace.Plane.HORIZONTAL.random(rand);
                     int k2 = i - rand.nextInt(4) - 1;
@@ -80,7 +80,7 @@ public class ObjectSavannaTree extends TreeGenerator {
                         Vector3 blockpos = new Vector3(i3, i2, j1);
                         String material = level.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
 
-                        if (material == Block.AIR || material == Block.LEAVES) {
+                        if (material.equals(Block.AIR) || material.equals(Block.LEAVES)) {
                             this.placeLogAt(level, blockpos);
                             k1 = i2;
                         }
@@ -171,7 +171,7 @@ public class ObjectSavannaTree extends TreeGenerator {
 
     private void placeLeafAt(BlockManager worldIn, Vector3 pos) {
         String material = worldIn.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
-        if (material == Block.AIR || material == Block.LEAVES) {
+        if (material.equals(Block.AIR) || material.equals(Block.LEAVES)) {
             worldIn.setBlockAt(pos, LEAF);
         }
     }

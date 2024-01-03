@@ -147,7 +147,6 @@ public interface IBehaviorGroup {
     default void debugTick(EntityIntelligent entity) {
     }
 
-
     default void save(EntityIntelligent entity) {
         //EmptyBehaviorGroup will return null
         if (getMemoryStorage() != null)

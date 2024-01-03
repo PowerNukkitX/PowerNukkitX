@@ -31,9 +31,8 @@ public class BlockPinkPetals extends BlockFlowable {
         super(blockState);
     }
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 

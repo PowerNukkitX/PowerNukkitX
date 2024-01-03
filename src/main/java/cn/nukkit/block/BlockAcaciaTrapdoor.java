@@ -4,7 +4,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockAcaciaTrapdoor extends BlockTrapdoor {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:acacia_trapdoor", CommonBlockProperties.DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPSIDE_DOWN_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(ACACIA_TRAPDOOR, CommonBlockProperties.DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPSIDE_DOWN_BIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -18,7 +18,6 @@ public class BlockAcaciaTrapdoor extends BlockTrapdoor {
     public BlockAcaciaTrapdoor(BlockState blockstate) {
         super(blockstate);
     }
-
 
     @Override
     public String getName() {

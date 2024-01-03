@@ -22,7 +22,6 @@ public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket>
             //player.resetCraftingGridType();
         }
 
-
         if (pk.event == EntityEventPacket.EATING_ITEM) {
             if (pk.data == 0 || pk.eid != player.getId()) {
                 return;

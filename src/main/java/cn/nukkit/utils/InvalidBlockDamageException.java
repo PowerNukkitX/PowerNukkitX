@@ -24,16 +24,13 @@ public class InvalidBlockDamageException extends InvalidBlockPropertyMetaExcepti
         this.before = before;
     }
 
-
     public int getBlockId() {
         return this.blockId;
     }
 
-
     public int getDamage() {
         return this.damage;
     }
-
 
     public int getBefore() {
         return this.before;

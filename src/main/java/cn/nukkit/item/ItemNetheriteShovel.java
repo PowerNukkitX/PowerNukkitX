@@ -33,7 +33,6 @@ public class ItemNetheriteShovel extends ItemTool {
         return 5;
     }
 
-
     @Override
     public boolean isLavaResistant() {
         return true;

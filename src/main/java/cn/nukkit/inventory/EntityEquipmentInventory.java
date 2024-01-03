@@ -36,7 +36,6 @@ public class EntityEquipmentInventory extends BaseInventory {
         return 2;
     }
 
-
     public Entity getEntity() {
         return entity;
     }
@@ -79,26 +78,21 @@ public class EntityEquipmentInventory extends BaseInventory {
         this.viewers.remove(who);
     }
 
-
     public Item getItemInHand() {
         return this.getItem(MAIN_HAND);
     }
-
 
     public Item getItemInOffhand() {
         return this.getItem(OFFHAND);
     }
 
-
     public boolean setItemInHand(Item item) {
         return this.setItem(MAIN_HAND, item);
     }
 
-
     public boolean setItemInHand(Item item, boolean send) {
         return this.setItem(MAIN_HAND, item, send);
     }
-
 
     public boolean setItemInOffhand(Item item, boolean send) {
         return this.setItem(OFFHAND, item, send);

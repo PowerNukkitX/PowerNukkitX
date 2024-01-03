@@ -37,7 +37,6 @@ public class ExplosionPrimeEvent extends EntityEvent implements Cancellable {
         return this.blockBreaking;
     }
 
-
     public void setBlockBreaking(boolean affectsBlocks) {
         this.blockBreaking = affectsBlocks;
     }

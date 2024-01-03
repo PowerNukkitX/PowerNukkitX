@@ -17,7 +17,6 @@ public class FlintAndSteelDispenseBehavior extends DefaultDispenseBehavior {
     }
 
     @Override
-
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);
         item = item.clone();

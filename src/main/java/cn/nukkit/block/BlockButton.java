@@ -46,7 +46,6 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         return false;
     }
 
-
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!BlockLever.isSupportValid(target, face)) {
@@ -86,7 +85,6 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         return true;
     }
 
-
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -120,11 +118,9 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         return getPropertyValue(CommonBlockProperties.BUTTON_PRESSED_BIT);
     }
 
-
     public void setActivated(boolean activated) {
         setActivated(activated, null);
     }
-
 
     public void setActivated(boolean activated, @Nullable Player player) {
         setPropertyValue(CommonBlockProperties.BUTTON_PRESSED_BIT,activated);
@@ -155,7 +151,6 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
     }
 
-
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.FACING_DIRECTION,face.getIndex());
@@ -174,7 +169,6 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
     public Item toItem() {
         return Item.get(this.getItemId());
     }
-
 
     @Override
     public BlockFace getBlockFace() {

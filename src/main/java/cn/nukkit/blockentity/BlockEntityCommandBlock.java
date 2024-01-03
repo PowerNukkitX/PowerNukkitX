@@ -3,8 +3,8 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockChainCommandBlock;
 import cn.nukkit.block.BlockCommandBlock;
-import cn.nukkit.block.BlockCommandBlockChain;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.ConsoleCommandSender;
@@ -34,7 +34,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 
 @Getter
 public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICommandBlock, BlockEntityNameable {
@@ -69,7 +68,6 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
             this.scheduleUpdate();
         }
     }
-
 
     @Override
     public void loadNBT() {
@@ -227,13 +225,12 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public boolean isBlockEntityValid() {
-        int blockId = this.getLevelBlock().getId();
-        return blockId == BlockID.COMMAND_BLOCK || blockId == BlockID.CHAIN_COMMAND_BLOCK || blockId == BlockID.REPEATING_COMMAND_BLOCK;
+        String blockId = this.getLevelBlock().getId();
+        return blockId.equals(BlockID.COMMAND_BLOCK) || blockId.equals(BlockID.CHAIN_COMMAND_BLOCK) || blockId.equals(BlockID.REPEATING_COMMAND_BLOCK);
     }
 
-    @NotNull
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return this.hasName() ? this.namedTag.getString(TAG_CUSTOM_NAME) : "!";
     }
 
@@ -285,7 +282,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         if (this.getLevelBlock().getSide(((Faceable) this.getLevelBlock()).getBlockFace().getOpposite()) instanceof BlockCommandBlock lastCB) {
             if (this.isConditional() && lastCB.getBlockEntity().getSuccessCount() == 0) {//jump over because this CB is conditional and the last CB didn't succeed
                 Block next = this.getLevelBlock().getSide(((Faceable) this.getLevelBlock()).getBlockFace());
-                if (next instanceof BlockCommandBlockChain nextChainBlock) {
+                if (next instanceof BlockChainCommandBlock nextChainBlock) {
                     nextChainBlock.getBlockEntity().trigger(++chain);
                 }
                 return true;
@@ -314,7 +311,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                 }
 
                 Block block = this.getLevelBlock().getSide(((Faceable) this.getLevelBlock()).getBlockFace());
-                if (block instanceof BlockCommandBlockChain chainBlock) {
+                if (block instanceof BlockChainCommandBlock chainBlock) {
                     chainBlock.getBlockEntity().trigger(++chain);
                 }
             }
@@ -334,9 +331,9 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @Override
     public int getMode() {
         Block block = this.getLevelBlock();
-        if (block.getId() == BlockID.REPEATING_COMMAND_BLOCK) {
+        if (block.getId().equals(BlockID.REPEATING_COMMAND_BLOCK)) {
             return MODE_REPEATING;
-        } else if (block.getId() == BlockID.CHAIN_COMMAND_BLOCK) {
+        } else if (block.getId().equals(BlockID.CHAIN_COMMAND_BLOCK)) {
             return MODE_CHAIN;
         }
         return MODE_NORMAL;
@@ -550,12 +547,10 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         return false;
     }
 
-
     @Override
     public boolean isEntity() {
         return false;
     }
-
 
     @Override
     @NotNull
@@ -563,10 +558,8 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         return this;
     }
 
-
-    @NotNull
     @Override
-    public Location getLocation() {
+    public @NotNull Location getLocation() {
         return Location.fromObject(this.getPosition(), this.getLevel());
     }
 

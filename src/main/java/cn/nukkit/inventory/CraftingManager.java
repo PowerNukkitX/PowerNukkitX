@@ -148,16 +148,13 @@ public class CraftingManager {
         return vanillaRecipeParser;
     }
 
-
     public double getRecipeXp(Recipe recipe) {
         return recipeXpMap.getOrDefault(recipe, 0.0);
     }
 
-
     public static DataPacket getCraftingPacket() {
         return packet;
     }
-
 
     public static UUID getItemWithItemDescriptorsHash(Collection<Item> items, Collection<ItemDescriptor> itemDescriptors) {
         BinaryStream stream = new BinaryStream();
@@ -171,7 +168,6 @@ public class CraftingManager {
         }
         return UUID.nameUUIDFromBytes(stream.getBuffer());
     }
-
 
     public static UUID getShapelessItemDescriptorHash(Collection<ItemDescriptor> itemDescriptors) {
         var stream = new BinaryStream();
@@ -187,7 +183,6 @@ public class CraftingManager {
         return UUID.nameUUIDFromBytes(stream.getBuffer());
     }
 
-
     public static UUID getShapelessMultiItemHash(Collection<Item> items) {
         var stream = new BinaryStream();
         items.stream().mapToInt(CraftingManager::getFullItemHash).sorted().forEachOrdered(stream::putVarInt);
@@ -201,7 +196,6 @@ public class CraftingManager {
     public static int getItemHash(Item item) {
         return getItemHash(item, item.getAux());
     }
-
 
     public static int getItemHash(Item item, int meta) {
         int id = item.getId();
@@ -225,7 +219,6 @@ public class CraftingManager {
         return hash;
     }
 
-
     public static int getContainerHash(@NotNull Item ingredient, @NotNull Item container) {
         int ingredientId = ingredient.getId();
         int containerId = container.getId();
@@ -237,66 +230,53 @@ public class CraftingManager {
         return hash;
     }
 
-
     public Int2ObjectMap<Map<UUID, ShapedRecipe>> getShapedRecipeMap() {
         return shapedRecipeMap;
     }
-
 
     public Int2ObjectMap<FurnaceRecipe> getFurnaceRecipesMap() {
         return furnaceRecipeMap;
     }
 
-
     public Int2ObjectMap<BlastFurnaceRecipe> getBlastFurnaceRecipeMap() {
         return blastFurnaceRecipeMap;
     }
-
 
     public Int2ObjectMap<SmokerRecipe> getSmokerRecipeMap() {
         return smokerRecipeMap;
     }
 
-
     public Int2ObjectMap<CampfireRecipe> getCampfireRecipeMap() {
         return campfireRecipeMap;
     }
-
 
     public Map<UUID, MultiRecipe> getMultiRecipeMap() {
         return multiRecipeMap;
     }
 
-
     public Int2ObjectMap<BrewingRecipe> getBrewingRecipeMap() {
         return brewingRecipeMap;
     }
-
 
     public Int2ObjectMap<ContainerRecipe> getContainerRecipeMap() {
         return containerRecipeMap;
     }
 
-
     public Int2ObjectMap<StonecutterRecipe> getStonecutterRecipeMap() {
         return stonecutterRecipeMap;
     }
-
 
     public Int2ObjectMap<Map<UUID, ShapelessRecipe>> getShapelessRecipeMap() {
         return shapelessRecipeMap;
     }
 
-
     public Int2ObjectMap<Map<UUID, CartographyRecipe>> getCartographyRecipeMap() {
         return cartographyRecipeMap;
     }
 
-
     public Int2ObjectMap<Map<UUID, SmithingRecipe>> getSmithingRecipeMap() {
         return smithingRecipeMap;
     }
-
 
     public Object2DoubleOpenHashMap<Recipe> getRecipeXpMap() {
         return recipeXpMap;
@@ -382,7 +362,6 @@ public class CraftingManager {
         return recipe;
     }
 
-
     public CampfireRecipe matchCampfireRecipe(Item input) {
         if (input.isNull()) {
             return null;
@@ -392,7 +371,6 @@ public class CraftingManager {
         return recipe;
     }
 
-
     public BlastFurnaceRecipe matchBlastFurnaceRecipe(Item input) {
         if (input.isNull()) {
             return null;
@@ -401,7 +379,6 @@ public class CraftingManager {
         if (recipe == null) recipe = getBlastFurnaceRecipeMap().get(getItemHash(input, 0));
         return recipe;
     }
-
 
     public SmokerRecipe matchSmokerRecipe(Item input) {
         if (input.isNull()) {
@@ -415,7 +392,6 @@ public class CraftingManager {
     public void registerRecipe(Recipe recipe) {
         recipe.registerToCraftingManager(this);
     }
-
 
     public void registerCartographyRecipe(CartographyRecipe recipe) {
         this.addRecipe(recipe);
@@ -450,7 +426,6 @@ public class CraftingManager {
         map.put(hash, recipe);
     }
 
-
     public void registerStonecutterRecipe(StonecutterRecipe recipe) {
         this.addRecipe(recipe);
         getStonecutterRecipeMap().put(getItemHash(recipe.getResult()), recipe);
@@ -462,13 +437,11 @@ public class CraftingManager {
         getFurnaceRecipesMap().put(getItemHash(input), recipe);
     }
 
-
     public void registerBlastFurnaceRecipe(BlastFurnaceRecipe recipe) {
         this.addRecipe(recipe);
         Item input = recipe.getInput();
         getBlastFurnaceRecipeMap().put(getItemHash(input), recipe);
     }
-
 
     public void registerSmokerRecipe(SmokerRecipe recipe) {
         this.addRecipe(recipe);
@@ -476,13 +449,11 @@ public class CraftingManager {
         getSmokerRecipeMap().put(getItemHash(input), recipe);
     }
 
-
     public void registerCampfireRecipe(CampfireRecipe recipe) {
         this.addRecipe(recipe);
         Item input = recipe.getInput();
         getCampfireRecipeMap().put(getItemHash(input), recipe);
     }
-
 
     public void registerModProcessRecipe(@NotNull ModProcessRecipe recipe) {
         this.addRecipe(recipe);
@@ -490,7 +461,6 @@ public class CraftingManager {
         var inputHash = getShapelessItemDescriptorHash(recipe.getIngredients());
         map.put(inputHash, recipe);
     }
-
 
     public void registerSmithingRecipe(@NotNull SmithingRecipe recipe) {
         this.addRecipe(recipe);
@@ -524,24 +494,19 @@ public class CraftingManager {
         getContainerRecipeMap().put(getContainerHash(input, potion), recipe);
     }
 
-
     public void registerMultiRecipe(MultiRecipe recipe) {
         this.addRecipe(recipe);
         getMultiRecipeMap().put(recipe.getId(), recipe);
     }
 
-
-    @Nullable
-    public SmithingRecipe matchSmithingRecipe(Item equipment, Item ingredient) {
+    public @Nullable SmithingRecipe matchSmithingRecipe(Item equipment, Item ingredient) {
         List<Item> inputList = new ArrayList<>(2);
         inputList.add(equipment.decrement(equipment.count - 1));
         inputList.add(ingredient.decrement(ingredient.count - 1));
         return matchSmithingRecipe(inputList);
     }
 
-
-    @Nullable
-    public SmithingRecipe matchSmithingRecipe(@NotNull List<Item> inputList) {
+    public @Nullable SmithingRecipe matchSmithingRecipe(@NotNull List<Item> inputList) {
         inputList.sort(recipeComparator);
         UUID inputHash = getMultiItemHash(inputList);
         return getSmithingRecipeMap().values().stream().flatMap(map -> map.entrySet().stream())
@@ -554,13 +519,10 @@ public class CraftingManager {
                 );
     }
 
-
-    @Nullable
-    public SmithingRecipe matchSmithingRecipe(@NotNull Item equipment, @NotNull Item ingredient, @NotNull Item primaryOutput) {
+    public @Nullable SmithingRecipe matchSmithingRecipe(@NotNull Item equipment, @NotNull Item ingredient, @NotNull Item primaryOutput) {
         List<Item> inputList = Arrays.asList(equipment, ingredient);
         return matchSmithingRecipe(inputList, primaryOutput);
     }
-
 
     public SmithingRecipe matchSmithingRecipe(@NotNull List<Item> inputList, @NotNull Item primaryOutput) {
         int outputHash = getItemHash(primaryOutput);
@@ -592,11 +554,9 @@ public class CraftingManager {
         return getContainerRecipeMap().get(getContainerHash(input, potion));
     }
 
-
     public StonecutterRecipe matchStonecutterRecipe(Item output) {
         return getStonecutterRecipeMap().get(getItemHash(output));
     }
-
 
     public CartographyRecipe matchCartographyRecipe(List<Item> inputList, Item primaryOutput, List<Item> extraOutputList) {
         int outputHash = getItemHash(primaryOutput);
@@ -620,9 +580,7 @@ public class CraftingManager {
         return null;
     }
 
-
-    @Nullable
-    public ModProcessRecipe matchModProcessRecipe(@NotNull String category, @NotNull List<Item> inputList) {
+    public @Nullable ModProcessRecipe matchModProcessRecipe(@NotNull String category, @NotNull List<Item> inputList) {
         var recipeMap = getModProcessRecipeMap();
         var subMap = recipeMap.get(category);
         if (subMap != null) {
@@ -638,11 +596,9 @@ public class CraftingManager {
         return null;
     }
 
-
     public void setRecipeXp(Recipe recipe, double xp) {
         recipeXpMap.put(recipe, xp);
     }
-
 
     public static void setCraftingPacket(DataPacket craftingPacket) {
         CraftingManager.packet = craftingPacket;
@@ -890,7 +846,6 @@ public class CraftingManager {
         registerCartographyRecipe(new CartographyRecipe(Item.get(ItemID.MAP, 5), Collections.singletonList(Item.get(ItemID.MAP, 5))));
     }
 
-
     @SuppressWarnings("unchecked")
     private Recipe parseShapelessRecipe(Map<String, Object> recipeObject, String craftingBlock) {
         StringBuilder id = new StringBuilder("minecraft:");
@@ -956,7 +911,6 @@ public class CraftingManager {
             default -> null;
         };
     }
-
 
     @SuppressWarnings("unchecked")
     private Recipe parseShapeRecipe(Map<String, Object> recipeObject) {

@@ -94,12 +94,10 @@ public class EntityXpBottle extends EntityProjectile {
         this.getLevel().dropExpOrb(this, ThreadLocalRandom.current().nextInt(3, 12));
     }
 
-
     @Override
     protected void addHitEffect() {
         this.getLevel().addSound(this, Sound.RANDOM_GLASS);
     }
-
 
     @Override
     public String getOriginalName() {

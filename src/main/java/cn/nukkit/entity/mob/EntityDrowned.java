@@ -41,7 +41,6 @@ public class EntityDrowned extends EntityMob implements EntitySwimmable, EntityW
         return 1.9f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Drowned";
@@ -52,12 +51,10 @@ public class EntityDrowned extends EntityMob implements EntitySwimmable, EntityW
         return new Item[]{Item.get(Item.ROTTEN_FLESH)};
     }
 
-
     @Override
     public boolean isUndead() {
         return true;
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {

@@ -73,7 +73,6 @@ public class ShapedRecipe implements CraftingRecipe {
             throw new RuntimeException("Shaped recipes may only have 1, 2 or 3 columns, not " + columnCount);
         }
 
-
         for (int i = 0, shapeLength = shape.length; i < shapeLength; i++) {
             String row = shape[i];
             if (row.length() != columnCount) {
@@ -168,7 +167,6 @@ public class ShapedRecipe implements CraftingRecipe {
         return this.setIngredient(key, new DefaultDescriptor(item));
     }
 
-
     public ShapedRecipe setIngredient(char key, ItemDescriptor item) {
         if (String.join("", this.shape).indexOf(key) < 0) {
             throw new RuntimeException("Symbol does not appear in the shape: " + key);
@@ -189,7 +187,6 @@ public class ShapedRecipe implements CraftingRecipe {
         }
         return items;
     }
-
 
     public List<ItemDescriptor> getNewIngredientList() {
         List<ItemDescriptor> items = new ArrayList<>();
@@ -227,7 +224,6 @@ public class ShapedRecipe implements CraftingRecipe {
         }
         throw new UnsupportedOperationException("use getNewIngredient()");
     }
-
 
     public ItemDescriptor getNewIngredient(int x, int y) {
         try {

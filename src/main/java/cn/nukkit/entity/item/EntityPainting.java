@@ -134,7 +134,6 @@ public class EntityPainting extends EntityHanging {
         this.namedTag.putString("Motive", this.motive.title);
     }
 
-
     @Override
     public void onPushByPiston(BlockEntityPistonArm piston) {
         if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
@@ -152,12 +151,10 @@ public class EntityPainting extends EntityHanging {
         return Motive.BY_NAME.get(namedTag.getString("Motive"));
     }
 
-
     @Override
     public String getOriginalName() {
         return "Painting";
     }
-
 
     public enum Motive {
         KEBAB("Kebab", 1, 1),

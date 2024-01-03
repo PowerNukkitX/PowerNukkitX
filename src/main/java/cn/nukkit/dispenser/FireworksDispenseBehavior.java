@@ -17,7 +17,6 @@ public class FireworksDispenseBehavior extends DefaultDispenseBehavior {
         super();
     }
 
-
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         BlockFace opposite = face.getOpposite();

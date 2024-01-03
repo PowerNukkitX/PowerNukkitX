@@ -9,7 +9,6 @@ public class CloudParticle extends GenericParticle {
         this(pos, 0);
     }
 
-
     public CloudParticle(Vector3 pos, int scale) {
         super(pos, Particle.TYPE_EVAPORATION, scale);
     }

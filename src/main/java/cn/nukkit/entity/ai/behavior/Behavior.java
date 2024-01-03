@@ -33,7 +33,6 @@ public class Behavior extends AbstractBehavior {
         this(executor, evaluator, priority, weight, 1);
     }
 
-
     public Behavior(IBehaviorExecutor executor, IBehaviorEvaluator evaluator, int priority, int weight, int period) {
         this.executor = executor;
         this.evaluator = evaluator;

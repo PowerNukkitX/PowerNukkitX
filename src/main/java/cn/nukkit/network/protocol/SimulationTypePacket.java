@@ -56,17 +56,14 @@ public class SimulationTypePacket extends DataPacket {
         putByte((byte) type.ordinal());
     }
 
-
     @NotNull
     public SimulationType getSimulationType() {
         return type;
     }
 
-
     public void setSimulationType(@NotNull SimulationType type) {
         this.type = type;
     }
-
 
     public enum SimulationType {
         GAME,

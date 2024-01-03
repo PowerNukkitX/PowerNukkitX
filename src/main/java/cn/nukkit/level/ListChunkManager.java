@@ -2,19 +2,15 @@ package cn.nukkit.level;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.IChunk;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
 public class ListChunkManager implements ChunkManager {
     private final ChunkManager parent;
     private final List<Block> blocks;
-
 
     public ListChunkManager(ChunkManager parent) {
         this.parent = parent;
@@ -30,8 +26,6 @@ public class ListChunkManager implements ChunkManager {
         ).findAny();
     }
 
-
-
     @Override
     public void setBlockStateAt(int x, int y, int z, int layer, BlockState state) {
 
@@ -41,7 +35,6 @@ public class ListChunkManager implements ChunkManager {
     public BlockState getBlockStateAt(int x, int y, int z, int layer) {
         return findBlockAt(x, y, z, layer).map(Block::getBlockState).orElseGet(() -> parent.getBlockStateAt(x, y, z, layer));
     }
-
 
     @Override
     public IChunk getChunk(int chunkX, int chunkZ) {
@@ -55,11 +48,6 @@ public class ListChunkManager implements ChunkManager {
 
     @Override
     public void setChunk(int chunkX, int chunkZ, IChunk chunk) {
-
-    }
-
-    @Override
-    public void setChunk(int chunkX, int chunkZ, IChunk chunk) {
         this.parent.setChunk(chunkX, chunkZ, chunk);
     }
 
@@ -69,22 +57,17 @@ public class ListChunkManager implements ChunkManager {
     }
 
     @Override
-    public void setSeed(long seed) {
-
-    }
-
+    public void setSeed(long seed) {}
 
     @Override
     public boolean isOverWorld() {
         return parent.isOverWorld();
     }
 
-
     @Override
     public boolean isNether() {
         return parent.isNether();
     }
-
 
     @Override
     public boolean isTheEnd() {
@@ -92,9 +75,7 @@ public class ListChunkManager implements ChunkManager {
     }
 
     @Override
-    public void cleanChunks(long seed) {
-
-    }
+    public void cleanChunks(long seed) {}
 
     public List<Block> getBlocks() {
         return this.blocks;

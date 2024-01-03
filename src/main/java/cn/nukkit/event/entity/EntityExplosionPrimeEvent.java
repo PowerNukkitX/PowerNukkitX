@@ -41,11 +41,9 @@ public class EntityExplosionPrimeEvent extends EntityEvent implements Cancellabl
         this.blockBreaking = blockBreaking;
     }
 
-
     public boolean isIncendiary() {
         return fireChance > 0;
     }
-
 
     public void setIncendiary(boolean incendiary) {
         if (!incendiary) {
@@ -55,11 +53,9 @@ public class EntityExplosionPrimeEvent extends EntityEvent implements Cancellabl
         }
     }
 
-
     public double getFireChance() {
         return fireChance;
     }
-
 
     public void setFireChance(double fireChance) {
         this.fireChance = fireChance;

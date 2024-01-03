@@ -29,7 +29,6 @@ public final class DispenseBehaviorRegister {
         behaviors.remove(identifier);
     }
 
-
     public static void init() {
         registerBehavior(ItemID.SHEARS, new ShearsDispenseBehavior());
         registerBehavior(ItemID.BUCKET, new BucketDispenseBehavior());
@@ -130,7 +129,6 @@ public final class DispenseBehaviorRegister {
             protected double getMotion() {
                 return super.getMotion() * 1.25;
             }
-
 
             @Override
             protected Sound getShootingSound() {

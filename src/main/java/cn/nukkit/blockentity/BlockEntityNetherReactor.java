@@ -1,7 +1,6 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.block.BlockID;
-import cn.nukkit.blockproperty.value.NetherReactorState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -20,7 +19,6 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
     private NetherReactorState reactorState;
     private int progress;
 
-
     public BlockEntityNetherReactor(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -30,26 +28,21 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
         return getLevelBlock().getId() == BlockID.NETHER_REACTOR;
     }
 
-
     public NetherReactorState getReactorState() {
         return reactorState;
     }
-
 
     public void setReactorState(NetherReactorState reactorState) {
         this.reactorState = reactorState;
     }
 
-
     public int getProgress() {
         return progress;
     }
 
-
     public void setProgress(int progress) {
         this.progress = MathHelper.clamp(progress, 0, 900);
     }
-
 
     @Override
     public void loadNBT() {

@@ -2,8 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.OldLeafType;
 import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.event.block.LeavesDecayEvent;
@@ -29,7 +27,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.*;
  * @author Angelic47 (Nukkit Project)
  */
 public class BlockLeaves extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:leaves", OLD_LEAF_TYPE, PERSISTENT_BIT, UPDATE_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(LEAVES, OLD_LEAF_TYPE, PERSISTENT_BIT, UPDATE_BIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {

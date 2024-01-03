@@ -11,11 +11,9 @@ public class ItemChain extends Item {
         this(0, 1);
     }
 
-
     public ItemChain(Integer meta) {
         this(meta, 1);
     }
-
 
     public ItemChain(Integer meta, int count) {
         super(CHAIN, meta, count, "Chain");

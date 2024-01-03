@@ -10,8 +10,7 @@ public record JType(Type asmType) {
         return new JType(type);
     }
 
-    @Nullable
-    public static JType ofClassName(String className) {
+    public @Nullable static JType ofClassName(String className) {
         switch (className) {
             case "int" -> {
                 return of(int.class);

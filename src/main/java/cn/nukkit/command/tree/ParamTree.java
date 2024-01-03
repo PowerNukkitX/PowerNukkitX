@@ -135,8 +135,7 @@ public class ParamTree {
      * @param sender 命令发送者
      * @param args   命令的参数
      */
-    @Nullable
-    public Map.Entry<String, ParamList> matchAndParse(CommandSender sender, String commandLabel, String[] args) {
+    public @Nullable Map.Entry<String, ParamList> matchAndParse(CommandSender sender, String commandLabel, String[] args) {
         this.args = args;
         this.sender = sender;
         Map.Entry<String, ParamList> result = null;

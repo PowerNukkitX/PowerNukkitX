@@ -94,24 +94,20 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
         return 1.9f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Zombie";
     }
-
 
     @Override
     public boolean isUndead() {
         return true;
     }
 
-
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }
-
 
     @Override
     public boolean onUpdate(int currentTick) {
@@ -122,7 +118,6 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
         burn(this);
         return super.onUpdate(currentTick);
     }
-
 
     @Override
     public double getFloatingForceFactor() {

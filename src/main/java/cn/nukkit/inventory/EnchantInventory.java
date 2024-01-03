@@ -39,16 +39,13 @@ public class EnchantInventory extends FakeBlockUIComponent {
         who.resetCraftingGridType();
     }
 
-
     public Item getInputSlot() {
         return this.getItem(0);
     }
 
-
     public Item getOutputSlot() {
         return this.getItem(0);
     }
-
 
     public Item getReagentSlot() {
         return this.getItem(1);

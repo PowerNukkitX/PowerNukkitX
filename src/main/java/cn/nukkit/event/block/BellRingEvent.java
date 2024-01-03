@@ -30,16 +30,13 @@ public class BellRingEvent extends BlockEvent implements Cancellable {
         return (BlockBell) super.getBlock();
     }
 
-
     public Entity getEntity() {
         return entity;
     }
 
-
     public RingCause getCause() {
         return cause;
     }
-
 
     public enum RingCause {
         HUMAN_INTERACTION,

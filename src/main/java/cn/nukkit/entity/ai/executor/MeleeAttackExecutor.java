@@ -82,7 +82,6 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
         this.effects = effects;
     }
 
-
     @Override
     public boolean execute(EntityIntelligent entity) {
         attackTick++;

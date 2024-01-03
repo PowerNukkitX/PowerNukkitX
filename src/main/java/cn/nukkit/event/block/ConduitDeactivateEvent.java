@@ -13,7 +13,6 @@ public class ConduitDeactivateEvent extends BlockEvent {
         super(block);
     }
 
-
     public static HandlerList getHandlers() {
         return handlers;
     }

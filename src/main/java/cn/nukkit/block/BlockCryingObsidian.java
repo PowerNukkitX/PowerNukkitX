@@ -39,7 +39,6 @@ public class BlockCryingObsidian extends BlockSolid {
         return 10;
     }
 
-
     @Override
     public int getToolTier() {
         return ItemTool.TIER_DIAMOND;
@@ -59,7 +58,6 @@ public class BlockCryingObsidian extends BlockSolid {
     public boolean canHarvestWithHand() {
         return false;
     }
-
 
     @Override
     public int getToolType() {

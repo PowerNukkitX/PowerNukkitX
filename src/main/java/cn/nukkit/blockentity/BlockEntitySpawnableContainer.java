@@ -23,7 +23,6 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
         super(chunk, nbt);
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -66,7 +65,6 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
         }
     }
 
-
     protected int getSlotIndex(int index) {
         ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
         for (int i = 0; i < list.size(); i++) {
@@ -96,7 +94,7 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
         CompoundTag d = NBTIO.putItemHelper(item, index);
 
         // If item is air or count less than 0, remove the item from the "Items" list
-        if (item.getId() == Item.AIR || item.getCount() <= 0) {
+        if (item.isNull() || item.getCount() <= 0) {
             if (i >= 0) {
                 this.namedTag.getList("Items").remove(i);
             }

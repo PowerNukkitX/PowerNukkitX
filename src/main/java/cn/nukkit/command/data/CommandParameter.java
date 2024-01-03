@@ -22,7 +22,6 @@ public class CommandParameter {
         this(name, optional, type, enumData, postFix, null);
     }
 
-
     private CommandParameter(String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix, IParamNode<?> paramNode) {
         this.name = name;
         this.optional = optional;
@@ -31,7 +30,6 @@ public class CommandParameter {
         this.postFix = postFix;
         this.paramNode = paramNode;
     }
-
 
     /**
      * optional = false
@@ -43,7 +41,6 @@ public class CommandParameter {
         return newType(name, false, type);
     }
 
-
     /**
      * optional = false,CommandParamOption=[]
      *
@@ -54,7 +51,6 @@ public class CommandParameter {
     public static CommandParameter newType(String name, CommandParamType type, IParamNode<?> paramNode) {
         return newType(name, false, type, paramNode);
     }
-
 
     /**
      * paramNode = null , CommandParamOption=[]
@@ -177,7 +173,6 @@ public class CommandParameter {
     public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, CommandParamOption... options) {
         return newEnum(name, optional, data, null, options);
     }
-
 
     /**
      * optional = false

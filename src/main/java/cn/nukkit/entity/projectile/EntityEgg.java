@@ -70,7 +70,6 @@ public class EntityEgg extends EntityProjectile {
         return hasUpdate;
     }
 
-
     @Override
     protected void addHitEffect() {
         int particles = ThreadLocalRandom.current().nextInt(10) + 5;
@@ -79,7 +78,6 @@ public class EntityEgg extends EntityProjectile {
             level.addParticle(new ItemBreakParticle(this, egg));
         }
     }
-
 
     @Override
     public String getOriginalName() {

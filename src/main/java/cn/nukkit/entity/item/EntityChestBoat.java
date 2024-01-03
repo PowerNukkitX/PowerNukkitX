@@ -127,7 +127,6 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
         }
     }
 
-
     @Override
     protected void dropItem() {
         switch (this.getVariant()) {

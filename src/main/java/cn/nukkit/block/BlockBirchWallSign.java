@@ -13,7 +13,6 @@ public class BlockBirchWallSign extends BlockWallSign {
         super(PROPERTIES.getDefaultState());
     }
 
-
     public BlockBirchWallSign(BlockState blockState) {
         super(blockState);
     }
@@ -27,7 +26,6 @@ public class BlockBirchWallSign extends BlockWallSign {
     public String getWallSignId() {
         return BIRCH_WALL_SIGN;
     }
-
 
     @Override
     public String getStandingSignId() {

@@ -40,7 +40,6 @@ public class CraftingTakeResultExperienceAction extends CraftingTakeResultAction
         this.experience = experience;
     }
 
-
     public int getExperience() {
         return experience;
     }

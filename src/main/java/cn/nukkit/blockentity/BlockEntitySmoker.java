@@ -14,42 +14,35 @@ public class BlockEntitySmoker extends BlockEntityFurnace {
         super(chunk, nbt);
     }
 
-
     @Override
     protected String getFurnaceName() {
         return "Smoker";
     }
-
 
     @Override
     protected String getClientName() {
         return SMOKER;
     }
 
-
     @Override
     protected int getIdleBlockId() {
         return Block.SMOKER;
     }
-
 
     @Override
     protected int getBurningBlockId() {
         return Block.LIT_SMOKER;
     }
 
-
     @Override
     protected InventoryType getInventoryType() {
         return InventoryType.SMOKER;
     }
 
-
     @Override
     protected SmeltingRecipe matchRecipe(Item raw) {
         return this.server.getCraftingManager().matchSmokerRecipe(raw);
     }
-
 
     @Override
     protected int getSpeedMultiplier() {

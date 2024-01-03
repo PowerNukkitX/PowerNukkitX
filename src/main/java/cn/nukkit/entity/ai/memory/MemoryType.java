@@ -60,7 +60,6 @@ public final class MemoryType<Data> {
         this.defaultData = defaultData;
     }
 
-
     public static Set<MemoryType<?>> getPersistentMemories() {
         return PERSISTENT_MEMORIES;
     }
@@ -69,13 +68,11 @@ public final class MemoryType<Data> {
         return defaultData.get();
     }
 
-
     public MemoryType<Data> withCodec(IMemoryCodec<Data> codec) {
         this.codec = codec;
         PERSISTENT_MEMORIES.add(this);
         return this;
     }
-
 
     public void encode(Entity entity, Data data) {
         if (codec != null) {
@@ -97,9 +94,7 @@ public final class MemoryType<Data> {
         }
     }
 
-
-    @Nullable
-    public Data decode(Entity entity) {
+    public @Nullable Data decode(Entity entity) {
         if (codec != null) {
             var tag = entity.namedTag;
             return codec.decode(tag);

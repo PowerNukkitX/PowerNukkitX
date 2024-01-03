@@ -149,7 +149,6 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
         return 2.9f;
     }
 
-
     @Override
     public float getFloatingHeight() {
         return 0.8f;

@@ -96,8 +96,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         return new CustomItemDefinition.EdibleBuilder(item, creativeCategory);
     }
 
-    @Nullable
-    public String getDisplayName() {
+    public @Nullable String getDisplayName() {
         if (!this.nbt.getCompound("components").contains("minecraft:display_name")) return null;
         return this.nbt.getCompound("components").getCompound("minecraft:display_name").getString("value");
     }
@@ -396,24 +395,20 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                     .putBoolean("can_destroy_in_creative", true);
         }
 
-
         public ToolBuilder addRepairItemName(@NonNull String repairItemName, String molang) {
             super.addRepairs(List.of(repairItemName), molang);
             return this;
         }
-
 
         public ToolBuilder addRepairItemName(@NonNull String repairItemName, int repairAmount) {
             super.addRepairs(List.of(repairItemName), String.valueOf(repairAmount));
             return this;
         }
 
-
         public ToolBuilder addRepairItems(@NotNull List<Item> repairItems, String molang) {
             super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), molang);
             return this;
         }
-
 
         public ToolBuilder addRepairItems(@NotNull List<Item> repairItems, int repairAmount) {
             super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), String.valueOf(repairAmount));
@@ -658,24 +653,20 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                     .putBoolean("can_destroy_in_creative", true);
         }
 
-
         public ArmorBuilder addRepairItemName(@NonNull String repairItemName, String molang) {
             super.addRepairs(List.of(repairItemName), molang);
             return this;
         }
-
 
         public ArmorBuilder addRepairItemName(@NonNull String repairItemName, int repairAmount) {
             super.addRepairs(List.of(repairItemName), String.valueOf(repairAmount));
             return this;
         }
 
-
         public ArmorBuilder addRepairItems(@NotNull List<Item> repairItems, String molang) {
             super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), molang);
             return this;
         }
-
 
         public ArmorBuilder addRepairItems(@NotNull List<Item> repairItems, int repairAmount) {
             super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), String.valueOf(repairAmount));

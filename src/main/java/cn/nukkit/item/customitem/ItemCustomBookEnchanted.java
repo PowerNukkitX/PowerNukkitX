@@ -1,16 +1,14 @@
 package cn.nukkit.item.customitem;
 
-import cn.nukkit.item.ItemBookEnchanted;
-import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemEnchantedBook;
 import cn.nukkit.item.customitem.data.ItemCreativeCategory;
 import cn.nukkit.item.enchantment.Enchantment;
 
-
-public abstract class ItemCustomBookEnchanted extends ItemBookEnchanted implements CustomItem {
+public abstract class ItemCustomBookEnchanted extends ItemEnchantedBook implements CustomItem {
     private final String id;
 
     public ItemCustomBookEnchanted(String id, String name) {
-        super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, name);
+        super(id, 0, 1, name);
         this.id = id;
     }
 
@@ -18,7 +16,6 @@ public abstract class ItemCustomBookEnchanted extends ItemBookEnchanted implemen
     public String getTextureName() {
         return "book_enchanted";
     }
-
 
     @Override
     public String getNamespaceId() {

@@ -181,7 +181,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(CHERRY_STANDING_SIGN, BlockCherryStandingSign.class);// done.
         register(CHERRY_TRAPDOOR, BlockCherryTrapdoor.class);// done.
         register(CHERRY_WALL_SIGN, BlockCherryWallSign.class);// done.
-        register(CHERRY_WOOD, BlockCherryWood.class);
+        register(CHERRY_WOOD, BlockCherryWood.class);// done.
         register(CHEST, BlockChest.class);// done.
         register(CHISELED_BOOKSHELF, BlockChiseledBookshelf.class);// done.
 //        register(CHISELED_COPPER, BlockChiseledCopper.class);// experimental
@@ -273,7 +273,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(DARK_PRISMARINE_STAIRS, BlockDarkPrismarineStairs.class);// done.
         register(DARKOAK_STANDING_SIGN, BlockDarkoakStandingSign.class);// done.
         register(DARKOAK_WALL_SIGN, BlockDarkoakWallSign.class);// done.
-        register(DAYLIGHT_DETECTOR, BlockDaylightDetector.class);//TODO WeakPower
+        register(DAYLIGHT_DETECTOR, BlockDaylightDetector.class);// done.
         register(DAYLIGHT_DETECTOR_INVERTED, BlockDaylightDetectorInverted.class);// done.
         register(DEAD_BRAIN_CORAL, BlockDeadBrainCoral.class);// done.
         register(DEAD_BUBBLE_CORAL, BlockDeadBubbleCoral.class);// done.
@@ -783,7 +783,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(RED_GLAZED_TERRACOTTA, BlockRedGlazedTerracotta.class);// done.
         register(RED_MUSHROOM, BlockRedMushroom.class);// done.
         register(RED_MUSHROOM_BLOCK, BlockRedMushroomBlock.class);// done.
-        register(RED_NETHER_BRICK, BlockRedNetherBrick.class);
+        register(RED_NETHER_BRICK, BlockRedNetherBrick.class);// done.
         register(RED_NETHER_BRICK_STAIRS, BlockRedNetherBrickStairs.class);// done.
         register(RED_SANDSTONE, BlockRedSandstone.class);// done.
         register(RED_SANDSTONE_STAIRS, BlockRedSandstoneStairs.class);// done.
@@ -857,7 +857,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(STICKY_PISTON_ARM_COLLISION, BlockStickyPistonArmCollision.class);// done.
         register(STONE, BlockStone.class);// done.
         register(STONE_BLOCK_SLAB, BlockStoneBlockSlab.class);// done.
-        register(STONE_BLOCK_SLAB2, BlockStoneBlockSlab2.class);
+        register(STONE_BLOCK_SLAB2, BlockStoneBlockSlab2.class);// done.
         register(STONE_BLOCK_SLAB3, BlockStoneBlockSlab3.class);// done.
         register(STONE_BLOCK_SLAB4, BlockStoneBlockSlab4.class);// done.
         register(STONE_BRICK_STAIRS, BlockStoneBrickStairs.class);// done.
@@ -886,7 +886,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(STRUCTURE_VOID, BlockStructureVoid.class);// done.
         register(SUSPICIOUS_GRAVEL, BlockSuspiciousGravel.class);// done.
         register(SUSPICIOUS_SAND, BlockSuspiciousSand.class);// done.
-        register(SWEET_BERRY_BUSH, BlockSweetBerryBush.class);
+        register(SWEET_BERRY_BUSH, BlockSweetBerryBush.class);// done.
         register(TALLGRASS, BlockTallgrass.class);// done.
         register(TARGET, BlockTarget.class);// done.
         register(TINTED_GLASS, BlockTintedGlass.class);// done.
@@ -911,7 +911,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
 //        register(TUFF_WALL, BlockTuffWall.class);// experimental
         register(TURTLE_EGG, BlockTurtleEgg.class);// done.
         register(TWISTING_VINES, BlockTwistingVines.class);// done.
-        register(UNDERWATER_TORCH, BlockUnderwaterTorch.class);
+//        register(UNDERWATER_TORCH, BlockUnderwaterTorch.class);//edu
         register(UNDYED_SHULKER_BOX, BlockUndyedShulkerBox.class);// done.
         register(UNKNOWN, BlockUnknown.class);// done.
         register(UNLIT_REDSTONE_TORCH, BlockUnlitRedstoneTorch.class);// done.
@@ -1069,9 +1069,8 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         } else return properties;
     }
 
-    @NotNull
     @Override
-    public Block get(String identifier) {
+    public @NotNull Block get(String identifier) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
         if (constructor == null) return new BlockAir();
         try {

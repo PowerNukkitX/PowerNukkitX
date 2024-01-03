@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public class BlockBorderBlock extends BlockWallBase {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:border_block", CommonBlockProperties.WALL_CONNECTION_TYPE_EAST, CommonBlockProperties.WALL_CONNECTION_TYPE_NORTH, CommonBlockProperties.WALL_CONNECTION_TYPE_SOUTH, CommonBlockProperties.WALL_CONNECTION_TYPE_WEST, CommonBlockProperties.WALL_POST_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BORDER_BLOCK, CommonBlockProperties.WALL_CONNECTION_TYPE_EAST, CommonBlockProperties.WALL_CONNECTION_TYPE_NORTH, CommonBlockProperties.WALL_CONNECTION_TYPE_SOUTH, CommonBlockProperties.WALL_CONNECTION_TYPE_WEST, CommonBlockProperties.WALL_POST_BIT);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -52,7 +52,6 @@ public class BlockBorderBlock extends BlockWallBase {
     }
 
     @Override
-
     public  boolean canBePulled() {
         return false;
     }
@@ -69,7 +68,6 @@ public class BlockBorderBlock extends BlockWallBase {
         }
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
-
 
     @Override
     public boolean isBreakable(Vector3 vector, int layer, BlockFace face, Item item, @Nullable Player player, boolean setBlockDestroy) {

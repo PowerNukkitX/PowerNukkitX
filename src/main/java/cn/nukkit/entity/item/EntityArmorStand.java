@@ -120,12 +120,10 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
     }
 
-
     @Override
     public boolean isPersistent() {
         return true;
     }
-
 
     @Override
     public void setPersistent(boolean persistent) {
@@ -290,7 +288,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         return false;
     }
 
-
     private int getPose() {
         return this.dataProperties.getInt(Entity.DATA_ARMOR_STAND_POSE_INDEX);
     }
@@ -438,7 +435,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         return true;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Armor Stand";
@@ -465,7 +461,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     public EntityArmorInventory getArmorInventory() {
         return this.armorInventory;
     }
-
 
     public EntityEquipmentInventory getEquipmentInventory() {
         return this.equipmentInventory;

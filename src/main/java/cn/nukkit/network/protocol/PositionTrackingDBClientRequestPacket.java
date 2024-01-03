@@ -25,7 +25,6 @@ public class PositionTrackingDBClientRequestPacket extends DataPacket {
         return action;
     }
 
-
     public int getTrackingId() {
         return trackingId;
     }
@@ -48,7 +47,6 @@ public class PositionTrackingDBClientRequestPacket extends DataPacket {
     public byte pid() {
         return NETWORK_ID;
     }
-
 
     public enum Action {
 

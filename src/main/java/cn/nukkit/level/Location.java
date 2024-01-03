@@ -46,11 +46,9 @@ public class Location extends Position {
         this(x, y, z, yaw, pitch, 0, level);
     }
 
-
     public Location(double x, double y, double z, double yaw, double pitch, double headYaw) {
         this(x, y, z, yaw, pitch, headYaw, null);
     }
-
 
     public Location(double x, double y, double z, double yaw, double pitch, double headYaw, Level level) {
         this.x = x;
@@ -78,7 +76,6 @@ public class Location extends Position {
         return new Location(pos.x, pos.y, pos.z, yaw, pitch, (level == null) ? ((pos instanceof Position) ? ((Position) pos).level : null) : level);
     }
 
-
     public static Location fromObject(Vector3 pos, Level level, double yaw, double pitch, double headYaw) {
         if (level == null && pos instanceof Position) {
             level = ((Position) pos).level;
@@ -90,7 +87,6 @@ public class Location extends Position {
         return this.yaw;
     }
 
-
     public Location setYaw(double yaw) {
         this.yaw = yaw;
         return this;
@@ -100,23 +96,19 @@ public class Location extends Position {
         return this.pitch;
     }
 
-
     public Location setPitch(double pitch) {
         this.pitch = pitch;
         return this;
     }
 
-
     public double getHeadYaw() {
         return this.headYaw;
     }
-
 
     public Location setHeadYaw(double headYaw) {
         this.headYaw = headYaw;
         return this;
     }
-
 
     @Override
     public Location setX(double x) {
@@ -124,13 +116,11 @@ public class Location extends Position {
         return this;
     }
 
-
     @Override
     public Location setY(double y) {
         super.setY(y);
         return this;
     }
-
 
     @Override
     public Location setZ(double z) {
@@ -143,9 +133,8 @@ public class Location extends Position {
         return "Location (level=" + (this.isValid() ? this.getLevel().getName() : "null") + ", x=" + this.x + ", y=" + this.y + ", z=" + this.z + ", yaw=" + this.yaw + ", pitch=" + this.pitch + ", headYaw=" + this.headYaw + ")";
     }
 
-    @NotNull
     @Override
-    public Location getLocation() {
+    public @NotNull Location getLocation() {
         if (this.isValid()) return new Location(this.x, this.y, this.z, this.yaw, this.pitch, this.headYaw, this.level);
         else throw new LevelException("Undefined Level reference");
     }

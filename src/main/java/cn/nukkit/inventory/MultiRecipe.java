@@ -36,7 +36,6 @@ public class MultiRecipe implements Recipe {
         return RecipeType.MULTI;
     }
 
-
     public UUID getId() {
         return this.id;
     }

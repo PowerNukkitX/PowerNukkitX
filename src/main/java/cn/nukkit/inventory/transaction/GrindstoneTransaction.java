@@ -117,21 +117,17 @@ public class GrindstoneTransaction extends InventoryTransaction {
         return true;
     }
 
-
     public Item getFirstItem() {
         return firstItem == null? null : firstItem.clone();
     }
-
 
     public Item getSecondItem() {
         return secondItem == null? null : secondItem.clone();
     }
 
-
     public Item getOutputItem() {
         return outputItem == null? null : outputItem.clone();
     }
-
 
     public static boolean checkForItemPart(List<InventoryAction> actions) {
         return actions.stream().anyMatch(it-> it instanceof GrindstoneItemAction);

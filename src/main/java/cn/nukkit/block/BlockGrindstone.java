@@ -42,7 +42,6 @@ public class BlockGrindstone extends BlockTransparent implements Faceable {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

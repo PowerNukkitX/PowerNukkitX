@@ -80,7 +80,6 @@ public class PlayerEnchantOptionsPacket extends DataPacket {
 
     }
 
-
     @Value
     public class EnchantOptionData {
         private final int minLevel;
@@ -91,7 +90,6 @@ public class PlayerEnchantOptionsPacket extends DataPacket {
         private final String enchantName;
         private final int enchantNetId;
     }
-
 
     @Value
     public class EnchantData {

@@ -2,12 +2,10 @@ package cn.nukkit.level.generator.task;
 
 import cn.nukkit.Server;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.Generator;
-import cn.nukkit.level.generator.SimpleChunkManager;
 import cn.nukkit.scheduler.AsyncTask;
 
 /**
@@ -38,7 +36,6 @@ public class PopulationTask extends AsyncTask {
             }
         }
     }
-
 
     @Override
     public void onRun() {

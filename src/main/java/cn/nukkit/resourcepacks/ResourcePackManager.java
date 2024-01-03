@@ -24,7 +24,6 @@ public class ResourcePackManager {
         reloadPacks();
     }
 
-
     public ResourcePackManager(ResourcePackLoader... loaders) {
         this(Sets.newHashSet(loaders));
     }
@@ -45,21 +44,17 @@ public class ResourcePackManager {
         return this.resourcePacksById.get(id);
     }
 
-
     public int getMaxChunkSize() {
         return this.maxChunkSize;
     }
-
 
     public void setMaxChunkSize(int size) {
         this.maxChunkSize = size;
     }
 
-
     public void registerPackLoader(ResourcePackLoader loader) {
         this.loaders.add(loader);
     }
-
 
     public void reloadPacks() {
         this.resourcePacksById.clear();

@@ -30,7 +30,6 @@ public final class VehicleDestroyByEntityEvent extends VehicleDestroyEvent imple
         this.destroyer = destroyer;
     }
 
-
     public static HandlerList getHandlers() {
         return HANDLER_LIST;
     }

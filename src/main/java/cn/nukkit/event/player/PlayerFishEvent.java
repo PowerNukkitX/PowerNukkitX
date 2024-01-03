@@ -36,36 +36,29 @@ public class PlayerFishEvent extends PlayerEvent implements Cancellable {
         this.motion = motion;
     }
 
-
     public EntityFishingHook getHook() {
         return hook;
     }
-
 
     public Item getLoot() {
         return loot;
     }
 
-
     public void setLoot(Item loot) {
         this.loot = loot;
     }
-
 
     public int getExperience() {
         return experience;
     }
 
-
     public void setExperience(int experience) {
         this.experience = experience;
     }
 
-
     public Vector3 getMotion() {
         return motion;
     }
-
 
     public void setMotion(Vector3 motion) {
         this.motion = motion;

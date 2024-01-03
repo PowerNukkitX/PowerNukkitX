@@ -150,7 +150,6 @@ public class CommandEnum {
         return name.hashCode();
     }
 
-
     public void updateSoftEnum(UpdateSoftEnumPacket.Type mode, String... value) {
         if (!this.isSoft) return;
         UpdateSoftEnumPacket pk = new UpdateSoftEnumPacket();
@@ -159,7 +158,6 @@ public class CommandEnum {
         pk.type = mode;
         Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), pk);
     }
-
 
     public void updateSoftEnum() {
         if (!this.isSoft && this.strListSupplier == null) return;

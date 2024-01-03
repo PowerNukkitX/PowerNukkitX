@@ -6,7 +6,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockBlackstoneSlab extends BlockSlab {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:blackstone_slab", CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BLACKSTONE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -21,16 +21,14 @@ public class BlockBlackstoneSlab extends BlockSlab {
         super(blockstate, BLACKSTONE_DOUBLE_SLAB);
     }
 
-
     @Override
     public String getSlabName() {
         return "Blackstone Slab";
     }
 
-
     @Override
     public boolean isSameType(BlockSlab slab) {
-        return slab.getId() == getId();
+        return slab.getId().equals(getId());
     }
 
     @Override

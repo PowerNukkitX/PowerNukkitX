@@ -34,11 +34,9 @@ public interface EntityNameable {
         return false;
     }
 
-
     default boolean playerApplyNameTag(@NotNull Player player, @NotNull Item item) {
         return playerApplyNameTag(player, item, true);
     }
-
 
     default boolean playerApplyNameTag(@NotNull Player player, @NotNull Item item, boolean consume) {
         if (item.hasCustomName()) {
@@ -53,7 +51,6 @@ public interface EntityNameable {
         }
         return false;
     }
-
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN",

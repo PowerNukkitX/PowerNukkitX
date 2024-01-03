@@ -36,7 +36,6 @@ public class BlockBrickStairs extends BlockStairs {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

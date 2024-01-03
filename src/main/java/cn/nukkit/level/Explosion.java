@@ -52,7 +52,6 @@ public class Explosion {
         this(center, size, (Object) what);
     }
 
-
     public Explosion(Position center, double size, Block what) {
         this(center, size, (Object) what);
     }
@@ -73,21 +72,17 @@ public class Explosion {
         this.what = what;
     }
 
-
     public double getFireChance() {
         return fireChance;
     }
-
 
     public void setFireChance(double fireChance) {
         this.fireChance = fireChance;
     }
 
-
     public boolean isIncendiary() {
         return fireChance > 0;
     }
-
 
     public void setIncendiary(boolean incendiary) {
         if (!incendiary) {

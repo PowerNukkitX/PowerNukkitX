@@ -61,21 +61,17 @@ public class PlayerTypingAnvilInventoryEvent extends InventoryEvent {
         return (AnvilInventory) super.getInventory();
     }
 
-
     @NotNull
     public Player getPlayer() {
         return player;
     }
-
 
     @NotNull
     public String getTypedName() {
         return typedName;
     }
 
-
-    @Nullable
-    public String getPreviousName() {
+    public @Nullable String getPreviousName() {
         return previousName;
     }
 }

@@ -280,15 +280,13 @@ public class EntityItem extends Entity {
         }
     }
 
-
     @Override
     public String getOriginalName() {
         return "Item";
     }
 
-    @NotNull
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         if (this.hasCustomName()) {
             return getNameTag();
         }

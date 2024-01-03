@@ -84,7 +84,6 @@ public class NetworkInventoryAction {
         return inventorySource;
     }
 
-
     public void setInventorySource(InventorySource inventorySource) {
         this.inventorySource = inventorySource;
     }

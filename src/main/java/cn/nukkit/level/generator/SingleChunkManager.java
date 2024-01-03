@@ -34,18 +34,15 @@ public class SingleChunkManager extends SimpleChunkManager {
         }
     }
 
-
     @Override
     public boolean isOverWorld() {
         return chunk.isOverWorld();
     }
 
-
     @Override
     public boolean isNether() {
         return chunk.isNether();
     }
-
 
     @Override
     public boolean isTheEnd() {

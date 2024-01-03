@@ -89,7 +89,6 @@ public class EntitySplashPotion extends EntityProjectile {
         this.splash(entity);
     }
 
-
     protected void splash(Entity collidedWith) {
         Potion potion = Potion.getPotion(this.potionId);
         PotionCollideEvent event = new PotionCollideEvent(potion, this);
@@ -158,7 +157,6 @@ public class EntitySplashPotion extends EntityProjectile {
         }
         return hasUpdate;
     }
-
 
     @Override
     public String getOriginalName() {

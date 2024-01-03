@@ -42,7 +42,6 @@ public class Geometry implements NBTData {
         return this;
     }
 
-
     @Override
     public CompoundTag toCompoundTag() {
         var boneVisibility = new CompoundTag();

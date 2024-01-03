@@ -42,15 +42,13 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
         return "Beehive";
     }
 
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    public @NotNull String getBlockEntityType() {
         return BlockEntity.BEEHIVE;
     }
 
-    @NotNull
     @Override
-    public Class<? extends BlockEntityBeehive> getBlockEntityClass() {
+    public @NotNull Class<? extends BlockEntityBeehive> getBlockEntityClass() {
         return BlockEntityBeehive.class;
     }
 
@@ -107,7 +105,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-        if (item.getId() == ItemID.SHEARS && isFull()) {
+        if (item.getId().equals(ItemID.SHEARS) && isFull()) {
             honeyCollected(player);
             level.addSound(add(0.5, 0.5, 0.5), Sound.BLOCK_BEEHIVE_SHEAR);
             item.useOn(this);
@@ -125,11 +123,9 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
         return true;
     }
 
-
     public void honeyCollected(Player player) {
         honeyCollected(player, level.getServer().getDifficulty() > 0 && !player.isCreative());
     }
-
 
     public void honeyCollected(Player player, boolean angerBees) {
         setHoneyLevel(0);
@@ -137,7 +133,6 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
             angerBees(player);
         }
     }
-
 
     public void angerBees(Player player) {
         BlockEntityBeehive beehive = getBlockEntity();
@@ -168,7 +163,6 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
         return true;
     }
 
-
     @Override
     public boolean mustSilkTouch(Vector3 vector, int layer, BlockFace face, Item item, Player player) {
         if (player != null) {
@@ -179,7 +173,6 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
         }
         return super.mustSilkTouch(vector, layer, face, item, player);
     }
-
 
     @Override
     public boolean mustDrop(Vector3 vector, int layer, BlockFace face, Item item, Player player) {
@@ -201,27 +194,22 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
         return BlockFace.fromHorizontalIndex(getPropertyValue(CommonBlockProperties.DIRECTION));
     }
 
-
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.DIRECTION,face.getHorizontalIndex());
     }
 
-
     public void setHoneyLevel(int honeyLevel) {
         setPropertyValue(HONEY_LEVEL, honeyLevel);
     }
-
 
     public int getHoneyLevel() {
         return getPropertyValue(HONEY_LEVEL);
     }
 
-
     public boolean isEmpty() {
         return getHoneyLevel() == HONEY_LEVEL.getMin();
     }
-
 
     public boolean isFull() {
         return getPropertyValue(HONEY_LEVEL) == HONEY_LEVEL.getMax();

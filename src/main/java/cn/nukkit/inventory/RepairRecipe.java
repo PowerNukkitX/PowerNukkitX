@@ -37,7 +37,6 @@ public class RepairRecipe implements Recipe {
         return result.clone();
     }
 
-
     public List<Item> getIngredientList() {
         List<Item> ingredients = new ArrayList<>();
         for (Item ingredient : this.ingredients) {
@@ -56,7 +55,6 @@ public class RepairRecipe implements Recipe {
     public RecipeType getType() {
         return RecipeType.REPAIR;
     }
-
 
     public InventoryType getInventoryType() {
         return inventoryType;

@@ -34,7 +34,6 @@ public class FilterTextPacket extends DataPacket {
     public FilterTextPacket() {
     }
 
-
     public FilterTextPacket(String text, boolean fromServer) {
         this.text = text;
         this.fromServer = fromServer;
@@ -58,21 +57,17 @@ public class FilterTextPacket extends DataPacket {
         fromServer = getBoolean();
     }
 
-
     public String getText() {
         return text;
     }
-
 
     public void setText(String text) {
         this.text = text;
     }
 
-
     public boolean isFromServer() {
         return fromServer;
     }
-
 
     public void setFromServer(boolean fromServer) {
         this.fromServer = fromServer;

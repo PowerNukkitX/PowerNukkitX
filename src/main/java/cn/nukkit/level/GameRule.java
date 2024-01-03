@@ -81,7 +81,6 @@ public enum GameRule {
         return name;
     }
 
-
     public boolean isDeprecated() {
         return deprecated;
     }

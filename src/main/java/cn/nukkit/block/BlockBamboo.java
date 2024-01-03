@@ -33,9 +33,8 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
         super(blockState);
     }
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull  BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -63,7 +62,6 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
         return 0;
     }
 
-
     public boolean grow(Block up) {
         BlockBamboo newState = new BlockBamboo();
         if (isThick()) {
@@ -85,7 +83,6 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
         }
         return false;
     }
-
 
     public int countHeight() {
         int count = 0;
@@ -229,21 +226,17 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
         return 5;
     }
 
-
     public boolean isThick() {
         return getBambooStalkThickness().equals(BambooStalkThickness.THICK);
     }
-
 
     public void setThick(boolean thick) {
         setBambooStalkThickness(thick ? BambooStalkThickness.THICK : BambooStalkThickness.THIN);
     }
 
-
     public BambooStalkThickness getBambooStalkThickness() {
         return getPropertyValue(BAMBOO_STALK_THICKNESS);
     }
-
 
     public void setBambooStalkThickness(@NotNull BambooStalkThickness value) {
         setPropertyValue(BAMBOO_STALK_THICKNESS, value);
@@ -253,7 +246,6 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
-
 
     public BambooLeafSize getBambooLeafSize() {
         return getPropertyValue(BAMBOO_LEAF_SIZE);
@@ -317,17 +309,14 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
         return false;
     }
 
-
     public int getAge() {
         return getPropertyValue(AGE_BIT) ? 1 : 0;
     }
-
 
     public void setAge(int age) {
         age = MathHelper.clamp(age, 0, 1);
         setPropertyValue(AGE_BIT, age == 1);
     }
-
 
     @Override
     public boolean breaksWhenMoved() {

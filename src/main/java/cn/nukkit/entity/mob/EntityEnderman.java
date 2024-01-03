@@ -38,12 +38,10 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
         return 2.9f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Enderman";
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {

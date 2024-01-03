@@ -13,7 +13,6 @@ public class PlayerBucketEmptyEvent extends PlayerBucketEvent {
         return handlers;
     }
 
-
     public PlayerBucketEmptyEvent(Player who, Block blockClicked, BlockFace blockFace, Block liquid, Item bucket, Item itemInHand) {
         super(who, blockClicked, blockFace, liquid, bucket, itemInHand);
     }

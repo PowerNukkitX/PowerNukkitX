@@ -44,19 +44,16 @@ public class EntityEnderDragon extends EntityMob implements EntityFlyable {
         return false;
     }
 
-
     @Deprecated
     @Override
     public boolean applyNameTag(Item item) {
         return false;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Ender Dragon";
     }
-
 
     @Override
     public boolean isBoss() {

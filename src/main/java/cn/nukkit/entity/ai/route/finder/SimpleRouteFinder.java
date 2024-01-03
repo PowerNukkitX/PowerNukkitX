@@ -52,8 +52,7 @@ public abstract class SimpleRouteFinder implements IRouteFinder {
     }
 
     @Override
-    @Nullable
-    public Node getCurrentNode() {
+    public @Nullable Node getCurrentNode() {
         if (this.hasCurrentNode()) {
             return nodes.get(currentIndex);
         }
@@ -72,8 +71,7 @@ public abstract class SimpleRouteFinder implements IRouteFinder {
     }
 
     @Override
-    @Nullable
-    public Node next() {
+    public @Nullable Node next() {
         if (this.hasNext()) {
             return this.nodes.get(++currentIndex);
         }
@@ -95,9 +93,8 @@ public abstract class SimpleRouteFinder implements IRouteFinder {
         this.currentIndex = index;
     }
 
-    @Nullable
     @Override
-    public Node getNode(int index) {
+    public @Nullable Node getNode(int index) {
         if (index + 1 < nodes.size()) {
             return this.nodes.get(index);
         }

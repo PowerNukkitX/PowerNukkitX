@@ -38,12 +38,10 @@ public class EntityVex extends EntityMob implements EntityFlyable {
         return 0.8f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Vex";
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {

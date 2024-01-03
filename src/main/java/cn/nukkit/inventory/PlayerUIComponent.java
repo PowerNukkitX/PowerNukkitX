@@ -36,15 +36,13 @@ public class PlayerUIComponent extends BaseInventory {
         throw new UnsupportedOperationException();
     }
 
-
     @Override
     public String getTitle() {
         throw new UnsupportedOperationException();
     }
 
-    @NotNull
     @Override
-    public Item getItem(int index) {
+    public @NotNull Item getItem(int index) {
         return this.playerUI.getItem(index + this.offset);
     }
 
@@ -74,7 +72,6 @@ public class PlayerUIComponent extends BaseInventory {
         contents.keySet().removeIf(slot -> slot < offset || slot > offset + size);
         return contents;
     }
-
 
     @Override
     public void sendContents(Player... players) {

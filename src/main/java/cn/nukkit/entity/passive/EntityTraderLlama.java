@@ -25,7 +25,6 @@ public class EntityTraderLlama extends EntityCreature implements IEntityNPC {
         return 1.9f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Wandering Trader";

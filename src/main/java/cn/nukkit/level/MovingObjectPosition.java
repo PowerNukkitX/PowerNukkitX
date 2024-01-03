@@ -67,7 +67,6 @@ public class MovingObjectPosition {
         return objectPosition;
     }
 
-
     @Nullable
     @SuppressWarnings("java:S1874")
     public BlockFace getFaceHit() {
@@ -88,7 +87,6 @@ public class MovingObjectPosition {
                 return null;
         }
     }
-
 
     @SuppressWarnings("java:S1874")
     public void setFaceHit(@Nullable BlockFace face) {

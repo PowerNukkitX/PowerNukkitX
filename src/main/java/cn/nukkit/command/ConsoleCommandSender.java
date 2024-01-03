@@ -100,7 +100,6 @@ public class ConsoleCommandSender implements CommandSender {
         this.sendMessage(this.getServer().getLanguage().tr(message));
     }
 
-
     @Override
     public void sendCommandOutput(CommandOutputContainer container) {
         if (this.getLocation().getLevel().getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
@@ -115,9 +114,8 @@ public class ConsoleCommandSender implements CommandSender {
         }
     }
 
-    @NotNull
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return "CONSOLE";
     }
 

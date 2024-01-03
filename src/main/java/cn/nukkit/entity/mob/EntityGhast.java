@@ -37,7 +37,6 @@ public class EntityGhast extends EntityMob implements EntityFlyable {
         return 4;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Ghast";

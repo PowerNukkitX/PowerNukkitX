@@ -250,7 +250,6 @@ public class NukkitMetrics {
         };
     }
 
-
     public static void closeNow(Server server) {
         NukkitMetrics nukkitMetrics = getOrCreateMetrics(server);
         if (nukkitMetrics.metrics != null) nukkitMetrics.metrics.close();

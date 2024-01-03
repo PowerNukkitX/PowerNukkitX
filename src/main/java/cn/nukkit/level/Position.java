@@ -102,32 +102,25 @@ public class Position extends NamedPosition {
         return this;
     }
 
-
     @Override
     public Position setComponents(Vector3 pos) {
         super.setComponents(pos);
         return this;
     }
 
-
-    @Nullable
-    public BlockEntity getLevelBlockEntity() {
+    public @Nullable BlockEntity getLevelBlockEntity() {
         return getValidLevel().getBlockEntity(this);
     }
 
-
-    @Nullable
-    public final <T extends BlockEntity> T getTypedBlockEntity(@NotNull Class<T> type) {
+    public @Nullable final <T extends BlockEntity> T getTypedBlockEntity(@NotNull Class<T> type) {
         BlockEntity blockEntity = getValidLevel().getBlockEntity(this);
         return type.isInstance(blockEntity) ? type.cast(blockEntity) : null;
     }
-
 
     @NotNull
     public BlockState getLevelBlockState() {
         return getLevelBlockState(0);
     }
-
 
     @NotNull
     public BlockState getLevelBlockState(int layer) {
@@ -138,36 +131,29 @@ public class Position extends NamedPosition {
         return getLevelBlock(true);
     }
 
-
     public Block getLevelBlock(boolean load) {
         return getValidLevel().getBlock(this, load);
     }
-
 
     public Block getLevelBlock(int layer) {
         return getValidLevel().getBlock(this, layer);
     }
 
-
     public Block getLevelBlock(int layer, boolean load) {
         return getValidLevel().getBlock(this, layer, load);
     }
-
 
     public Block getTickCachedLevelBlock() {
         return getValidLevel().getTickCachedBlock(this);
     }
 
-
     public Set<Block> getLevelBlockAround() {
         return getValidLevel().getBlockAround(this);
     }
 
-
     public Block getLevelBlockAtLayer(int layer) {
         return getValidLevel().getBlock(this, layer);
     }
-
 
     public Block getTickCachedLevelBlockAtLayer(int layer) {
         return getValidLevel().getTickCachedBlock(this, layer);
@@ -178,13 +164,10 @@ public class Position extends NamedPosition {
         return new Location(this.x, this.y, this.z, 0, 0, getValidLevel());
     }
 
-
-    @NotNull
     @Override
-    public String getLevelName() {
+    public @NotNull String getLevelName() {
         return getValidLevel().getName();
     }
-
 
     @NotNull
     public final Level getValidLevel() {
@@ -275,8 +258,7 @@ public class Position extends NamedPosition {
         return (Position) super.clone();
     }
 
-    @Nullable
-    public IChunk getChunk() {
+    public @Nullable IChunk getChunk() {
         return isValid() ? level.getChunk(getChunkX(), getChunkZ()) : null;
     }
 }

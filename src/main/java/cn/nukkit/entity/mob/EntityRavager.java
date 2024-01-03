@@ -35,12 +35,10 @@ public class EntityRavager extends EntityMob implements EntityWalkable {
         return 1.2f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Ravager";
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {

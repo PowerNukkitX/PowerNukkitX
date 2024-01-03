@@ -15,9 +15,8 @@ public class BlockCalcite extends BlockSolid {
         super(blockState);
     }
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -40,7 +39,6 @@ public class BlockCalcite extends BlockSolid {
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
-
 
     @Override
     public int getToolTier() {

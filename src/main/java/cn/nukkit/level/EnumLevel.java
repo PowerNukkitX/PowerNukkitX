@@ -90,7 +90,6 @@ public enum EnumLevel {
         return Math.round((float) value / factor) * factor;
     }
 
-
     public static Level getOtherTheEndPair(Level current) {
         if (current == OVERWORLD.level || current.getDimension() == Level.DIMENSION_OVERWORLD) {
             return THE_END.level;
@@ -100,7 +99,6 @@ public enum EnumLevel {
             throw new IllegalArgumentException("Neither overworld nor the end given!");
         }
     }
-
 
     public static Position moveToTheEnd(Position current) {
         if (THE_END.level == null) {

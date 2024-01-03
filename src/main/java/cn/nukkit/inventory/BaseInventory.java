@@ -96,12 +96,10 @@ public abstract class BaseInventory implements Inventory {
         return title;
     }
 
-    @NotNull
     @Override
-    public Item getItem(int index) {
+    public @NotNull Item getItem(int index) {
         return this.slots.containsKey(index) ? this.slots.get(index).clone() : AIR_ITEM.clone();
     }
-
 
     @Override
     public Item getUnclonedItem(int index) {
@@ -474,7 +472,6 @@ public abstract class BaseInventory implements Inventory {
             getViewers().forEach(p -> p.updateTrackingPositions(true));
         }
 
-
         if (this.listeners != null) {
             for (InventoryListener listener : listeners) {
                 listener.onInventoryChanged(this, before, index);
@@ -593,7 +590,6 @@ public abstract class BaseInventory implements Inventory {
         this.sendSlot(index, players.toArray(Player.EMPTY_ARRAY));
     }
 
-
     @Override
     public void addListener(InventoryListener listener) {
         if (this.listeners == null) {
@@ -602,7 +598,6 @@ public abstract class BaseInventory implements Inventory {
 
         this.listeners.add(listener);
     }
-
 
     @Override
     public void removeListener(InventoryListener listener) {

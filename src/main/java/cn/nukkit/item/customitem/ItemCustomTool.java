@@ -16,13 +16,13 @@ public abstract class ItemCustomTool extends ItemTool implements ItemDurable, Cu
     private final String textureName;
 
     public ItemCustomTool(@NotNull String id, @Nullable String name) {
-        super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
+        super(id, 0, 1, name);
         this.id = id;
         this.textureName = name;
     }
 
     public ItemCustomTool(@NotNull String id, @Nullable String name, @NotNull String textureName) {
-        super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
+        super(id, 0, 1, name);
         this.id = id;
         this.textureName = textureName;
     }
@@ -35,7 +35,6 @@ public abstract class ItemCustomTool extends ItemTool implements ItemDurable, Cu
     public String getTextureName() {
         return textureName;
     }
-
 
     @Override
     public String getNamespaceId() {

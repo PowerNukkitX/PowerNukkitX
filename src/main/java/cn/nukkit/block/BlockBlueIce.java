@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 
 public class BlockBlueIce extends BlockIcePacked {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:blue_ice");
+    public static final BlockProperties PROPERTIES = new BlockProperties(BLUE_ICE);
 
     public BlockBlueIce() {
         super(PROPERTIES.getDefaultState());

@@ -11,11 +11,9 @@ public class ItemSpyglass extends Item {
         this(0, 1);
     }
 
-
     public ItemSpyglass(Integer meta) {
         this(meta, 1);
     }
-
 
     public ItemSpyglass(Integer meta, int count) {
         super(SPYGLASS, meta, count, "Spyglass");

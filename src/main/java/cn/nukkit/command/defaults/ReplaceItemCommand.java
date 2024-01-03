@@ -83,7 +83,6 @@ public class ReplaceItemCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
@@ -145,7 +144,6 @@ public class ReplaceItemCommand extends VanillaCommand {
             }
         }
     }
-
 
     private int entity(CommandSender sender, String key, ParamList list, CommandLogger log) {
         List<Entity> entities = list.getResult(1);

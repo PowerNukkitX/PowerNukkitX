@@ -57,12 +57,10 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
         return this.left.getHolder();
     }
 
-    @NotNull
     @Override
-    public Item getItem(int index) {
+    public @NotNull Item getItem(int index) {
         return index < this.left.getSize() ? this.left.getItem(index) : this.right.getItem(index - this.right.getSize());
     }
-
 
     @Override
     public Item getUnclonedItem(int index) {
@@ -113,7 +111,6 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
         }
     }
 
-
     @Override
     public void onOpen(Player who) {
         super.onOpen(who);
@@ -147,7 +144,6 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
             }
         }
     }
-
 
     @Override
     public void onClose(Player who) {

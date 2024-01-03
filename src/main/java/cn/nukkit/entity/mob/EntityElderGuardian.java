@@ -39,12 +39,10 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
         return 1.99f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Elder Guardian";
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {

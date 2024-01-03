@@ -38,7 +38,6 @@ public class ShapelessRecipe implements CraftingRecipe {
         this(recipeId, priority, result, ingredients.stream().map(item -> (ItemDescriptor) new DefaultDescriptor(item)).toList());
     }
 
-
     public ShapelessRecipe(String recipeId, int priority, Item result, List<ItemDescriptor> ingredients) {
         this.recipeId = recipeId;
         this.priority = priority;
@@ -227,7 +226,6 @@ public class ShapelessRecipe implements CraftingRecipe {
     public List<Item> getIngredientsAggregate() {
         return ingredientsAggregate;
     }
-
 
     public List<ItemDescriptor> getNewIngredients() {
         return newIngredients;

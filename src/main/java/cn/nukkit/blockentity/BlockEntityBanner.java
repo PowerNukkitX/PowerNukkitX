@@ -15,7 +15,6 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
         super(chunk, nbt);
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -93,6 +92,5 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
     public DyeColor getDyeColor() {
         return DyeColor.getByWoolData(color);
     }
-
 
 }

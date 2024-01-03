@@ -13,7 +13,6 @@ public class FurnaceInventory extends ContainerInventory {
         super(furnace, InventoryType.FURNACE);
     }
 
-
     public FurnaceInventory(BlockEntityFurnace furnace, InventoryType inventoryType) {
         super(furnace, inventoryType);
     }
@@ -47,10 +46,9 @@ public class FurnaceInventory extends ContainerInventory {
         return this.setItem(0, item);
     }
 
-
     @Override
     public boolean setItemByPlayer(Player player, int index, Item item, boolean send) {
-        if (index == 2 && (item.getId() == 0 || item.getCount() == 0)) {
+        if (index == 2 && (item.isNull() || item.getCount() == 0)) {
             var holder = getHolder();
             var xp = holder.calculateXpDrop();
             if (xp > 0) {

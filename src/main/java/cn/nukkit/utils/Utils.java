@@ -176,7 +176,6 @@ public class Utils {
         return builder.toString();
     }
 
-
     public static String getExceptionMessage(Throwable e) {
         StringWriter stringWriter = new StringWriter();
         try (PrintWriter printWriter = new PrintWriter(stringWriter)) {
@@ -371,14 +370,12 @@ public class Utils {
         return random.nextInt(max + 1 - min) + min;
     }
 
-
     public static double rand(double min, double max) {
         if (min == max) {
             return max;
         }
         return min + random.nextDouble() * (max - min);
     }
-
 
     public static boolean rand() {
         return random.nextBoolean();
@@ -412,7 +409,6 @@ public class Utils {
         return value;
     }
 
-
     public static void zipFolder(Path sourceFolderPath, Path zipPath) throws IOException {
         try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipPath.toFile()))) {
             Files.walkFileTree(sourceFolderPath, new SimpleFileVisitor<Path>() {
@@ -426,7 +422,6 @@ public class Utils {
             });
         }
     }
-
 
     public static boolean isInteger(String str) {
         if (str == null) {
@@ -478,7 +473,6 @@ public class Utils {
         return blocks.toArray(Block.EMPTY_ARRAY);
     }
 
-
     public static final int ACCORDING_X_OBTAIN_Y = 0;
 
 
@@ -502,7 +496,6 @@ public class Utils {
         }
     }
 
-
     public static boolean hasCollisionBlocks(Level level, AxisAlignedBB bb) {
         int minX = NukkitMath.floorDouble(bb.getMinX());
         int minY = NukkitMath.floorDouble(bb.getMinY());
@@ -525,7 +518,6 @@ public class Utils {
 
         return false;
     }
-
 
     public static boolean hasCollisionTickCachedBlocks(Level level, AxisAlignedBB bb) {
         int minX = NukkitMath.floorDouble(bb.getMinX());

@@ -32,7 +32,6 @@ public class PluginI18n {
         this.fallback = LangCode.en_US;
     }
 
-
     /**
      * 翻译一个文本key，key从语言文件中查询
      * <p>
@@ -45,7 +44,6 @@ public class PluginI18n {
     public String tr(LangCode lang, String key) {
         return tr(lang, key, EmptyArrays.EMPTY_STRINGS);
     }
-
 
     /**
      * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充其中参数
@@ -64,7 +62,6 @@ public class PluginI18n {
         }
         return baseText;
     }
-
 
     /**
      * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充其中参数
@@ -103,7 +100,6 @@ public class PluginI18n {
         return baseText;
     }
 
-
     /**
      * 获取指定id对应的多语言文本，若不存在则返回null
      * <p>
@@ -123,7 +119,6 @@ public class PluginI18n {
             return Server.getInstance().getLanguage().internalGet(id);
         }
     }
-
 
     /**
      * 获取指定id对应的多语言文本，若不存在则返回id本身

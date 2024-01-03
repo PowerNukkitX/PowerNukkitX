@@ -37,7 +37,6 @@ public class EntityShulker extends EntityMob implements EntityWalkable {
         return 1f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Shulker";

@@ -5,7 +5,6 @@ public class ItemOakBoat extends ItemBoat {
         super(OAK_BOAT);
     }
 
-
     @Override
     public int getBoatId() {
         return 0;

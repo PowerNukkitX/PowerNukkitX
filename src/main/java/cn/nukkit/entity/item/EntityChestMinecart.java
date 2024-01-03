@@ -33,7 +33,6 @@ public class EntityChestMinecart extends EntityMinecartAbstract implements Inven
         setDisplayBlock(Block.get(Block.CHEST), false);
     }
 
-
     @Override
     public String getOriginalName() {
         return getType().getName();

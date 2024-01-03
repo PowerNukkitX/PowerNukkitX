@@ -14,12 +14,10 @@ public abstract class VectorMath {
         return new Vector2(Math.cos(azimuth), Math.sin(azimuth));
     }
 
-
     public static BlockFace.Axis calculateAxis(Vector3 base, Vector3 side) {
         Vector3 vector = side.subtract(base);
         return vector.x != 0 ? BlockFace.Axis.X : vector.z != 0 ? BlockFace.Axis.Z : BlockFace.Axis.Y;
     }
-
 
     public static BlockFace calculateFace(Vector3 base, Vector3 side) {
         Vector3 vector = side.subtract(base);
@@ -28,14 +26,12 @@ public abstract class VectorMath {
         return BlockFace.fromAxis(direction < 0 ? BlockFace.AxisDirection.NEGATIVE : BlockFace.AxisDirection.POSITIVE, axis);
     }
 
-
     record FixedVector3(Vector3 from, Vector3 to) {
         @Override
         public String toString() {
             return from.x + " " + from.y + " " + from.z + " -> " + to.x + " " + to.y + " " + to.z;
         }
     }
-
 
     public static List<Vector3> getPassByVector3(Vector3 from, Vector3 to) {
         if (from.equals(to)) throw new IllegalArgumentException("from == to");

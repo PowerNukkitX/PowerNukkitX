@@ -60,71 +60,57 @@ public class AnimateEntityPacket extends DataPacket {
         return NETWORK_ID;
     }
 
-
     public String getAnimation() {
         return this.animation;
     }
-
 
     public void setAnimation(String animation) {
         this.animation = animation;
     }
 
-
     public String getNextState() {
         return this.nextState;
     }
-
 
     public void setNextState(String nextState) {
         this.nextState = nextState;
     }
 
-
     public String getStopExpression() {
         return this.stopExpression;
     }
-
 
     public void setStopExpression(String stopExpression) {
         this.stopExpression = stopExpression;
     }
 
-
     public String getController() {
         return this.controller;
     }
-
 
     public void setController(String controller) {
         this.controller = controller;
     }
 
-
     public float getBlendOutTime() {
         return this.blendOutTime;
     }
-
 
     public void setBlendOutTime(float blendOutTime) {
         this.blendOutTime = blendOutTime;
     }
 
-
     public List<Long> getEntityRuntimeIds() {
         return this.entityRuntimeIds;
     }
-
 
     public void setEntityRuntimeIds(List<Long> entityRuntimeIds) {
         this.entityRuntimeIds = entityRuntimeIds;
     }
 
-
     public int getStopExpressionVersion() {
         return stopExpressionVersion;
     }
-
 
     public void setStopExpressionVersion(int stopExpressionVersion) {
         this.stopExpressionVersion = stopExpressionVersion;

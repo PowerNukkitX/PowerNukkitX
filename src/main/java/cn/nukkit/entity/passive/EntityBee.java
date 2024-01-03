@@ -44,26 +44,21 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
         return 0.5f;
     }
 
-
     public boolean getHasNectar() {
         return false;
     }
-
 
     public void setHasNectar(boolean hasNectar) {
 
     }
 
-
     public boolean isAngry() {
         return false;
     }
 
-
     public void setAngry(boolean angry) {
 
     }
-
 
     public void setAngry(Player player) {
 
@@ -108,16 +103,13 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
         super.initEntity();
     }
 
-
     public void nectarDelivered(BlockEntityBeehive blockEntityBeehive) {
 
     }
 
-
     public void leftBeehive(BlockEntityBeehive blockEntityBeehive) {
 
     }
-
 
     @Override
     public String getOriginalName() {

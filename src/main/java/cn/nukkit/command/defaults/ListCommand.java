@@ -23,7 +23,6 @@ public class ListCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         StringBuilder online = new StringBuilder();

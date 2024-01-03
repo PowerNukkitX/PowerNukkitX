@@ -4,8 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemCompassLodestone;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemLodestoneCompass;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.PositionTrackingDBServerBroadcastPacket;
 import com.google.common.base.Preconditions;
@@ -75,17 +75,17 @@ public class PositionTrackingService implements Closeable {
     }
     
     private boolean isTrackingDevice(Player player, @Nullable Item item, int trackingHandler) throws IOException {
-        if (!(item != null && item.getId() == ItemID.LODESTONE_COMPASS && item instanceof ItemCompassLodestone)) {
+        if (!(item != null && item.getId().equals(ItemID.LODESTONE_COMPASS) && item instanceof ItemLodestoneCompass compassLodestone)) {
             return false;
         }
-        ItemCompassLodestone compassLodestone = (ItemCompassLodestone) item;
+
         if (compassLodestone.getTrackingHandle() != trackingHandler) {
             return false;
         }
+
         PositionTracking position = getPosition(trackingHandler);
         return position != null && position.getLevelName().equals(player.getLevelName());
     }
-
 
     public boolean hasTrackingDevice(Player player, int trackingHandler) throws IOException {
         for (Inventory inventory: inventories(player)) {
@@ -115,9 +115,7 @@ public class PositionTrackingService implements Closeable {
         player.dataPacket(packet);
     }
 
-
-    @Nullable
-    public synchronized PositionTracking startTracking(Player player, int trackingHandler, boolean validate) throws IOException {
+    public @Nullable synchronized PositionTracking startTracking(Player player, int trackingHandler, boolean validate) throws IOException {
         Preconditions.checkArgument(trackingHandler >= 0, "Tracking handler must be positive");
         if (isTracking(player, trackingHandler, validate)) {
             PositionTracking position = getPosition(trackingHandler);
@@ -157,7 +155,6 @@ public class PositionTrackingService implements Closeable {
         return packet;
     }
 
-
     public synchronized boolean stopTracking(Player player) {
         Map<PositionTrackingStorage, IntSet> toRemove = tracking.remove(player);
         if (toRemove != null && player.isOnline()) {
@@ -169,7 +166,6 @@ public class PositionTrackingService implements Closeable {
         }
         return toRemove != null;
     }
-
 
     public synchronized boolean stopTracking(Player player, int trackingHandler) {
         Map<PositionTrackingStorage, IntSet> tracking = this.tracking.get(player);
@@ -189,7 +185,6 @@ public class PositionTrackingService implements Closeable {
         return false;
     }
 
-
     public synchronized boolean isTracking(Player player, int trackingHandler, boolean validate) throws IOException {
         Map<PositionTrackingStorage, IntSet> tracking = this.tracking.get(player);
         if (tracking == null) {
@@ -207,7 +202,6 @@ public class PositionTrackingService implements Closeable {
         }
         return false;
     }
-
 
     public synchronized void forceRecheckAllPlayers() {
         tracking.keySet().removeIf(p-> !p.isOnline());
@@ -244,14 +238,14 @@ public class PositionTrackingService implements Closeable {
 
             @Override
             public Inventory next() {
-                switch (next++) {
-                    case 0: return player.getInventory();
-                    case 1: return player.getCursorInventory();
-                    case 2: return player.getOffhandInventory();
-                    case 3: return player.getCraftingGrid();
-                    case 4: return player.getTopWindow().orElse(null);
-                    default: throw new NoSuchElementException(); 
-                }
+                return switch (next++) {
+                    case 0 -> player.getInventory();
+                    case 1 -> player.getCursorInventory();
+                    case 2 -> player.getOffhandInventory();
+                    case 3 -> player.getCraftingGrid();
+                    case 4 -> player.getTopWindow().orElse(null);
+                    default -> throw new NoSuchElementException();
+                };
             }
         };
     }
@@ -264,8 +258,7 @@ public class PositionTrackingService implements Closeable {
             int size = inventory.getSize();
             for (int slot = 0; slot < size; slot++) {
                 Item item = inventory.getItem(slot);
-                if (item.getId() == ItemID.LODESTONE_COMPASS && item instanceof ItemCompassLodestone) {
-                    ItemCompassLodestone compass = (ItemCompassLodestone) item;
+                if (item.getId().equals(ItemID.LODESTONE_COMPASS) && item instanceof ItemLodestoneCompass compass) {
                     int trackingHandle = compass.getTrackingHandle();
                     if (trackingHandle != 0) {
                         PositionTracking pos;
@@ -282,7 +275,6 @@ public class PositionTrackingService implements Closeable {
             }
         }
     }
-
 
     public void forceRecheck(Player player) {
         Map<PositionTrackingStorage, IntSet> tracking = this.tracking.get(player);
@@ -402,7 +394,6 @@ public class PositionTrackingService implements Closeable {
         return trackingStorage.addNewPosition(position, enabled).orElseThrow(InternalError::new);
     }
 
-
     @NotNull
     public OptionalInt findTrackingHandler(NamedPosition position) throws IOException {
         IntList handlers = findTrackingHandlers(position, true, 1);
@@ -411,7 +402,6 @@ public class PositionTrackingService implements Closeable {
         }
         return OptionalInt.empty();
     }
-
 
     public synchronized boolean invalidateHandler(int trackingHandler) throws IOException {
         checkClosed();
@@ -455,15 +445,11 @@ public class PositionTrackingService implements Closeable {
         }
     }
 
-
-    @Nullable
-    public PositionTracking getPosition(int trackingHandle) throws IOException {
+    public @Nullable PositionTracking getPosition(int trackingHandle) throws IOException {
         return getPosition(trackingHandle, true);
     }
 
-
-    @Nullable
-    public PositionTracking getPosition(int trackingHandle, boolean onlyEnabled) throws IOException {
+    public @Nullable PositionTracking getPosition(int trackingHandle, boolean onlyEnabled) throws IOException {
         checkClosed();
         PositionTrackingStorage trackingStorage = getStorageForHandler(trackingHandle);
         if (trackingStorage == null) {
@@ -473,13 +459,11 @@ public class PositionTrackingService implements Closeable {
         return trackingStorage.getPosition(trackingHandle, onlyEnabled);
     }
 
-
     public synchronized boolean isEnabled(int trackingHandler) throws IOException {
         checkClosed();
         PositionTrackingStorage trackingStorage = getStorageForHandler(trackingHandler);
         return trackingStorage != null && trackingStorage.isEnabled(trackingHandler);
     }
-
 
     public synchronized boolean setEnabled(int trackingHandler, boolean enabled) throws IOException {
         checkClosed();
@@ -499,11 +483,9 @@ public class PositionTrackingService implements Closeable {
         return false;
     }
 
-
     public synchronized boolean hasPosition(int trackingHandler) throws IOException {
         return hasPosition(trackingHandler, true);
     }
-
 
     public synchronized boolean hasPosition(int trackingHandler, boolean onlyEnabled) throws IOException {
         checkClosed();
@@ -519,18 +501,15 @@ public class PositionTrackingService implements Closeable {
         return loadStorage(startIndex).hasPosition(trackingHandler, onlyEnabled);
     }
 
-
     @NotNull
     public synchronized IntList findTrackingHandlers(NamedPosition pos) throws IOException {
         return findTrackingHandlers(pos, true);
     }
 
-
     @NotNull
     public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled) throws IOException {
         return findTrackingHandlers(pos, onlyEnabled, Integer.MAX_VALUE);
     }
-
 
     @NotNull
     public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled, int limit) throws IOException {

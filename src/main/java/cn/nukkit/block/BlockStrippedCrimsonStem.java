@@ -19,7 +19,6 @@ public class BlockStrippedCrimsonStem extends BlockStemStripped {
         super(blockstate);
     }
 
-
     @Override
     public String getName() {
         return "Stripped Crimson Stem";

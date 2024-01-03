@@ -43,7 +43,6 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
         super(chunk, nbt);
     }
 
-
     @Override
     public float getSwimmingHeight() {
         return getWidth();
@@ -311,9 +310,8 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
         return "EntityIntelligentHuman";
     }
 
-    @NotNull
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return this.getNameTag();
     }
 
@@ -389,7 +387,6 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
         }
     }
 
-
     @Override
     protected void onBlock(Entity entity, EntityDamageEvent event, boolean animate) {
         super.onBlock(entity, event, animate);
@@ -414,71 +411,57 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
         return null;
     }
 
-
     public Item getHelmet() {
         return this.getInventory().getHelmet();
     }
-
 
     public boolean setHelmet(Item item) {
         return this.getInventory().setHelmet(item);
     }
 
-
     public Item getChestplate() {
         return this.getInventory().getChestplate();
     }
-
 
     public boolean setChestplate(Item item) {
         return this.getInventory().setChestplate(item);
     }
 
-
     public Item getLeggings() {
         return getInventory().getLeggings();
     }
-
 
     public boolean setLeggings(Item item) {
         return getInventory().setLeggings(item);
     }
 
-
     public Item getBoots() {
         return getInventory().getBoots();
     }
-
 
     public boolean setBoots(Item item) {
         return getInventory().setBoots(item);
     }
 
-
     public Item getItemInHand() {
         return getInventory().getItemInHand();
     }
-
 
     public Item getItemInOffhand() {
         return this.getOffhandInventory().getItem(0);
     }
 
-
     public boolean setItemInHand(Item item) {
         return getInventory().setItemInHand(item);
     }
-
 
     public boolean setItemInHand(Item item, boolean send) {
         return this.getInventory().setItem(getInventory().getHeldItemIndex(), item, send);
     }
 
-
     public boolean setItemInOffhand(Item item) {
         return this.getOffhandInventory().setItem(0, item, true);
     }
-
 
     public boolean setItemInOffhand(Item item, boolean send) {
         return this.getOffhandInventory().setItem(0, item, send);

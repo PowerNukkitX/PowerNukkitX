@@ -23,13 +23,11 @@ public class PluginCommand<T extends Plugin> extends Command implements PluginId
         this.usageMessage = "";
     }
 
-
     public PluginCommand(String name, String description, T owner) {
         super(name, description);
         this.owningPlugin = owner;
         this.executor = owner;
     }
-
 
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {

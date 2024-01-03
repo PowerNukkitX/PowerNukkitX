@@ -337,7 +337,6 @@ public class Potion implements Cloneable {
         }
     }
 
-
     @NotNull
     public String getPotionTypeName() {
         return switch (getId()) {
@@ -365,7 +364,6 @@ public class Potion implements Cloneable {
         };
     }
 
-
     @NotNull
     public String getName() {
         String name = getPotionTypeName();
@@ -388,7 +386,6 @@ public class Potion implements Cloneable {
         }
         return finalName.toString();
     }
-
 
     @NotNull
     public String getRomanLevel() {

@@ -58,7 +58,6 @@ public class InventoryTransaction {
         return inventories;
     }
 
-
     public List<InventoryAction> getActionList() {
         return actions;
     }
@@ -205,13 +204,11 @@ public class InventoryTransaction {
         return !ev.isCancelled();
     }
 
-
     public boolean execute() {
         if (this.hasExecuted() || !this.canExecute()) {
             this.sendInventories();
             return false;
         }
-
 
         if (!callExecuteEvent()) {
             this.sendInventories();

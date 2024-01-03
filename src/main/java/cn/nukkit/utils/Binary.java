@@ -512,5 +512,4 @@ public class Binary {
         return appendedBytes;
     }
 
-
 }

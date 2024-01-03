@@ -34,19 +34,15 @@ public class BlockBuddingAmethyst extends BlockSolid {
         return 1.5;
     }
 
-
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
-
 
     @Override
     public boolean breaksWhenMoved() {
         return true;
     }
-
 
     @Override
     public boolean sticksToPiston() {

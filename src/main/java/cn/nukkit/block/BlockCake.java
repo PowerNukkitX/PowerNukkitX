@@ -33,9 +33,8 @@ public class BlockCake extends BlockTransparent {
         return "Cake Block";
     }
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -91,7 +90,7 @@ public class BlockCake extends BlockTransparent {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (down().getId() != Block.AIR) {
+        if (!down().isAir()) {
             getLevel().setBlock(block, this, true, true);
 
             return true;
@@ -102,7 +101,7 @@ public class BlockCake extends BlockTransparent {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (down().getId() == Block.AIR) {
+            if (!down().isAir()) {
                 getLevel().setBlock(this, Block.get(BlockID.AIR), true);
 
                 return Level.BLOCK_UPDATE_NORMAL;

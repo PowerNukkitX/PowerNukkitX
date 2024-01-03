@@ -100,7 +100,6 @@ public class EntityThrownTrident extends SlenderProjectile {
         return 0.01f;
     }
 
-
     @Override
     public String getOriginalName() {
         return NAME_TRIDENT;
@@ -186,16 +185,13 @@ public class EntityThrownTrident extends SlenderProjectile {
         this.impalingLevel = this.trident.getEnchantmentLevel(Enchantment.ID_TRIDENT_IMPALING);
     }
 
-
     public void setCritical() {
         this.setCritical(true);
     }
 
-
     public boolean isCritical() {
         return this.getDataFlag(DATA_FLAGS, DATA_FLAG_CRITICAL);
     }
-
 
     public void setCritical(boolean value) {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_CRITICAL, value);
@@ -319,7 +315,6 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
     }
 
-
     public Entity create(Object type, Position source, Object... args) {
         FullChunk chunk = source.getLevel().getChunk((int) source.x >> 4, (int) source.z >> 4);
         if (chunk == null) return null;
@@ -333,16 +328,13 @@ public class EntityThrownTrident extends SlenderProjectile {
         return Entity.createEntity(type.toString(), chunk, nbt, args);
     }
 
-
     public int getPickupMode() {
         return this.pickupMode;
     }
 
-
     public void setPickupMode(int pickupMode) {
         this.pickupMode = pickupMode;
     }
-
 
     @Override
     protected void onCollideWithBlock(Position position, Vector3 motion) {
@@ -362,41 +354,33 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
     }
 
-
     public Vector3 getCollisionPos() {
         return collisionPos;
     }
-
 
     public void setCollisionPos(Vector3 collisionPos) {
         this.collisionPos = collisionPos;
     }
 
-
     public BlockVector3 getStuckToBlockPos() {
         return stuckToBlockPos;
     }
-
 
     public void setStuckToBlockPos(BlockVector3 stuckToBlockPos) {
         this.stuckToBlockPos = stuckToBlockPos;
     }
 
-
     public int getFavoredSlot() {
         return favoredSlot;
     }
-
 
     public void setFavoredSlot(int favoredSlot) {
         this.favoredSlot = favoredSlot;
     }
 
-
     public boolean isCreative() {
         return getPickupMode() == EntityProjectile.PICKUP_CREATIVE;
     }
-
 
     @Deprecated
     @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", replaceWith = "setPickupMode(EntityProjectile.PICKUP_<MODE>)",
@@ -409,21 +393,17 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
     }
 
-
     public boolean isPlayer() {
         return player;
     }
-
 
     public void setPlayer(boolean player) {
         this.player = player;
     }
 
-
     public int getLoyaltyLevel() {
         return loyaltyLevel;
     }
-
 
     public void setLoyaltyLevel(int loyaltyLevel) {
         this.loyaltyLevel = loyaltyLevel;
@@ -434,11 +414,9 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
     }
 
-
     public boolean hasChanneling() {
         return hasChanneling;
     }
-
 
     public void setChanneling(boolean hasChanneling) {
         this.hasChanneling = hasChanneling;
@@ -449,11 +427,9 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
     }
 
-
     public int getRiptideLevel() {
         return riptideLevel;
     }
-
 
     public void setRiptideLevel(int riptideLevel) {
         this.riptideLevel = riptideLevel;
@@ -464,11 +440,9 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
     }
 
-
     public int getImpalingLevel() {
         return impalingLevel;
     }
-
 
     public void setImpalingLevel(int impalingLevel) {
         this.impalingLevel = impalingLevel;
@@ -479,11 +453,9 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
     }
 
-
     public boolean getTridentRope() {
         return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SHOW_TRIDENT_ROPE);
     }
-
 
     public void setTridentRope(boolean tridentRope) {
         if (tridentRope) {
@@ -493,7 +465,6 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHOW_TRIDENT_ROPE, tridentRope);
     }
-
 
     public boolean canReturnToShooter() {
         if (this.loyaltyLevel <= 0) {

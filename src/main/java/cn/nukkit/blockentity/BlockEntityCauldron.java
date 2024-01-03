@@ -3,11 +3,9 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCauldron;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.Location;
-import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -22,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
  * @author CreeperFace (Nukkit Project)
  */
 public class BlockEntityCauldron extends BlockEntitySpawnable {
-
 
     @Deprecated
     @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
@@ -57,7 +54,6 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     public BlockEntityCauldron(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
 
     @Override
     public void loadNBT() {
@@ -101,21 +97,17 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
         return (getPotionId() & 0xffff) != 0xffff;
     }
 
-
     public void setPotionType(int potionType) {
         this.namedTag.putShort("PotionType", (short) (potionType & 0xFFFF));
     }
-
 
     public int getPotionType() {
         return (short) (this.namedTag.getShort("PotionType") & 0xFFFF);
     }
 
-
     public PotionType getType() {
         return PotionType.getByTypeData(getPotionType());
     }
-
 
     public void setType(PotionType type) {
         setPotionType(type.potionTypeData);
@@ -212,7 +204,6 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
         return compoundTag;
     }
 
-
     @RequiredArgsConstructor
     public enum PotionType {
         EMPTY(POTION_TYPE_EMPTY),
@@ -232,7 +223,6 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
                 BY_DATA.put(type.potionTypeData, type);
             }
         }
-
 
         @NotNull
         public static PotionType getByTypeData(int typeData) {

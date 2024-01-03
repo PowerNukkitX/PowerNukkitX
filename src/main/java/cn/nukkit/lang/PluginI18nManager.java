@@ -157,8 +157,7 @@ public final class PluginI18nManager {
         }
     }
 
-    @Nullable
-    public static PluginI18n getI18n(PluginBase plugin) {
+    public @Nullable static PluginI18n getI18n(PluginBase plugin) {
         return PLUGINS_MULTI_LANGUAGE.get(plugin.getFile().getName());
     }
 }

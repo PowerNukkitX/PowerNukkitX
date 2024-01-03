@@ -126,21 +126,17 @@ public class SmithingTransaction extends InventoryTransaction {
         return true;
     }
 
-
     public Item getEquipmentItem() {
         return equipmentItem == null? null : equipmentItem.clone();
     }
-
 
     public Item getIngredientItem() {
         return ingredientItem == null? null : ingredientItem.clone();
     }
 
-
     public Item getOutputItem() {
         return outputItem == null? null : outputItem.clone();
     }
-
 
     public static boolean checkForItemPart(List<InventoryAction> actions) {
         return actions.stream().anyMatch(it-> it instanceof SmithingItemAction);

@@ -1,15 +1,14 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.property.enums.OldLeafType;
+import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.block.property.CommonBlockProperties.PERSISTENT_BIT;
-import static cn.nukkit.block.property.CommonBlockProperties.UPDATE_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.*;
 
 public class BlockAzaleaLeaves extends BlockLeaves {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:azalea_leaves",PERSISTENT_BIT, UPDATE_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(AZALEA_LEAVES, PERSISTENT_BIT, UPDATE_BIT);
 
     public BlockAzaleaLeaves() {
         this(PROPERTIES.getDefaultState());
@@ -34,17 +33,15 @@ public class BlockAzaleaLeaves extends BlockLeaves {
         return item.isShears();
     }
 
-
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    public @NotNull  BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     /*这里写木质类型为OAK只是为了获取凋落物时的概率正确，并不代表真的就是橡木*/
     @Override
-    public OldLeafType getType() {
-        return OldLeafType.OAK;
+    public WoodType getType() {
+        return WoodType.OAK;
     }
 
     @Override

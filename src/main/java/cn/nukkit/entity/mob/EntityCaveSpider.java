@@ -39,12 +39,10 @@ public class EntityCaveSpider extends EntityMob implements EntityWalkable, Entit
         return 0.5f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Cave Spider";
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {

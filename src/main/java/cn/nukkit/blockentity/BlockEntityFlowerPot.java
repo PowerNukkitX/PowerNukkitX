@@ -14,7 +14,6 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
         super(chunk, nbt);
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();

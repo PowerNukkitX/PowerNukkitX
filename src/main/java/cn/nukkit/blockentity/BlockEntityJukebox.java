@@ -22,14 +22,13 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
         super(chunk, nbt);
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();
         if (namedTag.contains("RecordItem")) {
             this.recordItem = NBTIO.getItemHelper(namedTag.getCompound("RecordItem"));
         } else {
-            this.recordItem = Item.get(0);
+            this.recordItem = Item.AIR_ITEM;
         }
     }
 
@@ -72,10 +71,10 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     }
 
     public void dropItem() {
-        if (this.recordItem.getId() != 0) {
+        if (!this.recordItem.isNull()) {
             stop();
             this.level.dropItem(this.up(), this.recordItem);
-            this.recordItem = Item.get(0);
+            this.recordItem = Item.AIR_ITEM;
         }
     }
 

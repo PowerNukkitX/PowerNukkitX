@@ -52,7 +52,6 @@ public class EntityArrow extends SlenderProjectile {
         return 0.01f;
     }
 
-
     @Override
     protected void updateMotion() {
         if (!isInsideOfWater()) {
@@ -137,7 +136,6 @@ public class EntityArrow extends SlenderProjectile {
         return !hadCollision;
     }
 
-
     @Override
     protected void afterCollisionWithEntity(Entity entity) {
         if (hadCollision) {
@@ -146,7 +144,6 @@ public class EntityArrow extends SlenderProjectile {
             setMotion(getMotion().divide(-4));
         }
     }
-
 
     @Override
     protected void addHitEffect() {
@@ -174,7 +171,6 @@ public class EntityArrow extends SlenderProjectile {
     public void setPickupMode(int pickupMode) {
         this.pickupMode = pickupMode;
     }
-
 
     @Override
     public String getOriginalName() {

@@ -30,7 +30,6 @@ public class BlockEntityBell extends BlockEntitySpawnable {
         scheduleUpdate();
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -99,11 +98,9 @@ public class BlockEntityBell extends BlockEntitySpawnable {
         }
     }
 
-
     public boolean isRinging() {
         return ringing;
     }
-
 
     public void setRinging(boolean ringing) {
         if (this.level != null && this.ringing != ringing) {
@@ -112,21 +109,17 @@ public class BlockEntityBell extends BlockEntitySpawnable {
         }
     }
 
-
     public int getDirection() {
         return direction;
     }
-
 
     public void setDirection(int direction) {
         this.direction = direction;
     }
 
-
     public int getTicks() {
         return ticks;
     }
-
 
     public void setTicks(int ticks) {
         this.ticks = ticks;

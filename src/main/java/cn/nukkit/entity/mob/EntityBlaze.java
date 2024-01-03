@@ -38,18 +38,15 @@ public class EntityBlaze extends EntityMob implements EntityFlyable {
         return 1.8f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Blaze";
     }
 
-
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }
-
 
     @Override
     public int getFrostbiteInjury() {

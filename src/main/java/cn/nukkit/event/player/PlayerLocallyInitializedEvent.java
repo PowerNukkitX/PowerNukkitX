@@ -15,7 +15,6 @@ public class PlayerLocallyInitializedEvent extends PlayerEvent {
         return handlers;
     }
 
-
     public PlayerLocallyInitializedEvent(Player player) {
         this.player = player;
     }

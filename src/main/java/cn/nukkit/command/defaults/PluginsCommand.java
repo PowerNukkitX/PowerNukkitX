@@ -28,7 +28,6 @@ public class PluginsCommand extends Command implements CoreCommand {
         this.enableParamTree();
     }
 
-
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         this.sendPluginList(sender, log);

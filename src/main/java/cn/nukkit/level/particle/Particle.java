@@ -160,7 +160,6 @@ public abstract class Particle extends Vector3 {
         super(x, y, z);
     }
 
-
     public static Integer getParticleIdByName(String name) {
         name = name.toUpperCase();
 
@@ -177,7 +176,6 @@ public abstract class Particle extends Vector3 {
         }
         return null;
     }
-
 
     public static boolean particleExists(String name) {
         return getParticleIdByName(name) != null;

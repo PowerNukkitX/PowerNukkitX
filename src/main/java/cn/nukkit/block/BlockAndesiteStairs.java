@@ -5,7 +5,7 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockAndesiteStairs extends BlockStairs {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:andesite_stairs", CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(ANDESITE_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
 
     @Override
     public @NotNull BlockProperties getProperties() {
@@ -36,7 +36,6 @@ public class BlockAndesiteStairs extends BlockStairs {
     }
 
     @Override
-
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

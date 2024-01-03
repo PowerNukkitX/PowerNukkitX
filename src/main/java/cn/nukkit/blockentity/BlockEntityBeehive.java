@@ -40,7 +40,6 @@ public class BlockEntityBeehive extends BlockEntity {
         }
     }
 
-
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -99,7 +98,6 @@ public class BlockEntityBeehive extends BlockEntity {
         }
     }
 
-
     public int getHoneyLevel() {
         Block block = getBlock();
         if (block instanceof BlockBeehive) {
@@ -109,7 +107,6 @@ public class BlockEntityBeehive extends BlockEntity {
         }
     }
 
-
     public void setHoneyLevel(int honeyLevel) {
         Block block = getBlock();
         if (block instanceof BlockBeehive) {
@@ -117,7 +114,6 @@ public class BlockEntityBeehive extends BlockEntity {
             block.getLevel().setBlock(block, block, true, true);
         }
     }
-
 
     public boolean addOccupant(Occupant occupant) {
         occupants.add(occupant);
@@ -127,7 +123,6 @@ public class BlockEntityBeehive extends BlockEntity {
         scheduleUpdate();
         return true;
     }
-
 
     public Occupant addOccupant(Entity entity) {
         if (entity instanceof EntityBee) {
@@ -139,16 +134,13 @@ public class BlockEntityBeehive extends BlockEntity {
         }
     }
 
-
     public Occupant addOccupant(Entity entity, int ticksLeftToStay) {
         return addOccupant(entity, ticksLeftToStay, false, true);
     }
 
-
     public Occupant addOccupant(Entity entity, int ticksLeftToStay, boolean hasNectar) {
         return addOccupant(entity, ticksLeftToStay, hasNectar, true);
     }
-
 
     public Occupant addOccupant(Entity entity, int ticksLeftToStay, boolean hasNectar, boolean playSound) {
         entity.saveNBT();
@@ -167,47 +159,38 @@ public class BlockEntityBeehive extends BlockEntity {
         return occupant;
     }
 
-
     public Occupant[] getOccupants() {
         return occupants.toArray(Occupant.EMPTY_ARRAY);
     }
-
 
     public boolean removeOccupant(Occupant occupant) {
         return occupants.remove(occupant);
     }
 
-
     public boolean isHoneyEmpty() {
         return getHoneyLevel() == HONEY_LEVEL.getMin();
     }
-
 
     public boolean isHoneyFull() {
         return getHoneyLevel() == HONEY_LEVEL.getMax();
     }
 
-
     public boolean isEmpty() {
         return occupants.isEmpty();
     }
 
-
     public int getOccupantsCount() {
         return occupants.size();
     }
-
 
     public boolean isSpawnFaceValid(BlockFace face) {
         Block side = getSide(face).getLevelBlock();
         return side.canPassThrough() && !(side instanceof BlockLiquid);
     }
 
-
     public List<BlockFace> scanValidSpawnFaces() {
         return scanValidSpawnFaces(false);
     }
-
 
     public List<BlockFace> scanValidSpawnFaces(boolean preferFront) {
         if (preferFront) {
@@ -230,7 +213,6 @@ public class BlockEntityBeehive extends BlockEntity {
         
         return validFaces;
     }
-
 
     public Entity spawnOccupant(Occupant occupant, List<BlockFace> validFaces) {
         if (validFaces != null && validFaces.isEmpty()) {
@@ -333,14 +315,12 @@ public class BlockEntityBeehive extends BlockEntity {
         }
     }
 
-
     @Override
     public void onBreak(boolean isSilkTouch) {
         if (!isSilkTouch) {
             onBreak();
         }
     }
-
 
     public void angerBees(Player player) {
         if (!isEmpty()) {
@@ -399,7 +379,6 @@ public class BlockEntityBeehive extends BlockEntity {
         return id == Block.BEEHIVE || id == Block.BEE_NEST;
     }
 
-
     public static final class Occupant implements Cloneable {
 
 
@@ -420,7 +399,6 @@ public class BlockEntityBeehive extends BlockEntity {
             this.saveData = saveData;
         }
 
-
         private Occupant(CompoundTag saved) {
             this.ticksLeftToStay = saved.getInt("TicksLeftToStay");
             this.actorIdentifier = saved.getString("ActorIdentifier");
@@ -439,7 +417,6 @@ public class BlockEntityBeehive extends BlockEntity {
             this.muted = saved.getBoolean("Muted");
         }
 
-
         public CompoundTag saveNBT() {
             CompoundTag compoundTag = new CompoundTag();
             compoundTag.putString("ActorIdentifier", actorIdentifier)
@@ -452,71 +429,57 @@ public class BlockEntityBeehive extends BlockEntity {
             return compoundTag;
         }
 
-
         public boolean getHasNectar() {
             return hasNectar;
         }
-
 
         public void setHasNectar(boolean hasNectar) {
             this.hasNectar = hasNectar;
         }
 
-
         public int getTicksLeftToStay() {
             return ticksLeftToStay;
         }
-
 
         public void setTicksLeftToStay(int ticksLeftToStay) {
             this.ticksLeftToStay = ticksLeftToStay;
         }
 
-
         public String getActorIdentifier() {
             return actorIdentifier;
         }
-
 
         public void setActorIdentifier(String actorIdentifier) {
             this.actorIdentifier = actorIdentifier;
         }
 
-
         public CompoundTag getSaveData() {
             return saveData.clone();
         }
-
 
         public void setSaveData(CompoundTag saveData) {
             this.saveData = saveData.clone();
         }
 
-
         public Sound getWorkSound() {
             return workSound;
         }
-
 
         public void setWorkSound(Sound workSound) {
             this.workSound = workSound;
         }
 
-
         public float getWorkSoundPitch() {
             return workSoundPitch;
         }
-
 
         public void setWorkSoundPitch(float workSoundPitch) {
             this.workSoundPitch = workSoundPitch;
         }
 
-
         public boolean isMuted() {
             return muted;
         }
-
 
         public void setMuted(boolean muted) {
             this.muted = muted;

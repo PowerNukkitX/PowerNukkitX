@@ -31,7 +31,6 @@ public abstract class ItemCustomArmor extends ItemArmor implements CustomItem {
         return textureName;
     }
 
-
     @Override
     public String getNamespaceId() {
         return id;

@@ -48,7 +48,6 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
         return false;
     }
 
-
     public void setMouthMoving(boolean mouthMoving) {
         if (this.mouthMoving == mouthMoving) {
             return;
@@ -64,7 +63,6 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
         }
     }
 
-
     @Override
     public boolean isObservable() {
         return false;
@@ -75,16 +73,13 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
         chunk.setChanged();
     }
 
-
     public boolean isMouthMoving() {
         return mouthMoving;
     }
 
-
     public int getMouthTickCount() {
         return mouthTickCount;
     }
-
 
     public void setMouthTickCount(int mouthTickCount) {
         if (this.mouthTickCount == mouthTickCount) {
@@ -105,7 +100,7 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
 
     @Override
     public boolean isBlockEntityValid() {
-        return getBlock().getId() == Block.SKULL_BLOCK;
+        return getBlock().getId().equals(Block.SKULL);
     }
 
     @Override

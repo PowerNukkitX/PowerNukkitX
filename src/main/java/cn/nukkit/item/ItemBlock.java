@@ -41,12 +41,10 @@ public class ItemBlock extends Item {
         return block;
     }
 
-    @NotNull
     @Override
-    public Block getBlock() {
+    public @NotNull Block getBlock() {
         return this.block.clone();
     }
-
 
     @Override
     public boolean isLavaResistant() {

@@ -179,8 +179,7 @@ public class PositionTrackingStorage implements Closeable {
      */
 
 
-    @Nullable
-    public PositionTracking getPosition(int trackingHandler) throws IOException {
+    public @Nullable PositionTracking getPosition(int trackingHandler) throws IOException {
         validateHandler(trackingHandler);
         try {
             return cache.get(trackingHandler, () -> loadPosition(trackingHandler, true))
@@ -205,8 +204,7 @@ public class PositionTrackingStorage implements Closeable {
      */
 
 
-    @Nullable
-    public PositionTracking getPosition(int trackingHandler, boolean onlyEnabled) throws IOException {
+    public @Nullable PositionTracking getPosition(int trackingHandler, boolean onlyEnabled) throws IOException {
         if (onlyEnabled) {
             return getPosition(trackingHandler);
         }
@@ -266,7 +264,6 @@ public class PositionTrackingStorage implements Closeable {
         return handler;
     }
 
-
     @NotNull
     public OptionalInt findTrackingHandler(NamedPosition position) throws IOException {
         OptionalInt cached = cache.asMap().entrySet().stream()
@@ -293,19 +290,16 @@ public class PositionTrackingStorage implements Closeable {
         return new IOException(e);
     }
 
-
     public synchronized void invalidateHandler(int trackingHandler) throws IOException {
         validateHandler(trackingHandler);
         invalidatePos(trackingHandler);
     }
-
 
     public synchronized boolean isEnabled(int trackingHandler) throws IOException {
         validateHandler(trackingHandler);
         persistence.seek(getAxisPos(trackingHandler));
         return persistence.readBoolean();
     }
-
 
     public synchronized boolean setEnabled(int trackingHandler, boolean enabled) throws IOException {
         validateHandler(trackingHandler);
@@ -323,11 +317,9 @@ public class PositionTrackingStorage implements Closeable {
         return true;
     }
 
-
     public synchronized boolean hasPosition(int trackingHandler) throws IOException {
         return hasPosition(trackingHandler, true);
     }
-
 
     public synchronized boolean hasPosition(int trackingHandler, boolean onlyEnabled) throws IOException {
         validateHandler(trackingHandler);
@@ -469,18 +461,15 @@ public class PositionTrackingStorage implements Closeable {
         return pos;
     }
 
-
     @NotNull
     public synchronized IntList findTrackingHandlers(NamedPosition pos) throws IOException {
         return findTrackingHandlers(pos, true);
     }
 
-
     @NotNull
     public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled) throws IOException {
         return findTrackingHandlers(pos, onlyEnabled, Integer.MAX_VALUE);
     }
-
 
     @NotNull
     public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled, int limit) throws IOException {
@@ -560,11 +549,9 @@ public class PositionTrackingStorage implements Closeable {
         return Optional.of(new PositionTracking(name, x, y, z));
     }
 
-
     public int getStartingHandler() {
         return startIndex;
     }
-
 
     public int getMaxHandler() {
         return startIndex + maxStorage - 1;

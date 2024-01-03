@@ -40,7 +40,6 @@ public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmi
         return 0.5f;
     }
 
-
     @Override
     public String getOriginalName() {
         return "Phantom";
@@ -51,12 +50,10 @@ public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmi
         return new Item[]{Item.get(470)};
     }
 
-
     @Override
     public boolean isUndead() {
         return true;
     }
-
 
     @Override
     public boolean isPreventingSleep(Player player) {

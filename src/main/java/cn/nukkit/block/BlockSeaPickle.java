@@ -163,7 +163,6 @@ public class BlockSeaPickle extends BlockFlowable {
         return super.onActivate(item, player);
     }
 
-
     @Override
     public int getWaterloggingLevel() {
         return 1;

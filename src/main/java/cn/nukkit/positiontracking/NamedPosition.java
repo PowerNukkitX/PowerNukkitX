@@ -14,21 +14,17 @@ public abstract class NamedPosition extends Vector3 {
     public NamedPosition() {
     }
 
-
     public NamedPosition(double x) {
         super(x);
     }
-
 
     public NamedPosition(double x, double y) {
         super(x, y);
     }
 
-
     public NamedPosition(double x, double y, double z) {
         super(x, y, z);
     }
-
 
     @NotNull
     public abstract String getLevelName();
