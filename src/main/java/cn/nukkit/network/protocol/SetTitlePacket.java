@@ -58,8 +58,7 @@ public class SetTitlePacket extends DataPacket {
         this.putString(platformOnlineId);
     }
 
-    @NotNull
-    public TitleAction getTitleAction() {
+    public @NotNull TitleAction getTitleAction() {
         int currentType = this.type;
         if (currentType >= 0 && currentType < TITLE_ACTIONS.length) {
             return TITLE_ACTIONS[currentType];
@@ -71,8 +70,7 @@ public class SetTitlePacket extends DataPacket {
         this.type = type.ordinal();
     }
 
-    @NotNull
-    public String getText() {
+    public @NotNull String getText() {
         return text;
     }
 

@@ -85,8 +85,6 @@ public enum DyeColor {
      * The {@code minecraft:dye} meta that actually represents the item dye for that color.
      * Uses black_dye instead of ink_sac, white_dye instead of bone_meal, and so on.
      */
-
-
     public int getItemDyeMeta() {
         return itemDyeMeta;
     }

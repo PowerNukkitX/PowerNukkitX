@@ -58,8 +58,6 @@ public interface Inventory {
      * @param index the index
      * @return the item
      */
-
-
     @DoNotModify
     default Item getUnclonedItem(int index) {
         //你需要覆写它来实现
@@ -95,8 +93,6 @@ public interface Inventory {
      * @param item   item to set
      * @return true if the item was set
      */
-
-
     default boolean setItemByPlayer(Player player, int index, Item item, boolean send) {
         return setItem(index, item, send);
     }

@@ -53,8 +53,7 @@ public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
      *
      * @return the item frame
      */
-    @NotNull
-    public BlockEntityItemFrame getItemFrame() {
+    public @NotNull BlockEntityItemFrame getItemFrame() {
         return itemFrame;
     }
 
@@ -76,8 +75,7 @@ public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
      *
      * @return the action
      */
-    @NotNull
-    public Action getAction() {
+    public @NotNull Action getAction() {
         return action;
     }
 

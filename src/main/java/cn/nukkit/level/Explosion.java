@@ -63,8 +63,6 @@ public class Explosion {
      * @param size the power of explosion
      * @param what the source object, used for tracking damage
      */
-
-
     protected Explosion(Position center, double size, Object what) {
         this.level = center.getLevel();
         this.source = center;
@@ -199,8 +197,6 @@ public class Explosion {
      *
      * @return {@code false} if explosion was canceled, otherwise {@code true}
      */
-
-
     public boolean explodeB() {
 
         LongArraySet updateBlocks = new LongArraySet();

@@ -400,8 +400,6 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      * @param pushArea 漏斗输出范围
      * @return 是否有漏斗被通知
      */
-
-
     private boolean checkPushHopper(AxisAlignedBB pushArea, InventoryHolder holder) {
         int minX = NukkitMath.floorDouble(pushArea.getMinX());
         int minY = NukkitMath.floorDouble(pushArea.getMinY());
@@ -431,8 +429,6 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      * @param pickupArea 漏斗拉取范围
      * @return 是否有漏斗被通知
      */
-
-
     private boolean checkPickupHopper(AxisAlignedBB pickupArea, InventoryHolder holder) {
         int minX = NukkitMath.floorDouble(pickupArea.getMinX());
         int minY = NukkitMath.floorDouble(pickupArea.getMinY());

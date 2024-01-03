@@ -93,8 +93,6 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     /**
      * @return If the sign is waxed, once a sign is waxed it cannot be modified
      */
-
-
     public boolean isWaxed() {
         return this.namedTag.getByte(TAG_WAXED) == 1;
     }
@@ -102,8 +100,6 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     /**
      * @param waxed If the sign is waxed, once a sign is waxed it cannot be modified
      */
-
-
     public void setWaxed(boolean waxed) {
         this.namedTag.putByte(TAG_WAXED, waxed ? (byte) 1 : (byte) 0);
     }

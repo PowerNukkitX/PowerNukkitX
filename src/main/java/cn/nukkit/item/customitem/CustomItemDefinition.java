@@ -42,8 +42,6 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
      * @param creativeCategory the creative category
      * @return the custom item definition . simple builder
      */
-
-
     public static CustomItemDefinition.SimpleBuilder customBuilder(CustomItem item, ItemCreativeCategory creativeCategory) {
         return new CustomItemDefinition.SimpleBuilder(item, creativeCategory);
     }

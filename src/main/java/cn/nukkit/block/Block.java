@@ -437,16 +437,13 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     /**
      * The properties that fully describe all possible and valid states that this block can have.
      */
-    @NotNull
-    public abstract BlockProperties getProperties();
+    public @NotNull abstract BlockProperties getProperties();
 
-    @NotNull
-    public final String getId() {
+    public @NotNull final String getId() {
         return this.getProperties().getIdentifier();
     }
 
-    @NotNull
-    public String getItemId() {
+    public @NotNull String getItemId() {
         return getId();
     }
 

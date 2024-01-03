@@ -155,8 +155,6 @@ public abstract class BlockEntity extends Position implements BlockEntityID{
     /**
      * 从方块实体的namedtag中读取数据
      */
-
-
     public void loadNBT() {}
 
     public CompoundTag getCleanedNBT() {
@@ -224,8 +222,6 @@ public abstract class BlockEntity extends Position implements BlockEntityID{
     /**
      * Indicates if an observer blocks that are looking at this block should blink when {@link #setDirty()} is called.
      */
-
-
     public boolean isObservable() {
         return true;
     }

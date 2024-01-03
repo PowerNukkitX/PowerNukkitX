@@ -460,8 +460,6 @@ public abstract class Enchantment implements Cloneable {
      * @param name Enchantment Identifier
      * @return the enchantment
      */
-
-
     public static Enchantment getEnchantment(String name) {
         if (Identifier.isValid(name)) {
             return customEnchantments.get(Identifier.tryParse(name));
@@ -487,8 +485,6 @@ public abstract class Enchantment implements Cloneable {
      *
      * @return The objects can be modified without affecting the registry and the collection will not have null values.
      */
-
-
     public static Collection<Enchantment> getRegisteredEnchantments() {
         return new ArrayList<>(customEnchantments.values());
     }
@@ -506,8 +502,7 @@ public abstract class Enchantment implements Cloneable {
     /**
      * The group of objects that this enchantment can be applied.
      */
-    @NotNull
-    public EnchantmentType type;
+    public @NotNull EnchantmentType type;
 
     /**
      * The level of this enchantment. Starting from {@code 1}.
@@ -563,8 +558,6 @@ public abstract class Enchantment implements Cloneable {
      * @param rarity How rare this enchantment is
      * @param type   Where the enchantment can be applied
      */
-
-
     protected Enchantment(@NotNull Identifier identifier, String name, Rarity rarity, @NotNull EnchantmentType type) {
         this.identifier = identifier;
         this.id = CUSTOM_ENCHANTMENT_ID;
@@ -578,8 +571,6 @@ public abstract class Enchantment implements Cloneable {
      *
      * @return the identifier
      */
-
-
     public @Nullable Identifier getIdentifier() {
         return identifier;
     }
@@ -591,8 +582,6 @@ public abstract class Enchantment implements Cloneable {
      *
      * @return the lore
      */
-
-
     public String getLore() {
         return TextFormat.GRAY + this.getName() + " " + Enchantment.getLevelString(this.getLevel());
     }
@@ -614,8 +603,7 @@ public abstract class Enchantment implements Cloneable {
      * @return This object so you can do chained calls
      */
 
-    @NotNull
-    public Enchantment setLevel(int level) {
+    public @NotNull Enchantment setLevel(int level) {
         return this.setLevel(level, true);
     }
 
@@ -628,8 +616,7 @@ public abstract class Enchantment implements Cloneable {
      * @param safe  If the level should clamped or applied directly
      * @return This object so you can do chained calls
      */
-    @NotNull
-    public Enchantment setLevel(int level, boolean safe) {
+    public @NotNull Enchantment setLevel(int level, boolean safe) {
         if (!safe) {
             this.level = level;
             return this;
@@ -651,8 +638,7 @@ public abstract class Enchantment implements Cloneable {
      * How rare this enchantment is.
      */
 
-    @NotNull
-    public Rarity getRarity() {
+    public @NotNull Rarity getRarity() {
         return this.rarity;
     }
 
@@ -833,8 +819,6 @@ public abstract class Enchantment implements Cloneable {
     /**
      * Checks if an item can have this enchantment. It's not strict to the enchantment table.
      */
-
-
     @Deprecated
     @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Does the same as canEnchant(item)", replaceWith = "canEnchant(item)")

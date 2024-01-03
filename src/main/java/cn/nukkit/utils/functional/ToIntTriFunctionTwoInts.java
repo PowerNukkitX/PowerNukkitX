@@ -28,8 +28,6 @@ public interface ToIntTriFunctionTwoInts<F> {
      * @param t the third function argument
      * @return the function result
      */
-
-
     int apply(F f, int s, int t);
 
     /**
@@ -43,8 +41,6 @@ public interface ToIntTriFunctionTwoInts<F> {
      * applies the {@code after} function
      * @throws NullPointerException if after is null
      */
-
-
     default ToIntTriFunctionTwoInts<F> andThen(IntUnaryOperator after) {
         Objects.requireNonNull(after);
         return (F f, int s, int t) -> after.applyAsInt(apply(f, s, t));

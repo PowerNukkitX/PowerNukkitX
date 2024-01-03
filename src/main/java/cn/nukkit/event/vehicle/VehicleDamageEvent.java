@@ -21,8 +21,6 @@ public class VehicleDamageEvent extends VehicleEvent implements Cancellable {
      * @param vehicle the damaged vehicle
      * @param damage  the caused damage on the vehicle
      */
-
-
     public VehicleDamageEvent(final EntityVehicle vehicle, final double damage) {
         super(vehicle);
 

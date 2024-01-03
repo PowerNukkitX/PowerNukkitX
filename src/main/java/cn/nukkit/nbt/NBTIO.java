@@ -140,8 +140,7 @@ public class NBTIO {
         return result.putInt("version", BlockStateRegistry.blockPaletteVersion.get());
     }
 
-    @NotNull
-    public static Block getBlockHelper(@NotNull CompoundTag block) {
+    public @NotNull static Block getBlockHelper(@NotNull CompoundTag block) {
         if (!block.containsString("name")) return Block.get(0);
         StringBuilder state = new StringBuilder(block.getString("name"));
         CompoundTag states = block.getCompound("states");
@@ -468,8 +467,6 @@ public class NBTIO {
      * only used for LevelEventGenericPacket
      * which do not write/read tag id and name
      */
-
-
     public static byte[] writeValue(CompoundTag tag) throws IOException {
         return writeValue(tag, ByteOrder.BIG_ENDIAN);
     }

@@ -6,13 +6,11 @@ import org.objectweb.asm.Type;
 import java.util.Arrays;
 
 public record JSuperMethod(JClassBuilder builder, String methodName, JType returnType, JType... argTypes) {
-    @NotNull
-    public Type[] argAsmTypes() {
+    public @NotNull Type[] argAsmTypes() {
         return Arrays.stream(this.argTypes()).map(JType::asmType).toArray(Type[]::new);
     }
 
-    @NotNull
-    public Type returnAsmType() {
+    public @NotNull Type returnAsmType() {
         return returnType.asmType();
     }
 }

@@ -30,8 +30,6 @@ public abstract class EnchantmentBow extends Enchantment {
      * @param projectile 箭实体
      * @param bow        弓物品
      */
-
-
     public void onBowShoot(EntityLiving user, EntityProjectile projectile, ItemBow bow) {
 
     }

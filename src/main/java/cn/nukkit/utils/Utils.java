@@ -361,8 +361,6 @@ public class Utils {
      * @param max the max
      * @return the int
      */
-
-
     public static int rand(int min, int max) {
         if (min == max) {
             return max;
@@ -389,8 +387,6 @@ public class Utils {
      * @param value The value to be assigned to the field.
      * @return The same value that was passed as parameter
      */
-
-
     public static int dynamic(int value) {
         return value;
     }
@@ -403,8 +399,6 @@ public class Utils {
      * @param value The value to be assigned to the field.
      * @return The same value that was passed as parameter
      */
-
-
     public static <T> T dynamic(T value) {
         return value;
     }
@@ -554,8 +548,6 @@ public class Utils {
      * if zz is 11, then the block at the maxZ side of the bb has collision <br>
      * if zz is 00, then zz is not used <br>
      */
-
-
     public static byte hasCollisionTickCachedBlocksWithInfo(Level level, @NotNull AxisAlignedBB bb) {
         int minX = NukkitMath.floorDouble(bb.getMinX());
         int minY = NukkitMath.floorDouble(bb.getMinY());

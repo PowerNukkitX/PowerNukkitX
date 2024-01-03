@@ -4,8 +4,7 @@ import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
 public record SemVersion(int major, int minor, int patch, int revision, int build) {
-    @NotNull
-    public static SemVersion from(int[] versions) {
+    public @NotNull static SemVersion from(int[] versions) {
         if (versions.length == 0) {
             return new SemVersion(0, 0, 0, 0, 0);
         }

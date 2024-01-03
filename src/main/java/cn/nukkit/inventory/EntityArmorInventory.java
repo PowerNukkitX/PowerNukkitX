@@ -23,8 +23,6 @@ public class EntityArmorInventory extends BaseInventory {
      * @param entity an Entity which implements {@link InventoryHolder}.
      * @throws ClassCastException if the entity does not implements {@link InventoryHolder}
      */
-
-
     public EntityArmorInventory(Entity entity) {
         super((InventoryHolder) entity, InventoryType.ENTITY_ARMOR);
         this.entity = entity;

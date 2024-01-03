@@ -54,8 +54,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
     public static final int DURABILITY_WARPED_FUNGUS_ON_A_STICK = dynamic(101);
     public static final int DURABILITY_SHIELD = dynamic(337);
 
-    @NotNull
-    public static Item getBestTool(int toolType) {
+    public @NotNull static Item getBestTool(int toolType) {
         switch (toolType) {
             case TYPE_NONE, TYPE_PICKAXE -> {
                 return Item.get(ItemID.NETHERITE_PICKAXE);

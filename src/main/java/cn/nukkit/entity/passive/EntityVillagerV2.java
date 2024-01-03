@@ -204,8 +204,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * 获取村民职业id对应的displayName硬编码
      */
-
-
     private String getProfessionName(int profession) {
         return switch (profession) {
             case 1 -> "entity.villager.farmer";
@@ -228,8 +226,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * @return 村民的职业id
      */
-
-
     public int getProfession() {
         return profession;
     }
@@ -239,8 +235,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
      *
      * @param profession 请查看{@link EntityVillagerV2#profession}
      */
-
-
     public void setProfession(int profession) {
         this.profession = profession;
         this.setDataProperty(new IntEntityData(DATA_VARIANT, profession));
@@ -250,8 +244,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * 这个方法插件一般不用
      */
-
-
     public void setTradingPlayer(Long eid) {
         this.setDataProperty(new LongEntityData(DATA_TRADING_PLAYER_EID, eid));
     }
@@ -259,8 +251,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * @return 该村民是否可以交易
      */
-
-
     public boolean getCanTrade() {
         return canTrade;
     }
@@ -270,8 +260,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
      *
      * @param canTrade true 可以交易
      */
-
-
     public void setCanTrade(boolean canTrade) {
         this.canTrade = canTrade;
         this.namedTag.putBoolean("canTrade", canTrade);
@@ -280,8 +268,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * @return 交易UI的显示名称
      */
-
-
     public String getDisplayName() {
         return displayName;
     }
@@ -289,8 +275,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * @param displayName 设置交易UI的显示名称
      */
-
-
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
         this.namedTag.putString("displayName", displayName);
@@ -299,8 +283,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * @return 该村民的交易等级
      */
-
-
     public int getTradeTier() {
         return tradeTier;
     }
@@ -308,8 +290,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     /**
      * @param tradeTier <p>村民的交易等级(1-{@link EntityVillagerV2#maxTradeTier})</p>
      */
-
-
     public void setTradeTier(int tradeTier) {
         this.tradeTier = --tradeTier;
         this.namedTag.putInt("tradeTier", this.tradeTier);

@@ -45,10 +45,7 @@ public enum TorchFacingDirection {
     /**
      * The direction that is touching the attached block.
      */
-
-
-    @NotNull
-    public BlockFace getAttachedFace() {
+    public @NotNull BlockFace getAttachedFace() {
         return switch (this) {
             default -> BlockFace.DOWN;
             case EAST -> BlockFace.EAST;

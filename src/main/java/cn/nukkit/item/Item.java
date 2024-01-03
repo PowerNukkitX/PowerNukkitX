@@ -328,8 +328,6 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * @param id 要查询的附魔标识符
      */
-
-
     public Enchantment getCustomEnchantment(String id) {
         if (!this.hasEnchantments()) {
             return null;
@@ -795,8 +793,7 @@ public abstract class Item implements Cloneable, ItemID {
         return this.hasCustomName() ? this.getCustomName() : idConvertToName();
     }
 
-    @NotNull
-    public final String getDisplayName() {
+    public @NotNull final String getDisplayName() {
         return this.hasCustomName() ? this.getCustomName() : idConvertToName();
     }
 
@@ -804,8 +801,7 @@ public abstract class Item implements Cloneable, ItemID {
         return ((this.block != null) && this.block.canBePlaced());
     }
 
-    @NotNull
-    public Block getBlock() {
+    public @NotNull Block getBlock() {
         if (this.block != null) {
             return this.block.clone();
         } else {
@@ -856,8 +852,6 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * Create a wildcard recipe item,the item can be applied to a recipe without restriction on data(damage/meta) values
      */
-
-
     public Item createFuzzyCraftingRecipe() {
         Item item = clone();
         item.hasMeta = false;
@@ -884,7 +878,7 @@ public abstract class Item implements Cloneable, ItemID {
         if (!Fuel.isFuel(this)) {
             return null;
         }
-        if (this.id != BUCKET || this.aux == 10) {
+        if (!this.id.equals(BUCKET) || this.aux == 10) {
             return Fuel.getFuelDuration(this);
         }
         return null;
@@ -1087,8 +1081,6 @@ public abstract class Item implements Cloneable, ItemID {
      *
      * @since 1.4.0.0-PN
      */
-
-
     public boolean isLavaResistant() {
         return false;
     }
@@ -1098,8 +1090,6 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * Define if the item can break the shield
      */
-
-
     public boolean canBreakShield() {
         return false;
     }
@@ -1180,8 +1170,6 @@ public abstract class Item implements Cloneable, ItemID {
      *
      * @return {@code true} if it can act like a bone meal
      */
-
-
     public boolean isFertilizer() {
         return false;
     }
@@ -1250,8 +1238,6 @@ public abstract class Item implements Cloneable, ItemID {
      *
      * @since 1.2.1.0-PN
      */
-
-
     public final boolean equalsIgnoringEnchantmentOrder(Item item, boolean checkDamage) {
         if (!this.equals(item, checkDamage, false)) {
             return false;
@@ -1331,8 +1317,6 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * Controls what block types this block may be placed on.
      */
-
-
     public void addCanPlaceOn(Block block) {
         CompoundTag tag = getOrCreateNamedTag();
         ListTag<StringTag> canPlaceOn = tag.getList("CanPlaceOn", StringTag.class);
@@ -1366,8 +1350,6 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * Controls what block types can destroy
      */
-
-
     public void addCanDestroy(Block block) {
         CompoundTag tag = getOrCreateNamedTag();
         ListTag<StringTag> canDestroy = tag.getList("CanDestroy", StringTag.class);
@@ -1405,8 +1387,6 @@ public abstract class Item implements Cloneable, ItemID {
      * LOCK_IN_SLOT Prevents the item from being removed from the player's inventory, dropped, or crafted with.
      * LOCK_IN_INVENTORY Prevents the item from being moved or removed from its slot in the player's inventory, dropped, or crafted with
      */
-
-
     public enum ItemLockMode {
         NONE,//only used in server
         LOCK_IN_SLOT,
@@ -1430,8 +1410,6 @@ public abstract class Item implements Cloneable, ItemID {
      *
      * @return
      */
-
-
     public ItemLockMode getItemLockMode() {
         CompoundTag tag = getOrCreateNamedTag();
         if (tag.contains("minecraft:item_lock")) {

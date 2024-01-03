@@ -284,8 +284,6 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     /**
      * 获得可以治疗狼的物品的治疗量
      */
-
-
     public int getHealingAmount(Item item) {
         return switch (item.getId()) {
             case ItemID.RAW_PORKCHOP, ItemID.RAW_BEEF, ItemID.RAW_RABBIT -> 3;

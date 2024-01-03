@@ -86,8 +86,7 @@ public abstract class Tag {
         return this;
     }
 
-    @NotNull
-    public String getName() {
+    public @NotNull String getName() {
         if (name == null) return "";
         return name;
     }
@@ -96,8 +95,6 @@ public abstract class Tag {
      * Only used for LevelEventGenericPacket
      * Which do not read tag id and name (It only can be a compound tag)
      */
-
-
     public static CompoundTag readCompoundValue(NBTInputStream dis) throws IOException {
         var compoundTag = new CompoundTag();
         compoundTag.load(dis);
@@ -120,8 +117,6 @@ public abstract class Tag {
      * Only used for LevelEventGenericPacket
      * Which do not write tag id and name
      */
-
-
     public static void writeValue(Tag tag, NBTOutputStream dos) throws IOException {
         if (tag.getId() == Tag.TAG_End) return;
 

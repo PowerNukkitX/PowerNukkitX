@@ -2500,8 +2500,7 @@ public class Server {
         BlockEntity.init();
     }
 
-    @NotNull
-    public PositionTrackingService getPositionTrackingService() {
+    public @NotNull PositionTrackingService getPositionTrackingService() {
         return positionTrackingService;
     }
 

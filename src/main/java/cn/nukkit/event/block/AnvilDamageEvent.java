@@ -56,8 +56,7 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
         return transaction;
     }
 
-    @NotNull
-    public DamageCause getDamageCause() {
+    public @NotNull DamageCause getDamageCause() {
         return cause;
     }
 
@@ -78,18 +77,15 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
         return null;
     }
 
-    @NotNull
-    public BlockState getOldBlockState() {
+    public @NotNull BlockState getOldBlockState() {
         return oldState;
     }
 
-    @NotNull
-    public BlockState getNewBlockState() {
+    public @NotNull BlockState getNewBlockState() {
         return newState;
     }
 
-    @NotNull
-    public Block getNewState() {
+    public @NotNull Block getNewState() {
         return newState.getBlockRepairing(block);
     }
 
@@ -118,8 +114,7 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
         this.newState = block.getBlockState();
     }
 
-    @NotNull
-    public DamageCause getCause() {
+    public @NotNull DamageCause getCause() {
         return this.cause;
     }
 

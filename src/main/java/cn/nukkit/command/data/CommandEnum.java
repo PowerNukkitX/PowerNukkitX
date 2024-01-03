@@ -108,8 +108,6 @@ public class CommandEnum {
      * @param values 该枚举的可选值，不能为空，但是可以为空列表
      * @param isSoft 当为False  时，客户端显示枚举参数会带上枚举名称{@link CommandEnum#getName()},当为true时 则判定为String
      */
-
-
     public CommandEnum(String name, List<String> values, boolean isSoft) {
         this.name = name;
         this.values = values;
@@ -123,8 +121,6 @@ public class CommandEnum {
      * @param name            the name
      * @param strListSupplier the str list supplier
      */
-
-
     public CommandEnum(String name, Supplier<Collection<String>> strListSupplier) {
         this.name = name;
         this.values = null;

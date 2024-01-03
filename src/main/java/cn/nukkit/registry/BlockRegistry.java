@@ -1080,8 +1080,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         }
     }
 
-    @NotNull
-    public Block get(String identifier, int x, int y, int z) {
+    public @NotNull Block get(String identifier, int x, int y, int z) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
         if (constructor == null) return new BlockAir();
         try {
@@ -1095,8 +1094,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         }
     }
 
-    @NotNull
-    public Block get(String identifier, int x, int y, int z, Level level) {
+    public @NotNull Block get(String identifier, int x, int y, int z, Level level) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
         if (constructor == null) return new BlockAir();
         try {
@@ -1111,8 +1109,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         }
     }
 
-    @NotNull
-    public Block get(String identifier, int x, int y, int z, int layer, Level level) {
+    public @NotNull Block get(String identifier, int x, int y, int z, int layer, Level level) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
         if (constructor == null) return new BlockAir();
         try {
@@ -1128,8 +1125,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         }
     }
 
-    @NotNull
-    public Block get(BlockState blockState) {
+    public @NotNull Block get(BlockState blockState) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
         if (constructor == null) return new BlockAir();
         try {
@@ -1139,8 +1135,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         }
     }
 
-    @NotNull
-    public Block get(BlockState blockState, int x, int y, int z) {
+    public @NotNull Block get(BlockState blockState, int x, int y, int z) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
         if (constructor == null) return new BlockAir();
         try {
@@ -1154,8 +1149,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         }
     }
 
-    @NotNull
-    public Block get(BlockState blockState, int x, int y, int z, Level level) {
+    public @NotNull Block get(BlockState blockState, int x, int y, int z, Level level) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
         if (constructor == null) return new BlockAir();
         try {
@@ -1170,8 +1164,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         }
     }
 
-    @NotNull
-    public Block get(BlockState blockState, int x, int y, int z, int layer, Level level) {
+    public @NotNull Block get(BlockState blockState, int x, int y, int z, int layer, Level level) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
         if (constructor == null) return new BlockAir();
         try {

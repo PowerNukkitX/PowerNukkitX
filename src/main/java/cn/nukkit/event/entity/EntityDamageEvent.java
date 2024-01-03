@@ -237,56 +237,38 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         /**
          * Damage caused by Wither
          */
-
-
         WITHER,
         /**
          * Damage caused by thorns
          */
-
-
         THORNS,
         /**
          * Damage caused by falling block
          */
-
-
         FALLING_BLOCK,
         /**
          * Damage caused by flying into wall
          */
-
-
         FLYING_INTO_WALL,
         /**
          * Damage caused when an entity steps on a hot block, like {@link cn.nukkit.block.BlockID#MAGMA}
          */
-
-
         HOT_FLOOR,
         /**
          * Damage caused by fireworks
          */
-
-
         FIREWORKS,
         /**
          * Damage caused by temperature
          */
-
-
         FREEZING,
         /**
          * Damage caused by no reason (eg: /damage command with cause NONE)
          */
-
-
         NONE,
         /**
          * Damage caused by a lot of (>24) entities colliding together
          */
-
-
         COLLIDE
     }
 }

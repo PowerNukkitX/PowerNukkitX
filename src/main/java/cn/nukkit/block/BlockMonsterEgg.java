@@ -22,8 +22,7 @@ public class BlockMonsterEgg extends BlockSolid {
         super(blockstate);
     }
 
-    @NotNull
-    public MonsterEggStoneType getMonsterEggStoneType() {
+    public @NotNull MonsterEggStoneType getMonsterEggStoneType() {
         return getPropertyValue(MONSTER_EGG_STONE_TYPE);
     }
 

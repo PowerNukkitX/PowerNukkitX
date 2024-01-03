@@ -69,8 +69,6 @@ public class Metrics {
      * @param serverUUID        The unique identifier of this server.
      * @param logFailedRequests If failed submissions should be logged.
      */
-
-
     public Metrics(String name, String serverUUID, boolean logFailedRequests) {
         this.name = name;
         this.serverUUID = serverUUID;

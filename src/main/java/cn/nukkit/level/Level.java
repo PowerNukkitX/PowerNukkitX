@@ -479,10 +479,7 @@ public class Level implements Metadatable {
      *
      * @throws LevelException If the level is already closed
      */
-
-
-    @NotNull
-    public final LevelProvider requireProvider() {
+    public @NotNull final LevelProvider requireProvider() {
         LevelProvider levelProvider = getProvider();
         if (levelProvider == null) {
             LevelException levelException = new LevelException("The level \"" + getFolderName() + "\" is already closed (have no providers)");
@@ -1418,8 +1415,6 @@ public class Level implements Metadatable {
      *
      * @param pos 指定位置
      */
-
-
     public void neighborChangeAroundImmediately(Vector3 pos) {
         for (var face : BlockFace.values()) {
             var neighborBlock = getBlock(pos.getSide(face));
@@ -3857,8 +3852,6 @@ public class Level implements Metadatable {
      *
      * @param force the force
      */
-
-
     public void doChunkGarbageCollection(boolean force) {
         // remove all invaild block entities.
         if (!blockEntities.isEmpty()) {
@@ -3961,8 +3954,6 @@ public class Level implements Metadatable {
      * @param force
      * @return true if there is allocated time remaining
      */
-
-
     private boolean unloadChunks(long now, long allocatedTime, boolean force) {
         if (!this.unloadQueue.isEmpty()) {
             boolean result = true;

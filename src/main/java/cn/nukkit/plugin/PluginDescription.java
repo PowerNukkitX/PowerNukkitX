@@ -428,8 +428,6 @@ public class PluginDescription {
      * @see PluginDescription
      * @since PowerNukkitX 1.6.0.0-PNX | Nukkit API 1.0.14
      */
-
-
     public List<String> getFeatures() {
         return features;
     }

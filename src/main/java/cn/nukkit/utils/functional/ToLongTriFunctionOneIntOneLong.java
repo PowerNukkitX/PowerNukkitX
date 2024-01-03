@@ -28,8 +28,6 @@ public interface ToLongTriFunctionOneIntOneLong<F> {
      * @param t the third function argument
      * @return the function result
      */
-
-
     long apply(F f, int s, long t);
 
     /**
@@ -43,8 +41,6 @@ public interface ToLongTriFunctionOneIntOneLong<F> {
      * applies the {@code after} function
      * @throws NullPointerException if after is null
      */
-
-
     default ToLongTriFunctionOneIntOneLong<F> andThen(LongUnaryOperator after) {
         Objects.requireNonNull(after);
         return (F f, int s, long t) -> after.applyAsLong(apply(f, s, t));

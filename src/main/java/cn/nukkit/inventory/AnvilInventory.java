@@ -292,8 +292,6 @@ public class AnvilInventory extends FakeBlockUIComponent {
         return super.setItem(index, item, send);
     }
      */
-
-
     @Deprecated @DeprecationDetails(
             reason = "NukkitX added the samething with other name.",
             by = "PowerNukkit", since = "1.4.0.0-PN",
@@ -344,8 +342,6 @@ public class AnvilInventory extends FakeBlockUIComponent {
         }
     }
      */
-
-
     public boolean setFirstItem(Item item, boolean send) {
         return setItem(SACRIFICE, item, send);
     }

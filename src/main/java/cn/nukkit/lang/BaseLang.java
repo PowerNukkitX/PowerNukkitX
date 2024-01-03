@@ -121,8 +121,6 @@ public class BaseLang {
      * @param key the key
      * @return the string
      */
-
-
     public String tr(String key) {
         return tr(key, EmptyArrays.EMPTY_STRINGS);
     }
@@ -134,8 +132,6 @@ public class BaseLang {
      * @param args the args
      * @return the string
      */
-
-
     public String tr(String key, String... args) {
         String baseText = parseLanguageText(key);
         for (int i = 0; i < args.length; i++) {
@@ -153,8 +149,6 @@ public class BaseLang {
      * @param args the args
      * @return the string
      */
-
-
     public String tr(String key, Object... args) {
         String baseText = parseLanguageText(key);
         for (int i = 0; i < args.length; i++) {

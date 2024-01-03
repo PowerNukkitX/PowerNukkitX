@@ -287,8 +287,6 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
      * Bound cat breeding items
      * WIKI understands that only raw salmon and raw cod can be used to breed
      */
-
-
     @Override
     public boolean isBreedingItem(Item item) {
         return item.getId() == ItemID.RAW_SALMON ||
@@ -302,8 +300,6 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
      * Obtain healing amount of items that can heal cats
      * WIKI understands that only raw salmon and raw cod can restore the cat's blood recovery 2
      */
-
-
     public int getHealingAmount(Item item) {
         return switch (item.getId()) {
             case ItemID.RAW_FISH, ItemID.RAW_SALMON -> 2;

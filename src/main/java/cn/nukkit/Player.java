@@ -196,8 +196,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * <p>
      * direction of dig
      */
-
-
     public BlockFace breakingBlockFace = null;
     public int pickedXPOrb = 0;
     public EntityFishingHook fishing = null;
@@ -314,8 +312,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * The reason is that there is a chance that the client will not respond to the dialogs sent, and in certain cases we cannot clear these dialogs, which can lead to memory leaks
      * Unresponsive dialogs will be cleared after 5 minutes
      */
-
-
     protected Cache<String, FormWindowDialog> dialogWindows = Caffeine.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
     protected Map<Long, DummyBossBar> dummyBossBars = new Long2ObjectLinkedOpenHashMap<>();
     protected boolean shouldLogin = false;
@@ -362,24 +358,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * <p>
      * Time to play sound when player upgrades
      */
-
-
     protected int lastPlayerdLevelUpSoundTime = 0;
     /**
      * 玩家最后攻击的实体.
      * <p>
      * The entity that the player attacked last.
      */
-
-
     protected Entity lastAttackEntity = null;
     /**
      * 玩家迷雾设置
      * <p>
      * Player Fog Settings
      */
-
-
     @Getter
     @Setter
     protected List<PlayerFogPacket.Fog> fogStack = new ArrayList<>();
@@ -388,8 +378,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * <p>
      * The entity that the player is attacked last.
      */
-
-
     protected Entity lastBeAttackEntity = null;
 
     private boolean foodEnabled = true;
@@ -1566,8 +1554,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     /**
      * 玩家客户端初始化完成后调用
      */
-
-
     protected void onPlayerLocallyInitialized() {
         /*
           我们在玩家客户端初始化后才发送游戏模式，以解决观察者模式疾跑速度不正确的问题
@@ -1608,8 +1594,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param block
      * @return
      */
-
-
     protected boolean isValidRespawnBlock(Block block) {
         if (block.getId() == BlockID.RESPAWN_ANCHOR && block.getLevel().getDimension() == Level.DIMENSION_NETHER) {
             BlockRespawnAnchor anchor = (BlockRespawnAnchor) block;
@@ -1811,8 +1795,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     /**
      * @return {@link #lastAttackEntity}
      */
-
-
     public Entity getLastAttackEntity() {
         return lastAttackEntity;
     }
@@ -1820,8 +1802,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     /**
      * @return {@link #lastBeAttackEntity}
      */
-
-
     public Entity getLastBeAttackEntity() {
         return lastBeAttackEntity;
     }
@@ -1902,8 +1882,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @return int
      */
-
-
     public int getLastInAirTick() {
         return this.lastInAirTick;
     }
@@ -2574,8 +2552,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @return 床、重生锚的位置，或在未知时为空。<br>The position of a bed, respawn anchor, or null when unknown.
      */
-
-
     @Deprecated
     @DeprecationDetails(since = "1.19.60-r1", reason = "same #getSpawn")
     public Position getSpawnBlock() {
@@ -2621,8 +2597,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @param spawnBlock 床位或重生锚的位置<br>The position of a bed or respawn anchor
      */
-
-
     public void setSpawnBlock(@Nullable Vector3 spawnBlock) {
         if (spawnBlock == null) {
             this.spawnBlockPosition = null;
@@ -3091,8 +3065,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     /**
      * 将迷雾设定发送到客户端
      */
-
-
     public void sendFogStack() {
         var pk = new PlayerFogPacket();
         pk.setFogStack(this.fogStack);
@@ -3604,8 +3576,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @param text JSON文本<br>Json text
      */
-
-
     public void sendRawTextMessage(RawText text) {
         TextPacket pk = new TextPacket();
         pk.type = TextPacket.TYPE_OBJECT;
@@ -3747,8 +3717,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @param text JSON文本<br>JSON text
      */
-
-
     public void setRawTextSubTitle(RawText text) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_SUBTITLE_JSON;
@@ -3781,8 +3749,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @param text JSON文本<br>JSON text
      */
-
-
     public void setRawTextTitle(RawText text) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_TITLE_JSON;
@@ -3862,8 +3828,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @see #setRawTextActionBar(RawText, int, int, int)
      */
-
-
     public void setRawTextActionBar(RawText text) {
         this.setRawTextActionBar(text, 1, 0, 1);
     }
@@ -3878,8 +3842,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param duration 持续时间
      * @param fadeout  淡出时间
      */
-
-
     public void setRawTextActionBar(RawText text, int fadein, int duration, int fadeout) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_ACTIONBAR_JSON;
@@ -5756,8 +5718,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @param items The items to give to the player.
      */
-
-
     public void giveItem(Item... items) {
         for (Item failed : getInventory().addItem(items)) {
             getLevel().dropItem(this, failed);
@@ -5892,8 +5852,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param shakeType   the shake type
      * @param shakeAction the shake action
      */
-
-
     public void shakeCamera(float intensity, float duration, CameraShakePacket.CameraShakeType shakeType, CameraShakePacket.CameraShakeAction shakeAction) {
         CameraShakePacket packet = new CameraShakePacket();
         packet.intensity = intensity;
@@ -5911,8 +5869,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param coolDown     the cool down
      * @param itemCategory the item category
      */
-
-
     public void setItemCoolDown(int coolDown, String itemCategory) {
         var pk = new PlayerStartItemCoolDownPacket();
         pk.setCoolDownDuration(coolDown);
@@ -6022,8 +5978,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     /**
      * Opens the player's sign editor GUI for the sign at the given position.
      */
-
-
     public void openSignEditor(Vector3 position, boolean frontSide) {
         if (openSignFront == null) {
             BlockEntity blockEntity = this.getLevel().getBlockEntity(position);

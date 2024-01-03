@@ -36,8 +36,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
      * may also add horizontal directions.
      * @return Normally, up or down.
      */
-    @NotNull
-    public abstract BlockFace getGrowthDirection();
+    public @NotNull abstract BlockFace getGrowthDirection();
 
     /**
      * The current age of this block.
