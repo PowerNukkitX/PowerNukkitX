@@ -3,19 +3,17 @@ package cn.nukkit.event.level;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.Level;
+import lombok.Getter;
 
 /**
  * @author funcraft (Nukkit Project)
  */
 public class WeatherChangeEvent extends WeatherEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
 
     private final boolean to;
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     public WeatherChangeEvent(Level level, boolean to) {
         super(level);

@@ -23,6 +23,7 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.SmithingInventory;
 import cn.nukkit.item.Item;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -32,18 +33,13 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class SmithingTableEvent extends InventoryEvent implements Cancellable {
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final @NotNull Item equipmentItem;
     private final @NotNull Item resultItem;
     private final @NotNull Item ingredientItem;
     private final @NotNull Player player;
-
 
     public SmithingTableEvent(SmithingInventory inventory, @NotNull Item equipmentItem, @NotNull Item resultItem, @NotNull Item ingredientItem, @NotNull Player player) {
         super(inventory);
@@ -53,23 +49,19 @@ public class SmithingTableEvent extends InventoryEvent implements Cancellable {
         this.player = player;
     }
 
-    @NotNull
-    public Item getEquipmentItem() {
+    public @NotNull Player getPlayer() {
+        return this.player;
+    }
+
+    public @NotNull Item getEquipmentItem() {
         return this.equipmentItem;
     }
 
-    @NotNull
-    public Item getResultItem() {
+    public @NotNull Item getResultItem() {
         return this.resultItem;
     }
 
-    @NotNull
-    public Item getIngredientItem() {
+    public @NotNull Item getIngredientItem() {
         return this.ingredientItem;
-    }
-
-    @NotNull
-    public Player getPlayer() {
-        return this.player;
     }
 }

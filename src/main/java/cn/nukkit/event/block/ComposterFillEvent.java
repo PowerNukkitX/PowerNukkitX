@@ -5,17 +5,18 @@ import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
+import lombok.Getter;
 
 
 public class ComposterFillEvent extends BlockEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
 
     private final Player player;
     private final Item item;
     private final int chance;
     private boolean success;
-
 
     public ComposterFillEvent(Block block, Player player, Item item, int chance, boolean success) {
         super(block);
@@ -45,7 +46,4 @@ public class ComposterFillEvent extends BlockEvent implements Cancellable {
         this.success = success;
     }
 
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 }

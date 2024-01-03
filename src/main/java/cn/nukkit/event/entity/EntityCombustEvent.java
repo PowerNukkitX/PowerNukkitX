@@ -3,16 +3,14 @@ package cn.nukkit.event.entity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityCombustEvent extends EntityEvent implements Cancellable {
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     protected int duration;
 

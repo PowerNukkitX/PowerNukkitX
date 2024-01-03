@@ -9,19 +9,15 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.transaction.CraftingTransaction;
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-
 public class AnvilDamageEvent extends BlockEvent implements Cancellable {
     
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     @Nullable
     private final Player player;
@@ -99,7 +95,6 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
 
     @Deprecated
     @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", reason = "Unstable use of raw block state data", replaceWith = "getNewAnvilDamage or getNewBlockState")
-
     public int getNewDamage() {
         BlockState newBlockState = getNewBlockState();
         return newBlockState.getProperties().contains(BlockAnvil.DAMAGE)? newBlockState.getIntValue(BlockAnvil.DAMAGE) : 0;
@@ -112,7 +107,6 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
     @Deprecated
     @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", reason = "Unstable use of raw block state data",
             replaceWith = "setNewBlockState example: setNewBlockState(BlockState.of(BlockID.ANVIL).withProperty(BlockAnvil.DAMAGE, AnvilDamage.VERY_DAMAGED))")
-
     public void setNewDamage(int newDamage) {
         BlockState newBlockState = getNewBlockState();
         if (newBlockState.getProperties().contains(BlockAnvil.DAMAGE)) {

@@ -5,20 +5,17 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.EnchantInventory;
 import cn.nukkit.item.Item;
+import lombok.Getter;
 
 
 public class EnchantItemEvent extends InventoryEvent implements Cancellable {
+    @Getter
     private static final HandlerList handlers = new HandlerList();
 
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
-
+    private Player enchanter;
     private Item oldItem;
     private Item newItem;
     private int xpCost;
-    private Player enchanter;
-
 
     public EnchantItemEvent(EnchantInventory inventory, Item oldItem, Item newItem, int cost, Player p) {
         super(inventory);

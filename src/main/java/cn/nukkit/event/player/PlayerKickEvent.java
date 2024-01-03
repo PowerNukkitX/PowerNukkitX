@@ -4,8 +4,10 @@ import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.lang.TextContainer;
+import lombok.Getter;
 
 public class PlayerKickEvent extends PlayerEvent implements Cancellable {
+    @Getter
     private static final HandlerList handlers = new HandlerList();
 
     public enum Reason {
@@ -25,10 +27,6 @@ public class PlayerKickEvent extends PlayerEvent implements Cancellable {
         public String toString() {
             return this.name();
         }
-    }
-
-    public static HandlerList getHandlers() {
-        return handlers;
     }
 
     protected TextContainer quitMessage;

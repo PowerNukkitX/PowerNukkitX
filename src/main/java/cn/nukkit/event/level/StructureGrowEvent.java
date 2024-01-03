@@ -3,6 +3,7 @@ package cn.nukkit.event.level;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 import java.util.List;
 import java.util.Objects;
@@ -13,16 +14,11 @@ import java.util.Objects;
 
 public class StructureGrowEvent extends LevelEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final Block block;
     private final List<Block> blocks;
-
 
     public StructureGrowEvent(Block block, List<Block> blocks) {
         super(Objects.requireNonNull(block.getLevel()));

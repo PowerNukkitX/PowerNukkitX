@@ -5,25 +5,22 @@ import cn.nukkit.blockentity.BlockEntityLectern;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
+import lombok.Getter;
 
 
 public class LecternDropBookEvent extends BlockEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
     private final Player player;
     private final BlockEntityLectern lectern;
     private Item book;
-
 
     public LecternDropBookEvent(Player player, BlockEntityLectern lectern, Item book) {
         super(lectern.getBlock());
         this.player = player;
         this.lectern = lectern;
         this.book = book;
-    }
-
-    public static HandlerList getHandlers() {
-        return handlers;
     }
 
     public BlockEntityLectern getLectern() {

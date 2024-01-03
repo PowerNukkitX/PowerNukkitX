@@ -4,18 +4,16 @@ import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.food.Food;
+import lombok.Getter;
 
 /**
  * @author Snake1999
  * @since 2016/1/14
  */
 public class PlayerEatFoodEvent extends PlayerEvent implements Cancellable {
+    @Getter
     private static final HandlerList handlers = new HandlerList();
     private Food food;
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     public PlayerEatFoodEvent(Player player, Food food) {
         this.player = player;

@@ -15,6 +15,10 @@ public final class VehicleDestroyByEntityEvent extends VehicleDestroyEvent imple
 
     private static final HandlerList HANDLER_LIST = new HandlerList();
 
+    public static HandlerList getHandlers() {
+        return HANDLER_LIST;
+    }
+
     private final Entity destroyer;
 
     /**
@@ -28,10 +32,6 @@ public final class VehicleDestroyByEntityEvent extends VehicleDestroyEvent imple
         super(vehicle);
 
         this.destroyer = destroyer;
-    }
-
-    public static HandlerList getHandlers() {
-        return HANDLER_LIST;
     }
 
     /**

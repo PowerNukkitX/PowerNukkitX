@@ -4,17 +4,15 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 /**
  * @author KCodeYT (Nukkit Project)
  */
 public class PlayerChangeSkinEvent extends PlayerEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final Skin skin;
 

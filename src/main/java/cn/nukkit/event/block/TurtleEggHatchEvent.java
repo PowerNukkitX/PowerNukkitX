@@ -6,16 +6,17 @@ import cn.nukkit.block.BlockTurtleEgg;
 import cn.nukkit.block.property.enums.TurtleEggCount;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 
 public class TurtleEggHatchEvent extends BlockEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
 
     private int eggsHatching;
     private Block newState;
     private boolean recalculateOnFailure = true;
-
 
     public TurtleEggHatchEvent(BlockTurtleEgg turtleEgg, int eggsHatching, Block newState) {
         super(turtleEgg);
@@ -65,7 +66,4 @@ public class TurtleEggHatchEvent extends BlockEvent implements Cancellable {
         this.recalculateOnFailure = recalculateOnFailure;
     }
 
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 }

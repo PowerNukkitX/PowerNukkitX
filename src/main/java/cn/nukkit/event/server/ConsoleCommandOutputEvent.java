@@ -3,10 +3,13 @@ package cn.nukkit.event.server;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 
 public class ConsoleCommandOutputEvent extends ServerEvent implements Cancellable {
+    @Getter
     private static final HandlerList handlers = new HandlerList();
+
     protected final CommandSender sender;
     protected String message;
 
@@ -27,7 +30,4 @@ public class ConsoleCommandOutputEvent extends ServerEvent implements Cancellabl
         this.message = message;
     }
 
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 }

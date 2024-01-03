@@ -22,6 +22,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 import javax.annotation.Nullable;
 
@@ -33,12 +34,8 @@ import javax.annotation.Nullable;
 
 public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private double force;
     private boolean blockBreaking;
@@ -46,8 +43,6 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
     private final Player player;
 
     @Deprecated
-
-
     public BlockExplosionPrimeEvent(Block block, double force) {
         this(block, force, 0);
     }
@@ -104,10 +99,7 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
         this.fireChance = fireChance;
     }
 
-    @Nullable
-
-
-    public Player getPlayer() {
+    public @Nullable Player getPlayer() {
         return player;
     }
 }

@@ -4,17 +4,14 @@ import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.network.protocol.AnimatePacket;
+import lombok.Getter;
 
 public class PlayerAnimationEvent extends PlayerEvent implements Cancellable {
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final AnimatePacket.Action animationType;
     private final float rowingTime;
-
 
     public PlayerAnimationEvent(Player player, AnimatePacket animatePacket) {
         this.player = player;

@@ -4,17 +4,15 @@ import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.Inventory;
+import lombok.Getter;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class InventoryPickupArrowEvent extends InventoryEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final EntityArrow arrow;
 

@@ -6,20 +6,17 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.permission.Permissible;
+import lombok.Getter;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class PlayerChatEvent extends PlayerMessageEvent implements Cancellable {
+    @Getter
     private static final HandlerList handlers = new HandlerList();
 
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
-
-    protected String format;
-
     protected Set<CommandSender> recipients = new HashSet<>();
+    protected String format;
 
     public PlayerChatEvent(Player player, String message) {
         this(player, message, "chat.type.text", null);

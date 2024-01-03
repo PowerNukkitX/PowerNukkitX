@@ -7,24 +7,19 @@ import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.Recipe;
 import cn.nukkit.inventory.transaction.CraftingTransaction;
 import cn.nukkit.item.Item;
+import lombok.Getter;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class CraftItemEvent extends Event implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
 
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
-
-    private Item[] input = Item.EMPTY_ARRAY;
-
     private final Recipe recipe;
-
     private final Player player;
-
+    private final Item[] input;
     private CraftingTransaction transaction;
 
     public CraftItemEvent(CraftingTransaction transaction) {

@@ -8,6 +8,7 @@ import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginDescription;
 import cn.nukkit.utils.Binary;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -21,11 +22,8 @@ import java.util.Map;
 public class QueryRegenerateEvent extends ServerEvent {
     //alot todo
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private static final String GAME_ID = "MINECRAFTPE";
 

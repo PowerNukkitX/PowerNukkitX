@@ -5,18 +5,16 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
+import lombok.Getter;
 
 
 public class PlayerChangeArmorStandEvent extends PlayerEvent implements Cancellable {
-    private final Entity armorStand;
-    private Item item;
-    private final int slot;
-
+    @Getter
     private static final HandlerList handlers = new HandlerList();
 
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
+    private final Entity armorStand;
+    private final int slot;
+    private Item item;
 
     public PlayerChangeArmorStandEvent(Player player, Entity armorStand, Item item, int slot) {
         this.player = player;

@@ -4,16 +4,14 @@ import cn.nukkit.entity.mob.EntityCreeper;
 import cn.nukkit.entity.weather.EntityLightningStrike;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class CreeperPowerEvent extends EntityEvent implements Cancellable {
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final PowerCause cause;
     private EntityLightningStrike bolt;

@@ -8,6 +8,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -15,23 +16,13 @@ import org.jetbrains.annotations.Nullable;
  */
 public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
 
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
-
-    @Nullable
-    protected final Block blockTouched;
-
+    protected @Nullable final Block blockTouched;
+    protected @Nullable final BlockFace blockFace;
+    protected @Nullable final Item item;
     protected final Vector3 touchVector;
-
-    @Nullable
-    protected final BlockFace blockFace;
-
-    @Nullable
-    protected final Item item;
-
     protected final Action action;
 
     public PlayerInteractEvent(Player player, Item item, Vector3 block, BlockFace face) {

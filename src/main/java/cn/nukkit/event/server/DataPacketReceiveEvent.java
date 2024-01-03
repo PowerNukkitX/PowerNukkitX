@@ -4,12 +4,14 @@ import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.network.protocol.DataPacket;
+import lombok.Getter;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class DataPacketReceiveEvent extends ServerEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
 
     private final DataPacket packet;
@@ -28,7 +30,4 @@ public class DataPacketReceiveEvent extends ServerEvent implements Cancellable {
         return player;
     }
 
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 }

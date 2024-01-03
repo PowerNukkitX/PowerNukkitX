@@ -3,6 +3,7 @@ package cn.nukkit.event.player;
 import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 /**
  * @author GoodLucky777
@@ -11,15 +12,10 @@ import cn.nukkit.event.HandlerList;
 
 public class PlayerToggleSpinAttackEvent extends PlayerEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
 
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
-
     private final boolean isSpinAttacking;
-
 
     public PlayerToggleSpinAttackEvent(Player player, boolean isSpinAttacking) {
         this.player = player;
