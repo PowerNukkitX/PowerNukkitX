@@ -86,7 +86,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        items = new Item[]{Item.AIR_ITEM, Item.AIR_ITEM, Item.AIR_ITEM, Item.AIR_ITEM, Item.AIR_ITEM, Item.AIR_ITEM};
+        items = new Item[]{Item.AIR, Item.AIR, Item.AIR, Item.AIR, Item.AIR, Item.AIR};
         if (namedTag.containsInt(LAST_INTERACTED_SLOT)) {
             this.lastInteractedSlot = namedTag.getInt(LAST_INTERACTED_SLOT);
         }
@@ -101,7 +101,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
                     this.items[i] = null;
                     continue;
                 }
-                Item item = Item.fromString(name);
+                Item item = Item.get(name);
                 item.setAux(compoundTag.getByte("Damage"));
                 item.setCount(compoundTag.getByte("Count"));
                 if (compoundTag.containsCompound("tag")) {
@@ -128,7 +128,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
             } else {
                 CompoundTag compoundTag = new CompoundTag()
                         .putByte("Count", item.getCount())
-                        .putString("Name", item.getNamespaceId())
+                        .putString("Name", item.getId())
                         .putByte("Damage", item.getAux())
                         .putBoolean("WasPickedUp", false);
                 if (item.hasCompoundTag()) {

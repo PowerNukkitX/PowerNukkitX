@@ -107,7 +107,7 @@ public abstract class Fuel {
         if (!(item instanceof StringItem)) {
             duration.put(item.getId(), fuelDuration);
         }
-        durationByStringId.put(item.getNamespaceId(), fuelDuration);
+        durationByStringId.put(item.getId(), fuelDuration);
     }
 
     /**
@@ -117,7 +117,7 @@ public abstract class Fuel {
     public static short getFuelDuration(@NotNull Item item) {
         var d = duration.get(item.getId());
         if (d == null) {
-            return (short) durationByStringId.getOrDefault(item.getNamespaceId(), -1);
+            return (short) durationByStringId.getOrDefault(item.getId(), -1);
         }
         return duration.getOrDefault(item.getId(), (short) 0);
     }

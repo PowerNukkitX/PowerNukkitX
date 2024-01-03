@@ -33,7 +33,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
     private String newItemName;
 
     @NotNull
-    private Item currentResult = Item.get(0);
+    private Item currentResult = Item.AIR;
 
     public AnvilInventory(PlayerUIInventory playerUI, Position position) {
         super(playerUI, InventoryType.ANVIL, OFFSET, position);
@@ -206,7 +206,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
         
         setLevelCost(levelCost + extraCost);
         if (extraCost <= 0) {
-            result = Item.get(0);
+            result = Item.AIR;
         }
         
         if (costHelper == extraCost && costHelper > 0 && getLevelCost() >= 40) {
@@ -214,7 +214,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
         }
         
         if (getLevelCost() >= 40 && !this.playerUI.getHolder().isCreative()) {
-            result = Item.get(0);
+            result = Item.AIR;
         }
         
         if (!result.isNull()) {
@@ -270,7 +270,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
     @Override
     public Item getItem(int index) {
         if (index < 0 || index > 3) {
-            return Item.get(0);
+            return Item.AIR;
         }
         if (index == 2) {
             return getResult();
@@ -368,7 +368,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
 
     private boolean setResult(Item item) {
         if (item == null || item.isNull()) {
-            this.currentResult = Item.get(0);
+            this.currentResult = Item.AIR;
         } else {
             this.currentResult = item.clone();
         }

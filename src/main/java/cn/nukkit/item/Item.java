@@ -15,6 +15,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.TextFormat;
@@ -39,7 +40,7 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 public abstract class Item implements Cloneable, ItemID {
-    public static final Item AIR_ITEM = Item.getItemBlock(BlockID.AIR);
+    public static final Item AIR = getItemBlock(BlockID.AIR);
     public static final Item[] EMPTY_ARRAY = new Item[0];
 
     /**
@@ -172,9 +173,9 @@ public abstract class Item implements Cloneable, ItemID {
             this.setCanDestroy(Arrays.stream(components.canDestroy.blocks).map(str -> Block.get(str.startsWith("minecraft:") ? str : "minecraft:" + str)).toArray(Block[]::new));
         if (components.itemLock != null)
             this.setItemLockMode(switch (components.itemLock.mode) {
-                case ItemJsonComponents.ItemLock.LOCK_IN_SLOT -> Item.ItemLockMode.LOCK_IN_SLOT;
-                case ItemJsonComponents.ItemLock.LOCK_IN_INVENTORY -> Item.ItemLockMode.LOCK_IN_INVENTORY;
-                default -> Item.ItemLockMode.NONE;
+                case ItemJsonComponents.ItemLock.LOCK_IN_SLOT -> ItemLockMode.LOCK_IN_SLOT;
+                case ItemJsonComponents.ItemLock.LOCK_IN_INVENTORY -> ItemLockMode.LOCK_IN_INVENTORY;
+                default -> ItemLockMode.NONE;
             });
         if (components.keepOnDeath != null)
             this.setKeepOnDeath(true);
@@ -260,8 +261,6 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * 该物品是否可以应用附魔效果
      */
-
-
     public boolean applyEnchantments() {
         return true;
     }
@@ -292,8 +291,6 @@ public abstract class Item implements Cloneable, ItemID {
      * @param id The enchantment ID from {@link Enchantment} constants.
      * @return {@code 0} if the item don't have that enchantment or the current level of the given enchantment.
      */
-
-
     public int getEnchantmentLevel(int id) {
         if (!this.hasEnchantments()) {
             return 0;
@@ -316,8 +313,6 @@ public abstract class Item implements Cloneable, ItemID {
      * @param id 要查询的附魔标识符
      * @return {@code 0} if the item don't have that enchantment or the current level of the given enchantment.
      */
-
-
     public int getCustomEnchantmentLevel(String id) {
         if (!this.hasEnchantments()) {
             return 0;
@@ -360,8 +355,6 @@ public abstract class Item implements Cloneable, ItemID {
      *
      * @param id 要查询的附魔标识符
      */
-
-
     public boolean hasCustomEnchantment(String id) {
         return this.getCustomEnchantmentLevel(id) > 0;
     }
@@ -369,8 +362,6 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * @param id 要查询的附魔标识符
      */
-
-
     public int getCustomEnchantmentLevel(@NotNull Identifier id) {
         return getCustomEnchantmentLevel(id.toString());
     }
@@ -378,8 +369,6 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * @param id 要查询的附魔标识符
      */
-
-
     public boolean hasCustomEnchantment(@NotNull Identifier id) {
         return hasCustomEnchantment(id.toString());
     }
@@ -387,8 +376,6 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * @param id 要查询的附魔标识符
      */
-
-
     public Enchantment getCustomEnchantment(@NotNull Identifier id) {
         return getCustomEnchantment(id.toString());
     }
@@ -798,7 +785,13 @@ public abstract class Item implements Cloneable, ItemID {
         return this.count <= 0 || Objects.equals(this.id, Block.AIR);
     }
 
-    public @Nullable final String getName() {
+    public boolean is(final String itemTag){
+        boolean contains = ItemTags.getTagSet(this.getId()).contains(itemTag);
+        if(contains) return true;
+        return ItemTags.getTagSet(this.getBlockId()).contains(itemTag);
+    }
+
+    public @NotNull final String getName() {
         return this.hasCustomName() ? this.getCustomName() : idConvertToName();
     }
 

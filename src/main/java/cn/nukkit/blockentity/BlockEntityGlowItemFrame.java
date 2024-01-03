@@ -38,7 +38,7 @@ public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
         if (!item.isNull()) {
             CompoundTag itemTag = NBTIO.putItemHelper(item);
             int networkDamage = item.getAux();
-            String namespacedId = item.getNamespaceId();
+            String namespacedId = item.getId();
             if (namespacedId != null) {
                 itemTag.remove("id");
                 itemTag.putShort("Damage", networkDamage);

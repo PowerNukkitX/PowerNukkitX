@@ -126,7 +126,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
 
         //attack logic
         if (entity.distanceSquared(target) <= 2.5 && attackTick > coolDown) {
-            Item item = entity instanceof EntityInventoryHolder holder ? holder.getItemInHand() : Item.AIR_ITEM;
+            Item item = entity instanceof EntityInventoryHolder holder ? holder.getItemInHand() : Item.AIR;
 
             float defaultDamage = 0;
             if (entity instanceof EntityCanAttack entityCanAttack) {

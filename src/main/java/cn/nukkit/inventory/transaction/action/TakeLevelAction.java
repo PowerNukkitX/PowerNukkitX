@@ -12,7 +12,7 @@ public class TakeLevelAction extends InventoryAction {
 
 
     public TakeLevelAction(int levels) {
-        super(Item.AIR_ITEM, Item.AIR_ITEM);
+        super(Item.AIR, Item.AIR);
         this.levels = levels;
     }
 

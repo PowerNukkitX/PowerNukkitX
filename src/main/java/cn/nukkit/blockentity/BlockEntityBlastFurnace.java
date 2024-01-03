@@ -25,12 +25,12 @@ public class BlockEntityBlastFurnace extends BlockEntityFurnace {
     }
 
     @Override
-    protected int getIdleBlockId() {
+    protected String getIdleBlockId() {
         return Block.BLAST_FURNACE;
     }
 
     @Override
-    protected int getBurningBlockId() {
+    protected String getBurningBlockId() {
         return Block.LIT_BLAST_FURNACE;
     }
 

@@ -6,6 +6,7 @@ import cn.nukkit.inventory.recipe.ItemDescriptor;
 import cn.nukkit.inventory.recipe.ItemDescriptorType;
 import cn.nukkit.inventory.recipe.ItemTagDescriptor;
 import cn.nukkit.item.Item;
+import cn.nukkit.tags.ItemTags;
 
 import java.util.*;
 
@@ -174,8 +175,8 @@ public class ShapelessRecipe implements CraftingRecipe {
             if (!haveInputs.isEmpty()) {
                 Set<String> tags = new HashSet<>();
                 for (var hInput : haveInputs) {
-                    var t = ItemTag.getTags(hInput.getNamespaceId());
-                    if (t != null) tags.addAll(t);
+                    var t = ItemTags.getItemSet(hInput.getId());
+                    tags.addAll(t);
                 }
                 if (!tags.containsAll(needTags)) return false;
             } else return false;

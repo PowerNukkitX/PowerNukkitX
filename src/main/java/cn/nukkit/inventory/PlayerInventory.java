@@ -313,7 +313,7 @@ public class PlayerInventory extends BaseInventory {
                 item = ev.getNewItem();
             }
 
-            if (item.getId() != Item.AIR) {
+            if (item.getId() != BlockID.AIR) {
                 this.slots.put(index, item.clone());
             } else {
                 this.slots.remove(index);
@@ -379,7 +379,7 @@ public class PlayerInventory extends BaseInventory {
                 items[i] = new ItemBlock(Block.get(BlockID.AIR), null, 0);
             }
 
-            if (items[i].getId() == Item.AIR) {
+            if (items[i].getId() == BlockID.AIR) {
                 this.clear(this.getSize() + i);
             } else {
                 this.setItem(this.getSize() + i, items[i]);

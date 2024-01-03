@@ -11,12 +11,12 @@ import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectCollection;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class BiomeRegistry extends BaseRegistry<Integer, BiomeRegistry.BiomeDefinition, BiomeRegistry.BiomeDefinition> {
     private static final Int2ObjectOpenHashMap<BiomeDefinition> DEFINITIONS = new Int2ObjectOpenHashMap<>(0xFF);
@@ -44,7 +44,7 @@ public class BiomeRegistry extends BaseRegistry<Integer, BiomeRegistry.BiomeDefi
                 int id = NAME2ID.getInt(e.getKey());
                 CompoundTag value = (CompoundTag) e.getValue();
                 ListTag<StringTag> tags1 = value.getList("tags", StringTag.class);
-                List<String> list = tags1.getAll().stream().map(StringTag::parseValue).toList();
+                Set<String> list = tags1.getAll().stream().map(StringTag::parseValue).collect(Collectors.toSet());
                 BiomeDefinition biomeDefinition = new BiomeDefinition(
                         value.getFloat("ash"),
                         value.getFloat("blue_spores"),
@@ -91,6 +91,11 @@ public class BiomeRegistry extends BaseRegistry<Integer, BiomeRegistry.BiomeDefi
         }
     }
 
+    @UnmodifiableView
+    public Set<BiomeDefinition> getBiomeDefinitions() {
+        return Collections.unmodifiableSet(new HashSet<>(DEFINITIONS.values()));
+    }
+
     @Override
     public void trim() {
         DEFINITIONS.trim();
@@ -116,7 +121,7 @@ public class BiomeRegistry extends BaseRegistry<Integer, BiomeRegistry.BiomeDefi
                                   String name_hash,
                                   byte rain,
                                   float red_spores,
-                                  List<String> tags,
+                                  Set<String> tags,
                                   float temperature,
                                   float waterColorA,
                                   float waterColorB,

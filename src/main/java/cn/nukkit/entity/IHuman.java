@@ -215,7 +215,7 @@ public interface IHuman extends InventoryHolder {
 
             for (int slot = 100; slot < 104; ++slot) {
                 Item item = this.getInventory().getItem(this.getInventory().getSize() + slot - 100);
-                if (item != null && item.getId() != Item.AIR) {
+                if (item != null && item.getId() != BlockID.AIR) {
                     inventoryTag.add(NBTIO.putItemHelper(item, slot));
                 }
             }
@@ -228,7 +228,7 @@ public interface IHuman extends InventoryHolder {
 
         if (this.getOffhandInventory() != null) {
             Item item = this.getOffhandInventory().getItem(0);
-            if (item.getId() != Item.AIR) {
+            if (item.getId() != BlockID.AIR) {
                 if (inventoryTag == null) {
                     inventoryTag = new ListTag<>("Inventory");
                     human.namedTag.putList(inventoryTag);
@@ -241,7 +241,7 @@ public interface IHuman extends InventoryHolder {
         if (this.getEnderChestInventory() != null) {
             for (int slot = 0; slot < 27; ++slot) {
                 Item item = this.getEnderChestInventory().getItem(slot);
-                if (item != null && item.getId() != Item.AIR) {
+                if (item != null && item.getId() != BlockID.AIR) {
                     human.namedTag.getList("EnderItems", CompoundTag.class).add(NBTIO.putItemHelper(item, slot));
                 }
             }

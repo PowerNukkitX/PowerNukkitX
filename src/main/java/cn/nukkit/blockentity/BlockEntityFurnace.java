@@ -23,15 +23,11 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX
  */
 public class BlockEntityFurnace extends BlockEntitySpawnable implements InventoryHolder, RecipeInventoryHolder, BlockEntityContainer, BlockEntityNameable {
-
     protected FurnaceInventory inventory;
-
     protected int burnTime;
     protected int burnDuration;
     protected int cookTime;
     protected int maxTime;
-
-
     protected float storedXP;
 
     private int crackledTime;
@@ -169,11 +165,10 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
 
     @Override
     public boolean isBlockEntityValid() {
-        int blockID = getBlock().getId();
+        String blockID = getBlock().getId();
         return blockID == getIdleBlockId() || blockID == getBurningBlockId();
     }
 
-    @Override
     public int getSize() {
         return 3;
     }
@@ -189,7 +184,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         return -1;
     }
 
-    @Override
     public Item getItem(int index) {
         int i = this.getSlotIndex(index);
         if (i < 0) {
@@ -200,13 +194,12 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         }
     }
 
-    @Override
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 
         CompoundTag d = NBTIO.putItemHelper(item, index);
 
-        if (item.getId() == Item.AIR || item.getCount() <= 0) {
+        if (item.isNull()) {
             if (i >= 0) {
                 this.namedTag.getList("Items").getAll().remove(i);
             }
@@ -222,21 +215,21 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         return inventory;
     }
 
-    protected int getIdleBlockId() {
+    protected String getIdleBlockId() {
         return Block.FURNACE;
     }
 
-    protected int getBurningBlockId() {
+    protected String getBurningBlockId() {
         return Block.LIT_FURNACE;
     }
 
     protected void setBurning(boolean burning) {
         if (burning) {
             if (this.getBlock().getId() == getIdleBlockId()) {
-                this.getLevel().setBlock(this, Block.get(getBurningBlockId(), this.getBlock().getDamage()), true);
+                this.getLevel().setBlock(this, Block.getWithState(getBurningBlockId(), this.getBlock().getBlockState()), true);
             }
         } else if (this.getBlock().getId() == getBurningBlockId()) {
-            this.getLevel().setBlock(this, Block.get(getIdleBlockId(), this.getBlock().getDamage()), true);
+            this.getLevel().setBlock(this, Block.getWithState(getIdleBlockId(), this.getBlock().getBlockState()), true);
         }
     }
 
@@ -255,7 +248,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         if (burnTime > 0 && ev.isBurning()) {
             fuel.setCount(fuel.getCount() - 1);
             if (fuel.getCount() == 0) {
-                if (fuel.getId() == Item.BUCKET && ((ItemBucket)fuel).isLava()) {
+                if (fuel.getId() == Item.BUCKET && ((ItemBucket) fuel).isLava()) {
                     fuel.setAux(0);
                     fuel.setCount(1);
                 } else {
@@ -288,7 +281,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
 
         boolean canSmelt = false;
         if (smelt != null) {
-            canSmelt = (raw.getCount() > 0 && ((smelt.getResult().equals(product, true) && product.getCount() < product.getMaxStackSize()) || product.getId() == Item.AIR));
+            canSmelt = (raw.getCount() > 0 && ((smelt.getResult().equals(product, true) && product.getCount() < product.getMaxStackSize()) || product.getId() == BlockID.AIR));
             //检查输入
             if (!smelt.getInput().equals(raw, true, false)) {
                 canSmelt = false;

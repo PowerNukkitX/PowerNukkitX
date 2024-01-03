@@ -112,7 +112,7 @@ public class InventoryTransaction {
 
     protected boolean matchItems(List<Item> needItems, List<Item> haveItems) {
         for (InventoryAction action : this.actions) {
-            if (action.getTargetItem().getId() != Item.AIR) {
+            if (action.getTargetItem().getId() != BlockID.AIR) {
                 needItems.add(action.getTargetItem());
             }
 
@@ -120,7 +120,7 @@ public class InventoryTransaction {
                 return false;
             }
 
-            if (action.getSourceItem().getId() != Item.AIR) {
+            if (action.getSourceItem().getId() != BlockID.AIR) {
                 haveItems.add(action.getSourceItem());
             }
         }

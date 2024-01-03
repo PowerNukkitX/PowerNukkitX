@@ -21,16 +21,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 
 public class BlockEntityConduit extends BlockEntitySpawnable {
-
-    public static IntSet VALID_STRUCTURE_BLOCKS = new IntOpenHashSet(new int[]{
-            BlockID.PRISMARINE,
-            BlockID.SEA_LANTERN
-    });
+    private static HashSet<String> VALID_STRUCTURE_BLOCKS = new HashSet<>(List.of(BlockID.PRISMARINE, BlockID.SEA_LANTERN));
 
     private Entity targetEntity;
     private long target;
@@ -66,7 +63,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         Entity targetEntity = this.targetEntity;
-        namedTag.putLong("Target", targetEntity != null? targetEntity.getId() : -1);
+        namedTag.putLong("Target", targetEntity != null ? targetEntity.getId() : -1);
         namedTag.putBoolean("Active", active);
         super.saveNBT();
     }
@@ -159,7 +156,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
                                 .setVisible(true)
                                 .setAmplifier(0)
                                 .setAmbient(true)
-                    )
+                        )
                 );
     }
 
@@ -211,7 +208,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     public boolean canAffect(Entity target) {
         return target.isTouchingWater()
                 || target.level.isRaining() && target.level.canBlockSeeSky(target)
-                        && !(Biome.getBiome(target.level.getBiomeId(target.getFloorX(), target.getFloorZ())) instanceof SnowyBiome);
+                && !(Biome.getBiome(target.level.getBiomeId(target.getFloorX(), target.getFloorZ())) instanceof SnowyBiome);
     }
 
     private boolean scanWater() {
@@ -325,7 +322,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     }
 
     public boolean scanStructure() {
-        if(!scanWater()) {
+        if (!scanWater()) {
             this.validBlocks = 0;
             return false;
         }
@@ -368,7 +365,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
                 .putBoolean("Active", this.active)
                 .putBoolean("isMovable", isMovable());
         Entity targetEntity = this.targetEntity;
-        tag.putLong("Target", targetEntity != null? targetEntity.getId() : -1);
+        tag.putLong("Target", targetEntity != null ? targetEntity.getId() : -1);
         return tag;
     }
 }

@@ -72,7 +72,7 @@ public class HorseInventory extends BaseInventory {
             }
             MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
             mobArmorEquipmentPacket.eid = this.getHolder().getId();
-            mobArmorEquipmentPacket.slots = new Item[]{Item.AIR_ITEM.clone(), this.getHorseArmor(), Item.AIR_ITEM.clone(), Item.AIR_ITEM.clone()};
+            mobArmorEquipmentPacket.slots = new Item[]{Item.AIR.clone(), this.getHorseArmor(), Item.AIR.clone(), Item.AIR.clone()};
             Server.broadcastPacket(this.getViewers(), mobArmorEquipmentPacket);
         }
     }

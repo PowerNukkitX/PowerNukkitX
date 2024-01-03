@@ -61,11 +61,9 @@ public class BlockEntityBeehive extends BlockEntity {
         if (this.namedTag.contains("HoneyLevel")) {
             int faceHorizontalIndex = 0;
             Block block = getBlock();
-            if (block instanceof BlockBeehive) {
-                faceHorizontalIndex = block.getDamage() & 0b11;
+            if (block instanceof BlockBeehive beehive) {
                 int honeyLevel = this.namedTag.getByte("HoneyLevel");
-                BlockBeehive beehive = (BlockBeehive) block;
-                beehive.setBlockFace(BlockFace.fromHorizontalIndex(faceHorizontalIndex));
+                beehive.setBlockFace(beehive.getBlockFace());
                 beehive.setHoneyLevel(honeyLevel);
                 beehive.getLevel().setBlock(beehive, beehive, true, true);
             }
@@ -304,7 +302,7 @@ public class BlockEntityBeehive extends BlockEntity {
         if (!isEmpty()) {
             for (BlockEntityBeehive.Occupant occupant : getOccupants()) {
                 Entity entity = spawnOccupant(occupant, null);
-                if (level == null || level.getBlock(down()).getId() != BlockID.CAMPFIRE_BLOCK) {
+                if (level == null || level.getBlock(down()).getId() != BlockID.CAMPFIRE) {
                     if (entity instanceof EntityBee) {
                         ((EntityBee) entity).setAngry(true);
                     } else {
@@ -375,7 +373,7 @@ public class BlockEntityBeehive extends BlockEntity {
     
     @Override
     public boolean isBlockEntityValid() {
-        int id = this.getBlock().getId();
+        String id = this.getBlock().getId();
         return id == Block.BEEHIVE || id == Block.BEE_NEST;
     }
 

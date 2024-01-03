@@ -98,10 +98,10 @@ public class GiveCommand extends VanillaCommand {
             for (Item drop : drops) {
                 player.dropItem(drop);
             }
-            log.outputObjectWhisper(player, "commands.give.successRecipient", item.getDisplayName() + " (" + item.getNamespaceId() + (item.getAux() != 0 ? ":" + item.getAux() : "") + ")",
+            log.outputObjectWhisper(player, "commands.give.successRecipient", item.getDisplayName() + " (" + item.getId() + (item.getAux() != 0 ? ":" + item.getAux() : "") + ")",
                     String.valueOf(item.getCount()));
         }
-        log.addSuccess("commands.give.success", item.getDisplayName() + " (" + item.getNamespaceId() + (item.getAux() != 0 ? ":" + item.getAux() : "") + ")",
+        log.addSuccess("commands.give.success", item.getDisplayName() + " (" + item.getId() + (item.getAux() != 0 ? ":" + item.getAux() : "") + ")",
                 String.valueOf(item.getCount()),
                 players.stream().map(Player::getName).collect(Collectors.joining(","))).successCount(players.size()).output(true);
         return players.size();

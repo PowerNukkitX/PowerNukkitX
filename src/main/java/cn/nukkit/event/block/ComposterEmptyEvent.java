@@ -37,7 +37,7 @@ public class ComposterEmptyEvent extends BlockEvent implements Cancellable {
 
     public void setDrop(Item drop) {
         if (drop == null) {
-            drop = Item.get(Item.AIR);
+            drop = Item.get(BlockID.AIR);
         } else {
             drop = drop.clone();
         }

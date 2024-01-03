@@ -22,6 +22,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.BlockColor;
 import com.google.gson.JsonParser;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -95,6 +96,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static Block get(BlockState blockState, Level level, int x, int y, int z, int layer) {
         Block block = get(blockState, level, x, y, z);
         block.layer = layer;
+        return block;
+    }
+
+    public static Block getWithState(String id, BlockState blockState) {
+        Block block = get(blockState);
+        block.setPropertyValues(blockState.getBlockPropertyValues());
         return block;
     }
 
@@ -453,6 +460,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     public BlockState getBlockState() {
         return blockstate;
+    }
+
+    public boolean is(final String blockTag) {
+        return BlockTags.getTagSet(this.getId()).contains(blockTag);
     }
 
     public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> DATATYPE getPropertyValue(PROPERTY p) {

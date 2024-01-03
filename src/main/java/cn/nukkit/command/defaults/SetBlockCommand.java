@@ -61,7 +61,7 @@ public class SetBlockCommand extends VanillaCommand {
             switch (oldBlockHandling) {
                 case "destroy" -> {
                     if (sender.isPlayer()) {
-                        level.useBreakOn(position, null, Item.get(Item.AIR), sender.asPlayer(), true, true);
+                        level.useBreakOn(position, null, Item.get(BlockID.AIR), sender.asPlayer(), true, true);
                     } else {
                         level.useBreakOn(position);
                     }

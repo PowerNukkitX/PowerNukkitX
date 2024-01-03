@@ -5,6 +5,7 @@ import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBrewingStand;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.inventory.BrewEvent;
 import cn.nukkit.event.inventory.StartBrewEvent;
 import cn.nukkit.inventory.*;
@@ -24,22 +25,11 @@ import java.util.HashSet;
 import java.util.List;
 
 public class BlockEntityBrewingStand extends BlockEntitySpawnable implements RecipeInventoryHolder, BlockEntityContainer, BlockEntityNameable {
-
-    protected BrewingInventory inventory;
-
     public static final int MAX_BREW_TIME = 400;
-
+    protected BrewingInventory inventory;
     public int brewTime;
     public int fuelTotal;
     public int fuelAmount;
-
-    @Deprecated
-    @DeprecationDetails(since = "1.3.1.2-PN", reason = "Makes no sense and is unused", replaceWith = "Use CraftingManager")
-    public static final List<Integer> ingredients = new ArrayList<>(Arrays.asList(
-            ItemID.NETHER_WART, ItemID.GHAST_TEAR, ItemID.GLOWSTONE_DUST, ItemID.REDSTONE_DUST, ItemID.GUNPOWDER,
-            ItemID.MAGMA_CREAM, ItemID.BLAZE_POWDER, ItemID.GOLDEN_CARROT, ItemID.SPIDER_EYE, ItemID.FERMENTED_SPIDER_EYE,
-            ItemID.GLISTERING_MELON, ItemID.SUGAR, ItemID.RABBIT_FOOT, ItemID.PUFFERFISH, ItemID.TURTLE_SHELL, 
-            ItemID.PHANTOM_MEMBRANE, 437));
 
     public BlockEntityBrewingStand(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -128,10 +118,9 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
 
     @Override
     public boolean isBlockEntityValid() {
-        return getBlock().getId() == BlockID.BREWING_STAND_BLOCK;
+        return getBlock().getId() == BlockID.BREWING_STAND;
     }
 
-    @Override
     public int getSize() {
         return 5;
     }
@@ -147,7 +136,6 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         return -1;
     }
 
-    @Override
     public Item getItem(int index) {
         int i = this.getSlotIndex(index);
         if (i < 0) {
@@ -158,7 +146,6 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         }
     }
 
-    @Override
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 
@@ -180,13 +167,6 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         return inventory;
     }
 
-    @Deprecated @DeprecationDetails(since = "1.3.1.2-PN", reason = "Checks the wrong location")
-    protected boolean checkIngredient(Item ingredient) {
-        return ingredients.contains(ingredient.getId());
-    }
-
-    
-    
     @Override
     public boolean onUpdate() {
         if (closed) {
@@ -351,22 +331,28 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     public void updateBlock() {
         Block block = this.getLevelBlock();
 
-        if (!(block instanceof BlockBrewingStand)) {
+        if (!(block instanceof BlockBrewingStand blockBrewingStand)) {
             return;
         }
-
-        int meta = 0;
 
         for (int i = 1; i <= 3; ++i) {
             Item potion = this.inventory.getItem(i);
 
-            int id = potion.getId();
+            String id = potion.getId();
             if ((id == ItemID.POTION || id == ItemID.SPLASH_POTION || id == ItemID.LINGERING_POTION) && potion.getCount() > 0) {
-                meta |= 1 << (i - 1);
+                switch (i){
+                    case 1-> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_A_BIT,true);
+                    case 2-> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_B_BIT,true);
+                    case 3-> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_C_BIT,true);
+                }
+            }else {
+                switch (i){
+                    case 1-> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_A_BIT,false);
+                    case 2-> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_B_BIT,false);
+                    case 3-> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_C_BIT,false);
+                }
             }
         }
-
-        block.setDamage(meta);
         this.level.setBlock(block, block, false, false);
         
         if (brewTime != MAX_BREW_TIME && matchRecipes(true)[0] == null) {

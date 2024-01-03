@@ -59,7 +59,7 @@ public class NBTIO {
 
     public static Item getItemHelper(CompoundTag tag) {
         if (!tag.containsByte("Count")) {
-            return Item.get(0);
+            return Item.AIR;
         }
 
         int damage = !tag.containsShort("Damage") ? 0 : tag.getShort("Damage");

@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.Identifier;
 import com.google.common.collect.ImmutableList;
@@ -29,7 +30,12 @@ public final class BlockProperties {
     private final byte bitSize;
 
     public BlockProperties(String identifier, BlockPropertyType<?>... properties) {
+        this(identifier, Set.of(), properties);
+    }
+
+    public BlockProperties(String identifier, Set<String> blockTags, BlockPropertyType<?>... properties) {
         Identifier.assertValid(identifier);
+        BlockTags.register(identifier,false, blockTags);
         this.identifier = identifier.intern();
         this.properties = Sets.newHashSet(properties);
 

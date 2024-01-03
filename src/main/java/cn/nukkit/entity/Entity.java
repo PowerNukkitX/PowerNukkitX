@@ -29,7 +29,7 @@ import cn.nukkit.event.entity.EntityPortalEnterEvent.PortalType;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent;
-import cn.nukkit.inventory.ItemTag;
+import cn.nukkit.tags.ItemTags;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTotemOfUndying;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -2486,7 +2486,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             if (damage > 0) {
                 if (!this.isSneaking()) {
                     if (!(this instanceof EntityItem item) ||
-                            !ItemTag.getTags(item.getIdentifier().toString()).contains(ItemTag.WOOL.toString())) {
+                            !ItemTags.getTagSet(item.getIdentifier()).contains(ItemTags.WOOL)) {
                         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.HIT_GROUND));
                     }
                 }

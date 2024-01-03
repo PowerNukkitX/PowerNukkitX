@@ -45,6 +45,6 @@ public class BlockSuspiciousSand extends BlockFallable {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{Item.AIR_ITEM};
+        return new Item[]{Item.AIR};
     }
 }

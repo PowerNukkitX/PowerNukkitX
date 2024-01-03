@@ -6,7 +6,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
-import cn.nukkit.inventory.ItemTag;
+import cn.nukkit.tags.ItemTags;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
@@ -100,7 +100,7 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block down = down();
-            if (ItemTag.getItems(ItemTag.SAND.toString()).contains(down.getId())
+            if (ItemTags.getItemSet(ItemTags.SAND.toString()).contains(down.getId())
                     && !(down instanceof BlockCactus)) {
                 this.getLevel().useBreakOn(this);
                 return 0;
@@ -139,7 +139,7 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         Block down = this.down();
-        if (!ItemTag.getItems(ItemTag.SAND.toString()).contains(down.getId())
+        if (!ItemTags.getItemSet(ItemTags.SAND.toString()).contains(down.getId())
                 && !(down instanceof BlockCactus)) {
             return false;
         }

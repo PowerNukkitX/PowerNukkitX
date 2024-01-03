@@ -46,11 +46,10 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
 
     @Override
     public boolean isBlockEntityValid() {
-        int blockID = this.getBlock().getId();
+        String blockID = this.getBlock().getId();
         return blockID == Block.CHEST || blockID == Block.TRAPPED_CHEST;
     }
 
-    @Override
     public int getSize() {
         return 27;
     }

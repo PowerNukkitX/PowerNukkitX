@@ -266,7 +266,7 @@ public class EntityFallingBlock extends Entity {
     }
 
     private void dropItems() {
-        for (var i : Block.get(this.getBlock(), this.getDamage()).getDrops(Item.AIR_ITEM)) {
+        for (var i : Block.get(this.getBlock(), this.getDamage()).getDrops(Item.AIR)) {
             getLevel().dropItem(this, i);
         }
     }

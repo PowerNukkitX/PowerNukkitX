@@ -1,10 +1,13 @@
 package cn.nukkit.block;
 
+import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.DyeColor;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Set;
+
 public class BlockLightGrayWool extends BlockWool {
-    public static final BlockProperties PROPERTIES = new BlockProperties(LIGHT_GRAY_WOOL);
+    public static final BlockProperties PROPERTIES = new BlockProperties(LIGHT_GRAY_WOOL, Set.of(BlockTags.PNX_WOOL));
 
     @Override
     public @NotNull BlockProperties getProperties() {

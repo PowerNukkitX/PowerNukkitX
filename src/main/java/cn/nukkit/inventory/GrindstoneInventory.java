@@ -120,7 +120,7 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
         Item firstItem = getFirstItem();
         Item secondItem = getSecondItem();
         if (!firstItem.isNull() && !secondItem.isNull() && !firstItem.getId().equals(secondItem.getId())) {
-            setResult(Item.AIR_ITEM, send);
+            setResult(Item.AIR, send);
             setResultExperience(0);
             return false;
         }
@@ -132,7 +132,7 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
         }
 
         if (firstItem.isNull()) {
-            setResult(Item.AIR_ITEM, send);
+            setResult(Item.AIR, send);
             setResultExperience(0);
             return false;
         }
@@ -143,7 +143,7 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
                 recalculateResultExperience();
             } else {
                 setResultExperience(0);
-                setResult(Item.AIR_ITEM, send);
+                setResult(Item.AIR, send);
             }
             return false;
         }
@@ -207,7 +207,7 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
     @Override
     public @NotNull Item getItem(int index) {
         if (index < 0 || index > 3) {
-            return Item.AIR_ITEM;
+            return Item.AIR;
         }
         if (index == 2) {
             index = SLOT_RESULT;
@@ -219,7 +219,7 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
     @Override
     public Item getUnclonedItem(int index) {
         if (index < 0 || index > 3) {
-            return Item.AIR_ITEM;
+            return Item.AIR;
         }
         if (index == 2) {
             index = SLOT_RESULT;

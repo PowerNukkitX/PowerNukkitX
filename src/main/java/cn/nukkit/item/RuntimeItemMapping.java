@@ -393,7 +393,7 @@ public class RuntimeItemMapping {
     public void registerNamespacedIdItem(@NotNull Class<? extends StringItem> item) {
         Constructor<? extends StringItem> declaredConstructor = item.getDeclaredConstructor();
         var Item = declaredConstructor.newInstance();
-        registerNamespacedIdItem(Item.getNamespaceId(), stringItemSupplier(declaredConstructor));
+        registerNamespacedIdItem(item.getId(), stringItemSupplier(declaredConstructor));
     }
 
     public void registerNamespacedIdItem(@NotNull String namespacedId, @NotNull Constructor<? extends Item> constructor) {

@@ -84,7 +84,7 @@ public class SmithingTransaction extends InventoryTransaction {
             return false;
         }
         
-        Item air = Item.get(0);
+        Item air = Item.AIR;
         Item equipment = equipmentItem != null? equipmentItem : air;
         Item ingredient = ingredientItem != null? ingredientItem : air;
         
@@ -101,7 +101,7 @@ public class SmithingTransaction extends InventoryTransaction {
             return false;
         }
         SmithingInventory inventory = (SmithingInventory) getSource().getWindowById(Player.SMITHING_WINDOW_ID);
-        Item air = Item.get(0);
+        Item air = Item.AIR;
         Item equipment = equipmentItem != null? equipmentItem : air;
         Item ingredient = ingredientItem != null? ingredientItem : air;
         SmithingTableEvent event = new SmithingTableEvent(inventory, equipment, outputItem, ingredient, source);

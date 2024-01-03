@@ -1,6 +1,6 @@
 package cn.nukkit.inventory.recipe;
 
-import cn.nukkit.inventory.ItemTag;
+import cn.nukkit.tags.ItemTags;
 import cn.nukkit.item.Item;
 
 import java.util.Objects;
@@ -27,7 +27,7 @@ public class ItemTagDescriptor implements ItemDescriptor {
 
     @Override
     public boolean match(Item item) {
-        return item.getCount() >= count && ItemTag.getTagSet(item.getNamespaceId()).contains(itemTag);
+        return item.getCount() >= count && ItemTags.getTagSet(item.getId()).contains(itemTag);
     }
 
     @Override

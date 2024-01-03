@@ -20,37 +20,6 @@ import org.jetbrains.annotations.NotNull;
  * @author CreeperFace (Nukkit Project)
  */
 public class BlockEntityCauldron extends BlockEntitySpawnable {
-
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
-            reason = "Magic value", replaceWith = "PotionType")
-
-    public static final int POTION_TYPE_EMPTY = -1;
-
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
-            reason = "Magic value", replaceWith = "PotionType")
-
-    public static final int POTION_TYPE_NORMAL = 0;
-
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
-            reason = "Magic value", replaceWith = "PotionType")
-
-    public static final int POTION_TYPE_SPLASH = 1;
-
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
-            reason = "Magic value", replaceWith = "PotionType")
-
-    public static final int POTION_TYPE_LINGERING = 2;
-
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
-            reason = "Magic value", replaceWith = "PotionType")
-
-    public static final int POTION_TYPE_LAVA = 0xF19B;
-
     public BlockEntityCauldron(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -63,10 +32,9 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
             namedTag.putShort("PotionId", 0xffff);
         }
         potionId = namedTag.getShort("PotionId");
-
-        int potionType = (potionId & 0xFFFF) == 0xFFFF ? POTION_TYPE_EMPTY : POTION_TYPE_NORMAL;
+        int potionType = (potionId & 0xFFFF) == 0xFFFF ? PotionType.EMPTY.potionTypeData : PotionType.NORMAL.potionTypeData;
         if (namedTag.getBoolean("SplashPotion")) {
-            potionType = POTION_TYPE_SPLASH;
+            potionType =  PotionType.SPLASH.potionTypeData;
             namedTag.remove("SplashPotion");
         }
 
@@ -80,7 +48,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
         super.saveNBT();
         namedTag.putShort("PotionId", getPotionId());
         int potionId = namedTag.getShort("PotionId");
-        int potionType = (potionId & 0xFFFF) == 0xFFFF ? POTION_TYPE_EMPTY : POTION_TYPE_NORMAL;
+        int potionType = (potionId & 0xFFFF) == 0xFFFF ? PotionType.EMPTY.potionTypeData : PotionType.NORMAL.potionTypeData;
         namedTag.putShort("PotionType", potionType);
     }
 
@@ -114,7 +82,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     }
 
     public boolean isSplashPotion() {
-        return namedTag.getShort("PotionType") == POTION_TYPE_SPLASH;
+        return namedTag.getShort("PotionType") == PotionType.SPLASH.potionTypeData;
     }
 
     /**
@@ -206,11 +174,11 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
 
     @RequiredArgsConstructor
     public enum PotionType {
-        EMPTY(POTION_TYPE_EMPTY),
-        NORMAL(POTION_TYPE_NORMAL),
-        SPLASH(POTION_TYPE_SPLASH),
-        LINGERING(POTION_TYPE_LINGERING),
-        LAVA(POTION_TYPE_LAVA),
+        EMPTY(-1),
+        NORMAL(0),
+        SPLASH(1),
+        LINGERING(2),
+        LAVA(0xF19B),
         UNKNOWN(-2);
 
         private final int potionTypeData;

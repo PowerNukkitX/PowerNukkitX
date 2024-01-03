@@ -78,7 +78,7 @@ public class BlockFrostedIce extends BlockTransparent {
 
     @Override
     public Item toItem() {
-        return Item.AIR_ITEM;
+        return Item.AIR;
     }
 
     @Override

@@ -171,7 +171,7 @@ public class CraftingTransaction extends InventoryTransaction {
                 if (getTransactionRecipe() == null) {
                     source.sendExperienceLevel();
                 }
-                source.getUIInventory().setItem(AnvilInventory.RESULT, Item.get(0), false);
+                source.getUIInventory().setItem(AnvilInventory.RESULT, Item.AIR, false);
                 break;
             case Player.CRAFTING_GRINDSTONE:
                 inventory = source.getWindowById(Player.GRINDSTONE_WINDOW_ID);
@@ -180,7 +180,7 @@ public class CraftingTransaction extends InventoryTransaction {
                     addInventory(grindstone);
                     if (grindstone.updateResult(false) && this.primaryOutput.equals(grindstone.getResult(), true, true)) {
                         setTransactionRecipe(new RepairRecipe(InventoryType.GRINDSTONE, this.primaryOutput, this.inputs));
-                        grindstone.setResult(Item.get(0), false);
+                        grindstone.setResult(Item.AIR, false);
                     }
                 }
                 break;

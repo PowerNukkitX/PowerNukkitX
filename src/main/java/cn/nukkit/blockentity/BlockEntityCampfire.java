@@ -70,7 +70,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
                 if (recipe == null) {
                     recipe = this.server.getCraftingManager().matchCampfireRecipe(item);
                     if (recipe == null) {
-                        inventory.setItem(slot, Item.get(0));
+                        inventory.setItem(slot, Item.AIR);
                         ThreadLocalRandom random = ThreadLocalRandom.current();
                         this.level.dropItem(add(random.nextFloat(), 0.5, random.nextFloat()), item);
                         burnTime[slot] = 0;
@@ -87,7 +87,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
                     Item product = Item.get(recipe.getResult().getId(), recipe.getResult().getAux(), item.getCount());
                     CampfireSmeltEvent event = new CampfireSmeltEvent(this, item, product);
                     if (!event.isCancelled()) {
-                        inventory.setItem(slot, Item.get(0));
+                        inventory.setItem(slot, Item.AIR);
                         ThreadLocalRandom random = ThreadLocalRandom.current();
                         this.level.dropItem(add(random.nextFloat(), 0.5, random.nextFloat()), event.getResult());
                         burnTime[slot] = 0;
@@ -190,15 +190,13 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
 
     @Override
     public boolean isBlockEntityValid() {
-        return getBlock().getId() == BlockID.CAMPFIRE_BLOCK;
+        return getBlock().getId() == BlockID.CAMPFIRE;
     }
 
-    @Override
     public int getSize() {
         return 4;
     }
 
-    @Override
     public Item getItem(int index) {
         if (index < 0 || index >= getSize()) {
             return new ItemBlock(new BlockAir(), 0, 0);
@@ -208,7 +206,6 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
         }
     }
 
-    @Override
     public void setItem(int index, Item item) {
         if (index < 0 || index >= getSize()) {
             return;

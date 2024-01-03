@@ -95,7 +95,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     public @NotNull Item getFlower() {
         BlockEntityFlowerPot blockEntity = getBlockEntity();
         if (blockEntity == null || !blockEntity.namedTag.containsCompound("PlantBlock")) {
-            return Item.AIR_ITEM;
+            return Item.AIR;
         }
         var plantBlockTag = blockEntity.namedTag.getCompound("PlantBlock");
         var id = plantBlockTag.getString("itemId");

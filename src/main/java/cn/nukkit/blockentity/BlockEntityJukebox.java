@@ -28,7 +28,7 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
         if (namedTag.contains("RecordItem")) {
             this.recordItem = NBTIO.getItemHelper(namedTag.getCompound("RecordItem"));
         } else {
-            this.recordItem = Item.AIR_ITEM;
+            this.recordItem = Item.AIR;
         }
     }
 
@@ -74,7 +74,7 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
         if (!this.recordItem.isNull()) {
             stop();
             this.level.dropItem(this.up(), this.recordItem);
-            this.recordItem = Item.AIR_ITEM;
+            this.recordItem = Item.AIR;
         }
     }
 

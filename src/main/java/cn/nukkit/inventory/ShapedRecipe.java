@@ -6,6 +6,7 @@ import cn.nukkit.inventory.recipe.ItemDescriptor;
 import cn.nukkit.inventory.recipe.ItemDescriptorType;
 import cn.nukkit.inventory.recipe.ItemTagDescriptor;
 import cn.nukkit.item.Item;
+import cn.nukkit.tags.ItemTags;
 import com.google.common.collect.Maps;
 import io.netty.util.collection.CharObjectHashMap;
 
@@ -220,7 +221,7 @@ public class ShapedRecipe implements CraftingRecipe {
         var descriptor = this.newIngredients.get(this.shape[y].charAt(x));
 
         if (descriptor.getType() == ItemDescriptorType.DEFAULT) {
-            return descriptor.toItem() != null ? descriptor.toItem().clone() : Item.get(Item.AIR);
+            return descriptor.toItem() != null ? descriptor.toItem().clone() : Item.get(BlockID.AIR);
         }
         throw new UnsupportedOperationException("use getNewIngredient()");
     }
@@ -228,7 +229,7 @@ public class ShapedRecipe implements CraftingRecipe {
     public ItemDescriptor getNewIngredient(int x, int y) {
         try {
             var res = this.newIngredients.get(this.shape[y].charAt(x));
-            return res != null ? res.clone() : new DefaultDescriptor(Item.get(Item.AIR));
+            return res != null ? res.clone() : new DefaultDescriptor(Item.get(BlockID.AIR));
         } catch (CloneNotSupportedException ignore) {
             return null;
         }
@@ -296,7 +297,7 @@ public class ShapedRecipe implements CraftingRecipe {
             if (!haveInputs.isEmpty()) {
                 Set<String> tags = new HashSet<>();
                 for (var hInput : haveInputs) {
-                    var t = ItemTag.getTags(hInput.getNamespaceId());
+                    var t = ItemTags.getTagSet(hInput.getId());
                     if (t != null) tags.addAll(t);
                 }
                 if (!tags.containsAll(needTags)) return false;

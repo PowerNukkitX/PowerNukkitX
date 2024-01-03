@@ -98,7 +98,7 @@ public class EnchantTransaction extends InventoryTransaction {
                 case NetworkInventoryAction.SOURCE_TYPE_ENCHANT_OUTPUT ->
                         this.outputItem = action.getSourceItem(); // Output sent as oldItem
                 case NetworkInventoryAction.SOURCE_TYPE_ENCHANT_MATERIAL -> {
-                    if (action.getTargetItem().equals(Item.AIR_ITEM, false, false)) {
+                    if (action.getTargetItem().equals(Item.AIR, false, false)) {
                         this.cost = action.getSourceItem().count;
                     } else {
                         this.cost = action.getSourceItem().count - action.getTargetItem().count;

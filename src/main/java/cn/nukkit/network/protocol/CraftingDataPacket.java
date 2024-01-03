@@ -132,7 +132,7 @@ public class CraftingDataPacket extends DataPacket {
                     SmithingRecipe smithing = (SmithingRecipe) recipe;
                     this.putString(smithing.getRecipeId());
                     //todo 1.19.80还没有模板，下个版本再加入
-                    this.putRecipeIngredient(new DefaultDescriptor(Item.AIR_ITEM));
+                    this.putRecipeIngredient(new DefaultDescriptor(Item.AIR));
                     this.putRecipeIngredient(new DefaultDescriptor(smithing.getEquipment()));
                     this.putRecipeIngredient(new DefaultDescriptor(smithing.getIngredient()));
                     this.putSlot(smithing.getResult(), true);

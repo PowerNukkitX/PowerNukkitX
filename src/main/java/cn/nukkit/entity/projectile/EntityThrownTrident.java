@@ -131,7 +131,7 @@ public class EntityThrownTrident extends SlenderProjectile {
             this.riptideLevel = this.trident.getEnchantmentLevel(Enchantment.ID_TRIDENT_RIPTIDE);
             this.impalingLevel = this.trident.getEnchantmentLevel(Enchantment.ID_TRIDENT_IMPALING);
         } else {
-            this.trident = Item.get(0);
+            this.trident = Item.AIR;
             this.loyaltyLevel = 0;
             this.hasChanneling = false;
             this.riptideLevel = 0;
@@ -174,7 +174,7 @@ public class EntityThrownTrident extends SlenderProjectile {
     }
 
     public Item getItem() {
-        return this.trident != null ? this.trident.clone() : Item.get(0);
+        return this.trident != null ? this.trident.clone() : Item.AIR;
     }
 
     public void setItem(Item item) {

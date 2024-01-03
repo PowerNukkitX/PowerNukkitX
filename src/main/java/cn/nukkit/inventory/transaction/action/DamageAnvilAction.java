@@ -21,7 +21,7 @@ public class DamageAnvilAction extends InventoryAction {
 
 
     public DamageAnvilAction(AnvilInventory anvil, boolean shouldDamage, CraftingTransaction transaction) {
-        super(Item.get(0), Item.get(0));
+        super(Item.AIR, Item.get(0));
         this.anvil = anvil;
         this.shouldDamage = shouldDamage;
         this.transaction = transaction;

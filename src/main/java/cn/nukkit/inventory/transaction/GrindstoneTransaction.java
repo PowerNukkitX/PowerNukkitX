@@ -76,7 +76,7 @@ public class GrindstoneTransaction extends InventoryTransaction {
             return false;
         }
 
-        Item air = Item.get(0);
+        Item air = Item.AIR;
         Item first = firstItem != null ? firstItem : air;
         Item second = secondItem != null ? secondItem : air;
 
@@ -96,7 +96,7 @@ public class GrindstoneTransaction extends InventoryTransaction {
         }
         GrindstoneInventory inventory = (GrindstoneInventory) getSource().getWindowById(Player.GRINDSTONE_WINDOW_ID);
         int exp = inventory.getResultExperience();
-        Item air = Item.get(0);
+        Item air = Item.AIR;
         Item first = firstItem != null? firstItem : air;
         Item second = secondItem != null? secondItem : air;
         GrindstoneEvent event = new GrindstoneEvent(inventory, first, outputItem, second, exp, source);

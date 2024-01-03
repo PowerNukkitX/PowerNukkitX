@@ -201,7 +201,7 @@ public class CraftingManager {
         int id = item.getId();
         int hash = 31 + (id << 8 | meta & 0xFF);
         hash *= 31 + (id == ItemID.STRING_IDENTIFIED_ITEM && item instanceof StringItem ?
-                item.getNamespaceId().hashCode()
+                item.getId().hashCode()
                 : 0);
         return hash;
     }
@@ -988,12 +988,12 @@ public class CraftingManager {
         }
         if (meta != null) {
             if (meta == Short.MAX_VALUE) {
-                item = Item.fromString(name).createFuzzyCraftingRecipe();
+                item = Item.get(name).createFuzzyCraftingRecipe();
             } else {
                 item = Item.fromString(name + ":" + meta);
             }
         } else {
-            item = Item.fromString(name);
+            item = Item.get(name);
         }
 
         item.setCount(count);
