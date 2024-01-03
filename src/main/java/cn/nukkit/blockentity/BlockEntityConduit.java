@@ -16,6 +16,7 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.potion.Effect;
+import cn.nukkit.tags.BiomeTags;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -208,7 +209,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     public boolean canAffect(Entity target) {
         return target.isTouchingWater()
                 || target.level.isRaining() && target.level.canBlockSeeSky(target)
-                && !(Biome.getBiome(target.level.getBiomeId(target.getFloorX(), target.getFloorZ())) instanceof SnowyBiome);
+                && !BiomeTags.containTag(target.level.getBiomeId(target.getFloorX(), target.getFloorY(), target.getFloorZ()), BiomeTags.FROZEN);
     }
 
     private boolean scanWater() {

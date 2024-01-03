@@ -75,6 +75,10 @@ public class BiomeRegistry extends BaseRegistry<Integer, BiomeRegistry.BiomeDefi
         return DEFINITIONS.get(key);
     }
 
+    public BiomeDefinition get(String biomeName) {
+        return get(NAME2ID.getInt(biomeName));
+    }
+
     public int getBiomeId(String biomeName) {
         return NAME2ID.getInt(biomeName);
     }
@@ -129,6 +133,12 @@ public class BiomeRegistry extends BaseRegistry<Integer, BiomeRegistry.BiomeDefi
                                   float waterColorR,
                                   float waterTransparency,
                                   float white_ash) {
+
+        @UnmodifiableView
+        @Override
+        public Set<String> tags() {
+            return Collections.unmodifiableSet(tags);
+        }
 
         public CompoundTag toNBT() {
             ListTag<StringTag> stringTagListTag = new ListTag<>();
