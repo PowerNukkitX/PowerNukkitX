@@ -30,8 +30,6 @@ public interface TriFunction<F, S, T, R> {
      * @param t the third function argument
      * @return the function result
      */
-
-
     R apply(F f, S s, T t);
 
     /**
@@ -47,8 +45,6 @@ public interface TriFunction<F, S, T, R> {
      * applies the {@code after} function
      * @throws NullPointerException if after is null
      */
-
-
     default <V> TriFunction<F, S, T, V> andThen(Function<? super R, ? extends V> after) {
         Objects.requireNonNull(after);
         return (F f, S s, T t) -> after.apply(apply(f, s, t));

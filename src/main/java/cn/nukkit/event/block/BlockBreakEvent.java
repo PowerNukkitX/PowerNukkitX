@@ -6,17 +6,15 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
+import lombok.Getter;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockBreakEvent extends BlockEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     protected final Player player;
 
@@ -26,7 +24,6 @@ public class BlockBreakEvent extends BlockEvent implements Cancellable {
     protected boolean instaBreak = false;
     protected Item[] blockDrops = Item.EMPTY_ARRAY;
     protected int blockXP = 0;
-
     protected boolean fastBreak = false;
 
     public BlockBreakEvent(Player player, Block block, Item item, Item[] drops) {

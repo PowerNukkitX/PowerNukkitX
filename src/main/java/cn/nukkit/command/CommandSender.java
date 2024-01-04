@@ -49,8 +49,6 @@ public interface CommandSender extends Permissible {
      *
      * @param container the container
      */
-
-
     void sendCommandOutput(CommandOutputContainer container);
 
     /**
@@ -98,8 +96,6 @@ public interface CommandSender extends Permissible {
      *
      * @return 发送者是否为实体<br>whether the sender is an entity
      */
-
-
     default boolean isEntity() {
         return false;
     }
@@ -111,8 +107,6 @@ public interface CommandSender extends Permissible {
      *
      * @return 实体对象<br>Entity instance
      */
-
-
     default Entity asEntity() {
         return null;
     }
@@ -124,8 +118,6 @@ public interface CommandSender extends Permissible {
      *
      * @return 玩家对象<br>Player instance
      */
-
-
     default Player asPlayer() {
         return null;
     }
@@ -133,8 +125,6 @@ public interface CommandSender extends Permissible {
     /**
      * @return 返回发送者的Position<br>return the sender's position.
      */
-
-
     @NotNull
     default Position getPosition() {
         return new Position(0, 0, 0, Server.getInstance().getDefaultLevel());
@@ -143,8 +133,6 @@ public interface CommandSender extends Permissible {
     /**
      * @return 返回发送者克隆过的Location<br>return the sender's location.
      */
-
-
     @NotNull
     default Location getLocation() {
         return new Location(0, 0, 0, Server.getInstance().getDefaultLevel());

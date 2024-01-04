@@ -13,13 +13,10 @@ import java.util.Map;
  */
 public class EntityDamageByEntityEvent extends EntityDamageEvent {
 
-    @NotNull
-    private final Entity damager;
+    private @NotNull final Entity damager;
 
     private float knockBack;
-
-    @Nullable
-    private Enchantment[] enchantments;
+    private @Nullable Enchantment[] enchantments;
 
     public EntityDamageByEntityEvent(@NotNull Entity damager, @NotNull Entity entity, @NotNull DamageCause cause, float damage) {
         this(damager, entity, cause, damage, 0.3f);
@@ -58,8 +55,7 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
         }
     }
 
-    @NotNull
-    public Entity getDamager() {
+    public @NotNull Entity getDamager() {
         return damager;
     }
 

@@ -21,6 +21,7 @@ package cn.nukkit.event.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.AnvilInventory;
+import lombok.Getter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,17 +37,12 @@ import javax.annotation.Nullable;
 
 @ToString
 public class PlayerTypingAnvilInventoryEvent extends InventoryEvent {
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final Player player;
     private final String previousName;
     private final String typedName;
-
 
     public PlayerTypingAnvilInventoryEvent(@NotNull Player player, @NotNull AnvilInventory inventory, @Nullable String previousName, @NotNull String typedName) {
         super(inventory);
@@ -56,18 +52,15 @@ public class PlayerTypingAnvilInventoryEvent extends InventoryEvent {
     }
 
     @Override
-    @NotNull
-    public AnvilInventory getInventory() {
+    public @NotNull AnvilInventory getInventory() {
         return (AnvilInventory) super.getInventory();
     }
 
-    @NotNull
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 
-    @NotNull
-    public String getTypedName() {
+    public @NotNull String getTypedName() {
         return typedName;
     }
 

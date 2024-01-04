@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
+import lombok.Getter;
 
 /**
  * @author CreeperFace
@@ -11,9 +12,10 @@ import cn.nukkit.item.Item;
  */
 public class PlayerMapInfoRequestEvent extends PlayerEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
 
-    private Item item;
+    private final Item item;
 
     public PlayerMapInfoRequestEvent(Player p, Item item) {
         this.player = p;
@@ -24,7 +26,4 @@ public class PlayerMapInfoRequestEvent extends PlayerEvent implements Cancellabl
         return item;
     }
 
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 }

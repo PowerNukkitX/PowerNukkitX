@@ -6,6 +6,7 @@ import cn.nukkit.event.HandlerList;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.EventException;
 import com.google.common.collect.ImmutableMap;
+import lombok.Getter;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -14,20 +15,15 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityDamageEvent extends EntityEvent implements Cancellable {
+    @Getter
     private static final HandlerList handlers = new HandlerList();
 
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
-
-    private int attackCooldown = 10;
     private final DamageCause cause;
-
     private final Map<DamageModifier, Float> modifiers;
     private final Map<DamageModifier, Float> originals;
 
     private boolean breakShield = false;
-
+    private int attackCooldown = 10;
     private int ShieldBreakCoolDown = 100;
 
     private static Map<DamageModifier, Float> createDamageModifierMap(float baseDamage) {
@@ -241,56 +237,38 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         /**
          * Damage caused by Wither
          */
-
-
         WITHER,
         /**
          * Damage caused by thorns
          */
-
-
         THORNS,
         /**
          * Damage caused by falling block
          */
-
-
         FALLING_BLOCK,
         /**
          * Damage caused by flying into wall
          */
-
-
         FLYING_INTO_WALL,
         /**
          * Damage caused when an entity steps on a hot block, like {@link cn.nukkit.block.BlockID#MAGMA}
          */
-
-
         HOT_FLOOR,
         /**
          * Damage caused by fireworks
          */
-
-
         FIREWORKS,
         /**
          * Damage caused by temperature
          */
-
-
         FREEZING,
         /**
          * Damage caused by no reason (eg: /damage command with cause NONE)
          */
-
-
         NONE,
         /**
          * Damage caused by a lot of (>24) entities colliding together
          */
-
-
         COLLIDE
     }
 }

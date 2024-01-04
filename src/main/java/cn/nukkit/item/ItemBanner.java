@@ -54,8 +54,7 @@ public class ItemBanner extends Item {
         this.setAux(color.getDyeData() & 0x0f);
     }
 
-    @NotNull
-    public DyeColor getBaseDyeColor() {
+    public @NotNull DyeColor getBaseDyeColor() {
         return Objects.requireNonNull(DyeColor.getByDyeData(getBaseColor()));
     }
 

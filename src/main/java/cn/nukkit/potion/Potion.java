@@ -337,8 +337,7 @@ public class Potion implements Cloneable {
         }
     }
 
-    @NotNull
-    public String getPotionTypeName() {
+    public @NotNull String getPotionTypeName() {
         return switch (getId()) {
             case WATER -> "Water";
             case MUNDANE, MUNDANE_II -> "Mundane";
@@ -364,8 +363,7 @@ public class Potion implements Cloneable {
         };
     }
 
-    @NotNull
-    public String getName() {
+    public @NotNull String getName() {
         String name = getPotionTypeName();
         StringBuilder finalName = new StringBuilder(255).append("Potion");
         if (!name.isEmpty()) {
@@ -387,8 +385,7 @@ public class Potion implements Cloneable {
         return finalName.toString();
     }
 
-    @NotNull
-    public String getRomanLevel() {
+    public @NotNull String getRomanLevel() {
         int currentLevel = getLevel();
         if (currentLevel == 0) {
             return "0";

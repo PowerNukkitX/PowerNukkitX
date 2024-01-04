@@ -29,8 +29,6 @@ public abstract class DataPacket extends BinaryStream implements Cloneable {
     /**
      * @return The id of the packet
      */
-
-
     public @Nonnegative int packetId() {
         return ProtocolInfo.toNewProtocolID(this.pid());
     }

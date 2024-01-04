@@ -410,21 +410,18 @@ public class Vector3 implements Cloneable {
         return this;
     }
 
-    @NotNull
-    public Vector3 setComponentsAdding(double x, double y, double z, double ax, double ay, double az) {
+    public @NotNull Vector3 setComponentsAdding(double x, double y, double z, double ax, double ay, double az) {
         this.x = x + ax;
         this.y = y + ay;
         this.z = z + az;
         return this;
     }
 
-    @NotNull
-    public Vector3 setComponentsAdding(@NotNull Vector3 pos, @NotNull BlockFace face) {
+    public @NotNull Vector3 setComponentsAdding(@NotNull Vector3 pos, @NotNull BlockFace face) {
         return setComponentsAdding(pos.x, pos.y, pos.z, face.getXOffset(), face.getYOffset(), face.getZOffset());
     }
 
-    @NotNull
-    public Vector3 setComponents(@NotNull Vector3 pos) {
+    public @NotNull Vector3 setComponents(@NotNull Vector3 pos) {
         this.x = pos.x;
         this.y = pos.y;
         this.z = pos.z;

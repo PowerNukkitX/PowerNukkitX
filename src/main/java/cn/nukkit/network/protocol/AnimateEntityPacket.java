@@ -119,8 +119,6 @@ public class AnimateEntityPacket extends DataPacket {
     /**
      * 从 {@link Animation} 对象中解析数据并写入到包
      */
-
-
     public void parseFromAnimation(Animation ani) {
         this.animation = ani.animation;
         this.nextState = ani.nextState;
@@ -134,8 +132,6 @@ public class AnimateEntityPacket extends DataPacket {
      * 包含一个实体动画的信息的记录类<br/>
      * 用于{@link cn.nukkit.network.protocol.AnimateEntityPacket}网络包
      */
-
-
     @Builder
     public static class Animation {
         public static final float DEFAULT_BLEND_OUT_TIME = 0.0f;

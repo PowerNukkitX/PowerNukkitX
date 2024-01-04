@@ -23,8 +23,6 @@ public class Attribute implements Cloneable {
      * <p>
      * Convenient execution of {@link Collection#toArray()}
      */
-
-
     public static final Attribute[] EMPTY_ARRAY = new Attribute[0];
 
     /**

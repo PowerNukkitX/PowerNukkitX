@@ -22,6 +22,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.Position;
+import lombok.Getter;
 
 import java.util.Set;
 
@@ -33,27 +34,15 @@ import java.util.Set;
 
 public class BlockExplodeEvent extends BlockEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
 
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
-
     protected final Position position;
-
-
-    protected Set<Block> blocks;
-
-
-    protected Set<Block> ignitions;
-
-
-    protected double yield;
-
-
     protected final double fireChance;
 
+    protected double yield;
+    protected Set<Block> blocks;
+    protected Set<Block> ignitions;
 
     public BlockExplodeEvent(Block block, Position position, Set<Block> blocks, Set<Block> ignitions, double yield, double fireChance) {
         super(block);

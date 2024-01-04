@@ -5,6 +5,7 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.block.BlockEvent;
 import cn.nukkit.item.Item;
+import lombok.Getter;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -12,18 +13,13 @@ import cn.nukkit.item.Item;
 
 public class CampfireSmeltEvent extends BlockEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final BlockEntityCampfire campfire;
     private final Item source;
     private Item result;
     private boolean keepItem;
-
 
     public CampfireSmeltEvent(BlockEntityCampfire campfire, Item source, Item result) {
         super(campfire.getBlock());

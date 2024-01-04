@@ -274,8 +274,6 @@ public class RuntimeItemMapping {
      * @return The <b>network id</b>
      * @throws IllegalArgumentException If the mapping of the <b>full id</b> to the <b>network id</b> is unknown
      */
-
-
     public int getNetworkId(Item item) {
         if (item instanceof StringItem) {
             return name2RuntimeId.getInt(item.getNamespaceId());
@@ -302,8 +300,6 @@ public class RuntimeItemMapping {
      * @return The <b>full id</b>
      * @throws IllegalArgumentException If the mapping of the <b>full id</b> to the <b>network id</b> is unknown
      */
-
-
     public int getLegacyFullId(int networkId) {
         LegacyEntry legacyEntry = runtime2Legacy.get(networkId);
         if (legacyEntry == null) {
@@ -322,8 +318,6 @@ public class RuntimeItemMapping {
      * @param networkId The given <b>network id</b>
      * @return The <b>namespace id</b> or {@code null} if it is unknown
      */
-
-
     public @Nullable String getNamespacedIdByNetworkId(int networkId) {
         return runtimeId2Name.get(networkId);
     }
@@ -334,10 +328,7 @@ public class RuntimeItemMapping {
      * @param namespaceId The given <b>namespaced id</b>
      * @return A <b>network id</b> wrapped in {@link OptionalInt} or an empty {@link OptionalInt} if it is unknown
      */
-
-
-    @NotNull
-    public OptionalInt getNetworkIdByNamespaceId(@NotNull String namespaceId) {
+    public @NotNull OptionalInt getNetworkIdByNamespaceId(@NotNull String namespaceId) {
         int id = name2RuntimeId.getOrDefault(namespaceId, -1);
         if (id == -1) return OptionalInt.empty();
         return OptionalInt.of(id);
@@ -351,10 +342,7 @@ public class RuntimeItemMapping {
      * @return The correct {@link Item} instance with the write <b>item id</b> and <b>item damage</b> values.
      * @throws IllegalArgumentException If there are unknown mappings in the process.
      */
-
-
-    @NotNull
-    public Item getItemByNamespaceId(@NotNull String namespaceId, int amount) {
+    public @NotNull Item getItemByNamespaceId(@NotNull String namespaceId, int amount) {
         Supplier<Item> constructor = this.namespacedIdItem.get(namespaceId.toLowerCase(Locale.ENGLISH));
         if (constructor != null) {
             try {

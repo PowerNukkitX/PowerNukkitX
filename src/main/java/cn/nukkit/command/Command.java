@@ -177,8 +177,6 @@ public abstract class Command implements GenericParameter {
      * @param log          命令输出工具
      * @return int 返回0代表执行失败, 返回大于等于1代表执行成功
      */
-
-
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         throw new UnsupportedOperationException();
     }
@@ -334,8 +332,6 @@ public abstract class Command implements GenericParameter {
     /**
      * 若调用此方法，则将启用ParamTree用于解析命令参数
      */
-
-
     public void enableParamTree() {
         this.paramTree = new ParamTree(this);
     }

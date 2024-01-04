@@ -150,8 +150,6 @@ public enum BlockFace {
      *
      * @return index
      */
-
-
     public int getDUNESWIndex() {
         return switch (getIndex()) {
             case 1 -> 1;
@@ -168,8 +166,6 @@ public enum BlockFace {
      *
      * @return index
      */
-
-
     public int getDUSWNEIndex() {
         return switch (getIndex()) {
             case 1 -> 1;

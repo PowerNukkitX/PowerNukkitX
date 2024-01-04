@@ -3,17 +3,15 @@ package cn.nukkit.event.player;
 import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 /**
  * @author CreeperFace
  */
 public class PlayerToggleSwimEvent extends PlayerEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final boolean isSwimming;
 

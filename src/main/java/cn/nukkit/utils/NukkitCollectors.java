@@ -43,8 +43,6 @@ public class NukkitCollectors {
      *     reducing(0, e -> 1, Integer::sum)
      * }</pre>
      */
-
-
     public static <T> Collector<T, ?, Integer> countingInt() {
         return Collectors.reducing(0, e -> 1, Integer::sum);
     }

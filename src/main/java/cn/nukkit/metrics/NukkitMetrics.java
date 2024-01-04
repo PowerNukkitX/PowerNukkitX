@@ -70,8 +70,6 @@ public class NukkitMetrics {
      *
      * @param server The Nukkit server
      */
-
-
     public static boolean startNow(Server server) {
         NukkitMetrics nukkitMetrics = getOrCreateMetrics(server);
         return nukkitMetrics.metrics != null;

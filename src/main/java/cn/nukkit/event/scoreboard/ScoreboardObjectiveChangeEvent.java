@@ -2,15 +2,13 @@ package cn.nukkit.event.scoreboard;
 
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;
+import lombok.Getter;
 
 
 public class ScoreboardObjectiveChangeEvent extends ScoreboardEvent{
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final ActionType actionType;
 

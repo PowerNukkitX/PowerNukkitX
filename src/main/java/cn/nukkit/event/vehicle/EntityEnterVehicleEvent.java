@@ -4,14 +4,12 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 public class EntityEnterVehicleEvent extends VehicleEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final cn.nukkit.entity.Entity riding;
 

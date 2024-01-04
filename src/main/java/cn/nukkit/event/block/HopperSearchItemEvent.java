@@ -4,17 +4,14 @@ import cn.nukkit.block.BlockHopper;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 
 public class HopperSearchItemEvent extends Event implements Cancellable {
+    @Getter
     private static final HandlerList handlers = new HandlerList();
 
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
-
     private final BlockHopper.IHopper hopper;
-
     private final boolean isMinecart;
 
     public HopperSearchItemEvent(BlockHopper.IHopper hopper, boolean isMinecart) {

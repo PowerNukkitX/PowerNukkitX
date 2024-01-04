@@ -16,12 +16,9 @@ import java.util.List;
 
 
 public class BlockStateRepairFinishEvent extends BlockStateRepairEvent {
-    @NotNull
-    private final List<BlockStateRepair> allRepairs;
+    private @NotNull final List<BlockStateRepair> allRepairs;
 
-    @NotNull
-    private Block result;
-
+    private @NotNull Block result;
 
     public BlockStateRepairFinishEvent(@NotNull List<BlockStateRepair> allRepairs, @NotNull Block result) {
         super(allRepairs.get(allRepairs.size() - 1));
@@ -29,13 +26,11 @@ public class BlockStateRepairFinishEvent extends BlockStateRepairEvent {
         this.result = result;
     }
 
-    @NotNull
-    public List<BlockStateRepair> getAllRepairs() {
+    public @NotNull List<BlockStateRepair> getAllRepairs() {
         return allRepairs;
     }
 
-    @NotNull
-    public Block getResult() {
+    public @NotNull Block getResult() {
         return result;
     }
 
@@ -43,12 +38,9 @@ public class BlockStateRepairFinishEvent extends BlockStateRepairEvent {
         this.result = Preconditions.checkNotNull(result);
     }
 
-    @NotNull
-    private static final HandlerList handlers = new HandlerList();
+    private @NotNull static final HandlerList handlers = new HandlerList();
 
-
-    @NotNull
-    public static HandlerList getHandlers() {
+    public @NotNull static HandlerList getHandlers() {
         return handlers;
     }
 }

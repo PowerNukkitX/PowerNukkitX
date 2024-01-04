@@ -46,8 +46,6 @@ public class CommandParameter {
      *
      * @see #newType(String, boolean, CommandParamType, IParamNode, CommandParamOption...)
      */
-
-
     public static CommandParameter newType(String name, CommandParamType type, IParamNode<?> paramNode) {
         return newType(name, false, type, paramNode);
     }
@@ -67,8 +65,6 @@ public class CommandParameter {
      *
      * @see #newType(String, boolean, CommandParamType, IParamNode, CommandParamOption...)
      */
-
-
     public static CommandParameter newType(String name, boolean optional, CommandParamType type, CommandParamOption... options) {
         return newType(name, optional, type, null, options);
     }
@@ -83,8 +79,6 @@ public class CommandParameter {
      * @param options   the options
      * @return the command parameter
      */
-
-
     public static CommandParameter newType(String name, boolean optional, CommandParamType type, IParamNode<?> paramNode, CommandParamOption... options) {
         var result = new CommandParameter(name, optional, type, null, null, paramNode);
         if (options.length != 0) {
@@ -117,8 +111,6 @@ public class CommandParameter {
     /**
      * @see #newEnum(String name, boolean optional, CommandEnum data)
      */
-
-
     public static CommandParameter newEnum(String name, boolean optional, String[] values, boolean isSoft) {
         return newEnum(name, optional, new CommandEnum(name + "Enums", Arrays.asList(values), isSoft));
     }
@@ -168,8 +160,6 @@ public class CommandParameter {
      *
      * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
      */
-
-
     public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, CommandParamOption... options) {
         return newEnum(name, optional, data, null, options);
     }
@@ -179,8 +169,6 @@ public class CommandParameter {
      *
      * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
      */
-
-
     public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, IParamNode<?> paramNode) {
         return newEnum(name, optional, data, paramNode, new CommandParamOption[]{});
     }
@@ -195,8 +183,6 @@ public class CommandParameter {
      * @param options   the options
      * @return the command parameter
      */
-
-
     public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, IParamNode<?> paramNode, CommandParamOption... options) {
         var result = new CommandParameter(name, optional, null, data, null, paramNode);
         if (options.length != 0) {

@@ -287,8 +287,6 @@ public class Network {
      * @param id    The packet id, non-negative int
      * @param clazz The packet class
      */
-
-
     public void registerPacketNew(@Nonnegative int id, @NotNull Class<? extends DataPacket> clazz) {
         this.packetPool.put(id, clazz);
     }

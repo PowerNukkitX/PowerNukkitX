@@ -6,14 +6,12 @@ import cn.nukkit.event.Event;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.Position;
 import cn.nukkit.nbt.tag.CompoundTag;
+import lombok.Getter;
 
 public class CreatureSpawnEvent extends Event implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final SpawnReason reason;
     private final int entityNetworkId;

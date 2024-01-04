@@ -29,8 +29,6 @@ public interface ToIntTriFunctionOneInt<F, S> {
      * @param t the third function argument
      * @return the function result
      */
-
-
     int apply(F f, S s, int t);
 
     /**
@@ -44,8 +42,6 @@ public interface ToIntTriFunctionOneInt<F, S> {
      * applies the {@code after} function
      * @throws NullPointerException if after is null
      */
-
-
     default ToIntTriFunctionOneInt<F, S> andThen(IntUnaryOperator after) {
         Objects.requireNonNull(after);
         return (F f, S s, int t) -> after.applyAsInt(apply(f, s, t));

@@ -111,7 +111,5 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
      * 继承于此类的容器方块实体必须实现此方法
      * @return ContainerInventory
      */
-
-
     protected abstract ContainerInventory requireContainerInventory();
 }

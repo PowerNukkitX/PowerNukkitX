@@ -79,8 +79,7 @@ public class NPCDialoguePacket extends DataPacket {
         this.runtimeEntityId = runtimeEntityId;
     }
 
-    @NotNull
-    public NPCDialogAction getAction() {
+    public @NotNull NPCDialogAction getAction() {
         return action;
     }
 
@@ -88,8 +87,7 @@ public class NPCDialoguePacket extends DataPacket {
         this.action = action;
     }
 
-    @NotNull
-    public String getDialogue() {
+    public @NotNull String getDialogue() {
         return dialogue;
     }
 
@@ -97,8 +95,7 @@ public class NPCDialoguePacket extends DataPacket {
         this.dialogue = dialogue;
     }
 
-    @NotNull
-    public String getSceneName() {
+    public @NotNull String getSceneName() {
         return sceneName;
     }
 
@@ -106,8 +103,7 @@ public class NPCDialoguePacket extends DataPacket {
         this.sceneName = sceneName;
     }
 
-    @NotNull
-    public String getNpcName() {
+    public @NotNull String getNpcName() {
         return npcName;
     }
 
@@ -115,8 +111,7 @@ public class NPCDialoguePacket extends DataPacket {
         this.npcName = npcName;
     }
 
-    @NotNull
-    public String getActionJson() {
+    public @NotNull String getActionJson() {
         return actionJson;
     }
 

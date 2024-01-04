@@ -34,8 +34,7 @@ public class BlockStructureVoid extends BlockSolid {
         return "Structure Void";
     }
 
-    @NotNull
-    public StructureVoidType getType() {
+    public @NotNull StructureVoidType getType() {
         return getPropertyValue(STRUCTURE_VOID_TYPE);
     }
 

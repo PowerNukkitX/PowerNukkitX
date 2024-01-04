@@ -2,6 +2,7 @@ package cn.nukkit.event.block;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 /**
  * @author CreeperFace
@@ -12,11 +13,8 @@ import cn.nukkit.event.HandlerList;
 @Deprecated
 public class BlockPistonChangeEvent extends BlockEvent {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private int oldPower;
     private int newPower;

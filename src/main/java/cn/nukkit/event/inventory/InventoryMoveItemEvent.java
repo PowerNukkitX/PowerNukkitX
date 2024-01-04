@@ -5,6 +5,7 @@ import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
+import lombok.Getter;
 
 /**
  * @author CreeperFace
@@ -13,18 +14,13 @@ import cn.nukkit.item.Item;
  */
 public class InventoryMoveItemEvent extends InventoryEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final Inventory targetInventory;
     private final InventoryHolder source;
-
-    private Item item;
-
     private final Action action;
+    private Item item;
 
     public InventoryMoveItemEvent(Inventory from, Inventory targetInventory, InventoryHolder source, Item item, Action action) {
         super(from);

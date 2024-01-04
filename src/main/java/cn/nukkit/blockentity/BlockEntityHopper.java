@@ -97,8 +97,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
     /**
      * @return How much ticks does it take for the hopper to transfer an item
      */
-
-
     public int getCooldownTick() {
         return 8;
     }

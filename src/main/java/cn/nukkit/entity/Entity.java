@@ -771,13 +771,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     /**
      * @see #getDefaultNBT(Vector3, Vector3, float, float)
      */
-    @NotNull
-    public static CompoundTag getDefaultNBT(@NotNull Vector3 pos) {
+    public @NotNull static CompoundTag getDefaultNBT(@NotNull Vector3 pos) {
         return getDefaultNBT(pos, null);
     }
 
-    @NotNull
-    public static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion) {
+    public @NotNull static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion) {
         Location loc = pos instanceof Location ? (Location) pos : null;
 
         if (loc != null) {
@@ -798,8 +796,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @param pitch  the pitch
      * @return the default nbt
      */
-    @NotNull
-    public static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion, float yaw, float pitch) {
+    public @NotNull static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion, float yaw, float pitch) {
         return new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
                         .add(new DoubleTag("", pos.x))
@@ -825,8 +822,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @param entities  需要播放动画的实体群 Group of entities that need to play animations
      * @param players   可视玩家 Visible Player
      */
-
-
     public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities, Collection<Player> players) {
         var pk = new AnimateEntityPacket();
         pk.parseFromAnimation(animation);
@@ -838,8 +833,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     /**
      * @see #playAnimationOnEntities(AnimateEntityPacket.Animation, Collection, Collection)
      */
-
-
     public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities) {
         var viewers = new HashSet<Player>();
         entities.forEach(entity -> {
@@ -971,8 +964,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      *
      * @return the identifier
      */
-    @NotNull
-    public abstract String getIdentifier();
+    public @NotNull abstract String getIdentifier();
 
     /**
      * 实体高度
@@ -1522,8 +1514,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     /**
      * The name that English name of the type of this entity.
      */
-
-
     public String getOriginalName() {
         return this.getSaveId();
     }
@@ -1531,8 +1521,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     /**
      * Similar to {@link #getName()}, but if the name is blank or empty it returns the static name instead.
      */
-
-
     public final String getVisibleName() {
         String name = getName();
         if (!TextFormat.clean(name).trim().isEmpty()) {
@@ -1545,8 +1533,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     /**
      * The current name used by this entity in the name tag, or the static name if the entity don't have nametag.
      */
-    @NotNull
-    public String getName() {
+    public @NotNull String getName() {
         if (this.hasCustomName()) {
             return this.getNameTag();
         } else {
@@ -2637,14 +2624,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return true;
     }
 
-    @NotNull
-    public Position getPosition() {
+    public @NotNull Position getPosition() {
         return new Position(this.x, this.y, this.z, this.level);
     }
 
     @Override
-    @NotNull
-    public Location getLocation() {
+    public @NotNull Location getLocation() {
         return new Location(this.x, this.y, this.z, this.yaw, this.pitch, this.headYaw, this.level);
     }
 
@@ -3663,8 +3648,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @param animation 动画对象 Animation objects
      * @param players   可视玩家 Visible Player
      */
-
-
     public void playAnimation(AnimateEntityPacket.Animation animation, Collection<Player> players) {
         var pk = new AnimateEntityPacket();
         pk.parseFromAnimation(animation);
@@ -3689,8 +3672,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @param rowingTime the rowing time
      * @param players    可视玩家 Visible Player
      */
-
-
     public void playActionAnimation(AnimatePacket.Action action, float rowingTime, Collection<Player> players) {
         var pk = new AnimatePacket();
         pk.action = action;

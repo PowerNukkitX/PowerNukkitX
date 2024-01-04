@@ -4,9 +4,11 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.potion.Effect;
+import lombok.Getter;
 
 
 public class EntityEffectUpdateEvent extends EntityEvent implements Cancellable {
+    @Getter
     private static final HandlerList handlers = new HandlerList();
 
     private Effect oldEffect;
@@ -16,10 +18,6 @@ public class EntityEffectUpdateEvent extends EntityEvent implements Cancellable 
         this.entity = entity;
         this.oldEffect = oldEffect;
         this.newEffect = newEffect;
-    }
-
-    public static HandlerList getHandlers() {
-        return handlers;
     }
 
     public Effect getOldEffect() {

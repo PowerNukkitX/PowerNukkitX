@@ -4,16 +4,14 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.Level;
+import lombok.Getter;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityLevelChangeEvent extends EntityEvent implements Cancellable {
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final Level originLevel;
     private final Level targetLevel;

@@ -5,15 +5,13 @@ import cn.nukkit.block.BlockBigDripleaf;
 import cn.nukkit.block.property.enums.BigDripleafTilt;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 
 public class BigDripleafTiltChangeEvent extends BlockEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private BigDripleafTilt oldTilt;
     private BigDripleafTilt newTilt;

@@ -48,8 +48,6 @@ public class PositionTrackingService implements Closeable {
      * @param folder The folder that will hold the position tracking db files
      * @throws FileNotFoundException If the folder does not exists and can't be created 
      */
-
-
     public PositionTrackingService(File folder) throws FileNotFoundException {
         if (!folder.isDirectory() && !folder.mkdirs()) {
             throw new FileNotFoundException("Failed to create the folder "+folder);
@@ -345,8 +343,6 @@ public class PositionTrackingService implements Closeable {
      * @return The trackingHandler assigned to the position or an empty OptionalInt if none was found and this storage is full
      * @throws IOException If an error occurred while reading or writing the file
      */
-
-
     public synchronized int addOrReusePosition(NamedPosition position) throws IOException {
         checkClosed();
         OptionalInt trackingHandler = findTrackingHandler(position);
@@ -362,8 +358,6 @@ public class PositionTrackingService implements Closeable {
      * @return The trackingHandler assigned to the position or an empty OptionalInt if none was found and this storage is full
      * @throws IOException If an error occurred while reading or writing the file
      */
-
-
     public synchronized int addNewPosition(NamedPosition position) throws IOException {
         return addNewPosition(position, true);
     }
@@ -375,8 +369,6 @@ public class PositionTrackingService implements Closeable {
      * @return The trackingHandler assigned to the position or an empty OptionalInt if none was found and this storage is full
      * @throws IOException If an error occurred while reading or writing the file
      */
-
-
     public synchronized int addNewPosition(NamedPosition position, boolean enabled) throws IOException {
         checkClosed();
         int next = 1;
@@ -394,8 +386,7 @@ public class PositionTrackingService implements Closeable {
         return trackingStorage.addNewPosition(position, enabled).orElseThrow(InternalError::new);
     }
 
-    @NotNull
-    public OptionalInt findTrackingHandler(NamedPosition position) throws IOException {
+    public @NotNull OptionalInt findTrackingHandler(NamedPosition position) throws IOException {
         IntList handlers = findTrackingHandlers(position, true, 1);
         if (!handlers.isEmpty()) {
             return OptionalInt.of(handlers.getInt(0));
@@ -501,18 +492,15 @@ public class PositionTrackingService implements Closeable {
         return loadStorage(startIndex).hasPosition(trackingHandler, onlyEnabled);
     }
 
-    @NotNull
-    public synchronized IntList findTrackingHandlers(NamedPosition pos) throws IOException {
+    public @NotNull synchronized IntList findTrackingHandlers(NamedPosition pos) throws IOException {
         return findTrackingHandlers(pos, true);
     }
 
-    @NotNull
-    public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled) throws IOException {
+    public @NotNull synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled) throws IOException {
         return findTrackingHandlers(pos, onlyEnabled, Integer.MAX_VALUE);
     }
 
-    @NotNull
-    public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled, int limit) throws IOException {
+    public @NotNull synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled, int limit) throws IOException {
         checkClosed();
         IntList list = new IntArrayList();
         for (Integer startIndex : storage.descendingKeySet()) {

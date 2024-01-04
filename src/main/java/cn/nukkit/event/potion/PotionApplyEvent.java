@@ -5,6 +5,7 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
+import lombok.Getter;
 
 /**
  * @author Snake1999
@@ -12,15 +13,11 @@ import cn.nukkit.potion.Potion;
  */
 public class PotionApplyEvent extends PotionEvent implements Cancellable {
 
+    @Getter
     private static final HandlerList handlers = new HandlerList();
 
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
-
-    private Effect applyEffect;
-
     private final Entity entity;
+    private Effect applyEffect;
 
     public PotionApplyEvent(Potion potion, Effect applyEffect, Entity entity) {
         super(potion);

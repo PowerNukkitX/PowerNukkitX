@@ -287,7 +287,5 @@ public interface Plugin extends CommandExecutor {
      *
      * @return 这个插件的文件 {@code File}对象。<br>The {@code File} object of this plugin itself.
      */
-
-
     File getFile();
 }

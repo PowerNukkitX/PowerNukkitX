@@ -140,8 +140,6 @@ public class AdventureSettings implements Cloneable {
      * 注意此方法并不会向客户端发包刷新权限信息，你需要手动调用update()方法刷新
      * @param op 是否是OP
      */
-
-
     public void onOpChange(boolean op) {
         if (op) {
             for (PlayerAbility controllableAbility : RequestPermissionsPacket.CONTROLLABLE_ABILITIES)
@@ -192,8 +190,6 @@ public class AdventureSettings implements Cloneable {
     /**
      * 保存权限到nbt
      */
-
-
     public void saveNBT() {
         var nbt = player.namedTag;
         var abilityTag = new CompoundTag(KEY_ABILITIES);
@@ -208,8 +204,6 @@ public class AdventureSettings implements Cloneable {
     /**
      * 从nbt读取权限数据
      */
-
-
     public void readNBT(CompoundTag nbt) {
         var abilityTag = nbt.getCompound(KEY_ABILITIES);
         for (Tag tag : abilityTag.getAllTags()) {

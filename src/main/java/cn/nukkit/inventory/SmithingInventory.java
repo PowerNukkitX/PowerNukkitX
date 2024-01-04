@@ -79,8 +79,7 @@ public class SmithingInventory extends FakeBlockUIComponent {
         this.currentResult = result;
     }
 
-    @NotNull
-    public Item getResult() {
+    public @NotNull Item getResult() {
         SmithingRecipe recipe = matchRecipe();
         if (recipe == null) {
             return AIR_ITEM;

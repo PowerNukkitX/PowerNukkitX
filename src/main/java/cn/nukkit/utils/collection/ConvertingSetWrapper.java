@@ -44,8 +44,7 @@ public class ConvertingSetWrapper<V1, V2> extends AbstractSet<V1> {
     }
 
     @Override
-    @NotNull
-    public Iterator<V1> iterator() {
+    public @NotNull Iterator<V1> iterator() {
         return new ConvertingIterator();
     }
 
