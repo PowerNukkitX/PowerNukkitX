@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.nbt.tag.CompoundTagView;
+import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -35,6 +36,10 @@ public interface BlockState {
     BlockState setPropertyValue(BlockProperties properties, BlockPropertyType.BlockPropertyValue<?, ?, ?> propertyValue);
 
     BlockState setPropertyValues(BlockProperties properties, BlockPropertyType.BlockPropertyValue<?, ?, ?>... values);
+
+    default boolean isDefaultState() {
+        return Registries.BLOCK.getBlockProperties(getIdentifier()).getDefaultState() == this;
+    }
 
     default Block toBlock() {
         return Block.get(this);

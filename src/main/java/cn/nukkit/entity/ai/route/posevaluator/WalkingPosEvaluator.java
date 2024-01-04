@@ -27,13 +27,13 @@ public class WalkingPosEvaluator implements IPosEvaluator {
             return false;
         //TODO: 检查碰头
         //脚下不能是伤害性方块
-        if (block.getId() == Block.FLOWING_LAVA || block.getId() == Block.STILL_LAVA || block.getId() == Block.CACTUS)
+        if (block.getId() == Block.FLOWING_LAVA || block.getId() == Block.LAVA || block.getId() == Block.CACTUS)
             return false;
         //不能是栏杆
         if (block instanceof BlockFence || block instanceof BlockFenceGate)
             return false;
         //水特判
-        if (block.getId() == Block.STILL_WATER || block.getId() == Block.FLOWING_WATER)
+        if (block.getId() == Block.WATER || block.getId() == Block.FLOWING_WATER)
             return true;
         //必须可以站立
         return !block.canPassThrough();

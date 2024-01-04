@@ -862,7 +862,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         registerEntity("EnderDragon", EntityEnderDragon.class);
         registerEntity("Enderman", EntityEnderman.class);
         registerEntity("Endermite", EntityEndermite.class);
-        registerEntity("Evoker", EntityEvoker.class);
+        registerEntity("Evoker", EntityEvocationIllager.class);
         registerEntity("Ghast", EntityGhast.class);
         registerEntity("GlowSquid", EntityGlowSquid.class);
         registerEntity("Guardian", EntityGuardian.class);

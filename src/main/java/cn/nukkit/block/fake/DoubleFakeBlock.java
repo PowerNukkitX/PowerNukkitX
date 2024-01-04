@@ -10,7 +10,7 @@ import java.util.List;
 
 public class DoubleFakeBlock extends SingleFakeBlock {
 
-    public DoubleFakeBlock(int blockId, String tileId) {
+    public DoubleFakeBlock(String blockId, String tileId) {
         super(blockId, tileId);
     }
 

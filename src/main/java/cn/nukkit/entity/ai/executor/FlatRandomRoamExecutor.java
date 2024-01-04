@@ -59,9 +59,9 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
         if (currentTargetCalTick >= frequency || (calNextTargetImmediately && needUpdateTarget(entity))) {
             Vector3 target = next(entity);
             if (avoidWater) {
-                int blockId;
+                String blockId;
                 int time = 0;
-                while (time <= maxRetryTime && ((blockId = entity.level.getTickCachedBlock(target.add(0, -1, 0)).getId()) == Block.FLOWING_WATER || blockId == Block.STILL_WATER)) {
+                while (time <= maxRetryTime && ((blockId = entity.level.getTickCachedBlock(target.add(0, -1, 0)).getId()) == Block.FLOWING_WATER || blockId == Block.WATER)) {
                     target = next(entity);
                     time++;
                 }

@@ -15,11 +15,11 @@ import java.util.List;
 
 public class SingleFakeBlock implements FakeBlock {
 
-    protected final int blockId;
+    protected final String blockId;
     protected final String tileId;
     protected List<Vector3> lastPositions;
 
-    public SingleFakeBlock(int blockId, String tileId) {
+    public SingleFakeBlock(String blockId, String tileId) {
         this.blockId = blockId;
         this.tileId = tileId;
     }

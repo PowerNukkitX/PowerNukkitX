@@ -30,7 +30,7 @@ public class EntityFallingBlock extends Entity {
         return FALLING_BLOCK;
     }
     
-    protected int blockId;
+    protected String blockId;
     protected int damage;
     protected boolean breakOnLava;
     protected boolean breakOnGround;

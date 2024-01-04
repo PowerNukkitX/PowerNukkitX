@@ -9,14 +9,13 @@ import cn.nukkit.event.block.ConduitDeactivateEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.biome.Biome;
-import cn.nukkit.level.biome.type.SnowyBiome;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.tags.BiomeTags;
+import cn.nukkit.tags.BlockTags;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -219,10 +218,10 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         for (int ix = -1; ix <= 1; ix++) {
             for (int iz = -1; iz <= 1; iz++) {
                 for (int iy = -1; iy <= 1; iy++) {
-                    int blockId = this.getLevel().getBlockIdAt(x + ix, y + iy, z + iz, 0);
-                    if (blockId != Block.FLOWING_WATER && blockId != Block.STILL_WATER) {
-                        blockId = this.getLevel().getBlockIdAt(x + ix, y + iy, z + iz, 1);
-                        if (blockId != Block.FLOWING_WATER && blockId != Block.STILL_WATER) {
+                    Block block = this.getLevel().getBlock(x + ix, y + iy, z + iz, 0);
+                    if (!block.is(BlockTags.WATER)) {
+                        block = this.getLevel().getBlock(x + ix, y + iy, z + iz, 1);
+                        if (!block.is(BlockTags.WATER)) {
                             return false;
                         }
                     }
@@ -246,7 +245,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
                             continue;
                         }
 
-                        int blockId = level.getBlockIdAt(x + ix, y, z + iz);
+                        String blockId = level.getBlockIdAt(x + ix, y, z + iz);
                         //validBlocks++;
                         //level.setBlock(x + ix, y, z + iz, new BlockPlanks(), true, true);
                         if (VALID_STRUCTURE_BLOCKS.contains(blockId)) {
@@ -262,7 +261,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
                     }
 
                     if (absIY == 2 || Math.abs(ix) == 2) {
-                        int blockId = level.getBlockIdAt(x + ix, y + iy, z);
+                        String blockId = level.getBlockIdAt(x + ix, y + iy, z);
                         //validBlocks++;
                         //level.setBlock(x + ix, y + iy, z, new BlockWood(), true, true);
                         if (VALID_STRUCTURE_BLOCKS.contains(blockId)) {
@@ -277,7 +276,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
                     }
 
                     if (absIY == 2 && iz != 0 || Math.abs(iz) == 2) {
-                        int blockId = level.getBlockIdAt(x, y + iy, z + iz);
+                        String blockId = level.getBlockIdAt(x, y + iy, z + iz);
                         //validBlocks++;
                         //level.setBlock(x, y + iy, z + iz, new BlockWood(), true, true);
                         if (VALID_STRUCTURE_BLOCKS.contains(blockId)) {

@@ -76,7 +76,6 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
         return -1;
     }
 
-    @Override
     public Item getItem(int index) {
         int i = this.getSlotIndex(index);
         if (i < 0) {
@@ -87,7 +86,6 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
         }
     }
 
-    @Override
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 

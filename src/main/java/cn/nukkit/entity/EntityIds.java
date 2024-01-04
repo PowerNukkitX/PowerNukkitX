@@ -45,7 +45,7 @@ public final class EntityIds {
             .put("minecraft:balloon", 107)
             .put("minecraft:ice_bomb", 106)
             .put("minecraft:vex", EntityVex.NETWORK_ID)
-            .put("minecraft:evocation_illager", EntityEvoker.NETWORK_ID)
+            .put("minecraft:evocation_illager", EntityEvocationIllager.NETWORK_ID)
             .put("minecraft:evocation_fang", 103)
             .put("minecraft:llama_spit", 102)
             .put("minecraft:lingering_potion", EntityLingeringPotion.NETWORK_ID)

@@ -47,7 +47,7 @@ public class EntityStray extends EntityMob implements EntityWalkable, EntitySmit
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.BONE, Item.ARROW)};
+        return new Item[]{Item.get(Item.BONE),Item.get(Item.ARROW)};
     }
 
     @Override

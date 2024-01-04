@@ -31,13 +31,12 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
     public @NotNull String getIdentifier() {
         return SKELETON;
     }
-    
+
 
     public EntitySkeleton(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    
 
     @Override
     protected void initEntity() {
@@ -65,7 +64,7 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.BONE, Item.ARROW)};
+        return new Item[]{Item.get(Item.BONE), Item.get(Item.ARROW)};
     }
 
     @Override

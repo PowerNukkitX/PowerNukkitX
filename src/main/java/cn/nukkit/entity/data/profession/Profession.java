@@ -22,12 +22,12 @@ public abstract class Profession {
     }
 
     private final int index;
-    private final int blockid;
+    private final String blockId;
     private final String name;
 
-    public Profession(int index, int blockid, String name) {
+    public Profession(int index, String blockId, String name) {
         this.index = index;
-        this.blockid = blockid;
+        this.blockId = blockId;
         this.name = name;
     }
 
@@ -53,8 +53,8 @@ public abstract class Profession {
         registerProfession(new ProfessionMason());
     }
 
-    public int getBlockID() {
-        return this.blockid;
+    public String getBlockID() {
+        return this.blockId;
     }
 
     public int getIndex() {

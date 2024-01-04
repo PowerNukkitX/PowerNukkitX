@@ -1,6 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.property.enums.NetherReactorState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -25,7 +26,7 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
 
     @Override
     public boolean isBlockEntityValid() {
-        return getLevelBlock().getId() == BlockID.NETHER_REACTOR;
+        return getLevelBlock().getId() == BlockID.NETHERREACTOR;
     }
 
     public NetherReactorState getReactorState() {

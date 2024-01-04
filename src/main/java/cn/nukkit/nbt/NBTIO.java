@@ -155,7 +155,7 @@ public class NBTIO {
                 log.debug("Unsupported block found in creativeitems.json: {}", blockStateId);
                 return BlockState.AIR.getBlock();
             }
-            int blockId = BlockStateRegistry.getBlockIdByRuntimeId(runtimeId);
+            String blockId = BlockStateRegistry.getBlockIdByRuntimeId(runtimeId);
             BlockState defaultBlockState = BlockState.of(blockId);
             if (defaultBlockState.getProperties().equals(BlockUnknown.PROPERTIES)) {
                 log.debug("Unsupported block found in creativeitems.json: {}", blockStateId);

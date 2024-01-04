@@ -47,7 +47,7 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.STRING, Item.SPIDER_EYE)};
+        return new Item[]{Item.get(Item.STRING),Item.get(Item.SPIDER_EYE)};
     }
 
     @Override

@@ -113,7 +113,7 @@ public class EntityChestMinecart extends EntityMinecartAbstract implements Inven
         if (this.inventory != null) {
             for (int slot = 0; slot < 27; ++slot) {
                 Item item = this.inventory.getItem(slot);
-                if (item != null && item.getId() != BlockID.AIR) {
+                if (item != null && !item.isNull()) {
                     this.namedTag.getList("Items", CompoundTag.class)
                             .add(NBTIO.putItemHelper(item, slot));
                 }

@@ -1,22 +1,25 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
-public class EntityEvoker extends EntityMob implements EntityWalkable {
-
-    
-
-    public EntityEvoker(IChunk chunk, CompoundTag nbt) {
+public class EntityEvocationIllager extends EntityMob implements EntityWalkable {
+    public EntityEvocationIllager(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    
+    @Override
+    public @NotNull String getIdentifier() {
+        return EntityID.EVOCATION_ILLAGER;
+    }
+
 
     @Override
     protected void initEntity() {

@@ -56,7 +56,7 @@ public final class BlockTags {
     static {
         try {
             Gson gson = new Gson();
-            try (var stream = Server.class.getClassLoader().getResourceAsStream("item_tags.json")) {
+            try (var stream = Server.class.getClassLoader().getResourceAsStream("block_tags.json")) {
                 TypeToken<HashMap<String, HashSet<String>>> typeToken = new TypeToken<>() {
                 };
                 assert stream != null;

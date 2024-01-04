@@ -10,12 +10,12 @@ import lombok.EqualsAndHashCode;
 @Deprecated
 @DeprecationDetails(since = "1.4.0.0-PN", reason = "Moved to a class with more details and unlimited data bits", replaceWith = "InvalidBlockPropertyMetaException")
 public class InvalidBlockDamageException extends InvalidBlockPropertyMetaException {
-    private final int blockId;
+    private final String blockId;
     private final int damage;
     private final int before;
 
 
-    public InvalidBlockDamageException(int blockId, int damage, int before) {
+    public InvalidBlockDamageException(String blockId, int damage, int before) {
         super(BlockUnknown.UNKNOWN,
                 before, damage,
                 "Invalid block-meta combination. New: " + blockId + ":" + damage + ", Before: " + blockId + ":" + before);

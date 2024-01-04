@@ -60,13 +60,13 @@ public class ExecuteCommandOld extends VanillaCommand {
                 }
             }
             case "detect" -> {
-                int blockid = list.getResult(4);
+                String blockId = list.getResult(4);
                 int meta = list.getResult(5);
                 String command = list.getResult(6);
                 for (Entity entity : entities) {
                     Position pos = ((PositionNode) list.get(1)).get(entity);
                     Position detect = ((PositionNode) list.get(3)).get(pos);
-                    if (detect.getLevelBlock().getId() == blockid && detect.getLevelBlock().getDamage() == meta) {
+                    if (detect.getLevelBlock().getId() == blockId && detect.getLevelBlock().getBlockState().specialValue() == meta) {
                         ExecutorCommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(pos));
                         int n = executeSender.getServer().executeCommand(executeSender, command);
                         if (n == 0) {

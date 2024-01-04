@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockPistonArmCollision;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityMoveByPistonEvent;
 import cn.nukkit.level.Level;
@@ -160,7 +161,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             if (!extending) {
                 //未伸出的活塞可以被推动
                 this.movable = true;
-                if (this.level.getBlock(pos) instanceof BlockPistonHead) {
+                if (this.level.getBlock(pos) instanceof BlockPistonArmCollision) {
                     this.level.setBlock(pos, 1, Block.get(Block.AIR), true, false);
                     //方块更新
                     this.level.setBlock(pos, Block.get(Block.AIR), true);

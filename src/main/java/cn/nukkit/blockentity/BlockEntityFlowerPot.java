@@ -31,8 +31,8 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
 
     @Override
     public boolean isBlockEntityValid() {
-        int blockID = getBlock().getId();
-        return blockID == Block.FLOWER_POT_BLOCK;
+        String blockId = getBlock().getId();
+        return blockId == Block.FLOWER_POT;
     }
 
     @Override

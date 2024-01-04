@@ -41,7 +41,6 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         }
     }
 
-    @Override
     public int getSize() {
         return 9;
     }
@@ -57,7 +56,6 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         return -1;
     }
 
-    @Override
     public Item getItem(int index) {
         int i = this.getSlotIndex(index);
         if (i < 0) {
@@ -68,7 +66,6 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         }
     }
 
-    @Override
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 

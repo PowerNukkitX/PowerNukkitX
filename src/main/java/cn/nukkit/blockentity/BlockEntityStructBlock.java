@@ -1,7 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.block.BlockID;
-import cn.nukkit.blockproperty.value.StructureBlockType;
+import cn.nukkit.block.property.enums.StructureBlockType;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.StructBlockInventory;
 import cn.nukkit.level.format.IChunk;
@@ -182,7 +182,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
 
     @Override
     public boolean isBlockEntityValid() {
-        int blockId = this.getLevelBlock().getId();
+        String blockId = this.getLevelBlock().getId();
         return blockId == BlockID.STRUCTURE_BLOCK;
     }
 

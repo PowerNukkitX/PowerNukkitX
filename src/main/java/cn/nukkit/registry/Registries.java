@@ -11,4 +11,5 @@ public final class Registries {
     public static final BlockState2ItemMetaRegistry BLOCKSTATE_ITEMMETA = new BlockState2ItemMetaRegistry();
     public static final BiomeRegistry BIOME = new BiomeRegistry();
     public static final GeneratorRegistry GENERATOR = new GeneratorRegistry();
+    public static final FuelRegistry FUEL = new FuelRegistry();
 }

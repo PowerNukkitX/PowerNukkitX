@@ -783,17 +783,19 @@ public abstract class Item implements Cloneable, ItemID {
         return this.count <= 0 || Objects.equals(this.id, Block.AIR);
     }
 
-    public boolean is(final String itemTag){
+    public boolean is(final String itemTag) {
         boolean contains = ItemTags.getTagSet(this.getId()).contains(itemTag);
-        if(contains) return true;
+        if (contains) return true;
         return ItemTags.getTagSet(this.getBlockId()).contains(itemTag);
     }
 
-    public @NotNull final String getName() {
+    public @NotNull
+    final String getName() {
         return this.hasCustomName() ? this.getCustomName() : idConvertToName();
     }
 
-    public @NotNull final String getDisplayName() {
+    public @NotNull
+    final String getDisplayName() {
         return this.hasCustomName() ? this.getCustomName() : idConvertToName();
     }
 
@@ -824,6 +826,10 @@ public abstract class Item implements Cloneable, ItemID {
         } catch (IllegalArgumentException e) {
             throw e;
         }
+    }
+
+    public boolean isBlock() {
+        return this.block != null;
     }
 
     public String getBlockId() {
@@ -874,12 +880,12 @@ public abstract class Item implements Cloneable, ItemID {
      * Get the burn time of a burnable item
      */
 
-    final public Short getFuelTime() {
-        if (!Fuel.isFuel(this)) {
+    public final Integer getFuelTime() {
+        if (!Registries.FUEL.isFuel(this)) {
             return null;
         }
         if (!this.id.equals(BUCKET) || this.aux == 10) {
-            return Fuel.getFuelDuration(this);
+            return Registries.FUEL.getFuelDuration(this);
         }
         return null;
     }

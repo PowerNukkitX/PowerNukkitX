@@ -51,7 +51,7 @@ public class AddEntityPacket extends DataPacket {
             .put(107, "minecraft:balloon")
             .put(106, "minecraft:ice_bomb")
             .put(EntityVex.NETWORK_ID, "minecraft:vex")
-            .put(EntityEvoker.NETWORK_ID, "minecraft:evocation_illager")
+            .put(EntityEvocationIllager.NETWORK_ID, "minecraft:evocation_illager")
             .put(103, "minecraft:evocation_fang")
             .put(102, "minecraft:llama_spit")
             .put(EntityLingeringPotion.NETWORK_ID, "minecraft:lingering_potion")

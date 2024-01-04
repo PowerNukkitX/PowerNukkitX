@@ -19,6 +19,7 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.registry.Registries;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -138,7 +139,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         this.transferCooldown = transferCooldown;
     }
 
-    @Override
     public int getSize() {
         return 5;
     }
@@ -154,7 +154,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         return -1;
     }
 
-    @Override
     public Item getItem(int index) {
         int i = this.getSlotIndex(index);
         if (i < 0) {
@@ -165,7 +164,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         }
     }
 
-    @Override
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 
@@ -407,7 +405,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                                 pushedItem = true;
                             }
                         }
-                    } else if (Fuel.isFuel(itemToAdd)) {
+                    } else if (Registries.FUEL.isFuel(itemToAdd)) {
                         Item fuel = inventory.getFuel();
                         if (fuel.isNull()) {
                             event = new InventoryMoveItemEvent(this.inventory, inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);

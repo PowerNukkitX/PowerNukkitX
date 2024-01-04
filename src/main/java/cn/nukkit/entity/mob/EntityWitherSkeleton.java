@@ -1,10 +1,7 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityCanAttack;
-import cn.nukkit.entity.EntitySmite;
-import cn.nukkit.entity.EntityWalkable;
+import cn.nukkit.entity.*;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -25,6 +22,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -91,15 +89,14 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
         );
     }
 
-    
 
     //凋零骷髅会攻击距离他16格范围内的玩家、雪傀儡、小海龟、铁傀儡、猪灵或猪灵蛮兵
     @Override
     public boolean attackTarget(Entity entity) {
-        return switch (entity.getNetworkId()) {
-            case EntitySnowGolem.NETWORK_ID, EntityIronGolem.NETWORK_ID,
-                    EntityTurtle.NETWORK_ID, EntityPiglin.NETWORK_ID,
-                    EntityPiglinBrute.NETWORK_ID -> true;
+        return switch (entity.getIdentifier()) {
+            case EntityID.SNOW_GOLEM, EntityID.IRON_GOLEM,
+                    EntityID.TURTLE, EntityID.PIGLIN,
+                    EntityID.PIGLIN_BRUTE -> true;
             default -> false;
         };
     }

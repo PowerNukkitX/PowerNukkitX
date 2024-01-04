@@ -659,9 +659,9 @@ public class Utils {
 
     static {
         isPlantOrFluid[Block.FLOWING_WATER] = true;
-        isPlantOrFluid[Block.STILL_WATER] = true;
+        isPlantOrFluid[Block.WATER] = true;
         isPlantOrFluid[Block.FLOWING_LAVA] = true;
-        isPlantOrFluid[Block.STILL_LAVA] = true;
+        isPlantOrFluid[Block.LAVA] = true;
         isPlantOrFluid[Block.ICE] = true; //solid water
         isPlantOrFluid[Block.PACKED_ICE] = true; //solid water
     }

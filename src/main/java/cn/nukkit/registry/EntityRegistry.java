@@ -119,7 +119,7 @@ public class EntityRegistry extends BaseRegistry<EntityRegistry.EntityDefinition
         register(new EntityDefinition(LINGERING_POTION, "", 101, false, false), EntityLingeringPotion.class);
         register(new EntityDefinition(LLAMA_SPIT, "", 102, false, false), EntityLlamaSpit.class);
 //        register(new EntityDefinition(EVOCATION_FANG, "", 103, false, true), EntityEvocationFang.class);
-//        register(new EntityDefinition(EVOCATION_ILLAGER, "", 104, true, true), EntityEvocationIllager.class);
+        register(new EntityDefinition(EVOCATION_ILLAGER, "", 104, true, true), EntityEvocationIllager.class);
         register(new EntityDefinition(VEX, "", 105, true, true), EntityVex.class);
 //        register(new EntityDefinition(ICE_BOMB, "", 106, false, false), EntityIceBomb.class);
 //        register(new EntityDefinition(BALLOON, "", 107, false, false), EntityBalloon.class);

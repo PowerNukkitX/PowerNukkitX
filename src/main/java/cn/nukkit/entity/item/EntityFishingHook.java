@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.projectile.SlenderProjectile;
 import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
@@ -26,6 +27,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
+import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -248,7 +250,7 @@ public class EntityFishingHook extends SlenderProjectile {
             this.getServer().getPluginManager().callEvent(event);
 
             if (!event.isCancelled()) {
-                EntityItem itemEntity = (EntityItem) Entity.createEntity(EntityItem.NETWORK_ID,
+                EntityItem itemEntity = (EntityItem) Entity.createEntity(Registries.ENTITY.getEntityNetworkId(EntityID.ITEM),
                         this.level.getChunk((int) this.x >> 4, (int) this.z >> 4, true),
                         Entity.getDefaultNBT(
                                         pos,
@@ -279,7 +281,7 @@ public class EntityFishingHook extends SlenderProjectile {
         AddEntityPacket pk = new AddEntityPacket();
         pk.entityRuntimeId = this.getId();
         pk.entityUniqueId = this.getId();
-        pk.type = NETWORK_ID;
+        pk.type = getNetworkId();
         pk.x = (float) this.x;
         pk.y = (float) this.y;
         pk.z = (float) this.z;

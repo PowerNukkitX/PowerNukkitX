@@ -7,15 +7,14 @@ package cn.nukkit.block.property.enums;
  * @author daoge_cmd
  */
 public enum StructureBlockType {
-    CORNER,
-
-    DATA,
-
-    EXPORT,
-
     INVALID,
-
+    DATA,
+    SAVE,
     LOAD,
+    CORNER,
+    EXPORT;
 
-    SAVE
+    public static StructureBlockType from(int id) {
+        return values()[id];
+    }
 }

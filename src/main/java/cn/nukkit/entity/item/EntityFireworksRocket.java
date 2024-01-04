@@ -9,6 +9,7 @@ import cn.nukkit.entity.data.Vector3fEntityData;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemFireworkRocket;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
@@ -54,7 +55,7 @@ public class EntityFireworksRocket extends Entity {
         if (nbt.contains("FireworkItem")) {
             firework = NBTIO.getItemHelper(nbt.getCompound("FireworkItem"));
         } else {
-            firework = new ItemFirework();
+            firework = new ItemFireworkRocket();
         }
 
         if (!firework.hasCompoundTag() || !firework.getNamedTag().contains("Fireworks")) {
@@ -68,7 +69,7 @@ public class EntityFireworksRocket extends Entity {
                     .putByteArray("FireworkFade", new byte[]{})
                     .putBoolean("FireworkFlicker", false)
                     .putBoolean("FireworkTrail", false)
-                    .putByte("FireworkType", ItemFirework.FireworkExplosion.ExplosionType.CREEPER_SHAPED.ordinal());
+                    .putByte("FireworkType", ItemFireworkRocket.FireworkExplosion.ExplosionType.CREEPER_SHAPED.ordinal());
 
             tag.putCompound("Fireworks", new CompoundTag("Fireworks")
                     .putList(new ListTag<CompoundTag>("Explosions").add(ex))
@@ -143,7 +144,7 @@ public class EntityFireworksRocket extends Entity {
                 pk.event = EntityEventPacket.FIREWORK_EXPLOSION;
                 pk.eid = this.getId();
 
-                level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_LARGE_BLAST, -1, NETWORK_ID);
+                level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_LARGE_BLAST, -1, getNetworkId());
 
                 Server.broadcastPacket(getViewers().values(), pk);
 

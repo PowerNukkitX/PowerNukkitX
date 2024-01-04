@@ -49,11 +49,11 @@ public class UpdateBlockPacket extends DataPacket {
         public final int x;
         public final int z;
         public final int y;
-        public final int blockId;
+        public final String blockId;
         public final int blockData;
         public final int flags;
 
-        public Entry(int x, int z, int y, int blockId, int blockData, int flags) {
+        public Entry(int x, int z, int y, String blockId, int blockData, int flags) {
             this.x = x;
             this.z = z;
             this.y = y;

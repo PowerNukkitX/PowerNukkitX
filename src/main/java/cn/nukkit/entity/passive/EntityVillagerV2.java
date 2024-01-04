@@ -372,7 +372,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                 for (int x = -1; x <= 1; x++) {
                     for (int z = -1; z <= 1; z++) {
                         Block block = getLocation().add(x, 0, z).getLevelBlock();
-                        int id = block.getId();
+                        String id = block.getId();
                         for (Profession profession : Profession.getProfessions().values()) {
                             if (id == profession.getBlockID()) {
                                 professionFound = true;
@@ -394,7 +394,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                     int x = this.namedTag.getInt("blockX");
                     int y = this.namedTag.getInt("blockY");
                     int z = this.namedTag.getInt("blockZ");
-                    if (level.getBlock(x, y, z).getId() != Profession.getProfession(this.profession).getBlockID()) {
+                    if (level.getBlockIdAt(x, y, z) != Profession.getProfession(this.profession).getBlockID()) {
                         setProfession(0);
                         setCanTrade(false);
                     }

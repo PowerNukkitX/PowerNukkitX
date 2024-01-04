@@ -744,9 +744,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 setDataProperty(new IntEntityData(DATA_DISPLAY_OFFSET, offSet));
             }
         } else {
-            int display = blockInside == null ? 0
-                    : blockInside.getId()
-                    | blockInside.getDamage() << 16;
+            int display = blockInside == null ? 0 : blockInside.getId() | blockInside.getDamage() << 16;
             if (display == 0) {
                 setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 0));
                 return;

@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockAir extends BlockTransparent {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(AIR);
+    public static final BlockState STATE = PROPERTIES.getDefaultState();
 
     @Override
     public @NotNull BlockProperties getProperties() {
