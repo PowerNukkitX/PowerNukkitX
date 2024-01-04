@@ -285,8 +285,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 if (blockEntity != null && !(blockEntity instanceof BlockEntityMovingBlock)) {
                     blockEntity.saveNBT();
                     nbt.putCompound("movingEntity", new CompoundTag(blockEntity.namedTag.getTags()));
-                    if (blockEntity instanceof InventoryHolder)
-                        ((InventoryHolder) blockEntity).getInventory().clearAll();
+                    if (blockEntity instanceof InventoryHolder inventoryHolder) inventoryHolder.getInventory().clearAll();
                     blockEntity.close();
                 }
                 oldPosList.add(oldPos);

@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemShears;
 import cn.nukkit.item.ItemString;
 import cn.nukkit.level.Level;
@@ -30,7 +31,9 @@ public class BlockTripWire extends BlockTransparent {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockTripWire(BlockState state) { super(state); }
+    public BlockTripWire(BlockState state) {
+        super(state);
+    }
 
     @Override
     public String getName() {
@@ -72,6 +75,11 @@ public class BlockTripWire extends BlockTransparent {
         return new ItemString();
     }
 
+    @Override
+    public @NotNull String getItemId() {
+        return ItemID.STRING;
+    }
+
     public boolean isPowered() {
         return this.getPropertyValue(POWERED_BIT);
     }
@@ -89,30 +97,44 @@ public class BlockTripWire extends BlockTransparent {
     }
 
     public void setPowered(boolean isPowered) {
-        if (this.isPowered() == isPowered) { return; }
+        if (this.isPowered() == isPowered) {
+            return;
+        }
         this.setPropertyValue(POWERED_BIT, isPowered);
     }
 
     public void setAttached(boolean isAttached) {
-        if (this.isAttached() == isAttached) { return; }
+        if (this.isAttached() == isAttached) {
+            return;
+        }
         this.setPropertyValue(ATTACHED_BIT, isAttached);
     }
 
     public void setDisarmed(boolean isDisarmed) {
-        if (this.isDisarmed() == isDisarmed) { return; }
+        if (this.isDisarmed() == isDisarmed) {
+            return;
+        }
         this.setPropertyValue(DISARMED_BIT, isDisarmed);
     }
 
     public void setSuspended(boolean isSuspended) {
-        if (this.isSuspended() == isSuspended) { return; }
+        if (this.isSuspended() == isSuspended) {
+            return;
+        }
         this.setPropertyValue(SUSPENDED_BIT, isSuspended);
     }
-    
+
     @Override
     public void onEntityCollide(Entity entity) {
-        if (!this.level.getServer().isRedstoneEnabled()) { return; }
-        if (!entity.doesTriggerPressurePlate()) { return; }
-        if (this.isPowered()) { return; }
+        if (!this.level.getServer().isRedstoneEnabled()) {
+            return;
+        }
+        if (!entity.doesTriggerPressurePlate()) {
+            return;
+        }
+        if (this.isPowered()) {
+            return;
+        }
 
         this.setPowered(true);
         this.level.setBlock(this, this, true, false);
@@ -123,7 +145,9 @@ public class BlockTripWire extends BlockTransparent {
     }
 
     private void updateHook(boolean scheduleUpdate) {
-        if (!this.level.getServer().isRedstoneEnabled()) { return; }
+        if (!this.level.getServer().isRedstoneEnabled()) {
+            return;
+        }
 
         for (BlockFace side : new BlockFace[]{BlockFace.SOUTH, BlockFace.WEST}) {
             for (int i = 1; i < MAX_TRIPWIRE_CIRCUIT_LENGTH; ++i) {
@@ -140,20 +164,28 @@ public class BlockTripWire extends BlockTransparent {
                     break;
                 }
 
-                if (!(block instanceof BlockTripWire)) { break; }
+                if (!(block instanceof BlockTripWire)) {
+                    break;
+                }
             }
         }
     }
 
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().isRedstoneEnabled()) { return 0; }
+        if (!this.level.getServer().isRedstoneEnabled()) {
+            return 0;
+        }
 
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (!isPowered()) { return type; }
+            if (!isPowered()) {
+                return type;
+            }
 
             for (Entity entity : this.level.getCollidingEntities(this.getCollisionBoundingBox())) {
-                if (!entity.doesTriggerPressurePlate()) { continue; }
+                if (!entity.doesTriggerPressurePlate()) {
+                    continue;
+                }
                 this.level.scheduleUpdate(this, 10);
                 return type;
             }

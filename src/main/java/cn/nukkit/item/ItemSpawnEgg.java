@@ -14,6 +14,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.registry.Registries;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -118,15 +119,15 @@ public class ItemSpawnEgg extends Item {
     }
 
     public @Nullable String getEntityName() {
-        String saveId = Entity.getSaveId(getEntityNetworkId());
-        if (saveId == null) {
-            return null;
+        String entityIdentifier = Registries.ENTITY.getEntityIdentifier(getEntityNetworkId());
+        var path = entityIdentifier.split(":")[1];
+        StringBuilder result = new StringBuilder();
+        String[] parts = path.split("_");
+        for (String part : parts) {
+            if (!part.isEmpty()) {
+                result.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1)).append(" ");
+            }
         }
-        return switch (saveId) {
-            case "VillagerV1" -> "Villager";
-            case "ZombieVillagerV1" -> "Zombie Villager";
-            case "NPC" -> "NPC";
-            default -> String.join(" ", saveId.split("(?=\\p{Lu})"));
-        };
+        return result.toString().trim();
     }
 }

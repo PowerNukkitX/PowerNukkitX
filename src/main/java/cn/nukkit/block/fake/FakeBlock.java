@@ -48,6 +48,6 @@ public interface FakeBlock {
     }
 
     default Vector3 getOffset(Player player) {
-        return player.getPosition().floor().setY(player.getLevel().getMinHeight());
+        return player.getPosition().floor().setY(player.getLevel().getMinHeight() + 1);
     }
 }

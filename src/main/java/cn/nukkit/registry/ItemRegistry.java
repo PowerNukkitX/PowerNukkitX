@@ -503,7 +503,9 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
     @Override
     public Item get(String key) {
         try {
-            return (Item) CACHE_CONSTRUCTORS.get(key).invoke();
+            FastConstructor<? extends Item> fastConstructor = CACHE_CONSTRUCTORS.get(key);
+            if (fastConstructor == null) return null;
+            return (Item) fastConstructor.invoke();
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -511,7 +513,9 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
 
     public Item get(String id, Integer meta) {
         try {
-            Item item = (Item) CACHE_CONSTRUCTORS.get(id).invoke();
+            var c = CACHE_CONSTRUCTORS.get(id);
+            if (c == null) return null;
+            Item item = (Item) c.invoke();
             item.setAux(meta);
             return item;
         } catch (Throwable e) {
@@ -521,7 +525,9 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
 
     public Item get(String id, Integer meta, int count) {
         try {
-            Item item = (Item) CACHE_CONSTRUCTORS.get(id).invoke();
+            var c = CACHE_CONSTRUCTORS.get(id);
+            if (c == null) return null;
+            Item item = (Item) c.invoke();
             item.setAux(meta);
             item.setCount(count);
             return item;
@@ -532,7 +538,9 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
 
     public Item get(String id, Integer meta, int count, CompoundTag tags) {
         try {
-            Item item = (Item) CACHE_CONSTRUCTORS.get(id).invoke();
+            var c = CACHE_CONSTRUCTORS.get(id);
+            if (c == null) return null;
+            Item item = (Item) c.invoke();
             item.setAux(meta);
             item.setCount(count);
             item.setCompoundTag(tags);
@@ -544,7 +552,9 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
 
     public Item get(String id, Integer meta, int count, byte[] tags) {
         try {
-            Item item = (Item) CACHE_CONSTRUCTORS.get(id).invoke();
+            var c = CACHE_CONSTRUCTORS.get(id);
+            if (c == null) return null;
+            Item item = (Item) c.invoke();
             item.setAux(meta);
             item.setCount(count);
             item.setCompoundTag(tags);

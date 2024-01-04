@@ -1,6 +1,7 @@
 package cn.nukkit.block.fake;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.Block;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -10,8 +11,8 @@ import java.util.List;
 
 public class DoubleFakeBlock extends SingleFakeBlock {
 
-    public DoubleFakeBlock(String blockId, String tileId) {
-        super(blockId, tileId);
+    public DoubleFakeBlock(Block block, String tileId) {
+        super(block, tileId);
     }
 
     @Override

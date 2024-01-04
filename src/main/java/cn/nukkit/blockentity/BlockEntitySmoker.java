@@ -25,12 +25,12 @@ public class BlockEntitySmoker extends BlockEntityFurnace {
     }
 
     @Override
-    protected int getIdleBlockId() {
+    protected String getIdleBlockId() {
         return Block.SMOKER;
     }
 
     @Override
-    protected int getBurningBlockId() {
+    protected String getBurningBlockId() {
         return Block.LIT_SMOKER;
     }
 

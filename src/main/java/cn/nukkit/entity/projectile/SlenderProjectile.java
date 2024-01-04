@@ -163,15 +163,15 @@ public abstract class SlenderProjectile extends EntityProjectile {
             BVector3 bVector3 = BVector3.fromPos(new Vector3(dx, dy, dz));
             BlockFace blockFace = BlockFace.fromHorizontalAngle(bVector3.getYaw());
             Block block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ()).getSide(blockFace);
-            if (block.getId() == 0) {
+            if (block.isAir()) {
                 blockFace = BlockFace.DOWN;
                 block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ()).down();
             }
-            if (block.getId() == 0) {
+            if (block.isAir()) {
                 blockFace = BlockFace.UP;
                 block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ()).up();
             }
-            if (block.getId() == 0 && collisionBlock != null) {
+            if (block.isAir() && collisionBlock != null) {
                 block = collisionBlock;
             }
             this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, lastHitBlock = MovingObjectPosition.fromBlock(block.getFloorX(), block.getFloorY(), block.getFloorZ(), blockFace, this)));

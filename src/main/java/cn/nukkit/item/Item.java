@@ -1,12 +1,11 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.API;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.inventory.Fuel;
 import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
@@ -25,6 +24,7 @@ import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -811,21 +811,39 @@ public abstract class Item implements Cloneable, ItemID {
         }
     }
 
-    @API(definition = API.Definition.INTERNAL, usage = API.Usage.INCUBATING)
+    @ApiStatus.Internal
     public Block getBlockUnsafe() {
         return this.block;
+    }
+
+    @ApiStatus.Internal
+    public void setBlockUnsafe(Block block) {
+        this.block = block;
     }
 
     public final String getId() {
         return id;
     }
 
+    private int getAirRuntimeId() {
+        return Registries.ITEM_RUNTIMEID.getInt(BlockID.AIR);
+    }
+
+    private int getUnknownRuntimeId() {
+        return Registries.ITEM_RUNTIMEID.getInt(BlockID.UNKNOWN);
+    }
+
     public final int getRuntimeId() {
-        try {
-            return RuntimeItems.getRuntimeMapping().getNetworkId(this);
-        } catch (IllegalArgumentException e) {
-            throw e;
+        if (this.block.isAir()) return getAirRuntimeId();
+        int i = Registries.ITEM_RUNTIMEID.getInt(this.getId());
+        if (i == Integer.MAX_VALUE) {
+            i = Registries.ITEM_RUNTIMEID.getInt(this.getBlockId());
         }
+        if (i == Integer.MAX_VALUE) {
+            log.warn("cant find runtimeId for item {},will return unknown itemblock!", getId());
+            return getUnknownRuntimeId();//cant find runtimeId
+        }
+        return i;
     }
 
     public boolean isBlock() {

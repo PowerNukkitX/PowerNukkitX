@@ -2,7 +2,9 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockBlackShulkerBox;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockUndyedShulkerBox;
 import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.ShulkerBoxInventory;
@@ -66,11 +68,10 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
 
     @Override
     public boolean isBlockEntityValid() {
-        String blockID = this.getBlock().getId();
-        return blockID == Block.SHULKER_BOX || blockID == Block.UNDYED_SHULKER_BOX;
+        Block block = this.getBlock();
+        return block instanceof BlockUndyedShulkerBox;
     }
 
-    @Override
     public int getSize() {
         return 27;
     }
@@ -86,7 +87,6 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
         return -1;
     }
 
-    @Override
     public Item getItem(int index) {
         int i = this.getSlotIndex(index);
         if (i < 0) {
@@ -97,7 +97,6 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
         }
     }
 
-    @Override
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 

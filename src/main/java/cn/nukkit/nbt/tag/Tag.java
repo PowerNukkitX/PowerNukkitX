@@ -136,33 +136,21 @@ public abstract class Tag {
     }
 
     public static Tag newTag(byte type, String name) {
-        switch (type) {
-            case TAG_End:
-                return new EndTag();
-            case TAG_Byte:
-                return new ByteTag(name);
-            case TAG_Short:
-                return new ShortTag(name);
-            case TAG_Int:
-                return new IntTag(name);
-            case TAG_Long:
-                return new LongTag(name);
-            case TAG_Float:
-                return new FloatTag(name);
-            case TAG_Double:
-                return new DoubleTag(name);
-            case TAG_Byte_Array:
-                return new ByteArrayTag(name);
-            case TAG_Int_Array:
-                return new IntArrayTag(name);
-            case TAG_String:
-                return new StringTag(name);
-            case TAG_List:
-                return new ListTag<>(name);
-            case TAG_Compound:
-                return new CompoundTag(name);
-        }
-        return new EndTag();
+        return switch (type) {
+            case TAG_End -> new EndTag();
+            case TAG_Byte -> new ByteTag(name);
+            case TAG_Short -> new ShortTag(name);
+            case TAG_Int -> new IntTag(name);
+            case TAG_Long -> new LongTag(name);
+            case TAG_Float -> new FloatTag(name);
+            case TAG_Double -> new DoubleTag(name);
+            case TAG_Byte_Array -> new ByteArrayTag(name);
+            case TAG_Int_Array -> new IntArrayTag(name);
+            case TAG_String -> new StringTag(name);
+            case TAG_List -> new ListTag<>(name);
+            case TAG_Compound -> new CompoundTag(name);
+            default -> new EndTag();
+        };
     }
 
     public static String getTagName(byte type) {

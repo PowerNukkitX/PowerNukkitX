@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer> {
     private static final Object2IntOpenHashMap<String> REGISTRY = new Object2IntOpenHashMap<>();
-    private static final Object2ObjectOpenHashMap<String, String> FALLBACK_BLOCK_ITEM_ID = new Object2ObjectOpenHashMap<>();
+
     @Override
     public void init() {
         try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("runtime_item_states.json")) {
@@ -30,6 +30,7 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
             for (var v : list) {
                 REGISTRY.put(v.get("name").toString(), Integer.parseInt(v.get("id").toString()));
             }
+            REGISTRY.defaultReturnValue(Integer.MAX_VALUE);
             trim();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -52,7 +53,7 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
 
     @Override
     public OK<?> register(String key, Integer value) {
-        if (REGISTRY.putIfAbsent(key, value.intValue()) == 0) {
+        if (REGISTRY.putIfAbsent(key, value.intValue()) == Integer.MAX_VALUE) {
             return OK.TRUE;
         } else {
             return new OK<>(false, new IllegalArgumentException("The item runtime has been registered!"));

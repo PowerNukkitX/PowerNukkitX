@@ -1,9 +1,11 @@
 package cn.nukkit.nbt;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.nbt.stream.NBTInputStream;
@@ -11,7 +13,10 @@ import cn.nukkit.nbt.stream.NBTOutputStream;
 import cn.nukkit.nbt.stream.PGZIPOutputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.ThreadCache;
+import com.google.common.base.Preconditions;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,20 +45,16 @@ public class NBTIO {
         CompoundTag tag = new CompoundTag((String) null)
                 .putByte("Count", item.getCount())
                 .putShort("Damage", item.getAux());
-        int id = item.getId();
-        if (id == ItemID.STRING_IDENTIFIED_ITEM || Block.ID_TO_CUSTOM_BLOCK.containsKey(255 - id)) {
-            tag.putString("Name", item.getNamespaceId());
-        } else {
-            tag.putShort("id", item.getId());
-        }
+        tag.putString("Name", item.getId());
         if (slot != null) {
             tag.putByte("Slot", slot);
         }
-
         if (item.hasCompoundTag()) {
             tag.putCompound("tag", item.getNamedTag());
         }
-
+        if (item.isBlock()) {
+            tag.putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag());
+        }
         return tag;
     }
 
@@ -61,169 +62,40 @@ public class NBTIO {
         if (!tag.containsByte("Count")) {
             return Item.AIR;
         }
+        String name;
+        Preconditions.checkNotNull((name = tag.getString("Name")));
 
         int damage = !tag.containsShort("Damage") ? 0 : tag.getShort("Damage");
         int amount = tag.getByte("Count");
-        Item item;
-        if (tag.containsShort("id")) {
-            int id = (short) tag.getShort("id");
-            item = fixWoolItem(id, damage, amount);
-            if (item == null) {
-                try {
-                    item = Item.get(id, damage, amount);
-                } catch (Exception e) {
-                    item = Item.fromString(tag.getString("id"));
-                    if (item.getAux() == 0) {
-                        item.setAux(damage);
-                    }
-                    item.setCount(amount);
-                }
-            }
-        } else {
-            item = Item.fromString(tag.getString("Name"));
-            if (item.getAux() == 0) {
-                item.setAux(damage);
-            }
-            item.setCount(amount);
+        Item item = Registries.ITEM.get(name);
+        if (item == null) {
+            if (tag.containsCompound("Block")) {
+                CompoundTag block = tag.getCompound("Block");
+                CompoundTag newBlock = new CompoundTag(new TreeMap<>(block.getTags()));
+                newBlock.remove("version");
+                int blockhash = HashUtils.fnv1a_32_nbt(newBlock);
+                BlockState blockState = Registries.BLOCKSTATE.get(blockhash);
+                if (blockState == null) return Item.AIR;
+                item = new ItemBlock(blockState.toBlock());
+            } else return Item.AIR;
+        } else if (tag.containsCompound("Block")) {
+            CompoundTag block = tag.getCompound("Block");
+            CompoundTag newBlock = new CompoundTag(new TreeMap<>(block.getTags()));
+            newBlock.remove("version");
+            int blockhash = HashUtils.fnv1a_32_nbt(newBlock);
+            BlockState blockState = Registries.BLOCKSTATE.get(blockhash);
+            if (blockState != null) item.setBlockUnsafe(blockState.toBlock());
         }
+        if (item.getAux() == 0) {
+            item.setAux(damage);
+        }
+        item.setCount(amount);
 
         Tag tagTag = tag.get("tag");
         if (tagTag instanceof CompoundTag compoundTag) {
             item.setNamedTag(compoundTag);
         }
         return item;
-    }
-
-    public static CompoundTag putBlockHelper(Block block) {
-        return putBlockHelper(block, "Block");
-    }
-
-    public static CompoundTag putBlockHelper(Block block, String nbtName) {
-        String[] states = BlockStateRegistry.getKnownBlockStateIdByRuntimeId(block.getRuntimeId()).split(";");
-        CompoundTag result = new CompoundTag(nbtName).putString("name", states[0]);
-        var nbt = new CompoundTag("", new TreeMap<>());
-        if (block instanceof CustomBlock) {
-            for (var str : block.getProperties().getNames()) {
-                BlockProperty<?> property = block.getBlockState().getProperty(str);
-                if (property instanceof BooleanBlockProperty) {
-                    nbt.putBoolean(str, block.getBlockState().getBooleanValue(str));
-                } else if (property instanceof IntBlockProperty) {
-                    nbt.putInt(str, block.getBlockState().getIntValue(str));
-                } else if (property instanceof UnsignedIntBlockProperty) {
-                    nbt.putInt(str, block.getBlockState().getIntValue(str));
-                } else if (property instanceof ArrayBlockProperty<?> arrayBlockProperty) {
-                    if (arrayBlockProperty.isOrdinal()) {
-                        if (property.getBitSize() > 1) {
-                            nbt.putInt(str, Integer.parseInt(block.getBlockState().getPersistenceValue(str)));
-                        } else {
-                            nbt.putBoolean(str, !block.getBlockState().getPersistenceValue(str).equals("0"));
-                        }
-                    } else {
-                        nbt.putString(str, block.getBlockState().getPersistenceValue(str));
-                    }
-                }
-            }
-        } else {
-            for (int i = 1, len = states.length; i < len; ++i) {
-                String[] split = states[i].split("=");
-                String propertyTypeString = PropertyTypes.getPropertyTypeString(split[0]);
-                if (propertyTypeString != null) {
-                    switch (propertyTypeString) {
-                        case "BOOLEAN" -> nbt.putBoolean(split[0], Integer.parseInt(split[1]) == 1);
-                        case "ENUM" -> nbt.putString(split[0], split[1]);
-                        case "INTEGER" -> nbt.putInt(split[0], Integer.parseInt(split[1]));
-                    }
-                }
-            }
-        }
-        result.putCompound("states", nbt);
-        return result.putInt("version", BlockStateRegistry.blockPaletteVersion.get());
-    }
-
-    public @NotNull static Block getBlockHelper(@NotNull CompoundTag block) {
-        if (!block.containsString("name")) return Block.get(0);
-        StringBuilder state = new StringBuilder(block.getString("name"));
-        CompoundTag states = block.getCompound("states");
-        states.getTags().forEach((k, v) -> state.append(';').append(k).append('=').append(v.parseValue()));
-        var blockStateId = state.toString();
-        try {
-            var blockState = BlockState.of(blockStateId);
-            return blockState.getBlock();
-        } catch (BlockPropertyNotFoundException | UnknownRuntimeIdException e) {
-            int runtimeId = BlockStateRegistry.getKnownRuntimeIdByBlockStateId(blockStateId);
-            if (runtimeId == -1) {
-                log.debug("Unsupported block found in creativeitems.json: {}", blockStateId);
-                return BlockState.AIR.getBlock();
-            }
-            String blockId = BlockStateRegistry.getBlockIdByRuntimeId(runtimeId);
-            BlockState defaultBlockState = BlockState.of(blockId);
-            if (defaultBlockState.getProperties().equals(BlockUnknown.PROPERTIES)) {
-                log.debug("Unsupported block found in creativeitems.json: {}", blockStateId);
-                return BlockState.AIR.getBlock();
-            }
-            log.error("Failed to load the creative item with {}", blockStateId, e);
-            return BlockState.AIR.getBlock();
-        } catch (NoSuchElementException e) {
-            log.debug("No Such Element in creativeitems.json: {}", blockStateId, e);
-        } catch (Exception e) {
-            log.error("Failed to load the creative item {}", blockStateId, e);
-            return BlockState.AIR.getBlock();
-        }
-        return BlockState.AIR.getBlock();
-    }
-
-    private static Item fixWoolItem(int id, int damage, int count) {
-        //TODO 回退之前的方块更新方案，现在有更好的解决方式，下个版本移除这段代码
-        if (damage == 0) {
-            switch (id) {
-                case -552 -> {
-                    return Item.get(35, 8, count);
-                }
-                case -553 -> {
-                    return Item.get(35, 7, count);
-                }
-                case -554 -> {
-                    return Item.get(35, 15, count);
-                }
-                case -555 -> {
-                    return Item.get(35, 12, count);
-                }
-                case -556 -> {
-                    return Item.get(35, 14, count);
-                }
-                case -557 -> {
-                    return Item.get(35, 1, count);
-                }
-                case -558 -> {
-                    return Item.get(35, 4, count);
-                }
-                case -559 -> {
-                    return Item.get(35, 5, count);
-                }
-                case -560 -> {
-                    return Item.get(35, 13, count);
-                }
-                case -561 -> {
-                    return Item.get(35, 9, count);
-                }
-                case -562 -> {
-                    return Item.get(35, 3, count);
-                }
-                case -563 -> {
-                    return Item.get(35, 11, count);
-                }
-                case -564 -> {
-                    return Item.get(35, 10, count);
-                }
-                case -565 -> {
-                    return Item.get(35, 2, count);
-                }
-                case -566 -> {
-                    return Item.get(35, 6, count);
-                }
-            }
-        }
-        return Item.get(id, damage, count);
     }
 
     public static CompoundTag read(File file) throws IOException {

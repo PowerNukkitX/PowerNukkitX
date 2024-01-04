@@ -196,6 +196,11 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
     }
 
     @Override
+    public @NotNull String getItemId() {
+        return ItemID.COCOA_BEANS;
+    }
+
+    @Override
     public Item toItem() {
         return Item.get(ItemID.COCOA_BEANS);
     }

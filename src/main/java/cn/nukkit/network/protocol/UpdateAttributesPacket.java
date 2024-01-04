@@ -13,7 +13,7 @@ public class UpdateAttributesPacket extends DataPacket {
 
     public Attribute[] entries;
     public long entityId;
-    public long frame;
+    public long frame;//tick
 
     @Override
     public byte pid() {

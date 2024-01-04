@@ -66,8 +66,7 @@ public class PlayerInventory extends BaseInventory {
             return false;
         }
 
-        if (this.getHolder() instanceof Player) {
-            Player player = (Player) this.getHolder();
+        if (this.getHolder() instanceof Player player) {
             PlayerItemHeldEvent ev = new PlayerItemHeldEvent(player, this.getItem(slot), slot);
             this.getHolder().getLevel().getServer().getPluginManager().callEvent(ev);
 
@@ -89,16 +88,6 @@ public class PlayerInventory extends BaseInventory {
 
     private boolean isHotbarSlot(int slot) {
         return slot >= 0 && slot <= this.getHotbarSize();
-    }
-
-    @Deprecated
-    public int getHotbarSlotIndex(int index) {
-        return index;
-    }
-
-    @Deprecated
-    public void setHotbarSlotIndex(int index, int slot) {
-
     }
 
     public int getHeldItemIndex() {
@@ -254,7 +243,7 @@ public class PlayerInventory extends BaseInventory {
     private boolean setItem(int index, Item item, boolean send, boolean ignoreArmorEvents) {
         if (index < 0 || index >= this.size) {
             return false;
-        } else if (item.getId() == 0 || item.getCount() <= 0) {
+        } else if (item.isNull()) {
             return this.clear(index);
         }
 
@@ -510,7 +499,7 @@ public class PlayerInventory extends BaseInventory {
         int space = (this.getSize() - slots) * maxStackSize;
 
         for (Item slot : this.getContents().values()) {
-            if (slot == null || slot.getId() == 0) {
+            if (slot == null || slot.isNull()) {
                 space += maxStackSize;
                 continue;
             }

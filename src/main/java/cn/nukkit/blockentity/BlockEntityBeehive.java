@@ -82,13 +82,10 @@ public class BlockEntityBeehive extends BlockEntity {
 
         // Backward compatibility
         if (this.namedTag.contains("HoneyLevel")) {
-            int faceHorizontalIndex = 0;
             Block block = getBlock();
-            if (block instanceof BlockBeehive) {
-                faceHorizontalIndex = block.getDamage() & 0b11;
+            if (block instanceof BlockBeehive beehive) {
                 int honeyLevel = this.namedTag.getByte("HoneyLevel");
-                BlockBeehive beehive = (BlockBeehive) block;
-                beehive.setBlockFace(BlockFace.fromHorizontalIndex(faceHorizontalIndex));
+                beehive.setBlockFace( beehive.getBlockFace());
                 beehive.setHoneyLevel(honeyLevel);
                 beehive.getLevel().setBlock(beehive, beehive, true, true);
             }
@@ -142,7 +139,7 @@ public class BlockEntityBeehive extends BlockEntity {
 
     public Occupant addOccupant(Entity entity, int ticksLeftToStay, boolean hasNectar, boolean playSound) {
         entity.saveNBT();
-        Occupant occupant = new Occupant(ticksLeftToStay, entity.getSaveId(), entity.namedTag.clone());
+        Occupant occupant = new Occupant(ticksLeftToStay, entity.getIdentifier(), entity.namedTag.clone());
         if(!addOccupant(occupant)) {
             return null;
         }

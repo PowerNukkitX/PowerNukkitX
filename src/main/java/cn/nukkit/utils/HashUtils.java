@@ -20,6 +20,8 @@ public class HashUtils {
     //https://gist.github.com/Alemiz112/504d0f79feac7ef57eda174b668dd345
     private static final int FNV1_32_INIT = 0x811c9dc5;
     private static final int FNV1_PRIME_32 = 0x01000193;
+    private static final long FNV1_64_INIT = 0xcbf29ce484222325L;
+    private static final long FNV1_PRIME_64 = 1099511628211L;
 
     public int computeBlockStateHash(String identifier, List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> propertyValues) {
         if (identifier.equals("minecraft:unknown")) {
@@ -59,6 +61,17 @@ public class HashUtils {
                 .putString("name", identifier)
                 .putCompound("states", states);
         return fnv1a_32_nbt(tag);
+    }
+
+
+    public static long fnv164(byte[] data) {
+        long hash = FNV1_64_INIT;
+        for (byte datum : data) {
+            hash *= FNV1_PRIME_64;
+            hash ^= (datum & 0xff);
+        }
+
+        return hash;
     }
 
     @SneakyThrows

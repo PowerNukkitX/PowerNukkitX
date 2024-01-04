@@ -13,9 +13,6 @@ import java.nio.ByteOrder;
  * @author GoodLucky777
  */
 @ToString
-
-
-@NoArgsConstructor(onConstructor = @__())
 public class ItemComponentPacket extends DataPacket {
 
 
@@ -58,8 +55,6 @@ public class ItemComponentPacket extends DataPacket {
     }
     
     @ToString
-
-
     public static class Entry {
 
 

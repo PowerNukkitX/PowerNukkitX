@@ -12,6 +12,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.OK;
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -27,140 +28,149 @@ import java.util.*;
 public class EntityRegistry extends BaseRegistry<EntityRegistry.EntityDefinition, Class<? extends Entity>, Class<? extends Entity>> implements EntityID {
     private static final Object2ObjectOpenHashMap<String, Class<? extends Entity>> CLASS = new Object2ObjectOpenHashMap<>();
     private static final Object2IntOpenHashMap<String> ID2RID = new Object2IntOpenHashMap<>();
+    private static final Int2ObjectArrayMap<String> RID2ID = new Int2ObjectArrayMap<>();
     private static final Object2ObjectOpenHashMap<String, EntityRegistry.EntityDefinition> DEFINITIONS = new Object2ObjectOpenHashMap<>();
 
     @Override
     public void init() {
-        register(new EntityDefinition(CHICKEN, "", 10, true, true), EntityChicken.class);
-        register(new EntityDefinition(COW, "", 11, true, true), EntityCow.class);
-        register(new EntityDefinition(PIG, "", 12, true, true), EntityPig.class);
-        register(new EntityDefinition(SHEEP, "", 13, true, true), EntitySheep.class);
-        register(new EntityDefinition(WOLF, "", 14, true, true), EntityWolf.class);
-        register(new EntityDefinition(VILLAGER, "", 15, false, true), EntityVillager.class);
-        register(new EntityDefinition(MOOSHROOM, "", 16, true, true), EntityMooshroom.class);
-        register(new EntityDefinition(SQUID, "", 17, true, true), EntitySquid.class);
-        register(new EntityDefinition(RABBIT, "", 18, true, true), EntityRabbit.class);
-        register(new EntityDefinition(BAT, "", 19, true, true), EntityBat.class);
-        register(new EntityDefinition(IRON_GOLEM, "", 20, true, true), EntityIronGolem.class);
-        register(new EntityDefinition(SNOW_GOLEM, "", 21, true, true), EntitySnowGolem.class);
-        register(new EntityDefinition(OCELOT, "", 22, true, true), EntityOcelot.class);
-        register(new EntityDefinition(HORSE, "", 23, true, true), EntityHorse.class);
-        register(new EntityDefinition(DONKEY, "", 24, true, true), EntityDonkey.class);
-        register(new EntityDefinition(MULE, "", 25, true, true), EntityMule.class);
-        register(new EntityDefinition(SKELETON_HORSE, "", 26, true, true), EntitySkeletonHorse.class);
-        register(new EntityDefinition(ZOMBIE_HORSE, "", 27, true, true), EntityZombieHorse.class);
-        register(new EntityDefinition(POLAR_BEAR, "", 28, true, true), EntityPolarBear.class);
-        register(new EntityDefinition(LLAMA, "", 29, true, true), EntityLlamaSpit.class);
-        register(new EntityDefinition(PARROT, "", 30, true, true), EntityParrot.class);
-        register(new EntityDefinition(DOLPHIN, "", 31, true, true), EntityDolphin.class);
-        register(new EntityDefinition(ZOMBIE, "", 32, true, true), EntityZombie.class);
-        register(new EntityDefinition(CREEPER, "", 33, true, true), EntityCreeper.class);
-        register(new EntityDefinition(SKELETON, "", 34, true, true), EntitySkeleton.class);
-        register(new EntityDefinition(SPIDER, "", 35, true, true), EntitySpider.class);
-        register(new EntityDefinition(ZOMBIE_PIGMAN, "", 36, true, true), EntityZombiePigman.class);
-        register(new EntityDefinition(SLIME, "", 37, true, true), EntitySlime.class);
-        register(new EntityDefinition(ENDERMAN, "", 38, true, true), EntityEnderman.class);
-        register(new EntityDefinition(SILVERFISH, "", 39, true, true), EntitySilverfish.class);
-        register(new EntityDefinition(CAVE_SPIDER, "", 40, true, true), EntityCaveSpider.class);
-        register(new EntityDefinition(GHAST, "", 41, true, true), EntityGhast.class);
-        register(new EntityDefinition(MAGMA_CUBE, "", 42, true, true), EntityMagmaCube.class);
-        register(new EntityDefinition(BLAZE, "", 43, true, true), EntityBlaze.class);
-        register(new EntityDefinition(ZOMBIE_VILLAGER, "", 44, false, true), EntityZombieVillager.class);
-        register(new EntityDefinition(WITCH, "", 45, true, true), EntityWitch.class);
-        register(new EntityDefinition(STRAY, "", 46, true, true), EntityStray.class);
-        register(new EntityDefinition(HUSK, "", 47, true, true), EntityHusk.class);
-        register(new EntityDefinition(WITHER_SKELETON, "", 48, true, true), EntityWitherSkeleton.class);
-        register(new EntityDefinition(GUARDIAN, "", 49, true, true), EntityGuardian.class);
-        register(new EntityDefinition(ELDER_GUARDIAN, "", 50, true, true), EntityElderGuardian.class);
-        register(new EntityDefinition(NPC, "", 51, true, true), EntityNpc.class);
-        register(new EntityDefinition(WITHER, "", 52, true, true), EntityWither.class);
-        register(new EntityDefinition(ENDER_DRAGON, "", 53, true, true), EntityEnderDragon.class);
-        register(new EntityDefinition(SHULKER, "", 54, true, true), EntityShulker.class);
-        register(new EntityDefinition(ENDERMITE, "", 55, true, true), EntityEndermite.class);
-//        register(new EntityDefinition(AGENT, "", 56, false, false), EntityAgent.class);
-        register(new EntityDefinition(VINDICATOR, "", 57, true, true), EntityVindicator.class);
-        register(new EntityDefinition(PHANTOM, "", 58, true, true), EntityPhantom.class);
-        register(new EntityDefinition(RAVAGER, "", 59, true, true), EntityRavager.class);
-        register(new EntityDefinition(ARMOR_STAND, "", 61, false, true), EntityArmorStand.class);
-//        register(new EntityDefinition(TRIPOD_CAMERA, "", 62, false, false), EntityTripodCamera.class);
-        register(new EntityDefinition(ITEM, "", 64, false, false), EntityItem.class);
-        register(new EntityDefinition(TNT, "", 65, false, true), EntityTnt.class);
-        register(new EntityDefinition(FALLING_BLOCK, "", 66, false, false), EntityFallingBlock.class);
-        register(new EntityDefinition(XP_BOTTLE, "", 68, false, true), EntityXpBottle.class);
-        register(new EntityDefinition(XP_ORB, "", 69, false, true), EntityXpOrb.class);
-//        register(new EntityDefinition(EYE_OF_ENDER_SIGNAL, "", 70, false, false), EntityEyeOfEnderSignal.class);
-        register(new EntityDefinition(ENDER_CRYSTAL, "", 71, false, true), EntityEnderCrystal.class);
-        register(new EntityDefinition(FIREWORKS_ROCKET, "", 72, false, true), EntityFireworksRocket.class);
-        register(new EntityDefinition(THROWN_TRIDENT, "", 73, false, false), EntityThrownTrident.class);
-        register(new EntityDefinition(TURTLE, "", 74, true, true), EntityTurtle.class);
-        register(new EntityDefinition(CAT, "", 75, true, true), EntityCat.class);
-//        register(new EntityDefinition(SHULKER_BULLET, "", 76, false, false), EntityShulkerBullet.class);
-        register(new EntityDefinition(FISHING_HOOK, "", 77, false, false), EntityFishingHook.class);
-//        register(new EntityDefinition(DRAGON_FIREBALL, "", 79, false, false), EntityDragonFireball.class);
-        register(new EntityDefinition(ARROW, "", 80, false, true), EntityArrow.class);
-        register(new EntityDefinition(SNOWBALL, "", 81, false, true), EntitySnowball.class);
-        register(new EntityDefinition(EGG, "", 82, false, true), EntityEgg.class);
-        register(new EntityDefinition(PAINTING, "", 83, false, false), EntityPainting.class);
-        register(new EntityDefinition(MINECART, "", 84, false, true), EntityMinecart.class);
-//        register(new EntityDefinition(FIREBALL, "", 85, false, false), EntityFireball.class);
-        register(new EntityDefinition(SPLASH_POTION, "", 86, false, true), EntitySplashPotion.class);
-        register(new EntityDefinition(ENDER_PEARL, "", 87, false, false), EntityEnderPearl.class);
-//        register(new EntityDefinition(LEASH_KNOT, "", 88, false, true), EntityLeashKnot.class);
-//        register(new EntityDefinition(WITHER_SKULL, "", 89, false, false), EntityWitherSkull.class);//This is the skull fired by Wither
-        register(new EntityDefinition(BOAT, "", 90, false, true), EntityBoat.class);
-//        register(new EntityDefinition(WITHER_SKULL_DANGEROUS, "", 91, false, false), EntityWitherSkullDangerous.class);
-        register(new EntityDefinition(LIGHTNING_BOLT, "", 93, false, true), EntityLightningBolt.class);
-        register(new EntityDefinition(SMALL_FIREBALL, "", 94, false, false), EntitySmallFireball.class);
-        register(new EntityDefinition(AREA_EFFECT_CLOUD, "", 95, false, false), EntityAreaEffectCloud.class);
-        register(new EntityDefinition(HOPPER_MINECART, "", 96, false, true), EntityHopperMinecart.class);
-        register(new EntityDefinition(TNT_MINECART, "", 97, false, true), EntityTntMinecart.class);
-        register(new EntityDefinition(CHEST_MINECART, "", 98, false, true), EntityChestMinecart.class);
-//        register(new EntityDefinition(COMMAND_BLOCK_MINECART, "", 100, false, true), EntityCommandBlockMinecart.class);
-        register(new EntityDefinition(LINGERING_POTION, "", 101, false, false), EntityLingeringPotion.class);
-        register(new EntityDefinition(LLAMA_SPIT, "", 102, false, false), EntityLlamaSpit.class);
-//        register(new EntityDefinition(EVOCATION_FANG, "", 103, false, true), EntityEvocationFang.class);
-        register(new EntityDefinition(EVOCATION_ILLAGER, "", 104, true, true), EntityEvocationIllager.class);
-        register(new EntityDefinition(VEX, "", 105, true, true), EntityVex.class);
-//        register(new EntityDefinition(ICE_BOMB, "", 106, false, false), EntityIceBomb.class);
-//        register(new EntityDefinition(BALLOON, "", 107, false, false), EntityBalloon.class);
-        register(new EntityDefinition(PUFFERFISH, "", 108, true, true), EntityPufferfish.class);
-        register(new EntityDefinition(SALMON, "", 109, true, true), EntitySalmon.class);
-        register(new EntityDefinition(DROWNED, "", 110, true, true), EntityDrowned.class);
-        register(new EntityDefinition(TROPICALFISH, "", 111, true, true), EntityTropicalfish.class);
-        register(new EntityDefinition(COD, "", 112, true, true), EntityCod.class);
-        register(new EntityDefinition(PANDA, "", 113, true, true), EntityPanda.class);
-        register(new EntityDefinition(PILLAGER, "", 114, true, true), EntityPillager.class);
-        register(new EntityDefinition(VILLAGER_V2, "", 115, true, false), EntityVillagerV2.class);
-        register(new EntityDefinition(ZOMBIE_VILLAGER_V2, "", 116, true, false), EntityZombieVillagerV2.class);
-        register(new EntityDefinition(WANDERING_TRADER, "", 118, true, true), EntityTraderLlama.class);
-//        register(new EntityDefinition(ELDER_GUARDIAN_GHOST, "", 120, false, true), EntityElderGuardianGhost.class);
-        register(new EntityDefinition(FOX, "", 121, true, true), EntityFox.class);
-        register(new EntityDefinition(BEE, "", 122, true, true), EntityBee.class);
-        register(new EntityDefinition(PIGLIN, "", 123, true, true), EntityPiglin.class);
-        register(new EntityDefinition(HOGLIN, "", 124, true, true), EntityHoglin.class);
-        register(new EntityDefinition(STRIDER, "", 125, true, true), EntityStrider.class);
-        register(new EntityDefinition(ZOGLIN, "", 126, true, true), EntityZoglin.class);
-        register(new EntityDefinition(PIGLIN_BRUTE, "", 127, true, true), EntityPiglinBrute.class);
-        register(new EntityDefinition(GOAT, "", 128, true, true), EntityGoat.class);
-        register(new EntityDefinition(GLOW_SQUID, "", 129, true, true), EntityGlowSquid.class);
-        register(new EntityDefinition(AXOLOTL, "", 130, true, true), EntityAxolotl.class);
-        register(new EntityDefinition(WARDEN, "", 131, true, true), EntityWarden.class);
-        register(new EntityDefinition(FROG, "", 132, true, true), EntityFrog.class);
-        register(new EntityDefinition(TADPOLE, "", 133, true, true), EntityTadpole.class);
-        register(new EntityDefinition(ALLAY, "", 134, true, true), EntityAllay.class);
-        register(new EntityDefinition(CAMEL, "", 138, true, true), EntityCamel.class);
-//        register(new EntityDefinition(SNIFFER, "", 139, true, true), EntitySniffer.class);
-        register(new EntityDefinition(TRADER_LLAMA, "", 157, true, true), EntityTraderLlama.class);
-        register(new EntityDefinition(CHEST_BOAT, "", 218, false, true), EntityChestBoat.class);
-        register(new EntityDefinition(PLAYER, "minecraft:", 257, false, false), Player.class);
+        registerInternal(new EntityDefinition(CHICKEN, "", 10, true, true), EntityChicken.class);
+        registerInternal(new EntityDefinition(COW, "", 11, true, true), EntityCow.class);
+        registerInternal(new EntityDefinition(PIG, "", 12, true, true), EntityPig.class);
+        registerInternal(new EntityDefinition(SHEEP, "", 13, true, true), EntitySheep.class);
+        registerInternal(new EntityDefinition(WOLF, "", 14, true, true), EntityWolf.class);
+        registerInternal(new EntityDefinition(VILLAGER, "", 15, false, true), EntityVillager.class);
+        registerInternal(new EntityDefinition(MOOSHROOM, "", 16, true, true), EntityMooshroom.class);
+        registerInternal(new EntityDefinition(SQUID, "", 17, true, true), EntitySquid.class);
+        registerInternal(new EntityDefinition(RABBIT, "", 18, true, true), EntityRabbit.class);
+        registerInternal(new EntityDefinition(BAT, "", 19, true, true), EntityBat.class);
+        registerInternal(new EntityDefinition(IRON_GOLEM, "", 20, true, true), EntityIronGolem.class);
+        registerInternal(new EntityDefinition(SNOW_GOLEM, "", 21, true, true), EntitySnowGolem.class);
+        registerInternal(new EntityDefinition(OCELOT, "", 22, true, true), EntityOcelot.class);
+        registerInternal(new EntityDefinition(HORSE, "", 23, true, true), EntityHorse.class);
+        registerInternal(new EntityDefinition(DONKEY, "", 24, true, true), EntityDonkey.class);
+        registerInternal(new EntityDefinition(MULE, "", 25, true, true), EntityMule.class);
+        registerInternal(new EntityDefinition(SKELETON_HORSE, "", 26, true, true), EntitySkeletonHorse.class);
+        registerInternal(new EntityDefinition(ZOMBIE_HORSE, "", 27, true, true), EntityZombieHorse.class);
+        registerInternal(new EntityDefinition(POLAR_BEAR, "", 28, true, true), EntityPolarBear.class);
+        registerInternal(new EntityDefinition(LLAMA, "", 29, true, true), EntityLlamaSpit.class);
+        registerInternal(new EntityDefinition(PARROT, "", 30, true, true), EntityParrot.class);
+        registerInternal(new EntityDefinition(DOLPHIN, "", 31, true, true), EntityDolphin.class);
+        registerInternal(new EntityDefinition(ZOMBIE, "", 32, true, true), EntityZombie.class);
+        registerInternal(new EntityDefinition(CREEPER, "", 33, true, true), EntityCreeper.class);
+        registerInternal(new EntityDefinition(SKELETON, "", 34, true, true), EntitySkeleton.class);
+        registerInternal(new EntityDefinition(SPIDER, "", 35, true, true), EntitySpider.class);
+        registerInternal(new EntityDefinition(ZOMBIE_PIGMAN, "", 36, true, true), EntityZombiePigman.class);
+        registerInternal(new EntityDefinition(SLIME, "", 37, true, true), EntitySlime.class);
+        registerInternal(new EntityDefinition(ENDERMAN, "", 38, true, true), EntityEnderman.class);
+        registerInternal(new EntityDefinition(SILVERFISH, "", 39, true, true), EntitySilverfish.class);
+        registerInternal(new EntityDefinition(CAVE_SPIDER, "", 40, true, true), EntityCaveSpider.class);
+        registerInternal(new EntityDefinition(GHAST, "", 41, true, true), EntityGhast.class);
+        registerInternal(new EntityDefinition(MAGMA_CUBE, "", 42, true, true), EntityMagmaCube.class);
+        registerInternal(new EntityDefinition(BLAZE, "", 43, true, true), EntityBlaze.class);
+        registerInternal(new EntityDefinition(ZOMBIE_VILLAGER, "", 44, false, true), EntityZombieVillager.class);
+        registerInternal(new EntityDefinition(WITCH, "", 45, true, true), EntityWitch.class);
+        registerInternal(new EntityDefinition(STRAY, "", 46, true, true), EntityStray.class);
+        registerInternal(new EntityDefinition(HUSK, "", 47, true, true), EntityHusk.class);
+        registerInternal(new EntityDefinition(WITHER_SKELETON, "", 48, true, true), EntityWitherSkeleton.class);
+        registerInternal(new EntityDefinition(GUARDIAN, "", 49, true, true), EntityGuardian.class);
+        registerInternal(new EntityDefinition(ELDER_GUARDIAN, "", 50, true, true), EntityElderGuardian.class);
+        registerInternal(new EntityDefinition(NPC, "", 51, true, true), EntityNpc.class);
+        registerInternal(new EntityDefinition(WITHER, "", 52, true, true), EntityWither.class);
+        registerInternal(new EntityDefinition(ENDER_DRAGON, "", 53, true, true), EntityEnderDragon.class);
+        registerInternal(new EntityDefinition(SHULKER, "", 54, true, true), EntityShulker.class);
+        registerInternal(new EntityDefinition(ENDERMITE, "", 55, true, true), EntityEndermite.class);
+//        registerInternal(new EntityDefinition(AGENT, "", 56, false, false), EntityAgent.class);
+        registerInternal(new EntityDefinition(VINDICATOR, "", 57, true, true), EntityVindicator.class);
+        registerInternal(new EntityDefinition(PHANTOM, "", 58, true, true), EntityPhantom.class);
+        registerInternal(new EntityDefinition(RAVAGER, "", 59, true, true), EntityRavager.class);
+        registerInternal(new EntityDefinition(ARMOR_STAND, "", 61, false, true), EntityArmorStand.class);
+//        registerInternal(new EntityDefinition(TRIPOD_CAMERA, "", 62, false, false), EntityTripodCamera.class);
+        registerInternal(new EntityDefinition(ITEM, "", 64, false, false), EntityItem.class);
+        registerInternal(new EntityDefinition(TNT, "", 65, false, true), EntityTnt.class);
+        registerInternal(new EntityDefinition(FALLING_BLOCK, "", 66, false, false), EntityFallingBlock.class);
+        registerInternal(new EntityDefinition(XP_BOTTLE, "", 68, false, true), EntityXpBottle.class);
+        registerInternal(new EntityDefinition(XP_ORB, "", 69, false, true), EntityXpOrb.class);
+//        registerInternal(new EntityDefinition(EYE_OF_ENDER_SIGNAL, "", 70, false, false), EntityEyeOfEnderSignal.class);
+        registerInternal(new EntityDefinition(ENDER_CRYSTAL, "", 71, false, true), EntityEnderCrystal.class);
+        registerInternal(new EntityDefinition(FIREWORKS_ROCKET, "", 72, false, true), EntityFireworksRocket.class);
+        registerInternal(new EntityDefinition(THROWN_TRIDENT, "", 73, false, false), EntityThrownTrident.class);
+        registerInternal(new EntityDefinition(TURTLE, "", 74, true, true), EntityTurtle.class);
+        registerInternal(new EntityDefinition(CAT, "", 75, true, true), EntityCat.class);
+//        registerInternal(new EntityDefinition(SHULKER_BULLET, "", 76, false, false), EntityShulkerBullet.class);
+        registerInternal(new EntityDefinition(FISHING_HOOK, "", 77, false, false), EntityFishingHook.class);
+//        registerInternal(new EntityDefinition(DRAGON_FIREBALL, "", 79, false, false), EntityDragonFireball.class);
+        registerInternal(new EntityDefinition(ARROW, "", 80, false, true), EntityArrow.class);
+        registerInternal(new EntityDefinition(SNOWBALL, "", 81, false, true), EntitySnowball.class);
+        registerInternal(new EntityDefinition(EGG, "", 82, false, true), EntityEgg.class);
+        registerInternal(new EntityDefinition(PAINTING, "", 83, false, false), EntityPainting.class);
+        registerInternal(new EntityDefinition(MINECART, "", 84, false, true), EntityMinecart.class);
+//        registerInternal(new EntityDefinition(FIREBALL, "", 85, false, false), EntityFireball.class);
+        registerInternal(new EntityDefinition(SPLASH_POTION, "", 86, false, true), EntitySplashPotion.class);
+        registerInternal(new EntityDefinition(ENDER_PEARL, "", 87, false, false), EntityEnderPearl.class);
+//        registerInternal(new EntityDefinition(LEASH_KNOT, "", 88, false, true), EntityLeashKnot.class);
+//        registerInternal(new EntityDefinition(WITHER_SKULL, "", 89, false, false), EntityWitherSkull.class);//This is the skull fired by Wither
+        registerInternal(new EntityDefinition(BOAT, "", 90, false, true), EntityBoat.class);
+//        registerInternal(new EntityDefinition(WITHER_SKULL_DANGEROUS, "", 91, false, false), EntityWitherSkullDangerous.class);
+        registerInternal(new EntityDefinition(LIGHTNING_BOLT, "", 93, false, true), EntityLightningBolt.class);
+        registerInternal(new EntityDefinition(SMALL_FIREBALL, "", 94, false, false), EntitySmallFireball.class);
+        registerInternal(new EntityDefinition(AREA_EFFECT_CLOUD, "", 95, false, false), EntityAreaEffectCloud.class);
+        registerInternal(new EntityDefinition(HOPPER_MINECART, "", 96, false, true), EntityHopperMinecart.class);
+        registerInternal(new EntityDefinition(TNT_MINECART, "", 97, false, true), EntityTntMinecart.class);
+        registerInternal(new EntityDefinition(CHEST_MINECART, "", 98, false, true), EntityChestMinecart.class);
+//        registerInternal(new EntityDefinition(COMMAND_BLOCK_MINECART, "", 100, false, true), EntityCommandBlockMinecart.class);
+        registerInternal(new EntityDefinition(LINGERING_POTION, "", 101, false, false), EntityLingeringPotion.class);
+        registerInternal(new EntityDefinition(LLAMA_SPIT, "", 102, false, false), EntityLlamaSpit.class);
+//        registerInternal(new EntityDefinition(EVOCATION_FANG, "", 103, false, true), EntityEvocationFang.class);
+        registerInternal(new EntityDefinition(EVOCATION_ILLAGER, "", 104, true, true), EntityEvocationIllager.class);
+        registerInternal(new EntityDefinition(VEX, "", 105, true, true), EntityVex.class);
+//        registerInternal(new EntityDefinition(ICE_BOMB, "", 106, false, false), EntityIceBomb.class);
+//        registerInternal(new EntityDefinition(BALLOON, "", 107, false, false), EntityBalloon.class);
+        registerInternal(new EntityDefinition(PUFFERFISH, "", 108, true, true), EntityPufferfish.class);
+        registerInternal(new EntityDefinition(SALMON, "", 109, true, true), EntitySalmon.class);
+        registerInternal(new EntityDefinition(DROWNED, "", 110, true, true), EntityDrowned.class);
+        registerInternal(new EntityDefinition(TROPICALFISH, "", 111, true, true), EntityTropicalfish.class);
+        registerInternal(new EntityDefinition(COD, "", 112, true, true), EntityCod.class);
+        registerInternal(new EntityDefinition(PANDA, "", 113, true, true), EntityPanda.class);
+        registerInternal(new EntityDefinition(PILLAGER, "", 114, true, true), EntityPillager.class);
+        registerInternal(new EntityDefinition(VILLAGER_V2, "", 115, true, false), EntityVillagerV2.class);
+        registerInternal(new EntityDefinition(ZOMBIE_VILLAGER_V2, "", 116, true, false), EntityZombieVillagerV2.class);
+        registerInternal(new EntityDefinition(WANDERING_TRADER, "", 118, true, true), EntityTraderLlama.class);
+//        registerInternal(new EntityDefinition(ELDER_GUARDIAN_GHOST, "", 120, false, true), EntityElderGuardianGhost.class);
+        registerInternal(new EntityDefinition(FOX, "", 121, true, true), EntityFox.class);
+        registerInternal(new EntityDefinition(BEE, "", 122, true, true), EntityBee.class);
+        registerInternal(new EntityDefinition(PIGLIN, "", 123, true, true), EntityPiglin.class);
+        registerInternal(new EntityDefinition(HOGLIN, "", 124, true, true), EntityHoglin.class);
+        registerInternal(new EntityDefinition(STRIDER, "", 125, true, true), EntityStrider.class);
+        registerInternal(new EntityDefinition(ZOGLIN, "", 126, true, true), EntityZoglin.class);
+        registerInternal(new EntityDefinition(PIGLIN_BRUTE, "", 127, true, true), EntityPiglinBrute.class);
+        registerInternal(new EntityDefinition(GOAT, "", 128, true, true), EntityGoat.class);
+        registerInternal(new EntityDefinition(GLOW_SQUID, "", 129, true, true), EntityGlowSquid.class);
+        registerInternal(new EntityDefinition(AXOLOTL, "", 130, true, true), EntityAxolotl.class);
+        registerInternal(new EntityDefinition(WARDEN, "", 131, true, true), EntityWarden.class);
+        registerInternal(new EntityDefinition(FROG, "", 132, true, true), EntityFrog.class);
+        registerInternal(new EntityDefinition(TADPOLE, "", 133, true, true), EntityTadpole.class);
+        registerInternal(new EntityDefinition(ALLAY, "", 134, true, true), EntityAllay.class);
+        registerInternal(new EntityDefinition(CAMEL, "", 138, true, true), EntityCamel.class);
+//        registerInternal(new EntityDefinition(SNIFFER, "", 139, true, true), EntitySniffer.class);
+        registerInternal(new EntityDefinition(TRADER_LLAMA, "", 157, true, true), EntityTraderLlama.class);
+        registerInternal(new EntityDefinition(CHEST_BOAT, "", 218, false, true), EntityChestBoat.class);
+        registerInternal(new EntityDefinition(PLAYER, "minecraft:", 257, false, false), Player.class);
     }
 
     public Class<? extends Entity> getEntityClass(String id) {
         return CLASS.get(id);
     }
 
+    public Class<? extends Entity> getEntityClass(int id) {
+        return getEntityClass(RID2ID.get(id));
+    }
+
     public int getEntityNetworkId(String entityID) {
         return ID2RID.getInt(entityID);
+    }
+
+    public String getEntityIdentifier(int networkID) {
+        return RID2ID.get(networkID);
     }
 
     public EntityRegistry.EntityDefinition getEntityDefinition(String id) {
@@ -196,7 +206,7 @@ public class EntityRegistry extends BaseRegistry<EntityRegistry.EntityDefinition
 
     public Entity provideEntity(String id, @NotNull IChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
         Class<? extends Entity> clazz = getEntityClass(id);
-        Preconditions.checkNotNull(clazz);
+        if (clazz == null) return null;
 
         Entity entity = null;
         List<Exception> exceptions = null;
@@ -260,11 +270,17 @@ public class EntityRegistry extends BaseRegistry<EntityRegistry.EntityDefinition
     public OK<?> register(EntityDefinition key, Class<? extends Entity> value) {
         if (CLASS.putIfAbsent(key.id(), value) == null) {
             ID2RID.put(key.id, key.rid);
+            RID2ID.put(key.rid, key.id);
             DEFINITIONS.put(key.id, key);
             return OK.TRUE;
         } else {
             return new OK<>(false, new IllegalArgumentException("This Entity has already been registered with the identifier: " + key.id));
         }
+    }
+
+    private void registerInternal(EntityDefinition key, Class<? extends Entity> value) {
+        RID2ID.put(key.rid, key.id);
+        register(key, value);
     }
 
     public record EntityDefinition(String id, String bid, int rid, boolean hasSpawnegg, boolean summonable) {

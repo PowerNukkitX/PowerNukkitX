@@ -33,7 +33,7 @@ public class TestForCommand extends VanillaCommand {
         } else {
             log.addSuccess("commands.testfor.success", targets.stream().map(entity -> {
                 var name = entity.getName();
-                if (name.isBlank()) name = entity.getSaveId();
+                if (name.isBlank()) name = entity.getOriginalName();
                 return name;
             }).collect(Collectors.joining(","))).output();
             return targets.size();

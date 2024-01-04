@@ -13,6 +13,7 @@ import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
 import cn.nukkit.network.protocol.UpdateEquipmentPacket;
+import cn.nukkit.utils.Identifier;
 
 import java.io.IOException;
 import java.util.List;
@@ -61,7 +62,7 @@ public class HorseInventory extends BaseInventory {
                 this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED, false);
                 this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_CAN_POWER_JUMP, false);
             } else {
-                this.getHolder().getLevel().addLevelSoundEvent(this.getHolder(), LevelSoundEventPacket.SOUND_SADDLE, -1, this.getHolder().getIdentifier().getNamespace(), false, false);
+                this.getHolder().getLevel().addLevelSoundEvent(this.getHolder(), LevelSoundEventPacket.SOUND_SADDLE, -1, new Identifier(this.getHolder().getIdentifier()).getNamespace(), false, false);
                 this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SADDLED);
                 this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED);
                 this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_CAN_POWER_JUMP);
@@ -103,10 +104,10 @@ public class HorseInventory extends BaseInventory {
         Item saddle = getSaddle();
         Item horseArmor = getHorseArmor();
         if (!saddle.isNull()) {
-            slots.add(slot0.clone().putCompound(new CompoundTag("item").putString("Name", saddle.getNamespaceId()).putShort("Aux", Short.MAX_VALUE)));
+            slots.add(slot0.clone().putCompound(new CompoundTag("item").putString("Name", saddle.getId()).putShort("Aux", Short.MAX_VALUE)));
         } else slots.add(slot0.clone());
         if (!horseArmor.isNull()) {
-            slots.add(slot1.clone().putCompound(new CompoundTag("item").putString("Name", horseArmor.getNamespaceId()).putShort("Aux", Short.MAX_VALUE)));
+            slots.add(slot1.clone().putCompound(new CompoundTag("item").putString("Name", horseArmor.getId()).putShort("Aux", Short.MAX_VALUE)));
         } else slots.add(slot1.clone());
         var nbt = new CompoundTag().putList("slots", slots);
         UpdateEquipmentPacket updateEquipmentPacket = new UpdateEquipmentPacket();

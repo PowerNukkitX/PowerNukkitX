@@ -47,7 +47,6 @@ import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.*;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.PunchBlockParticle;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
@@ -1486,7 +1485,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.generator = (byte) ((this.level.getDimension() + 1) & 0xff); //0 旧世界, 1 主世界, 2 下界, 3末地
         startGamePacket.serverAuthoritativeMovement = getServer().getServerAuthoritativeMovement();
         //写入自定义方块数据
-        startGamePacket.blockProperties.addAll(Block.getCustomBlockDefinitionList());
+//        startGamePacket.blockProperties.addAll(Block.getCustomBlockDefinitionList());
         startGamePacket.playerPropertyData = EntityProperty.getPlayerPropertyCache();
         this.dataPacketImmediately(startGamePacket);
         this.loggedIn = true;
@@ -1498,7 +1497,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         //写入自定义物品数据
         ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
-        if (this.getServer().isEnableExperimentMode() && !Item.getCustomItemDefinition().isEmpty()) {
+        /*if (this.getServer().isEnableExperimentMode() && !Item.getCustomItemDefinition().isEmpty()) {
             Int2ObjectOpenHashMap<ItemComponentPacket.Entry> entries = new Int2ObjectOpenHashMap<>();
             int i = 0;
             for (var entry : Item.getCustomItemDefinition().entrySet()) {
@@ -1512,7 +1511,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
             }
             itemComponentPacket.setEntries(entries.values().toArray(ItemComponentPacket.Entry.EMPTY_ARRAY));
-        }
+        }*/
         this.dataPacket(itemComponentPacket);
 
         this.dataPacket(new BiomeDefinitionListPacket());
@@ -1525,10 +1524,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
         });
 
-        this.sendAttributes();
+        this.syncAttributes();
         this.sendPotionEffects(this);
         this.sendData(this);
-        this.sendAttributes();
+        this.syncAttributes();
         this.setNameTagVisible(true);
         this.setNameTagAlwaysVisible(true);
         this.setCanClimb(true);
@@ -1599,7 +1598,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             BlockRespawnAnchor anchor = (BlockRespawnAnchor) block;
             return anchor.getCharge() > 0;
         }
-        if (block.getId() == BlockID.BED_BLOCK && block.getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
+        if (block.getId() == BlockID.BED && block.getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
             BlockBed bed = (BlockBed) block;
             return bed.isBedValid();
         }
@@ -3049,19 +3048,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return false;
     }
 
-    public void sendAttributes() {
-        UpdateAttributesPacket pk = new UpdateAttributesPacket();
-        pk.entityId = this.getId();
-        pk.entries = new Attribute[]{
-                Attribute.getAttribute(Attribute.MAX_HEALTH).setMaxValue(this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0),
-                Attribute.getAttribute(Attribute.MAX_HUNGER).setValue(this.getFoodData().getLevel()),
-                Attribute.getAttribute(Attribute.MOVEMENT_SPEED).setValue(this.getMovementSpeed()),
-                Attribute.getAttribute(Attribute.EXPERIENCE_LEVEL).setValue(this.getExperienceLevel()),
-                Attribute.getAttribute(Attribute.EXPERIENCE).setValue(((float) this.getExperience()) / calculateRequireExperience(this.getExperienceLevel()))
-        };
-        this.dataPacket(pk);
-    }
-
     /**
      * 将迷雾设定发送到客户端
      */
@@ -4320,8 +4306,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             health = 0;
         }
         super.setHealth(health);
-        //TODO: Remove it in future! This a hack to solve the client-side absorption bug! WFT Mojang (Half a yellow heart cannot be shown, we can test it in local gaming)
-        Attribute attr = Attribute.getAttribute(Attribute.MAX_HEALTH).setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
+        Attribute attr = Attribute.getAttribute(Attribute.MAX_HEALTH);
+        Attribute attribute = this.attributes.computeIfAbsent(Attribute.MAX_HEALTH, Attribute::getAttribute);
+        attribute.setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
         if (this.spawned) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.entries = new Attribute[]{attr};
@@ -4334,10 +4321,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void setMaxHealth(int maxHealth) {
         super.setMaxHealth(maxHealth);
 
-        Attribute attr = Attribute.getAttribute(Attribute.MAX_HEALTH).setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
+        Attribute attribute = this.attributes.computeIfAbsent(Attribute.MAX_HEALTH, Attribute::getAttribute);
+        attribute.setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
         if (this.spawned) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
-            pk.entries = new Attribute[]{attr};
+            pk.entries = new Attribute[]{attribute};
             pk.entityId = this.id;
             this.dataPacket(pk);
         }
@@ -4488,7 +4476,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.spawned) {
             float percent = ((float) exp) / calculateRequireExperience(this.getExperienceLevel());
             percent = Math.max(0f, Math.min(1f, percent));
-            this.setAttribute(Attribute.getAttribute(Attribute.EXPERIENCE).setValue(percent));
+            Attribute attribute = this.attributes.computeIfAbsent(Attribute.EXPERIENCE, Attribute::getAttribute);
+            attribute.setValue(percent);
+            this.syncAttribute(attribute);
         }
     }
 
@@ -4508,7 +4498,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     public void sendExperienceLevel(int level) {
         if (this.spawned) {
-            this.setAttribute(Attribute.getAttribute(Attribute.EXPERIENCE_LEVEL).setValue(level));
+            Attribute attribute = this.attributes.computeIfAbsent(Attribute.EXPERIENCE_LEVEL, Attribute::getAttribute);
+            attribute.setValue(level);
+            this.syncAttribute(attribute);
         }
     }
 
@@ -4519,11 +4511,28 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @param attribute the attribute
      */
-    public void setAttribute(Attribute attribute) {
+    public void syncAttribute(Attribute attribute) {
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
         pk.entries = new Attribute[]{attribute};
         pk.entityId = this.id;
         this.dataPacket(pk);
+    }
+
+    public void syncAttributes() {
+        UpdateAttributesPacket pk = new UpdateAttributesPacket();
+        pk.entries = this.attributes.values().stream().filter(Attribute::isSyncable).toArray(Attribute[]::new);
+        pk.entityId = this.id;
+        this.dataPacket(pk);
+    }
+
+    @Override
+    public void setAbsorption(float absorption) {
+        if (absorption != this.absorption) {
+            this.absorption = absorption;
+            Attribute attribute = this.attributes.computeIfAbsent(Attribute.ABSORPTION, Attribute::getAttribute);
+            attribute.setValue(absorption);
+            this.syncAttribute(attribute);
+        }
     }
 
     /**
@@ -4560,8 +4569,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
 
     public void sendMovementSpeed(float speed) {
-        Attribute attribute = Attribute.getAttribute(Attribute.MOVEMENT_SPEED).setValue(speed);
-        this.setAttribute(attribute);
+        Attribute attribute = this.attributes.computeIfAbsent(Attribute.MOVEMENT_SPEED, Attribute::getAttribute);
+        attribute.setValue(speed);
+        this.syncAttribute(attribute);
     }
 
     /**

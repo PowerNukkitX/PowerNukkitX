@@ -1,40 +1,71 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.HashUtils;
 
 import javax.annotation.Nullable;
+import java.util.TreeMap;
 
 /**
  * @author CreeperFace
  * @since 11.4.2017
  */
 public class BlockEntityMovingBlock extends BlockEntitySpawnable {
-
-
-    protected String blockString;
     protected Block block;
-
     protected BlockVector3 piston;
+    //true if the piston is extending instead of withdrawing.
+    protected boolean expanding;
 
     public BlockEntityMovingBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
+    /**
+     * {
+     * expanding: 0b,
+     * id: MovingBlock,
+     * isMovable: 1b,
+     * movingBlock: {
+     * name: "minecraft:air",
+     * states: {
+     * },
+     * version: 18100737
+     * },
+     * movingBlockExtra: {
+     * name: "minecraft:air",
+     * states: {
+     * },
+     * version: 18100737
+     * },
+     * pistonPosX: 0,
+     * pistonPosY: -1,
+     * pistonPosZ: 0,
+     * x: 0,
+     * y: 100,
+     * z: 0
+     * }
+     */
     @Override
     public void loadNBT() {
         super.loadNBT();
         if (namedTag.contains("movingBlock")) {
-            CompoundTag blockData = namedTag.getCompound("movingBlock");
-
-            this.blockString = blockData.getString("name");
-            this.block = Block.get(blockData.getInt("id"), blockData.getInt("meta"));
+            CompoundTag movingBlock = namedTag.getCompound("movingBlock");
+            CompoundTag newMovingBlock = new CompoundTag(new TreeMap<>(movingBlock.getTags()));
+            newMovingBlock.remove("version");
+            int blockhash = HashUtils.fnv1a_32_nbt(movingBlock);
+            BlockState blockState = Registries.BLOCKSTATE.get(blockhash);
+            this.block = blockState.toBlock();
+            this.block.x = x;
+            this.block.y = y;
+            this.block.z = z;
         } else {
             this.close();
         }
@@ -44,11 +75,6 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         } else {
             this.piston = new BlockVector3(0, -1, 0);
         }
-    }
-
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN", reason = "renamed", replaceWith = "getMovingBlockEntityCompound()")
-    public CompoundTag getBlockEntity() {
-        return getMovingBlockEntityCompound();
     }
 
     public @Nullable CompoundTag getMovingBlockEntityCompound() {
@@ -61,10 +87,6 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
 
     public Block getMovingBlock() {
         return this.block;
-    }
-
-    public String getMovingBlockString() {
-        return this.blockString;
     }
 
     public void moveCollidedEntities(BlockEntityPistonArm piston, BlockFace moveDirection) {

@@ -453,7 +453,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         }
                     }
 
-                    if (item.getId() == 0 || player.getInventory().getItemInHand().getId() == item.getId()) {
+                    if (item.isNull() || player.getInventory().getItemInHand().getId() == item.getId()) {
                         player.getInventory().setItemInHand(item);
                     } else {
                         logTriedToSetButHadInHand(playerHandle, item, player.getInventory().getItemInHand());
@@ -525,7 +525,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         player.getLevel().addSound(player, Sound.RANDOM_BREAK);
                         player.getInventory().setItemInHand(Item.get(0));
                     } else {
-                        if (item.getId() == 0 || player.getInventory().getItemInHand().getId() == item.getId()) {
+                        if (item.isNull() || player.getInventory().getItemInHand().getId() == item.getId()) {
                             player.getInventory().setItemInHand(item);
                         } else {
                             logTriedToSetButHadInHand(playerHandle, item, player.getInventory().getItemInHand());
@@ -638,7 +638,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 }
                 if (item.onClickAir(player, directionVector)) {
                     if (!player.isCreative()) {
-                        if (item.getId() == 0 || player.getInventory().getItemInHand().getId() == item.getId()) {
+                        if (item.isNull() || player.getInventory().getItemInHand().getId() == item.getId()) {
                             player.getInventory().setItemInHand(item);
                         } else {
                             logTriedToSetButHadInHand(playerHandle, item, player.getInventory().getItemInHand());

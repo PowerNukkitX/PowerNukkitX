@@ -38,13 +38,18 @@ public class BlockTorchflowerCrop extends BlockCrops {
     }
 
     @Override
+    public @NotNull String getItemId() {
+        return ItemID.TORCHFLOWER_SEEDS;
+    }
+
+    @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         //Bone meal
         if (item.isFertilizer()) {
             int max = getMaxGrowth();
             int growth = getGrowth();
 
-            if(growth == 1) {
+            if (growth == 1) {
                 BlockTorchflower block = new BlockTorchflower();
                 BlockGrowEvent ev = new BlockGrowEvent(this, block);
                 Server.getInstance().getPluginManager().callEvent(ev);
@@ -93,7 +98,7 @@ public class BlockTorchflowerCrop extends BlockCrops {
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (ThreadLocalRandom.current().nextInt(2) == 1 && getLevel().getFullLight(this) >= getMinimumLightLevel()) {
                 int growth = getGrowth();
-                if(growth == 1) {
+                if (growth == 1) {
                     BlockTorchflower block = new BlockTorchflower();
                     BlockGrowEvent ev = new BlockGrowEvent(this, block);
                     Server.getInstance().getPluginManager().callEvent(ev);

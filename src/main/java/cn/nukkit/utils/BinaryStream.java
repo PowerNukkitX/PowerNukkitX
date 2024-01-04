@@ -2,8 +2,7 @@ package cn.nukkit.utils;
 
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.blockstate.BlockStateRegistry;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.inventory.recipe.*;
@@ -21,6 +20,7 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.LittleEndianByteBufInputStream;
 import cn.nukkit.network.LittleEndianByteBufOutputStream;
 import cn.nukkit.network.protocol.types.EntityLink;
+import cn.nukkit.registry.Registries;
 import io.netty.buffer.AbstractByteBufAllocator;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -409,10 +409,11 @@ public class BinaryStream {
         byte[] data = this.getByteArray();
         return new SerializedImage(width, height, data);
     }
+
     public Item getSlot() {
         int networkId = getVarInt();
         if (networkId == 0) {
-            return Item.get(0, 0, 0);
+            return Item.AIR;
         }
 
         int count = getLShort();
@@ -442,7 +443,7 @@ public class BinaryStream {
 
         int blockRuntimeId = getVarInt();//blockDefinition
         if (id != null && id <= 255 && id != FALLBACK_ID) {
-            BlockState blockStateByRuntimeId = BlockStateRegistry.getBlockStateByRuntimeId(blockRuntimeId);
+            BlockState blockStateByRuntimeId = Registries.BLOCKSTATE.get(blockRuntimeId);
             if (blockStateByRuntimeId != null) {
                 damage = blockStateByRuntimeId.asItemBlock().getDamage();
             }
@@ -607,8 +608,8 @@ public class BinaryStream {
         this.putSlot(item, false);
     }
 
-    public void putSlot(Item item, boolean instanceItem) {
-        if (item == null || item.getId() == 0) {
+    public void putSlot(Item item, boolean instance) {
+        if (item == null || item.isNull()) {
             putByte((byte) 0);
             return;
         }
@@ -733,7 +734,7 @@ public class BinaryStream {
     @Deprecated
     @DeprecationDetails(since = "1.19.50-r2", reason = "Support more types of recipe input", replaceWith = "putRecipeIngredient(ItemDescriptor itemDescriptor)")
     public void putRecipeIngredient(Item ingredient) {
-        if (ingredient == null || ingredient.getId() == 0) {
+        if (ingredient == null || ingredient.isNull()) {
             this.putBoolean(false); // isValid? - false
             this.putVarInt(0); // item == null ? 0 : item.getCount()
             return;
@@ -757,7 +758,7 @@ public class BinaryStream {
         switch (type) {
             case DEFAULT -> {
                 var ingredient = itemDescriptor.toItem();
-                if (ingredient == null || ingredient.getId() == 0) {
+                if (ingredient == null || ingredient.isNull()) {
                     this.putLShort(0);
                     this.putVarInt(0); // item == null ? 0 : item.getCount()
                     return;

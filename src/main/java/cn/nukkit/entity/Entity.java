@@ -9,17 +9,12 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.custom.CustomEntity;
-import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.data.property.*;
 import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.mob.*;
 import cn.nukkit.entity.passive.*;
 import cn.nukkit.entity.projectile.*;
-import cn.nukkit.entity.provider.ClassEntityProvider;
-import cn.nukkit.entity.provider.CustomEntityProvider;
-import cn.nukkit.entity.provider.EntityProvider;
-import cn.nukkit.entity.provider.EntityProviderWithClass;
 import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.block.FarmLandDecayEvent;
@@ -543,10 +538,25 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     protected Server server;
     protected boolean isPlayer = this instanceof Player;
     private int maxHealth = 20;
+    protected String name;
     private volatile boolean initialized;
     protected volatile boolean saveWithChunk = true;
     private final Map<String, Integer> intProperties = new LinkedHashMap<>();
     private final Map<String, Float> floatProperties = new LinkedHashMap<>();
+    protected final Map<Integer, Attribute> attributes = new HashMap<>();
+
+    private String idConvertToName() {
+        var path = getIdentifier().split(":")[1];
+        StringBuilder result = new StringBuilder();
+        String[] parts = path.split("_");
+        for (String part : parts) {
+            if (!part.isEmpty()) {
+                result.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1)).append(" ");
+            }
+        }
+        this.name = result.toString().trim().intern();
+        return this.name;
+    }
 
     public Entity(IChunk chunk, CompoundTag nbt) {
         if (this instanceof Player) {
@@ -621,137 +631,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      */
     @Nullable
     public static Entity createEntity(int type, @NotNull IChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
-        return createEntity(String.valueOf(type), chunk, nbt, args);
+        String entityIdentifier = Registries.ENTITY.getEntityIdentifier(type);
+        if (entityIdentifier == null) return null;
+        return Registries.ENTITY.provideEntity(entityIdentifier, chunk, nbt, args);
     }
 
-    /**
-     * @see #registerEntity(String, Class, boolean)
-     */
     @Nullable
-    public static Entity createEntity(@NotNull String name, @NotNull IChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
-        var provider = knownEntities.get(name);
-        if (provider != null) {
-            return provider.provideEntity(chunk, nbt, args);
-        }
-        return null;
-    }
-
-    /**
-     * @see #registerEntity(String, Class, boolean)
-     */
-    public static boolean registerEntity(String name, Class<? extends Entity> clazz) {
-        return registerEntity(name, clazz, false);
-    }
-
-    /**
-     * 注册一个实体，仅供内部使用，自定义实体请使用{@link #registerCustomEntity registerCustomEntity}
-     * <p>
-     * Register an entity for internal use only, for custom entities please use {@link #registerCustomEntity registerCustomEntity}
-     *
-     * @param name  the name
-     * @param clazz the clazz
-     * @param force the force
-     * @return the boolean
-     */
-    public static boolean registerEntity(String name, Class<? extends Entity> clazz, boolean force) {
-        if (clazz == null) {
-            return false;
-        }
-
-        EntityProvider<?> provider;
-        try {
-            int networkId = clazz.getField("NETWORK_ID").getInt(null);
-            provider = new ClassEntityProvider(name, clazz, networkId);
-            knownEntities.put(String.valueOf(networkId), provider);
-        } catch (Exception e) {
-            provider = new ClassEntityProvider(name, clazz, Entity.NETWORK_ID);
-            if (!force) {
-                return false;
-            }
-        }
-
-        knownEntities.put(name, provider);
-        shortNames.put(clazz.getSimpleName(), name);
-        return true;
-    }
-
-    /**
-     * @see #registerEntity(EntityProvider, boolean)
-     */
-    public static boolean registerEntity(EntityProvider<? extends Entity> provider) {
-        return registerEntity(provider, false);
-    }
-
-    /**
-     * 注册一个实体，仅供内部使用，自定义实体请使用{@link #registerCustomEntity registerCustomEntity}
-     * <p>
-     * Register an entity for internal use only, for custom entities please use {@link #registerCustomEntity registerCustomEntity}
-     *
-     * @param provider the provider
-     * @param force    the force
-     * @return the boolean
-     */
-    public static boolean registerEntity(EntityProvider<? extends Entity> provider, boolean force) {
-        if (provider == null) {
-            return false;
-        }
-
-        if (provider.getNetworkId() != Entity.NETWORK_ID) {
-            knownEntities.put(String.valueOf(provider.getNetworkId()), provider);
-        } else {
-            if (!force) {
-                return false;
-            }
-        }
-
-        knownEntities.put(provider.getName(), provider);
-        shortNames.put(provider.getSimpleName(), provider.getName());
-        return true;
-    }
-
-    /**
-     * 获取全部自定义实体定义的拷贝
-     * <p>
-     * Get a copy of all custom entity definitions
-     *
-     * @return the entity definitions
-     */
-    public static Set<CustomEntityDefinition> getEntityDefinitions() {
-        return new HashSet<>(entityDefinitions);
-    }
-
-    /**
-     * 注册一个自定义实体
-     * <p>
-     * Register a custom entity
-     *
-     * @param customEntityProvider the custom entity provider
-     * @return the ok
-     */
-    public static OK<?> registerCustomEntity(CustomEntityProvider customEntityProvider) {
-        if (!Server.getInstance().isEnableExperimentMode()) {
-            return new OK<>(false, "The server does not have the experiment mode feature enabled.Unable to register custom entity!");
-        }
-        entityDefinitions.add(customEntityProvider.getCustomEntityDefinition());
-        return new OK<Void>(registerEntity(customEntityProvider, true));
-    }
-
-
-    /**
-     * 从网络id 查询该实体的Name,对应{@link #knownEntities} key
-     * <p>
-     * Query the name of the entity from its network id, corresponding to {@link #knownEntities} key
-     *
-     * @param id the id
-     * @return the save id
-     */
-    @Nullable
-    public static String getSaveId(int id) {
-        var entityProvider = knownEntities.get(Integer.toString(id));
-        if (entityProvider == null) {
-            return null;
-        }
-        return shortNames.get(entityProvider.getSimpleName());
+    public static Entity createEntity(@NotNull String identifier, @NotNull IChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
+        Identifier.assertValid(identifier);
+        return Registries.ENTITY.provideEntity(identifier, chunk, nbt, args);
     }
 
     /**
@@ -763,19 +651,21 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      */
     @Nullable
     public static Identifier getIdentifier(int networkID) {
-        var str = AddEntityPacket.LEGACY_IDS.get(networkID);
-        if (str == null) return null;
-        return new Identifier(str);
+        String entityIdentifier = Registries.ENTITY.getEntityIdentifier(networkID);
+        if (entityIdentifier == null) return null;
+        return new Identifier(entityIdentifier);
     }
 
     /**
      * @see #getDefaultNBT(Vector3, Vector3, float, float)
      */
-    public @NotNull static CompoundTag getDefaultNBT(@NotNull Vector3 pos) {
+    public @NotNull
+    static CompoundTag getDefaultNBT(@NotNull Vector3 pos) {
         return getDefaultNBT(pos, null);
     }
 
-    public @NotNull static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion) {
+    public @NotNull
+    static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion) {
         Location loc = pos instanceof Location ? (Location) pos : null;
 
         if (loc != null) {
@@ -796,7 +686,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @param pitch  the pitch
      * @return the default nbt
      */
-    public @NotNull static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion, float yaw, float pitch) {
+    public @NotNull
+    static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion, float yaw, float pitch) {
         return new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
                         .add(new DoubleTag("", pos.x))
@@ -842,121 +733,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         playAnimationOnEntities(animation, entities, viewers);
     }
 
-
-    public static void init() {
-        registerEntity("Lightning", EntityLightningBolt.class);
-        registerEntity("Arrow", EntityArrow.class);
-        registerEntity("EnderPearl", EntityEnderPearl.class);
-        registerEntity("FallingSand", EntityFallingBlock.class);
-        registerEntity("Firework", EntityFireworksRocket.class);
-        registerEntity("Item", EntityItem.class);
-        registerEntity("Painting", EntityPainting.class);
-        registerEntity("PrimedTnt", EntityTnt.class);
-        registerEntity("Snowball", EntitySnowball.class);
-        //Monsters
-        registerEntity("Blaze", EntityBlaze.class);
-        registerEntity("CaveSpider", EntityCaveSpider.class);
-        registerEntity("Creeper", EntityCreeper.class);
-        registerEntity("Drowned", EntityDrowned.class);
-        registerEntity("ElderGuardian", EntityElderGuardian.class);
-        registerEntity("EnderDragon", EntityEnderDragon.class);
-        registerEntity("Enderman", EntityEnderman.class);
-        registerEntity("Endermite", EntityEndermite.class);
-        registerEntity("Evoker", EntityEvocationIllager.class);
-        registerEntity("Ghast", EntityGhast.class);
-        registerEntity("GlowSquid", EntityGlowSquid.class);
-        registerEntity("Guardian", EntityGuardian.class);
-        registerEntity("Hoglin", EntityHoglin.class);
-        registerEntity("Husk", EntityHusk.class);
-        registerEntity("MagmaCube", EntityMagmaCube.class);
-        registerEntity("Phantom", EntityPhantom.class);
-        registerEntity("Piglin", EntityPiglin.class);
-        registerEntity("PiglinBrute", EntityPiglinBrute.class);
-        registerEntity("Pillager", EntityPillager.class);
-        registerEntity("Ravager", EntityRavager.class);
-        registerEntity("Shulker", EntityShulker.class);
-        registerEntity("Silverfish", EntitySilverfish.class);
-        registerEntity("Skeleton", EntitySkeleton.class);
-        registerEntity("Slime", EntitySlime.class);
-        registerEntity("IronGolem", EntityIronGolem.class);
-        registerEntity("SnowGolem", EntitySnowGolem.class);
-        registerEntity("Spider", EntitySpider.class);
-        registerEntity("Stray", EntityStray.class);
-        registerEntity("Vex", EntityVex.class);
-        registerEntity("Vindicator", EntityVindicator.class);
-        registerEntity("Warden", EntityWarden.class);
-        registerEntity("Witch", EntityWitch.class);
-        registerEntity("Wither", EntityWither.class);
-        registerEntity("WitherSkeleton", EntityWitherSkeleton.class);
-        registerEntity("Zombie", EntityZombie.class);
-        registerEntity("Zoglin", EntityZoglin.class);
-        registerEntity("ZombiePigman", EntityZombiePigman.class);
-        registerEntity("ZombieVillager", EntityZombieVillagerV2.class);
-        registerEntity("ZombieVillagerV1", EntityZombieVillager.class);
-        //Passive
-        registerEntity("Allay", EntityAllay.class);
-        registerEntity("Axolotl", EntityAxolotl.class);
-        registerEntity("Bat", EntityBat.class);
-        registerEntity("Bee", EntityBee.class);
-        registerEntity("Cat", EntityCat.class);
-        registerEntity("Chicken", EntityChicken.class);
-        registerEntity("Cod", EntityCod.class);
-        registerEntity("Cow", EntityCow.class);
-        registerEntity("Dolphin", EntityDolphin.class);
-        registerEntity("Donkey", EntityDonkey.class);
-        registerEntity("Fox", EntityFox.class);
-        registerEntity("Frog", EntityFrog.class);
-        registerEntity("Goat", EntityGoat.class);
-        registerEntity("Horse", EntityHorse.class);
-        registerEntity("Llama", EntityLlamaSpit.class);
-        registerEntity("Mooshroom", EntityMooshroom.class);
-        registerEntity("Mule", EntityMule.class);
-        registerEntity("Ocelot", EntityOcelot.class);
-        registerEntity("Panda", EntityPanda.class);
-        registerEntity("Parrot", EntityParrot.class);
-        registerEntity("Pig", EntityPig.class);
-        registerEntity("PolarBear", EntityPolarBear.class);
-        registerEntity("Pufferfish", EntityPufferfish.class);
-        registerEntity("Rabbit", EntityRabbit.class);
-        registerEntity("Salmon", EntitySalmon.class);
-        registerEntity("Sheep", EntitySheep.class);
-        registerEntity("SkeletonHorse", EntitySkeletonHorse.class);
-        registerEntity("Squid", EntitySquid.class);
-        registerEntity("Strider", EntityStrider.class);
-        registerEntity("Tadpole", EntityTadpole.class);
-        registerEntity("TropicalFish", EntityTropicalfish.class);
-        registerEntity("Turtle", EntityTurtle.class);
-        registerEntity("Villager", EntityVillagerV2.class);
-        registerEntity("VillagerV1", EntityVillager.class);
-        registerEntity("WanderingTrader", EntityTraderLlama.class);
-        registerEntity("Wolf", EntityWolf.class);
-        registerEntity("ZombieHorse", EntityZombieHorse.class);
-        registerEntity("NPC", EntityNPCEntity.class);
-        registerEntity("Camel", EntityCamel.class);
-        //Projectile
-        registerEntity("Small FireBall", EntitySmallFireball.class);
-        registerEntity("AreaEffectCloud", EntityAreaEffectCloud.class);
-        registerEntity("Egg", EntityEgg.class);
-        registerEntity("LingeringPotion", EntityLingeringPotion.class);
-        registerEntity("ThrownExpBottle", EntityXpBottle.class);
-        registerEntity("ThrownPotion", EntitySplashPotion.class);
-        registerEntity("ThrownTrident", EntityThrownTrident.class);
-        registerEntity("XpOrb", EntityXpOrb.class);
-        registerEntity("ArmorStand", EntityArmorStand.class);
-
-        registerEntity("Human", EntityHuman.class, true);
-        //Vehicle
-        registerEntity("Boat", EntityBoat.class);
-        registerEntity("ChestBoat", EntityChestBoat.class);
-        registerEntity("MinecartChest", EntityChestMinecart.class);
-        registerEntity("MinecartHopper", EntityHopperMinecart.class);
-        registerEntity("MinecartRideable", EntityMinecart.class);
-        registerEntity("MinecartTnt", EntityTntMinecart.class);
-
-        registerEntity("EndCrystal", EntityEnderCrystal.class);
-        registerEntity("FishingHook", EntityFishingHook.class);
-    }
-
     /**
      * 获取该实体的标识符
      * <p>
@@ -964,7 +740,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      *
      * @return the identifier
      */
-    public @NotNull abstract String getIdentifier();
+    @NotNull
+    public abstract String getIdentifier();
 
     /**
      * 实体高度
@@ -1062,6 +839,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             }
             if (this.namedTag.contains("CustomNameAlwaysVisible")) {
                 this.setNameTagAlwaysVisible(this.namedTag.getBoolean("CustomNameAlwaysVisible"));
+            }
+        }
+
+        if (this.namedTag.contains("Attributes")) {
+            ListTag<CompoundTag> attributes = this.namedTag.getList("Attributes", CompoundTag.class);
+            for (var nbt : attributes.getAll()) {
+                Attribute attribute = Attribute.fromNBT(nbt);
+                this.attributes.put(attribute.getId(), attribute);
             }
         }
 
@@ -1453,7 +1238,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public void saveNBT() {
         if (!(this instanceof Player)) {
-            this.namedTag.putString("id", this.getSaveId());
+            this.namedTag.putString("identifier", this.getIdentifier());
             if (!this.getNameTag().equals("")) {
                 this.namedTag.putString("CustomName", this.getNameTag());
                 this.namedTag.putBoolean("CustomNameVisible", this.isNameTagVisible());
@@ -1509,13 +1294,24 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         } else {
             this.namedTag.remove("ActiveEffects");
         }
+
+        if (!this.attributes.isEmpty()) {
+            ListTag<CompoundTag> attributes = new ListTag<>("Attributes");
+            for (var attribute : this.attributes.values()) {
+                CompoundTag nbt = Attribute.toNBT(attribute);
+                attributes.add(nbt);
+            }
+            this.namedTag.putList(attributes);
+        } else {
+            this.namedTag.remove("Attributes");
+        }
     }
 
     /**
      * The name that English name of the type of this entity.
      */
     public String getOriginalName() {
-        return this.getSaveId();
+        return name == null ? idConvertToName() : name;
     }
 
     /**
@@ -1539,10 +1335,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         } else {
             return this.getOriginalName();
         }
-    }
-
-    public final String getSaveId() {
-        return shortNames.getOrDefault(this.getClass().getSimpleName(), "");
     }
 
     /**
@@ -2385,9 +2177,21 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public void setAbsorption(float absorption) {
         if (absorption != this.absorption) {
             this.absorption = absorption;
-            if (this instanceof Player)
-                ((Player) this).setAttribute(Attribute.getAttribute(Attribute.ABSORPTION).setValue(absorption));
         }
+    }
+
+    public void syncAttribute(Attribute attribute) {
+        UpdateAttributesPacket pk = new UpdateAttributesPacket();
+        pk.entries = new Attribute[]{attribute};
+        pk.entityId = this.id;
+        Server.broadcastPacket(this.getViewers().values(), pk);
+    }
+
+    public void syncAttributes() {
+        UpdateAttributesPacket pk = new UpdateAttributesPacket();
+        pk.entries = this.attributes.values().stream().filter(Attribute::isSyncable).toArray(Attribute[]::new);
+        pk.entityId = this.id;
+        Server.broadcastPacket(this.getViewers().values(), pk);
     }
 
 

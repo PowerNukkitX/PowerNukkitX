@@ -34,43 +34,6 @@ public abstract class BlockEntity extends Position implements BlockEntityID{
     public CompoundTag namedTag;
     protected Server server;
 
-    public BlockEntity(IChunk chunk, CompoundTag nbt) {
-        if (chunk == null || chunk.getProvider() == null) {
-            throw new ChunkException("Invalid garbage Chunk given to Block Entity");
-        }
-
-        this.server = chunk.getProvider().getLevel().getServer();
-        this.chunk = chunk;
-        this.setLevel(chunk.getProvider().getLevel());
-        this.namedTag = nbt;
-        this.name = "";
-        this.id = BlockEntity.count++;
-        this.x = this.namedTag.getInt("x");
-        this.y = this.namedTag.getInt("y");
-        this.z = this.namedTag.getInt("z");
-
-        if (namedTag.contains("isMovable")) {
-            this.movable = this.namedTag.getBoolean("isMovable");
-        } else {
-            this.movable = true;
-            namedTag.putBoolean("isMovable", true);
-        }
-
-        this.initBlockEntity();
-        
-        if (closed) {
-            throw new IllegalStateException("Could not create the entity "+getClass().getName()+", the initializer closed it on construction.");
-        }
-        
-        this.chunk.addBlockEntity(this);
-        this.getLevel().addBlockEntity(this);
-    }
-
-    protected void initBlockEntity() {
-        loadNBT();
-    }
-
-
     public static BlockEntity createBlockEntity(String type, Position position, Object... args) {
         return createBlockEntity(type, position, BlockEntity.getDefaultCompound(position, type), args);
     }
@@ -87,7 +50,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID{
         if (clazz != null) {
             List<Exception> exceptions = null;
 
-            for (Constructor constructor : clazz.getConstructors()) {
+            for (Constructor<?> constructor : clazz.getConstructors()) {
                 if (blockEntity != null) {
                     break;
                 }
@@ -133,13 +96,46 @@ public abstract class BlockEntity extends Position implements BlockEntityID{
         return blockEntity;
     }
 
-    public final String getSaveId() {
-        return Registries.BLOCKENTITY.getSaveId(getClass());
+    public BlockEntity(IChunk chunk, CompoundTag nbt) {
+        if (chunk == null || chunk.getProvider() == null) {
+            throw new ChunkException("Invalid garbage Chunk given to Block Entity");
+        }
+
+        this.server = chunk.getProvider().getLevel().getServer();
+        this.chunk = chunk;
+        this.setLevel(chunk.getProvider().getLevel());
+        this.namedTag = nbt;
+        this.name = "";
+        this.id = BlockEntity.count++;
+        this.x = this.namedTag.getInt("x");
+        this.y = this.namedTag.getInt("y");
+        this.z = this.namedTag.getInt("z");
+
+        if (namedTag.contains("isMovable")) {
+            this.movable = this.namedTag.getBoolean("isMovable");
+        } else {
+            this.movable = true;
+            namedTag.putBoolean("isMovable", true);
+        }
+
+        this.initBlockEntity();
+        
+        if (closed) {
+            throw new IllegalStateException("Could not create the entity "+getClass().getName()+", the initializer closed it on construction.");
+        }
+        
+        this.chunk.addBlockEntity(this);
+        this.getLevel().addBlockEntity(this);
     }
 
-    public long getId() {
-        return id;
+    protected void initBlockEntity() {
+        loadNBT();
     }
+
+    /**
+     * 从方块实体的namedtag中读取数据
+     */
+    public void loadNBT() {}
 
     /**
      * 存储方块实体数据到namedtag
@@ -152,10 +148,13 @@ public abstract class BlockEntity extends Position implements BlockEntityID{
         this.namedTag.putBoolean("isMovable", this.movable);
     }
 
-    /**
-     * 从方块实体的namedtag中读取数据
-     */
-    public void loadNBT() {}
+    public final String getSaveId() {
+        return Registries.BLOCKENTITY.getSaveId(getClass());
+    }
+
+    public long getId() {
+        return id;
+    }
 
     public CompoundTag getCleanedNBT() {
         this.saveNBT();
@@ -196,7 +195,6 @@ public abstract class BlockEntity extends Position implements BlockEntityID{
     }
 
     public void onBreak() {
-
     }
 
 
@@ -241,7 +239,6 @@ public abstract class BlockEntity extends Position implements BlockEntityID{
                 .putInt("y", pos.getFloorY())
                 .putInt("z", pos.getFloorZ());
     }
-
 
     @Nullable
     @Override

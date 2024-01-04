@@ -312,15 +312,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public Block[] getLineOfSight(int maxDistance, int maxLength) {
-        return this.getLineOfSight(maxDistance, maxLength, new Integer[]{});
+        return this.getLineOfSight(maxDistance, maxLength, new String[]{});
     }
 
-    @Deprecated
-    public Block[] getLineOfSight(int maxDistance, int maxLength, Map<Integer, Object> transparent) {
-        return this.getLineOfSight(maxDistance, maxLength, transparent.keySet().toArray(Utils.EMPTY_INTEGERS));
-    }
-
-    public Block[] getLineOfSight(int maxDistance, int maxLength, Integer[] transparent) {
+    public Block[] getLineOfSight(int maxDistance, int maxLength, String[] transparent) {
         if (maxDistance > 120) {
             maxDistance = 120;
         }
@@ -341,7 +336,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 blocks.remove(0);
             }
 
-            int id = block.getId();
+            String id = block.getId();
 
             if (transparent == null) {
                 if (!block.isAir()) {
@@ -358,15 +353,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public Block getTargetBlock(int maxDistance) {
-        return getTargetBlock(maxDistance, new Integer[]{});
+        return getTargetBlock(maxDistance, new String[]{});
     }
 
-    @Deprecated
-    public Block getTargetBlock(int maxDistance, Map<Integer, Object> transparent) {
-        return getTargetBlock(maxDistance, transparent.keySet().toArray(Utils.EMPTY_INTEGERS));
-    }
-
-    public Block getTargetBlock(int maxDistance, Integer[] transparent) {
+    public Block getTargetBlock(int maxDistance, String[] transparent) {
         try {
             Block[] blocks = this.getLineOfSight(maxDistance, 1, transparent);
             Block block = blocks[0];
@@ -380,9 +370,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 }
             }
         } catch (Exception ignored) {
-
         }
-
         return null;
     }
 

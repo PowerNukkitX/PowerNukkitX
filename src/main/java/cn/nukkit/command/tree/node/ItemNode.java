@@ -13,7 +13,7 @@ public class ItemNode extends ParamNode<Item> {
     @Override
     public void fill(String arg) {
         Item item = Item.fromString(arg);
-        if (item.getId() == 0) {
+        if (item.isNull()) {
             error();
             return;
         }
