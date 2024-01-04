@@ -30,10 +30,6 @@ public class BigDripleafTiltChangeEvent extends BlockEvent implements Cancellabl
         return newTilt;
     }
 
-    public void setOldTilt(BigDripleafTilt oldTilt) {
-        this.oldTilt = oldTilt;
-    }
-
     public void setNewTilt(BigDripleafTilt newTilt) {
         this.newTilt = newTilt;
     }
