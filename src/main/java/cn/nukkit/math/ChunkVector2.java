@@ -28,7 +28,6 @@ public class ChunkVector2 {
     private int x;
     private int z;
 
-
     public ChunkVector2() {
         this(0, 0);
     }

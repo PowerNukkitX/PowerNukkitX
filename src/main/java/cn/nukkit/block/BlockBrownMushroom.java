@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.level.generator.object.ObjectBigMushroom;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockBrownMushroom extends BlockMushroom {
@@ -29,7 +30,7 @@ public class BlockBrownMushroom extends BlockMushroom {
     }
 
     @Override
-    protected int getType() {
-        return 0;
+    protected ObjectBigMushroom.MushroomType getType() {
+        return ObjectBigMushroom.MushroomType.BROWN;
     }
 }

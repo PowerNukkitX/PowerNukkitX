@@ -46,7 +46,7 @@ public class PositionTrackingService implements Closeable {
     /**
      * Creates position tracking db service. The service is ready to be used right after the creation.
      * @param folder The folder that will hold the position tracking db files
-     * @throws FileNotFoundException If the folder does not exists and can't be created 
+     * @throws FileNotFoundException If the folder does not exist and can't be created
      */
     public PositionTrackingService(File folder) throws FileNotFoundException {
         if (!folder.isDirectory() && !folder.mkdirs()) {

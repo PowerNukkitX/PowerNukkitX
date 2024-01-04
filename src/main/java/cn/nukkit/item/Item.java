@@ -530,7 +530,6 @@ public abstract class Item implements Cloneable, ItemID {
      *
      * @param id The enchantment ID from {@link Enchantment} constants.
      */
-
     public boolean hasEnchantment(int id) {
         return this.getEnchantmentLevel(id) > 0;
     }
@@ -600,7 +599,6 @@ public abstract class Item implements Cloneable, ItemID {
      * @param name
      * @return
      */
-
     public Item setCustomName(String name) {
         if (name == null || name.equals("")) {
             this.clearCustomName();
@@ -630,7 +628,6 @@ public abstract class Item implements Cloneable, ItemID {
      *
      * @return
      */
-
     public Item clearCustomName() {
         if (!this.hasCompoundTag()) {
             return this;
@@ -657,7 +654,6 @@ public abstract class Item implements Cloneable, ItemID {
      *
      * @return
      */
-
     public String[] getLore() {
         Tag tag = this.getNamedTagEntry("display");
         ArrayList<String> lines = new ArrayList<>();
@@ -840,7 +836,7 @@ public abstract class Item implements Cloneable, ItemID {
             i = Registries.ITEM_RUNTIMEID.getInt(this.getBlockId());
         }
         if (i == Integer.MAX_VALUE) {
-            log.warn("cant find runtimeId for item {},will return unknown itemblock!", getId());
+            log.warn("Can't find runtimeId for item {}, will return unknown itemblock!", getId());
             return getUnknownRuntimeId();//cant find runtimeId
         }
         return i;
@@ -887,7 +883,6 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * Define the maximum number of items to be stacked
      */
-
     public int getMaxStackSize() {
         return block == null ? 64 : block.getItemMaxStackSize();
     }
@@ -897,7 +892,6 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * Get the burn time of a burnable item
      */
-
     public final Integer getFuelTime() {
         if (!Registries.FUEL.isFuel(this)) {
             return null;
@@ -921,7 +915,6 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * Define if this item is a tool
      */
-
     public boolean isTool() {
         return false;
     }
@@ -931,7 +924,6 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * Define the maximum durability value of the item
      */
-
     public int getMaxDurability() {
         return -1;
     }
@@ -941,7 +933,6 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * Define the item Tier level
      */
-
     public int getTier() {
         return 0;
     }
@@ -951,7 +942,6 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * Define if the item is a Pickaxe
      */
-
     public boolean isPickaxe() {
         return false;
     }
@@ -961,7 +951,6 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * Define if the item is a Axe
      */
-
     public boolean isAxe() {
         return false;
     }
@@ -980,7 +969,6 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * Define if the item is a Shovel
      */
-
     public boolean isShovel() {
         return false;
     }
@@ -990,7 +978,6 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * Define if the item is a Hoe
      */
-
     public boolean isHoe() {
         return false;
     }
@@ -1063,7 +1050,6 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * Define the attackdamage of an item
      */
-
     public int getAttackDamage() {
         return 1;
     }
@@ -1073,7 +1059,6 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * Define the Armour value of an item
      */
-
     public int getArmorPoints() {
         return 0;
     }
@@ -1083,7 +1068,6 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * Define the Armour Toughness of an item
      */
-
     public int getToughness() {
         return 0;
     }
@@ -1093,7 +1077,6 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * Define if the item is Unbreakable
      */
-
     public boolean isUnbreakable() {
         return false;
     }
@@ -1259,8 +1242,6 @@ public abstract class Item implements Cloneable, ItemID {
 
     /**
      * Same as {@link #equals(Item, boolean)} but the enchantment order of the items does not affect the result.
-     *
-     * @since 1.2.1.0-PN
      */
     public final boolean equalsIgnoringEnchantmentOrder(Item item, boolean checkDamage) {
         if (!this.equals(item, checkDamage, false)) {

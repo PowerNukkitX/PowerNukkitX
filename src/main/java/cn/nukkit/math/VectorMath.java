@@ -53,7 +53,7 @@ public abstract class VectorMath {
             }
         }
 
-        if (xCuts.size() == 0) xCuts.add(new FixedVector3(from, to));
+        if (xCuts.isEmpty()) xCuts.add(new FixedVector3(from, to));
 
         var zCuts = new LinkedList<FixedVector3>();
         if (from.z != to.z) {

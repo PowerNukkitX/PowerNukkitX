@@ -29,29 +29,21 @@ public class PopChunkManager extends SimpleChunkManager {
     public IChunk getChunk(int chunkX, int chunkZ) {
         int index;
         switch (chunkX - CX) {
-            case 0:
-                index = 0;
-                break;
-            case 1:
-                index = 1;
-                break;
-            case 2:
-                index = 2;
-                break;
-            default:
+            case 0 -> index = 0;
+            case 1 -> index = 1;
+            case 2 -> index = 2;
+            default -> {
                 return null;
+            }
         }
         switch (chunkZ - CZ) {
-            case 0:
-                break;
-            case 1:
-                index += 3;
-                break;
-            case 2:
-                index += 6;
-                break;
-            default:
+            case 0 -> {
+            }
+            case 1 -> index += 3;
+            case 2 -> index += 6;
+            default -> {
                 return null;
+            }
         }
         return chunks[index];
     }
@@ -69,16 +61,10 @@ public class PopChunkManager extends SimpleChunkManager {
             default -> throw new UnsupportedOperationException("Chunk is outside population area");
         };
         switch (chunkZ - CZ) {
-            case 0:
-                break;
-            case 1:
-                index += 3;
-                break;
-            case 2:
-                index += 6;
-                break;
-            default:
-                throw new UnsupportedOperationException("Chunk is outside population area");
+            case 0 -> {}
+            case 1 -> index += 3;
+            case 2 -> index += 6;
+            default -> throw new UnsupportedOperationException("Chunk is outside population area");
         }
         clean = false;
         chunks[index] = chunk;

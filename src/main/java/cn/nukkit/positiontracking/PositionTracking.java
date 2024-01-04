@@ -14,9 +14,8 @@ import javax.annotation.Nullable;
 
 
 public class PositionTracking extends NamedPosition {
-    @NotNull
-    private String levelName;
 
+    private @NotNull String levelName;
 
     public PositionTracking(@NotNull String levelName, double x, double y, double z) {
         super(x, y, z);
@@ -231,8 +230,8 @@ public class PositionTracking extends NamedPosition {
     }
 
     @Override
-    public PositionTracking setComponents(Vector3 pos) {
-        super.setComponents(pos);
+    public @NotNull PositionTracking setComponents(@NotNull Vector3 position) {
+        super.setComponents(position);
         return this;
     }
 

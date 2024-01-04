@@ -105,7 +105,7 @@ public class GameRules {
         Preconditions.checkNotNull(value, "value");
 
         switch (getGameRuleType(gameRule)) {
-            case BOOLEAN:
+            case BOOLEAN -> {
                 if (value.equalsIgnoreCase("true")) {
                     setGameRule(gameRule, true);
                 } else if (value.equalsIgnoreCase("false")) {
@@ -113,12 +113,9 @@ public class GameRules {
                 } else {
                     throw new IllegalArgumentException("Was not a boolean");
                 }
-                break;
-            case INTEGER:
-                setGameRule(gameRule, Integer.parseInt(value));
-                break;
-            case FLOAT:
-                setGameRule(gameRule, Float.parseFloat(value));
+            }
+            case INTEGER -> setGameRule(gameRule, Integer.parseInt(value));
+            case FLOAT -> setGameRule(gameRule, Float.parseFloat(value));
         }
     }
 

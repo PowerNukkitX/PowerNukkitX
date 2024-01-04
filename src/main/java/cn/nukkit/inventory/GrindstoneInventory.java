@@ -125,45 +125,67 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
             return false;
         }
 
-        if (firstItem.isNull()) {
-            Item air = firstItem;
-            firstItem = secondItem;
-            secondItem = air;
-        }
-
-        if (firstItem.isNull()) {
+        if (firstItem.isNull() && secondItem.isNull()) {
             setResult(Item.AIR, send);
             setResultExperience(0);
             return false;
         }
 
-        if (firstItem.getId().equals(ItemID.ENCHANTED_BOOK)) {
-            if (secondItem.isNull()) {
-                setResult(Item.get(ItemID.BOOK, 0, firstItem.getCount()), send);
-                recalculateResultExperience();
-            } else {
-                setResultExperience(0);
-                setResult(Item.AIR, send);
-            }
-            return false;
+        if (firstItem.isNull() && !secondItem.isNull()) {
+            firstItem = secondItem;
+            secondItem = Item.AIR;
         }
 
-        Item result = firstItem.clone();
-        CompoundTag tag = result.getNamedTag();
-        if (tag == null) tag = new CompoundTag();
-        tag.remove("ench");
-        
-        result.setCompoundTag(tag);
-        if (!secondItem.isNull() && firstItem.getMaxDurability() > 0) {
+        if (firstItem.getId().equals(ItemID.ENCHANTED_BOOK) && secondItem.isNull()) {
+            setResult(Item.get(ItemID.BOOK, 0, firstItem.getCount()), send);
+            recalculateResultExperience();
+            return true;
+        }
+
+        if (firstItem.getId().equals(ItemID.BOOK) && firstItem.hasEnchantments() && secondItem.isNull()) {
+            setResult(Item.get(ItemID.BOOK, 0, firstItem.getCount()), send);
+            recalculateResultExperience();
+            return true;
+        }
+
+        if (!firstItem.isNull() && !secondItem.isNull() && firstItem.getId().equals(secondItem.getId())) {
             int first = firstItem.getMaxDurability() - firstItem.getAux();
             int second = secondItem.getMaxDurability() - secondItem.getAux();
             int reduction = first + second + firstItem.getMaxDurability() * 5 / 100;
             int resultingDamage = Math.max(firstItem.getMaxDurability() - reduction + 1, 0);
+            Item result = firstItem.hasEnchantments() ? firstItem.clone() : secondItem.clone();
+
+            if (firstItem.hasEnchantments() || secondItem.hasEnchantments()) {
+                CompoundTag tag = result.getNamedTag();
+                if (tag.contains("ench")) {
+                    tag.remove("ench");
+                }
+                if (tag.contains("custom_ench")) {
+                    tag.remove("custom_ench");
+                }
+                result.setCompoundTag(tag);
+            }
+
             result.setAux(resultingDamage);
+            setResult(result, send);
+            recalculateResultExperience();
+            return true;
         }
 
-        setResult(result, send);
-        recalculateResultExperience();
+        if (firstItem.hasEnchantments() && secondItem.isNull()) {
+            Item result = firstItem.clone();
+            CompoundTag tag = result.getNamedTag();
+            if (tag.contains("ench")) {
+                tag.remove("ench");
+            }
+            if (tag.containsList("custom_ench")) {
+                tag.remove("custom_ench");
+            }
+            result.setCompoundTag(tag);
+
+            setResult(result, send);
+            recalculateResultExperience();
+        }
         return true;
     }
 

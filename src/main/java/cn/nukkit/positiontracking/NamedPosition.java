@@ -10,9 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class NamedPosition extends Vector3 {
 
-
-    public NamedPosition() {
-    }
+    public NamedPosition() {}
 
     public NamedPosition(double x) {
         super(x);
@@ -27,7 +25,6 @@ public abstract class NamedPosition extends Vector3 {
     }
 
     public @NotNull abstract String getLevelName();
-
 
     public boolean matchesNamedPosition(NamedPosition position) {
         return x == position.x && y == position.y && z == position.z && getLevelName().equals(position.getLevelName());

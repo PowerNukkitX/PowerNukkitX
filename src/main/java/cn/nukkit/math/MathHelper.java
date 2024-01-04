@@ -89,11 +89,11 @@ public class MathHelper {
     }
 
     public static int clamp(int check, int min, int max) {
-        return check > max ? max : (check < min ? min : check);
+        return check > max ? max : (Math.max(check, min));
     }
 
     public static float clamp(float num, float min, float max) {
-        return num > max ? max : (num < min ? min : num);
+        return num > max ? max : (Math.max(num, min));
     }
 
     public static double denormalizeClamp(double lowerBnd, double upperBnd, double slide) {

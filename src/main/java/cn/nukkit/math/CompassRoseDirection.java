@@ -107,58 +107,25 @@ public enum CompassRoseDirection {
     }
 
     public CompassRoseDirection getOppositeFace() {
-        switch (this) {
-            case NORTH:
-                return CompassRoseDirection.SOUTH;
-
-            case SOUTH:
-                return CompassRoseDirection.NORTH;
-
-            case EAST:
-                return CompassRoseDirection.WEST;
-
-            case WEST:
-                return CompassRoseDirection.EAST;
-
-            case NORTH_EAST:
-                return CompassRoseDirection.SOUTH_WEST;
-
-            case NORTH_WEST:
-                return CompassRoseDirection.SOUTH_EAST;
-
-            case SOUTH_EAST:
-                return CompassRoseDirection.NORTH_WEST;
-
-            case SOUTH_WEST:
-                return CompassRoseDirection.NORTH_EAST;
-
-            case WEST_NORTH_WEST:
-                return CompassRoseDirection.EAST_SOUTH_EAST;
-
-            case NORTH_NORTH_WEST:
-                return CompassRoseDirection.SOUTH_SOUTH_EAST;
-
-            case NORTH_NORTH_EAST:
-                return CompassRoseDirection.SOUTH_SOUTH_WEST;
-
-            case EAST_NORTH_EAST:
-                return CompassRoseDirection.WEST_SOUTH_WEST;
-
-            case EAST_SOUTH_EAST:
-                return CompassRoseDirection.WEST_NORTH_WEST;
-
-            case SOUTH_SOUTH_EAST:
-                return CompassRoseDirection.NORTH_NORTH_WEST;
-
-            case SOUTH_SOUTH_WEST:
-                return CompassRoseDirection.NORTH_NORTH_EAST;
-
-            case WEST_SOUTH_WEST:
-                return CompassRoseDirection.EAST_NORTH_EAST;
-
-            default:
-                throw new IncompatibleClassChangeError("New values was added to the enum");
-        }
+        return switch (this) {
+            case NORTH -> CompassRoseDirection.SOUTH;
+            case SOUTH -> CompassRoseDirection.NORTH;
+            case EAST -> CompassRoseDirection.WEST;
+            case WEST -> CompassRoseDirection.EAST;
+            case NORTH_EAST -> CompassRoseDirection.SOUTH_WEST;
+            case NORTH_WEST -> CompassRoseDirection.SOUTH_EAST;
+            case SOUTH_EAST -> CompassRoseDirection.NORTH_WEST;
+            case SOUTH_WEST -> CompassRoseDirection.NORTH_EAST;
+            case WEST_NORTH_WEST -> CompassRoseDirection.EAST_SOUTH_EAST;
+            case NORTH_NORTH_WEST -> CompassRoseDirection.SOUTH_SOUTH_EAST;
+            case NORTH_NORTH_EAST -> CompassRoseDirection.SOUTH_SOUTH_WEST;
+            case EAST_NORTH_EAST -> CompassRoseDirection.WEST_SOUTH_WEST;
+            case EAST_SOUTH_EAST -> CompassRoseDirection.WEST_NORTH_WEST;
+            case SOUTH_SOUTH_EAST -> CompassRoseDirection.NORTH_NORTH_WEST;
+            case SOUTH_SOUTH_WEST -> CompassRoseDirection.NORTH_NORTH_EAST;
+            case WEST_SOUTH_WEST -> CompassRoseDirection.EAST_NORTH_EAST;
+            default -> throw new IncompatibleClassChangeError("New values was added to the enum");
+        };
     }
 
     /**
