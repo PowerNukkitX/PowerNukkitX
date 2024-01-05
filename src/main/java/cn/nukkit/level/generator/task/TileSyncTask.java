@@ -9,7 +9,7 @@ import cn.nukkit.scheduler.Task;
 public class TileSyncTask extends Task {
 
     public final String type;
-    public final FullChunk chunk;
+    public final IChunk chunk;
     public final CompoundTag nbt;
 
     public TileSyncTask(String type, IChunk chunk, CompoundTag nbt) {

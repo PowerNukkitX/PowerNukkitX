@@ -125,7 +125,7 @@ public class ObjectSavannaTree extends TreeGenerator {
                                 Vector3 blockpos1 = new Vector3(i3, j2, j1);
                                 String material1 = level.getBlockIdAt(blockpos1.getFloorX(), blockpos1.getFloorY(), blockpos1.getFloorZ());
 
-                                if (material1 == Block.AIR || material1 == Block.LEAVES) {
+                                if (material1.equals(Block.AIR) || material1.equals(Block.LEAVES)) {
                                     this.placeLogAt(level, blockpos1);
                                     k1 = j2;
                                 }

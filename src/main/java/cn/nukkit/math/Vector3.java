@@ -429,14 +429,11 @@ public class Vector3 implements Cloneable {
     }
 
     public double getAxis(BlockFace.Axis axis) {
-        switch (axis) {
-            case X:
-                return x;
-            case Y:
-                return y;
-            default:
-                return z;
-        }
+        return switch (axis) {
+            case X -> x;
+            case Y -> y;
+            default -> z;
+        };
     }
 
     @Override
@@ -446,11 +443,9 @@ public class Vector3 implements Cloneable {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Vector3)) {
+        if (!(obj instanceof Vector3 other)) {
             return false;
         }
-
-        Vector3 other = (Vector3) obj;
 
         return this.x == other.x && this.y == other.y && this.z == other.z;
     }

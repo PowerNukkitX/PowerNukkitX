@@ -6,11 +6,13 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.ListChunkManager;
-import cn.nukkit.level.generator.object.mushroom.BigMushroom;
+import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.ObjectBigMushroom;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.random.NukkitRandomSource;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.utils.random.RandomSource;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -67,10 +69,10 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
     public boolean grow() {
         this.level.setBlock(this, Block.get(BlockID.AIR), true, false);
 
-        BigMushroom generator = new BigMushroom(getType());
+        ObjectBigMushroom generator = new ObjectBigMushroom(getType());
 
-        ListChunkManager chunkManager = new ListChunkManager(this.level);
-        if (generator.generate(chunkManager, new NukkitRandomSource(), this)) {
+        BlockManager chunkManager = new BlockManager(this.level);
+        if (generator.generate(chunkManager, RandomSource.create(), this)) {
             StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
             this.level.getServer().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
@@ -106,7 +108,7 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
         return ItemTool.TIER_WOODEN;
     }
 
-    protected abstract int getType();
+    protected abstract ObjectBigMushroom.MushroomType getType();
 
     @Override
     public boolean isFertilizable() {

@@ -60,23 +60,14 @@ public class PluginLogger implements Logger {
     }
 
     private Level toApacheLevel(LogLevel level) {
-        switch (level) {
-            case NONE:
-                return Level.OFF;
-            case EMERGENCY:
-            case CRITICAL:
-                return Level.FATAL;
-            case ALERT:
-            case WARNING:
-            case NOTICE:
-                return Level.WARN;
-            case ERROR:
-                return Level.ERROR;
-            case DEBUG:
-                return Level.DEBUG;
-            default:
-                return Level.INFO;
-        }
+        return switch (level) {
+            case NONE -> Level.OFF;
+            case EMERGENCY, CRITICAL -> Level.FATAL;
+            case ALERT, WARNING, NOTICE -> Level.WARN;
+            case ERROR -> Level.ERROR;
+            case DEBUG -> Level.DEBUG;
+            default -> Level.INFO;
+        };
     }
     
     @Override

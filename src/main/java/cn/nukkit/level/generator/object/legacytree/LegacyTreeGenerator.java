@@ -14,24 +14,18 @@ public abstract class LegacyTreeGenerator {
     public static void growTree(BlockManager level, int x, int y, int z, RandomSource random, WoodType type, boolean tall) {
         LegacyTreeGenerator tree;
         switch (type) {
-            case SPRUCE:
-                tree = new LegacySpruceTree();
-                break;
-            case BIRCH:
+            case SPRUCE -> tree = new LegacySpruceTree();
+            case BIRCH -> {
                 if (tall) {
                     tree = new LegacyTallBirchTree();
                 } else {
                     tree = new LegacyBirchTree();
                 }
-                break;
-            case JUNGLE:
-                tree = new LegacyJungleTree();
-                break;
-            case OAK:
-            default:
-                tree = new LegacyOakTree();
-                //todo: more complex treeeeeeeeeeeeeeeee
-                break;
+            }
+            case JUNGLE -> tree = new LegacyJungleTree();
+            default -> tree = new LegacyOakTree();
+
+            //todo: more complex treeeeeeeeeeeeeeeee
         }
 
         if (tree.canPlaceObject(level, x, y, z, random)) {

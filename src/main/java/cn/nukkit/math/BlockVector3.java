@@ -230,14 +230,11 @@ public class BlockVector3 implements Cloneable {
     }
 
     public int getAxis(BlockFace.Axis axis) {
-        switch (axis) {
-            case X:
-                return x;
-            case Y:
-                return y;
-            default:
-                return z;
-        }
+        return switch (axis) {
+            case X -> x;
+            case Y -> y;
+            default -> z;
+        };
     }
 
     @Override
@@ -245,8 +242,7 @@ public class BlockVector3 implements Cloneable {
         if (o == null) return false;
         if (o == this) return true;
 
-        if (!(o instanceof BlockVector3)) return false;
-        BlockVector3 that = (BlockVector3) o;
+        if (!(o instanceof BlockVector3 that)) return false;
 
         return this.x == that.x &&
                 this.y == that.y &&

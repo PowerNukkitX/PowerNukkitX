@@ -70,22 +70,15 @@ public class MovingObjectPosition {
     @Nullable
     @SuppressWarnings("java:S1874")
     public BlockFace getFaceHit() {
-        switch (sideHit) {
-            case 0:
-                return BlockFace.DOWN;
-            case 1:
-                return BlockFace.UP;
-            case 2:
-                return BlockFace.EAST;
-            case 3:
-                return BlockFace.WEST;
-            case 4:
-                return BlockFace.NORTH;
-            case 5:
-                return BlockFace.SOUTH;
-            default:
-                return null;
-        }
+        return switch (sideHit) {
+            case 0 -> BlockFace.DOWN;
+            case 1 -> BlockFace.UP;
+            case 2 -> BlockFace.EAST;
+            case 3 -> BlockFace.WEST;
+            case 4 -> BlockFace.NORTH;
+            case 5 -> BlockFace.SOUTH;
+            default -> null;
+        };
     }
 
     @SuppressWarnings("java:S1874")
@@ -96,26 +89,13 @@ public class MovingObjectPosition {
         }
 
         switch (face) {
-            case DOWN:
-                sideHit = 0;
-                break;
-            case UP:
-                sideHit = 1;
-                break;
-            case NORTH:
-                sideHit = 4;
-                break;
-            case SOUTH:
-                sideHit = 5;
-                break;
-            case WEST:
-                sideHit = 3;
-                break;
-            case EAST:
-                sideHit = 2;
-                break;
-            default:
-                sideHit = -1;
+            case DOWN -> sideHit = 0;
+            case UP -> sideHit = 1;
+            case NORTH -> sideHit = 4;
+            case SOUTH -> sideHit = 5;
+            case WEST -> sideHit = 3;
+            case EAST -> sideHit = 2;
+            default -> sideHit = -1;
         }
     }
 
