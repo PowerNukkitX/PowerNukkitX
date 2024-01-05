@@ -30,10 +30,8 @@ public class PluginManager {
 
     private final SimpleCommandMap commandMap;
 
-    @Getter
     protected final Map<String, Plugin> plugins = new LinkedHashMap<>();
 
-    @Getter
     protected final Map<String, Permission> permissions = new HashMap<>();
 
     protected final Map<String, Permission> defaultPerms = new HashMap<>();
@@ -93,6 +91,10 @@ public class PluginManager {
         plugin.init(pluginLoader, server, description, new File("PowerNukkitX"), file);
         plugins.put(description.getName(), plugin);
         enablePlugin(plugin);
+    }
+
+    public Map<String, Plugin> getPlugins() {
+        return plugins;
     }
 
     public Plugin loadPlugin(String path) {
@@ -432,6 +434,10 @@ public class PluginManager {
         } else {
             return new HashSet<>(this.defSubs);
         }
+    }
+
+    public Map<String, Permission> getPermissions() {
+        return permissions;
     }
 
     public boolean isPluginEnabled(Plugin plugin) {
