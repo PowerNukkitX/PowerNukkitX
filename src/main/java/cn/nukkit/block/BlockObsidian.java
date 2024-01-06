@@ -25,7 +25,7 @@ public class BlockObsidian extends BlockSolid {
     }
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -68,7 +68,7 @@ public class BlockObsidian extends BlockSolid {
     @Override
     public void afterRemoval(Block newBlock, boolean update) {
         if (update) {
-            onBreak(Item.get(BlockID.AIR));
+            onBreak(Item.getItemBlock(BlockID.AIR));
         }
     }
 

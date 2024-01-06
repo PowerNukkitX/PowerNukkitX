@@ -19,7 +19,7 @@ public class ItemConcrete extends Item {
     }
 
     private void adjustBlock() {
-        switch (getAux()) {
+        switch (getDamage()) {
             case 0:
                 block = Block.get(BlockID.WHITE_CONCRETE);
                 return;
@@ -71,7 +71,7 @@ public class ItemConcrete extends Item {
     }
 
     private void adjustName() {
-        switch (getAux()) {
+        switch (getDamage()) {
             case 0:
                 name = "White Concrete";
                 return;

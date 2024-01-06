@@ -19,7 +19,7 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
     public static final BlockProperties PROPERTIES = new BlockProperties(JUKEBOX);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -37,12 +37,12 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityJukebox> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityJukebox> getBlockEntityClass() {
         return BlockEntityJukebox.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.JUKEBOX;
     }
 

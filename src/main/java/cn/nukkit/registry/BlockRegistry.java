@@ -8,7 +8,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.utils.OK;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.sunlan.fastreflection.FastConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.lang.reflect.Field;
@@ -458,7 +457,8 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
 //        register(EXPOSED_COPPER_GRATE, BlockExposedCopperGrate.class);//experiment
 //        register(EXPOSED_COPPER_TRAPDOOR, BlockExposedCopperTrapdoor.class);//experiment
         register(EXPOSED_CUT_COPPER, BlockExposedCutCopper.class);// done.
-        register(EXPOSED_CUT_COPPER_SLAB, BlockExposedCutCopperSlab.class);;// done.
+        register(EXPOSED_CUT_COPPER_SLAB, BlockExposedCutCopperSlab.class);
+        ;// done.
         register(EXPOSED_CUT_COPPER_STAIRS, BlockExposedCutCopperStairs.class);// done.
         register(EXPOSED_DOUBLE_CUT_COPPER_SLAB, BlockExposedDoubleCutCopperSlab.class);// done.
         register(FARMLAND, BlockFarmland.class);// done.
@@ -1070,9 +1070,9 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
     }
 
     @Override
-    public @NotNull Block get(String identifier) {
+    public Block get(String identifier) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
-        if (constructor == null) return new BlockAir();
+        if (constructor == null) return null;
         try {
             return (Block) constructor.invoke((Object) null);
         } catch (Throwable e) {
@@ -1080,9 +1080,9 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         }
     }
 
-    public @NotNull Block get(String identifier, int x, int y, int z) {
+    public Block get(String identifier, int x, int y, int z) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
-        if (constructor == null) return new BlockAir();
+        if (constructor == null) return null;
         try {
             var b = (Block) constructor.invoke((Object) null);
             b.x = x;
@@ -1094,9 +1094,9 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         }
     }
 
-    public @NotNull Block get(String identifier, int x, int y, int z, Level level) {
+    public Block get(String identifier, int x, int y, int z, Level level) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
-        if (constructor == null) return new BlockAir();
+        if (constructor == null) return null;
         try {
             var b = (Block) constructor.invoke((Object) null);
             b.x = x;
@@ -1109,9 +1109,9 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         }
     }
 
-    public @NotNull Block get(String identifier, int x, int y, int z, int layer, Level level) {
+    public Block get(String identifier, int x, int y, int z, int layer, Level level) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
-        if (constructor == null) return new BlockAir();
+        if (constructor == null) return null;
         try {
             var b = (Block) constructor.invoke((Object) null);
             b.x = x;
@@ -1125,9 +1125,9 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         }
     }
 
-    public @NotNull Block get(BlockState blockState) {
+    public Block get(BlockState blockState) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
-        if (constructor == null) return new BlockAir();
+        if (constructor == null) return null;
         try {
             return (Block) constructor.invoke(blockState);
         } catch (Throwable e) {
@@ -1135,9 +1135,9 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         }
     }
 
-    public @NotNull Block get(BlockState blockState, int x, int y, int z) {
+    public Block get(BlockState blockState, int x, int y, int z) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
-        if (constructor == null) return new BlockAir();
+        if (constructor == null) return null;
         try {
             var b = (Block) constructor.invoke(blockState);
             b.x = x;
@@ -1149,9 +1149,9 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         }
     }
 
-    public @NotNull Block get(BlockState blockState, int x, int y, int z, Level level) {
+    public Block get(BlockState blockState, int x, int y, int z, Level level) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
-        if (constructor == null) return new BlockAir();
+        if (constructor == null) return null;
         try {
             var b = (Block) constructor.invoke(blockState);
             b.x = x;
@@ -1164,9 +1164,9 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         }
     }
 
-    public @NotNull Block get(BlockState blockState, int x, int y, int z, int layer, Level level) {
+    public Block get(BlockState blockState, int x, int y, int z, int layer, Level level) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
-        if (constructor == null) return new BlockAir();
+        if (constructor == null) return null;
         try {
             var b = (Block) constructor.invoke(blockState);
             b.x = x;

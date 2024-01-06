@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityPolarBear extends EntityAnimal implements EntityWalkable {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return POLAR_BEAR;
     }
 

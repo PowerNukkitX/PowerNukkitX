@@ -27,11 +27,11 @@ public class BlockDirt extends BlockSolid {
     }
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    public @NotNull DirtType getDirtType() {
+    @NotNull public DirtType getDirtType() {
         return getPropertyValue(CommonBlockProperties.DIRT_TYPE);
     }
 

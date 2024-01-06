@@ -7,7 +7,7 @@ public class BlockWaxedWeatheredDoubleCutCopperSlab extends BlockWeatheredDouble
     public static final BlockProperties PROPERTIES = new BlockProperties(WAXED_WEATHERED_DOUBLE_CUT_COPPER_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

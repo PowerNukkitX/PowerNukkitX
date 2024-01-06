@@ -17,7 +17,7 @@ public class BlockDropper extends BlockDispenser {
     public static final BlockProperties PROPERTIES = new BlockProperties(DROPPER);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -35,12 +35,12 @@ public class BlockDropper extends BlockDispenser {
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityDropper> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityDropper> getBlockEntityClass() {
         return BlockEntityDropper.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.DROPPER;
     }
 

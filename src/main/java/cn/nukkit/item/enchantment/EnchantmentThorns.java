@@ -5,7 +5,6 @@ import cn.nukkit.entity.EntityHumanType;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemElytra;
 import org.jetbrains.annotations.NotNull;
 
@@ -59,14 +58,6 @@ public class EnchantmentThorns extends Enchantment {
     @Override
     public boolean canEnchant(@NotNull Item item) {
         return !(item instanceof ItemElytra) && super.canEnchant(item);
-    }
-
-    @Override
-    public boolean isItemAcceptable(Item item) {
-        if (item instanceof ItemArmor) {
-            return !(item instanceof ItemElytra);
-        }
-        return super.isItemAcceptable(item);
     }
 
     private static boolean shouldHit(ThreadLocalRandom random, int level) {

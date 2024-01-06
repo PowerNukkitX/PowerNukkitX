@@ -67,7 +67,7 @@ public class ItemBucket extends Item {
     }
 
     public int getBucketType() {
-        return this.aux;
+        return this.meta;
     }
 
     public static String getDamageByTarget(int target) {
@@ -257,7 +257,7 @@ public class ItemBucket extends Item {
                 return true;
             } else if (nether) {
                 if (!player.isCreative()) {
-                    this.setAux(0); // Empty bucket
+                    this.setDamage(0); // Empty bucket
                     player.getInventory().setItemInHand(this);
                 }
                 player.getLevel().addLevelSoundEvent(target, LevelSoundEventPacket.SOUND_FIZZ);

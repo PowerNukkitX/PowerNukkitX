@@ -10,7 +10,7 @@ public class BlockAzaleaLeavesFlowered extends BlockAzaleaLeaves {
     public static final BlockProperties PROPERTIES = new BlockProperties(AZALEA_LEAVES_FLOWERED,PERSISTENT_BIT, UPDATE_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

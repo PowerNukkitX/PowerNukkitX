@@ -15,7 +15,7 @@ public class BlockWallSign extends BlockStandingSign {
     public static final BlockProperties PROPERTIES = new BlockProperties(WALL_SIGN, FACING_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -6,7 +6,7 @@ public class BlockReserved6 extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(RESERVED6);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -155,11 +155,11 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
 
         result.setCompoundTag(tag);
         if (!secondItem.isNull() && firstItem.getMaxDurability() > 0) {
-            int first = firstItem.getMaxDurability() - firstItem.getAux();
-            int second = secondItem.getMaxDurability() - secondItem.getAux();
+            int first = firstItem.getMaxDurability() - firstItem.getDamage();
+            int second = secondItem.getMaxDurability() - secondItem.getDamage();
             int reduction = first + second + firstItem.getMaxDurability() * 5 / 100;
             int resultingDamage = Math.max(firstItem.getMaxDurability() - reduction + 1, 0);
-            result.setAux(resultingDamage);
+            result.setDamage(resultingDamage);
         }
 
         setResult(result, send);
@@ -205,7 +205,7 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
     }
 
     @Override
-    public @NotNull Item getItem(int index) {
+    @NotNull public Item getItem(int index) {
         if (index < 0 || index > 3) {
             return Item.AIR;
         }
@@ -217,7 +217,7 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
     }
 
     @Override
-    public Item getUnclonedItem(int index) {
+    public Item getItemUnsafe(int index) {
         if (index < 0 || index > 3) {
             return Item.AIR;
         }
@@ -225,7 +225,7 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
             index = SLOT_RESULT;
         }
 
-        return super.getUnclonedItem(index);
+        return super.getItemUnsafe(index);
     }
 
     @Override

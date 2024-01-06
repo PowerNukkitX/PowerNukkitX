@@ -8,7 +8,7 @@ public class BlockEndBrickStairs extends BlockStairs {
     public static final BlockProperties PROPERTIES = new BlockProperties(END_BRICK_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -10,7 +10,7 @@ public class BlockDeepslate extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -9,7 +9,7 @@ public class BlockSoulLantern extends BlockLantern {
     public static final BlockProperties PROPERTIES = new BlockProperties(SOUL_LANTERN, HANGING);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

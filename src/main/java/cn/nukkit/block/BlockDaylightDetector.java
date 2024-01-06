@@ -22,7 +22,7 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
     public static final BlockProperties PROPERTIES = new BlockProperties(DAYLIGHT_DETECTOR, CommonBlockProperties.REDSTONE_SIGNAL);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -40,12 +40,12 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.DAYLIGHT_DETECTOR;
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityDaylightDetector> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityDaylightDetector> getBlockEntityClass() {
         return BlockEntityDaylightDetector.class;
     }
 

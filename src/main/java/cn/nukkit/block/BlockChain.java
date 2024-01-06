@@ -16,7 +16,7 @@ public class BlockChain extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHAIN, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

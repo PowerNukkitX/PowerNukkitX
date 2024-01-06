@@ -7,7 +7,7 @@ public class BlockWarpedPlanks extends BlockPlanks {
     public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_PLANKS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

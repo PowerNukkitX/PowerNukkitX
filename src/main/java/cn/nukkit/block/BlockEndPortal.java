@@ -18,7 +18,7 @@ public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<B
     public static final BlockProperties PROPERTIES = new BlockProperties(END_PORTAL);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -36,12 +36,12 @@ public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<B
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityEndPortal> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityEndPortal> getBlockEntityClass() {
         return BlockEntityEndPortal.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.END_PORTAL;
     }
 

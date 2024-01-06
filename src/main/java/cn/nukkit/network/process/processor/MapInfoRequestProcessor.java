@@ -7,7 +7,8 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.event.player.PlayerMapInfoRequestEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemMap;
+import cn.nukkit.item.ItemEmptyMap;
+import cn.nukkit.item.ItemFilledMap;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.MapInfoRequestPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -25,21 +26,23 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
         int index = 0;
         var offhand = false;
 
-        for (var entry : player.getOffhandInventory().getContents().entrySet()) {
-            var item1 = entry.getValue();
+        Item[] contents = player.getOffhandInventory().getContents();
+        for (int i = 0; i < contents.length; i++) {
+            Item item1 = contents[i];
             if (checkMapItemValid(item1, pk)) {
                 mapItem = item1;
-                index = entry.getKey();                    
+                index = i;
                 offhand = true;
             }
         }
 
         if (mapItem == null) {
-            for (var entry : player.getInventory().getContents().entrySet()) {
-                var item1 = entry.getValue();
+            contents = player.getInventory().getContents();
+            for (int i = 0; i < contents.length; i++) {
+                Item item1 = contents[i];
                 if (checkMapItemValid(item1, pk)) {
                     mapItem = item1;
-                    index = entry.getKey();
+                    index = i;
                 }
             }
         }
@@ -47,7 +50,7 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
         if (mapItem == null) {
             for (BlockEntity be : player.level.getBlockEntities().values()) {
                 if (be instanceof BlockEntityItemFrame itemFrame && checkMapItemValid(itemFrame.getItem(), pk)) {
-                    ((ItemMap) itemFrame.getItem()).sendImage(player);
+                    ((ItemFilledMap) itemFrame.getItem()).sendImage(player);
                     break;
                 }
             }
@@ -58,7 +61,7 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
             player.getServer().getPluginManager().callEvent(event = new PlayerMapInfoRequestEvent(player, mapItem));
 
             if (!event.isCancelled()) {
-                ItemMap map = (ItemMap) mapItem;
+                ItemFilledMap map = (ItemFilledMap) mapItem;
                 if (map.trySendImage(player)) {
                     return;
                 }
@@ -71,10 +74,10 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
                     public void onRun() {
                         map.renderMap(player.getLevel(), (player.getFloorX() / 128) << 7, (player.getFloorZ() / 128) << 7, 1);
                         if (finalOffhand) {
-                            if (checkMapItemValid(player.getOffhandInventory().getUnclonedItem(finalIndex), pk))
+                            if (checkMapItemValid(player.getOffhandInventory().getItemUnsafe(finalIndex), pk))
                                 player.getOffhandInventory().setItem(finalIndex, map);
                         } else {
-                            if (checkMapItemValid(player.getInventory().getUnclonedItem(finalIndex), pk))
+                            if (checkMapItemValid(player.getInventory().getItemUnsafe(finalIndex), pk))
                                 player.getInventory().setItem(finalIndex, map);
                         }
                         map.sendImage(player);
@@ -90,6 +93,6 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
     }
 
     protected boolean checkMapItemValid(Item item, MapInfoRequestPacket pk) {
-        return item instanceof ItemMap itemMap && itemMap.getMapId() == pk.mapId;
+        return item instanceof ItemFilledMap itemMap && itemMap.getMapId() == pk.mapId;
     }
 }

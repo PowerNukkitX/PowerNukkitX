@@ -25,7 +25,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
     public static final BlockProperties PROPERTIES = new BlockProperties(BEEHIVE, CommonBlockProperties.DIRECTION, HONEY_LEVEL);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -43,12 +43,12 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.BEEHIVE;
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityBeehive> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityBeehive> getBlockEntityClass() {
         return BlockEntityBeehive.class;
     }
 

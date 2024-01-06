@@ -43,7 +43,7 @@ public class PositionTracking extends NamedPosition {
     }
 
     @Override
-    public @NotNull String getLevelName() {
+    @NotNull public String getLevelName() {
         return levelName;
     }
 
@@ -52,7 +52,7 @@ public class PositionTracking extends NamedPosition {
     }
 
     @Override
-    public @NotNull PositionTracking add(double x) {
+    @NotNull public PositionTracking add(double x) {
         return add(x, 0, 0);
     }
 
@@ -230,7 +230,7 @@ public class PositionTracking extends NamedPosition {
     }
 
     @Override
-    public @NotNull PositionTracking setComponents(@NotNull Vector3 position) {
+    @NotNull public PositionTracking setComponents(@NotNull Vector3 position) {
         super.setComponents(position);
         return this;
     }

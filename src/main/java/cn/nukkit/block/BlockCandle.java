@@ -25,7 +25,7 @@ public class BlockCandle extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(BLACK_CANDLE, CANDLES, LIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

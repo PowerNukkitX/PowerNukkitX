@@ -9,7 +9,7 @@ public class BlockTwistingVines extends BlockVinesNether {
     public static final BlockProperties PROPERTIES = new BlockProperties(TWISTING_VINES, TWISTING_VINES_AGE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -27,7 +27,7 @@ public class BlockTwistingVines extends BlockVinesNether {
     }
 
     @Override
-    public @NotNull BlockFace getGrowthDirection() {
+    @NotNull public BlockFace getGrowthDirection() {
         return BlockFace.UP;
     }
 

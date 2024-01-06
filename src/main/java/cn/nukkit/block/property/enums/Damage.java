@@ -7,11 +7,12 @@ package cn.nukkit.block.property.enums;
  * @author daoge_cmd
  */
 public enum Damage {
-    BROKEN,
-
-    SLIGHTLY_DAMAGED,
-
     UNDAMAGED,
+    SLIGHTLY_DAMAGED,
+    BROKEN,
+    VERY_DAMAGED;
 
-    VERY_DAMAGED
+    public Damage next(){
+        return values()[this.ordinal()+1];
+    }
 }

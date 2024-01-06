@@ -7,7 +7,7 @@ public class BlockBambooFence extends BlockFence {
     public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_FENCE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

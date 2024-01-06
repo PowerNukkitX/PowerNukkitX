@@ -6,7 +6,7 @@ public class BlockJungleFence extends BlockFence {
     public static final BlockProperties PROPERTIES = new BlockProperties(JUNGLE_FENCE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

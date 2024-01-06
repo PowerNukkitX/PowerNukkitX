@@ -13,7 +13,7 @@ public class BlockRedstoneBlock extends BlockSolid implements RedstoneComponent 
     public static final BlockProperties PROPERTIES = new BlockProperties(REDSTONE_BLOCK);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

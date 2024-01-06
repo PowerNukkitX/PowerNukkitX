@@ -6,7 +6,7 @@ public class BlockCrackedDeepslateTiles extends BlockDeepslateTiles {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRACKED_DEEPSLATE_TILES);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

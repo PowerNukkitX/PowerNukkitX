@@ -12,5 +12,5 @@ public abstract class BlockGlassStained extends BlockGlass {
         super(blockState);
     }
 
-    public @NotNull abstract DyeColor getDyeColor();
+    @NotNull public abstract DyeColor getDyeColor();
 }

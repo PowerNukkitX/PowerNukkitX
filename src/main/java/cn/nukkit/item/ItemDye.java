@@ -27,7 +27,7 @@ public class ItemDye extends Item {
     public ItemDye(Integer meta, int amount) {
         super(DYE, meta, amount, meta <= 15 ? DyeColor.getByDyeData(meta).getDyeName() : DyeColor.getByDyeData(meta).getName() + " Dye");
 
-        if (this.aux == DyeColor.BROWN.getDyeData()) {
+        if (this.meta == DyeColor.BROWN.getDyeData()) {
             this.block = Block.get(BlockID.COCOA);
         }
     }
@@ -50,6 +50,6 @@ public class ItemDye extends Item {
     }
 
     public DyeColor getDyeColor() {
-        return DyeColor.getByDyeData(aux);
+        return DyeColor.getByDyeData(meta);
     }
 }

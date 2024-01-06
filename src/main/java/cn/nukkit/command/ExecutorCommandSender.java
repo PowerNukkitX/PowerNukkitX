@@ -55,7 +55,7 @@ public class ExecutorCommandSender implements CommandSender {
     }
 
     @Override
-    public @NotNull String getName() {
+    @NotNull public String getName() {
         return entity.getName();
     }
 
@@ -80,12 +80,12 @@ public class ExecutorCommandSender implements CommandSender {
     }
 
     @Override
-    public @NotNull Position getPosition() {
+    @NotNull public Position getPosition() {
         return (executeLocation == null ? entity : executeLocation).clone();
     }
 
     @Override
-    public @NotNull Location getLocation() {
+    @NotNull public Location getLocation() {
         return (executeLocation == null ? entity : executeLocation).clone();
     }
 

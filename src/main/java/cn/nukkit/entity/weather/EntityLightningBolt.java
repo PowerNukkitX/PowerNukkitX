@@ -31,7 +31,7 @@ import java.util.function.Supplier;
  */
 public class EntityLightningBolt extends Entity implements EntityLightningStrike {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return LIGHTNING_BOLT;
     }
     

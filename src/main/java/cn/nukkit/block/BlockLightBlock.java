@@ -9,7 +9,7 @@ public class BlockLightBlock extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(LIGHT_BLOCK, CommonBlockProperties.BLOCK_LIGHT_LEVEL);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

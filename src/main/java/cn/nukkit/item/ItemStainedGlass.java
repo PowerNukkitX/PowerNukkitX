@@ -18,7 +18,7 @@ public class ItemStainedGlass extends Item {
     }
 
     public void adjust() {
-        switch (getAux()) {
+        switch (getDamage()) {
             case 0:
                 this.name = "White Stained Glass";
                 this.block = Block.get(BlockID.WHITE_STAINED_GLASS);

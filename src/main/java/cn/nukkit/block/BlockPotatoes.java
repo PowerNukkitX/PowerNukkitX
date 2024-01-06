@@ -12,7 +12,7 @@ public class BlockPotatoes  extends BlockCrops {
     public static final BlockProperties PROPERTIES = new BlockProperties(POTATOES, CommonBlockProperties.GROWTH);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

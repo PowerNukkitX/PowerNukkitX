@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityDrowned extends EntityMob implements EntitySwimmable, EntityWalkable, EntitySmite {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return DROWNED;
     }
 

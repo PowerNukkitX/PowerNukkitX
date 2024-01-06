@@ -31,7 +31,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     public static final BlockProperties PROPERTIES = new BlockProperties(FRAME, FACING_DIRECTION, ITEM_FRAME_MAP_BIT, ITEM_FRAME_PHOTO_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -44,7 +44,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     }
 
     @Override
-    public @NotNull BlockFace getBlockFace() {
+    @NotNull public BlockFace getBlockFace() {
         return BlockFace.fromIndex(getPropertyValue(FACING_DIRECTION));
     }
 
@@ -70,12 +70,12 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.ITEM_FRAME;
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityItemFrame> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityItemFrame> getBlockEntityClass() {
         return BlockEntityItemFrame.class;
     }
 

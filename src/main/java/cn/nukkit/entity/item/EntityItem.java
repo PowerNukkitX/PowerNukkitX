@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityItem extends Entity {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return ITEM;
     }
     
@@ -286,7 +286,7 @@ public class EntityItem extends Entity {
     }
 
     @Override
-    public @NotNull String getName() {
+    @NotNull public String getName() {
         if (this.hasCustomName()) {
             return getNameTag();
         }

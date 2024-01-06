@@ -5,27 +5,17 @@ import cn.nukkit.item.customitem.data.ItemCreativeCategory;
 import cn.nukkit.item.enchantment.Enchantment;
 
 public abstract class ItemCustomBookEnchanted extends ItemEnchantedBook implements CustomItem {
-    private final String id;
 
-    public ItemCustomBookEnchanted(String id, String name) {
-        super(id, 0, 1, name);
-        this.id = id;
-    }
-
-    @Override
-    public String getTextureName() {
-        return "book_enchanted";
-    }
-
-    @Override
-    public String getNamespaceId() {
-        return id;
+    public ItemCustomBookEnchanted(String id) {
+        super(id);
     }
 
     @Override
     public CustomItemDefinition getDefinition() {
-        return CustomItemDefinition.customBuilder(this, ItemCreativeCategory.ITEMS)
+        return CustomItemDefinition.customBuilder(this)
+                .texture("book_enchanted")
                 .allowOffHand(false)
+                .creativeCategory(ItemCreativeCategory.ITEMS)
                 .creativeGroup("itemGroup.name.enchantedBook")
                 .foil(true)
                 .customBuild(nbt -> nbt.getCompound("components")
@@ -42,11 +32,6 @@ public abstract class ItemCustomBookEnchanted extends ItemEnchantedBook implemen
     }
 
     public Enchantment getEnchantment() {
-        return Enchantment.getEnchantment(this.getNamespaceId());
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 1;
+        return Enchantment.getEnchantment(this.getId());
     }
 }

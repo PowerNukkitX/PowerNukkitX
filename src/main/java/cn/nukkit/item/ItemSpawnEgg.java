@@ -42,8 +42,8 @@ public class ItemSpawnEgg extends Item {
     }
 
     @Override
-    public void setAux(Integer aux) {
-        super.setAux(aux);
+    public void setDamage(Integer meta) {
+        super.setDamage(meta);
         updateName();
     }
 
@@ -115,7 +115,7 @@ public class ItemSpawnEgg extends Item {
     }
 
     public int getEntityNetworkId() {
-        return this.aux;
+        return this.meta;
     }
 
     public @Nullable String getEntityName() {

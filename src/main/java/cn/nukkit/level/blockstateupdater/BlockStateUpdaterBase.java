@@ -1,8 +1,7 @@
 package cn.nukkit.level.blockstateupdater;
 
 import cn.nukkit.level.blockstateupdater.util.tagupdater.CompoundTagUpdaterContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -18,52 +17,51 @@ public class BlockStateUpdaterBase implements BlockStateUpdater {
     public static final BlockStateUpdater INSTANCE = new BlockStateUpdaterBase();
 
     public static final Map<String, Map<String, Object>[]> LEGACY_BLOCK_DATA_MAP = new HashMap<>();
-    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+    private static final Gson JSON_MAPPER = new Gson();
 
     static {
-        JsonNode node;
+        JsonObject node;
         try (InputStream stream = BlockStateUpdater.class.getClassLoader().getResourceAsStream("legacy_block_data_map.json")) {
-            node = JSON_MAPPER.readTree(stream);
+            node = (JsonObject) JSON_MAPPER.toJsonTree(stream);
         } catch (IOException e) {
             throw new AssertionError("Error loading legacy block data map", e);
         }
 
-        Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
+        Iterator<Map.Entry<String, JsonElement>> iterator = node.entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<String, JsonNode> entry = iterator.next();
+            Map.Entry<String, JsonElement> entry = iterator.next();
             String name = entry.getKey();
-            JsonNode stateNodes = entry.getValue();
+            JsonArray stateNodes = entry.getValue().getAsJsonArray();
 
             int size = stateNodes.size();
             Map<String, Object>[] states = new Map[size];
             for (int i = 0; i < size; i++) {
-                states[i] = convertStateToCompound(stateNodes.get(i));
+                states[i] = convertStateToCompound(stateNodes.get(i).getAsJsonObject());
             }
 
             LEGACY_BLOCK_DATA_MAP.put(name, states);
         }
     }
 
-    private static Map<String, Object> convertStateToCompound(JsonNode node) {
+    private static Map<String, Object> convertStateToCompound(JsonObject node) {
         Map<String, Object> tag = new LinkedHashMap<>();
-        Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
+        Iterator<Map.Entry<String, JsonElement>> iterator = node.entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<String, JsonNode> entry = iterator.next();
+            Map.Entry<String, JsonElement> entry = iterator.next();
             String name = entry.getKey();
-            JsonNode value = entry.getValue();
-            switch (value.getNodeType()) {
-                case BOOLEAN:
-                    tag.put(name, value.booleanValue());
-                    break;
-                case NUMBER:
-                    tag.put(name, value.intValue());
-                    break;
-                case STRING:
-                    tag.put(name, value.textValue());
-                    break;
-                default:
+            JsonElement value = entry.getValue();
+            if (value.isJsonPrimitive()) {
+                JsonPrimitive primitive = entry.getValue().getAsJsonPrimitive();
+                if (primitive.isBoolean()) {
+                    tag.put(name, primitive.getAsBoolean());
+                } else if (primitive.isNumber()) {
+                    tag.put(name, primitive.getAsInt());
+                } else if (primitive.isString()) {
+                    tag.put(name, primitive.getAsString());
+                } else {
                     throw new UnsupportedOperationException("Invalid state type");
-            }
+                }
+            } else throw new UnsupportedOperationException("Invalid state type");
         }
         return tag;
     }

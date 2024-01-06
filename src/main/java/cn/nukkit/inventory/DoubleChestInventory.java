@@ -30,7 +30,7 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
         this.right = right.getRealInventory();
         this.right.setDoubleInventory(this);
 
-        Map<Integer, Item> items = new HashMap<>();
+        Item[] items = new Item[54];
         // First we add the items from the left chest
         for (int idx = 0; idx < this.left.getSize(); idx++) {
             if (this.left.getContents().containsKey(idx)) { // Don't forget to skip empty slots!
@@ -58,13 +58,13 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
     }
 
     @Override
-    public @NotNull Item getItem(int index) {
+    @NotNull public Item getItem(int index) {
         return index < this.left.getSize() ? this.left.getItem(index) : this.right.getItem(index - this.right.getSize());
     }
 
     @Override
-    public Item getUnclonedItem(int index) {
-        return index < this.left.getSize() ? this.left.getUnclonedItem(index) : this.right.getUnclonedItem(index - this.right.getSize());
+    public Item getItemUnsafe(int index) {
+        return index < this.left.getSize() ? this.left.getItemUnsafe(index) : this.right.getItemUnsafe(index - this.right.getSize());
     }
 
     @Override
@@ -78,7 +78,7 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
     }
 
     @Override
-    public Map<Integer, Item> getContents() {
+    public Item[] getContents() {
         Map<Integer, Item> contents = new HashMap<>();
 
         for (int i = 0; i < this.getSize(); ++i) {
@@ -89,7 +89,7 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
     }
 
     @Override
-    public void setContents(Map<Integer, Item> items) {
+    public void setContents(Item[] items) {
         if (items.size() > this.size) {
             Map<Integer, Item> newItems = new HashMap<>();
             for (int i = 0; i < this.size; i++) {
@@ -191,7 +191,7 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
     public void sendSlot(Inventory inv, int index, Player... players) {
         InventorySlotPacket pk = new InventorySlotPacket();
         pk.slot = inv == this.right ? this.left.getSize() + index : index;
-        pk.item = inv.getUnclonedItem(index);
+        pk.item = inv.getItemUnsafe(index);
 
         for (Player player : players) {
             int id = player.getWindowId(this);

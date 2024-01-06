@@ -17,7 +17,7 @@ public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.Flowe
     public static final BlockProperties PROPERTIES = new BlockProperties(DEADBUSH);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

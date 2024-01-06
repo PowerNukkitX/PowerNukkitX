@@ -6,7 +6,7 @@ public class BlockCrackedPolishedBlackstoneBricks extends BlockBlackstone {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRACKED_POLISHED_BLACKSTONE_BRICKS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

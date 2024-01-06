@@ -6,7 +6,7 @@ public class BlockJunglePlanks extends BlockPlanks {
     public static final BlockProperties PROPERTIES = new BlockProperties(JUNGLE_PLANKS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

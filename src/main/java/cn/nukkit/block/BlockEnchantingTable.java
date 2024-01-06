@@ -25,7 +25,7 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
     public static final BlockProperties PROPERTIES = new BlockProperties(ENCHANTING_TABLE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -43,12 +43,12 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.ENCHANT_TABLE;
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityEnchantTable> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityEnchantTable> getBlockEntityClass() {
         return BlockEntityEnchantTable.class;
     }
 

@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityFox extends EntityAnimal implements EntityWalkable {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return FOX;
     }
     

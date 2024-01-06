@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityDolphin extends EntityAnimal implements EntitySwimmable {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return DOLPHIN;
     }
     

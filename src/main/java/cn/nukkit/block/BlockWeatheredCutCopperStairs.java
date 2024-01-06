@@ -8,7 +8,7 @@ public class BlockWeatheredCutCopperStairs extends BlockCutCopperStairs {
     public static final BlockProperties PROPERTIES = new BlockProperties(WEATHERED_CUT_COPPER_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -21,7 +21,7 @@ public class BlockWeatheredCutCopperStairs extends BlockCutCopperStairs {
     }
 
     @Override
-    public @NotNull OxidizationLevel getOxidizationLevel() {
+    @NotNull public OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.WEATHERED;
     }
 }

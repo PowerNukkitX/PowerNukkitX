@@ -7,7 +7,7 @@ public class BlockGrayCandleCake extends BlockCandleCake {
     public static final BlockProperties PROPERTIES = new BlockProperties(GRAY_CANDLE_CAKE, CommonBlockProperties.LIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

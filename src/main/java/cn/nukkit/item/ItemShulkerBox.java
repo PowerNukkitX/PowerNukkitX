@@ -18,7 +18,7 @@ public class ItemShulkerBox extends Item {
     }
 
     public void adjust() {
-        switch (getAux()) {
+        switch (getDamage()) {
             case 0:
                 this.name = "White Shulker Box";
                 this.block = Block.get(BlockID.WHITE_SHULKER_BOX);

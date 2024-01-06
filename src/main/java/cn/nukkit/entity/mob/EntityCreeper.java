@@ -37,7 +37,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityCreeper extends EntityMob implements EntityWalkable, EntityInteractable {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return CREEPER;
     }
     

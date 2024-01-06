@@ -27,7 +27,7 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
     public static final BlockProperties PROPERTIES = new BlockProperties(SKULL, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -40,12 +40,12 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.SKULL;
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntitySkull> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntitySkull> getBlockEntityClass() {
         return BlockEntitySkull.class;
     }
 
@@ -102,7 +102,7 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
             }
         }
         CompoundTag nbt = new CompoundTag()
-                .putByte("SkullType", item.getAux())
+                .putByte("SkullType", item.getDamage())
                 .putByte("Rot", (int) Math.floor((player.yaw * 16 / 360) + 0.5) & 0x0f);
         if (item.hasCustomBlockData()) {
             for (Tag aTag : item.getCustomBlockData().getAllTags()) {

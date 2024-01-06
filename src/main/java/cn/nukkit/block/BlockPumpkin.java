@@ -30,7 +30,7 @@ public class BlockPumpkin extends BlockSolid implements Faceable {
     }
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

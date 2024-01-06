@@ -17,19 +17,9 @@ import java.util.Map;
 
 
 public abstract class ItemCustomEdible extends ItemEdible implements CustomItem {
-    private final String id;
-    private final String textureName;
 
-    public ItemCustomEdible(@NotNull String id, @Nullable String name) {
-        super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
-        this.id = id;
-        this.textureName = name;
-    }
-
-    public ItemCustomEdible(@NotNull String id, @Nullable String name, @NotNull String textureName) {
-        super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
-        this.id = id;
-        this.textureName = textureName;
+    public ItemCustomEdible(@NotNull String id) {
+        super(id);
     }
 
     @Override
@@ -39,20 +29,6 @@ public abstract class ItemCustomEdible extends ItemEdible implements CustomItem 
         }
         player.getFoodData().sendFoodLevel();
         return false;
-    }
-
-    public String getTextureName() {
-        return textureName;
-    }
-
-    @Override
-    public String getNamespaceId() {
-        return id;
-    }
-
-    @Override
-    public final int getId() {
-        return CustomItem.super.getId();
     }
 
     public abstract Map.Entry<Plugin, Food> getFood();

@@ -23,7 +23,7 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
     public static final BlockProperties PROPERTIES = new BlockProperties(LIT_FURNACE, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -41,12 +41,12 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityFurnace> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityFurnace> getBlockEntityClass() {
         return BlockEntityFurnace.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.FURNACE;
     }
 

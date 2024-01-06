@@ -51,54 +51,107 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     protected BlockColor color;
     public int layer;
 
+    @NotNull
     public static Block get(String id) {
-        return Registries.BLOCK.get(id);
+        Block block = Registries.BLOCK.get(id);
+        if (block == null) return new BlockAir();
+        return block;
     }
 
+    @NotNull
     public static Block get(String id, Position pos) {
-        return Registries.BLOCK.get(id, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), pos.level);
+        Block block = Registries.BLOCK.get(id, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), pos.level);
+        if (block == null) {
+            BlockAir blockAir = new BlockAir();
+            blockAir.x = pos.getFloorX();
+            blockAir.y = pos.getFloorY();
+            blockAir.z = pos.getFloorZ();
+            blockAir.level = pos.level;
+            return blockAir;
+        }
+        return block;
     }
 
+    @NotNull
     public static Block get(String id, Position pos, int layer) {
         Block block = get(id, pos);
         block.layer = layer;
         return block;
     }
 
+    @NotNull
     public static Block get(String id, Level level, int x, int y, int z) {
-        return Registries.BLOCK.get(id, x, y, z, level);
+        Block block = Registries.BLOCK.get(id, x, y, z, level);
+        if (block == null) {
+            BlockAir blockAir = new BlockAir();
+            blockAir.x = x;
+            blockAir.y = y;
+            blockAir.z = z;
+            blockAir.level = level;
+            return blockAir;
+        }
+        return block;
     }
 
+    @NotNull
     public static Block get(String id, Level level, int x, int y, int z, int layer) {
         Block block = get(id, level, x, y, z);
         block.layer = layer;
         return block;
     }
 
+    @NotNull
     public static Block get(BlockState blockState) {
-        return Registries.BLOCK.get(blockState);
+        Block block = Registries.BLOCK.get(blockState);
+        if (block == null) {
+            return new BlockAir();
+        }
+        return block;
     }
 
+    @NotNull
     public static Block get(BlockState blockState, Position pos) {
-        return Registries.BLOCK.get(blockState, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), pos.level);
+        Block block = Registries.BLOCK.get(blockState, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), pos.level);
+        if (block == null) {
+            BlockAir blockAir = new BlockAir();
+            blockAir.x = pos.getFloorX();
+            blockAir.y = pos.getFloorY();
+            blockAir.z = pos.getFloorZ();
+            blockAir.level = pos.level;
+            return blockAir;
+        }
+        return block;
     }
 
+    @NotNull
     public static Block get(BlockState blockState, Position pos, int layer) {
         Block block = get(blockState, pos);
         block.layer = layer;
         return block;
     }
 
+    @NotNull
     public static Block get(BlockState blockState, Level level, int x, int y, int z) {
-        return Registries.BLOCK.get(blockState, x, y, z, level);
+        Block block = Registries.BLOCK.get(blockState, x, y, z, level);
+        if (block == null) {
+            BlockAir blockAir = new BlockAir();
+            blockAir.x = x;
+            blockAir.y = y;
+            blockAir.z = z;
+            blockAir.level = level;
+            return blockAir;
+        }
+        return block;
     }
 
+    @NotNull
     public static Block get(BlockState blockState, Level level, int x, int y, int z, int layer) {
         Block block = get(blockState, level, x, y, z);
         block.layer = layer;
         return block;
     }
 
+    @NotNull
     public static Block getWithState(String id, BlockState blockState) {
         Block block = get(blockState);
         block.setPropertyValues(blockState.getBlockPropertyValues());
@@ -437,13 +490,16 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     /**
      * The properties that fully describe all possible and valid states that this block can have.
      */
-    public @NotNull abstract BlockProperties getProperties();
+    @NotNull
+    public abstract BlockProperties getProperties();
 
-    public @NotNull final String getId() {
+    @NotNull
+    public final String getId() {
         return this.getProperties().getIdentifier();
     }
 
-    public @NotNull String getItemId() {
+    @NotNull
+    public String getItemId() {
         return getId();
     }
 

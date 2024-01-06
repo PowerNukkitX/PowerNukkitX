@@ -8,7 +8,7 @@ public class BlockOxidizedCutCopperSlab extends BlockCutCopperSlab {
     public static final BlockProperties PROPERTIES = new BlockProperties(OXIDIZED_CUT_COPPER_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -25,7 +25,7 @@ public class BlockOxidizedCutCopperSlab extends BlockCutCopperSlab {
     }
 
     @Override
-    public @NotNull OxidizationLevel getOxidizationLevel() {
+    @NotNull public OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.OXIDIZED;
     }
 }

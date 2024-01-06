@@ -7,7 +7,7 @@ public class BlockBlastFurnace extends BlockLitBlastFurnace {
     public static final BlockProperties PROPERTIES = new BlockProperties(BLAST_FURNACE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

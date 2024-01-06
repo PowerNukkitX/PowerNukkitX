@@ -16,7 +16,7 @@ public class EntityEvocationIllager extends EntityMob implements EntityWalkable 
     }
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return EntityID.EVOCATION_ILLAGER;
     }
 

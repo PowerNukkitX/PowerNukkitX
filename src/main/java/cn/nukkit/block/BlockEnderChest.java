@@ -28,7 +28,7 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
     private final Set<Player> viewers = new HashSet<>();
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -46,12 +46,12 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.ENDER_CHEST;
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityEnderChest> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityEnderChest> getBlockEntityClass() {
         return BlockEntityEnderChest.class;
     }
 

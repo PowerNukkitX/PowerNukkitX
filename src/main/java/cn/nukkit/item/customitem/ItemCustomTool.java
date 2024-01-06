@@ -2,29 +2,15 @@ package cn.nukkit.item.customitem;
 
 import cn.nukkit.item.*;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 
 /**
  * @author lt_name
  */
-
-
 public abstract class ItemCustomTool extends ItemTool implements ItemDurable, CustomItem {
-    private final String id;
-    private final String textureName;
-
-    public ItemCustomTool(@NotNull String id, @Nullable String name) {
-        super(id, 0, 1, name);
-        this.id = id;
-        this.textureName = name;
-    }
-
-    public ItemCustomTool(@NotNull String id, @Nullable String name, @NotNull String textureName) {
-        super(id, 0, 1, name);
-        this.id = id;
-        this.textureName = textureName;
+    public ItemCustomTool(@NotNull String id) {
+        super(id);
     }
 
     @Override
@@ -32,22 +18,9 @@ public abstract class ItemCustomTool extends ItemTool implements ItemDurable, Cu
         return DURABILITY_WOODEN;
     }
 
-    public String getTextureName() {
-        return textureName;
-    }
-
-    @Override
-    public String getNamespaceId() {
-        return id;
-    }
-
-    @Override
-    public final int getId() {
-        return CustomItem.super.getId();
-    }
 
     public final Integer getSpeed() {
-        var nbt = Item.getCustomItemDefinition().get(this.getNamespaceId()).nbt();
+        var nbt = Registries.ITEM.getCustomItemDefinition().get(this.getId()).nbt();
         if (nbt == null || !nbt.getCompound("components").contains("minecraft:digger")) return null;
         return nbt.getCompound("components")
                 .getCompound("minecraft:digger")

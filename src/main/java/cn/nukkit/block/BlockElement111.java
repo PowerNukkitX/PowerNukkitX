@@ -6,7 +6,7 @@ public class BlockElement111 extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:element_111");
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

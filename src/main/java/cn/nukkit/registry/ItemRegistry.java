@@ -1,16 +1,28 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.item.*;
+import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.OK;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.sunlan.fastreflection.FastConstructor;
+import org.jetbrains.annotations.UnmodifiableView;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Cool_Loong
  */
 public final class ItemRegistry extends BaseRegistry<String, Item, Class<? extends Item>> implements ItemID {
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Item>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
+    private static final HashMap<String, CustomItemDefinition> CUSTOM_ITEM_DEFINITIONS = new HashMap<>();
+
+    @UnmodifiableView
+    public Map<String, CustomItemDefinition> getCustomItemDefinition() {
+        return Collections.unmodifiableMap(CUSTOM_ITEM_DEFINITIONS);
+    }
 
     @Override
     public void init() {
@@ -516,7 +528,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
-            item.setAux(meta);
+            item.setDamage(meta);
             return item;
         } catch (Throwable e) {
             throw new RuntimeException(e);
@@ -528,7 +540,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
-            item.setAux(meta);
+            item.setDamage(meta);
             item.setCount(count);
             return item;
         } catch (Throwable e) {
@@ -541,7 +553,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
-            item.setAux(meta);
+            item.setDamage(meta);
             item.setCount(count);
             item.setCompoundTag(tags);
             return item;
@@ -555,7 +567,7 @@ public final class ItemRegistry extends BaseRegistry<String, Item, Class<? exten
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
-            item.setAux(meta);
+            item.setDamage(meta);
             item.setCount(count);
             item.setCompoundTag(tags);
             return item;

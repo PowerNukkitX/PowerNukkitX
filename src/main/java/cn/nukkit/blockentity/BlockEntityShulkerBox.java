@@ -40,7 +40,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
         ListTag<CompoundTag> list = (ListTag<CompoundTag>) this.namedTag.getList("Items");
         for (CompoundTag compound : list.getAll()) {
             Item item = NBTIO.getItemHelper(compound);
-            this.inventory.slots.put(compound.getByte("Slot"), item);
+            this.inventory.getContents()[compound.getByte("Slot")] = item;
         }
 
         if (!this.namedTag.contains("facing")) {

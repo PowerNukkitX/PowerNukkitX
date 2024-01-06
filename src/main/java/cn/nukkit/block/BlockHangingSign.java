@@ -23,12 +23,12 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityHangingSign> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityHangingSign> getBlockEntityClass() {
         return BlockEntityHangingSign.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.HANGING_SIGN;
     }
 

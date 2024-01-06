@@ -7,7 +7,7 @@ public class BlockJungleLog extends BlockLog {
     public static final BlockProperties PROPERTIES = new BlockProperties(JUNGLE_LOG, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

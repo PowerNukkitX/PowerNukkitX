@@ -33,7 +33,7 @@ public class PlayerInventory extends BaseInventory {
     private int[] hotbar;
 
     public PlayerInventory(EntityHumanType player) {
-        super(player, InventoryType.PLAYER);
+        super(player, InventoryType.PLAYER_INVENTORY);
         this.hotbar = new int[this.getHotbarSize()];
 
         for (int i = 0; i < this.hotbar.length; i++) {
@@ -45,12 +45,6 @@ public class PlayerInventory extends BaseInventory {
     @Override
     public int getSize() {
         return super.getSize() - 4;
-    }
-
-    @Override
-    public void setSize(int size) {
-        super.setSize(size + 4);
-        this.sendContents(this.getViewers());
     }
 
     /**

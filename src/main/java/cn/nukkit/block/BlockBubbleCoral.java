@@ -11,7 +11,7 @@ public class BlockBubbleCoral extends BlockCoral {
     public static final BlockProperties PROPERTIES = new BlockProperties(BUBBLE_CORAL);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

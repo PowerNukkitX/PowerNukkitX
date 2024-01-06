@@ -31,7 +31,7 @@ import java.util.Set;
  */
 public class EntityCow extends EntityAnimal implements EntityWalkable {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return COW;
     }
     
@@ -112,7 +112,7 @@ public class EntityCow extends EntityAnimal implements EntityWalkable {
             return true;
         }
 
-        if (item.getId() == Item.BUCKET && item.getAux() == 0) {
+        if (item.getId() == Item.BUCKET && item.getDamage() == 0) {
             item.count--;
             player.getInventory().addItem(Item.get(Item.BUCKET, 1));
             return true;

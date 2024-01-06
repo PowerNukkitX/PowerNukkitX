@@ -8,7 +8,7 @@ import java.util.Map;
 
 public record BannerPattern(@NotNull cn.nukkit.utils.BannerPattern.Type type, @NotNull DyeColor color) {
 
-    public @NotNull static BannerPattern fromCompoundTag(@NotNull CompoundTag compoundTag) {
+    @NotNull public static BannerPattern fromCompoundTag(@NotNull CompoundTag compoundTag) {
         return new BannerPattern(Type.getByName(compoundTag.contains("Pattern") ? compoundTag.getString("Pattern") : ""), compoundTag.contains("Color") ? DyeColor.getByDyeData(compoundTag.getInt("Color")) : DyeColor.BLACK);
     }
 

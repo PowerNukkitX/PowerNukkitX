@@ -41,13 +41,13 @@ public class ItemFilledMap extends Item {
     }
 
     @Override
-    public void setAux(Integer aux) {
-        super.setAux(aux);
+    public void setDamage(Integer meta) {
+        super.setDamage(meta);
         updateName();
     }
 
     private void updateName() {
-        switch (aux) {
+        switch (meta) {
             case 3 -> this.name = "Ocean Explorer Map";
             case 4 -> this.name = "Woodland Explorer Map";
             case 5 -> this.name = "Treasure Map";

@@ -7,7 +7,7 @@ public class BlockSpruceLog extends BlockLog {
     public static final BlockProperties PROPERTIES = new BlockProperties(SPRUCE_LOG, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

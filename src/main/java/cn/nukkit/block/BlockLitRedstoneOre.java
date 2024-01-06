@@ -7,7 +7,7 @@ public class BlockLitRedstoneOre extends BlockRedstoneOre implements IBlockOreRe
     public static final BlockProperties PROPERTIES = new BlockProperties(LIT_REDSTONE_ORE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

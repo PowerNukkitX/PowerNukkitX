@@ -21,7 +21,7 @@ public class BlockNetherWart extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(NETHER_WART, AGE_4);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

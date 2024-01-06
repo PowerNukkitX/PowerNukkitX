@@ -44,7 +44,7 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
     public static final BlockProperties PROPERTIES = new BlockProperties(DISPENSER, FACING_DIRECTION, CommonBlockProperties.TRIGGERED_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -67,7 +67,7 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.DISPENSER;
     }
 
@@ -82,7 +82,7 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityEjectable> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityEjectable> getBlockEntityClass() {
         return BlockEntityDispenser.class;
     }
 
@@ -254,7 +254,7 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
         inv.setItem(slot, target);
 
         if (result != null) {
-            if (result.getId().equals(origin.getId()) || result.getAux() != origin.getAux()) {
+            if (result.getId().equals(origin.getId()) || result.getDamage() != origin.getDamage()) {
                 Item[] fit = inv.addItem(result);
 
                 if (fit.length > 0) {

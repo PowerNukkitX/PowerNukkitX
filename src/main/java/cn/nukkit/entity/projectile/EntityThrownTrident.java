@@ -38,7 +38,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityThrownTrident extends SlenderProjectile {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return THROWN_TRIDENT;
     }
     

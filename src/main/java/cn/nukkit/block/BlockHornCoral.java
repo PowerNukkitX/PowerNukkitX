@@ -6,7 +6,7 @@ public class BlockHornCoral extends BlockCoral {
     public static final BlockProperties PROPERTIES = new BlockProperties(HORN_CORAL);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

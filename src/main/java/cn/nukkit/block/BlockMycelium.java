@@ -22,7 +22,7 @@ public class BlockMycelium extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(MYCELIUM);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

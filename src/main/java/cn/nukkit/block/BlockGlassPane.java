@@ -12,7 +12,7 @@ public class BlockGlassPane extends BlockThin {
     public static final BlockProperties PROPERTIES = new BlockProperties(GLASS_PANE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

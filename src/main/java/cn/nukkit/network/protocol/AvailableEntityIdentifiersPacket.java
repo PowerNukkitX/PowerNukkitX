@@ -26,9 +26,9 @@ public class AvailableEntityIdentifiersPacket extends DataPacket {
             BufferedInputStream bis = new BufferedInputStream(inputStream);
             CompoundTag nbt = NBTIO.read(bis, ByteOrder.BIG_ENDIAN, true);
             ListTag<CompoundTag> list = nbt.getList("idlist", CompoundTag.class);
-            for (var customEntityDefinition : Entity.getEntityDefinitions()) {
+            /*for (var customEntityDefinition : Entity.getEntityDefinitions()) {
                 list.add(customEntityDefinition.nbt());
-            }
+            }*/
             nbt.putList(list);
             TAG = NBTIO.write(nbt, ByteOrder.BIG_ENDIAN, true);
         } catch (Exception e) {

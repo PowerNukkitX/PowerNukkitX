@@ -3,7 +3,6 @@ package cn.nukkit.item;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFlowingWater;
-import cn.nukkit.block.BlockWater;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.level.Level;
@@ -37,13 +36,13 @@ public class ItemBoat extends Item {
     }
 
     @Override
-    public void setAux(Integer aux) {
-        super.setAux(aux);
+    public void setDamage(Integer meta) {
+        super.setDamage(meta);
         adjustName();
     }
 
     private void adjustName() {
-        switch (getAux()) {
+        switch (getDamage()) {
             case 0:
                 name = "Oak Boat";
                 return;
@@ -82,7 +81,7 @@ public class ItemBoat extends Item {
     }
 
     public int getBoatId() {
-        return this.aux;
+        return this.meta;
     }
 
     @Override

@@ -28,7 +28,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
     public static final BlockProperties PROPERTIES = new BlockProperties(LEVER, LEVER_DIRECTION, OPEN_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

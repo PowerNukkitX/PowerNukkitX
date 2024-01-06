@@ -6,7 +6,7 @@ public class BlockOakFence extends BlockFence {
     public static final BlockProperties PROPERTIES = new BlockProperties(OAK_FENCE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

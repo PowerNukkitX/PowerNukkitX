@@ -14,6 +14,7 @@ public final class BlockStateRegistry extends BaseRegistry<Integer, BlockState, 
 
     @Override
     public void init() {
+        //register from Block Registry
     }
 
     @Override

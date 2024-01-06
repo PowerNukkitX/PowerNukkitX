@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityWither extends EntityMob implements EntityFlyable, EntitySmite {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return WITHER;
     }
 

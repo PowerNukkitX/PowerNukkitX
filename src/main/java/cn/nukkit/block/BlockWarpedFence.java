@@ -6,7 +6,7 @@ public class BlockWarpedFence extends BlockFence {
     public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_FENCE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

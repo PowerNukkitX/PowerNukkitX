@@ -8,7 +8,7 @@ public class BlockCherryHangingSign extends BlockHangingSign {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_HANGING_SIGN, CommonBlockProperties.ATTACHED_BIT, CommonBlockProperties.FACING_DIRECTION, CommonBlockProperties.GROUND_SIGN_DIRECTION, CommonBlockProperties.HANGING);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

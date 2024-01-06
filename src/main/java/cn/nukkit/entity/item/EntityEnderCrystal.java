@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityEnderCrystal extends Entity implements EntityExplosive {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return ENDER_CRYSTAL;
     }
     

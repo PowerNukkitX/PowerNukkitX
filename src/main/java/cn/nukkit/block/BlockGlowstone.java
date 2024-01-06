@@ -15,7 +15,7 @@ import java.util.Random;
 public class BlockGlowstone extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(GLOWSTONE);
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

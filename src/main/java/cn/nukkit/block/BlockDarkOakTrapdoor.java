@@ -7,7 +7,7 @@ public class BlockDarkOakTrapdoor extends BlockTrapdoor {
     public static final BlockProperties PROPERTIES = new BlockProperties(DARK_OAK_TRAPDOOR, CommonBlockProperties.DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPSIDE_DOWN_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

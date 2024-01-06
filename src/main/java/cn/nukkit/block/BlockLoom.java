@@ -17,7 +17,7 @@ public class BlockLoom extends BlockSolid implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(LOOM, CommonBlockProperties.DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

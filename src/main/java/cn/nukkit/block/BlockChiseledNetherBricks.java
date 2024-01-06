@@ -7,7 +7,7 @@ public class BlockChiseledNetherBricks extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHISELED_NETHER_BRICKS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

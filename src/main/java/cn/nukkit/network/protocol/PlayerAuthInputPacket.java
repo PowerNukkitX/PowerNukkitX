@@ -4,6 +4,7 @@ import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector2f;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.protocol.types.*;
+import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -29,8 +30,13 @@ public class PlayerAuthInputPacket extends DataPacket {
     private Vector3f vrGazeDirection;
     private long tick;
     private Vector3f delta;
-    // private ItemStackRequest itemStackRequest;
-    private Map<PlayerActionType, PlayerBlockActionData> blockActionData = new EnumMap<>(PlayerActionType.class);
+    /**
+     * {@link #inputData} must contain {@link AuthInputAction#PERFORM_ITEM_STACK_REQUEST} in order for this to not be null.
+     *
+     * @since v428
+     */
+    private ItemStackRequest itemStackRequest;
+    private final Map<PlayerActionType, PlayerBlockActionData> blockActionData = new EnumMap<>(PlayerActionType.class);
 
     private Vector2f analogMoveVector;
 
@@ -66,8 +72,7 @@ public class PlayerAuthInputPacket extends DataPacket {
         this.delta = this.getVector3f();
 
         if (this.inputData.contains(AuthInputAction.PERFORM_ITEM_STACK_REQUEST)) {
-            // TODO: this.itemStackRequest = readItemStackRequest(buf, protocolVersion);
-            // We are safe to leave this for later, since it is only sent with ServerAuthInventories
+            this.itemStackRequest = readItemStackRequest();
         }
 
         if (this.inputData.contains(AuthInputAction.PERFORM_BLOCK_ACTIONS)) {

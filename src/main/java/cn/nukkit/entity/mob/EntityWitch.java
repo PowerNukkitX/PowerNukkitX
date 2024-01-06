@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityWitch extends EntityMob implements EntityWalkable {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return WITCH;
     }
 

@@ -17,7 +17,7 @@ public class BlockUnknown extends Block {
     }
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

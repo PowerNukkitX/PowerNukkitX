@@ -30,7 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmite {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return ZOMBIE;
     }
     

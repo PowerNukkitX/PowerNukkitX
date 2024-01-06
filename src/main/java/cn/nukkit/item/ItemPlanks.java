@@ -18,7 +18,7 @@ public class ItemPlanks extends Item {
     }
 
     public void adjust() {
-        switch (getAux()) {
+        switch (getDamage()) {
             case 0:
                 this.name = "Oak Planks";
                 this.block = Block.get(BlockID.OAK_PLANKS);

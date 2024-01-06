@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityLlamaSpit extends EntityAnimal implements EntityWalkable {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return LLAMA_SPIT;
     }
 

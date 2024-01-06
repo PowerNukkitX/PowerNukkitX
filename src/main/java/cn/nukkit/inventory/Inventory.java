@@ -4,6 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.api.DoNotModify;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventorySlotPacket;
+import com.google.common.collect.BiMap;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -14,6 +16,7 @@ import java.util.Set;
  * @author MagicDroidX (Nukkit Project)
  */
 public interface Inventory {
+    BiMap<Integer, Integer> getNetworkSlotBiMap();
 
     int MAX_STACK = 64;
 
@@ -38,11 +41,6 @@ public interface Inventory {
     String getName();
 
     /**
-     * 获取该库存的标题
-     */
-    String getTitle();
-
-    /**
      * 获取该库存指定索引处的物品
      *
      * @param index the index
@@ -59,7 +57,8 @@ public interface Inventory {
      * @return the item
      */
     @DoNotModify
-    default Item getUnclonedItem(int index) {
+    @ApiStatus.Internal
+    default Item getItemUnsafe(int index) {
         //你需要覆写它来实现
         return getItem(index);
     }
@@ -86,8 +85,6 @@ public interface Inventory {
     boolean setItem(int index, Item item, boolean send);
 
     /**
-     * Now it is only called by {@link cn.nukkit.inventory.transaction.action.SlotChangeAction} and {@link cn.nukkit.inventory.transaction.EnchantTransaction}
-     *
      * @param player player that will receive the changes
      * @param index  index of the item
      * @param item   item to set
@@ -103,9 +100,10 @@ public interface Inventory {
 
     Item[] removeItem(Item... slots);
 
-    Map<Integer, Item> getContents();
+    @ApiStatus.Internal
+    Item[] getContents();
 
-    void setContents(Map<Integer, Item> items);
+    void setContents(Item[] items);
 
     void sendContents(Player player);
 
@@ -142,6 +140,8 @@ public interface Inventory {
     boolean clear(int index, boolean send);
 
     void clearAll();
+
+    int getFreeSpace(Item item);
 
     boolean isFull();
 

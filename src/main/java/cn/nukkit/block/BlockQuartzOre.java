@@ -13,7 +13,7 @@ public class BlockQuartzOre extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(QUARTZ_ORE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

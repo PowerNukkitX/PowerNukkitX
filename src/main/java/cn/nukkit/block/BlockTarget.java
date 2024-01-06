@@ -29,7 +29,7 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
     public static final BlockProperties PROPERTIES = new BlockProperties(TARGET);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -47,12 +47,12 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityTarget> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityTarget> getBlockEntityClass() {
         return BlockEntityTarget.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.TARGET;
     }
 

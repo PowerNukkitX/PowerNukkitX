@@ -2,8 +2,6 @@ package cn.nukkit.block.customblock;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockFallableMeta;
-import cn.nukkit.block.BlockMeta;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
@@ -56,13 +54,7 @@ public interface CustomBlock {
      */
     double getHardness();
 
-    /**
-     * 覆写该方法设置自定义方块的命名空间ID
-     * <p>
-     * {@code @Override} this method to set the namespace ID of the custom block
-     */
-    @NotNull
-    String getNamespaceId();
+    String getId();
 
     /**
      * 一般不需要被覆写,继承父类会提供
@@ -80,31 +72,6 @@ public interface CustomBlock {
 
     /* 下面两个方法需要被手动覆写,请使用接口的定义 */
 
-    /**
-     * 该方法必须被覆写为使用接口的定义，请使用
-     * <p>
-     * The method must be {@code @Override} to use the definition of the interface, please use the
-     * <br>
-     * {@code @Override}<br>{@code public int getId() {
-     * return CustomBlock.super.getId();
-     * } }
-     */
-    default int getId() {
-        return Block.CUSTOM_BLOCK_ID_MAP.get(getNamespaceId().toLowerCase(Locale.ENGLISH));
-    }
-
-    /**
-     * 该方法必须被覆写为使用接口的定义，请使用
-     * <p>
-     * The method must be {@code @Override} to use the definition of the interface, please use the
-     * <br>
-     * {@code @Override}<br>{@code public String getName() {
-     * return CustomBlock.super.getName();
-     * } }
-     */
-    default String getName() {
-        return this.getNamespaceId().split(":")[1].toLowerCase(Locale.ENGLISH);
-    }
 
     /**
      * Plugins do not need {@code @Override}
@@ -113,26 +80,6 @@ public interface CustomBlock {
      */
     default Block toCustomBlock() {
         return ((Block) this).clone();
-    }
-
-    /**
-     * Plugins do not need {@code @Override}
-     *
-     * @return the block
-     */
-    default Block toCustomBlock(int meta) {
-        var block = toCustomBlock();
-        if (block instanceof BlockMeta || block instanceof BlockFallableMeta) {
-            block.getMutableState().setDataStorageFromInt(meta, true);
-        }
-        return block;
-    }
-
-    /**
-     * @return 是否反转自定义方块属性解析的顺序<br>Whether to reverse the order of properties parsing
-     */
-    default boolean reverseSending() {
-        return true;
     }
 
     /**

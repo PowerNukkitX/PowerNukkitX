@@ -9,18 +9,7 @@ import cn.nukkit.item.Item;
  *
  * @author lt_name
  */
-
-
-public interface CustomItem extends StringItem {
-    /**
-     * 定义该自定义物品的材质
-     * <p>
-     * Define the texture of this custom item
-     *
-     * @return the texture name
-     */
-    String getTextureName();
-
+public interface CustomItem{
     /**
      * 该方法设置自定义物品的定义
      * <p>

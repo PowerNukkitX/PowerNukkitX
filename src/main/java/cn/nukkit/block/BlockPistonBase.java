@@ -61,12 +61,12 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityPistonArm> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityPistonArm> getBlockEntityClass() {
         return BlockEntityPistonArm.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.PISTON_ARM;
     }
 

@@ -10,7 +10,7 @@ public class BlockMonsterEgg extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(MONSTER_EGG, MONSTER_EGG_STONE_TYPE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -22,7 +22,7 @@ public class BlockMonsterEgg extends BlockSolid {
         super(blockstate);
     }
 
-    public @NotNull MonsterEggStoneType getMonsterEggStoneType() {
+    @NotNull public MonsterEggStoneType getMonsterEggStoneType() {
         return getPropertyValue(MONSTER_EGG_STONE_TYPE);
     }
 

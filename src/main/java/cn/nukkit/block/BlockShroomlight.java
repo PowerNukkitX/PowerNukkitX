@@ -8,7 +8,7 @@ public class BlockShroomlight extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(SHROOMLIGHT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

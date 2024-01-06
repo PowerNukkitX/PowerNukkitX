@@ -9,7 +9,7 @@ public class BlockHangingRoots extends BlockRoots {
     public static final BlockProperties PROPERTIES = new BlockProperties(HANGING_ROOTS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

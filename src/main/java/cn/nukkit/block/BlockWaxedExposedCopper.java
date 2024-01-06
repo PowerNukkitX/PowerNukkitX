@@ -6,7 +6,7 @@ public class BlockWaxedExposedCopper extends BlockExposedCopper {
     public static final BlockProperties PROPERTIES = new BlockProperties(WAXED_EXPOSED_COPPER);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

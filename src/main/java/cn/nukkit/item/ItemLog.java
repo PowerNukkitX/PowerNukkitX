@@ -18,7 +18,7 @@ public class ItemLog extends Item {
     }
 
     public void adjust() {
-        switch (getAux()) {
+        switch (getDamage()) {
             case 0:
                 this.name = "Oak Log";
                 this.block = Block.get(BlockID.OAK_LOG);

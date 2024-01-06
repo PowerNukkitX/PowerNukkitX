@@ -22,7 +22,7 @@ import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
 public class EntityChestBoat extends EntityBoat implements InventoryHolder {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return CHEST_BOAT;
     }
 
@@ -140,7 +140,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
             default -> this.level.dropItem(this, Item.get(ItemID.CHEST_BOAT));
         }
 
-        for (Item item : this.inventory.getContents().values()) {
+        for (Item item : this.inventory.getContents()) {
             this.level.dropItem(this, item);
         }
         this.inventory.clearAll();

@@ -7,7 +7,7 @@ public class BlockColoredTorchBp extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(COLORED_TORCH_BP, CommonBlockProperties.COLOR_BIT, CommonBlockProperties.TORCH_FACING_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

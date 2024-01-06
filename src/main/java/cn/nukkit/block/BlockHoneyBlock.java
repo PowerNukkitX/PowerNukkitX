@@ -21,7 +21,7 @@ public class BlockHoneyBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(HONEY_BLOCK);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

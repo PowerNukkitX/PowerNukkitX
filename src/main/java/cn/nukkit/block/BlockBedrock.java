@@ -14,7 +14,7 @@ public class BlockBedrock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(BEDROCK, INFINIBURN_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

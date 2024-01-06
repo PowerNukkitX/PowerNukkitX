@@ -419,7 +419,7 @@ public class Chunk implements IChunk {
         long stamp2 = heightAndBiomeLock.writeLock();
         long stamp3 = lightLock.writeLock();
         try {
-            unsafeChunkConsumer.accept(new UnsafeChunk(changes, sections, heightMap, getDimensionData(), tiles));
+            unsafeChunkConsumer.accept(new UnsafeChunk(this));
         } finally {
             lightLock.unlockWrite(stamp3);
             heightAndBiomeLock.unlockWrite(stamp2);
@@ -676,6 +676,11 @@ public class Chunk implements IChunk {
     @Override
     public long getChanges() {
         return changes.get();
+    }
+
+    @Override
+    public long getSectionBlockChanges(int sectionY) {
+        return sections[sectionY].blockChanges().get();
     }
 
     @Override

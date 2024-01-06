@@ -25,8 +25,8 @@ public class ItemBlock extends Item {
     }
 
     @Override
-    public void setAux(Integer aux) {
-        int i = Registries.BLOCKSTATE_ITEMMETA.get(block.getId(), aux);
+    public void setDamage(Integer meta) {
+        int i = Registries.BLOCKSTATE_ITEMMETA.get(block.getId(), meta);
         if (i == 0) {
             throw new IllegalArgumentException("Unknown meta mapping in block: " + block.getId());
         }
@@ -42,7 +42,7 @@ public class ItemBlock extends Item {
     }
 
     @Override
-    public @NotNull Block getBlock() {
+    @NotNull public Block getBlock() {
         return this.block.clone();
     }
 

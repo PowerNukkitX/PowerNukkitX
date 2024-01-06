@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityTnt extends Entity implements EntityExplosive {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return TNT;
     }
 

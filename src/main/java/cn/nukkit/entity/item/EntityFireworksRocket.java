@@ -31,7 +31,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityFireworksRocket extends Entity {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return FIREWORKS_ROCKET;
     }
     

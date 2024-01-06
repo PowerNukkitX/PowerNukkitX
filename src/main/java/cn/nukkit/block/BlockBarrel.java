@@ -38,17 +38,17 @@ public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHold
     }
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.BARREL;
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityBarrel> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityBarrel> getBlockEntityClass() {
         return BlockEntityBarrel.class;
     }
 

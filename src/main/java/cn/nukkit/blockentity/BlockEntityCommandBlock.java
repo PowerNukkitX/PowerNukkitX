@@ -230,7 +230,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     }
 
     @Override
-    public @NotNull String getName() {
+    @NotNull public String getName() {
         return this.hasName() ? this.namedTag.getString(TAG_CUSTOM_NAME) : "!";
     }
 
@@ -553,12 +553,12 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     }
 
     @Override
-    public @NotNull Position getPosition() {
+    @NotNull public Position getPosition() {
         return this;
     }
 
     @Override
-    public @NotNull Location getLocation() {
+    @NotNull public Location getLocation() {
         return Location.fromObject(this.getPosition(), this.getLevel());
     }
 

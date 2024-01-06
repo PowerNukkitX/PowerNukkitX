@@ -8,7 +8,7 @@ public class BlockWarpedWartBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_WART_BLOCK);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

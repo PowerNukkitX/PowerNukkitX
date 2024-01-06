@@ -7,7 +7,7 @@ public class BlockSprucePressurePlate extends BlockWoodenPressurePlate {
     public static final BlockProperties PROPERTIES = new BlockProperties(SPRUCE_PRESSURE_PLATE, CommonBlockProperties.REDSTONE_SIGNAL);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

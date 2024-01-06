@@ -1,8 +1,6 @@
 package cn.nukkit.item.customitem;
 
-import cn.nukkit.tags.ItemTags;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.item.customitem.data.DigProperty;
 import cn.nukkit.item.customitem.data.ItemCreativeCategory;
 import cn.nukkit.item.customitem.data.ItemCreativeGroup;
@@ -11,14 +9,16 @@ import cn.nukkit.item.food.Food;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.registry.Registries;
+import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.Identifier;
+import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -30,7 +30,7 @@ import java.util.function.Consumer;
 
 
 public record CustomItemDefinition(String identifier, CompoundTag nbt) {
-    private static final ConcurrentHashMap<String, Integer> INTERNAL_ALLOCATION_ID_MAP = new ConcurrentHashMap<>();
+    private static final Object2IntOpenHashMap<String> INTERNAL_ALLOCATION_ID_MAP = new Object2IntOpenHashMap<>();
     private static final AtomicInteger nextRuntimeId = new AtomicInteger(10000);
 
     /**
@@ -39,11 +39,10 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
      * Definition builder for custom simple item
      *
      * @param item             the item
-     * @param creativeCategory the creative category
      * @return the custom item definition . simple builder
      */
-    public static CustomItemDefinition.SimpleBuilder customBuilder(CustomItem item, ItemCreativeCategory creativeCategory) {
-        return new CustomItemDefinition.SimpleBuilder(item, creativeCategory);
+    public static CustomItemDefinition.SimpleBuilder customBuilder(CustomItem item) {
+        return new CustomItemDefinition.SimpleBuilder(item);
     }
 
     /**
@@ -52,10 +51,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
      * Definition builder for custom simple item
      *
      * @param item             the item
-     * @param creativeCategory the creative category
      */
-    public static CustomItemDefinition.SimpleBuilder simpleBuilder(ItemCustom item, ItemCreativeCategory creativeCategory) {
-        return new CustomItemDefinition.SimpleBuilder(item, creativeCategory);
+    public static CustomItemDefinition.SimpleBuilder simpleBuilder(ItemCustom item) {
+        return new CustomItemDefinition.SimpleBuilder(item);
     }
 
     /**
@@ -64,10 +62,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
      * Definition builder for custom tools
      *
      * @param item             the item
-     * @param creativeCategory the creative category
      */
-    public static CustomItemDefinition.ToolBuilder toolBuilder(ItemCustomTool item, ItemCreativeCategory creativeCategory) {
-        return new CustomItemDefinition.ToolBuilder(item, creativeCategory);
+    public static CustomItemDefinition.ToolBuilder toolBuilder(ItemCustomTool item) {
+        return new CustomItemDefinition.ToolBuilder(item);
     }
 
     /**
@@ -76,10 +73,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
      * Definition builder for custom armor
      *
      * @param item             the item
-     * @param creativeCategory the creative category
      */
-    public static CustomItemDefinition.ArmorBuilder armorBuilder(ItemCustomArmor item, ItemCreativeCategory creativeCategory) {
-        return new CustomItemDefinition.ArmorBuilder(item, creativeCategory);
+    public static CustomItemDefinition.ArmorBuilder armorBuilder(ItemCustomArmor item) {
+        return new CustomItemDefinition.ArmorBuilder(item);
     }
 
     /**
@@ -88,10 +84,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
      * Definition builder for custom food or potion
      *
      * @param item             the item
-     * @param creativeCategory the creative category
      */
-    public static CustomItemDefinition.EdibleBuilder edibleBuilder(ItemCustomEdible item, ItemCreativeCategory creativeCategory) {
-        return new CustomItemDefinition.EdibleBuilder(item, creativeCategory);
+    public static CustomItemDefinition.EdibleBuilder edibleBuilder(ItemCustomEdible item) {
+        return new CustomItemDefinition.EdibleBuilder(item);
     }
 
     public @Nullable String getDisplayName() {
@@ -118,22 +113,12 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                         .putCompound("item_properties", new CompoundTag()
                                 .putCompound("minecraft:icon", new CompoundTag())));
         private final Item item;
+        protected String texture;
+        protected String name;
 
-        protected SimpleBuilder(CustomItem customItem, ItemCreativeCategory creativeCategory) {
+        protected SimpleBuilder(CustomItem customItem) {
             this.item = (Item) customItem;
-            this.identifier = customItem.getNamespaceId();
-            //定义材质
-            this.nbt.getCompound("components")
-                    .getCompound("item_properties")
-                    .getCompound("minecraft:icon")
-                    .putString("texture", customItem.getTextureName());
-
-            //定义显示名
-            if (item.getName() != null && !item.getName().equals(Item.UNKNOWN_STR)) {
-                this.nbt.getCompound("components")
-                        .putCompound("minecraft:display_name", new CompoundTag().putString("value", item.getName()));
-            }
-
+            this.identifier = ((Item) customItem).getId();
             //定义最大堆叠数量
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
@@ -141,9 +126,22 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             //定义在创造栏的分类
             this.nbt.getCompound("components")
                     .getCompound("item_properties")//1 none
-                    .putInt("creative_category", creativeCategory.ordinal() + 1)
+                    .putInt("creative_category", ItemCreativeCategory.NONE.ordinal() + 1)
                     .putString("creative_group", ItemCreativeGroup.NONE.getGroupName());
         }
+
+        public SimpleBuilder texture(String texture) {
+            Preconditions.checkArgument(texture.isBlank());
+            this.texture = texture;
+            return this;
+        }
+
+        public SimpleBuilder name(String name) {
+            Preconditions.checkArgument(name.isBlank());
+            this.name = name;
+            return this;
+        }
+
 
         /**
          * 是否允许副手持有
@@ -211,6 +209,13 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             return this;
         }
 
+        public SimpleBuilder creativeCategory(ItemCreativeCategory creativeCategory) {
+            this.nbt.getCompound("components")
+                    .getCompound("item_properties")
+                    .putInt("creative_category", creativeCategory.ordinal() + 1);
+            return this;
+        }
+
         /**
          * 控制自定义物品在不同视角下的渲染偏移
          * <p>
@@ -226,7 +231,6 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * 向自定义物品添加一个tag，通常用于合成等
          * <p>
          * Add a tag to a custom item, usually used for crafting, etc.
-         * todo: 2022/12/13  检查是否真的在客户端起作用
          *
          * @param tags the tags
          * @return the simple builder
@@ -275,10 +279,23 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         }
 
         protected CustomItemDefinition calculateID() {
+            Preconditions.checkNotNull(texture, "You must define the texture through SimpleBuilder#texture method!");
+            //定义材质
+            this.nbt.getCompound("components")
+                    .getCompound("item_properties")
+                    .getCompound("minecraft:icon")
+                    .putString("texture", texture);
+
+            if (name != null) {
+                //定义显示名
+                this.nbt.getCompound("components")
+                        .putCompound("minecraft:display_name", new CompoundTag().putString("value", name));
+            }
+
             var result = new CustomItemDefinition(identifier, nbt);
             if (!INTERNAL_ALLOCATION_ID_MAP.containsKey(result.identifier())) {
-                while (RuntimeItems.getRuntimeMapping().getNamespacedIdByNetworkId(nextRuntimeId.incrementAndGet()) != null)
-                    ;
+                while (Registries.ITEM_RUNTIMEID.getIdentifier(nextRuntimeId.incrementAndGet()) != null) {
+                }
                 INTERNAL_ALLOCATION_ID_MAP.put(result.identifier(), nextRuntimeId.get());
                 result.nbt.putString("name", result.identifier());
                 result.nbt.putInt("id", nextRuntimeId.get());
@@ -339,14 +356,14 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
 
     public static class ToolBuilder extends SimpleBuilder {
         private final ItemCustomTool item;
-        private Integer speed = null;
         private final List<CompoundTag> blocks = new ArrayList<>();
         private final List<String> blockTags = new ArrayList<>();
         private final CompoundTag diggerRoot = new CompoundTag("minecraft:digger")
                 .putBoolean("use_efficiency", true)
                 .putList(new ListTag<>("destroy_speeds"));
+        private Integer speed = null;
 
-        public static Map<Identifier, Map<String, DigProperty>> toolBlocks = new HashMap<>();
+        public static Map<String, Map<String, DigProperty>> toolBlocks = new HashMap<>();
 
         static {
             var pickaxeBlocks = new Object2ObjectOpenHashMap<String, DigProperty>();
@@ -380,8 +397,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             toolBlocks.put(ItemTags.IS_SWORD, swordBlocks);
         }
 
-        private ToolBuilder(ItemCustomTool item, ItemCreativeCategory creativeCategory) {
-            super(item, creativeCategory);
+        private ToolBuilder(ItemCustomTool item) {
+            super(item);
             this.item = item;
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
@@ -393,23 +410,23 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                     .putBoolean("can_destroy_in_creative", true);
         }
 
-        public ToolBuilder addRepairItemName(@NonNull String repairItemName, String molang) {
+        public ToolBuilder addRepairItemName(@NotNull String repairItemName, String molang) {
             super.addRepairs(List.of(repairItemName), molang);
             return this;
         }
 
-        public ToolBuilder addRepairItemName(@NonNull String repairItemName, int repairAmount) {
+        public ToolBuilder addRepairItemName(@NotNull String repairItemName, int repairAmount) {
             super.addRepairs(List.of(repairItemName), String.valueOf(repairAmount));
             return this;
         }
 
         public ToolBuilder addRepairItems(@NotNull List<Item> repairItems, String molang) {
-            super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), molang);
+            super.addRepairs(repairItems.stream().map(Item::getId).toList(), molang);
             return this;
         }
 
         public ToolBuilder addRepairItems(@NotNull List<Item> repairItems, int repairAmount) {
-            super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), String.valueOf(repairAmount));
+            super.addRepairs(repairItems.stream().map(Item::getId).toList(), String.valueOf(repairAmount));
             return this;
         }
 
@@ -555,7 +572,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                     default -> 1;
                 };
             }
-            Identifier type = null;
+            String type = null;
             if (item.isPickaxe()) {
                 //添加可挖掘方块Tags
                 this.blockTags.addAll(List.of("'stone'", "'metal'", "'diamond_pick_diggable'", "'mob_spawner'", "'rail'", "'slab_block'", "'stair_block'", "'smooth stone slab'", "'sandstone slab'", "'cobblestone slab'", "'brick slab'", "'stone bricks slab'", "'quartz slab'", "'nether brick slab'"));
@@ -595,7 +612,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                 if (this.nbt.getCompound("components").contains("item_tags")) {
                     var list = this.nbt.getCompound("components").getList("item_tags", StringTag.class).getAll();
                     for (var tag : list) {
-                        var id = new Identifier(tag.parseValue());
+                        var id = tag.parseValue();
                         if (toolBlocks.containsKey(id)) {
                             type = id;
                             break;
@@ -642,8 +659,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
     public static class ArmorBuilder extends SimpleBuilder {
         private final ItemCustomArmor item;
 
-        private ArmorBuilder(ItemCustomArmor item, ItemCreativeCategory creativeCategory) {
-            super(item, creativeCategory);
+        private ArmorBuilder(ItemCustomArmor item) {
+            super(item);
             this.item = item;
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
@@ -651,23 +668,23 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                     .putBoolean("can_destroy_in_creative", true);
         }
 
-        public ArmorBuilder addRepairItemName(@NonNull String repairItemName, String molang) {
+        public ArmorBuilder addRepairItemName(@NotNull String repairItemName, String molang) {
             super.addRepairs(List.of(repairItemName), molang);
             return this;
         }
 
-        public ArmorBuilder addRepairItemName(@NonNull String repairItemName, int repairAmount) {
+        public ArmorBuilder addRepairItemName(@NotNull String repairItemName, int repairAmount) {
             super.addRepairs(List.of(repairItemName), String.valueOf(repairAmount));
             return this;
         }
 
         public ArmorBuilder addRepairItems(@NotNull List<Item> repairItems, String molang) {
-            super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), molang);
+            super.addRepairs(repairItems.stream().map(Item::getId).toList(), molang);
             return this;
         }
 
         public ArmorBuilder addRepairItems(@NotNull List<Item> repairItems, int repairAmount) {
-            super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), String.valueOf(repairAmount));
+            super.addRepairs(repairItems.stream().map(Item::getId).toList(), String.valueOf(repairAmount));
             return this;
         }
 
@@ -708,8 +725,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
     }
 
     public static class EdibleBuilder extends SimpleBuilder {
-        private EdibleBuilder(ItemCustomEdible item, ItemCreativeCategory creativeCategory) {
-            super(item, creativeCategory);
+        private EdibleBuilder(ItemCustomEdible item) {
+            super(item);
             var food = Food.registerFood(item.getFood().getValue(), item.getFood().getKey());
             if (this.nbt.getCompound("components").contains("minecraft:food")) {
                 this.nbt.getCompound("components").getCompound("minecraft:food").putBoolean("can_always_eat", item.canAlwaysEat());
@@ -723,11 +740,6 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                     .putInt("use_duration", eatingtick)
                     .putInt("use_animation", item.isDrink() ? 2 : 1)
                     .putBoolean("can_destroy_in_creative", true);
-        }
-
-        @Override
-        public CustomItemDefinition build() {
-            return calculateID();
         }
     }
 }

@@ -8,7 +8,7 @@ public class BlockSmoothStone extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(SMOOTH_STONE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

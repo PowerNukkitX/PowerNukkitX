@@ -52,7 +52,7 @@ public class NPCCommandSender implements CommandSender {
     }
 
     @Override
-    public @NotNull String getName() {
+    @NotNull public String getName() {
         return npc.getName();
     }
 
@@ -77,12 +77,12 @@ public class NPCCommandSender implements CommandSender {
     }
 
     @Override
-    public @NotNull Position getPosition() {
+    @NotNull public Position getPosition() {
         return npc.getPosition();
     }
 
     @Override
-    public @NotNull Location getLocation() {
+    @NotNull public Location getLocation() {
         return npc.getLocation();
     }
 

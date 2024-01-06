@@ -38,8 +38,8 @@ public class ItemBannerPattern extends Item {
     }
 
     @Override
-    public void setAux(Integer aux) {
-        super.setAux(aux);
+    public void setDamage(Integer meta) {
+        super.setDamage(meta);
         updateName();
     }
 
@@ -47,7 +47,7 @@ public class ItemBannerPattern extends Item {
         if (!Objects.equals(getId(), BANNER_PATTERN)) {
             return BannerPattern.Type.PATTERN_CREEPER;
         }
-        return switch (getAux()) {
+        return switch (getDamage()) {
             default -> BannerPattern.Type.PATTERN_CREEPER;
             case PATTERN_SKULL_CHARGE -> BannerPattern.Type.PATTERN_SKULL;
             case PATTERN_FLOWER_CHARGE -> BannerPattern.Type.PATTERN_FLOWER;
@@ -63,7 +63,7 @@ public class ItemBannerPattern extends Item {
         if (!Objects.equals(getId(), BANNER_PATTERN)) {
             return;
         }
-        switch (super.aux) {
+        switch (super.meta) {
             case PATTERN_CREEPER_CHARGE -> name = "Creeper Charge Banner Pattern";
             case PATTERN_SKULL_CHARGE -> name = "Skull Charge Banner Pattern";
             case PATTERN_FLOWER_CHARGE -> name = "Flower Charge Banner Pattern";

@@ -12,7 +12,7 @@ public class BlockSporeBlossom extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(SPORE_BLOSSOM);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

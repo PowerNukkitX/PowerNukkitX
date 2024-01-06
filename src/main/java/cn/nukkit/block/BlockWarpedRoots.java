@@ -6,7 +6,7 @@ public class BlockWarpedRoots extends BlockRoots implements BlockFlowerPot.Flowe
     public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_ROOTS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

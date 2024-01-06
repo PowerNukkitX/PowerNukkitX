@@ -6,7 +6,7 @@ public class BlockLightBlueConcrete extends BlockConcrete {
     public static final BlockProperties PROPERTIES = new BlockProperties(LIGHT_BLUE_CONCRETE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

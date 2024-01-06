@@ -12,6 +12,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import lombok.Getter;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.*;
 import java.util.function.Function;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 public final class BlockProperties {
     @Getter
     private final String identifier;
-    private final Set<BlockPropertyType<?>> properties;
+    private final Set<BlockPropertyType<?>> propertyTypeSet;
     private final Map<Short, BlockState> specialValueMap;
     @Getter
     private final BlockState defaultState;
@@ -37,10 +38,10 @@ public final class BlockProperties {
         Identifier.assertValid(identifier);
         BlockTags.register(identifier,false, blockTags);
         this.identifier = identifier.intern();
-        this.properties = Sets.newHashSet(properties);
+        this.propertyTypeSet = Sets.newHashSet(properties);
 
         byte specialValueBits = 0;
-        for (var value : this.properties) specialValueBits += value.getBitSize();
+        for (var value : this.propertyTypeSet) specialValueBits += value.getBitSize();
         this.bitSize = specialValueBits;
         if (this.bitSize <= 16) {
             Pair<Map<Integer, BlockStateImpl>, BlockStateImpl> mapBlockStatePair = initStates();
@@ -57,7 +58,7 @@ public final class BlockProperties {
     }
 
     private Pair<Map<Integer, BlockStateImpl>, BlockStateImpl> initStates() {
-        List<BlockPropertyType<?>> propertyTypeList = this.properties.stream().toList();
+        List<BlockPropertyType<?>> propertyTypeList = this.propertyTypeSet.stream().toList();
         int size = propertyTypeList.size();
         if (size == 0) {
             BlockStateImpl blockState = new BlockStateImpl(identifier, new BlockPropertyType.BlockPropertyValue<?, ?, ?>[]{});
@@ -105,7 +106,7 @@ public final class BlockProperties {
                 indices[i] = 0;
             }
         }
-        int defaultStateHash = HashUtils.computeBlockStateHash(this.identifier, properties.stream().map(p -> p.tryCreateValue(p.getDefaultValue())).collect(Collectors.toList()));
+        int defaultStateHash = HashUtils.computeBlockStateHash(this.identifier, propertyTypeSet.stream().map(p -> p.tryCreateValue(p.getDefaultValue())).collect(Collectors.toList()));
         BlockStateImpl defaultState = null;
         for (var s : blockStates.values()) {
             if (s.blockStateHash() == defaultStateHash) {
@@ -143,10 +144,15 @@ public final class BlockProperties {
     }
 
     public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> boolean containProperty(PROPERTY property) {
-        return properties.contains(property);
+        return propertyTypeSet.contains(property);
     }
 
     public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> DATATYPE getPropertyValue(int specialValue, PROPERTY p) {
         return getBlockState((short) specialValue).getPropertyValue(p);
+    }
+
+    @UnmodifiableView
+    public Set<BlockPropertyType<?>> getPropertyTypeSet() {
+        return Collections.unmodifiableSet(propertyTypeSet);
     }
 }

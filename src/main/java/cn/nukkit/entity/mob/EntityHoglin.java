@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class EntityHoglin extends EntityMob implements EntityWalkable, EntityAgeable {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return HOGLIN;
     }
 

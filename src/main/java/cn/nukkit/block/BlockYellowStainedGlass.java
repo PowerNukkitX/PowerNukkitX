@@ -7,7 +7,7 @@ public class BlockYellowStainedGlass extends BlockGlassStained {
     public static final BlockProperties PROPERTIES = new BlockProperties(YELLOW_STAINED_GLASS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -20,7 +20,7 @@ public class BlockYellowStainedGlass extends BlockGlassStained {
     }
 
     @Override
-    public @NotNull DyeColor getDyeColor() {
+    @NotNull public DyeColor getDyeColor() {
         return DyeColor.YELLOW;
     }
 }

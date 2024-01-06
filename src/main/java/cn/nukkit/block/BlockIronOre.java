@@ -9,7 +9,7 @@ public class BlockIronOre extends BlockOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(IRON_ORE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

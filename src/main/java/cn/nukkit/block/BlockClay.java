@@ -40,7 +40,7 @@ public class BlockClay extends BlockSolid {
     }
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -12,7 +12,6 @@ import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.entity.ai.route.finder.SimpleRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.format.generic.BaseChunk;
 import cn.nukkit.math.Vector3;
 import lombok.Builder;
 import lombok.Getter;
@@ -288,7 +287,6 @@ public class BehaviorGroup implements IBehaviorGroup {
      *
      * @return 是否需要更新路径
      */
-
     protected boolean shouldUpdateRoute(EntityIntelligent entity) {
         //此优化只针对处于非active区块的实体
         if (entity.isActive()) return true;
@@ -322,11 +320,9 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 返回sectionVector对应的section的blockChanges
      */
-
     protected long getSectionBlockChange(Level level, ChunkSectionVector vector) {
         var chunk = level.getChunk(vector.chunkX, vector.chunkZ);
-        //TODO: 此处强转未经检查，可能在未来导致兼容性问题
-        return ((BaseChunk) chunk).getSectionBlockChanges(vector.sectionY);
+        return chunk.getSectionBlockChanges(vector.sectionY);
     }
 
     /**

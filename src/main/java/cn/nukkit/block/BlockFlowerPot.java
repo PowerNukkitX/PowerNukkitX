@@ -31,7 +31,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     }
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -46,12 +46,12 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityFlowerPot> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityFlowerPot> getBlockEntityClass() {
         return BlockEntityFlowerPot.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.FLOWER_POT;
     }
 
@@ -92,7 +92,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 
-    public @NotNull Item getFlower() {
+    @NotNull public Item getFlower() {
         BlockEntityFlowerPot blockEntity = getBlockEntity();
         if (blockEntity == null || !blockEntity.namedTag.containsCompound("PlantBlock")) {
             return Item.AIR;
@@ -272,7 +272,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
             var item = block.toItem();
             //only exist in PNX
             tag.putString("itemId", item.getId());
-            tag.putInt("itemMeta", item.getAux());
+            tag.putInt("itemMeta", item.getDamage());
             return tag;
         }
 

@@ -7,7 +7,7 @@ public class BlockCrackedNetherBricks extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRACKED_NETHER_BRICKS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

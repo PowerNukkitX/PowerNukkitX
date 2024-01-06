@@ -7,7 +7,7 @@ public class BlockCrimsonStem extends BlockStem {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_STEM, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

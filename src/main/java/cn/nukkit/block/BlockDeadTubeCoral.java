@@ -6,7 +6,7 @@ public class BlockDeadTubeCoral extends BlockTubeCoral {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEAD_TUBE_CORAL);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

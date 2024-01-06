@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class EntityPillager extends EntityMob implements EntityWalkable {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return PILLAGER;
     }
     

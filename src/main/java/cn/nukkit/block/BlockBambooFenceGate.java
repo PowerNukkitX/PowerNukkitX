@@ -8,7 +8,7 @@ public class BlockBambooFenceGate extends BlockFenceGate {
     public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_FENCE_GATE, CommonBlockProperties.DIRECTION,CommonBlockProperties.IN_WALL_BIT,CommonBlockProperties.OPEN_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

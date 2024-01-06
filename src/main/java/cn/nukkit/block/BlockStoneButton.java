@@ -9,7 +9,7 @@ public class BlockStoneButton extends BlockButton {
     public static final BlockProperties PROPERTIES = new BlockProperties(STONE_BUTTON, CommonBlockProperties.BUTTON_PRESSED_BIT, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

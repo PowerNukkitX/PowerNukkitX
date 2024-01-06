@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityBat extends EntityAnimal implements EntityFlyable {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return BAT;
     }
     

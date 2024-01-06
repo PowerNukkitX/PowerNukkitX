@@ -12,7 +12,7 @@ public class BlockDoubleStoneBlockSlab2 extends BlockDoubleSlabBase {
             CommonBlockProperties.MINECRAFT_VERTICAL_HALF, STONE_SLAB_TYPE_2);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

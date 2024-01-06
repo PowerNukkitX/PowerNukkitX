@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class EntityCamel extends EntityAnimal {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return CAMEL;
     }
 

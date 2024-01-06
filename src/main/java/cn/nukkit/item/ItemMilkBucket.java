@@ -11,7 +11,7 @@ public class ItemMilkBucket extends ItemBucket {
     }
 
     @Override
-    public void setAux(Integer aux) {
+    public void setDamage(Integer meta) {
         throw new UnsupportedOperationException();
     }
 }

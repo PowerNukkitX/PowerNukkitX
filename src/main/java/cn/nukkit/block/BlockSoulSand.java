@@ -14,7 +14,7 @@ public class BlockSoulSand extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(SOUL_SAND);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

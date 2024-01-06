@@ -13,7 +13,7 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_FAN_HANG, CORAL_FAN_DIRECTION, CORAL_HANG_TYPE_BIT, DEAD_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

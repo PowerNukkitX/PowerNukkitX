@@ -6,7 +6,7 @@ public class BlockWhiteConcrete extends BlockConcrete {
     public static final BlockProperties PROPERTIES = new BlockProperties(WHITE_CONCRETE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

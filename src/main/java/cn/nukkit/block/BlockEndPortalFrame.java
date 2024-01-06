@@ -28,7 +28,7 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
             END_PORTAL_EYE_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

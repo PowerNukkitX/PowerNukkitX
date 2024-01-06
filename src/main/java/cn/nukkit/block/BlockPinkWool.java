@@ -10,7 +10,7 @@ public class BlockPinkWool extends BlockWool {
     public static final BlockProperties PROPERTIES = new BlockProperties(PINK_WOOL, Set.of(BlockTags.PNX_WOOL));
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -24,7 +24,7 @@ public class BlockSponge extends BlockSolid {
             SPONGE_TYPE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

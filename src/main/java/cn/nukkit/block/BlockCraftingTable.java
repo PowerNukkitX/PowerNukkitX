@@ -17,7 +17,7 @@ public class BlockCraftingTable extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRAFTING_TABLE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

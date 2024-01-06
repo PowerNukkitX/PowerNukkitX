@@ -36,7 +36,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
      * may also add horizontal directions.
      * @return Normally, up or down.
      */
-    public @NotNull abstract BlockFace getGrowthDirection();
+    @NotNull public abstract BlockFace getGrowthDirection();
 
     /**
      * The current age of this block.
@@ -198,7 +198,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
      * @param base True to get the age of the base (oldest block), false to get the age of the head (newest block)
      * @return Empty if the target could not be reached. The age of the target if it was found.
      */
-    public @NotNull OptionalInt findVineAge(boolean base) {
+    @NotNull public OptionalInt findVineAge(boolean base) {
         return findVineBlock(base)
                 .map(vine-> OptionalInt.of(vine.getVineAge()))
                 .orElse(OptionalInt.empty());
@@ -210,7 +210,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
      * @return Empty if the target could not be reached or the block there isn't an instance of {@link BlockVinesNether}.
      *          The positioned block of the target if it was found.
      */
-    public @NotNull Optional<BlockVinesNether> findVineBlock(boolean base) {
+    @NotNull public Optional<BlockVinesNether> findVineBlock(boolean base) {
         return findVine(base)
                 .map(Position::getLevelBlock)
                 .filter(BlockVinesNether.class::isInstance)
@@ -222,7 +222,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
      * @param base True to find the base (oldest block), false to find the head (newest block)
      * @return Empty if the target could not be reached. The position of the target if it was found.
      */
-    public @NotNull Optional<Position> findVine(boolean base) {
+    @NotNull public Optional<Position> findVine(boolean base) {
         BlockFace supportFace = getGrowthDirection();
         if (base) {
             supportFace = supportFace.getOpposite();
@@ -250,7 +250,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
      *     <li>{@code FALSE} if the base was already in the max age or the block change was refused 
      *     </ul>
      */
-    public @NotNull OptionalBoolean increaseRootAge() {
+    @NotNull public OptionalBoolean increaseRootAge() {
         Block base = findVine(true).map(Position::getLevelBlock).orElse(null);
         if (!(base instanceof BlockVinesNether baseVine)) {
             return OptionalBoolean.EMPTY;

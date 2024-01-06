@@ -13,7 +13,7 @@ public class BlockLapisOre extends BlockOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(LAPIS_ORE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

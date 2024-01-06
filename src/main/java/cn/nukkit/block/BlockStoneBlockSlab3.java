@@ -9,7 +9,7 @@ public class BlockStoneBlockSlab3 extends BlockSlab {
     public static final BlockProperties PROPERTIES = new BlockProperties(STONE_BLOCK_SLAB3, CommonBlockProperties.MINECRAFT_VERTICAL_HALF, CommonBlockProperties.STONE_SLAB_TYPE_3);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

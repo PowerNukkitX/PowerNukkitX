@@ -6,7 +6,7 @@ public class BlockEndBricks extends BlockEndStone {
     public static final BlockProperties PROPERTIES = new BlockProperties(END_BRICKS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

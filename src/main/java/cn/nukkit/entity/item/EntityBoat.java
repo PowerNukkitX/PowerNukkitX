@@ -45,7 +45,7 @@ import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
 public class EntityBoat extends EntityVehicle {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return BOAT;
     }
 

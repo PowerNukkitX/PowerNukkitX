@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityMinecart extends EntityMinecartAbstract {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return MINECART;
     }
 

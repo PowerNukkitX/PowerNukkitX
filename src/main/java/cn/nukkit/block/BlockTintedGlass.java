@@ -7,7 +7,7 @@ public class BlockTintedGlass extends BlockGlass {
     public static final BlockProperties PROPERTIES = new BlockProperties(TINTED_GLASS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

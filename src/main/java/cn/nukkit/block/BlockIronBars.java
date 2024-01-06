@@ -14,7 +14,7 @@ public class BlockIronBars extends BlockThin {
     public static final BlockProperties PROPERTIES = new BlockProperties(IRON_BARS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -15,6 +15,8 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.ContainerSetDataPacket;
+import cn.nukkit.recipe.RecipeInventoryHolder;
+import cn.nukkit.recipe.SmeltingRecipe;
 
 import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
@@ -249,7 +251,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
             fuel.setCount(fuel.getCount() - 1);
             if (fuel.getCount() == 0) {
                 if (fuel.getId() == Item.BUCKET && ((ItemBucket) fuel).isLava()) {
-                    fuel.setAux(0);
+                    fuel.setDamage(0);
                     fuel.setCount(1);
                 } else {
                     fuel = new ItemBlock(Block.get(BlockID.AIR), 0, 0);

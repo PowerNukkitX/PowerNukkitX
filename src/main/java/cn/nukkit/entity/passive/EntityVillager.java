@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class EntityVillager extends EntityCreature implements IEntityNPC, EntityAgeable {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return VILLAGER;
     }
     public static final int PROFESSION_FARMER = 0;

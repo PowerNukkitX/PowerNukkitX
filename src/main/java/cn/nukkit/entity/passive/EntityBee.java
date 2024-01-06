@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityBee extends EntityAnimal implements EntityFlyable {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return BEE;
     }
     

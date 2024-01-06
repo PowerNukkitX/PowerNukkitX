@@ -18,7 +18,7 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     public static final BlockProperties PROPERTIES = new BlockProperties(COMMAND_BLOCK, CONDITIONAL_BIT, FACING_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -137,12 +137,12 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityCommandBlock> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityCommandBlock> getBlockEntityClass() {
         return BlockEntityCommandBlock.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.COMMAND_BLOCK;
     }
 }

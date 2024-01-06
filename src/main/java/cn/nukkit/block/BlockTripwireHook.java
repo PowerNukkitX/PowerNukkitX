@@ -30,7 +30,7 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
             DIRECTION, ATTACHED_BIT, POWERED_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

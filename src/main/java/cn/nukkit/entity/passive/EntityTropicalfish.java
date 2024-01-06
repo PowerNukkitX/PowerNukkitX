@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityTropicalfish extends EntityFish {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return TROPICALFISH;
     }
 

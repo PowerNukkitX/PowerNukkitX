@@ -6,7 +6,7 @@ public class BlockCrimsonRoots extends BlockRoots implements BlockFlowerPot.Flow
     public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_ROOTS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

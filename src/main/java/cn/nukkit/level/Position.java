@@ -117,11 +117,11 @@ public class Position extends NamedPosition {
         return type.isInstance(blockEntity) ? type.cast(blockEntity) : null;
     }
 
-    public @NotNull BlockState getLevelBlockState() {
+    @NotNull public BlockState getLevelBlockState() {
         return getLevelBlockState(0);
     }
 
-    public @NotNull BlockState getLevelBlockState(int layer) {
+    @NotNull public BlockState getLevelBlockState(int layer) {
         return getValidLevel().getBlockStateAt(getFloorX(), getFloorY(), getFloorZ(), layer);
     }
 
@@ -157,16 +157,16 @@ public class Position extends NamedPosition {
         return getValidLevel().getTickCachedBlock(this, layer);
     }
 
-    public @NotNull Location getLocation() {
+    @NotNull public Location getLocation() {
         return new Location(this.x, this.y, this.z, 0, 0, getValidLevel());
     }
 
     @Override
-    public @NotNull String getLevelName() {
+    @NotNull public String getLevelName() {
         return getValidLevel().getName();
     }
 
-    public @NotNull final Level getValidLevel() {
+    @NotNull public final Level getValidLevel() {
         Level level = this.level;
         if (level == null) {
             throw new LevelException("Undefined Level reference");

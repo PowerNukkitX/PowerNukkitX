@@ -35,7 +35,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
     public static final BlockProperties PROPERTIES = new BlockProperties(SAPLING, CommonBlockProperties.AGE_BIT, SAPLING_TYPE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

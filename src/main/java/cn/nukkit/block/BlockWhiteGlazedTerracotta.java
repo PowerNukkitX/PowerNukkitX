@@ -7,7 +7,7 @@ public class BlockWhiteGlazedTerracotta extends BlockGlazedTerracotta {
     public static final BlockProperties PROPERTIES = new BlockProperties(WHITE_GLAZED_TERRACOTTA, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

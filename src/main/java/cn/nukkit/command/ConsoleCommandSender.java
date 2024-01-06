@@ -115,7 +115,7 @@ public class ConsoleCommandSender implements CommandSender {
     }
 
     @Override
-    public @NotNull String getName() {
+    @NotNull public String getName() {
         return "CONSOLE";
     }
 

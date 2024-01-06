@@ -11,7 +11,7 @@ public class BlockPiston extends BlockPistonBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(PISTON, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

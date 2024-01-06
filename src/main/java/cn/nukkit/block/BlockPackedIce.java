@@ -6,7 +6,7 @@ public class BlockPackedIce extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(PACKED_ICE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -12,8 +12,6 @@ import org.jetbrains.annotations.NotNull;
  * Why not interfaces? Hotspot C2 JIT cannot handle so many classes that impl the same interface, it makes the
  * performance lower.
  */
-
-
 public abstract class DataPacketProcessor<T extends DataPacket> {
     public abstract void handle(@NotNull PlayerHandle playerHandle, @NotNull T pk);
 

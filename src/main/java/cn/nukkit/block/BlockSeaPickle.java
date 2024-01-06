@@ -25,7 +25,7 @@ public class BlockSeaPickle extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(SEA_PICKLE, CLUSTER_COUNT, DEAD_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

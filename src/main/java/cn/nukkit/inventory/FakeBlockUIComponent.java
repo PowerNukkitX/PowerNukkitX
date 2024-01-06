@@ -11,11 +11,11 @@ import cn.nukkit.network.protocol.ContainerOpenPacket;
 /**
  * 一个抽象的方块实体UI，提供了一些inventory方法的默认实现
  */
-public class FakeBlockUIComponent extends PlayerUIComponent {
+public class FakeBlockUIComponent extends BaseInventory {
     private final InventoryType type;
 
     FakeBlockUIComponent(PlayerUIInventory playerUI, InventoryType type, int offset, Position position) {
-        super(playerUI, offset, type.getDefaultSize());
+        super(playerUI, offset, type.getSize());
         this.type = type;
         this.holder = new FakeBlockMenu(this, position);
     }

@@ -19,7 +19,7 @@ public class BlockMossBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(MOSS_BLOCK);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

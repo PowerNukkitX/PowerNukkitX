@@ -17,7 +17,7 @@ public class BlockBeetroot extends BlockCrops {
     public static final BlockProperties PROPERTIES = new BlockProperties(BEETROOT, CommonBlockProperties.GROWTH);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -26,13 +26,13 @@ public class ItemArrow extends Item {
     }
 
     @Override
-    public void setAux(Integer aux) {
-        super.setAux(aux);
+    public void setDamage(Integer meta) {
+        super.setDamage(meta);
         updateName();
     }
 
     private void updateName() {
-        final int type = getAux();
+        final int type = getDamage();
         if (type <= 0) {
             name = GENERIC_NAME;
             return;
@@ -55,7 +55,7 @@ public class ItemArrow extends Item {
     }
 
     public @Nullable Potion getTippedArrowPotion() {
-        final int damage = getAux();
+        final int damage = getDamage();
         if (damage > 0) {
             try {
                 return Potion.getPotion(damage - 1);

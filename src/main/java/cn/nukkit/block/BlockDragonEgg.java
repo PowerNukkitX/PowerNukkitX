@@ -14,7 +14,7 @@ public class BlockDragonEgg extends BlockFallable {
     public static final BlockProperties PROPERTIES = new BlockProperties(DRAGON_EGG);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

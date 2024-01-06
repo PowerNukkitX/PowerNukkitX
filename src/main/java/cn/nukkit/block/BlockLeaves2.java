@@ -15,7 +15,7 @@ public class BlockLeaves2 extends BlockLeaves {
     public static final BlockProperties PROPERTIES = new BlockProperties(LEAVES2, NEW_LEAF_TYPE, PERSISTENT_BIT, UPDATE_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

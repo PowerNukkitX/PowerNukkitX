@@ -1,7 +1,6 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockFlowerPot;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -12,21 +11,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public class BlockEntityFlowerPot extends BlockEntitySpawnable {
     public BlockEntityFlowerPot(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-    }
-
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        //转换旧形式
-        if (namedTag.contains("item")) {
-            var data = 0;
-            if (namedTag.contains("data")) data = namedTag.getInt("data");
-            else if (namedTag.contains("mData")) data = namedTag.getInt("mData");
-            var block = Block.get(namedTag.getInt("item"), data);
-            if (block instanceof BlockFlowerPot.FlowerPotBlock potBlock && potBlock.isPotBlockState()) {
-                namedTag.putCompound("PlantBlock", potBlock.getPlantBlockTag());
-            }
-        }
     }
 
     @Override
@@ -47,5 +31,4 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
             tag.putCompound("PlantBlock", namedTag.getCompound("PlantBlock"));
         return tag;
     }
-
 }

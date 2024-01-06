@@ -24,7 +24,7 @@ import java.util.List;
 public class EntityAreaEffectCloud extends Entity {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return AREA_EFFECT_CLOUD;
     }
 

@@ -36,7 +36,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
     public static final BlockProperties PROPERTIES = new BlockProperties(BED, DIRECTION, HEAD_PIECE_BIT, OCCUPIED_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -49,12 +49,12 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityBed> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityBed> getBlockEntityClass() {
         return BlockEntityBed.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.BED;
     }
 
@@ -223,9 +223,9 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
 
         BlockEntityBed thisBed = null;
         try {
-            thisBed = createBlockEntity(new CompoundTag().putByte("color", item.getAux()));
+            thisBed = createBlockEntity(new CompoundTag().putByte("color", item.getDamage()));
             BlockEntityHolder<?> nextBlock = (BlockEntityHolder<?>) next.getLevelBlock();
-            nextBlock.createBlockEntity(new CompoundTag().putByte("color", item.getAux()));
+            nextBlock.createBlockEntity(new CompoundTag().putByte("color", item.getDamage()));
         } catch (Exception e) {
             log.warn("Failed to create the block entity {} at {} and {}", getBlockEntityType(), getLocation(), next.getLocation(), e);
             if (thisBed != null) {

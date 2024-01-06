@@ -61,12 +61,7 @@ public class InventorySlice implements Inventory {
     }
 
     @Override
-    public String getTitle() {
-        return rawInv.getTitle();
-    }
-
-    @Override
-    public @NotNull Item getItem(int index) {
+    @NotNull public Item getItem(int index) {
         // check whether the index is in the range
         if (index < 0 || index >= getSize()) {
             return AIR_ITEM;
@@ -117,7 +112,7 @@ public class InventorySlice implements Inventory {
     }
 
     @Override
-    public @NotNull Map<Integer, Item> getContents() {
+    public Item[] getContents() {
         var map = new HashMap<Integer, Item>();
         for (int i = startSlot; i < endSlot; i++) {
             map.put(i - startSlot, rawInv.getItem(i));
@@ -126,7 +121,7 @@ public class InventorySlice implements Inventory {
     }
 
     @Override
-    public void setContents(Map<Integer, Item> items) {
+    public void setContents(Item[] items) {
         for (Map.Entry<Integer, Item> entry : items.entrySet()) {
             // check whether the index is in the range
             var key = entry.getKey();
@@ -170,7 +165,7 @@ public class InventorySlice implements Inventory {
     @Override
     public boolean contains(Item item) {
         int count = Math.max(1, item.getCount());
-        boolean checkDamage = item.hasMeta() && item.getAux() >= 0;
+        boolean checkDamage = item.hasMeta() && item.getDamage() >= 0;
         boolean checkTag = item.getCompoundTag() != null;
         for (Item i : this.getContents().values()) {
             if (item.equals(i, checkDamage, checkTag)) {
@@ -187,7 +182,7 @@ public class InventorySlice implements Inventory {
     @Override
     public Map<Integer, Item> all(Item item) {
         Map<Integer, Item> slots = new HashMap<>();
-        boolean checkDamage = item.hasMeta() && item.getAux() >= 0;
+        boolean checkDamage = item.hasMeta() && item.getDamage() >= 0;
         boolean checkTag = item.getCompoundTag() != null;
         for (Map.Entry<Integer, Item> entry : this.getContents().entrySet()) {
             if (item.equals(entry.getValue(), checkDamage, checkTag)) {

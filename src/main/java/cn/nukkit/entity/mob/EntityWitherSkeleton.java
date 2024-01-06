@@ -36,7 +36,7 @@ import java.util.Set;
 public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, EntitySmite, EntityCanAttack {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return WITHER_SKELETON;
     }
 

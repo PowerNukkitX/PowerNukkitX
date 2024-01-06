@@ -30,7 +30,7 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent {
             EXPLODE_BIT, ALLOW_UNDERWATER_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

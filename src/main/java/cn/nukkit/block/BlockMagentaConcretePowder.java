@@ -6,7 +6,7 @@ public class BlockMagentaConcretePowder extends BlockConcretePowder {
     public static final BlockProperties PROPERTIES = new BlockProperties(MAGENTA_CONCRETE_POWDER);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

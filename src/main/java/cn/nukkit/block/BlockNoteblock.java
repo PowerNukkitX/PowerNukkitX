@@ -27,7 +27,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     public static final BlockProperties PROPERTIES = new BlockProperties(NOTEBLOCK);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -50,12 +50,12 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityMusic> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityMusic> getBlockEntityClass() {
         return BlockEntityMusic.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.MUSIC;
     }
 

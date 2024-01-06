@@ -11,7 +11,7 @@ public class BlockLitRedstoneLamp extends BlockRedstoneLamp implements RedstoneC
     public static final BlockProperties PROPERTIES = new BlockProperties(LIT_REDSTONE_LAMP);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

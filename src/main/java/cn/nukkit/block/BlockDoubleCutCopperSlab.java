@@ -11,7 +11,7 @@ public class BlockDoubleCutCopperSlab extends BlockDoubleSlabCopperBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(DOUBLE_CUT_COPPER_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -56,7 +56,7 @@ public class BlockDoubleCutCopperSlab extends BlockDoubleSlabCopperBase {
     }
 
     @Override
-    public @NotNull OxidizationLevel getOxidizationLevel() {
+    @NotNull public OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.UNAFFECTED;
     }
 }

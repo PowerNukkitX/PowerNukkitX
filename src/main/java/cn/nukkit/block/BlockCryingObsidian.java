@@ -7,7 +7,7 @@ public class BlockCryingObsidian extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRYING_OBSIDIAN);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -9,7 +9,7 @@ public class BlockCutCopper extends BlockCopperBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(CUT_COPPER);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -27,7 +27,7 @@ public class BlockCutCopper extends BlockCopperBase {
     }
 
     @Override
-    public @NotNull OxidizationLevel getOxidizationLevel() {
+    @NotNull public OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.UNAFFECTED;
     }
 

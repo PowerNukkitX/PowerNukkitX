@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class EntityLingeringPotion extends EntitySplashPotion {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return LINGERING_POTION;
     }
 

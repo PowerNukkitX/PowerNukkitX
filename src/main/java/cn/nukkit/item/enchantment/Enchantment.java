@@ -387,7 +387,7 @@ public abstract class Enchantment implements Cloneable {
             BOOK_NUMBER++;
             try {
                 Class<? extends CustomItem> clazz = (Class<? extends CustomItem>) loadClass(Thread.currentThread().getContextClassLoader(), "cn.nukkit.item.customitem." + className, classWriter.toByteArray());
-                Item.registerCustomItem(clazz).assertOK();
+//                Item.registerCustomItem(clazz).assertOK();//todo fix custom ench
             } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
                      IllegalAccessException | AssertionError e) {
                 return new OK<>(false, e);
@@ -502,7 +502,7 @@ public abstract class Enchantment implements Cloneable {
     /**
      * The group of objects that this enchantment can be applied.
      */
-    public @NotNull EnchantmentType type;
+    @NotNull public EnchantmentType type;
 
     /**
      * The level of this enchantment. Starting from {@code 1}.
@@ -603,7 +603,7 @@ public abstract class Enchantment implements Cloneable {
      * @return This object so you can do chained calls
      */
 
-    public @NotNull Enchantment setLevel(int level) {
+    @NotNull public Enchantment setLevel(int level) {
         return this.setLevel(level, true);
     }
 
@@ -616,7 +616,7 @@ public abstract class Enchantment implements Cloneable {
      * @param safe  If the level should clamped or applied directly
      * @return This object so you can do chained calls
      */
-    public @NotNull Enchantment setLevel(int level, boolean safe) {
+    @NotNull public Enchantment setLevel(int level, boolean safe) {
         if (!safe) {
             this.level = level;
             return this;
@@ -638,21 +638,8 @@ public abstract class Enchantment implements Cloneable {
      * How rare this enchantment is.
      */
 
-    public @NotNull Rarity getRarity() {
+    @NotNull public Rarity getRarity() {
         return this.rarity;
-    }
-
-    /**
-     * How rare this enchantment is, from {@code 1} to {@code 10} where {@code 1} is the rarest.
-     *
-     * @deprecated use {@link Rarity#getWeight()} instead
-     */
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
-            reason = "Refactored enchantments and now uses a Rarity enum",
-            replaceWith = "getRarity().getWeight()")
-    @Deprecated
-    public int getWeight() {
-        return this.rarity.getWeight();
     }
 
     /**
@@ -777,7 +764,6 @@ public abstract class Enchantment implements Cloneable {
      * @param enchantment The enchantment to be checked
      * @return If this enchantment is compatible with the other enchantment.
      */
-
     protected boolean checkCompatibility(Enchantment enchantment) {
         return this != enchantment;
     }
@@ -814,16 +800,6 @@ public abstract class Enchantment implements Cloneable {
         } catch (CloneNotSupportedException e) {
             return null;
         }
-    }
-
-    /**
-     * Checks if an item can have this enchantment. It's not strict to the enchantment table.
-     */
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
-            reason = "Does the same as canEnchant(item)", replaceWith = "canEnchant(item)")
-    public boolean isItemAcceptable(Item item) {
-        return canEnchant(item);
     }
 
     public static final String[] words = {"the", "elder", "scrolls", "klaatu", "berata", "niktu", "xyzzy", "bless", "curse", "light", "darkness", "fire", "air", "earth", "water", "hot", "dry", "cold", "wet", "ignite", "snuff", "embiggen", "twist", "shorten", "stretch", "fiddle", "destroy", "imbue", "galvanize", "enchant", "free", "limited", "range", "of", "towards", "inside", "sphere", "cube", "self", "other", "ball", "mental", "physical", "grow", "shrink", "demon", "elemental", "spirit", "animal", "creature", "beast", "humanoid", "undead", "fresh", "stale"};

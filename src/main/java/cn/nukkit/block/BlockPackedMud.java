@@ -6,7 +6,7 @@ public class BlockPackedMud extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(PACKED_MUD);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

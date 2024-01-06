@@ -16,7 +16,7 @@ public class BlockTorchflowerCrop extends BlockCrops {
     public static final BlockProperties PROPERTIES = new BlockProperties(TORCHFLOWER_CROP, CommonBlockProperties.GROWTH);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -38,7 +38,7 @@ public class BlockTorchflowerCrop extends BlockCrops {
     }
 
     @Override
-    public @NotNull String getItemId() {
+    @NotNull public String getItemId() {
         return ItemID.TORCHFLOWER_SEEDS;
     }
 

@@ -41,7 +41,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
     public static final BlockProperties PROPERTIES = new BlockProperties(CAULDRON, CAULDRON_LIQUID, FILL_LEVEL);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -54,12 +54,12 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.CAULDRON;
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityCauldron> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityCauldron> getBlockEntityClass() {
         return BlockEntityCauldron.class;
     }
 
@@ -157,7 +157,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                         this.getLevel().addLevelEvent(this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_TAKE_WATER);
                     }
                 } else if (bucket.isWater() || bucket.isLava() || bucket.isPowderSnow()) {
-                    if (isFull() && !cauldron.isCustomColor() && !cauldron.hasPotion() && item.getAux() == 8) {
+                    if (isFull() && !cauldron.isCustomColor() && !cauldron.hasPotion() && item.getDamage() == 8) {
                         break;
                     }
 
@@ -207,7 +207,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     player.getInventory().setItemInHand(item);
                 }
 
-                BlockColor color = new ItemDye(item.getAux()).getDyeColor().getLeatherColor();
+                BlockColor color = new ItemDye(item.getDamage()).getDyeColor().getLeatherColor();
                 if (!cauldron.isCustomColor()) {
                     cauldron.setCustomColor(color);
                 } else {
@@ -262,7 +262,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
             case ItemID.POTION:
             case ItemID.SPLASH_POTION:
             case ItemID.LINGERING_POTION:
-                if (!isEmpty() && (cauldron.hasPotion() ? cauldron.getPotionId() != item.getAux() : item.getAux() != 0)) {
+                if (!isEmpty() && (cauldron.hasPotion() ? cauldron.getPotionId() != item.getDamage() : item.getDamage() != 0)) {
                     clearWithFizz(cauldron, player);
                     consumePotion(item, player);
                     break;
@@ -271,8 +271,8 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     break;
                 }
 
-                if (item.getAux() != 0 && isEmpty()) {
-                    cauldron.setPotionId(item.getAux());
+                if (item.getDamage() != 0 && isEmpty()) {
+                    cauldron.setPotionId(item.getDamage());
                 }
 
                 cauldron.setType(
@@ -410,7 +410,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                 if (bucket.getFishEntityId() != null) {
                     break;
                 }
-                if (item.getAux() == 0) { //empty
+                if (item.getDamage() == 0) { //empty
                     if (!isFull() || cauldron.isCustomColor() || cauldron.hasPotion()) {
                         break;
                     }
@@ -425,7 +425,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                         this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.BUCKET_FILL_LAVA);
                     }
                 } else if (bucket.isWater() || bucket.isLava()) { //water or lava bucket
-                    if (isFull() && !cauldron.isCustomColor() && !cauldron.hasPotion() && item.getAux() == 10) {
+                    if (isFull() && !cauldron.isCustomColor() && !cauldron.hasPotion() && item.getDamage() == 10) {
                         break;
                     }
 
@@ -458,7 +458,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
             case Item.POTION:
             case Item.SPLASH_POTION:
             case Item.LINGERING_POTION:
-                if (!isEmpty() && (cauldron.hasPotion() ? cauldron.getPotionId() != item.getAux() : item.getAux() != 0)) {
+                if (!isEmpty() && (cauldron.hasPotion() ? cauldron.getPotionId() != item.getDamage() : item.getDamage() != 0)) {
                     clearWithFizz(cauldron);
                     break;
                 }

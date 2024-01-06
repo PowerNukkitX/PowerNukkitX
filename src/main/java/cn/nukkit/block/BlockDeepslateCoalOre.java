@@ -6,7 +6,7 @@ public class BlockDeepslateCoalOre extends BlockCoalOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_COAL_ORE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -6,7 +6,7 @@ public class BlockRawCopperBlock extends BlockRaw {
     public static final BlockProperties PROPERTIES = new BlockProperties(RAW_COPPER_BLOCK);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

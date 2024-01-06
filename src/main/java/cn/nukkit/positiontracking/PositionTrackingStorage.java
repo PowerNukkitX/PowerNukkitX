@@ -250,7 +250,7 @@ public class PositionTrackingStorage implements Closeable {
         return handler;
     }
 
-    public @NotNull OptionalInt findTrackingHandler(NamedPosition position) throws IOException {
+    @NotNull public OptionalInt findTrackingHandler(NamedPosition position) throws IOException {
         OptionalInt cached = cache.asMap().entrySet().stream()
                 .filter(e -> e.getValue().filter(position::matchesNamedPosition).isPresent())
                 .mapToInt(Map.Entry::getKey)
@@ -446,15 +446,15 @@ public class PositionTrackingStorage implements Closeable {
         return pos;
     }
 
-    public @NotNull synchronized IntList findTrackingHandlers(NamedPosition pos) throws IOException {
+    @NotNull public synchronized IntList findTrackingHandlers(NamedPosition pos) throws IOException {
         return findTrackingHandlers(pos, true);
     }
 
-    public @NotNull synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled) throws IOException {
+    @NotNull public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled) throws IOException {
         return findTrackingHandlers(pos, onlyEnabled, Integer.MAX_VALUE);
     }
 
-    public @NotNull synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled, int limit) throws IOException {
+    @NotNull public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled, int limit) throws IOException {
         persistence.seek(HEADER.length + 4 + 4 + 4);
         int handler = startIndex - 1;
         final double lookingX = pos.x;

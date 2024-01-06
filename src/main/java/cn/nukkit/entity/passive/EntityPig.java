@@ -28,7 +28,7 @@ import java.util.Set;
  */
 public class EntityPig extends EntityAnimal implements EntityWalkable {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return PIG;
     }
     

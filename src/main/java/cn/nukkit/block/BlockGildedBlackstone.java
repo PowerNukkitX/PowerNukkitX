@@ -12,7 +12,7 @@ public class BlockGildedBlackstone extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(GILDED_BLACKSTONE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

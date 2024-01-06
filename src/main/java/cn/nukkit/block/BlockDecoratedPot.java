@@ -21,7 +21,7 @@ public class BlockDecoratedPot extends BlockTransparent implements Faceable, Blo
     public static final BlockProperties PROPERTIES = new BlockProperties(DECORATED_POT, CommonBlockProperties.DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -60,12 +60,12 @@ public class BlockDecoratedPot extends BlockTransparent implements Faceable, Blo
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityDecoratedPot> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityDecoratedPot> getBlockEntityClass() {
         return BlockEntityDecoratedPot.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.DECORATED_POT;
     }
 

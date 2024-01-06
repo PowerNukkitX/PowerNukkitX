@@ -23,7 +23,7 @@ public class BlockTripWire extends BlockTransparent {
             POWERED_BIT, SUSPENDED_BIT, ATTACHED_BIT, DISARMED_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -76,7 +76,7 @@ public class BlockTripWire extends BlockTransparent {
     }
 
     @Override
-    public @NotNull String getItemId() {
+    @NotNull public String getItemId() {
         return ItemID.STRING;
     }
 

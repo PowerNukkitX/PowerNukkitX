@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class EntityZombieVillagerV2 extends EntityMob implements EntityWalkable, EntitySmite {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return ZOMBIE_VILLAGER_V2;
     }
     

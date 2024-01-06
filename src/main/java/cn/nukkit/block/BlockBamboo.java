@@ -34,7 +34,7 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
     }
 
     @Override
-    public @NotNull  BlockProperties getProperties() {
+    @NotNull public  BlockProperties getProperties() {
         return PROPERTIES;
     }
 

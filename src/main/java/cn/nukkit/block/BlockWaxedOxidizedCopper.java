@@ -6,7 +6,7 @@ public class BlockWaxedOxidizedCopper extends BlockOxidizedCopper {
     public static final BlockProperties PROPERTIES = new BlockProperties(WAXED_OXIDIZED_COPPER);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

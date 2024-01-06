@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityMagmaCube extends EntityMob implements EntityWalkable {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return MAGMA_CUBE;
     }
 

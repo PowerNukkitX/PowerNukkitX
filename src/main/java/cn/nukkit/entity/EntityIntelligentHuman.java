@@ -175,8 +175,8 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     @Override
     public Item[] getDrops() {
         if (this.inventory != null) {
-            List<Item> drops = new ArrayList<>(this.inventory.getContents().values());
-            drops.addAll(this.offhandInventory.getContents().values());
+            List<Item> drops = new ArrayList<>(List.of(this.inventory.getContents()));
+            drops.addAll(List.of(this.offhandInventory.getContents()));
             return drops.stream().filter(item -> !item.keepOnDeath()).toList().toArray(Item.EMPTY_ARRAY);
         }
         return Item.EMPTY_ARRAY;
@@ -292,13 +292,13 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
             }
 
             if (armor instanceof ItemShield)
-                armor.setAux(armor.getAux() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
+                armor.setDamage(armor.getDamage() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
             else
-                armor.setAux(armor.getAux() + Math.max(1, (int) (event.getDamage() / 4.0f)));
+                armor.setDamage(armor.getDamage() + Math.max(1, (int) (event.getDamage() / 4.0f)));
 
-            if (armor.getAux() >= armor.getMaxDurability()) {
+            if (armor.getDamage() >= armor.getMaxDurability()) {
                 getLevel().addSound(this, Sound.RANDOM_BREAK);
-                return Item.get(BlockID.AIR, 0, 0);
+                return Item.getItemBlock(BlockID.AIR, 0, 0);
             }
         }
 
@@ -311,7 +311,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     }
 
     @Override
-    public @NotNull String getName() {
+    @NotNull public String getName() {
         return this.getNameTag();
     }
 

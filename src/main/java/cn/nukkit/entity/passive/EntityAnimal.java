@@ -5,7 +5,6 @@ import cn.nukkit.Server;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -46,7 +45,7 @@ public abstract class EntityAnimal extends EntityIntelligent {
         EntityEventPacket pk = new EntityEventPacket();
         pk.event = EntityEventPacket.EATING_ITEM;
         pk.eid = this.getId();
-        pk.data = RuntimeItems.getFullId(item.getRuntimeId(), item.getAux());
+        pk.data =  item.getFullId();
         Server.broadcastPacket(this.getViewers().values(), pk);
     }
 

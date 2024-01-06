@@ -386,7 +386,7 @@ public class PositionTrackingService implements Closeable {
         return trackingStorage.addNewPosition(position, enabled).orElseThrow(InternalError::new);
     }
 
-    public @NotNull OptionalInt findTrackingHandler(NamedPosition position) throws IOException {
+    @NotNull public OptionalInt findTrackingHandler(NamedPosition position) throws IOException {
         IntList handlers = findTrackingHandlers(position, true, 1);
         if (!handlers.isEmpty()) {
             return OptionalInt.of(handlers.getInt(0));
@@ -492,15 +492,15 @@ public class PositionTrackingService implements Closeable {
         return loadStorage(startIndex).hasPosition(trackingHandler, onlyEnabled);
     }
 
-    public @NotNull synchronized IntList findTrackingHandlers(NamedPosition pos) throws IOException {
+    @NotNull public synchronized IntList findTrackingHandlers(NamedPosition pos) throws IOException {
         return findTrackingHandlers(pos, true);
     }
 
-    public @NotNull synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled) throws IOException {
+    @NotNull public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled) throws IOException {
         return findTrackingHandlers(pos, onlyEnabled, Integer.MAX_VALUE);
     }
 
-    public @NotNull synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled, int limit) throws IOException {
+    @NotNull public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled, int limit) throws IOException {
         checkClosed();
         IntList list = new IntArrayList();
         for (Integer startIndex : storage.descendingKeySet()) {

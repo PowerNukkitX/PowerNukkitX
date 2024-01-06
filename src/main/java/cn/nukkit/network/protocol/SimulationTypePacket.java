@@ -56,7 +56,7 @@ public class SimulationTypePacket extends DataPacket {
         putByte((byte) type.ordinal());
     }
 
-    public @NotNull SimulationType getSimulationType() {
+    @NotNull public SimulationType getSimulationType() {
         return type;
     }
 

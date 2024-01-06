@@ -11,7 +11,7 @@ public class BlockCoralFanDead extends BlockCoralFan {
     public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_FAN_DEAD, CORAL_COLOR, CORAL_FAN_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

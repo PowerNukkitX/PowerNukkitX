@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityTadpole extends EntityAnimal implements EntitySwimmable {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return TADPOLE;
     }
     public EntityTadpole(IChunk chunk, CompoundTag nbt) {

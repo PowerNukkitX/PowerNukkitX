@@ -18,7 +18,7 @@ public class ItemFence extends Item {
     }
 
     private void adjust() {
-        switch (getAux()) {
+        switch (getDamage()) {
             case 0:
                 this.name = "Oak Fence";
                 this.block = Block.get(BlockID.OAK_FENCE);

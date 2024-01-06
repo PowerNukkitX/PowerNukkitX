@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class EntityTurtle extends EntityAnimal implements EntitySwimmable, EntityWalkable {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return TURTLE;
     }
     

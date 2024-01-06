@@ -13,7 +13,7 @@ public class BlockFrogSpawn extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(FROG_SPAWN);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

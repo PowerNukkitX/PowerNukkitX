@@ -37,7 +37,7 @@ import java.util.Collection;
 
 public class EntityArmorStand extends Entity implements EntityInventoryHolder, EntityInteractable, EntityNameable {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return ARMOR_STAND;
     }
     private static final String TAG_MAINHAND = "Mainhand";

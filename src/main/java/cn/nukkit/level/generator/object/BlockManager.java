@@ -29,10 +29,7 @@ public class BlockManager {
     }
 
     public String getBlockIdAt(int x, int y, int z, int layer) {
-        Block block = this.blocks.get(hashXYZ(x, y, z, layer));
-        if (block == null) {
-            block = level.getBlock(x, y, z, layer);
-        }
+        Block block = this.blocks.computeIfAbsent(hashXYZ(x, y, z, 0), k -> level.getBlock(x, y, z));
         return block.getId();
     }
 
@@ -73,8 +70,12 @@ public class BlockManager {
         blocks.put(hashXYZ(x, y, z, 0), block);
     }
 
+    public void setBlockAt(int x, int y, int z, String block) {
+        blocks.put(hashXYZ(x, y, z, 0), Block.get(block));
+    }
+
     public Block getBlockAt(int x, int y, int z) {
-        return blocks.get(hashXYZ(x, y, z, 0));
+        return this.blocks.computeIfAbsent(hashXYZ(x, y, z, 0), k -> level.getBlock(x, y, z));
     }
 
     public IChunk getChunk(int chunkX, int chunkZ) {
@@ -109,6 +110,10 @@ public class BlockManager {
         return new ArrayList<>(this.blocks.values());
     }
 
+    public void apply() {
+        this.apply(new ArrayList<>(this.blocks.values()), null);
+    }
+
     public void apply(List<Block> blockList) {
         this.apply(blockList, null);
     }
@@ -128,5 +133,6 @@ public class BlockManager {
                 }
             });
         });
+        blocks.clear();
     }
 }

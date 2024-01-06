@@ -7,7 +7,7 @@ import cn.nukkit.block.BlockCampfire;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.event.inventory.CampfireSmeltEvent;
 import cn.nukkit.inventory.CampfireInventory;
-import cn.nukkit.inventory.CampfireRecipe;
+import cn.nukkit.recipe.CampfireRecipe;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
@@ -84,7 +84,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
 
                 int burnTimeLeft = burnTime[slot];
                 if (burnTimeLeft <= 0) {
-                    Item product = Item.get(recipe.getResult().getId(), recipe.getResult().getAux(), item.getCount());
+                    Item product = Item.get(recipe.getResult().getId(), recipe.getResult().getDamage(), item.getCount());
                     CampfireSmeltEvent event = new CampfireSmeltEvent(this, item, product);
                     if (!event.isCancelled()) {
                         inventory.setItem(slot, Item.AIR);

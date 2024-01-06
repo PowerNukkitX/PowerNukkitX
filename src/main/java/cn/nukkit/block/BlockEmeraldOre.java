@@ -14,7 +14,7 @@ public class BlockEmeraldOre extends BlockOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(EMERALD_ORE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -30,17 +30,17 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
     }
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityConduit> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityConduit> getBlockEntityClass() {
         return BlockEntityConduit.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.CONDUIT;
     }
 

@@ -25,7 +25,7 @@ public class BlockTallgrass extends BlockFlowable implements BlockFlowerPot.Flow
     public static final BlockProperties PROPERTIES = new BlockProperties(TALLGRASS, TALL_GRASS_TYPE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

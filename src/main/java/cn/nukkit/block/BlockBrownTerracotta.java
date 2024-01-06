@@ -6,7 +6,7 @@ public class BlockBrownTerracotta extends BlockHardenedClay {
     public static final BlockProperties PROPERTIES = new BlockProperties(BROWN_TERRACOTTA);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

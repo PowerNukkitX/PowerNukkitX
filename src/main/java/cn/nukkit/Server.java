@@ -16,10 +16,9 @@ import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
 import cn.nukkit.event.server.*;
-import cn.nukkit.inventory.CraftingManager;
-import cn.nukkit.inventory.Recipe;
+import cn.nukkit.recipe.CraftingManager;
+import cn.nukkit.recipe.Recipe;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.lang.LangCode;
@@ -73,6 +72,9 @@ import cn.nukkit.scoreboard.manager.IScoreboardManager;
 import cn.nukkit.scoreboard.manager.ScoreboardManager;
 import cn.nukkit.scoreboard.storage.JSONScoreboardStorage;
 import cn.nukkit.spark.SparkInstaller;
+import cn.nukkit.tags.BiomeTags;
+import cn.nukkit.tags.BlockTags;
+import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.bugreport.ExceptionHandler;
 import cn.nukkit.utils.collection.FreezableArrayManager;
@@ -293,103 +295,24 @@ public class Server {
             return result;
         }
     };
-
     private Level[] levelArray;
-
     private final ServiceManager serviceManager = new NKServiceManager();
-
     private Level defaultLevel = null;
-
     private boolean allowNether;
-
     private final Thread currentThread;
-
     private final long launchTime;
-
     private Watchdog watchdog;
-
     private DB nameLookup;
-
     private PlayerDataSerializer playerDataSerializer;
-
     private final Set<String> ignoredPackets = new HashSet<>();
-
     private boolean safeSpawn;
-
     private boolean forceSkinTrusted = false;
-
     private boolean checkMovement = true;
-
-
     private boolean allowTheEnd;
-
-
     private boolean useTerra;
-
-
     private boolean enableExperimentMode;
-
-
     private FreezableArrayManager freezableArrayManager;
-
-
     public boolean enabledNetworkEncryption;
-
-
-    /**
-     * 最小初始化测试
-     * Minimal initializer for testing
-     */
-    @SuppressWarnings("UnstableApiUsage")
-    Server(File tempDir) throws IOException {
-        if (tempDir.isFile() && !tempDir.delete()) {
-            throw new IOException("Failed to delete " + tempDir);
-        }
-        instance = this;
-        config = new Config();
-        levelArray = Level.EMPTY_ARRAY;
-        launchTime = System.currentTimeMillis();
-        BatchPacket batchPacket = new BatchPacket();
-        batchPacket.payload = EmptyArrays.EMPTY_BYTES;
-        CraftingManager.setCraftingPacket(batchPacket);
-
-        currentThread = Thread.currentThread();
-        File abs = tempDir.getAbsoluteFile();
-        filePath = abs.getPath();
-        dataPath = filePath;
-
-        File dir = new File(tempDir, "plugins");
-        pluginPath = dir.getPath();
-
-        File cmdDir = new File(tempDir, "command_data");
-        commandDataPath = cmdDir.getPath();
-
-        Files.createParentDirs(dir);
-        Files.createParentDirs(new File(tempDir, "worlds"));
-        Files.createParentDirs(new File(tempDir, "players"));
-
-        baseLang = new BaseLang(BaseLang.FALLBACK_LANGUAGE);
-        baseLangCode = mapInternalLang(BaseLang.FALLBACK_LANGUAGE);
-        console = new NukkitConsole(this);
-        consoleThread = new ConsoleThread();
-        this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
-        freezableArrayManager = new FreezableArrayManager(true, 32, 32, 0, -256, 1024, 16, 1, 32);
-        properties = new Config();
-        banByName = new BanList(dataPath + "banned-players.json");
-        banByIP = new BanList(dataPath + "banned-ips.json");
-        operators = new Config();
-        whitelist = new Config();
-        scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
-        functionManager = new FunctionManager(this.commandDataPath + "/functions");
-        tickingAreaManager = new SimpleTickingAreaManager(new JSONTickingAreaStorage(this.dataPath + "worlds/"));
-        commandMap = new SimpleCommandMap(this);
-
-        setMaxPlayers(10);
-
-        this.registerProfessions();
-        this.registerEntities();
-        this.registerBlockEntities();
-    }
 
     Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage) {
         Preconditions.checkState(instance == null, "Already initialized!");
@@ -778,19 +701,26 @@ public class Server {
         // Initialize metrics
         NukkitMetrics.startNow(this);
 
-        this.registerEntities();
-        this.registerProfessions();
-        this.registerBlockEntities();
-
-        Block.init();
-        Enchantment.init();
-        RuntimeItems.init();
-        Potion.init();
-        Item.init();
-        EnumBiome.values(); //load class, this also registers biomes
-        Effect.init();
-        Attribute.init();
-        DispenseBehaviorRegister.init();
+        {//init block
+            Registries.ENTITY.init();
+            Profession.init();
+            Registries.BLOCKENTITY.init();
+            String acacia = BlockTags.ACACIA;
+            String arrow = ItemTags.ARROW;
+            String warm = BiomeTags.WARM;
+            Registries.BLOCK.init();
+            Enchantment.init();
+            Registries.ITEM_RUNTIMEID.init();
+            Potion.init();
+            Registries.ITEM.init();
+            Registries.CREATIVE.init();
+            Registries.BLOCKSTATE_ITEMMETA.init();
+            Registries.BIOME.init();
+            Registries.FUEL.init();
+            Effect.init();
+            Attribute.init();
+            DispenseBehaviorRegister.init();
+        }
 
         freezableArrayManager = new FreezableArrayManager(
                 this.getConfig("memory-compression.enable", true),
@@ -847,11 +777,11 @@ public class Server {
 
         this.pluginManager.loadInternalPlugin();
         this.pluginManager.loadPlugins(this.pluginPath);
-        Block.initCustomBlock();
+        //Block.initCustomBlock();  todo adapt custom block
 
         this.enablePlugins(PluginLoadOrder.STARTUP);
 
-        LevelProviderManager.addProvider(this, Anvil.class);
+        LevelProviderManager.addProvider(this, LevelProvider.class);
 
         for (String name : this.getConfig("worlds", new HashMap<String, Object>()).keySet()) {
             if (!this.loadLevel(name)) {
@@ -1041,8 +971,6 @@ public class Server {
 
             log.debug("Saving scoreboards data");
             this.scoreboardManager.save();
-
-            BlockStateRegistry.close();
 
             log.debug("Stopping all tasks");
             this.scheduler.cancelAllTasks();
@@ -2485,22 +2413,7 @@ public class Server {
         return freezableArrayManager;
     }
 
-    // TODO: update PNX Junit5 test framework to remove dependency on this method
-    private void registerProfessions() {
-        Profession.init();
-    }
-
-    // TODO: update PNX Junit5 test framework to remove dependency on this method
-    private void registerEntities() {
-        Entity.init();
-    }
-
-    // TODO: update PNX Junit5 test framework to remove dependency on this method
-    private void registerBlockEntities() {
-        BlockEntity.init();
-    }
-
-    public @NotNull PositionTrackingService getPositionTrackingService() {
+    @NotNull public PositionTrackingService getPositionTrackingService() {
         return positionTrackingService;
     }
 

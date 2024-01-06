@@ -7,7 +7,7 @@ public class BlockStickyPistonArmCollision extends BlockPistonArmCollision {
     public static final BlockProperties PROPERTIES = new BlockProperties(STICKY_PISTON_ARM_COLLISION, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

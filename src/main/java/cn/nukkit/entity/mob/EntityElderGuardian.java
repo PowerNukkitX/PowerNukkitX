@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return ELDER_GUARDIAN;
     }
 

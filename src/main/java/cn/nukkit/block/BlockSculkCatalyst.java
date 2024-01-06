@@ -10,7 +10,7 @@ public class BlockSculkCatalyst extends BlockSolid implements BlockEntityHolder<
     public static final BlockProperties PROPERTIES = new BlockProperties(SCULK_CATALYST, CommonBlockProperties.BLOOM);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -58,12 +58,12 @@ public class BlockSculkCatalyst extends BlockSolid implements BlockEntityHolder<
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntitySculkCatalyst> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntitySculkCatalyst> getBlockEntityClass() {
         return BlockEntitySculkCatalyst.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.SCULK_CATALYST;
     }
 

@@ -18,7 +18,7 @@ public class ItemWool extends Item {
     }
 
     public void adjust() {
-        switch (getAux()) {
+        switch (getDamage()) {
             case 0:
                 this.name = "White Wool";
                 this.block = Block.get(BlockID.WHITE_WOOL);

@@ -10,7 +10,7 @@ public class BlockGlowFrame extends BlockFrame {
     public static final BlockProperties PROPERTIES = new BlockProperties(GLOW_FRAME, CommonBlockProperties.FACING_DIRECTION, CommonBlockProperties.ITEM_FRAME_MAP_BIT, CommonBlockProperties.ITEM_FRAME_PHOTO_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -28,7 +28,7 @@ public class BlockGlowFrame extends BlockFrame {
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.GLOW_ITEM_FRAME;
     }
 

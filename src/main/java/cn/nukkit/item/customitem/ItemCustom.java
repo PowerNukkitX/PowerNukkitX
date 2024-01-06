@@ -12,21 +12,9 @@ import javax.annotation.Nullable;
  *
  * @author lt_name
  */
-public abstract class ItemCustom extends StringItemBase implements CustomItem {
-    private final String textureName;
-
-    public ItemCustom(@NotNull String id, @Nullable String name) {
-        super(id, StringItem.notEmpty(name));
-        this.textureName = name;
-    }
-
-    public ItemCustom(@NotNull String id, @Nullable String name, @NotNull String textureName) {
-        super(id, StringItem.notEmpty(name));
-        this.textureName = textureName;
-    }
-
-    public String getTextureName() {
-        return textureName;
+public abstract class ItemCustom extends Item implements CustomItem {
+    public ItemCustom(@NotNull String id) {
+        super(id);
     }
 
     /**

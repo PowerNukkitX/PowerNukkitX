@@ -18,7 +18,7 @@ public class BlockWheat extends BlockCrops {
     public static final BlockProperties PROPERTIES = new BlockProperties(WHEAT, CommonBlockProperties.GROWTH);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

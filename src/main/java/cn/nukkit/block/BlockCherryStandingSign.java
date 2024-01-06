@@ -9,7 +9,7 @@ public class BlockCherryStandingSign extends BlockStandingSign {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_STANDING_SIGN, CommonBlockProperties.GROUND_SIGN_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

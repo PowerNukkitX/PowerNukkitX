@@ -7,7 +7,7 @@ public class BlockExposedCopperBulb extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(EXPOSED_COPPER_BULB, CommonBlockProperties.LIT, CommonBlockProperties.POWERED_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

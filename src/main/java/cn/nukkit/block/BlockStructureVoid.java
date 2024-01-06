@@ -17,7 +17,7 @@ public class BlockStructureVoid extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(STRUCTURE_VOID, STRUCTURE_VOID_TYPE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -34,7 +34,7 @@ public class BlockStructureVoid extends BlockSolid {
         return "Structure Void";
     }
 
-    public @NotNull StructureVoidType getType() {
+    @NotNull public StructureVoidType getType() {
         return getPropertyValue(STRUCTURE_VOID_TYPE);
     }
 

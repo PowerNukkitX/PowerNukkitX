@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityEndermite extends EntityMob implements EntityWalkable, EntityArthropod {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return ENDERMITE;
     }
 

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityGoat extends EntityAnimal implements EntityWalkable {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return GOAT;
     }
 

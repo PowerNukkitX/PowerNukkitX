@@ -15,7 +15,7 @@ public class BlockWitherRose extends BlockRedFlower {
     public static final BlockProperties PROPERTIES = new BlockProperties(WITHER_ROSE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

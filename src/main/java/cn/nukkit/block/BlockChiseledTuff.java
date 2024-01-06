@@ -6,7 +6,7 @@ public class BlockChiseledTuff extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHISELED_TUFF);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

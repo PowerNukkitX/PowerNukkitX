@@ -41,7 +41,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityShearable {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return SHEEP;
     }
     

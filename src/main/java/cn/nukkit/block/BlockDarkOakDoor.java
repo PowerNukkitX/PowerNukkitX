@@ -9,7 +9,7 @@ public class BlockDarkOakDoor extends BlockWoodenDoor {
     public static final BlockProperties PROPERTIES = new BlockProperties(DARK_OAK_DOOR, CommonBlockProperties.DIRECTION, CommonBlockProperties.DOOR_HINGE_BIT, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPPER_BLOCK_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

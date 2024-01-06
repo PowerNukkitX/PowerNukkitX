@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityStray extends EntityMob implements EntityWalkable, EntitySmite {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return STRAY;
     }
 

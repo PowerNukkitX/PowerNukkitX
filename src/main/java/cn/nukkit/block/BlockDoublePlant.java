@@ -22,7 +22,7 @@ public class BlockDoublePlant extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(DOUBLE_PLANT, DOUBLE_PLANT_TYPE, UPPER_BLOCK_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -34,7 +34,7 @@ public class BlockDoublePlant extends BlockFlowable {
         super(blockstate);
     }
 
-    public @NotNull DoublePlantType getDoublePlantType() {
+    @NotNull public DoublePlantType getDoublePlantType() {
         return getPropertyValue(DOUBLE_PLANT_TYPE);
     }
 

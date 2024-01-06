@@ -6,7 +6,7 @@ public class BlockChemicalHeat extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHEMICAL_HEAT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

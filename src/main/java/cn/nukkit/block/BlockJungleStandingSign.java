@@ -9,7 +9,7 @@ public class BlockJungleStandingSign extends BlockStandingSign {
     public static final BlockProperties PROPERTIES = new BlockProperties(JUNGLE_STANDING_SIGN, CommonBlockProperties.GROUND_SIGN_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -22,7 +22,7 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
     public static final BlockProperties PROPERTIES = new BlockProperties(BREWING_STAND , CommonBlockProperties.BREWING_STAND_SLOT_A_BIT, CommonBlockProperties.BREWING_STAND_SLOT_B_BIT, CommonBlockProperties.BREWING_STAND_SLOT_C_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -189,12 +189,12 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityBrewingStand> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityBrewingStand> getBlockEntityClass() {
         return BlockEntityBrewingStand.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.BREWING_STAND;
     }
 }

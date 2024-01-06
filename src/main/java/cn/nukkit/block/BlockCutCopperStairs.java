@@ -11,7 +11,7 @@ public class BlockCutCopperStairs extends BlockStairsCopperBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(CUT_COPPER_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -51,7 +51,7 @@ public class BlockCutCopperStairs extends BlockStairsCopperBase {
     }
 
     @Override
-    public @NotNull OxidizationLevel getOxidizationLevel() {
+    @NotNull public OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.UNAFFECTED;
     }
 }

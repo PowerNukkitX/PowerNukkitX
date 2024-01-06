@@ -24,13 +24,13 @@ public class ItemBed extends Item {
     }
 
     @Override
-    public void setAux(Integer aux) {
-        super.setAux(aux);
+    public void setDamage(Integer meta) {
+        super.setDamage(meta);
         updateName();
     }
 
     private void updateName() {
-        name = DyeColor.getByWoolData(aux).getName() + " Bed";
+        name = DyeColor.getByWoolData(meta).getName() + " Bed";
     }
 
     @Override

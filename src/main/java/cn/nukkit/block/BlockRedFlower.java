@@ -16,7 +16,7 @@ public class BlockRedFlower extends BlockFlowable implements BlockFlowerPot.Flow
     public static final BlockProperties PROPERTIES = new BlockProperties(RED_FLOWER, CommonBlockProperties.FLOWER_TYPE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

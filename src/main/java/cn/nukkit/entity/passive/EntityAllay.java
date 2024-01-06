@@ -24,7 +24,7 @@ import java.util.Set;
 
 public class EntityAllay extends EntityAnimal implements EntityFlyable {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return ALLAY;
     }
 

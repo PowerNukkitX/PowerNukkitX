@@ -13,7 +13,7 @@ public class BlockNetherGoldOre extends BlockGoldOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(NETHER_GOLD_ORE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

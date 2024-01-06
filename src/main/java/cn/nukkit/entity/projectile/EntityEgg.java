@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityEgg extends EntityProjectile {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return EGG;
     }
 

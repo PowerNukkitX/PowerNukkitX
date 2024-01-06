@@ -7,7 +7,7 @@ public class BlockCrackedDeepslateBricks extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRACKED_DEEPSLATE_BRICKS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

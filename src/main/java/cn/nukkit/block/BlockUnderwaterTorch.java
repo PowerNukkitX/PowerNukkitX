@@ -7,7 +7,7 @@ public class BlockUnderwaterTorch extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(UNDERWATER_TORCH, CommonBlockProperties.TORCH_FACING_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

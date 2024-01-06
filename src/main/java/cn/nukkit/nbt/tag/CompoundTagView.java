@@ -299,7 +299,7 @@ public class CompoundTagView extends CompoundTag {
     }
 
     @Override
-    public @NotNull String getName() {
+    @NotNull public String getName() {
         return delegate.getName();
     }
 

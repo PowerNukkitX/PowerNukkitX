@@ -32,7 +32,7 @@ import java.util.Set;
 
 public class EntityVillagerV2 extends EntityIntelligent implements InventoryHolder, IEntityNPC, EntityAgeable {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return VILLAGER_V2;
     }
     

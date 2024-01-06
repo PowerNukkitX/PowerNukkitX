@@ -7,7 +7,7 @@ public class BlockBrownMushroom extends BlockMushroom {
     public static final BlockProperties PROPERTIES = new BlockProperties(BROWN_MUSHROOM);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

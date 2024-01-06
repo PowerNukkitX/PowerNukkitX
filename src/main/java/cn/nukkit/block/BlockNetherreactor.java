@@ -18,7 +18,7 @@ public class BlockNetherreactor extends BlockSolid implements BlockEntityHolder<
     public static final BlockProperties PROPERTIES = new BlockProperties(NETHERREACTOR);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -31,12 +31,12 @@ public class BlockNetherreactor extends BlockSolid implements BlockEntityHolder<
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.NETHER_REACTOR;
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityNetherReactor> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityNetherReactor> getBlockEntityClass() {
         return BlockEntityNetherReactor.class;
     }
 

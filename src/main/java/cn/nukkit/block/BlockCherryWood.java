@@ -10,7 +10,7 @@ public class BlockCherryWood extends BlockWood {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_WOOD, CommonBlockProperties.PILLAR_AXIS, CommonBlockProperties.STRIPPED_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockSand extends BlockFallable {
     public static final BlockProperties PROPERTIES = new BlockProperties(SAND, CommonBlockProperties.SAND_TYPE);
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

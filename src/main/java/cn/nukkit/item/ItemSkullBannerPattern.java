@@ -6,7 +6,7 @@ public class ItemSkullBannerPattern extends ItemBannerPattern {
     }
 
     @Override
-    public void setAux(Integer aux) {
+    public void setDamage(Integer meta) {
         throw new UnsupportedOperationException();
     }
 }

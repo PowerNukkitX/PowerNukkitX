@@ -30,7 +30,7 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
     public static final BlockProperties PROPERTIES = new BlockProperties(BELL, ATTACHMENT, DIRECTION, CommonBlockProperties.TOGGLE_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -48,12 +48,12 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityBell> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityBell> getBlockEntityClass() {
         return BlockEntityBell.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.BELL;
     }
 

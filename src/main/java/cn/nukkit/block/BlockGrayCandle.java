@@ -7,7 +7,7 @@ public class BlockGrayCandle extends BlockCandle {
     public static final BlockProperties PROPERTIES = new BlockProperties(GRAY_CANDLE, CommonBlockProperties.CANDLES, CommonBlockProperties.LIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

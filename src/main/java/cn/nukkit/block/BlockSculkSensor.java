@@ -17,7 +17,7 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
     public static final BlockProperties PROPERTIES = new BlockProperties(SCULK_SENSOR, SCULK_SENSOR_PHASE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -35,12 +35,12 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntitySculkSensor> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntitySculkSensor> getBlockEntityClass() {
         return BlockEntitySculkSensor.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.SCULK_SENSOR;
     }
 

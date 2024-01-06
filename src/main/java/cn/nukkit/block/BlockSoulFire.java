@@ -10,7 +10,7 @@ public class BlockSoulFire extends BlockFire {
     public static final BlockProperties PROPERTIES = new BlockProperties(SOUL_FIRE, AGE_16);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

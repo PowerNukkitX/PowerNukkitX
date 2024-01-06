@@ -6,7 +6,7 @@ public class BlockChiseledCopper extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHISELED_COPPER);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

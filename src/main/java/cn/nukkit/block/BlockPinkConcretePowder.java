@@ -6,7 +6,7 @@ public class BlockPinkConcretePowder extends BlockConcretePowder {
     public static final BlockProperties PROPERTIES = new BlockProperties(PINK_CONCRETE_POWDER);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

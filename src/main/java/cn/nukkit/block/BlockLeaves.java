@@ -30,7 +30,7 @@ public class BlockLeaves extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(LEAVES, OLD_LEAF_TYPE, PERSISTENT_BIT, UPDATE_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -229,7 +229,7 @@ public class BlockLeaves extends BlockTransparent {
     }
 
     protected Item getSapling() {
-        return Item.get(BlockID.SAPLING, getPropertyValue(OLD_LEAF_TYPE).ordinal());
+        return Item.getItemBlock(BlockID.SAPLING, getPropertyValue(OLD_LEAF_TYPE).ordinal());
     }
 
     @Override

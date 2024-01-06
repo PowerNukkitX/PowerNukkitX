@@ -6,7 +6,7 @@ public class BlockElement64 extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:element_64");
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

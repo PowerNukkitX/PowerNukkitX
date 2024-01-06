@@ -30,7 +30,7 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
     public static final BlockProperties PROPERTIES = new BlockProperties(FENCE_GATE, DIRECTION, IN_WALL_BIT, OPEN_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

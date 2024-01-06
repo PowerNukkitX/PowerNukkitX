@@ -15,7 +15,7 @@ public class BlockLantern extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(LANTERN, HANGING);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

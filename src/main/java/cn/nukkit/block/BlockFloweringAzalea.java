@@ -7,7 +7,7 @@ public class BlockFloweringAzalea extends BlockAzalea {
     public static final BlockProperties PROPERTIES = new BlockProperties(FLOWERING_AZALEA);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

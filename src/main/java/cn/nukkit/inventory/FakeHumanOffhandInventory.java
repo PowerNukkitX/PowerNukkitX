@@ -18,11 +18,6 @@ public class FakeHumanOffhandInventory extends BaseInventory {
     }
 
     @Override
-    public void setSize(int size) {
-        throw new UnsupportedOperationException("Offhand can only carry one item at a time");
-    }
-
-    @Override
     public void onSlotChange(int index, Item before, boolean send) {
         EntityIntelligentHuman holder = this.getHolder();
         this.sendContents(holder.getViewers().values());

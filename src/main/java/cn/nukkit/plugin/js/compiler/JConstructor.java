@@ -12,11 +12,11 @@ public record JConstructor(JClassBuilder builder, String superDelegateName, Stri
         this(builder, "new", "constructor", superTypes, argTypes);
     }
 
-    public @NotNull Type[] argAsmTypes() {
+    @NotNull public Type[] argAsmTypes() {
         return Arrays.stream(this.argTypes()).map(JType::asmType).toArray(Type[]::new);
     }
 
-    public @NotNull Type[] superAsmTypes() {
+    @NotNull public Type[] superAsmTypes() {
         return Arrays.stream(this.superTypes()).map(JType::asmType).toArray(Type[]::new);
     }
 }

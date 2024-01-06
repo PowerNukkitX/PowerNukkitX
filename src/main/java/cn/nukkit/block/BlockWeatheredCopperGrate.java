@@ -6,7 +6,7 @@ public class BlockWeatheredCopperGrate extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(WEATHERED_COPPER_GRATE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

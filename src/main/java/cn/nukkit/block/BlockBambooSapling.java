@@ -18,7 +18,7 @@ public class BlockBambooSapling extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_SAPLING, CommonBlockProperties.AGE_BIT, CommonBlockProperties.SAPLING_TYPE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityEnderPearl extends EntityProjectile {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return ENDER_PEARL;
     }
 

@@ -7,7 +7,7 @@ public class BlockPolishedBlackstoneButton extends BlockStoneButton {
     public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_BLACKSTONE_BUTTON, CommonBlockProperties.BUTTON_PRESSED_BIT, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

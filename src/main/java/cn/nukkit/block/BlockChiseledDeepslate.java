@@ -6,7 +6,7 @@ public class BlockChiseledDeepslate extends BlockCobbledDeepslate {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHISELED_DEEPSLATE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

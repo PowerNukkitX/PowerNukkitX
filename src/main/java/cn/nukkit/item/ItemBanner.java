@@ -32,8 +32,8 @@ public class ItemBanner extends Item {
     }
 
     @Override
-    public void setAux(Integer aux) {
-        super.setAux(aux);
+    public void setDamage(Integer meta) {
+        super.setDamage(meta);
         updateName();
     }
 
@@ -47,14 +47,14 @@ public class ItemBanner extends Item {
     }
 
     public int getBaseColor() {
-        return this.getAux() & 0x0f;
+        return this.getDamage() & 0x0f;
     }
 
     public void setBaseColor(@NotNull DyeColor color) {
-        this.setAux(color.getDyeData() & 0x0f);
+        this.setDamage(color.getDyeData() & 0x0f);
     }
 
-    public @NotNull DyeColor getBaseDyeColor() {
+    @NotNull public DyeColor getBaseDyeColor() {
         return Objects.requireNonNull(DyeColor.getByDyeData(getBaseColor()));
     }
 

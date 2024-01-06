@@ -22,6 +22,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
+import cn.nukkit.recipe.SmithingRecipe;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -79,7 +80,7 @@ public class SmithingInventory extends FakeBlockUIComponent {
         this.currentResult = result;
     }
 
-    public @NotNull Item getResult() {
+    @NotNull public Item getResult() {
         SmithingRecipe recipe = matchRecipe();
         if (recipe == null) {
             return AIR_ITEM;
@@ -121,7 +122,7 @@ public class SmithingInventory extends FakeBlockUIComponent {
         playerUI.clear(50);
     }
 
-    public @NotNull Item getCurrentResult() {
+    @NotNull public Item getCurrentResult() {
         return currentResult;
     }
 }

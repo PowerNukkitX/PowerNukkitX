@@ -6,7 +6,7 @@ public class BlockPolishedTuff extends BlockTuff {
     public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_TUFF);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

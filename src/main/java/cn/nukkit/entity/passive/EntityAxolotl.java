@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class EntityAxolotl extends EntityAnimal implements EntitySwimmable {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return AXOLOTL;
     }
 

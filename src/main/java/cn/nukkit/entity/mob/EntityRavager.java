@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityRavager extends EntityMob implements EntityWalkable {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return RAVAGER;
     }
 

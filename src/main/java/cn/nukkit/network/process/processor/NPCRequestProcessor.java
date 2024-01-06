@@ -5,7 +5,7 @@ import cn.nukkit.PlayerHandle;
 import cn.nukkit.dialog.handler.FormDialogHandler;
 import cn.nukkit.dialog.response.FormResponseDialog;
 import cn.nukkit.dialog.window.FormWindowDialog;
-import cn.nukkit.entity.passive.EntityNPCEntity;
+import cn.nukkit.entity.passive.EntityNpc;
 import cn.nukkit.event.player.PlayerDialogRespondedEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.NPCDialoguePacket;
@@ -18,7 +18,7 @@ public class NPCRequestProcessor extends DataPacketProcessor<NPCRequestPacket> {
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull NPCRequestPacket pk) {
         Player player = playerHandle.player;
         //若sceneName字段为空，则为玩家在编辑NPC，我们并不需要记录对话框，直接通过entityRuntimeId获取实体即可
-        if (pk.getSceneName().isEmpty() && player.level.getEntity(pk.getRequestedEntityRuntimeId()) instanceof EntityNPCEntity npcEntity) {
+        if (pk.getSceneName().isEmpty() && player.level.getEntity(pk.getRequestedEntityRuntimeId()) instanceof EntityNpc npcEntity) {
             FormWindowDialog dialog = npcEntity.getDialog();
 
             FormResponseDialog response = new FormResponseDialog(pk, dialog);

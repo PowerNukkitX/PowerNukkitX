@@ -43,13 +43,8 @@ public class StructBlockInventory implements Inventory {
     }
 
     @Override
-    public String getTitle() {
-        return this.getName();
-    }
-
-    @Override
-    public @NotNull Item getItem(int index) {
-        return Item.get(BlockID.AIR);
+    @NotNull public Item getItem(int index) {
+        return Item.getItemBlock(BlockID.AIR);
     }
 
     @Override
@@ -73,12 +68,12 @@ public class StructBlockInventory implements Inventory {
     }
 
     @Override
-    public Map<Integer, Item> getContents() {
+    public Item[] getContents() {
         return Collections.emptyMap();
     }
 
     @Override
-    public void setContents(Map<Integer, Item> items) {
+    public void setContents(Item[] items) {
 
     }
 
@@ -169,7 +164,7 @@ public class StructBlockInventory implements Inventory {
 
     @Override
     public InventoryType getType() {
-        return InventoryType.STRUCTURE_EDITOR;
+        return InventoryType.STRUCTURE_BLOCK;
     }
 
     @Override

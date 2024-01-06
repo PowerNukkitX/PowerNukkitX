@@ -33,7 +33,7 @@ import java.util.Set;
  */
 public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return MOOSHROOM;
     }
     
@@ -122,11 +122,11 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
             cow.spawnToAll();
             this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), this.getPosition(), VibrationType.SHEAR));
             return true;
-        } else if (item.getId() == Item.BUCKET && item.getAux() == 0) {
+        } else if (item.getId() == Item.BUCKET && item.getDamage() == 0) {
             item.count--;
             player.getInventory().addItem(Item.get(Item.BUCKET, 1));
             return true;
-        } else if (item.getId() == Item.BOWL && item.getAux() == 0) {
+        } else if (item.getId() == Item.BOWL && item.getDamage() == 0) {
             item.count--;
             player.getInventory().addItem(Item.get(Item.MUSHROOM_STEW));
             return true;

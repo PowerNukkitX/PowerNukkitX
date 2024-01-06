@@ -1,6 +1,9 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.recipe.CraftingManager;
+import cn.nukkit.recipe.RecipeType;
+import cn.nukkit.recipe.SmeltingRecipe;
 
 import javax.annotation.Nullable;
 import java.util.List;

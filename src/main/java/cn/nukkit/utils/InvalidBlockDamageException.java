@@ -2,7 +2,6 @@ package cn.nukkit.utils;
 
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.BlockUnknown;
-import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
 import lombok.EqualsAndHashCode;
 
 

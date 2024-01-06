@@ -52,15 +52,15 @@ public class PlayerTypingAnvilInventoryEvent extends InventoryEvent {
     }
 
     @Override
-    public @NotNull AnvilInventory getInventory() {
+    @NotNull public AnvilInventory getInventory() {
         return (AnvilInventory) super.getInventory();
     }
 
-    public @NotNull Player getPlayer() {
+    @NotNull public Player getPlayer() {
         return player;
     }
 
-    public @NotNull String getTypedName() {
+    @NotNull public String getTypedName() {
         return typedName;
     }
 

@@ -24,7 +24,7 @@ public abstract class NamedPosition extends Vector3 {
         super(x, y, z);
     }
 
-    public @NotNull abstract String getLevelName();
+    @NotNull public abstract String getLevelName();
 
     public boolean matchesNamedPosition(NamedPosition position) {
         return x == position.x && y == position.y && z == position.z && getLevelName().equals(position.getLevelName());

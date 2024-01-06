@@ -6,7 +6,7 @@ public class BlockRawIronBlock extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(RAW_IRON_BLOCK);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

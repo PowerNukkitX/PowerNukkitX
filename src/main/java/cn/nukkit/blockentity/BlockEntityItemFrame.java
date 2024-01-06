@@ -8,7 +8,6 @@ import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.event.block.ItemFrameDropItemEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
@@ -107,7 +106,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
 
         if (!item.isNull()) {
             CompoundTag itemTag = NBTIO.putItemHelper(item);
-            int networkDamage = item.getAux();
+            int networkDamage = item.getDamage();
             String namespacedId = item.getId();
             if (namespacedId != null) {
                 itemTag.remove("id");
@@ -170,7 +169,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
             }
         }
 
-        setItem(Item.get(BlockID.AIR, 0, 1), true);
+        setItem(Item.getItemBlock(BlockID.AIR, 0, 1), true);
         setItemRotation(0);
         spawnToAll();
         level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEM_FRAME_REMOVED);

@@ -7,7 +7,7 @@ public class BlockTuffSlab extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(TUFF_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

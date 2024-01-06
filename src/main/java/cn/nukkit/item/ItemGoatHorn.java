@@ -22,7 +22,7 @@ public class ItemGoatHorn extends Item {
 
     public ItemGoatHorn(Integer aux, int count) {
         super(GOAT_HORN);
-        this.aux = aux;
+        this.meta = aux;
         this.count = count;
     }
 
@@ -51,7 +51,7 @@ public class ItemGoatHorn extends Item {
     }
 
     public void playSound(Player player) {
-        switch (this.aux) {
+        switch (this.meta) {
             case 0 -> player.getLevel().addSound(player, Sound.HORN_CALL_0);
             case 1 -> player.getLevel().addSound(player, Sound.HORN_CALL_1);
             case 2 -> player.getLevel().addSound(player, Sound.HORN_CALL_2);

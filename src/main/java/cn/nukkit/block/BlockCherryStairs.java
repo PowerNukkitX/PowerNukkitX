@@ -7,7 +7,7 @@ public class BlockCherryStairs extends BlockStairsWood {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

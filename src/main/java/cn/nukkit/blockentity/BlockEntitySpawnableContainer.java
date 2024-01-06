@@ -34,7 +34,7 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
         ListTag<CompoundTag> list = (ListTag<CompoundTag>) this.namedTag.getList("Items");
         for (CompoundTag compound : list.getAll()) {
             Item item = NBTIO.getItemHelper(compound);
-            this.inventory.slots.put(compound.getByte("Slot"), item);
+            this.inventory.getContents()[compound.getByte("Slot")] = item;
         }
     }
 
@@ -50,7 +50,7 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
 
     @Override
     public void onBreak() {
-        for (Item content : inventory.getContents().values()) {
+        for (Item content : inventory.getContents()) {
             level.dropItem(this, content);
         }
         inventory.clearAll(); // Stop items from being moved around by another player in the inventory
@@ -107,6 +107,7 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
 
     /**
      * 继承于此类的容器方块实体必须实现此方法
+     *
      * @return ContainerInventory
      */
     protected abstract ContainerInventory requireContainerInventory();

@@ -8,7 +8,6 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.PlayerUIInventory;
-import cn.nukkit.inventory.transaction.*;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
@@ -97,7 +96,7 @@ public final class PlayerHandle {
         return player.windows;
     }
 
-    public BiMap<Integer, Inventory> getWindowIndex() {
+    public Map<Integer, Inventory> getWindowIndex() {
         return player.windowIndex;
     }
 
@@ -153,76 +152,12 @@ public final class PlayerHandle {
         player.playerUIInventory = playerUIInventory;
     }
 
-    public CraftingTransaction getCraftingTransaction() {
-        return player.craftingTransaction;
-    }
-
-    public void setCraftingTransaction(CraftingTransaction craftingTransaction) {
-        player.craftingTransaction = craftingTransaction;
-    }
-
-    public EnchantTransaction getEnchantTransaction() {
-        return player.enchantTransaction;
-    }
-
-    public void setEnchantTransaction(EnchantTransaction enchantTransaction) {
-        player.enchantTransaction = enchantTransaction;
-    }
-
-    public RepairItemTransaction getRepairItemTransaction() {
-        return player.repairItemTransaction;
-    }
-
-    public void setRepairItemTransaction(RepairItemTransaction repairItemTransaction) {
-        player.repairItemTransaction = repairItemTransaction;
-    }
-
-    public GrindstoneTransaction getGrindstoneTransaction() {
-        return player.grindstoneTransaction;
-    }
-
-    public void setGrindstoneTransaction(GrindstoneTransaction grindstoneTransaction) {
-        player.grindstoneTransaction = grindstoneTransaction;
-    }
-
-    public SmithingTransaction getSmithingTransaction() {
-        return player.smithingTransaction;
-    }
-
-    public void setSmithingTransaction(SmithingTransaction smithingTransaction) {
-        player.smithingTransaction = smithingTransaction;
-    }
-
-    public TradingTransaction getTradingTransaction() {
-        return player.tradingTransaction;
-    }
-
-    public void setTradingTransaction(TradingTransaction tradingTransaction) {
-        player.tradingTransaction = tradingTransaction;
-    }
-
     public long getRandomClientId() {
         return player.randomClientId;
     }
 
     public void setRandomClientId(long randomClientId) {
         player.randomClientId = randomClientId;
-    }
-
-    public Vector3 getForceMovement() {
-        return player.forceMovement;
-    }
-
-    public void setForceMovement(Vector3 forceMovement) {
-        player.forceMovement = forceMovement;
-    }
-
-    public Vector3 getTeleportPosition() {
-        return player.teleportPosition;
-    }
-
-    public void setTeleportPosition(Vector3 teleportPosition) {
-        player.teleportPosition = teleportPosition;
     }
 
     public void setConnected(boolean connected) {

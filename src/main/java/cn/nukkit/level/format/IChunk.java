@@ -198,6 +198,8 @@ public interface IChunk {
 
     long getChanges();
 
+    long getSectionBlockChanges(int sectionY);
+
     /**
      * Used to handle with deny and allow blocks
      *

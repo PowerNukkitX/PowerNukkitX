@@ -48,13 +48,8 @@ public class CommandBlockInventory implements Inventory {
     }
 
     @Override
-    public String getTitle() {
-        return this.getName();
-    }
-
-    @Override
-    public @NotNull Item getItem(int index) {
-        return Item.get(BlockID.AIR);
+    @NotNull public Item getItem(int index) {
+        return Item.getItemBlock(BlockID.AIR);
     }
 
     @Override
@@ -78,12 +73,12 @@ public class CommandBlockInventory implements Inventory {
     }
 
     @Override
-    public Map<Integer, Item> getContents() {
+    public Item[] getContents() {
         return Collections.emptyMap();
     }
 
     @Override
-    public void setContents(Map<Integer, Item> items) {
+    public void setContents(Item[] items) {
 
     }
 
@@ -174,7 +169,7 @@ public class CommandBlockInventory implements Inventory {
 
     @Override
     public InventoryType getType() {
-        return null;
+        return InventoryType.COMMAND_BLOCK;
     }
 
     @Override
@@ -187,7 +182,7 @@ public class CommandBlockInventory implements Inventory {
         if (who.isOp() && who.isCreative()) {
             ContainerOpenPacket pk = new ContainerOpenPacket();
             pk.windowId = who.getWindowId(this);
-            pk.type = 16;
+            pk.type = getType().getNetworkType();
             InventoryHolder holder = this.getHolder();
             if (holder instanceof Vector3) {
                 pk.x = ((Vector3) holder).getFloorX();

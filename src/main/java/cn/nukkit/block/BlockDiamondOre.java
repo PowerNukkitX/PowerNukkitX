@@ -14,7 +14,7 @@ public class BlockDiamondOre extends BlockOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(DIAMOND_ORE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

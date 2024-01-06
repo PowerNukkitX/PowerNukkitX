@@ -11,8 +11,6 @@ import org.jetbrains.annotations.NotNull;
  * DataPacketManager is a static class to manage DataPacketProcessors and process DataPackets.
  */
 @SuppressWarnings("rawtypes")
-
-
 public final class DataPacketManager {
     private static final Int2ObjectOpenHashMap<DataPacketProcessor> CURRENT_PROTOCOL_PROCESSORS = new Int2ObjectOpenHashMap<>(300);
 
@@ -53,7 +51,6 @@ public final class DataPacketManager {
                 new RequestNetworkSettingsProcessor(),
                 new LoginProcessor(),
                 new ClientToServerHandshakeProcessor(),
-                new InventoryTransactionProcessor(),
                 new ResourcePackClientResponseProcessor(),
                 new ResourcePackChunkRequestProcessor(),
                 new SetLocalPlayerAsInitializedProcessor(),

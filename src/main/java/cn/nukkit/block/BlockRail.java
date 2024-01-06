@@ -31,7 +31,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(RAIL, RAIL_DIRECTION_10);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -255,7 +255,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
         return this.canBePowered;
     }
 
-    public @NotNull final Orientation getRailDirection() {
+    @NotNull public final Orientation getRailDirection() {
         return getOrientation();
     }
 

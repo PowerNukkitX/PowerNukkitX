@@ -27,7 +27,7 @@ import java.util.Map;
 public class EntityPainting extends EntityHanging {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return PAINTING;
     }
 

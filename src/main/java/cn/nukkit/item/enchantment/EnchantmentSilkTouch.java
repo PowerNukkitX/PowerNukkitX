@@ -30,11 +30,4 @@ public class EnchantmentSilkTouch extends Enchantment {
         return item.isShears() || super.canEnchant(item);
     }
 
-    @Override
-    public boolean isItemAcceptable(Item item) {
-        if (item.isShears()) {
-            return true;
-        }
-        return super.isItemAcceptable(item);
-    }
 }

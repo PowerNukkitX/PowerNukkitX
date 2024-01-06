@@ -20,7 +20,7 @@ public class BlockCaveVines extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(CAVE_VINES, GROWING_PLANT_AGE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

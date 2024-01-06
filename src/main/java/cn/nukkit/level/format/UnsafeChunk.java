@@ -9,9 +9,7 @@ import cn.nukkit.level.DimensionData;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.io.IOException;
 import java.util.Map;
-import java.util.function.Consumer;
 
 
 public class UnsafeChunk {

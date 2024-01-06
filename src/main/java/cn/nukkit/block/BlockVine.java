@@ -28,7 +28,7 @@ public class BlockVine extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(VINE, CommonBlockProperties.VINE_DIRECTION_BITS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

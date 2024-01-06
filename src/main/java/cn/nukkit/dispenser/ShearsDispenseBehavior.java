@@ -21,7 +21,7 @@ public class ShearsDispenseBehavior extends DefaultDispenseBehavior {
             if (entity instanceof EntityShearable shearable) {
                 shearable.shear();
                 item.useOn(entity);
-                return item.getAux() >= item.getMaxDurability() ? null : item;
+                return item.getDamage() >= item.getMaxDurability() ? null : item;
             }
         }
         return item;

@@ -8,7 +8,7 @@ public class BlockEmeraldBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(EMERALD_BLOCK);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

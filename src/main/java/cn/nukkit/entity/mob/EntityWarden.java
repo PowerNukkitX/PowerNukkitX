@@ -41,7 +41,7 @@ import java.util.Set;
 public class EntityWarden extends EntityMob implements EntityWalkable, VibrationListener {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return WARDEN;
     }
     protected int lastDetectTime = Server.getInstance().getTick();

@@ -31,7 +31,7 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
     public static final BlockProperties PROPERTIES = new BlockProperties(CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -44,12 +44,12 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityChest> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityChest> getBlockEntityClass() {
         return BlockEntityChest.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.CHEST;
     }
 

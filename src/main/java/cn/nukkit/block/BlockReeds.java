@@ -21,7 +21,7 @@ public class BlockReeds extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(REEDS, AGE_16);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

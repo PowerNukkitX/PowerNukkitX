@@ -11,7 +11,7 @@ public class BlockLitBlastFurnace extends BlockLitFurnace {
     public static final BlockProperties PROPERTIES = new BlockProperties(LIT_BLAST_FURNACE, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -29,12 +29,12 @@ public class BlockLitBlastFurnace extends BlockLitFurnace {
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.BLAST_FURNACE;
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityBlastFurnace> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityBlastFurnace> getBlockEntityClass() {
         return BlockEntityBlastFurnace.class;
     }
 

@@ -36,7 +36,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class EntityIronGolem extends EntityMob implements EntityWalkable {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return IRON_GOLEM;
     }
 

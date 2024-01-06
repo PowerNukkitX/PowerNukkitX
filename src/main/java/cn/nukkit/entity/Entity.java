@@ -567,7 +567,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.init(chunk, nbt);
     }
 
-
     /**
      * 从mc标准实体标识符创建实体，形如(minecraft:sheep)
      * <p>
@@ -580,12 +579,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      */
     @Nullable
     public static Entity createEntity(Identifier identifier, @NotNull Position pos, @Nullable Object... args) {
-        Integer id = EntityIds.IDENTIFIER_2_IDS.get(identifier.toString());
-        String name;
-        if (id == null) {
-            name = identifier.toString();
-        } else name = id.toString();
-        return createEntity(name, pos, args);
+        return createEntity(identifier.toString(), Objects.requireNonNull(pos.getChunk()), getDefaultNBT(pos), args);
     }
 
     /**
@@ -615,7 +609,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      */
     @Nullable
     public static Entity createEntity(int type, @NotNull Position pos, @Nullable Object... args) {
-        return createEntity(String.valueOf(type), Objects.requireNonNull(pos.getChunk()), getDefaultNBT(pos), args);
+        String entityIdentifier = Registries.ENTITY.getEntityIdentifier(type);
+        if (entityIdentifier == null) return null;
+        return createEntity(entityIdentifier, Objects.requireNonNull(pos.getChunk()), getDefaultNBT(pos), args);
     }
 
     /**
@@ -1329,7 +1325,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     /**
      * The current name used by this entity in the name tag, or the static name if the entity don't have nametag.
      */
-    public @NotNull String getName() {
+    @NotNull
+    public String getName() {
         if (this.hasCustomName()) {
             return this.getNameTag();
         } else {
@@ -2428,12 +2425,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return true;
     }
 
-    public @NotNull Position getPosition() {
+    @NotNull
+    public Position getPosition() {
         return new Position(this.x, this.y, this.z, this.level);
     }
 
     @Override
-    public @NotNull Location getLocation() {
+    @NotNull
+    public Location getLocation() {
         return new Location(this.x, this.y, this.z, this.yaw, this.pitch, this.headYaw, this.level);
     }
 

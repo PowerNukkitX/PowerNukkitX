@@ -7,7 +7,7 @@ public class BlockHardStainedGlass extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(HARD_STAINED_GLASS, CommonBlockProperties.COLOR);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

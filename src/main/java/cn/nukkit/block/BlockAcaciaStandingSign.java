@@ -10,7 +10,7 @@ public class BlockAcaciaStandingSign extends BlockStandingSign {
     public static final BlockProperties PROPERTIES = new BlockProperties(ACACIA_STANDING_SIGN, CommonBlockProperties.GROUND_SIGN_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

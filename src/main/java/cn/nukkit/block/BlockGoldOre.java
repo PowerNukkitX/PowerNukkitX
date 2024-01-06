@@ -9,7 +9,7 @@ public class BlockGoldOre extends BlockOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(GOLD_ORE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

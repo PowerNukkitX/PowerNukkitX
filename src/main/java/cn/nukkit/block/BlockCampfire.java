@@ -14,7 +14,7 @@ import cn.nukkit.event.entity.EntityCombustByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.inventory.CampfireInventory;
-import cn.nukkit.inventory.CampfireRecipe;
+import cn.nukkit.recipe.CampfireRecipe;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.*;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -52,17 +52,17 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
     }
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.CAMPFIRE;
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityCampfire> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityCampfire> getBlockEntityClass() {
         return BlockEntityCampfire.class;
     }
 

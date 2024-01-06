@@ -40,11 +40,6 @@ public class FakeHumanInventory extends BaseInventory {
         return super.getSize() - 4;
     }
 
-    @Override
-    public void setSize(int size) {
-        super.setSize(size + 4);
-    }
-
     /**
      * 判断这个格子位置是否在物品栏(0-9)
      * <br>

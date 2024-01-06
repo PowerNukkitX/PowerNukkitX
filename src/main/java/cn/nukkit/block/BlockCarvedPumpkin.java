@@ -9,7 +9,7 @@ public class BlockCarvedPumpkin extends BlockPumpkin {
     public static final BlockProperties PROPERTIES = new BlockProperties(CARVED_PUMPKIN);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

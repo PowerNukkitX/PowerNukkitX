@@ -6,7 +6,7 @@ public class BlockLimeConcretePowder extends BlockConcretePowder {
     public static final BlockProperties PROPERTIES = new BlockProperties(LIME_CONCRETE_POWDER);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

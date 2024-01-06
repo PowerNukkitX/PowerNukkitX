@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityHopperMinecart extends EntityMinecartAbstract implements InventoryHolder, BlockHopper.IHopper {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return HOPPER_MINECART;
     }
     private final BlockVector3 temporalVector = new BlockVector3();
@@ -104,7 +104,7 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
 
     @Override
     public void dropItem() {
-        for (Item item : this.inventory.getContents().values()) {
+        for (Item item : this.inventory.getContents()) {
             this.level.dropItem(this, item);
         }
         if (this.lastDamageCause instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {

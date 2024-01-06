@@ -13,7 +13,7 @@ public class BlockMovingBlock extends BlockTransparent implements BlockEntityHol
     public static final BlockProperties PROPERTIES = new BlockProperties(MOVING_BLOCK);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -31,12 +31,12 @@ public class BlockMovingBlock extends BlockTransparent implements BlockEntityHol
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.MOVING_BLOCK;
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityMovingBlock> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityMovingBlock> getBlockEntityClass() {
         return BlockEntityMovingBlock.class;
     }
 

@@ -10,7 +10,7 @@ public class BlockWeb extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(WEB);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

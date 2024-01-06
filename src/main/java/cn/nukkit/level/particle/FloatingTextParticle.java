@@ -148,7 +148,7 @@ public class FloatingTextParticle extends Particle {
             pk.yaw = 0;
             pk.pitch = 0;
             pk.metadata = this.metadata;
-            pk.item = Item.get(BlockID.AIR);
+            pk.item = Item.getItemBlock(BlockID.AIR);
             packets.add(pk);
 
             PlayerListPacket playerRemove = new PlayerListPacket();

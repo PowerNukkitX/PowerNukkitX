@@ -29,12 +29,12 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityComparator> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityComparator> getBlockEntityClass() {
         return BlockEntityComparator.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.COMPARATOR;
     }
 

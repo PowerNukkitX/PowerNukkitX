@@ -21,15 +21,15 @@ public abstract class ContainerInventory extends BaseInventory {
         super(holder, type);
     }
 
-    public ContainerInventory(InventoryHolder holder, InventoryType type, Map<Integer, Item> items) {
+    public ContainerInventory(InventoryHolder holder, InventoryType type, Item[] items) {
         super(holder, type, items);
     }
 
-    public ContainerInventory(InventoryHolder holder, InventoryType type, Map<Integer, Item> items, Integer overrideSize) {
+    public ContainerInventory(InventoryHolder holder, InventoryType type, Item[] items, Integer overrideSize) {
         super(holder, type, items, overrideSize);
     }
 
-    public ContainerInventory(InventoryHolder holder, InventoryType type, Map<Integer, Item> items, Integer overrideSize, String overrideTitle) {
+    public ContainerInventory(InventoryHolder holder, InventoryType type, Item[] items, Integer overrideSize, String overrideTitle) {
         super(holder, type, items, overrideSize, overrideTitle);
     }
 
@@ -94,7 +94,7 @@ public abstract class ContainerInventory extends BaseInventory {
             for (int slot = 0; slot < inv.getSize(); ++slot) {
                 Item item = inv.getItem(slot);
 
-                if (item.getId() != 0) {
+                if (!item.isNull()) {
                     averageCount += (float) item.getCount() / (float) Math.min(inv.getMaxStackSize(), item.getMaxStackSize());
                     ++itemCount;
                 }

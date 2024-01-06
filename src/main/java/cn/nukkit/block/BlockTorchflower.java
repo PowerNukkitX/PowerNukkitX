@@ -10,7 +10,7 @@ public class BlockTorchflower extends BlockRedFlower {
     public static final BlockProperties PROPERTIES = new BlockProperties(TORCHFLOWER);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

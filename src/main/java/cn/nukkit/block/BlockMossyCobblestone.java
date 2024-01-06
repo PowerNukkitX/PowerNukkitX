@@ -7,7 +7,7 @@ public class BlockMossyCobblestone extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(MOSSY_COBBLESTONE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

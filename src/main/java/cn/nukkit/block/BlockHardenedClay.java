@@ -7,7 +7,7 @@ public class BlockHardenedClay extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(HARDENED_CLAY);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

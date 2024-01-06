@@ -36,7 +36,7 @@ public class BlockPointedDripstone extends BlockFallable {
     public static final BlockProperties PROPERTIES = new BlockProperties(POINTED_DRIPSTONE, DRIPSTONE_THICKNESS, HANGING);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

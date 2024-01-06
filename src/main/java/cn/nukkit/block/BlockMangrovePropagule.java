@@ -5,7 +5,8 @@ import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.ListChunkManager;
-import cn.nukkit.level.generator.object.tree.ObjectMangroveTree;
+import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.ObjectMangroveTree;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.random.NukkitRandomSource;
@@ -21,7 +22,7 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
     public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_PROPAGULE, HANGING, PROPAGULE_STAGE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -47,6 +48,10 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
         }
 
         return false;
+    }
+
+    public boolean isHanging() {
+        return getPropertyValue(HANGING);
     }
 
     @Override
@@ -87,7 +92,7 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
     }
 
     protected void grow() {
-        ListChunkManager chunkManager = new ListChunkManager(this.level);
+        BlockManager chunkManager = new BlockManager(this.level);
         Vector3 vector3 = new Vector3(this.x, this.y - 1, this.z);
         var objectMangroveTree = new ObjectMangroveTree();
         objectMangroveTree.generate(chunkManager, new NukkitRandomSource(), this);
@@ -96,6 +101,7 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
         if (ev.isCancelled()) {
             return;
         }
+        chunkManager.apply(ev.getBlockList());
         this.level.setBlock(this, Block.get(BlockID.AIR));
         if (this.level.getBlock(vector3).getId().equals(BlockID.DIRT_WITH_ROOTS)) {
             this.level.setBlock(vector3, Block.get(BlockID.DIRT));

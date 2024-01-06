@@ -30,7 +30,7 @@ import java.util.Set;
  */
 public class EntityChicken extends EntityAnimal implements EntityWalkable {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return CHICKEN;
     }
     

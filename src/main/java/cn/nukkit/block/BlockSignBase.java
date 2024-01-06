@@ -73,7 +73,7 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
             case SOUTH_WEST, SOUTH_SOUTH_WEST, WEST_SOUTH_WEST -> face == BlockFace.WEST || face == BlockFace.SOUTH;
         };
         if (item instanceof ItemDye) {
-            BlockColor color = DyeColor.getByDyeData(item.getAux()).getSignColor();
+            BlockColor color = DyeColor.getByDyeData(item.getDamage()).getSignColor();
             if (color.equals(sign.getColor(front)) || sign.isEmpty(front)) {
                 player.openSignEditor(this, front);
                 return;

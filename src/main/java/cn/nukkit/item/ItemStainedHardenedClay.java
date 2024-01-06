@@ -18,7 +18,7 @@ public class ItemStainedHardenedClay extends Item {
     }
 
     private void adjust() {
-        switch (getAux()) {
+        switch (getDamage()) {
             case 0:
                 this.name = "White Terracotta";
                 this.block = Block.get(BlockID.WHITE_TERRACOTTA);

@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class EntityXpOrb extends Entity {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return XP_ORB;
     }
 

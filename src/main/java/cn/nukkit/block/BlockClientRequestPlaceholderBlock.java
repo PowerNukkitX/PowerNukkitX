@@ -6,7 +6,7 @@ public class BlockClientRequestPlaceholderBlock extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(CLIENT_REQUEST_PLACEHOLDER_BLOCK);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

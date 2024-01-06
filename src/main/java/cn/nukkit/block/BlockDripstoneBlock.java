@@ -7,7 +7,7 @@ public class BlockDripstoneBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(DRIPSTONE_BLOCK);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

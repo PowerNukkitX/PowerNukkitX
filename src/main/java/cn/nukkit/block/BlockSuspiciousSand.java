@@ -19,7 +19,7 @@ public class BlockSuspiciousSand extends BlockFallable {
     }
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

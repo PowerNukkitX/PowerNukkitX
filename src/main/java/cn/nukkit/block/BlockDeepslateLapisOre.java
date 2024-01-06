@@ -6,7 +6,7 @@ public class BlockDeepslateLapisOre extends BlockLapisOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_LAPIS_ORE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

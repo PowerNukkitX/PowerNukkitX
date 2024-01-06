@@ -8,7 +8,7 @@ public class BlockSmoker extends BlockLitSmoker {
     public static final BlockProperties PROPERTIES = new BlockProperties(SMOKER, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

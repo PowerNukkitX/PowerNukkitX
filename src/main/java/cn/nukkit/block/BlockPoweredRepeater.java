@@ -7,7 +7,7 @@ public class BlockPoweredRepeater extends BlockRedstoneRepeater {
     public static final BlockProperties PROPERTIES = new BlockProperties(POWERED_REPEATER, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.REPEATER_DELAY);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

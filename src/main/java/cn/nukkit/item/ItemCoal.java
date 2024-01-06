@@ -14,17 +14,12 @@ public class ItemCoal extends Item {
 
     public ItemCoal(Integer meta, int count) {
         super(COAL, meta, count, "Coal");
-        if (this.aux == 1) {
+        if (this.meta == 1) {
             this.name = "Charcoal";
         }
     }
 
-    @Override
-    public int getAux() {
-        return super.getAux();
-    }
-
     public boolean isCharcoal() {
-        return super.getAux() == 1;
+        return super.getDamage() == 1;
     }
 }

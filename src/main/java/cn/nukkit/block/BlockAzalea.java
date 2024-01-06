@@ -24,7 +24,7 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
     public static final BlockProperties PROPERTIES = new BlockProperties(AZALEA);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

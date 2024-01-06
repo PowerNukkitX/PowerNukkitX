@@ -7,7 +7,7 @@ public class BlockAcaciaLog extends BlockLog {
     public static final BlockProperties PROPERTIES = new BlockProperties(ACACIA_LOG, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

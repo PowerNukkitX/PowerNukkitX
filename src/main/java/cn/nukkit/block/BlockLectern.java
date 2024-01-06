@@ -25,7 +25,7 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
     public static final BlockProperties PROPERTIES = new BlockProperties(LECTERN, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.POWERED_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -43,12 +43,12 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityLectern> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityLectern> getBlockEntityClass() {
         return BlockEntityLectern.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.LECTERN;
     }
 

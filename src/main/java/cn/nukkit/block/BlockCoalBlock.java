@@ -7,7 +7,7 @@ public class BlockCoalBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(COAL_BLOCK);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

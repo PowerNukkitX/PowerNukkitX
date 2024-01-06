@@ -26,7 +26,7 @@ public class BlockChorusFlower extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHORUS_FLOWER, AGE_6);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

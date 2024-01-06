@@ -11,7 +11,7 @@ public class BlockLitSmoker extends BlockLitFurnace {
     public static final BlockProperties PROPERTIES = new BlockProperties(LIT_SMOKER, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -29,12 +29,12 @@ public class BlockLitSmoker extends BlockLitFurnace {
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.SMOKER;
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntitySmoker> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntitySmoker> getBlockEntityClass() {
         return BlockEntitySmoker.class;
     }
 

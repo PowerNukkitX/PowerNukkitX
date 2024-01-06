@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityChestMinecart extends EntityMinecartAbstract implements InventoryHolder {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return CHEST_MINECART;
     }
 
@@ -52,7 +52,7 @@ public class EntityChestMinecart extends EntityMinecartAbstract implements Inven
 
     @Override
     public void dropItem() {
-        for (Item item : this.inventory.getContents().values()) {
+        for (Item item : this.inventory.getContents()) {
             this.level.dropItem(this, item);
         }
 

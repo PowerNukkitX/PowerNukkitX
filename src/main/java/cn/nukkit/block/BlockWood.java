@@ -16,7 +16,7 @@ public class BlockWood extends BlockLog {
     public static final BlockProperties PROPERTIES = new BlockProperties(WOOD, PILLAR_AXIS, CommonBlockProperties.STRIPPED_BIT, WOOD_TYPE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

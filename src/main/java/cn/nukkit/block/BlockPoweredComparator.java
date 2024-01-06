@@ -7,7 +7,7 @@ public class BlockPoweredComparator extends BlockRedstoneComparator {
     public static final BlockProperties PROPERTIES = new BlockProperties(POWERED_COMPARATOR, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.OUTPUT_LIT_BIT, CommonBlockProperties.OUTPUT_SUBTRACT_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

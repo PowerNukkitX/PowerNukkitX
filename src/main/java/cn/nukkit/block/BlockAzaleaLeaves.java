@@ -34,7 +34,7 @@ public class BlockAzaleaLeaves extends BlockLeaves {
     }
 
     @Override
-    public @NotNull  BlockProperties getProperties() {
+    @NotNull public  BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -6,7 +6,7 @@ public class BlockWaxedWeatheredCutCopper extends BlockWeatheredCutCopper {
     public static final BlockProperties PROPERTIES = new BlockProperties(WAXED_WEATHERED_CUT_COPPER);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectNyliumVegetation;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.utils.random.NukkitRandomSource;
@@ -55,7 +56,9 @@ public abstract class BlockNylium extends BlockSolid {
     }
 
     public boolean grow() {
-        ObjectNyliumVegetation.growVegetation(level, this, new NukkitRandomSource());
+        BlockManager blockManager = new BlockManager(this.level);
+        ObjectNyliumVegetation.growVegetation(blockManager, this, new NukkitRandomSource());
+        blockManager.apply();
         return true;
     }
 

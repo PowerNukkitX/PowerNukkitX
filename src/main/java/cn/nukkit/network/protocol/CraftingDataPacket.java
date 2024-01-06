@@ -1,8 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.inventory.*;
-import cn.nukkit.inventory.recipe.DefaultDescriptor;
-import cn.nukkit.inventory.recipe.ItemDescriptor;
+import cn.nukkit.recipe.*;
 import cn.nukkit.item.Item;
 import lombok.ToString;
 
@@ -166,7 +165,7 @@ public class CraftingDataPacket extends DataPacket {
                     Item input = smelting.getInput();
                     this.putVarInt(input.getId());
                     if (recipe.getType().name().endsWith("_DATA")) {
-                        this.putVarInt(input.getAux());
+                        this.putVarInt(input.getDamage());
                     }
                     this.putSlot(smelting.getResult(), true);
                     switch (recipe.getType()) {
@@ -189,11 +188,11 @@ public class CraftingDataPacket extends DataPacket {
         this.putUnsignedVarInt(this.brewingEntries.size());
         for (BrewingRecipe recipe : brewingEntries) {
             this.putVarInt(recipe.getInput().getRuntimeId());
-            this.putVarInt(recipe.getInput().getAux());
+            this.putVarInt(recipe.getInput().getDamage());
             this.putVarInt(recipe.getIngredient().getRuntimeId());
-            this.putVarInt(recipe.getIngredient().getAux());
+            this.putVarInt(recipe.getIngredient().getDamage());
             this.putVarInt(recipe.getResult().getRuntimeId());
-            this.putVarInt(recipe.getResult().getAux());
+            this.putVarInt(recipe.getResult().getDamage());
         }
 
         this.putUnsignedVarInt(this.containerEntries.size());

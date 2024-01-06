@@ -29,7 +29,7 @@ import java.util.Set;
 public class EntityHusk extends EntityZombie {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return HUSK;
     }
 

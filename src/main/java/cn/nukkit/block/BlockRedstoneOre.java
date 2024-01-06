@@ -16,7 +16,7 @@ public class BlockRedstoneOre extends BlockOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(REDSTONE_ORE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

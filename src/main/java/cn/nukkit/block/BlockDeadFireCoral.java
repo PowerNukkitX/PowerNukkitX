@@ -6,7 +6,7 @@ public class BlockDeadFireCoral extends BlockFireCoral {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEAD_FIRE_CORAL);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

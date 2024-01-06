@@ -6,7 +6,7 @@ public class BlockTuffBricks extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(TUFF_BRICKS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

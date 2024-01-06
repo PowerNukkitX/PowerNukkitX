@@ -13,12 +13,12 @@ public final class JSJVMManager {
         this.jsPlugin = jsPlugin;
     }
 
-    public @NotNull String getJVMVersion() {
+    @NotNull public String getJVMVersion() {
         var mxBean = ManagementFactory.getRuntimeMXBean();
         return mxBean.getVmName() + " " + mxBean.getVmVendor() + " " + mxBean.getVmVersion();
     }
 
-    public @NotNull String getJITVersion() {
+    @NotNull public String getJITVersion() {
         var mxBean = ManagementFactory.getCompilationMXBean();
         return mxBean.getName();
     }

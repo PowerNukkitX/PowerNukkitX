@@ -2,7 +2,10 @@ package cn.nukkit.block.customblock;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.customblock.data.*;
-import cn.nukkit.blockproperty.*;
+import cn.nukkit.block.property.type.BlockPropertyType;
+import cn.nukkit.block.property.type.BooleanPropertyType;
+import cn.nukkit.block.property.type.EnumPropertyType;
+import cn.nukkit.block.property.type.IntPropertyType;
 import cn.nukkit.item.customitem.data.ItemCreativeGroup;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
@@ -14,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -58,7 +62,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                 .putCompound("components", new CompoundTag());
 
         protected Builder(CustomBlock customBlock, Materials materials, BlockCreativeCategory blockCreativeCategory) {
-            this.identifier = customBlock.getNamespaceId();
+            this.identifier = customBlock.getId();
             this.customBlock = customBlock;
 
             var components = this.nbt.getCompound("components");
@@ -304,54 +308,29 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         private ListTag<CompoundTag> getPropertiesNBT() {
             if (this.customBlock instanceof Block block) {
                 var properties = block.getProperties();
-                if (properties == CommonBlockProperties.EMPTY_PROPERTIES || properties.getAllProperties().size() == 0) {
+                Set<BlockPropertyType<?>> propertyTypeSet = properties.getPropertyTypeSet();
+                if (propertyTypeSet.isEmpty()) {
                     return null;
                 }
                 var nbtList = new ListTag<CompoundTag>("properties");
-                var tmpList = new ArrayList<>(properties.getAllProperties());
-                if (this.customBlock.reverseSending()) {
-                    Collections.reverse(tmpList);
-                }
-                for (var each : tmpList) {
-                    if (each.getProperty() instanceof BooleanBlockProperty booleanBlockProperty) {
+                for (var each : propertyTypeSet) {
+                    if (each instanceof BooleanPropertyType booleanBlockProperty) {
                         nbtList.add(new CompoundTag().putString("name", booleanBlockProperty.getName())
                                 .putList(new ListTag<>("enum")
                                         .add(new IntTag("", 0))
                                         .add(new IntTag("", 1))));
-                    } else if (each.getProperty() instanceof IntBlockProperty intBlockProperty) {
+                    } else if (each instanceof IntPropertyType intBlockProperty) {
                         var enumList = new ListTag<IntTag>("enum");
-                        for (int i = intBlockProperty.getMinValue(); i <= intBlockProperty.getMaxValue(); i++) {
+                        for (int i = intBlockProperty.getMin(); i <= intBlockProperty.getMax(); i++) {
                             enumList.add(new IntTag("", i));
                         }
                         nbtList.add(new CompoundTag().putString("name", intBlockProperty.getName()).putList(enumList));
-                    } else if (each.getProperty() instanceof UnsignedIntBlockProperty unsignedIntBlockProperty) {
-                        var enumList = new ListTag<IntTag>("enum");
-                        for (long i = unsignedIntBlockProperty.getMinValue(); i <= unsignedIntBlockProperty.getMaxValue(); i++) {
-                            enumList.add(new IntTag("", (int) i));
+                    } else if (each instanceof EnumPropertyType<?> arrayBlockProperty) {
+                        var enumList = new ListTag<StringTag>("enum");
+                        for (var e : arrayBlockProperty.getValidValues()) {
+                            enumList.add(new StringTag("", e.name().toLowerCase(Locale.ENGLISH)));
                         }
-                        nbtList.add(new CompoundTag().putString("name", unsignedIntBlockProperty.getName()).putList(enumList));
-                    } else if (each.getProperty() instanceof ArrayBlockProperty<?> arrayBlockProperty) {
-                        if (arrayBlockProperty.isOrdinal()) {
-                            if (arrayBlockProperty.getBitSize() > 1) {
-                                var enumList = new ListTag<IntTag>("enum");
-                                var universe = arrayBlockProperty.getUniverse();
-                                for (int i = 0, universeLength = universe.length; i < universeLength; i++) {
-                                    enumList.add(new IntTag("", i));
-                                }
-                                nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName()).putList(enumList));
-                            } else {
-                                nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName())
-                                        .putList(new ListTag<>("enum")
-                                                .add(new IntTag("", 0))
-                                                .add(new IntTag("", 1))));
-                            }
-                        } else {
-                            var enumList = new ListTag<StringTag>("enum");
-                            for (var e : arrayBlockProperty.getUniverse()) {
-                                enumList.add(new StringTag("", e.toString()));
-                            }
-                            nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName()).putList(enumList));
-                        }
+                        nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName()).putList(enumList));
                     }
                 }
                 return nbtList;

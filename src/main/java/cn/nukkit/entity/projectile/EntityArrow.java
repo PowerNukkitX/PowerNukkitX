@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityArrow extends SlenderProjectile {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return ARROW;
     }
 

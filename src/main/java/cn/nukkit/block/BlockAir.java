@@ -14,7 +14,7 @@ public class BlockAir extends BlockTransparent {
     public static final BlockState STATE = PROPERTIES.getDefaultState();
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

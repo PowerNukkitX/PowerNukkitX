@@ -6,7 +6,7 @@ public class BlockAcaciaFence extends BlockFence {
     public static final BlockProperties PROPERTIES = new BlockProperties(ACACIA_FENCE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

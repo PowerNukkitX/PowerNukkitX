@@ -35,7 +35,7 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
     protected static final Object2ObjectArrayMap<BlockFace, AxisAlignedBB[]> ALL = new Object2ObjectArrayMap<>(4);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -196,7 +196,7 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
     }
 
     @Override
-    public @NotNull String getItemId() {
+    @NotNull public String getItemId() {
         return ItemID.COCOA_BEANS;
     }
 

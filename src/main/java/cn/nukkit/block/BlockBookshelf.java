@@ -20,7 +20,7 @@ public class BlockBookshelf extends BlockSolid {
     }
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

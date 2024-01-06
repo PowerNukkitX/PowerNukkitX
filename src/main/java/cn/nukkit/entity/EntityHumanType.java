@@ -27,8 +27,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public abstract class EntityHumanType extends EntityCreature implements IHuman {
 
     protected PlayerInventory inventory;
-    protected PlayerEnderChestInventory enderChestInventory;
     protected PlayerOffhandInventory offhandInventory;
+    protected PlayerEnderChestInventory enderChestInventory;
 
     public EntityHumanType(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -57,9 +57,18 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
     @Override
     public Item[] getDrops() {
         if (this.inventory != null) {
-            List<Item> drops = new ArrayList<>(this.inventory.getContents().values());
-            drops.addAll(this.offhandInventory.getContents().values());
-            return drops.stream().filter(item -> !item.keepOnDeath()).toList().toArray(Item.EMPTY_ARRAY);
+            List<Item> result = new ArrayList<>();
+            for (var i : this.inventory.getContents()) {
+                if (!i.keepOnDeath()) {
+                    result.add(i);
+                }
+            }
+            for (var i : this.offhandInventory.getContents()) {
+                if (!i.keepOnDeath()) {
+                    result.add(i);
+                }
+            }
+            return result.toArray(Item.EMPTY_ARRAY);
         }
         return Item.EMPTY_ARRAY;
     }
@@ -155,6 +164,7 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
     public boolean applyNameTag(Item item) {
         return false;
     }
+
     protected Item damageArmor(Item armor, Entity damager, EntityDamageEvent event) {
         if (armor.hasEnchantments()) {
             if (damager != null) {
@@ -187,13 +197,13 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
             }
 
             if (armor instanceof ItemShield)
-                armor.setAux(armor.getAux() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
+                armor.setDamage(armor.getDamage() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
             else
-                armor.setAux(armor.getAux() + Math.max(1, (int) (event.getDamage() / 4.0f)));
+                armor.setDamage(armor.getDamage() + Math.max(1, (int) (event.getDamage() / 4.0f)));
 
-            if (armor.getAux() >= armor.getMaxDurability()) {
+            if (armor.getDamage() >= armor.getMaxDurability()) {
                 getLevel().addSound(this, Sound.RANDOM_BREAK);
-                return Item.get(BlockID.AIR, 0, 0);
+                return Item.getItemBlock(BlockID.AIR, 0, 0);
             }
         }
 

@@ -17,7 +17,7 @@ public class BlockDirtWithRoots extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(DIRT_WITH_ROOTS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

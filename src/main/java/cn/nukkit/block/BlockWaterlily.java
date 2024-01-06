@@ -16,7 +16,7 @@ public class BlockWaterlily extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(WATERLILY);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

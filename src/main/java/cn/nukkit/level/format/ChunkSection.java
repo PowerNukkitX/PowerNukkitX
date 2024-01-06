@@ -13,6 +13,7 @@ import io.netty.buffer.ByteBuf;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiPredicate;
 
 import static cn.nukkit.level.format.IChunk.index;
@@ -27,7 +28,8 @@ public record ChunkSection(byte y,
                            Palette<BlockState>[] blockLayer,
                            Palette<Integer> biomes,
                            NibbleArray blockLights,
-                           NibbleArray skyLights) {
+                           NibbleArray skyLights,
+                           AtomicLong blockChanges) {
     public static final int SIZE = 16 * 16 * 16;
     public static final int LAYER_COUNT = 2;
     public static final int VERSION = 9;
@@ -37,14 +39,16 @@ public record ChunkSection(byte y,
                 new Palette[]{new Palette<>(BlockAir.PROPERTIES.getDefaultState()), new Palette<>(BlockAir.PROPERTIES.getDefaultState())},
                 new Palette<>(BiomeID.PLAINS),
                 new NibbleArray(SIZE),
-                new NibbleArray(SIZE));
+                new NibbleArray(SIZE),
+                new AtomicLong(0));
     }
 
     public ChunkSection(byte sectionY, Palette<BlockState>[] blockLayer) {
         this(sectionY, blockLayer,
                 new Palette<>(1),
                 new NibbleArray(SIZE),
-                new NibbleArray(SIZE));
+                new NibbleArray(SIZE),
+                new AtomicLong(0));
     }
 
     public BlockState getBlockState(int x, int y, int z) {
@@ -56,10 +60,12 @@ public record ChunkSection(byte y,
     }
 
     public void setBlockState(int x, int y, int z, BlockState blockState, int layer) {
+        blockChanges.addAndGet(1);
         blockLayer[layer].set(index(x, y, z), blockState);
     }
 
     public BlockState getAndSetBlockState(int x, int y, int z, BlockState blockstate, int layer) {
+        blockChanges.addAndGet(1);
         BlockState result = blockLayer[layer].get(index(x, y, z));
         blockLayer[layer].set(index(x, y, z), blockstate);
         return result;

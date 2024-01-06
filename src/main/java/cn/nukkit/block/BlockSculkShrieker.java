@@ -12,7 +12,7 @@ public class BlockSculkShrieker extends BlockSolid implements BlockEntityHolder<
     public static final BlockProperties PROPERTIES = new BlockProperties(SCULK_SHRIEKER, CommonBlockProperties.ACTIVE, CommonBlockProperties.CAN_SUMMON);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -55,12 +55,12 @@ public class BlockSculkShrieker extends BlockSolid implements BlockEntityHolder<
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntitySculkShrieker> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntitySculkShrieker> getBlockEntityClass() {
         return BlockEntitySculkShrieker.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.SCULK_SHRIEKER;
     }
 

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityZombieHorse extends EntityAnimal implements EntityWalkable, EntitySmite {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return ZOMBIE_HORSE;
     }
     

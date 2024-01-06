@@ -15,7 +15,7 @@ public class BlockPodzol extends BlockDirt {
     public static final BlockProperties PROPERTIES = new BlockProperties(PODZOL);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -33,7 +33,7 @@ public class BlockPodzol extends BlockDirt {
     }
 
     @Override
-    public @NotNull DirtType getDirtType() {
+    @NotNull public DirtType getDirtType() {
         return DirtType.NORMAL;
     }
 

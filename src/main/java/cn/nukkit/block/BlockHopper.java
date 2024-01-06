@@ -12,7 +12,7 @@ import cn.nukkit.event.inventory.InventoryMoveItemEvent;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
-import cn.nukkit.inventory.RecipeInventoryHolder;
+import cn.nukkit.recipe.RecipeInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemHopper;
 import cn.nukkit.item.ItemTool;
@@ -38,7 +38,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
     public static final BlockProperties PROPERTIES = new BlockProperties(HOPPER, CommonBlockProperties.FACING_DIRECTION, TOGGLE_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -51,12 +51,12 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityHopper> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityHopper> getBlockEntityClass() {
         return BlockEntityHopper.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.HOPPER;
     }
 

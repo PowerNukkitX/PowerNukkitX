@@ -27,7 +27,7 @@ public class BlockStandingSign extends BlockSignBase implements BlockEntityHolde
     public static final BlockProperties PROPERTIES = new BlockProperties(STANDING_SIGN, GROUND_SIGN_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -48,12 +48,12 @@ public class BlockStandingSign extends BlockSignBase implements BlockEntityHolde
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntitySign> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntitySign> getBlockEntityClass() {
         return BlockEntitySign.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.SIGN;
     }
 

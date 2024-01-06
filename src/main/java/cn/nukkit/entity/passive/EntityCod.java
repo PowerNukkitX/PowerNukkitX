@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityCod extends EntityFish {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return COD;
     }
     

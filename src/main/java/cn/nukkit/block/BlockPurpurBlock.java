@@ -18,7 +18,7 @@ public class BlockPurpurBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(PURPUR_BLOCK, CHISEL_TYPE, PILLAR_AXIS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

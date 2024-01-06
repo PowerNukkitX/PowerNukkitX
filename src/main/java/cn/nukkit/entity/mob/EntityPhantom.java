@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmite {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return PHANTOM;
     }
 

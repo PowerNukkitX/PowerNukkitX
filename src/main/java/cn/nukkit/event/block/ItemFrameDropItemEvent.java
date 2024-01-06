@@ -30,11 +30,11 @@ public class ItemFrameDropItemEvent extends ItemFrameUseEvent implements Cancell
         return player;
     }
 
-    public @NotNull BlockEntityItemFrame getItemFrame() {
+    @NotNull public BlockEntityItemFrame getItemFrame() {
         return itemFrame;
     }
 
-    public @NotNull Item getItem() {
+    @NotNull public Item getItem() {
         return item;
     }
 }

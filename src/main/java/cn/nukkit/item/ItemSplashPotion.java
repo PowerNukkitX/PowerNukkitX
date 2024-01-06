@@ -18,13 +18,13 @@ public class ItemSplashPotion extends ProjectileItem {
     }
 
     @Override
-    public void setAux(Integer aux) {
-        super.setAux(aux);
+    public void setDamage(Integer meta) {
+        super.setDamage(meta);
         updateName();
     }
 
     private void updateName() {
-        int potionId = getAux();
+        int potionId = getDamage();
         if (potionId == Potion.WATER) {
             name = "Splash Water Bottle";
         } else {
@@ -54,6 +54,6 @@ public class ItemSplashPotion extends ProjectileItem {
 
     @Override
     protected void correctNBT(CompoundTag nbt) {
-        nbt.putInt("PotionId", this.aux);
+        nbt.putInt("PotionId", this.meta);
     }
 }

@@ -24,7 +24,7 @@ public final class StringUtils {
         return str.substring(i + 1);
     }
 
-    public @NotNull static String capitalize(@NotNull String str) {
+    @NotNull public static String capitalize(@NotNull String str) {
         if (str.length() == 0) {
             return "";
         }

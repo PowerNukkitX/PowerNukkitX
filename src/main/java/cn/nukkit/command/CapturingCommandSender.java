@@ -52,7 +52,7 @@ public class CapturingCommandSender implements CommandSender {
     }
 
     @Override
-    public @NotNull String getName() {
+    @NotNull public String getName() {
         return name;
     }
 

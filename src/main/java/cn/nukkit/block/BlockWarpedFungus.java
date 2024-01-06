@@ -1,7 +1,9 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.level.generator.object.tree.ObjectWarpedTree;
+import cn.nukkit.event.level.StructureGrowEvent;
+import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.legacytree.LegacyWarpedTree;
 import cn.nukkit.utils.random.NukkitRandomSource;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,7 +13,7 @@ public class BlockWarpedFungus extends BlockFungus {
     public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_FUNGUS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -23,7 +25,7 @@ public class BlockWarpedFungus extends BlockFungus {
         super(blockstate);
     }
 
-    private final ObjectWarpedTree feature = new ObjectWarpedTree();
+    private final LegacyWarpedTree feature = new LegacyWarpedTree();
 
     @Override
     public String getName() {
@@ -46,7 +48,14 @@ public class BlockWarpedFungus extends BlockFungus {
     @Override
     public boolean grow(@Nullable Player cause) {
         NukkitRandomSource nukkitRandom = new NukkitRandomSource();
-        this.feature.placeObject(this.getLevel(), this.getFloorX(), this.getFloorY(), this.getFloorZ(), nukkitRandom);
+        BlockManager blockManager = new BlockManager(this.getLevel());
+        this.feature.placeObject(blockManager, this.getFloorX(), this.getFloorY(), this.getFloorZ(), nukkitRandom);
+        StructureGrowEvent ev = new StructureGrowEvent(this, blockManager.getBlocks());
+        this.level.getServer().getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) {
+            return false;
+        }
+        blockManager.apply(ev.getBlockList());
         return true;
     }
 }

@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInteractable {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return NPC;
     }
 

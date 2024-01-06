@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityVex extends EntityMob implements EntityFlyable {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return VEX;
     }
 

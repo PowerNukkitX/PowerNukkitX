@@ -15,7 +15,7 @@ public class ItemCarpet extends Item {
     }
 
     private void adjustName() {
-        switch (getAux()) {
+        switch (getDamage()) {
             case 0:
                 name = "White Carpet";
                 return;

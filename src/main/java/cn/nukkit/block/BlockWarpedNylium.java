@@ -6,7 +6,7 @@ public class BlockWarpedNylium extends BlockNylium {
     public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_NYLIUM);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

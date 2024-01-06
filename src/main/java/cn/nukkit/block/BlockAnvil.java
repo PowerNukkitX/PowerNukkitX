@@ -26,7 +26,7 @@ public class BlockAnvil extends BlockFallable implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(ANVIL, DAMAGE, MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

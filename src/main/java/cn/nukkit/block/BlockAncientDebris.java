@@ -8,7 +8,7 @@ public class BlockAncientDebris extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(ANCIENT_DEBRIS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

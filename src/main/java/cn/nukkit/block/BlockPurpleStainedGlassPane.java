@@ -7,7 +7,7 @@ public class BlockPurpleStainedGlassPane extends BlockGlassPaneStained {
     public static final BlockProperties PROPERTIES = new BlockProperties(PURPLE_STAINED_GLASS_PANE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

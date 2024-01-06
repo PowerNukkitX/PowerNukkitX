@@ -134,7 +134,7 @@ public class Location extends Position {
     }
 
     @Override
-    public @NotNull Location getLocation() {
+    @NotNull public Location getLocation() {
         if (this.isValid()) return new Location(this.x, this.y, this.z, this.yaw, this.pitch, this.headYaw, this.level);
         else throw new LevelException("Undefined Level reference");
     }

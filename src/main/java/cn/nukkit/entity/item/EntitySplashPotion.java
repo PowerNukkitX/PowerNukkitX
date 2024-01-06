@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntitySplashPotion extends EntityProjectile {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return SPLASH_POTION;
     }
 

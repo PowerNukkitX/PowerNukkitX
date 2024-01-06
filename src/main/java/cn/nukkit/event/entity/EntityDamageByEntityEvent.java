@@ -55,7 +55,7 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
         }
     }
 
-    public @NotNull Entity getDamager() {
+    @NotNull public Entity getDamager() {
         return damager;
     }
 

@@ -19,7 +19,7 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
     public static final BlockProperties PROPERTIES = new BlockProperties(END_GATEWAY);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -37,12 +37,12 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityEndGateway> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityEndGateway> getBlockEntityClass() {
         return BlockEntityEndGateway.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.END_GATEWAY;
     }
 

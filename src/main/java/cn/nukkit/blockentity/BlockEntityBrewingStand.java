@@ -1,7 +1,6 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBrewingStand;
 import cn.nukkit.block.BlockID;
@@ -18,11 +17,12 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.ContainerSetDataPacket;
+import cn.nukkit.recipe.ContainerRecipe;
+import cn.nukkit.recipe.CraftingManager;
+import cn.nukkit.recipe.MixRecipe;
+import cn.nukkit.recipe.RecipeInventoryHolder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 
 public class BlockEntityBrewingStand extends BlockEntitySpawnable implements RecipeInventoryHolder, BlockEntityContainer, BlockEntityNameable {
     public static final int MAX_BREW_TIME = 400;
@@ -222,7 +222,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
                 Item result = recipe.getResult();
                 result.setCount(previous.getCount());
                 if (recipe instanceof ContainerRecipe) {
-                    result.setAux(previous.getAux());
+                    result.setDamage(previous.getDamage());
                 }
                 inventory.setItem(i + 1, result);
                 mixed = true;

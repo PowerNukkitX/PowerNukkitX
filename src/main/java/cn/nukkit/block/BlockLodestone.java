@@ -32,12 +32,12 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityLodestone> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityLodestone> getBlockEntityClass() {
         return BlockEntityLodestone.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.LODESTONE;
     }
 
@@ -104,7 +104,7 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
     }
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

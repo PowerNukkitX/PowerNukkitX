@@ -38,7 +38,6 @@ import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.inventory.*;
-import cn.nukkit.inventory.transaction.*;
 import cn.nukkit.item.*;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.CommandOutputContainer;
@@ -122,7 +121,7 @@ import static cn.nukkit.utils.Utils.dynamic;
 @Log4j2
 public class Player extends EntityHuman implements CommandSender, InventoryHolder, ChunkLoader, IPlayer, IScoreboardViewer {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return PLAYER;
     }
 
@@ -172,7 +171,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public boolean playedBefore;
     public boolean spawned = false;
     public boolean loggedIn = false;
-
     public boolean locallyInitialized = false;
     public int gamemode;
     public long lastBreak;
@@ -199,51 +197,24 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public int pickedXPOrb = 0;
     public EntityFishingHook fishing = null;
     public long lastSkinChange;
-
-
     protected long breakingBlockTime = 0;
-
-
     protected double blockBreakProgress = 0;
     protected final SourceInterface interfaz;
-
-
     protected final NetworkPlayerSession networkSession;
-    protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
-    protected final BiMap<Integer, Inventory> windowIndex = windows.inverse();
-    protected final Set<Integer> permanentWindows = new IntOpenHashSet();
     protected final InetSocketAddress rawSocketAddress;
     protected final Long2ObjectLinkedOpenHashMap<Boolean> loadQueue = new Long2ObjectLinkedOpenHashMap<>();
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
     protected final int chunksPerTick;
     protected final int spawnThreshold;
     protected int windowCnt = 4;
-
     protected int closingWindowId = Integer.MIN_VALUE;
     protected int messageCounter = 2;
+    protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
+    protected final Map<Integer, Inventory> windowIndex = windows.inverse();
+    protected final Set<Integer> permanentWindows = new IntOpenHashSet();
     protected PlayerUIInventory playerUIInventory;
     protected CraftingGrid craftingGrid;
-    protected CraftingTransaction craftingTransaction;
-
-    protected EnchantTransaction enchantTransaction;
-
-    protected RepairItemTransaction repairItemTransaction;
-
-
-    protected GrindstoneTransaction grindstoneTransaction;
-
-
-    protected SmithingTransaction smithingTransaction;
-
-
-    protected TradingTransaction tradingTransaction;
     protected long randomClientId;
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "Useless, use teleport directly")
-    protected Vector3 forceMovement = null;
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "Useless, use teleport directly")
-    protected Vector3 teleportPosition = null;
     protected boolean connected = true;
     protected InetSocketAddress socketAddress;
     /**
@@ -256,7 +227,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected String iusername;
     protected String displayName;
     protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
-
     /**
      * 这个值代表玩家是否正在使用物品(长按右键)，-1时玩家未使用物品，当玩家使用物品时该值为{@link Server#getTick() getTick()}的值.
      * <p>
@@ -331,8 +301,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private int expLevel = 0;
     private final int loaderId;
     private BlockVector3 lastBreakPosition = new BlockVector3();
-
-
     private boolean hasSeenCredits;
     private boolean wasInSoulSandCompatible;
     private float soulSpeedMultiplier = 1;
@@ -378,16 +346,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * The entity that the player is attacked last.
      */
     protected Entity lastBeAttackEntity = null;
-
     private boolean foodEnabled = true;
-
-
     private final @NotNull PlayerHandle playerHandle = new PlayerHandle(this);
-
-
     private boolean needDimensionChangeACK = false;
     private Boolean openSignFront = null;
-
     protected Boolean flySneaking = false;
 
     /**
@@ -3195,9 +3157,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         if ((chestplate == null || !chestplate.getId().equals(ItemID.ELYTRA))) {
                             this.setGliding(false);
                         } else if (this.age % (20 * (chestplate.getEnchantmentLevel(Enchantment.ID_DURABILITY) + 1)) == 0 && !isCreative()) {
-                            int newDamage = chestplate.getAux() + 1;
+                            int newDamage = chestplate.getDamage() + 1;
                             if (newDamage < chestplate.getMaxDurability()) {
-                                chestplate.setAux(newDamage);
+                                chestplate.setDamage(newDamage);
                                 playerInventory.setChestplate(chestplate);
                             } else {
                                 this.setGliding(false);
@@ -4087,7 +4049,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Override
-    public @NotNull String getName() {
+    @NotNull public String getName() {
         return this.username;
     }
 
@@ -4255,18 +4217,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
 
                 if (this.inventory != null) {
-                    new HashMap<>(this.inventory.slots).forEach((slot, item) -> {
+                    Item[] contents = this.inventory.getContents();
+                    for (int i = 0; i < contents.length; i++) {
+                        Item item = contents[i];
                         if (!item.keepOnDeath()) {
-                            this.inventory.clear(slot);
+                            this.inventory.clear(i);
                         }
-                    });
+                    }
                 }
                 if (this.offhandInventory != null) {
-                    new HashMap<>(this.offhandInventory.slots).forEach((slot, item) -> {
+                    Item[] contents = this.offhandInventory.getContents();
+                    for (int i = 0; i < contents.length; i++) {
+                        Item item = contents[i];
                         if (!item.keepOnDeath()) {
-                            this.offhandInventory.clear(slot);
+                            this.inventory.clear(i);
                         }
-                    });
+                    }
                 }
             }
 
@@ -5007,7 +4973,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param id 窗口id<br>the window id
      */
     public Inventory getWindowById(int id) {
-        return this.windowIndex.get(id);
+        return this.windows.inverse().get(id);
     }
 
     /**
@@ -5163,7 +5129,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     public void resetCraftingGridType() {
         if (this.craftingGrid != null) {
-            Item[] drops = this.inventory.addItem(this.craftingGrid.getContents().values().toArray(Item.EMPTY_ARRAY));
+            Item[] drops = this.inventory.addItem(this.craftingGrid.getContents());
 
             if (drops.length > 0) {
                 for (Item drop : drops) {
@@ -5210,7 +5176,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param permanent 如果为false则会跳过删除{@link #permanentWindows}里面对应的window<br>If false, it will skip deleting the corresponding window in {@link #permanentWindows}
      */
     public void removeAllWindows(boolean permanent) {
-        for (Entry<Integer, Inventory> entry : new ArrayList<>(this.windowIndex.entrySet())) {
+        for (Entry<Integer, Inventory> entry : new ArrayList<>(this.windows.inverse().entrySet())) {
             if (!permanent && this.permanentWindows.contains(entry.getKey())) {
                 continue;
             }
@@ -5591,12 +5557,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     Integer itemToRepair = itemsWithMending.get(rand.nextInt(itemsWithMending.size()));
                     Item toRepair = inventory.getItem(itemToRepair);
                     if (toRepair instanceof ItemTool || toRepair instanceof ItemArmor) {
-                        if (toRepair.getAux() > 0) {
-                            int dmg = toRepair.getAux() - 2;
+                        if (toRepair.getDamage() > 0) {
+                            int dmg = toRepair.getDamage() - 2;
                             if (dmg < 0) {
                                 dmg = 0;
                             }
-                            toRepair.setAux(dmg);
+                            toRepair.setDamage(dmg);
                             inventory.setItem(itemToRepair, toRepair);
                             return true;
                         }

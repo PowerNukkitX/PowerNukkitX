@@ -22,8 +22,8 @@ public class ItemNetherWart extends Item {
     }
 
     @Override
-    public void setAux(Integer aux) {
-        this.block = Registries.BLOCK.get(getItemBlockState(NETHER_WART, aux));
-        super.setAux(aux);
+    public void setDamage(Integer meta) {
+        this.block = Registries.BLOCK.get(getItemBlockState(NETHER_WART, meta));
+        super.setDamage(meta);
     }
 }

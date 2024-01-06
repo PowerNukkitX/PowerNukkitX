@@ -49,7 +49,7 @@ import java.util.Set;
  */
 public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable, EntityColor {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return WOLF;
     }
     protected float[] diffHandDamage = new float[]{3, 4, 6};

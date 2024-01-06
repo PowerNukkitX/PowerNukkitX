@@ -2,10 +2,10 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.Server;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
-import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.registry.Registries;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
@@ -251,7 +251,7 @@ public class StartGamePacket extends DataPacket {
             log.error("Error while encoding NBT data of BlockPropertyData", e);
         }
 
-        this.put(RuntimeItems.getRuntimeMapping().getItemDataPalette());
+        this.put(Registries.ITEM_RUNTIMEID.getItemPalette());
         this.putString(this.multiplayerCorrelationId);
         this.putBoolean(this.isInventoryServerAuthoritative);
         this.putString(vanillaVersion); // Server Engine

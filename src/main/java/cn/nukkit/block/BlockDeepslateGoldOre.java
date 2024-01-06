@@ -6,7 +6,7 @@ public class BlockDeepslateGoldOre extends BlockGoldOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_GOLD_ORE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

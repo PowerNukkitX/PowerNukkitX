@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class EntityTraderLlama extends EntityCreature implements IEntityNPC {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return TRADER_LLAMA;
     }
 

@@ -157,7 +157,7 @@ public abstract class Food {
 
     public static Food getByRelative(Item item) {
         Objects.requireNonNull(item);
-        return getByRelative(item.getId(), item.getId(), item.getAux());
+        return getByRelative(item.getId(), item.getId(), item.getDamage());
     }
 
     public static Food getByRelative(Block block) {

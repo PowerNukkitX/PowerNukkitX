@@ -7,7 +7,7 @@ public class BlockWeatheredCutCopper extends BlockCutCopper {
     public static final BlockProperties PROPERTIES = new BlockProperties(WEATHERED_CUT_COPPER);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -20,7 +20,7 @@ public class BlockWeatheredCutCopper extends BlockCutCopper {
     }
 
     @Override
-    public @NotNull OxidizationLevel getOxidizationLevel() {
+    @NotNull public OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.WEATHERED;
     }
 }

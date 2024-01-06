@@ -9,7 +9,7 @@ public class BlockMossCarpet extends BlockCarpet {
     public static final BlockProperties PROPERTIES = new BlockProperties(MOSS_CARPET);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -27,7 +27,7 @@ public class RemoteConsoleCommandSender extends ConsoleCommandSender {
     }
 
     @Override
-    public @NotNull String getName() {
+    @NotNull public String getName() {
         return "Rcon";
     }
 }

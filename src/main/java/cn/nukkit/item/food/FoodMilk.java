@@ -1,7 +1,8 @@
 package cn.nukkit.item.food;
 
 import cn.nukkit.Player;
-import cn.nukkit.item.MinecraftItemID;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
 
 /**
  * @author Snake1999
@@ -11,7 +12,7 @@ public class FoodMilk extends Food {
     @Override
     protected boolean onEatenBy(Player player) {
         super.onEatenBy(player);
-        player.getInventory().addItem(MinecraftItemID.BUCKET.get(1));
+        player.getInventory().addItem(Item.get(ItemID.BUCKET, 0, 1));
         player.removeAllEffects();
         return true;
     }

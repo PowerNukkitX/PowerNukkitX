@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityGlowSquid extends EntityAnimal implements EntitySwimmable {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return GLOW_SQUID;
     }
 

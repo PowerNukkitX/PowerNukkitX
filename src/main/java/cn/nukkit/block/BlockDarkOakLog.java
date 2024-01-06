@@ -7,7 +7,7 @@ public class BlockDarkOakLog extends BlockLog {
     public static final BlockProperties PROPERTIES = new BlockProperties(DARK_OAK_LOG, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

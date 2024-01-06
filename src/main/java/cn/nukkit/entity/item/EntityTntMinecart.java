@@ -26,7 +26,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityTntMinecart extends EntityMinecartAbstract implements EntityExplosive {
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return TNT_MINECART;
     }
     

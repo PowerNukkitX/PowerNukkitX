@@ -2,11 +2,9 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
@@ -32,7 +30,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.ByteOrder;
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 /**
@@ -40,7 +37,7 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 public abstract class Item implements Cloneable, ItemID {
-    public static final Item AIR = getItemBlock(BlockID.AIR);
+    public static final Item AIR = new ConstAirItem();
     public static final Item[] EMPTY_ARRAY = new Item[0];
 
     /**
@@ -57,17 +54,15 @@ public abstract class Item implements Cloneable, ItemID {
     );
 
     public static String UNKNOWN_STR = "Unknown";
-    private static final HashMap<String, Supplier<Item>> CUSTOM_ITEMS = new HashMap<>();
-    private static final HashMap<String, CustomItemDefinition> CUSTOM_ITEM_DEFINITIONS = new HashMap<>();
-
     protected Block block = null;
     protected final String id;
-    protected int aux;
+    protected int meta;
     protected boolean hasMeta = true;
     private byte[] tags = EmptyArrays.EMPTY_BYTES;
     private transient CompoundTag cachedNBT = null;
     public int count;
     protected String name;
+    protected Integer netId;
 
     private String idConvertToName() {
         if (this.name != null) {
@@ -89,24 +84,24 @@ public abstract class Item implements Cloneable, ItemID {
         this(id, 0);
     }
 
-    public Item(@NotNull String id, @Nullable Integer aux) {
-        this(id, aux, 1);
+    public Item(@NotNull String id, @Nullable Integer meta) {
+        this(id, meta, 1);
     }
 
-    public Item(@NotNull String id, @Nullable Integer aux, int count) {
+    public Item(@NotNull String id, @Nullable Integer meta, int count) {
         this.id = id.intern();
-        if (aux != null && aux >= 0) {
-            this.aux = aux & 0xffff;
+        if (meta != null && meta >= 0) {
+            this.meta = meta & 0xffff;
         } else {
             this.hasMeta = false;
         }
         this.count = count;
     }
 
-    public Item(@NotNull String id, @Nullable Integer aux, int count, @Nullable String name) {
+    public Item(@NotNull String id, @Nullable Integer meta, int count, @Nullable String name) {
         this.id = id.intern();
-        if (aux != null && aux >= 0) {
-            this.aux = aux & 0xffff;
+        if (meta != null && meta >= 0) {
+            this.meta = meta & 0xffff;
         } else {
             this.hasMeta = false;
         }
@@ -719,11 +714,7 @@ public abstract class Item implements Cloneable, ItemID {
         if (this.cachedNBT == null) {
             this.cachedNBT = parseCompoundTag(this.tags);
         }
-
-        if (this.cachedNBT != null) {
-            this.cachedNBT.setName("");
-        }
-
+        this.cachedNBT.setName("");
         return this.cachedNBT;
     }
 
@@ -767,6 +758,23 @@ public abstract class Item implements Cloneable, ItemID {
         }
     }
 
+    /**
+     * Gets whether this item is using a net id.
+     *
+     * @return whether this item is using a net id
+     */
+    public boolean isUsingNetId() {
+        return netId != null;
+    }
+
+    public Integer getNetId() {
+        return netId;
+    }
+
+    public void setNetId(Integer netId) {
+        this.netId = netId;
+    }
+
     public int getCount() {
         return count;
     }
@@ -776,7 +784,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public boolean isNull() {
-        return this.count <= 0 || Objects.equals(this.id, Block.AIR);
+        return Objects.equals(this.id, Block.AIR) || this.count <= 0;
     }
 
     public boolean is(final String itemTag) {
@@ -799,7 +807,8 @@ public abstract class Item implements Cloneable, ItemID {
         return ((this.block != null) && this.block.canBePlaced());
     }
 
-    public @NotNull Block getBlock() {
+    @NotNull
+    public Block getBlock() {
         if (this.block != null) {
             return this.block.clone();
         } else {
@@ -842,6 +851,10 @@ public abstract class Item implements Cloneable, ItemID {
         return i;
     }
 
+    public final int getFullId() {
+        return (((short) getRuntimeId()) << 16) | ((meta & 0x7fff) << 1);
+    }
+
     public boolean isBlock() {
         return this.block != null;
     }
@@ -854,13 +867,13 @@ public abstract class Item implements Cloneable, ItemID {
         }
     }
 
-    public int getAux() {
-        return aux;
+    public int getDamage() {
+        return meta;
     }
 
-    public void setAux(Integer aux) {
-        if (aux != null) {
-            this.aux = aux & 0xffff;
+    public void setDamage(Integer damage) {
+        if (damage != null) {
+            this.meta = damage & 0xffff;
             this.hasMeta = true;
         } else {
             this.hasMeta = false;
@@ -896,7 +909,7 @@ public abstract class Item implements Cloneable, ItemID {
         if (!Registries.FUEL.isFuel(this)) {
             return null;
         }
-        if (!this.id.equals(BUCKET) || this.aux == 10) {
+        if (!this.id.equals(BUCKET) || this.meta == 10) {
             return Registries.FUEL.getFuelDuration(this);
         }
         return null;
@@ -1129,7 +1142,7 @@ public abstract class Item implements Cloneable, ItemID {
     final public String toString() {
         return "Item " + idConvertToName() +
                 " (" + this.id
-                + ":" + (!this.hasMeta ? "?" : this.aux)
+                + ":" + (!this.hasMeta ? "?" : this.meta)
                 + ")x" + this.count
                 + (this.hasCompoundTag() ? " tags:0x" + Binary.bytesToHexString(this.getCompoundTag()) : "");
     }
@@ -1214,7 +1227,7 @@ public abstract class Item implements Cloneable, ItemID {
      */
     public final boolean equals(Item item, boolean checkDamage, boolean checkCompound) {
         if (!Objects.equals(this.getId(), item.getId())) return false;
-        if (!checkDamage || this.getAux() == item.getAux()) {
+        if (!checkDamage || this.getDamage() == item.getDamage()) {
             if (checkCompound) {
                 if (Arrays.equals(this.getCompoundTag(), item.getCompoundTag())) {
                     return true;

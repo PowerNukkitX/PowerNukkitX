@@ -9,7 +9,7 @@ public class BlockGlowingobsidian extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(GLOWINGOBSIDIAN);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

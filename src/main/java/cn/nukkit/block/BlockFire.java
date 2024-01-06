@@ -31,7 +31,7 @@ public class BlockFire extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(FIRE, AGE_16);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

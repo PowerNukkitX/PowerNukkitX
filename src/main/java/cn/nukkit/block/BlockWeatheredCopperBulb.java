@@ -7,7 +7,7 @@ public class BlockWeatheredCopperBulb extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(WEATHERED_COPPER_BULB, CommonBlockProperties.LIT, CommonBlockProperties.POWERED_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -10,11 +10,11 @@ public record JMethod(JClassBuilder builder, String methodName, String delegateN
         this(builder, name, name, returnType, argTypes);
     }
 
-    public @NotNull Type[] argAsmTypes() {
+    @NotNull public Type[] argAsmTypes() {
         return Arrays.stream(this.argTypes()).map(JType::asmType).toArray(Type[]::new);
     }
 
-    public @NotNull Type returnAsmType() {
+    @NotNull public Type returnAsmType() {
         return returnType.asmType();
     }
 }

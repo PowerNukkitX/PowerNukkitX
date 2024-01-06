@@ -7,7 +7,7 @@ public class BlockStrippedCrimsonHyphae extends BlockStemStripped {
     public static final BlockProperties PROPERTIES = new BlockProperties(STRIPPED_CRIMSON_HYPHAE, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

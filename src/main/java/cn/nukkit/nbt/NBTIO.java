@@ -1,12 +1,8 @@
 package cn.nukkit.nbt;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.block.BlockUnknown;
-import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.item.ItemID;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
@@ -18,14 +14,12 @@ import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.ThreadCache;
 import com.google.common.base.Preconditions;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
-import java.util.NoSuchElementException;
 import java.util.TreeMap;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
@@ -44,7 +38,7 @@ public class NBTIO {
     public static CompoundTag putItemHelper(Item item, Integer slot) {
         CompoundTag tag = new CompoundTag((String) null)
                 .putByte("Count", item.getCount())
-                .putShort("Damage", item.getAux());
+                .putShort("Damage", item.getDamage());
         tag.putString("Name", item.getId());
         if (slot != null) {
             tag.putByte("Slot", slot);
@@ -71,23 +65,17 @@ public class NBTIO {
         if (item == null) {
             if (tag.containsCompound("Block")) {
                 CompoundTag block = tag.getCompound("Block");
-                CompoundTag newBlock = new CompoundTag(new TreeMap<>(block.getTags()));
-                newBlock.remove("version");
-                int blockhash = HashUtils.fnv1a_32_nbt(newBlock);
-                BlockState blockState = Registries.BLOCKSTATE.get(blockhash);
+                BlockState blockState = getBlockStateHelper(block);
                 if (blockState == null) return Item.AIR;
                 item = new ItemBlock(blockState.toBlock());
             } else return Item.AIR;
         } else if (tag.containsCompound("Block")) {
             CompoundTag block = tag.getCompound("Block");
-            CompoundTag newBlock = new CompoundTag(new TreeMap<>(block.getTags()));
-            newBlock.remove("version");
-            int blockhash = HashUtils.fnv1a_32_nbt(newBlock);
-            BlockState blockState = Registries.BLOCKSTATE.get(blockhash);
+            BlockState blockState = getBlockStateHelper(block);
             if (blockState != null) item.setBlockUnsafe(blockState.toBlock());
         }
-        if (item.getAux() == 0) {
-            item.setAux(damage);
+        if (item.getDamage() == 0) {
+            item.setDamage(damage);
         }
         item.setCount(amount);
 
@@ -96,6 +84,13 @@ public class NBTIO {
             item.setNamedTag(compoundTag);
         }
         return item;
+    }
+
+    public static BlockState getBlockStateHelper(CompoundTag tag) {
+        CompoundTag newBlock = new CompoundTag(new TreeMap<>(tag.getTags()));
+        newBlock.remove("version");
+        int blockhash = HashUtils.fnv1a_32_nbt(newBlock);
+        return Registries.BLOCKSTATE.get(blockhash);
     }
 
     public static CompoundTag read(File file) throws IOException {

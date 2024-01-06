@@ -10,7 +10,7 @@ public class BlockPrismarine extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(PRISMARINE, CommonBlockProperties.PRISMARINE_BLOCK_TYPE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

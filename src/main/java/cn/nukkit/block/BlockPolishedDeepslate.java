@@ -6,7 +6,7 @@ public class BlockPolishedDeepslate extends BlockCobbledDeepslate {
     public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_DEEPSLATE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

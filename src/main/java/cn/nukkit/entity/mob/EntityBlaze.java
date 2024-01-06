@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntityBlaze extends EntityMob implements EntityFlyable {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return BLAZE;
     }
 

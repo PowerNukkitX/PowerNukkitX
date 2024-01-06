@@ -7,7 +7,7 @@ public class BlockPolishedDiorite extends BlockStone {
     public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_DIORITE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

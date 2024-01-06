@@ -54,7 +54,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
     public static final int DURABILITY_WARPED_FUNGUS_ON_A_STICK = dynamic(101);
     public static final int DURABILITY_SHIELD = dynamic(337);
 
-    public @NotNull static Item getBestTool(int toolType) {
+    @NotNull public static Item getBestTool(int toolType) {
         switch (toolType) {
             case TYPE_NONE, TYPE_PICKAXE -> {
                 return Item.get(ItemID.NETHERITE_PICKAXE);
@@ -118,15 +118,15 @@ public abstract class ItemTool extends Item implements ItemDurable {
                 block.getToolType() == ItemTool.TYPE_SWORD && this.isSword() ||
                 block.getToolType() == ItemTool.TYPE_SHEARS && this.isShears()
                 ) {
-            this.aux++;
+            this.meta++;
         } else if (!this.isShears() && block.calculateBreakTime(this) > 0) {
-            this.aux += 2;
+            this.meta += 2;
         } else if (this.isHoe()) {
             if (block.getId().equals(Block.GRASS) || block.getId().equals(Block.DIRT)) {
-                this.aux++;
+                this.meta++;
             }
         } else {
-            this.aux++;
+            this.meta++;
         }
         return true;
     }
@@ -138,9 +138,9 @@ public abstract class ItemTool extends Item implements ItemDurable {
         }
 
         if ((entity != null) && !this.isSword()) {
-            this.aux += 2;
+            this.meta += 2;
         } else {
-            this.aux++;
+            this.meta++;
         }
 
         return true;

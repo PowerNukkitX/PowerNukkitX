@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBanner;
 import cn.nukkit.item.Item;
@@ -29,7 +28,7 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
     public static final BlockProperties PROPERTIES = new BlockProperties(STANDING_BANNER, GROUND_SIGN_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -42,12 +41,12 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.BANNER;
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityBanner> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityBanner> getBlockEntityClass() {
         return BlockEntityBanner.class;
     }
 
@@ -112,7 +111,7 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
         }
 
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.BANNER)
-                .putInt("Base", item.getAux() & 0xf);
+                .putInt("Base", item.getDamage() & 0xf);
 
         Tag type = item.getNamedTagEntry("Type");
         if (type instanceof IntTag) {
@@ -152,7 +151,7 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
         BlockEntityBanner banner = getBlockEntity();
         Item item = Item.get(ItemID.BANNER);
         if (banner != null) {
-            item.setAux(banner.getBaseColor() & 0xf);
+            item.setDamage(banner.getBaseColor() & 0xf);
             int type = banner.namedTag.getInt("Type");
             if (type > 0) {
                 item.setNamedTag((item.hasCompoundTag() ? item.getNamedTag() : new CompoundTag())

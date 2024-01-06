@@ -7,7 +7,7 @@ public class BlockLitDeepslateRedstoneOre extends BlockDeepslateRedstoneOre impl
     public static final BlockProperties PROPERTIES = new BlockProperties(LIT_DEEPSLATE_REDSTONE_ORE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

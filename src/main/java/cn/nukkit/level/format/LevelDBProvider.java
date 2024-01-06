@@ -84,6 +84,11 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @UsedByReflection
+    public static String getProviderName() {
+        return "leveldb";
+    }
+
+    @UsedByReflection
     public static void generate(String path, String name, long seed, Class<? extends Generator> generator, Map<String, String> options) throws IOException {
         File dataDir = new File(path + "/db");
         if (!dataDir.exists() && !dataDir.mkdirs()) {
@@ -245,8 +250,7 @@ public class LevelDBProvider implements LevelProvider {
             throw new ChunkException("Invalid Chunk Set");
         }
         long timestamp = chunk.getChanges();
-        BiConsumer<BinaryStream, Integer> callback = (stream, subchunks) ->
-                this.getLevel().chunkRequestCallback(timestamp, X, Z, subchunks, stream.getBuffer());
+        BiConsumer<BinaryStream, Integer> callback = (stream, subchunks) -> this.getLevel().chunkRequestCallback(timestamp, X, Z, subchunks, stream.getBuffer());
         return new AsyncTask() {
             @Override
             public void onRun() {

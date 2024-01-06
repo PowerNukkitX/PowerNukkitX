@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 public class EntitySmallFireball extends EntityProjectile {
 
     @Override
-    public @NotNull String getIdentifier() {
+    @NotNull public String getIdentifier() {
         return SMALL_FIREBALL;
     }
 

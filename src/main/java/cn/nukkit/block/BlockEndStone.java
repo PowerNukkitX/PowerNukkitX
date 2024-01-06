@@ -11,7 +11,7 @@ public class BlockEndStone extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(END_STONE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

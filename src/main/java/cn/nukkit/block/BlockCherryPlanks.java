@@ -7,7 +7,7 @@ public class BlockCherryPlanks extends BlockPlanks {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_PLANKS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -54,11 +54,6 @@ public class PlayerUIInventory extends BaseInventory {
     }
 
     @Override
-    public void setSize(int size) {
-        throw new UnsupportedOperationException("UI size is immutable");
-    }
-
-    @Override
     public void sendSlot(int index, Player... target) {
         InventorySlotPacket pk = new InventorySlotPacket();
         pk.slot = index;

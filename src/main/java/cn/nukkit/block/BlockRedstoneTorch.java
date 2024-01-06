@@ -18,7 +18,7 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
     public static final BlockProperties PROPERTIES = new BlockProperties(REDSTONE_TORCH, TORCH_FACING_DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

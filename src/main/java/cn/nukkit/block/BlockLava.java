@@ -16,7 +16,7 @@ public class BlockLava extends BlockFlowingLava {
     public static final BlockProperties PROPERTIES = new BlockProperties(LAVA, CommonBlockProperties.LIQUID_DEPTH);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

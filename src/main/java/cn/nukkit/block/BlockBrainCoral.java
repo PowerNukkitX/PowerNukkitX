@@ -6,7 +6,7 @@ public class BlockBrainCoral extends BlockCoral {
     public static final BlockProperties PROPERTIES = new BlockProperties(BRAIN_CORAL);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

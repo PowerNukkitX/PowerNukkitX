@@ -17,7 +17,7 @@ public class BlockSeagrass extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(SEAGRASS, SEA_GRASS_TYPE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

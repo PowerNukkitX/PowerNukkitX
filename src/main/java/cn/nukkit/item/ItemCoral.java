@@ -19,7 +19,7 @@ public class ItemCoral extends Item {
     }
 
     private void adjustBlock() {
-        switch (getAux()) {
+        switch (getDamage()) {
             case 0:
                 this.block = Block.get(BlockID.TUBE_CORAL);
                 return;
@@ -56,7 +56,7 @@ public class ItemCoral extends Item {
     }
 
     private void adjustName() {
-        switch (getAux()) {
+        switch (getDamage()) {
             case 0:
                 this.name = "Tube Coral";
                 return;

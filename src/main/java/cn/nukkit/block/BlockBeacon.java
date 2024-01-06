@@ -19,7 +19,7 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
     public static final BlockProperties PROPERTIES = new BlockProperties(BEACON);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -32,12 +32,12 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityBeacon> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityBeacon> getBlockEntityClass() {
         return BlockEntityBeacon.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.BEACON;
     }
 

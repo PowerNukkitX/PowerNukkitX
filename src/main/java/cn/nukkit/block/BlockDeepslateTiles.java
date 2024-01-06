@@ -7,7 +7,7 @@ public class BlockDeepslateTiles extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_TILES);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -13,7 +13,7 @@ public class BlockSeaLantern extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(SEA_LANTERN);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

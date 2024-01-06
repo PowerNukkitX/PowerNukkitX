@@ -10,7 +10,7 @@ public class BlockRedMushroomBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(RED_MUSHROOM_BLOCK, CommonBlockProperties.HUGE_MUSHROOM_BITS);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -7,7 +7,7 @@ public class BlockCrimsonFenceGate extends BlockFenceGate {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_FENCE_GATE, CommonBlockProperties.DIRECTION, CommonBlockProperties.IN_WALL_BIT, CommonBlockProperties.OPEN_BIT);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

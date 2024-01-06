@@ -7,7 +7,7 @@ public class BlockNetherBrickFence extends BlockFence {
     public static final BlockProperties PROPERTIES = new BlockProperties(NETHER_BRICK_FENCE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

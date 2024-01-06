@@ -20,7 +20,7 @@ public class BlockKelp extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(KELP, KELP_AGE);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

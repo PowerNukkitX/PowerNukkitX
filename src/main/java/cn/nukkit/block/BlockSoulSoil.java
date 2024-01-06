@@ -10,7 +10,7 @@ public class BlockSoulSoil extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(SOUL_SOIL);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

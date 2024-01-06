@@ -1,15 +1,18 @@
 package cn.nukkit.registry;
 
+import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.OK;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +21,23 @@ import java.util.Map;
  */
 public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer> {
     private static final Object2IntOpenHashMap<String> REGISTRY = new Object2IntOpenHashMap<>();
+    private static final Int2ObjectOpenHashMap<String> ID2NAME = new Int2ObjectOpenHashMap<>();
+    private static byte[] itemPalette;
+
+    public byte[] getItemPalette() {
+        return itemPalette;
+    }
+
+    private void generatePalette() {
+        BinaryStream paletteBuffer = new BinaryStream();
+        paletteBuffer.putUnsignedVarInt(REGISTRY.size());
+        for (var entry : REGISTRY.object2IntEntrySet()) {
+            paletteBuffer.putString(entry.getKey());
+            paletteBuffer.putLShort(entry.getIntValue());
+            paletteBuffer.putBoolean(false); //Vanilla Item doesnt component item
+        }
+        itemPalette = paletteBuffer.getBuffer();
+    }
 
     @Override
     public void init() {
@@ -46,6 +66,10 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
         return REGISTRY.getInt(key);
     }
 
+    public String getIdentifier(int runtimeId) {
+        return ID2NAME.get(runtimeId);
+    }
+
     @Override
     public void trim() {
         REGISTRY.trim();
@@ -54,6 +78,7 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
     @Override
     public OK<?> register(String key, Integer value) {
         if (REGISTRY.putIfAbsent(key, value.intValue()) == Integer.MAX_VALUE) {
+            ID2NAME.put(value.intValue(), key);
             return OK.TRUE;
         } else {
             return new OK<>(false, new IllegalArgumentException("The item runtime has been registered!"));

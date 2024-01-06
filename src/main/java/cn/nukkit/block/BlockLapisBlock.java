@@ -7,7 +7,7 @@ public class BlockLapisBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(LAPIS_BLOCK);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

@@ -8,7 +8,7 @@ public class BlockMagentaShulkerBox extends BlockUndyedShulkerBox {
     public static final BlockProperties PROPERTIES = new BlockProperties(MAGENTA_SHULKER_BOX);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

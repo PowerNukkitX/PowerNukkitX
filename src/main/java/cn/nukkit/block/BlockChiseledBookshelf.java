@@ -26,7 +26,7 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
     public static final BlockProperties PROPERTIES = new BlockProperties(CHISELED_BOOKSHELF, BOOKS_STORED, CommonBlockProperties.DIRECTION);
 
     @Override
-    public @NotNull BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -72,12 +72,12 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityChiseledBookshelf> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityChiseledBookshelf> getBlockEntityClass() {
         return BlockEntityChiseledBookshelf.class;
     }
 
     @Override
-    public @NotNull String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.CHISELED_BOOKSHELF;
     }
 

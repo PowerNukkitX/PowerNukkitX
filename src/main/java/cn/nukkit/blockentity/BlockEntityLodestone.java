@@ -35,7 +35,7 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
         }
     }
 
-    public @NotNull OptionalInt getTrackingHandler() {
+    @NotNull public OptionalInt getTrackingHandler() {
         if (namedTag.containsInt("trackingHandle")) {
             return OptionalInt.of(namedTag.getInt("trackingHandle"));
         }

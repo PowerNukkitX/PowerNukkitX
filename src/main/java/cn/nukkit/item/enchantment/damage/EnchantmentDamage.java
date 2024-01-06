@@ -55,11 +55,4 @@ public abstract class EnchantmentDamage extends Enchantment {
         return true;
     }
 
-    @Override
-    public boolean isItemAcceptable(Item item) {
-        if (item.isAxe()) {
-            return true;
-        }
-        return super.isItemAcceptable(item);
-    }
 }
