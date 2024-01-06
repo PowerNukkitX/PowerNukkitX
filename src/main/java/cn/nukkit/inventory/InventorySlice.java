@@ -9,9 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static cn.nukkit.inventory.BaseInventory.AIR_ITEM;
-
-
 public class InventorySlice implements Inventory {
     @NotNull
     private final Inventory rawInv;
@@ -64,7 +61,7 @@ public class InventorySlice implements Inventory {
     @NotNull public Item getItem(int index) {
         // check whether the index is in the range
         if (index < 0 || index >= getSize()) {
-            return AIR_ITEM;
+            return Item.AIR;
         }
         return rawInv.getItem(index + startSlot);
     }

@@ -2,8 +2,6 @@ package cn.nukkit.entity.data.profession;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.MinecraftItemID;
-import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.RecipeBuildUtils;

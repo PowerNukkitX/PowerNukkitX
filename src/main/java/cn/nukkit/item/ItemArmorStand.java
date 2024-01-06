@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.item.EntityArmorStand;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
@@ -13,6 +14,7 @@ import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.registry.Registries;
 
 import static cn.nukkit.math.CompassRoseDirection.Precision.PRIMARY_INTER_CARDINAL;
 
@@ -63,7 +65,7 @@ public class ItemArmorStand extends Item {
             return false;
         }
 
-        Entity entity = Entity.createEntity(EntityArmorStand.NETWORK_ID, chunk, nbt);
+        Entity entity = Entity.createEntity(Registries.ENTITY.getEntityNetworkId(EntityID.ARMOR_STAND), chunk, nbt);
         if (entity == null) {
             return false;
         }

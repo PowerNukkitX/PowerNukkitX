@@ -43,7 +43,7 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_RABBIT : Item.RAW_RABBIT)), Item.get(Item.RABBIT_HIDE), Item.get(Item.RABBIT_FOOT)};
+        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_RABBIT : Item.RABBIT)), Item.get(Item.RABBIT_HIDE), Item.get(Item.RABBIT_FOOT)};
     }
 
     

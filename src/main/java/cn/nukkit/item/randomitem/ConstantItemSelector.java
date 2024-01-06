@@ -10,15 +10,15 @@ public class ConstantItemSelector extends Selector {
 
     protected final Item item;
 
-    public ConstantItemSelector(int id, Selector parent) {
+    public ConstantItemSelector(String id, Selector parent) {
         this(id, 0, parent);
     }
 
-    public ConstantItemSelector(int id, Integer meta, Selector parent) {
+    public ConstantItemSelector(String id, Integer meta, Selector parent) {
         this(id, meta, 1, parent);
     }
 
-    public ConstantItemSelector(int id, Integer meta, int count, Selector parent) {
+    public ConstantItemSelector(String id, Integer meta, int count, Selector parent) {
         this(Item.get(id, meta, count), parent);
     }
 

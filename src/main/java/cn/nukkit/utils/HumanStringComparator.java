@@ -9,7 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 
 
-@NoArgsConstructor(onConstructor = @__())
+@NoArgsConstructor()
 public class HumanStringComparator implements Comparator<String> {
     private static final HumanStringComparator INSTANCE = new HumanStringComparator();
     private static final int LEFT = -1;

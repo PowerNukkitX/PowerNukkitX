@@ -194,7 +194,7 @@ public abstract class SlenderProjectile extends EntityProjectile {
         this.lastUpdate = currentTick;
 
         if (this.isCollided && this.hadCollision) {
-            if (lastHitBlock != null && lastHitBlock.typeOfHit == 0 && level.getBlock(lastHitBlock.blockX, lastHitBlock.blockY, lastHitBlock.blockZ).getId() == 0) {
+            if (lastHitBlock != null && lastHitBlock.typeOfHit == 0 && level.getBlock(lastHitBlock.blockX, lastHitBlock.blockY, lastHitBlock.blockZ).isAir()) {
                 this.motionY -= this.getGravity();
                 updateRotation();
                 this.move(this.motionX, this.motionY, this.motionZ);

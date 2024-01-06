@@ -15,15 +15,15 @@ import java.util.concurrent.ThreadLocalRandom;
 
 
 public class EnchantmentItemSelector extends ConstantItemSelector {
-    public EnchantmentItemSelector(int id, Selector parent) {
+    public EnchantmentItemSelector(String id, Selector parent) {
         this(id, 0, parent);
     }
 
-    public EnchantmentItemSelector(int id, Integer meta, Selector parent) {
+    public EnchantmentItemSelector(String id, Integer meta, Selector parent) {
         this(id, meta, 1,  parent);
     }
 
-    public EnchantmentItemSelector(int id, Integer meta, int count, Selector parent) {
+    public EnchantmentItemSelector(String id, Integer meta, int count, Selector parent) {
         this(Item.get(id, meta, count), parent);
     }
 

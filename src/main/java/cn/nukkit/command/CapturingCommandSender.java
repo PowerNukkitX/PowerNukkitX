@@ -16,8 +16,7 @@ import java.util.function.Function;
 /**
  * @since 1.2.1.0-PN
  */
-
-@AllArgsConstructor(onConstructor = @__())
+@AllArgsConstructor()
 public class CapturingCommandSender implements CommandSender {
     private final StringBuilder captured = new StringBuilder();
 

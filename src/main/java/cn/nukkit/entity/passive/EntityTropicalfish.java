@@ -106,9 +106,9 @@ public class EntityTropicalfish extends EntityFish {
     @Override
     public Item[] getDrops() {
         if (Utils.rand(0, 3) == 1) {
-            return new Item[]{Item.get(Item.CLOWNFISH), Item.get(Item.BONE, 0, Utils.rand(1, 2))};
+            return new Item[]{Item.get(Item.TROPICAL_FISH), Item.get(Item.BONE, 0, Utils.rand(1, 2))};
         }
-        return new Item[]{Item.get(Item.CLOWNFISH)};
+        return new Item[]{Item.get(Item.TROPICAL_FISH)};
     }
 
     public int getColor() {

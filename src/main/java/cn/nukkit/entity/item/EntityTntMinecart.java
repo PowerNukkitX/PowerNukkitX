@@ -133,10 +133,6 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
         return MinecartType.valueOf(3);
     }
 
-    private int getNetworkId() {
-        return EntityTntMinecart.NETWORK_ID;
-    }
-
     @Override
     public void saveNBT() {
         super.saveNBT();

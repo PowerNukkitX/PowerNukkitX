@@ -48,8 +48,8 @@ public class EntityCod extends EntityFish {
     public Item[] getDrops() {
         //只能25%获得骨头
         if (Utils.rand(0, 3) == 1) {
-            return new Item[]{Item.get(Item.BONE, 0, Utils.rand(1, 2)), Item.get(((this.isOnFire()) ? Item.COOKED_FISH : Item.RAW_FISH))};
+            return new Item[]{Item.get(Item.BONE, 0, Utils.rand(1, 2)), Item.get(((this.isOnFire()) ? Item.COOKED_COD : Item.COD))};
         }
-        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_FISH : Item.RAW_FISH))};
+        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_COD : Item.COD))};
     }
 }

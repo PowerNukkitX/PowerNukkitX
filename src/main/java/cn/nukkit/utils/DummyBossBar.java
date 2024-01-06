@@ -3,9 +3,11 @@ package cn.nukkit.utils;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.entity.mob.EntityCreeper;
 import cn.nukkit.network.protocol.*;
+import cn.nukkit.registry.Registries;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
@@ -109,7 +111,8 @@ public class DummyBossBar {
 
     private void createBossEntity() {
         AddEntityPacket pkAdd = new AddEntityPacket();
-        pkAdd.type = EntityCreeper.NETWORK_ID;
+
+        pkAdd.type = Registries.ENTITY.getEntityNetworkId(EntityID.CREEPER);
         pkAdd.entityUniqueId = bossBarId;
         pkAdd.entityRuntimeId = bossBarId;
         pkAdd.x = (float) player.x;

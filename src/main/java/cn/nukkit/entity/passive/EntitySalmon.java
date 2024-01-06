@@ -60,15 +60,15 @@ public class EntitySalmon extends EntityFish {
         if (this.isLarge()) {
             //只有25%获得骨头 来自wiki https://zh.minecraft.wiki/w/%E9%B2%91%E9%B1%BC
             if (rand == 1) {
-                return new Item[]{Item.get(Item.BONE, 0, Utils.rand(1, 2)), Item.get(((this.isOnFire()) ? Item.COOKED_SALMON : Item.RAW_SALMON))};
+                return new Item[]{Item.get(Item.BONE, 0, Utils.rand(1, 2)), Item.get(((this.isOnFire()) ? Item.COOKED_SALMON : Item.SALMON))};
             }
         } else if (!this.isLarge()) {
             //只有25%获得骨头 来自wiki https://zh.minecraft.wiki/w/%E9%B2%91%E9%B1%BC
             if (rand == 1) {
-                return new Item[]{Item.get(Item.BONE), Item.get(((this.isOnFire()) ? Item.COOKED_SALMON : Item.RAW_SALMON))};
+                return new Item[]{Item.get(Item.BONE), Item.get(((this.isOnFire()) ? Item.COOKED_SALMON : Item.SALMON))};
             }
         }
-        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_SALMON : Item.RAW_SALMON))};
+        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_SALMON : Item.SALMON))};
     }
 
     //巨型体系

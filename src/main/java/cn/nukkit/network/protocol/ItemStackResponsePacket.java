@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ToString
-@NoArgsConstructor(onConstructor = @__())
+@NoArgsConstructor
 public class ItemStackResponsePacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.ITEM_STACK_RESPONSE_PACKET;
 

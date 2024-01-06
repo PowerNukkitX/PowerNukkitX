@@ -42,7 +42,8 @@ import java.util.Set;
 public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanSit, EntityCanAttack, EntityHealable, EntityVariant, EntityColor {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return CAT;
     }
 
@@ -54,7 +55,6 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
         super(chunk, nbt);
     }
 
-    
 
     @Override
     public void updateMovement() {
@@ -165,8 +165,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
 
     @Override
     public boolean attackTarget(Entity entity) {
-        return switch (entity.getNetworkId()) {
-            case EntityRabbit.NETWORK_ID, EntityTurtle.NETWORK_ID -> true;
+        return switch (entity.getIdentifier().toString()) {
+            case RABBIT, TURTLE -> true;
             default -> false;
         };
     }
@@ -289,8 +289,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
      */
     @Override
     public boolean isBreedingItem(Item item) {
-        return item.getId() == ItemID.RAW_SALMON ||
-                item.getId() == ItemID.RAW_FISH;
+        return item.getId() == ItemID.SALMON ||
+                item.getId() == ItemID.COD;
     }
 
     /**
@@ -302,7 +302,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
      */
     public int getHealingAmount(Item item) {
         return switch (item.getId()) {
-            case ItemID.RAW_FISH, ItemID.RAW_SALMON -> 2;
+            case ItemID.COD, ItemID.SALMON -> 2;
             default -> 0;
         };
     }

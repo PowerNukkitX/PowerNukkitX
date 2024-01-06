@@ -49,16 +49,17 @@ import java.util.Set;
  */
 public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable, EntityColor {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return WOLF;
     }
+
     protected float[] diffHandDamage = new float[]{3, 4, 6};
 
     public EntityWolf(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
@@ -151,9 +152,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
                         new NearestPlayerSensor(8, 0, 20),
                         new NearestTargetEntitySensor<>(0, 20, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, CoreMemoryTypes.NEAREST_SKELETON), this::attackTarget,
-                                entity -> switch (entity.getNetworkId()) {
-                                    case EntitySkeleton.NETWORK_ID, EntityWitherSkeleton.NETWORK_ID, EntityStray.NETWORK_ID ->
-                                            true;
+                                entity -> switch (entity.getIdentifier().toString()) {
+                                    case SKELETON, WITHER_SKELETON, STRAY -> true;
                                     default -> false;
                                 }),
                         new EntityAttackedByOwnerSensor(5, false)
@@ -268,15 +268,15 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
 
     @Override
     public boolean isBreedingItem(Item item) {
-        return item.getId() == ItemID.RAW_CHICKEN ||
+        return item.getId() == ItemID.CHICKEN ||
                 item.getId() == ItemID.COOKED_CHICKEN ||
-                item.getId() == ItemID.RAW_BEEF ||
+                item.getId() == ItemID.BEEF ||
                 item.getId() == ItemID.COOKED_BEEF ||
-                item.getId() == ItemID.RAW_MUTTON ||
+                item.getId() == ItemID.MUTTON ||
                 item.getId() == ItemID.COOKED_MUTTON ||
-                item.getId() == ItemID.RAW_PORKCHOP ||
+                item.getId() == ItemID.PORKCHOP ||
                 item.getId() == ItemID.COOKED_PORKCHOP ||
-                item.getId() == ItemID.RAW_RABBIT ||
+                item.getId() == ItemID.RABBIT ||
                 item.getId() == ItemID.COOKED_RABBIT ||
                 item.getId() == ItemID.ROTTEN_FLESH;
     }
@@ -286,11 +286,11 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
      */
     public int getHealingAmount(Item item) {
         return switch (item.getId()) {
-            case ItemID.RAW_PORKCHOP, ItemID.RAW_BEEF, ItemID.RAW_RABBIT -> 3;
+            case ItemID.PORKCHOP, ItemID.BEEF, ItemID.RABBIT -> 3;
             case ItemID.COOKED_PORKCHOP, ItemID.COOKED_BEEF -> 8;
-            case ItemID.RAW_FISH, ItemID.RAW_SALMON, ItemID.RAW_CHICKEN, ItemID.RAW_MUTTON -> 2;
-            case ItemID.CLOWNFISH, ItemID.PUFFERFISH -> 1;
-            case ItemID.COOKED_FISH, ItemID.COOKED_RABBIT -> 5;
+            case ItemID.COD, ItemID.SALMON, ItemID.CHICKEN, ItemID.MUTTON -> 2;
+            case ItemID.TROPICAL_FISH, ItemID.PUFFERFISH -> 1;
+            case ItemID.COOKED_COD, ItemID.COOKED_RABBIT -> 5;
             case ItemID.COOKED_SALMON, ItemID.COOKED_CHICKEN, ItemID.COOKED_MUTTON -> 6;
             case ItemID.ROTTEN_FLESH -> 4;
             case ItemID.RABBIT_STEW -> 10;
@@ -303,9 +303,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
 
     @Override
     public boolean attackTarget(Entity entity) {
-        return switch (entity.getNetworkId()) {
-            case EntityRabbit.NETWORK_ID, EntityFox.NETWORK_ID, EntitySkeleton.NETWORK_ID, EntityWitherSkeleton.NETWORK_ID, EntityStray.NETWORK_ID, EntityLlamaSpit.NETWORK_ID,
-                    EntitySheep.NETWORK_ID, EntityTurtle.NETWORK_ID -> true;
+        return switch (entity.getIdentifier()) {
+            case RABBIT, FOX, SKELETON, WITHER_SKELETON, STRAY, LLAMA, SHEEP, TURTLE -> true;
             default -> false;
         };
     }
