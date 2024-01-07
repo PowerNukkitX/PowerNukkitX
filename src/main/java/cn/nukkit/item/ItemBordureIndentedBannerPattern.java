@@ -7,6 +7,6 @@ public class ItemBordureIndentedBannerPattern extends ItemBannerPattern {
 
     @Override
     public void setDamage(Integer meta) {
-        throw new UnsupportedOperationException();
+        
     }
 }

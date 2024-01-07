@@ -14,6 +14,6 @@ public class ItemTadpoleSpawnEgg extends ItemSpawnEgg {
 
     @Override
     public void setDamage(Integer meta) {
-        throw new UnsupportedOperationException();
+        
     }
 }
