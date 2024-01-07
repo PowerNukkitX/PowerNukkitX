@@ -5,15 +5,16 @@ import cn.nukkit.level.generator.Generator;
 import cn.nukkit.utils.OK;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class GeneratorRegistry extends BaseRegistry<String, Class<? extends Generator>, Class<? extends Generator>> {
     private static final Object2ObjectOpenHashMap<String, Class<? extends Generator>> REGISTRY = new Object2ObjectOpenHashMap<>();
 
     @Override
     public void init() {
-        register("flat", Flat.class);
+        try {
+            register("flat", Flat.class);
+        } catch (RegisterException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String getGeneratorName(Class<? extends Generator> c) {
@@ -36,11 +37,10 @@ public class GeneratorRegistry extends BaseRegistry<String, Class<? extends Gene
     }
 
     @Override
-    public OK<?> register(String key, Class<? extends Generator> value) {
+    public void register(String key, Class<? extends Generator> value) throws RegisterException {
         if (REGISTRY.putIfAbsent(key.toLowerCase(), value) == null) {
-            return OK.TRUE;
         } else {
-            return new OK<>(false, new IllegalArgumentException("This generator has already been registered with the key: " + key));
+            throw new RegisterException("This generator has already been registered with the key: " + key);
         }
     }
 }

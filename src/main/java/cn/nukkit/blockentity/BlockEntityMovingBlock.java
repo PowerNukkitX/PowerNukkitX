@@ -58,9 +58,7 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         super.loadNBT();
         if (namedTag.contains("movingBlock")) {
             CompoundTag movingBlock = namedTag.getCompound("movingBlock");
-            CompoundTag newMovingBlock = new CompoundTag(new TreeMap<>(movingBlock.getTags()));
-            newMovingBlock.remove("version");
-            int blockhash = HashUtils.fnv1a_32_nbt(movingBlock);
+            int blockhash = HashUtils.fnv1a_32_nbt_palette(movingBlock);
             BlockState blockState = Registries.BLOCKSTATE.get(blockhash);
             this.block = blockState.toBlock();
             this.block.x = x;

@@ -79,6 +79,19 @@ public class HashUtils {
         return fnv1a_32(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
     }
 
+    @SneakyThrows
+    public int fnv1a_32_nbt_palette(CompoundTag tag) {
+        CompoundTag states = new CompoundTag(new TreeMap<>());
+        for (var e : tag.getCompound("states").getTags().entrySet()) {
+            states.put(e.getKey(), e.getValue());
+        }
+        tag.put("states", states);
+        if (tag.contains("version")) {
+            tag.remove("version");
+        }
+        return fnv1a_32(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
+    }
+
     public int fnv1a_32(byte[] data) {
         int hash = FNV1_32_INIT;
         for (byte datum : data) {

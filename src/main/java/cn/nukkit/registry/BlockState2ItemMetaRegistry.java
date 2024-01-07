@@ -44,11 +44,10 @@ public class BlockState2ItemMetaRegistry extends BaseRegistry<String, Integer, I
     }
 
     @Override
-    public OK<?> register(String key, Integer value) {
+    public void register(String key, Integer value) throws RegisterException {
         if (MAP.putIfAbsent(key, value.intValue()) == 0) {
-            return OK.TRUE;
         } else {
-            return new OK<>(false, new IllegalArgumentException("The mapping has been registered!"));
+            throw new RegisterException("The mapping has been registered!");
         }
     }
 }

@@ -3,6 +3,7 @@ package cn.nukkit.registry;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.utils.OK;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Allay Project 12/16/2023
@@ -32,19 +33,27 @@ public final class BlockStateRegistry extends BaseRegistry<Integer, BlockState, 
     }
 
     @Override
-    public OK<?> register(Integer key, BlockState value) {
+    public void register(Integer key, BlockState value) throws RegisterException {
         if (REGISTRY.putIfAbsent(key, value) == null) {
-            return OK.TRUE;
         } else {
-            return new OK<>(false, new IllegalArgumentException("The blockstate has been registered!"));
+            throw new RegisterException("The blockstate has been registered!");
         }
     }
 
-    public OK<?> register(BlockState value) {
-        if (REGISTRY.put(value.blockStateHash(), value) == null) {
-            return OK.TRUE;
+    public void register(BlockState value) throws RegisterException {
+        BlockState now;
+        if ((now = REGISTRY.put(value.blockStateHash(), value)) == null) {
         } else {
-            return new OK<>(false, new IllegalArgumentException("The blockstate has been registered!"));
+            throw new RegisterException("The blockstate " + value + "has been registered,\n current value: " + now);
+        }
+    }
+
+    @ApiStatus.Internal
+    public void registerInternal(BlockState value) {
+        try {
+            register(value);
+        } catch (RegisterException e) {
+            throw new RuntimeException(e);
         }
     }
 }

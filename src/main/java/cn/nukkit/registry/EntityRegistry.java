@@ -11,9 +11,7 @@ import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.OK;
-import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -192,7 +190,7 @@ public class EntityRegistry extends BaseRegistry<EntityRegistry.EntityDefinition
         return ID2RID.values();
     }
 
-    public Map<Integer,String> getEntityId2NetworkIdMap(){
+    public Map<Integer, String> getEntityId2NetworkIdMap() {
         return Collections.unmodifiableMap(RID2ID);
     }
 
@@ -271,20 +269,23 @@ public class EntityRegistry extends BaseRegistry<EntityRegistry.EntityDefinition
     }
 
     @Override
-    public OK<?> register(EntityDefinition key, Class<? extends Entity> value) {
+    public void register(EntityDefinition key, Class<? extends Entity> value) throws RegisterException {
         if (CLASS.putIfAbsent(key.id(), value) == null) {
             ID2RID.put(key.id, key.rid);
             RID2ID.put(key.rid, key.id);
             DEFINITIONS.put(key.id, key);
-            return OK.TRUE;
         } else {
-            return new OK<>(false, new IllegalArgumentException("This Entity has already been registered with the identifier: " + key.id));
+            throw new RegisterException("This Entity has already been registered with the identifier: " + key.id);
         }
     }
 
     private void registerInternal(EntityDefinition key, Class<? extends Entity> value) {
         RID2ID.put(key.rid, key.id);
-        register(key, value);
+        try {
+            register(key, value);
+        } catch (RegisterException e) {
+            log.error("{}", e.getCause().getMessage());
+        }
     }
 
     public record EntityDefinition(String id, String bid, int rid, boolean hasSpawnegg, boolean summonable) {

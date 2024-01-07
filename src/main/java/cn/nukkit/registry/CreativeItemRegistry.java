@@ -10,6 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.OK;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.Map;
@@ -19,6 +20,7 @@ import java.util.Map;
  *
  * @author Cool_Loong
  */
+@Slf4j
 public class CreativeItemRegistry extends BaseRegistry<Integer, Item, Item> implements ItemID {
     private static final Int2ObjectLinkedOpenHashMap<Item> MAP = new Int2ObjectLinkedOpenHashMap<>();
 
@@ -34,6 +36,10 @@ public class CreativeItemRegistry extends BaseRegistry<Integer, Item, Item> impl
                 if (tag.containsInt("blockStateHash")) {
                     int blockStateHash = tag.getInt("blockStateHash");
                     BlockState blockState = Registries.BLOCKSTATE.get(blockStateHash);
+                    if(blockState == null){
+                        log.warn("Item {} block state Hash cannot be found!",tag.getString("name"));
+                        continue;
+                    }
                     Block block = Registries.BLOCK.get(blockState);
                     register(Integer.parseInt(index), new ItemBlock(block, damage));
                 } else {
@@ -43,6 +49,8 @@ public class CreativeItemRegistry extends BaseRegistry<Integer, Item, Item> impl
                 }
             }
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (RegisterException e) {
             throw new RuntimeException(e);
         }
     }
@@ -90,7 +98,11 @@ public class CreativeItemRegistry extends BaseRegistry<Integer, Item, Item> impl
      */
     public void addCreativeItem(Item item) {
         int i = MAP.lastIntKey();
-        this.register(i + 1, item.clone());
+        try {
+            this.register(i + 1, item.clone());
+        } catch (RegisterException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -134,11 +146,10 @@ public class CreativeItemRegistry extends BaseRegistry<Integer, Item, Item> impl
     }
 
     @Override
-    public OK<?> register(Integer key, Item value) {
+    public void register(Integer key, Item value) throws RegisterException {
         if (MAP.putIfAbsent(key, value) == null) {
-            return OK.TRUE;
         } else {
-            return new OK<>(false, new IllegalArgumentException("This creative item has already been registered with the identifier: " + key));
+            throw new RegisterException("This creative item has already been registered with the identifier: " + key);
         }
     }
 }

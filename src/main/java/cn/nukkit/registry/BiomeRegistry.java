@@ -6,11 +6,9 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.OK;
-import com.google.common.io.ByteStreams;
 import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectCollection;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.IOException;
@@ -67,6 +65,8 @@ public class BiomeRegistry extends BaseRegistry<Integer, BiomeRegistry.BiomeDefi
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } catch (RegisterException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -107,13 +107,12 @@ public class BiomeRegistry extends BaseRegistry<Integer, BiomeRegistry.BiomeDefi
     }
 
     @Override
-    public OK<?> register(Integer key, BiomeDefinition value) {
+    public void register(Integer key, BiomeDefinition value) throws RegisterException {
         if (DEFINITIONS.putIfAbsent(key, value) == null) {
             NAME2ID.put(value.name_hash, key);
             REGISTRY.add(value.toNBT());
-            return OK.TRUE;
         } else {
-            return new OK<>(false, new IllegalArgumentException("This biome has already been registered with the id: " + key));
+            throw new RegisterException("This biome has already been registered with the id: " + key);
         }
     }
 

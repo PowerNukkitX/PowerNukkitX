@@ -18,9 +18,8 @@ import javax.annotation.Nullable;
 /**
  * @author Nukkit Project Team
  */
-
 public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<BlockEntityFlowerPot> {
-    public static BlockProperties PROPERTIES = new BlockProperties(FLOWER_POT, CommonBlockProperties.UPDATE_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(FLOWER_POT, CommonBlockProperties.UPDATE_BIT);
 
     public BlockFlowerPot() {
         super(PROPERTIES.getDefaultState());

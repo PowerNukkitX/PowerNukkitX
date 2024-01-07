@@ -87,10 +87,7 @@ public class NBTIO {
     }
 
     public static BlockState getBlockStateHelper(CompoundTag tag) {
-        CompoundTag newBlock = new CompoundTag(new TreeMap<>(tag.getTags()));
-        newBlock.remove("version");
-        int blockhash = HashUtils.fnv1a_32_nbt(newBlock);
-        return Registries.BLOCKSTATE.get(blockhash);
+        return Registries.BLOCKSTATE.get(HashUtils.fnv1a_32_nbt_palette(tag));
     }
 
     public static CompoundTag read(File file) throws IOException {

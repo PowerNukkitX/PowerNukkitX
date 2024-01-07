@@ -8,6 +8,7 @@ import cn.nukkit.utils.HashUtils;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.UnmodifiableView;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -158,7 +159,7 @@ record BlockStateImpl(String identifier,
                 "identifier='" + identifier + '\'' +
                 ", blockhash=" + blockhash +
                 ", specialValue=" + specialValue +
-                ", blockPropertyValues=" + blockPropertyValues +
+                ", blockPropertyValues=" + Arrays.stream(blockPropertyValues).map(BlockPropertyType.BlockPropertyValue::getValue).toList() +
                 '}';
     }
 }

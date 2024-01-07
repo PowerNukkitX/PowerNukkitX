@@ -8,11 +8,9 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -76,12 +74,11 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
     }
 
     @Override
-    public OK<?> register(String key, Integer value) {
+    public void register(String key, Integer value) throws RegisterException {
         if (REGISTRY.putIfAbsent(key, value.intValue()) == Integer.MAX_VALUE) {
             ID2NAME.put(value.intValue(), key);
-            return OK.TRUE;
         } else {
-            return new OK<>(false, new IllegalArgumentException("The item runtime has been registered!"));
+            throw new RegisterException("The item runtime has been registered!");
         }
     }
 }

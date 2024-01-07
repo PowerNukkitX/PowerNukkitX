@@ -51,7 +51,7 @@ public final class BlockProperties {
                     .values()
                     .stream()
                     .collect(Collectors.toMap(BlockStateImpl::specialValue, Function.identity(), (v1, v2) -> v1, Short2ObjectOpenHashMap::new));
-            blockStateHashMap.values().forEach(Registries.BLOCKSTATE::register);
+            blockStateHashMap.values().forEach(Registries.BLOCKSTATE::registerInternal);
         } else {
             throw new IllegalArgumentException();
         }
