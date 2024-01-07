@@ -19,10 +19,10 @@ public final class IntPropertyType extends BaseBlockPropertyType<Integer> {
     private final int max;
 
     private IntPropertyType(String name, int min, int max, Integer defaultData) {
-        super(name, IntStream.range(min, max + 1).boxed().toList(), defaultData, Utils.computeRequiredBits(max - min + 1));
+        super(name, IntStream.range(min, max + 1).boxed().toList(), defaultData, Utils.computeRequiredBits(min, max));
         this.min = min;
         this.max = max;
-        cachedValues = new IntPropertyValue[max + 1 - min];
+        cachedValues = new IntPropertyValue[max - min + 1];
         for (int i = min; i <= max; i++) {
             IntPropertyValue value = new IntPropertyValue(i);
             cachedValues[i] = value;

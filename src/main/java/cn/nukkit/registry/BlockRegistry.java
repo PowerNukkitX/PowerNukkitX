@@ -26,6 +26,7 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
 
     @Override
     public void init() {
+        register(TRAPDOOR, BlockTrapdoor.class);// done.
         register(ACACIA_BUTTON, BlockAcaciaButton.class);// done.
         register(ACACIA_DOOR, BlockAcaciaDoor.class);// done.
         register(ACACIA_FENCE, BlockAcaciaFence.class);// done.
@@ -894,7 +895,6 @@ public final class BlockRegistry extends BaseRegistry<String, Block, Class<? ext
         register(TORCH, BlockTorch.class);// done.
         register(TORCHFLOWER, BlockTorchflower.class);// done.
         register(TORCHFLOWER_CROP, BlockTorchflowerCrop.class);// done.
-        register(TRAPDOOR, BlockTrapdoor.class);// done.
         register(TRAPPED_CHEST, BlockTrappedChest.class);// done.
         register(TRIP_WIRE, BlockTripWire.class);// done.
         register(TRIPWIRE_HOOK, BlockTripwireHook.class);// done.

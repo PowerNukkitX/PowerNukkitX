@@ -18,7 +18,7 @@ public final class EnumPropertyType<T extends Enum<T>> extends BaseBlockProperty
     private final Class<T> enumClass;
 
     private EnumPropertyType(String name, Class<T> enumClass, T defaultData) {
-        super(name, Arrays.asList(enumClass.getEnumConstants()), defaultData, Utils.computeRequiredBits(enumClass.getEnumConstants().length));
+        super(name, Arrays.asList(enumClass.getEnumConstants()), defaultData, Utils.computeRequiredBits(0, enumClass.getEnumConstants().length - 1));
         this.enumClass = enumClass;
         var map = new HashMap<T, EnumPropertyValue>();
         for (var value : validValues) {

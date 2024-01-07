@@ -2,6 +2,7 @@ package cn.nukkit;
 
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockComposter;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.command.*;
 import cn.nukkit.command.function.FunctionManager;
@@ -709,17 +710,18 @@ public class Server {
             String acacia = BlockTags.ACACIA;
             String arrow = ItemTags.ARROW;
             String warm = BiomeTags.WARM;
+            Registries.BLOCKSTATE_ITEMMETA.init();
             Registries.BLOCK.init();
             Enchantment.init();
             Registries.ITEM_RUNTIMEID.init();
             Potion.init();
             Registries.ITEM.init();
             Registries.CREATIVE.init();
-            Registries.BLOCKSTATE_ITEMMETA.init();
             Registries.BIOME.init();
             Registries.FUEL.init();
             Effect.init();
             Attribute.init();
+            BlockComposter.init();
             DispenseBehaviorRegister.init();
         }
 

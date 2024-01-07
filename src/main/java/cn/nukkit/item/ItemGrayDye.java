@@ -14,6 +14,6 @@ public class ItemGrayDye extends ItemDye {
 
     @Override
     public void setDamage(Integer meta) {
-        throw new UnsupportedOperationException();
+
     }
 }

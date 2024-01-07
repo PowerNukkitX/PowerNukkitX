@@ -11,6 +11,6 @@ public class ItemPowderSnowBucket extends ItemBucket {
 
     @Override
     public void setDamage(Integer meta) {
-        throw new UnsupportedOperationException();
+
     }
 }

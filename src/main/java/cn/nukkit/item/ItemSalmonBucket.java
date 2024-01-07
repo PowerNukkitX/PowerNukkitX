@@ -12,6 +12,6 @@ public class ItemSalmonBucket extends ItemBucket {
 
     @Override
     public void setDamage(Integer meta) {
-        throw new UnsupportedOperationException();
+
     }
 }

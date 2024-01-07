@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cn.powernukkitx;
+package cn.powernukkitx.dump;
 
 import cn.nukkit.Server;
 import cn.nukkit.nbt.NBTIO;

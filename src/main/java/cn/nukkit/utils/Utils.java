@@ -607,13 +607,8 @@ public class Utils {
         return appendedBytes;
     }
 
-    /**
-     * Calculates the number of bit that the specified value convert to binary
-     *
-     * @param value the value
-     * @return the bits
-     */
-    public static byte computeRequiredBits(int value) {
+    public static byte computeRequiredBits(int min, int max) {
+        int value = max - min;
         if (value <= 1) return 1;
         byte bits = 1;
         while (value >= (1 << bits)) {

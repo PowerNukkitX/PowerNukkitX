@@ -7,7 +7,7 @@ public class ItemElderGuardianSpawnEgg extends ItemSpawnEgg {
 
     @Override
     public void setDamage(Integer meta) {
-        throw new UnsupportedOperationException();
+
     }
 
     @Override

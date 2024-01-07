@@ -7,6 +7,6 @@ public class ItemPiglinBannerPattern extends ItemBannerPattern {
 
     @Override
     public void setDamage(Integer meta) {
-        throw new UnsupportedOperationException();
+
     }
 }

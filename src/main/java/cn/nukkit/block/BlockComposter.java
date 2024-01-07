@@ -23,7 +23,7 @@ public class BlockComposter extends BlockSolid {
     private static final Object2IntMap<BlockState> compostableBlocks = new Object2IntOpenHashMap<>();
     public static final Item OUTPUT_ITEM = new ItemDye(DyeColor.BONE_MEAL, 1);
 
-    static {
+    public static void init(){
         registerDefaults();
     }
 

@@ -12,6 +12,6 @@ public class ItemZombiePigmanSpawnEgg extends ItemSpawnEgg {
 
     @Override
     public void setDamage(Integer meta) {
-        throw new UnsupportedOperationException();
+
     }
 }

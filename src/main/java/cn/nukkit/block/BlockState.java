@@ -15,6 +15,21 @@ import java.util.List;
  */
 @Unmodifiable
 public interface BlockState {
+    static short computeSpecialValue(BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
+        byte specialValueBits = 0;
+        for (var value : propertyValues) specialValueBits += value.getPropertyType().getBitSize();
+        return computeSpecialValue(specialValueBits, propertyValues);
+    }
+
+    static short computeSpecialValue(byte specialValueBits, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
+        short specialValue = 0;
+        for (var value : propertyValues) {
+            specialValue |= (short) (((short) value.getIndex()) << (specialValueBits - value.getPropertyType().getBitSize()));
+            specialValueBits -= value.getPropertyType().getBitSize();
+        }
+        return specialValue;
+    }
+
     String getIdentifier();
 
     int blockStateHash();

@@ -1,4 +1,4 @@
-package cn.powernukkitx;
+package cn.powernukkitx.dump;
 
 import java.io.File;
 import java.io.IOException;

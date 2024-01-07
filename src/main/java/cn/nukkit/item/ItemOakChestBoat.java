@@ -12,6 +12,6 @@ public class ItemOakChestBoat extends ItemChestBoat {
 
     @Override
     public void setDamage(Integer meta) {
-        throw new UnsupportedOperationException();
+
     }
 }
