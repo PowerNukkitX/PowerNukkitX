@@ -170,8 +170,18 @@ public class OfflinePlayer implements IPlayer {
     }
 
     @Override
+    public MetadataValue getMetadata(String metadataKey, Plugin plugin) {
+        return this.server.getPlayerMetadata().getMetadata(this, metadataKey, plugin);
+    }
+
+    @Override
     public boolean hasMetadata(String metadataKey) {
         return this.server.getPlayerMetadata().hasMetadata(this, metadataKey);
+    }
+
+    @Override
+    public boolean hasMetadata(String metadataKey, Plugin plugin) {
+        return this.server.getPlayerMetadata().hasMetadata(this, metadataKey, plugin);
     }
 
     @Override

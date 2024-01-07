@@ -20,8 +20,7 @@ import java.util.UUID;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityHuman extends EntityHumanType {
-    @Override
-    @NotNull public String getIdentifier() {
+    @Override @NotNull public String getIdentifier() {
         return PLAYER;
     }
 

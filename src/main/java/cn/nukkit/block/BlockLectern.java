@@ -214,7 +214,7 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
             return;
         }
 
-        lectern.setBook(Item.getItemBlock(BlockID.AIR));
+        lectern.setBook(Item.AIR);
         lectern.spawnToAll();
         this.level.dropItem(lectern.add(0.5f, 0.6f, 0.5f), dropBookEvent.getBook());
     }

@@ -13,9 +13,7 @@ import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.data.property.*;
 import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.mob.*;
-import cn.nukkit.entity.passive.*;
 import cn.nukkit.entity.projectile.*;
-import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.block.FarmLandDecayEvent;
 import cn.nukkit.event.entity.*;
@@ -3285,8 +3283,18 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     @Override
+    public MetadataValue getMetadata(String metadataKey, Plugin plugin) {
+        return this.server.getEntityMetadata().getMetadata(this, metadataKey, plugin);
+    }
+
+    @Override
     public boolean hasMetadata(String metadataKey) {
         return this.server.getEntityMetadata().hasMetadata(this, metadataKey);
+    }
+
+    @Override
+    public boolean hasMetadata(String metadataKey, Plugin plugin) {
+        return this.server.getEntityMetadata().hasMetadata(this, metadataKey, plugin);
     }
 
     @Override

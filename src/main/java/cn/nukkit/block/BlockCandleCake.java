@@ -140,7 +140,7 @@ public class BlockCandleCake extends BlockTransparent {
             final Block cake = new BlockCake();
             this.getLevel().setBlock(this, cake, true, true);
             this.getLevel().dropItem(this.add(0.5, 0.5, 0.5), getDrops(null)[0]);
-            return this.getLevel().getBlock(this).onActivate(Item.getItemBlock(AIR), player);
+            return this.getLevel().getBlock(this).onActivate(Item.get(AIR), player);
         }
         return false;
     }

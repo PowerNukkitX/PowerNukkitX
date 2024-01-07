@@ -121,7 +121,8 @@ import static cn.nukkit.utils.Utils.dynamic;
 @Log4j2
 public class Player extends EntityHuman implements CommandSender, InventoryHolder, ChunkLoader, IPlayer, IScoreboardViewer {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return PLAYER;
     }
 
@@ -206,14 +207,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
     protected final int chunksPerTick;
     protected final int spawnThreshold;
-    protected int windowCnt = 4;
+    protected int windowCnt = 1;
     protected int closingWindowId = Integer.MIN_VALUE;
-    protected int messageCounter = 2;
+    protected int messageLimitCounter = 2;
+    protected final PlayerCursorInventory playerCursorInventory;
     protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
     protected final Map<Integer, Inventory> windowIndex = windows.inverse();
-    protected final Set<Integer> permanentWindows = new IntOpenHashSet();
-    protected PlayerUIInventory playerUIInventory;
-    protected CraftingGrid craftingGrid;
+    /**
+     * The player's currently open external inventory (such as a chest or trade)
+     */
+    protected Inventory topWindows;
     protected long randomClientId;
     protected boolean connected = true;
     protected InetSocketAddress socketAddress;
@@ -224,6 +227,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     protected boolean removeFormat = true;
     protected String username;
+    /**
+     * Player name in lower case
+     */
     protected String iusername;
     protected String displayName;
     protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
@@ -352,21 +358,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private Boolean openSignFront = null;
     protected Boolean flySneaking = false;
 
-    /**
-     * 单元测试用的构造函数
-     * <p>
-     * Constructor for unit testing
-     *
-     * @param interfaz interfaz
-     * @param clientID clientID
-     * @param ip       IP地址
-     * @param port     端口
-     */
-
-    public Player(SourceInterface interfaz, Long clientID, String ip, int port) {
-        this(interfaz, clientID, uncheckedNewInetSocketAddress(ip, port));
-    }
-
     public Player(SourceInterface interfaz, Long clientID, InetSocketAddress socketAddress) {
         super(null, new CompoundTag());
         this.interfaz = interfaz;
@@ -392,6 +383,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.uuid = null;
         this.rawUUID = null;
 
+        this.playerCursorInventory = new PlayerCursorInventory(this);
         this.creationTime = System.currentTimeMillis();
     }
 
@@ -485,7 +477,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-        if (target.onTouch(this, playerInteractEvent.getAction()) != 0) return;
+        target.onTouch(pos, this.getInventory().getItemInHand(), face, 0, 0, 0, this, playerInteractEvent.getAction());
 
         Block block = target.getSide(face);
         if (block.getId() == Block.FIRE || block.getId() == BlockID.SOUL_FIRE) {
@@ -669,7 +661,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Override
     protected void initEntity() {
         super.initEntity();
-        this.addDefaultWindows();
     }
 
     /**
@@ -1446,6 +1437,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.worldName = this.getServer().getNetwork().getName();
         startGamePacket.generator = (byte) ((this.level.getDimension() + 1) & 0xff); //0 旧世界, 1 主世界, 2 下界, 3末地
         startGamePacket.serverAuthoritativeMovement = getServer().getServerAuthoritativeMovement();
+        startGamePacket.blockNetworkIdsHashed = true;//enable blockhash
+        startGamePacket.isInventoryServerAuthoritative = true;//enable itemstackrequest packet
         //写入自定义方块数据
 //        startGamePacket.blockProperties.addAll(Block.getCustomBlockDefinitionList());
         startGamePacket.playerPropertyData = EntityProperty.getPlayerPropertyCache();
@@ -1703,27 +1696,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.dataPacket(chunk);
             }
         }
-    }
-
-    protected void removeWindow(Inventory inventory, boolean isResponse) {
-        inventory.close(this);
-        if (isResponse && !this.permanentWindows.contains(this.getWindowId(inventory))) {
-            this.windows.remove(inventory);
-            updateTrackingPositions(true);
-        }
-    }
-
-    protected void addDefaultWindows() {
-        this.addWindow(this.getInventory(), ContainerIds.INVENTORY, true, true);
-
-        this.playerUIInventory = new PlayerUIInventory(this);
-        this.addWindow(this.playerUIInventory, ContainerIds.UI, true);
-        this.addWindow(this.offhandInventory, ContainerIds.OFFHAND, true, true);
-
-        this.craftingGrid = this.playerUIInventory.getCraftingGrid();
-        this.addWindow(this.craftingGrid, ContainerIds.NONE, true);
-
-        //TODO: more windows
     }
 
     @Override
@@ -3038,7 +3010,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return true;
         }
 
-        this.messageCounter = 2;
+        this.messageLimitCounter = 2;
 
         this.lastUpdate = currentTick;
 
@@ -3365,7 +3337,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         for (String msg : message.split("\n")) {
-            if (!msg.trim().isEmpty() && msg.length() <= 512 && this.messageCounter-- > 0) {
+            if (!msg.trim().isEmpty() && msg.length() <= 512 && this.messageLimitCounter-- > 0) {
                 PlayerChatEvent chatEvent = new PlayerChatEvent(this, msg);
                 this.server.getPluginManager().callEvent(chatEvent);
                 if (!chatEvent.isCancelled()) {
@@ -4049,7 +4021,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Override
-    @NotNull public String getName() {
+    @NotNull
+    public String getName() {
         return this.username;
     }
 
@@ -4870,7 +4843,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param length BossBar百分比<br>The BossBar percentage
      * @return bossBarId BossBar的ID，如果你想以后删除或更新BossBar，你应该存储它。<br>bossBarId The BossBar ID, you should store it if you want to remove or update the BossBar later
      */
-    @Deprecated
     public long createBossBar(String text, int length) {
         DummyBossBar bossBar = new DummyBossBar.Builder(this).text(text).length(length).build();
         return this.createBossBar(bossBar);
@@ -4926,7 +4898,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param length    The new BossBar length
      * @param bossBarId The BossBar ID
      */
-    @Deprecated
     public void updateBossBar(String text, int length, long bossBarId) {
         if (this.dummyBossBars.containsKey(bossBarId)) {
             DummyBossBar bossBar = this.dummyBossBars.get(bossBarId);
@@ -4976,86 +4947,33 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.windows.inverse().get(id);
     }
 
-    /**
-     * {@code forceId=null isPermanent=false alwaysOpen = false}
-     *
-     * @see #addWindow(Inventory, Integer, boolean, boolean)
-     */
     public int addWindow(Inventory inventory) {
         return this.addWindow(inventory, null);
     }
 
-    /**
-     * {@code isPermanent=false alwaysOpen = false}
-     *
-     * @see #addWindow(Inventory, Integer, boolean, boolean)
-     */
     public int addWindow(Inventory inventory, Integer forceId) {
-        return addWindow(inventory, forceId, false);
-    }
-
-    /**
-     * alwaysOpen = false
-     *
-     * @see #addWindow(Inventory, Integer, boolean, boolean)
-     */
-    public int addWindow(Inventory inventory, Integer forceId, boolean isPermanent) {
-        return addWindow(inventory, forceId, isPermanent, false);
-    }
-
-    /**
-     * 添加一个{@link Inventory}窗口显示到该玩家
-     *
-     * @param inventory   这个库存窗口<br>the inventory
-     * @param forceId     强制指定window id,若和现有window重复将会删除它并替换,为null则自动分配<br>Force the window id to be specified, if it is duplicated with an existing window, it will be deleted and replaced,if is null is automatically assigned.
-     * @param isPermanent 如果为true将会把Inventory存放到{@link #permanentWindows}<br>If true it will store the Inventory in {@link #permanentWindows}
-     * @param alwaysOpen  如果为true即使玩家未{@link #spawned}也会添加改玩家为指定inventory的viewer<br>If true, even if the player is not {@link #spawned}, it will add the player as viewer to the specified inventory.
-     * @return 返回窗口id，可以利用id通过{@link #windowIndex}重新获取该Inventory<br>Return the window id, you can use the id to retrieve the Inventory via {@link #windowIndex}
-     */
-
-    public int addWindow(Inventory inventory, Integer forceId, boolean isPermanent, boolean alwaysOpen) {
         if (this.windows.containsKey(inventory)) {
             return this.windows.get(inventory);
         }
         int cnt;
         if (forceId == null) {
-            this.windowCnt = cnt = Math.max(4, ++this.windowCnt % 99);
+            this.windowCnt = cnt = Math.max(1, ++this.windowCnt % 100);
         } else {
             cnt = forceId;
         }
-        this.windows.forcePut(inventory, cnt);
-
-        if (isPermanent) {
-            this.permanentWindows.add(cnt);
-        }
 
         if (this.spawned && inventory.open(this)) {
-            if (!isPermanent) {
-                updateTrackingPositions(true);
-            }
-            return cnt;
-        } else if (!alwaysOpen) {
-            this.removeWindow(inventory);
-
-            return -1;
-        } else {
-            inventory.getViewers().add(this);
-        }
-
-        if (!isPermanent) {
+            this.windows.forcePut(inventory, cnt);
+            this.topWindows = inventory;
             updateTrackingPositions(true);
+            return cnt;
         }
-
-        return cnt;
+        return -1;
     }
 
+
     public Optional<Inventory> getTopWindow() {
-        for (Entry<Inventory, Integer> entry : this.windows.entrySet()) {
-            if (!this.permanentWindows.contains(entry.getValue())) {
-                return Optional.of(entry.getKey());
-            }
-        }
-        return Optional.empty();
+        return Optional.of(topWindows);
     }
 
     /**
@@ -5066,7 +4984,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param inventory the inventory
      */
     public void removeWindow(Inventory inventory) {
-        this.removeWindow(inventory, false);
+        this.removeWindow0(inventory, false);
+    }
+
+    protected void removeWindow0(Inventory inventory, boolean isResponse) {
+        inventory.close(this);
+        if (isResponse) {
+            this.windows.remove(inventory);
+            updateTrackingPositions(true);
+        }
     }
 
     /**
@@ -5075,23 +5001,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * Commonly used for refreshing.
      */
     public void sendAllInventories() {
+        getInventory().sendArmorContents(this);
+        getOffhandInventory().sendContents(this);
         getCursorInventory().sendContents(this);
         for (Inventory inv : this.windows.keySet()) {
             inv.sendContents(this);
-
-            if (inv instanceof PlayerInventory) {
-                ((PlayerInventory) inv).sendArmorContents(this);
-            }
         }
-    }
-
-    /**
-     * 获取该玩家的{@link PlayerUIInventory}
-     * <p>
-     * Gets ui inventory of the player.
-     */
-    public PlayerUIInventory getUIInventory() {
-        return playerUIInventory;
     }
 
     /**
@@ -5100,35 +5015,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * Gets cursor inventory of the player.
      */
     public PlayerCursorInventory getCursorInventory() {
-        return this.playerUIInventory.getCursorInventory();
-    }
-
-    /**
-     * 获取该玩家的{@link CraftingGrid}
-     * <p>
-     * Gets crafting grid of the player.
-     */
-    public CraftingGrid getCraftingGrid() {
-        return this.craftingGrid;
-    }
-
-    /**
-     * 设置该玩家的{@link CraftingGrid}
-     * <p>
-     * Sets crafting grid.
-     *
-     * @param grid {@link CraftingGrid}
-     */
-    public void setCraftingGrid(CraftingGrid grid) {
-        this.craftingGrid = grid;
-        this.addWindow(grid, ContainerIds.NONE);
+        return playerCursorInventory;
     }
 
     /**
      * Reset crafting grid type.
      */
     public void resetCraftingGridType() {
-        if (this.craftingGrid != null) {
+        /*if (this.craftingGrid != null) {
             Item[] drops = this.inventory.addItem(this.craftingGrid.getContents());
 
             if (drops.length > 0) {
@@ -5156,7 +5050,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
 
             this.craftingType = CRAFTING_SMALL;
-        }
+        }*/
     }
 
     /**
@@ -5172,14 +5066,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * 清空{@link #windows}
      * <p>
      * Remove all windows.
-     *
-     * @param permanent 如果为false则会跳过删除{@link #permanentWindows}里面对应的window<br>If false, it will skip deleting the corresponding window in {@link #permanentWindows}
      */
     public void removeAllWindows(boolean permanent) {
         for (Entry<Integer, Inventory> entry : new ArrayList<>(this.windows.inverse().entrySet())) {
-            if (!permanent && this.permanentWindows.contains(entry.getKey())) {
-                continue;
-            }
             this.removeWindow(entry.getValue());
         }
     }

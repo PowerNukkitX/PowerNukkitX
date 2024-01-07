@@ -28,9 +28,8 @@ import com.google.gson.JsonParser;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -182,6 +181,16 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
     }
 
+    //http://minecraft.wiki/w/Breaking
+
+    public boolean canHarvestWithHand() {  //used for calculating breaking time
+        return true;
+    }
+
+    public int tickRate() {
+        return 10;
+    }
+
     /**
      * Place and initialize sa this block correctly in the world.
      * <p>The current instance must have level, x, y, z, and layer properties already set before calling this method.</p>
@@ -200,50 +209,30 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return this.getLevel().setBlock(this, this, true, true);
     }
 
-    //http://minecraft.wiki/w/Breaking
-    public boolean canHarvestWithHand() {  //used for calculating breaking time
-        return true;
-    }
-
-    public boolean isBreakable(Item item) {
-        return true;
-    }
-
-    public int tickRate() {
-        return 10;
-    }
-
     public boolean onBreak(Item item) {
         return this.getLevel().setBlock(this, layer, Block.get(AIR), true, true);
+    }
+
+    public boolean canSilkTouch() {
+        return false;
+    }
+
+    public boolean isSilkTouch(Vector3 vector, int layer, BlockFace face, Item item, Player player) {
+        return false;
     }
 
     public int onUpdate(int type) {
         return 0;
     }
 
-    /**
-     * 当玩家使用与左键或者右键方块时会触发，常被用于处理例如物品展示框左键掉落物品这种逻辑<br>
-     * 触发点在{@link Player}的onBlockBreakStart中
-     * <p>
-     * It will be triggered when the player uses the left or right-click on the block, which is often used to deal with logic such as left button dropping items in the item frame<br>
-     * The trigger point is in the onBlockBreakStart of {@link Player}
-     *
-     * @param player the player
-     * @param action the action
-     * @return 状态值，返回值不为0代表这是一个touch操作而不是一个挖掘方块的操作<br>Status value, if the return value is not 0, it means that this is a touch operation rather than a mining block operation
-     */
-    public int onTouch(@Nullable Player player, PlayerInteractEvent.Action action) {
+    public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player,@NotNull PlayerInteractEvent.Action action) {
         onUpdate(Level.BLOCK_UPDATE_TOUCH);
-        return 0;
-    }
-
-    public void onPlayerRightClick(@NotNull Player player, Item item, BlockFace face, Vector3 clickPoint) {
     }
 
     public void onNeighborChange(@NotNull BlockFace side) {
     }
 
-    public boolean isBreakable(@Nonnull Vector3 vector, int layer, @Nonnull BlockFace face, @Nonnull Item item, @Nonnull Player player, boolean setBlockDestroy) {
+    public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return true;
     }
 
@@ -555,21 +544,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         this.y = (int) v.y;
         this.z = (int) v.z;
         this.level = v.level;
-    }
-
-    /**
-     * 控制方块被破坏时掉落的物品
-     * 常在{@link cn.nukkit.level.Level#useBreakOn(Vector3, int, BlockFace, Item, Player, boolean, boolean)}方法被调用
-     *
-     * @return 掉落的物品数组
-     */
-    public Item[] getDrops(Item item) {
-        if (canHarvestWithHand() || canHarvest(item)) {
-            return new Item[]{
-                    this.toItem()
-            };
-        }
-        return Item.EMPTY_ARRAY;
     }
 
     private double toolBreakTimeBonus0(Item item) {
@@ -946,11 +920,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public void onEntityCollide(Entity entity) {
-
     }
 
     public void onEntityFallOn(Entity entity, float fallDistance) {
-
     }
 
     public boolean useDefaultFallDamage() {
@@ -1092,14 +1064,14 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     @Override
-    public void setMetadata(String metadataKey, MetadataValue newMetadataValue) throws Exception {
+    public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
         if (this.getLevel() != null) {
             this.getLevel().getBlockMetadata().setMetadata(this, metadataKey, newMetadataValue);
         }
     }
 
     @Override
-    public List<MetadataValue> getMetadata(String metadataKey) throws Exception {
+    public List<MetadataValue> getMetadata(String metadataKey) {
         if (this.getLevel() != null) {
             return this.getLevel().getBlockMetadata().getMetadata(this, metadataKey);
 
@@ -1108,12 +1080,25 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     @Override
-    public boolean hasMetadata(String metadataKey) throws Exception {
+    public MetadataValue getMetadata(String metadataKey, Plugin plugin) {
+        if (this.getLevel() != null) {
+            return this.getLevel().getBlockMetadata().getMetadata(this, metadataKey, plugin);
+        }
+        return null;
+    }
+
+    @Override
+    public boolean hasMetadata(String metadataKey) {
         return this.getLevel() != null && this.getLevel().getBlockMetadata().hasMetadata(this, metadataKey);
     }
 
     @Override
-    public void removeMetadata(String metadataKey, Plugin owningPlugin) throws Exception {
+    public boolean hasMetadata(String metadataKey, Plugin plugin) {
+        return this.getLevel() != null && this.getLevel().getBlockMetadata().hasMetadata(this, metadataKey, plugin);
+    }
+
+    @Override
+    public void removeMetadata(String metadataKey, Plugin owningPlugin) {
         if (this.getLevel() != null) {
             this.getLevel().getBlockMetadata().removeMetadata(this, metadataKey, owningPlugin);
         }
@@ -1274,23 +1259,26 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     /**
+     * 控制方块被破坏时掉落的物品
+     * 常在{@link cn.nukkit.level.Level#useBreakOn(Vector3, int, BlockFace, Item, Player, boolean, boolean)}方法被调用
+     *
+     * @return 掉落的物品数组
+     */
+    public Item[] getDrops(Item item) {
+        if (canHarvestWithHand() || canHarvest(item)) {
+            return new Item[]{
+                    this.toItem()
+            };
+        }
+        return Item.EMPTY_ARRAY;
+    }
+
+    /**
      * If the block, when in item form, is resistant to lava and fire and can float on lava like if it was on water.
      *
      * @since 1.4.0.0-PN
      */
     public boolean isLavaResistant() {
-        return false;
-    }
-
-    public boolean canSilkTouch() {
-        return false;
-    }
-
-    public boolean mustSilkTouch(Vector3 vector, int layer, BlockFace face, Item item, Player player) {
-        return false;
-    }
-
-    public boolean mustDrop(Vector3 vector, int layer, BlockFace face, Item item, Player player) {
         return false;
     }
 

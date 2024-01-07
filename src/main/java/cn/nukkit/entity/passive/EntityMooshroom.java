@@ -1,6 +1,7 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -114,7 +115,7 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
         if (item.getId() == Item.SHEARS && item.useOn(this)) {
             this.close();
             //TODO 不同颜色的牛掉落不同的蘑菇
-            this.level.dropItem(this, Item.get(40, 0, 5));
+            this.level.dropItem(this, Item.get(BlockID.RED_MUSHROOM, 0, 5));
             this.level.addParticleEffect(this.add(0, this.getHeight(), 0), ParticleEffect.LARGE_EXPLOSION_LEVEL);
             EntityCow cow = new EntityCow(this.getChunk(), this.namedTag);
             cow.setPosition(this);

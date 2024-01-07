@@ -56,8 +56,7 @@ public abstract class BlockFallable extends BlockSolid {
                 .putList(new ListTag<FloatTag>("Rotation")
                         .add(new FloatTag("", 0))
                         .add(new FloatTag("", 0)))
-                .putString("TileID", this.getId())
-                .putByte("Data", this.getDamage());
+                .putCompound("Block", this.blockstate.getBlockStateTag());
 
         for (Tag customTag : customNbt.getAllTags()) {
             nbt.put(customTag.getName(), customTag.copy());

@@ -52,13 +52,13 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     protected boolean powered;
     protected int tickDelay;
     protected boolean executingOnFirstTick; //TODO: ???
-
     protected PermissibleBase perm;
-    protected final Set<Player> viewers = Sets.newHashSet();
     protected int currentTick;
+    protected CommandBlockInventory inventory;
 
     public BlockEntityCommandBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+        this.inventory = new CommandBlockInventory(this);
     }
 
     @Override
@@ -230,7 +230,8 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     }
 
     @Override
-    @NotNull public String getName() {
+    @NotNull
+    public String getName() {
         return this.hasName() ? this.namedTag.getString(TAG_CUSTOM_NAME) : "!";
     }
 
@@ -553,12 +554,14 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     }
 
     @Override
-    @NotNull public Position getPosition() {
+    @NotNull
+    public Position getPosition() {
         return this;
     }
 
     @Override
-    @NotNull public Location getLocation() {
+    @NotNull
+    public Location getLocation() {
         return Location.fromObject(this.getPosition(), this.getLevel());
     }
 
@@ -614,7 +617,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public Inventory getInventory() {
-        return new CommandBlockInventory(this, this.viewers);
+        return inventory;
     }
 
     @Override
@@ -628,8 +631,8 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @Override
     public void close() {
         if (!closed) {
-            for (Player player : new HashSet<>(this.getInventory().getViewers())) {
-                player.removeWindow(this.getInventory());
+            for (Player player : this.getInventory().getViewers()) {
+                this.getInventory().close(player);
             }
             super.close();
         }

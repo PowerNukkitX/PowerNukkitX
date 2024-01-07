@@ -42,11 +42,6 @@ public class BlockBorderBlock extends BlockWallBase {
     }
 
     @Override
-    public boolean isBreakable(Item item) {
-        return false;
-    }
-
-    @Override
     public boolean canBePushed() {
         return false;
     }
@@ -70,11 +65,11 @@ public class BlockBorderBlock extends BlockWallBase {
     }
 
     @Override
-    public boolean isBreakable(Vector3 vector, int layer, BlockFace face, Item item, @Nullable Player player, boolean setBlockDestroy) {
+    public boolean isBreakable(@NotNull Vector3 vector, int layer, BlockFace face, Item item, @Nullable Player player) {
         if (player != null && (!player.isCreative() || !player.isOp())) {
             return false;
         }
-        return super.isBreakable(vector, layer, face, item, player, setBlockDestroy);
+        return super.isBreakable(vector, layer, face, item, player);
     }
 
     @Override

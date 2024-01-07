@@ -184,7 +184,7 @@ public class BlockLadder extends BlockTransparent implements Faceable {
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{
-                Item.getItemBlock(LADDER, 0, 1)
+                Item.get(LADDER, 0, 1)
         };
     }
 

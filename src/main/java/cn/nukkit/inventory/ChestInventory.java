@@ -15,8 +15,6 @@ import cn.nukkit.utils.RedstoneComponent;
  */
 public class ChestInventory extends ContainerInventory {
 
-    protected DoubleChestInventory doubleInventory;
-
     public ChestInventory(BlockEntityChest chest) {
         super(chest, InventoryType.CHEST);
     }
@@ -82,23 +80,6 @@ public class ChestInventory extends ContainerInventory {
                 }
             }
         } catch (LevelException ignored) {}
-    }
-
-    public void setDoubleInventory(DoubleChestInventory doubleInventory) {
-        this.doubleInventory = doubleInventory;
-    }
-
-    public DoubleChestInventory getDoubleInventory() {
-        return doubleInventory;
-    }
-
-    @Override
-    public void sendSlot(int index, Player... players) {
-        if (this.doubleInventory != null) {
-            this.doubleInventory.sendSlot(this, index, players);
-        } else {
-            super.sendSlot(index, players);
-        }
     }
 
     @Override

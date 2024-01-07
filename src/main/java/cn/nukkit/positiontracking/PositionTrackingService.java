@@ -240,7 +240,6 @@ public class PositionTrackingService implements Closeable {
                     case 0 -> player.getInventory();
                     case 1 -> player.getCursorInventory();
                     case 2 -> player.getOffhandInventory();
-                    case 3 -> player.getCraftingGrid();
                     case 4 -> player.getTopWindow().orElse(null);
                     default -> throw new NoSuchElementException();
                 };

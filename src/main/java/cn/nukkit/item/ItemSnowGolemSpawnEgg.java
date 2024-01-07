@@ -7,7 +7,7 @@ public class ItemSnowGolemSpawnEgg extends ItemSpawnEgg {
 
     @Override
     public int getEntityNetworkId() {
-        return;
+        return 21;
     }
 
     @Override

@@ -49,7 +49,7 @@ public class ProfessionCleric extends Profession {
                         .setTier(3)
                         .setTraderExp(20)
                         .build())
-                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,4), Item.getItemBlock(BlockID.GLOWSTONE, 0, 1))
+                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,4), Item.get(BlockID.GLOWSTONE, 0, 1))
                         .setMaxUses(12)
                         .setRewardExp((byte) 1)
                         .setTier(3)

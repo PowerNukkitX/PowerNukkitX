@@ -130,7 +130,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
 //            int toughness = 0;
 
             var armorInventory = this.getArmorInventory();
-            for (Item armor : armorInventory.getContents().values()) {
+            for (Item armor : armorInventory.getContents()) {
                 armorPoints += armor.getArmorPoints();
                 epf += calculateEnchantmentProtectionFactor(armor, source);
                 //toughness += armor.getToughness();
@@ -168,7 +168,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     public void setOnFire(int seconds) {
         int level = 0;
 
-        for (Item armor : this.getArmorInventory().getContents().values()) {
+        for (Item armor : this.getArmorInventory().getContents()) {
             Enchantment fireProtection = armor.getEnchantment(Enchantment.ID_PROTECTION_FIRE);
 
             if (fireProtection != null && fireProtection.getLevel() > 0) {
@@ -223,7 +223,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
 
         if (armor.getDamage() >= armor.getMaxDurability()) {
             getLevel().addSound(this, Sound.RANDOM_BREAK);
-            return Item.getItemBlock(BlockID.AIR, 0, 0);
+            return Item.get(BlockID.AIR, 0, 0);
         }
 
         return armor;

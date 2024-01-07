@@ -39,7 +39,8 @@ public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket>
 
             Inventory inventory = player.getWindowById(Player.ANVIL_WINDOW_ID);
             if (inventory instanceof AnvilInventory anvilInventory) {
-                anvilInventory.setCost(-pk.data);
+                //TODO
+                //anvilInventory.setCost(-pk.data);
             }
         }
     }

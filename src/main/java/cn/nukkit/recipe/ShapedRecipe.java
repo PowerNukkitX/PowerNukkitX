@@ -1,6 +1,7 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.api.DeprecationDetails;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.tags.ItemTags;
 import com.google.common.collect.Maps;
@@ -14,22 +15,14 @@ import static cn.nukkit.recipe.Recipe.matchItemList;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ShapedRecipe implements CraftingRecipe {
-
     private String recipeId;
     private final Item primaryResult;
     private final List<Item> extraResults = new ArrayList<>();
     private final List<Item> ingredientsAggregate;
-
-
     private final List<String> needTags;
-    private long least, most;
     private final String[] shape;
     private final int priority;
-    @Deprecated
-    @DeprecationDetails(since = "1.19.50-r2", reason = "new ingredients format", replaceWith = "newIngredients")
-    private final CharObjectHashMap<Item> ingredients = new CharObjectHashMap<>();
-
-
+    private UUID uuid;
     private final CharObjectHashMap<ItemDescriptor> newIngredients = new CharObjectHashMap<>();
 
     public ShapedRecipe(Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
@@ -58,6 +51,11 @@ public class ShapedRecipe implements CraftingRecipe {
     }
 
     public ShapedRecipe(String recipeId, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients, Collection<Item> extraResults) {
+        this(recipeId, null, priority, primaryResult, shape, ingredients, extraResults);
+    }
+
+    public ShapedRecipe(String recipeId, UUID uuid, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients, Collection<Item> extraResults) {
+        this.uuid = uuid;
         this.recipeId = recipeId;
         this.priority = priority;
         int rowCount = shape.length;
@@ -144,13 +142,12 @@ public class ShapedRecipe implements CraftingRecipe {
 
     @Override
     public UUID getId() {
-        return new UUID(least, most);
+        return uuid;
     }
 
     @Override
     public void setId(UUID uuid) {
-        this.least = uuid.getLeastSignificantBits();
-        this.most = uuid.getMostSignificantBits();
+        this.uuid = uuid;
         if (this.recipeId == null) {
             this.recipeId = getId().toString();
         }
@@ -217,7 +214,7 @@ public class ShapedRecipe implements CraftingRecipe {
         var descriptor = this.newIngredients.get(this.shape[y].charAt(x));
 
         if (descriptor.getType() == ItemDescriptorType.DEFAULT) {
-            return descriptor.toItem() != null ? descriptor.toItem().clone() : Item.getItemBlock(BlockID.AIR);
+            return descriptor.toItem() != null ? descriptor.toItem().clone() : Item.AIR;
         }
         throw new UnsupportedOperationException("use getNewIngredient()");
     }
@@ -225,7 +222,7 @@ public class ShapedRecipe implements CraftingRecipe {
     public ItemDescriptor getNewIngredient(int x, int y) {
         try {
             var res = this.newIngredients.get(this.shape[y].charAt(x));
-            return res != null ? res.clone() : new DefaultDescriptor(Item.getItemBlock(BlockID.AIR));
+            return res != null ? res.clone() : new DefaultDescriptor(Item.AIR);
         } catch (CloneNotSupportedException ignore) {
             return null;
         }

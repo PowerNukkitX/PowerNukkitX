@@ -4,17 +4,24 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.block.property.enums.Damage;
-import cn.nukkit.inventory.AnvilInventory;
+import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.metadata.FixedMetadataValue;
+import cn.nukkit.metadata.MetadataValue;
+import cn.nukkit.metadata.SoftFixedMetaValue;
+import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.ref.SoftReference;
 import java.util.Collection;
+import java.util.List;
+import java.util.function.Supplier;
 
 import static cn.nukkit.block.property.CommonBlockProperties.*;
 
@@ -22,11 +29,12 @@ import static cn.nukkit.block.property.CommonBlockProperties.*;
  * @author Pub4Game
  * @since 27.12.2015
  */
-public class BlockAnvil extends BlockFallable implements Faceable {
+public class BlockAnvil extends BlockFallable implements Faceable, BlockInventoryHolder {
     public static final BlockProperties PROPERTIES = new BlockProperties(ANVIL, DAMAGE, MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -94,13 +102,30 @@ public class BlockAnvil extends BlockFallable implements Faceable {
                 getLevel().addSound(this, Sound.RANDOM_ANVIL_LAND, 1, 0.8F, players);
             }
         }
+        setInventoryMetaData(this);
+        return true;
+    }
+
+    @Override
+    public Supplier<BlockTypeInventory> getBlockInventorySupplier() {
+        return () -> new AnvilInventory(this);
+    }
+
+    @Override
+    public Inventory getInventory() {
+        return getInventoryMetaData(this);
+    }
+
+    @Override
+    public boolean onBreak(Item item) {
+        removeInventoryMetaData(this);
         return true;
     }
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         if (player != null) {
-            player.addWindow(new AnvilInventory(player.getUIInventory(), this), Player.ANVIL_WINDOW_ID);
+            player.addWindow(getInventory(), Player.ANVIL_WINDOW_ID);
         }
         return true;
     }

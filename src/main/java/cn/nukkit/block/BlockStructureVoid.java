@@ -1,8 +1,10 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.property.enums.StructureVoidType;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -63,7 +65,7 @@ public class BlockStructureVoid extends BlockSolid {
     }
 
     @Override
-    public boolean isBreakable(Item item) {
+    public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return false;
     }
     

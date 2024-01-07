@@ -229,7 +229,7 @@ public class BlockLeaves extends BlockTransparent {
     }
 
     protected Item getSapling() {
-        return Item.getItemBlock(BlockID.SAPLING, getPropertyValue(OLD_LEAF_TYPE).ordinal());
+        return Item.get(BlockID.SAPLING, getPropertyValue(OLD_LEAF_TYPE).ordinal());
     }
 
     @Override

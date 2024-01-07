@@ -10,10 +10,9 @@ import java.util.UUID;
 public class StonecutterRecipe implements Recipe {
 
     private String recipeId;
+    private UUID uuid;
 
     private final Item output;
-
-    private long least,most;
 
     private final Item ingredient;
 
@@ -25,6 +24,11 @@ public class StonecutterRecipe implements Recipe {
     }
 
     public StonecutterRecipe(String recipeId, int priority, Item result, Item ingredient) {
+        this(recipeId, null, priority, result, ingredient);
+    }
+
+    public StonecutterRecipe(String recipeId, UUID uuid, int priority, Item result, Item ingredient) {
+        this.uuid = uuid;
         this.recipeId = recipeId;
         this.priority = priority;
         this.output = result.clone();
@@ -44,12 +48,11 @@ public class StonecutterRecipe implements Recipe {
     }
 
     public UUID getId() {
-        return new UUID(least, most);
+        return uuid;
     }
 
     public void setId(UUID uuid) {
-        this.least = uuid.getLeastSignificantBits();
-        this.most = uuid.getMostSignificantBits();
+        this.uuid = uuid;
 
         if (this.recipeId == null) {
             this.recipeId = this.getId().toString();

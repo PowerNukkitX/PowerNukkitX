@@ -16,6 +16,7 @@ import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
 import cn.nukkit.event.server.*;
+import cn.nukkit.level.format.LevelDBProvider;
 import cn.nukkit.recipe.CraftingManager;
 import cn.nukkit.recipe.Recipe;
 import cn.nukkit.item.Item;
@@ -572,9 +573,9 @@ public class Server {
             }
         });
         // Allow Nether? (determines if we create a nether world if one doesn't exist on startup)
-        this.allowNether = this.properties.getBoolean("allow-nether", true);
+        this.allowNether = this.properties.getBoolean("allow-nether", false);
 
-        this.allowTheEnd = this.properties.getBoolean("allow-the_end", true);
+        this.allowTheEnd = this.properties.getBoolean("allow-the_end", false);
 
         this.useTerra = this.properties.getBoolean("use-terra", false);
 
@@ -750,7 +751,7 @@ public class Server {
 
         convertLegacyPlayerData();
 
-        this.craftingManager = new CraftingManager();
+        this.craftingManager = new CraftingManager();//load recipes
         this.resourcePackManager = new ResourcePackManager(
                 new ZippedResourcePackLoader(new File(Nukkit.DATA_PATH, "resource_packs")),
                 new JarPluginResourcePackLoader(new File(this.pluginPath))
@@ -770,7 +771,6 @@ public class Server {
         try {
             log.debug("Loading position tracking service");
             this.positionTrackingService = new PositionTrackingService(new File(Nukkit.DATA_PATH, "services/position_tracking_db"));
-            //getScheduler().scheduleRepeatingTask(null, positionTrackingService::forceRecheckAllPlayers, 20 * 5);
         } catch (IOException e) {
             log.fatal("Failed to start the Position Tracking DB service!", e);
         }
@@ -781,7 +781,7 @@ public class Server {
 
         this.enablePlugins(PluginLoadOrder.STARTUP);
 
-        LevelProviderManager.addProvider(this, LevelProvider.class);
+        LevelProviderManager.addProvider(this, LevelDBProvider.class);
 
         for (String name : this.getConfig("worlds", new HashMap<String, Object>()).keySet()) {
             if (!this.loadLevel(name)) {
@@ -1429,9 +1429,9 @@ public class Server {
 
     /**
      * 从指定的许可名获取发送者们，广播一条消息给他们.可以指定多个许可名，以<b> ; </b>分割.<br>
-     * 一个permission在{@link PluginManager#permSubs}对应一个{@link CommandSender 发送者}Set.<p>
+     * 一个permission在{@code PluginManager#permSubs}对应一个{@link CommandSender 发送者}Set.<p>
      * Get the sender to broadcast a message from the specified permission name, multiple permissions can be specified, split by <b> ; </b><br>
-     * The permission corresponds to a {@link CommandSender Sender} set in {@link PluginManager#permSubs}.
+     * The permission corresponds to a {@link CommandSender Sender} set in {@code PluginManager#permSubs}.
      *
      * @param message     消息内容<br>Message content
      * @param permissions 许可名，需要先通过{@link PluginManager#subscribeToPermission subscribeToPermission}注册<br>Permissions name, need to register first through {@link PluginManager#subscribeToPermission subscribeToPermission}

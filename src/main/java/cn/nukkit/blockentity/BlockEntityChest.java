@@ -5,7 +5,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.ChestInventory;
 import cn.nukkit.inventory.ContainerInventory;
-import cn.nukkit.inventory.DoubleChestInventory;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -16,8 +15,6 @@ import java.util.HashSet;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockEntityChest extends BlockEntitySpawnableContainer implements BlockEntityNameable {
-
-    protected DoubleChestInventory doubleInventory = null;
 
     public BlockEntityChest(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -56,11 +53,12 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
 
     @Override
     public BaseInventory getInventory() {
-        if (this.doubleInventory == null && this.isPaired()) {
+       /* if (this.doubleInventory == null && this.isPaired()) {
             this.checkPairing();
         }
 
-        return this.doubleInventory != null ? this.doubleInventory : this.inventory;
+        return this.doubleInventory != null ? this.doubleInventory : this.inventory;*/
+        return null;
     }
 
     public ChestInventory getRealInventory() {
@@ -68,7 +66,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
     }
 
     protected void checkPairing() {
-        BlockEntityChest pair = this.getPair();
+        /*BlockEntityChest pair = this.getPair();
 
         if (pair != null) {
             if (!pair.isPaired()) {
@@ -94,7 +92,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
                 this.namedTag.remove("pairz");
                 this.namedTag.remove("pairlead");
             }
-        }
+        }*/
     }
 
     public boolean isPaired() {
@@ -140,7 +138,6 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
 
         BlockEntityChest chest = this.getPair();
 
-        this.doubleInventory = null;
         this.namedTag.remove("pairx");
         this.namedTag.remove("pairz");
 
@@ -149,7 +146,6 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
         if (chest != null) {
             chest.namedTag.remove("pairx");
             chest.namedTag.remove("pairz");
-            chest.doubleInventory = null;
             chest.checkPairing();
             chest.spawnToAll();
         }

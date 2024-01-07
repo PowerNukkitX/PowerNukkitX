@@ -10,6 +10,7 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.AddEntityPacket;
+import cn.nukkit.registry.Registries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ public class SummonCommand extends VanillaCommand {
         this.setPermission("nukkit.command.summon");
         this.commandParameters.clear();
         List<String> entity_key = new ArrayList<>();
-        for (String key : AddEntityPacket.LEGACY_IDS.values()) {
+        for (String key : Registries.ENTITY.getKnownEntities().keySet()) {
             entity_key.add(key);
             entity_key.add(key.substring(10));
         }

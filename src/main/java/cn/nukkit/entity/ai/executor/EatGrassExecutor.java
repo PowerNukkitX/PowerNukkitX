@@ -2,6 +2,7 @@ package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.passive.EntitySheep;
 import cn.nukkit.level.GameRule;
@@ -26,9 +27,9 @@ public class EatGrassExecutor implements IBehaviorExecutor {
         currentTick++;
         if (currentTick > duration) {
             currentTick = 0;
-            entity.level.addParticle(new DestroyBlockParticle(entity, Block.get(Block.TALL_GRASS)));
+            entity.level.addParticle(new DestroyBlockParticle(entity, Block.get(BlockID.TALLGRASS)));
             if (entity.level.getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
-                if (entity.getLevelBlock().getId() == Block.TALL_GRASS) {
+                if (entity.getLevelBlock().getId() == BlockID.TALLGRASS) {
                     entity.level.setBlock(entity, Block.get(Block.AIR));
                 } else {
                     entity.level.setBlock(entity.add(0, -1, 0), Block.get(Block.DIRT));

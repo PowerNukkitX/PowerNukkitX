@@ -192,6 +192,10 @@ public class EntityRegistry extends BaseRegistry<EntityRegistry.EntityDefinition
         return ID2RID.values();
     }
 
+    public Map<Integer,String> getEntityId2NetworkIdMap(){
+        return Collections.unmodifiableMap(RID2ID);
+    }
+
     /**
      * 获取全部已经注册的实体，包括自定义实体
      * <p>
@@ -200,7 +204,7 @@ public class EntityRegistry extends BaseRegistry<EntityRegistry.EntityDefinition
      * @return the known entities
      */
     @UnmodifiableView
-    public static Map<String, Class<? extends Entity>> getKnownEntities() {
+    public Map<String, Class<? extends Entity>> getKnownEntities() {
         return Collections.unmodifiableMap(CLASS);
     }
 

@@ -25,7 +25,7 @@ public class WalkController implements IController {
     private boolean canJump(Block block) {
         if (block.isSolid()) return true;
         else if (block instanceof BlockCarpet) return true;
-        else return block.getId() == BlockID.FLOWER_POT_BLOCK || block.getId() == BlockID.CAKE_BLOCK;
+        else return block.getId() == BlockID.FLOWER_POT || block.getId() == BlockID.CAKE;
     }
 
     @Override

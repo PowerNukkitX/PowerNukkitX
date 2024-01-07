@@ -1,6 +1,7 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -33,15 +34,13 @@ public class TestForBlockCommand extends VanillaCommand {
         var list = result.getValue();
         Position position = list.getResult(0);
         Block tileName = list.getResult(1);
-        int tileId = tileName.getId();
+        String tileId = tileName.getId();
         int dataValue = 0;
         if (list.hasResult(2)) {
             dataValue = list.getResult(2);
         }
-        try {
-            GlobalBlockPalette.getOrCreateRuntimeId(tileId, dataValue);
-        } catch (NoSuchElementException e) {
-            log.addError("commands.give.block.notFound", String.valueOf(tileId)).output();
+        if (!Block.get(tileId).getProperties().containBlockState((short) dataValue)) {
+            log.addError("commands.give.block.notFound", tileId).output();
             return 0;
         }
 
@@ -53,8 +52,8 @@ public class TestForBlockCommand extends VanillaCommand {
         }
 
         Block block = level.getBlock(position, false);
-        int id = block.getId();
-        int meta = block.getDamage();
+        String id = block.getId();
+        int meta = block.getBlockState().specialValue();
 
         if (id == tileId && meta == dataValue) {
             log.addSuccess("commands.testforblock.success", String.valueOf(position.getFloorX()), String.valueOf(position.getFloorY()), String.valueOf(position.getFloorZ())).output();

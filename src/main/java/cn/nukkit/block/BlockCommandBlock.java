@@ -7,8 +7,10 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static cn.nukkit.block.property.CommonBlockProperties.CONDITIONAL_BIT;
 import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
@@ -18,7 +20,8 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     public static final BlockProperties PROPERTIES = new BlockProperties(COMMAND_BLOCK, CONDITIONAL_BIT, FACING_DIRECTION);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -56,7 +59,7 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     }
 
     @Override
-    public boolean isBreakable(Item item) {
+    public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return false;
     }
 
@@ -137,12 +140,14 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityCommandBlock> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityCommandBlock> getBlockEntityClass() {
         return BlockEntityCommandBlock.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.COMMAND_BLOCK;
     }
 }

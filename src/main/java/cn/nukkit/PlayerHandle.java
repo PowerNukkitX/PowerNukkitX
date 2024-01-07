@@ -7,7 +7,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.inventory.Inventory;
-import cn.nukkit.inventory.PlayerUIInventory;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
@@ -60,12 +59,8 @@ public final class PlayerHandle {
         player.forceSendEmptyChunks();
     }
 
-    public void removeWindow(Inventory inventory, boolean isResponse) {
-        player.removeWindow(inventory, isResponse);
-    }
-
-    public void addDefaultWindows() {
-        player.addDefaultWindows();
+    public void removeWindow0(Inventory inventory, boolean isResponse) {
+        player.removeWindow0(inventory, isResponse);
     }
 
     public void onBlock(Entity entity, EntityDamageEvent e, boolean animate) {
@@ -98,10 +93,6 @@ public final class PlayerHandle {
 
     public Map<Integer, Inventory> getWindowIndex() {
         return player.windowIndex;
-    }
-
-    public Set<Integer> getPermanentWindows() {
-        return player.permanentWindows;
     }
 
     public Long2ObjectLinkedOpenHashMap<Boolean> getLoadQueue() {
@@ -137,19 +128,11 @@ public final class PlayerHandle {
     }
 
     public int getMessageCounter() {
-        return player.messageCounter;
+        return player.messageLimitCounter;
     }
 
     public void setMessageCounter(int messageCounter) {
-        player.messageCounter = messageCounter;
-    }
-
-    public PlayerUIInventory getPlayerUIInventory() {
-        return player.playerUIInventory;
-    }
-
-    public void setPlayerUIInventory(PlayerUIInventory playerUIInventory) {
-        player.playerUIInventory = playerUIInventory;
+        player.messageLimitCounter = messageCounter;
     }
 
     public long getRandomClientId() {

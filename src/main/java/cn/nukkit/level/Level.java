@@ -73,8 +73,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.lang.ref.SoftReference;
 import java.util.List;
@@ -479,7 +479,8 @@ public class Level implements Metadatable {
      *
      * @throws LevelException If the level is already closed
      */
-    @NotNull public final LevelProvider requireProvider() {
+    @NotNull
+    public final LevelProvider requireProvider() {
         LevelProvider levelProvider = getProvider();
         if (levelProvider == null) {
             LevelException levelException = new LevelException("The level \"" + getFolderName() + "\" is already closed (have no providers)");
@@ -595,7 +596,8 @@ public class Level implements Metadatable {
     }
 
     public void addLevelSoundEvent(Vector3 pos, int type, int data, int entityType, boolean isBaby, boolean isGlobal) {
-        String identifier = AddEntityPacket.LEGACY_IDS.getOrDefault(entityType, ":");
+        String identifier = Registries.ENTITY.getEntityIdentifier(entityType);
+        if (identifier == null) identifier = ":";
         addLevelSoundEvent(pos, type, data, identifier, isBaby, isGlobal);
     }
 
@@ -2158,6 +2160,8 @@ public class Level implements Metadatable {
         block.level = this;
         block.layer = layer;
 
+        Block blockPrevious = statePrevious.toBlock();
+
         int cx = x >> 4;
         int cz = z >> 4;
         long index = Level.chunkHash(cx, cz);
@@ -2187,6 +2191,7 @@ public class Level implements Metadatable {
                 }
             }
         }
+        blockPrevious.afterRemoval(block, update);
         return true;
     }
 
@@ -2301,35 +2306,35 @@ public class Level implements Metadatable {
         return itemEntity;
     }
 
-    public Item useBreakOn(Vector3 vector) {
+    public Item useBreakOn(@NotNull Vector3 vector) {
         return this.useBreakOn(vector, null);
     }
 
-    public Item useBreakOn(Vector3 vector, Item item) {
+    public Item useBreakOn(@NotNull Vector3 vector, @Nullable Item item) {
         return this.useBreakOn(vector, item, null);
     }
 
-    public Item useBreakOn(Vector3 vector, Item item, Player player) {
+    public Item useBreakOn(@NotNull Vector3 vector, @Nullable Item item, @Nullable Player player) {
         return this.useBreakOn(vector, item, player, false);
     }
 
-    public Item useBreakOn(Vector3 vector, Item item, Player player, boolean createParticles) {
+    public Item useBreakOn(@NotNull Vector3 vector, @Nullable Item item, @Nullable Player player, boolean createParticles) {
         return useBreakOn(vector, null, item, player, createParticles);
     }
 
-    public Item useBreakOn(Vector3 vector, BlockFace face, Item item, Player player, boolean createParticles) {
+    public Item useBreakOn(@NotNull Vector3 vector, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player, boolean createParticles) {
         return useBreakOn(vector, face, item, player, createParticles, false);
     }
 
-    public Item useBreakOn(Vector3 vector, BlockFace face, Item item, Player player, boolean createParticles, boolean setBlockDestroy) {
-        if (vector instanceof Block) {
-            return useBreakOn(vector, ((Block) vector).layer, face, item, player, createParticles, setBlockDestroy);
+    public Item useBreakOn(@NotNull Vector3 vector, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player, boolean createParticles, boolean immediateDestroy) {
+        if (vector instanceof Block b) {
+            return useBreakOn(b, b.layer, face, item, player, createParticles, immediateDestroy);
         } else {
-            return useBreakOn(vector, 0, face, item, player, createParticles, setBlockDestroy);
+            return useBreakOn(vector, 0, face, item, player, createParticles, immediateDestroy);
         }
     }
 
-    public Item useBreakOn(Vector3 vector, int layer, BlockFace face, Item item, Player player, boolean createParticles, boolean setBlockDestroy) {
+    public Item useBreakOn(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player, boolean createParticles, boolean immediateDestroy) {
         if (player != null && player.getGamemode() > 2) {
             return null;
         }
@@ -2347,13 +2352,12 @@ public class Level implements Metadatable {
             item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
         }
 
-        if (!target.isBreakable(vector, layer, face, item, player, setBlockDestroy)) {
+        if (!target.isBreakable(vector, layer, face, item, player)) {
             return null;
         }
 
-        boolean mustDrop = target.mustDrop(vector, layer, face, item, player);
-        boolean mustSilkTouch = target.mustSilkTouch(vector, layer, face, item, player);
-        boolean isSilkTouch = mustSilkTouch || (item.getEnchantment(Enchantment.ID_SILK_TOUCH) != null && item.applyEnchantments());
+        boolean isSilkTouch = target.isSilkTouch(vector, layer, face, item, player) ||
+                (item.getEnchantment(Enchantment.ID_SILK_TOUCH) != null && item.applyEnchantments());
 
         if (player != null) {
             if (player.getGamemode() == 2) {
@@ -2378,15 +2382,17 @@ public class Level implements Metadatable {
             }
 
             Item[] eventDrops;
-            if (!mustDrop && !setBlockDestroy && !player.isSurvival() && !player.isAdventure()) {
+            if (immediateDestroy || player.isCreative()) {
                 eventDrops = Item.EMPTY_ARRAY;
-            } else if (mustSilkTouch || isSilkTouch && target.canSilkTouch()) {
+            } else if (isSilkTouch && target.canSilkTouch()) {
                 eventDrops = new Item[]{target.toItem()};
             } else {
                 eventDrops = target.getDrops(item);
             }
 
-            if (!setBlockDestroy) {
+            if (immediateDestroy) {
+                drops = eventDrops;
+            } else {
                 if (!player.getAdventureSettings().get(PlayerAbility.MINE))
                     return null;
 
@@ -2407,9 +2413,7 @@ public class Level implements Metadatable {
                 //thisBreak-lastBreak < breakTime-1000ms = the player is hacker (fastBreak)
                 boolean fastBreak = Long.sum(player.lastBreak, (long) breakTime * 1000) > Long.sum(System.currentTimeMillis(), 1000);
                 BlockBreakEvent ev = new BlockBreakEvent(player, target, face, item, eventDrops, player.isCreative(), fastBreak);
-                if (player.isSurvival() && !target.isBreakable(item)) {
-                    ev.setCancelled();
-                } else if (!player.isOp() && isInSpawnRadius(target)) {
+                if (!player.isOp() && isInSpawnRadius(target)) {
                     ev.setCancelled();
                 } else if (!ev.getInstaBreak() && ev.isFastBreak()) {
                     ev.setCancelled();
@@ -2428,11 +2432,7 @@ public class Level implements Metadatable {
 
                 drops = ev.getDrops();
                 dropExp = ev.getDropExp();
-            } else {
-                drops = eventDrops;
             }
-        } else if (!target.isBreakable(item)) {
-            return null;
         } else if (isSilkTouch) {
             drops = new Item[]{target.toItem()};
         } else {
@@ -2448,10 +2448,8 @@ public class Level implements Metadatable {
 
         if (createParticles) {
             Map<Integer, Player> players = this.getChunkPlayers((int) target.x >> 4, (int) target.z >> 4);
-
             this.addParticle(new DestroyBlockParticle(target.add(0.5), target), players.values());
-
-            if (player != null && !setBlockDestroy) {
+            if (player != null && !immediateDestroy) {
                 players.remove(player.getLoaderId());
             }
         }
@@ -2481,19 +2479,16 @@ public class Level implements Metadatable {
 
         if (this.gameRules.getBoolean(GameRule.DO_TILE_DROPS)) {
 
-            if (!isSilkTouch && (mustDrop || player != null && ((player.isSurvival() || player.isAdventure()) || setBlockDestroy)) && dropExp > 0 && drops.length != 0) {
+            if (!isSilkTouch && (player != null && ((player.isSurvival() || player.isAdventure()) || immediateDestroy)) && dropExp > 0 && drops.length != 0) {
                 this.dropExpOrb(vector.add(0.5, 0.5, 0.5), dropExp);
             }
 
-            if (mustDrop || player == null || setBlockDestroy || (player.isSurvival() || player.isAdventure())) {
-                for (Item drop : drops) {
-                    if (drop.getCount() > 0) {
-                        this.dropItem(vector.add(0.5, 0.5, 0.5), drop);
-                    }
+            for (Item drop : drops) {
+                if (drop.getCount() > 0) {
+                    this.dropItem(vector.add(0.5, 0.5, 0.5), drop);
                 }
             }
         }
-
         return item;
     }
 
@@ -2582,10 +2577,7 @@ public class Level implements Metadatable {
             }
             this.server.getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
-                target.onTouch(player, ev.getAction());
-                if (ev.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                    target.onPlayerRightClick(player, item, face, new Vector3(fx, fy, fz));
-                }
+                target.onTouch(vector, item, face, fx, fy, fz, player, ev.getAction());
                 if (((!player.isSneaking() && !player.isFlySneaking()) || player.getInventory().getItemInHand().isNull()) && target.canBeActivated() && target.onActivate(item, player)) {
                     if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
                         addSound(player, Sound.RANDOM_BREAK);
@@ -2981,6 +2973,10 @@ public class Level implements Metadatable {
         return (chunk = this.getChunk(X, Z)) != null ? chunk.getBlockEntities() : Collections.emptyMap();
     }
 
+    public void setBlockStateAt(int x, int y, int z, BlockState state) {
+        setBlockStateAt(x, y, z, 0, state);
+    }
+
     public void setBlockStateAt(int x, int y, int z, int layer, BlockState state) {
         IChunk chunk = this.getChunk(x >> 4, z >> 4, true);
         chunk.setBlockState(x & 0x0f, ensureY(y), z & 0x0f, state, layer);
@@ -2989,10 +2985,6 @@ public class Level implements Metadatable {
         for (ChunkLoader loader : this.getChunkLoaders(x >> 4, z >> 4)) {
             loader.onBlockChanged(temporalVector);
         }
-    }
-
-    public void setBlockStateAt(int x, int y, int z, BlockState state) {
-        this.getChunk(x >> 4, z >> 4, true).setBlockState(x & 0x0f, ensureY(y), z & 0x0f, state);
     }
 
     public BlockState getBlockStateAt(int x, int y, int z, int layer) {
@@ -4000,22 +3992,32 @@ public class Level implements Metadatable {
     }
 
     @Override
-    public void setMetadata(String metadataKey, MetadataValue newMetadataValue) throws Exception {
+    public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
         this.server.getLevelMetadata().setMetadata(this, metadataKey, newMetadataValue);
     }
 
     @Override
-    public List<MetadataValue> getMetadata(String metadataKey) throws Exception {
+    public List<MetadataValue> getMetadata(String metadataKey) {
         return this.server.getLevelMetadata().getMetadata(this, metadataKey);
     }
 
     @Override
-    public boolean hasMetadata(String metadataKey) throws Exception {
+    public MetadataValue getMetadata(String metadataKey, Plugin plugin) {
+        return this.server.getLevelMetadata().getMetadata(this, metadataKey, plugin);
+    }
+
+    @Override
+    public boolean hasMetadata(String metadataKey) {
         return this.server.getLevelMetadata().hasMetadata(this, metadataKey);
     }
 
     @Override
-    public void removeMetadata(String metadataKey, Plugin owningPlugin) throws Exception {
+    public boolean hasMetadata(String metadataKey, Plugin plugin) {
+        return this.server.getLevelMetadata().hasMetadata(this, metadataKey, plugin);
+    }
+
+    @Override
+    public void removeMetadata(String metadataKey, Plugin owningPlugin) {
         this.server.getLevelMetadata().removeMetadata(this, metadataKey, owningPlugin);
     }
 

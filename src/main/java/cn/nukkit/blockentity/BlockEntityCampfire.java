@@ -158,7 +158,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
 
     @Override
     public void onBreak() {
-        for (Item content : inventory.getContents().values()) {
+        for (Item content : inventory.getContents()) {
             level.dropItem(this, content);
         }
     }

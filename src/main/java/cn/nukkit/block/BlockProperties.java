@@ -36,7 +36,7 @@ public final class BlockProperties {
 
     public BlockProperties(String identifier, Set<String> blockTags, BlockPropertyType<?>... properties) {
         Identifier.assertValid(identifier);
-        BlockTags.register(identifier,false, blockTags);
+        BlockTags.register(identifier, false, blockTags);
         this.identifier = identifier.intern();
         this.propertyTypeSet = Sets.newHashSet(properties);
 
@@ -141,6 +141,10 @@ public final class BlockProperties {
 
     public boolean containBlockState(BlockState blockState) {
         return this.specialValueMap.containsValue(blockState);
+    }
+
+    public boolean containBlockState(short specialValue) {
+        return this.specialValueMap.containsKey(specialValue);
     }
 
     public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> boolean containProperty(PROPERTY property) {

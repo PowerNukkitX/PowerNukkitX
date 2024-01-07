@@ -136,7 +136,7 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable {
 
     @Override
     public boolean isBreedingItem(Item item) {
-        int id = item.getId();
+        String id = item.getId();
 
         return id == Item.WHEAT_SEEDS || id == Item.MELON_SEEDS || id == Item.PUMPKIN_SEEDS || id == Item.BEETROOT_SEEDS;
     }

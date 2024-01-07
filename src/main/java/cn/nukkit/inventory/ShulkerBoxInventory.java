@@ -7,6 +7,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.BlockEventPacket;
+import cn.nukkit.tags.BlockTags;
 
 /**
  * @author PetteriM1
@@ -22,7 +23,7 @@ public class ShulkerBoxInventory extends ContainerInventory {
         return (BlockEntityShulkerBox) this.holder;
     }
 
-    
+
     @Override
     public void onOpen(Player who) {
         super.onOpen(who);
@@ -43,7 +44,7 @@ public class ShulkerBoxInventory extends ContainerInventory {
         }
     }
 
-    
+
     @Override
     public void onClose(Player who) {
         if (this.getViewers().size() == 1) {
@@ -66,7 +67,7 @@ public class ShulkerBoxInventory extends ContainerInventory {
 
     @Override
     public boolean canAddItem(Item item) {
-        if (item.getId() == BlockID.SHULKER_BOX || item.getId() == BlockID.UNDYED_SHULKER_BOX) {
+        if (item.isBlock() && item.getBlockUnsafe().is(BlockTags.PNX_SHULKERBOX)) {
             // Do not allow nested shulker boxes.
             return false;
         }

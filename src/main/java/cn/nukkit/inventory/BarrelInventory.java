@@ -29,8 +29,7 @@ public class BarrelInventory extends ContainerInventory {
             Level level = barrel.getLevel();
             if (level != null) {
                 Block block = barrel.getBlock();
-                if (block instanceof BlockBarrel) {
-                    BlockBarrel blockBarrel = (BlockBarrel) block;
+                if (block instanceof BlockBarrel blockBarrel) {
                     if (!blockBarrel.isOpen()) {
                         blockBarrel.setOpen(true);
                         level.setBlock(blockBarrel, blockBarrel, true, true);

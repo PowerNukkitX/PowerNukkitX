@@ -51,14 +51,14 @@ public final class InventoryType {
     public static final InventoryType OFFHAND = new InventoryType(1, "Offhand", NONE.getNetworkType());
 
     /**
-     * 4 CRAFTING slots, 1 RESULT
+     * 4 CRAFTING slots
      */
-    public static final InventoryType CRAFTING = new InventoryType(4 + 1, "Crafting", 1);
+    public static final InventoryType CRAFTING = new InventoryType(4, "Mini Crafting", 1);
 
     /**
-     * 9 CRAFTING slots, 1 RESULT
+     * 9 CRAFTING slots
      */
-    public static final InventoryType WORKBENCH = new InventoryType(9 + 1, "Crafting", 1);
+    public static final InventoryType WORKBENCH = new InventoryType(9, "Big Crafting", 1);
 
     /**
      * 2 slots, 1 result

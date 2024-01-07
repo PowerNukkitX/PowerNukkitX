@@ -1,6 +1,7 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.BlockCommandBlock;
 import cn.nukkit.blockentity.BlockEntityCommandBlock;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
@@ -13,15 +14,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 //implement the command block's ui
-public class CommandBlockInventory implements Inventory {
-
-    protected final Position holder;
-    protected final Set<Player> viewers;
-    private List<InventoryListener> listeners;
-
-    public CommandBlockInventory(Position holder, Set<Player> viewers) {
-        this.holder = holder;
-        this.viewers = viewers;
+public class CommandBlockInventory extends BlockTypeInventory {
+    public CommandBlockInventory(BlockEntityCommandBlock commandBlock) {
+        super(commandBlock, InventoryType.COMMAND_BLOCK);
     }
 
     @Override
@@ -48,8 +43,9 @@ public class CommandBlockInventory implements Inventory {
     }
 
     @Override
-    @NotNull public Item getItem(int index) {
-        return Item.getItemBlock(BlockID.AIR);
+    @NotNull
+    public Item getItem(int index) {
+        return Item.AIR;
     }
 
     @Override
@@ -74,11 +70,11 @@ public class CommandBlockInventory implements Inventory {
 
     @Override
     public Item[] getContents() {
-        return Collections.emptyMap();
+        return null;
     }
 
     @Override
-    public void setContents(Item[] items) {
+    public void setContents(Map<Integer, Item> items) {
 
     }
 
@@ -184,17 +180,10 @@ public class CommandBlockInventory implements Inventory {
             pk.windowId = who.getWindowId(this);
             pk.type = getType().getNetworkType();
             InventoryHolder holder = this.getHolder();
-            if (holder instanceof Vector3) {
-                pk.x = ((Vector3) holder).getFloorX();
-                pk.y = ((Vector3) holder).getFloorY();
-                pk.z = ((Vector3) holder).getFloorZ();
-            } else {
-                pk.x = pk.y = pk.z = 0;
-            }
-            if (holder instanceof Entity) {
-                pk.entityId = ((Entity) holder).getId();
-            }
-
+            pk.x = holder.getFloorX();
+            pk.y = holder.getFloorY();
+            pk.z = holder.getFloorZ();
+            pk.entityId = who.getId();
             who.dataPacket(pk);
         }
     }

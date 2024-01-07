@@ -32,34 +32,19 @@ public abstract class BaseInventory implements Inventory {
     protected final String name;
     protected final Set<Player> viewers = new HashSet<>();
     protected InventoryHolder holder;
-    private List<InventoryListener> listeners;
+    protected List<InventoryListener> listeners;
 
     public BaseInventory(InventoryHolder holder, InventoryType type) {
-        this(holder, type, Item.EMPTY_ARRAY);
-    }
-
-    public BaseInventory(InventoryHolder holder, InventoryType type, Item[] items) {
-        this(holder, type, items, null);
-    }
-
-    public BaseInventory(InventoryHolder holder, InventoryType type, Item[] items, Integer overrideSize) {
-        this(holder, type, items, overrideSize, null);
-    }
-
-    public BaseInventory(InventoryHolder holder, InventoryType type, Item[] items, Integer overrideSize, String overrideTitle) {
         this.holder = holder;
 
         this.type = type;
 
-        this.size = Objects.requireNonNullElseGet(overrideSize, this.type::getSize);
+        this.size = this.type.getSize();
 
         this.name = this.type.getName();
 
         this.slots = new Item[size];
         Arrays.fill(slots, Item.AIR);
-        if (!(this instanceof DoubleChestInventory)) {
-            this.setContents(items);
-        }
     }
 
     @Override
@@ -78,7 +63,8 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    @NotNull public Item getItem(int index) {
+    @NotNull
+    public Item getItem(int index) {
         Preconditions.checkArgument(index >= 0 && index < slots.length);
         return this.slots[index].clone();
     }
@@ -96,14 +82,14 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public void setContents(Item[] items) {
-        for (int i = 0; i < this.size; ++i) {
-            Item item = items[i];
+    public void setContents(Map<Integer, Item> items) {
+        for (var entry : items.entrySet()) {
+            Item item = entry.getValue();
             if (item == null || item.isNull()) {
-                this.clear(i);
+                this.clear(entry.getKey());
             } else {
-                if (!this.setItem(i, items[i])) {
-                    this.clear(i);
+                if (!this.setItem(entry.getKey(), entry.getValue())) {
+                    this.clear(entry.getKey());
                 }
             }
         }
@@ -251,7 +237,6 @@ public abstract class BaseInventory implements Inventory {
             if (slot.isNull()) {
                 continue;
             }
-            //todo: clone only if necessary
             itemSlots.add(slot.clone());
         }
 
@@ -341,7 +326,6 @@ public abstract class BaseInventory implements Inventory {
                     item.setCount(item.getCount() - amount);
                     this.setItem(i, item);
                     if (slot.getCount() <= 0) {
-//                        itemSlots.remove(slot);
                         iterator.remove();
                     }
 

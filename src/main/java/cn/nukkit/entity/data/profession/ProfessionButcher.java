@@ -1,13 +1,10 @@
 package cn.nukkit.entity.data.profession;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.RecipeBuildUtils;
-
-import java.util.Random;
 
 import static cn.nukkit.item.ItemID.SWEET_BERRIES;
 
@@ -75,7 +72,7 @@ public class ProfessionButcher extends Profession {
                         .setTier(3)
                         .setTraderExp(0)
                         .build())
-                .add(RecipeBuildUtils.of(Item.getItemBlock(BlockID.DRIED_KELP_BLOCK, 0, 10), Item.get(Item.EMERALD))
+                .add(RecipeBuildUtils.of(Item.get(BlockID.DRIED_KELP_BLOCK, 0, 10), Item.get(Item.EMERALD))
                         .setMaxUses(12)
                         .setRewardExp((byte) 1)
                         .setTier(4)

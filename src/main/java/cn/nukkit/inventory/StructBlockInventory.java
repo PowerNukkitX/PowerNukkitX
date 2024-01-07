@@ -15,11 +15,9 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class StructBlockInventory implements Inventory {
-    protected final BlockEntityStructBlock holder;
-
+public class StructBlockInventory extends BlockTypeInventory {
     public StructBlockInventory(BlockEntityStructBlock holder) {
-        this.holder = holder;
+        super(holder, InventoryType.STRUCTURE_BLOCK);
     }
 
     @Override
@@ -38,13 +36,9 @@ public class StructBlockInventory implements Inventory {
     }
 
     @Override
-    public String getName() {
-        return this.holder.getName();
-    }
-
-    @Override
-    @NotNull public Item getItem(int index) {
-        return Item.getItemBlock(BlockID.AIR);
+    @NotNull
+    public Item getItem(int index) {
+        return Item.AIR;
     }
 
     @Override
@@ -69,11 +63,11 @@ public class StructBlockInventory implements Inventory {
 
     @Override
     public Item[] getContents() {
-        return Collections.emptyMap();
+        return Item.EMPTY_ARRAY;
     }
 
     @Override
-    public void setContents(Item[] items) {
+    public void setContents(Map<Integer, Item> items) {
 
     }
 
@@ -178,17 +172,10 @@ public class StructBlockInventory implements Inventory {
             ContainerOpenPacket pk = new ContainerOpenPacket();
             pk.windowId = who.getWindowId(this);
             pk.type = getType().getNetworkType();
-            InventoryHolder holder = this.getHolder();
-            if (holder instanceof Vector3) {
-                pk.x = ((Vector3) holder).getFloorX();
-                pk.y = ((Vector3) holder).getFloorY();
-                pk.z = ((Vector3) holder).getFloorZ();
-            } else {
-                pk.x = pk.y = pk.z = 0;
-            }
-            if (holder instanceof Entity) {
-                pk.entityId = ((Entity) holder).getId();
-            }
+            pk.x = holder.getFloorX();
+            pk.y = holder.getFloorY();
+            pk.z = holder.getFloorZ();
+            pk.entityId = who.getId();
             who.dataPacket(pk);
         }
     }

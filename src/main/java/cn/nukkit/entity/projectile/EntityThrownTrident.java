@@ -27,6 +27,7 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
+import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
@@ -251,7 +252,7 @@ public class EntityThrownTrident extends SlenderProjectile {
     @Override
     public void spawnTo(Player player) {
         AddEntityPacket pk = new AddEntityPacket();
-        pk.type = NETWORK_ID;
+        pk.type = Registries.ENTITY.getEntityNetworkId(THROWN_TRIDENT);
         pk.entityUniqueId = this.getId();
         pk.entityRuntimeId = this.getId();
         pk.x = (float) this.x;
@@ -316,7 +317,7 @@ public class EntityThrownTrident extends SlenderProjectile {
     }
 
     public Entity create(Object type, Position source, Object... args) {
-        FullChunk chunk = source.getLevel().getChunk((int) source.x >> 4, (int) source.z >> 4);
+        IChunk chunk = source.getLevel().getChunk((int) source.x >> 4, (int) source.z >> 4);
         if (chunk == null) return null;
 
         CompoundTag nbt = Entity.getDefaultNBT(

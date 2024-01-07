@@ -15,7 +15,7 @@ public class DestroyBlockParticle extends Particle {
 
     public DestroyBlockParticle(Vector3 pos, Block block) {
         super(pos.x, pos.y, pos.z);
-        this.data = GlobalBlockPalette.getOrCreateRuntimeId(block.getId(), block.getDamage());
+        this.data = block.getRuntimeId();
     }
 
     @Override

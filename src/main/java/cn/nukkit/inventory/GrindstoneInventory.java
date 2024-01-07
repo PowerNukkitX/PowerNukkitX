@@ -2,6 +2,7 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.API;
+import cn.nukkit.block.BlockGrindstone;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -15,27 +16,16 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
 
-public class GrindstoneInventory extends FakeBlockUIComponent {
-
-    public static final int OFFSET = 16;
-    
-    private static final int SLOT_FIRST_ITEM = 0;
-    private static final int SLOT_SECOND_ITEM = 1;
-    private static final int SLOT_RESULT = 50 - OFFSET;
-
-
-    @API(usage = API.Usage.INCUBATING, definition = API.Definition.INTERNAL)
-    public static final int GRINDSTONE_EQUIPMENT_UI_SLOT = OFFSET + SLOT_FIRST_ITEM;
-
-
-    @API(usage = API.Usage.INCUBATING, definition = API.Definition.INTERNAL)
-    public static final int GRINDSTONE_INGREDIENT_UI_SLOT = OFFSET + SLOT_SECOND_ITEM;
-
+public class GrindstoneInventory extends BlockTypeInventory {
     private int resultExperience;
 
+    public GrindstoneInventory(BlockGrindstone blockGrindstone) {
+        super(blockGrindstone, InventoryType.GRINDSTONE);
+    }
 
-    public GrindstoneInventory(PlayerUIInventory playerUI, Position position) {
-        super(playerUI, InventoryType.GRINDSTONE, OFFSET, position);
+    @Override
+    public BlockGrindstone getHolder() {
+        return (BlockGrindstone) super.getHolder();
     }
 
     @Override
@@ -48,7 +38,7 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
         super.onClose(who);
         who.craftingType = Player.CRAFTING_SMALL;
 
-        Item[] drops = new Item[]{ getFirstItem(), getSecondItem() };
+        Item[] drops = new Item[]{getFirstItem(), getSecondItem()};
         drops = who.getInventory().addItem(drops);
         for (Item drop : drops) {
             if (!who.dropItem(drop)) {
@@ -56,8 +46,8 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
             }
         }
 
-        clear(SLOT_FIRST_ITEM);
-        clear(SLOT_SECOND_ITEM);
+        clear(0);
+        clear(1);
 
         who.resetCraftingGridType();
     }
@@ -69,11 +59,11 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
     }
 
     public Item getFirstItem() {
-        return getItem(SLOT_FIRST_ITEM);
+        return getItem(0);
     }
 
     public Item getSecondItem() {
-        return getItem(SLOT_SECOND_ITEM);
+        return getItem(1);
     }
 
     public Item getResult() {
@@ -81,7 +71,7 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
     }
 
     public boolean setFirstItem(Item item, boolean send) {
-        return setItem(SLOT_FIRST_ITEM, item, send);
+        return setItem(0, item, send);
     }
 
     public boolean setFirstItem(Item item) {
@@ -89,7 +79,7 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
     }
 
     public boolean setSecondItem(Item item, boolean send) {
-        return setItem(SLOT_SECOND_ITEM, item, send);
+        return setItem(1, item, send);
     }
 
     public boolean setSecondItem(Item item) {
@@ -103,7 +93,7 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
     public boolean setResult(Item item) {
         return setResult(item, true);
     }
-    
+
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
         try {
@@ -193,11 +183,11 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
                         return Arrays.stream(enchantments).flatMap(Arrays::stream);
                     }
                 })
-                .mapToInt(enchantment-> enchantment.getMinEnchantAbility(enchantment.getLevel()))
+                .mapToInt(enchantment -> enchantment.getMinEnchantAbility(enchantment.getLevel()))
                 .sum();
 
         resultExperience = ThreadLocalRandom.current().nextInt(
-                NukkitMath.ceilDouble((double)resultExperience / 2),
+                NukkitMath.ceilDouble((double) resultExperience / 2),
                 resultExperience + 1
         );
 
@@ -205,14 +195,11 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
     }
 
     @Override
-    @NotNull public Item getItem(int index) {
+    @NotNull
+    public Item getItem(int index) {
         if (index < 0 || index > 3) {
             return Item.AIR;
         }
-        if (index == 2) {
-            index = SLOT_RESULT;
-        }
-
         return super.getItem(index);
     }
 
@@ -221,10 +208,6 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
         if (index < 0 || index > 3) {
             return Item.AIR;
         }
-        if (index == 2) {
-            index = SLOT_RESULT;
-        }
-
         return super.getItemUnsafe(index);
     }
 
@@ -233,11 +216,6 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
         if (index < 0 || index > 3) {
             return false;
         }
-        
-        if (index == 2) {
-            index = SLOT_RESULT;
-        }
-        
         return super.setItem(index, item, send);
     }
 

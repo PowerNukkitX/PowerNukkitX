@@ -66,7 +66,7 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
     }
 
     @Override
-    public boolean isBreakable(Item item) {
+    public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return false;
     }
 

@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.CommonPropertyMap;
-import cn.nukkit.inventory.StonecutterInventory;
+import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
@@ -13,13 +13,15 @@ import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
-public class BlockStonecutterBlock extends BlockTransparent implements Faceable {
+public class BlockStonecutterBlock extends BlockTransparent implements Faceable, BlockInventoryHolder {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(STONECUTTER_BLOCK, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -55,6 +57,7 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable 
         setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getHorizontalIndex()) : BlockFace.SOUTH);
 
         this.getLevel().setBlock(block, this, true, true);
+        setInventoryMetaData(this);
         return true;
     }
 
@@ -66,9 +69,25 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         if (player != null) {
-            player.addWindow(new StonecutterInventory(player.getUIInventory(), this), ContainerIds.NONE);
+            player.addWindow(getInventory(), ContainerIds.NONE);
             player.craftingType = Player.CRAFTING_STONECUTTER;
         }
+        return true;
+    }
+
+    @Override
+    public Supplier<BlockTypeInventory> getBlockInventorySupplier() {
+        return () -> new StonecutterInventory(this);
+    }
+
+    @Override
+    public Inventory getInventory() {
+        return getInventoryMetaData(this);
+    }
+
+    @Override
+    public boolean onBreak(Item item) {
+        removeInventoryMetaData(this);
         return true;
     }
 
@@ -104,14 +123,14 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable 
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[] {  toItem() };
+        return new Item[]{toItem()};
     }
 
     @Override
     public Item toItem() {
         return new ItemBlock(new BlockStonecutterBlock());
     }
-    
+
     @Override
     public double getMaxY() {
         return y + 9 / 16.0;

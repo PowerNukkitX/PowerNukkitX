@@ -140,7 +140,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
 
     @Override
     public void onBreak() {
-        for (Item content : inventory.getContents().values()) {
+        for (Item content : inventory.getContents()) {
             level.dropItem(this, content);
         }
         this.inventory.clearAll();

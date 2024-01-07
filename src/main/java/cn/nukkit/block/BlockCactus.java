@@ -162,7 +162,7 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{
-                Item.getItemBlock(BlockID.CACTUS, 0, 1)
+                Item.get(BlockID.CACTUS, 0, 1)
         };
     }
 

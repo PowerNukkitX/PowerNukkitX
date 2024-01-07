@@ -12,18 +12,11 @@ import static cn.nukkit.recipe.Recipe.matchItemList;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ShapelessRecipe implements CraftingRecipe {
-    @Deprecated
-    @DeprecationDetails(since = "1.19.50-r2", reason = "new ingredients format", replaceWith = "newIngredients")
-    private final List<Item> ingredients = null;
     private String recipeId;
     private final Item output;
-    private long least, most;
+    private UUID uuid;
     private final List<Item> ingredientsAggregate;
-
-
     private final List<String> needTags;
-
-
     private final List<ItemDescriptor> newIngredients;
     private final int priority;
 
@@ -36,6 +29,11 @@ public class ShapelessRecipe implements CraftingRecipe {
     }
 
     public ShapelessRecipe(String recipeId, int priority, Item result, List<ItemDescriptor> ingredients) {
+        this(recipeId, null, priority, result, ingredients);
+    }
+
+    public ShapelessRecipe(String recipeId, UUID uuid, int priority, Item result, List<ItemDescriptor> ingredients) {
+        this.uuid = uuid;
         this.recipeId = recipeId;
         this.priority = priority;
         this.output = result.clone();
@@ -62,8 +60,7 @@ public class ShapelessRecipe implements CraftingRecipe {
                             break;
                         }
                     }
-                    if (!found)
-                        this.ingredientsAggregate.add(item.clone());
+                    if (!found) this.ingredientsAggregate.add(item.clone());
                     this.ingredientsAggregate.sort(CraftingManager.recipeComparator);
                 }
                 case ITEM_TAG -> {
@@ -87,14 +84,12 @@ public class ShapelessRecipe implements CraftingRecipe {
 
     @Override
     public UUID getId() {
-        return new UUID(least, most);
+        return uuid;
     }
 
     @Override
     public void setId(UUID uuid) {
-        this.least = uuid.getLeastSignificantBits();
-        this.most = uuid.getMostSignificantBits();
-
+        this.uuid = uuid;
         if (this.recipeId == null) {
             this.recipeId = this.getId().toString();
         }

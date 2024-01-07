@@ -7,7 +7,7 @@ public class ItemSnifferSpawnEgg extends ItemSpawnEgg {
 
     @Override
     public int getEntityNetworkId() {
-        return;
+        return 139;
     }
 
     @Override

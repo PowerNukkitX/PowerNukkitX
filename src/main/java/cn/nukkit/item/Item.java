@@ -2,6 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Entity;
@@ -117,34 +118,6 @@ public abstract class Item implements Cloneable, ItemID {
         return false;
     }
 
-    public static ItemBlock getItemBlock(String id) {
-        return getItemBlock(id, 0);
-    }
-
-    public static ItemBlock getItemBlock(String id, Integer meta) {
-        return getItemBlock(id, meta, 1);
-    }
-
-    public static ItemBlock getItemBlock(String id, Integer meta, int count) {
-        return getItemBlock(id, meta, count, EmptyArrays.EMPTY_BYTES);
-    }
-
-    /**
-     * Gets ItemBlock.
-     *
-     * @param id    the {@link BlockID} id
-     * @param meta  the Item Meta
-     * @param count the Item count
-     * @param tags  the Item tags
-     * @return the ItemBlock
-     */
-    public static ItemBlock getItemBlock(String id, Integer meta, int count, byte[] tags) {
-        ItemBlock itemBlock = new ItemBlock(Registries.BLOCK.get(getItemBlockState(id, meta)));
-        itemBlock.setCount(count);
-        itemBlock.setCompoundTag(tags);
-        return itemBlock;
-    }
-
     public static Item get(String id) {
         return get(id, 0);
     }
@@ -157,8 +130,19 @@ public abstract class Item implements Cloneable, ItemID {
         return get(id, meta, count, EmptyArrays.EMPTY_BYTES);
     }
 
+    @NotNull
     public static Item get(String id, Integer meta, int count, byte[] tags) {
-        return Registries.ITEM.get(id, meta, count, tags);
+        Item item = Registries.ITEM.get(id, meta, count, tags);
+        if (item == null) {
+            BlockState itemBlockState = getItemBlockState(id, meta);
+            if (itemBlockState == null || itemBlockState == BlockAir.STATE) {
+                return Item.AIR;
+            }
+            item = new ItemBlock(Registries.BLOCK.get(itemBlockState));
+            item.setCount(count);
+            item.setCompoundTag(tags);
+        }
+        return item;
     }
 
     public void readItemJsonComponents(ItemJsonComponents components) {
@@ -1176,7 +1160,7 @@ public abstract class Item implements Cloneable, ItemID {
 
     public final Item increment(int amount) {
         if (count + amount <= 0) {
-            return getItemBlock(BlockID.AIR);
+            return get(BlockID.AIR);
         }
         Item cloned = clone();
         cloned.count += amount;
@@ -1462,6 +1446,7 @@ public abstract class Item implements Cloneable, ItemID {
         int i = Registries.BLOCKSTATE_ITEMMETA.get(id, aux);
         if (i == 0) {
             Block block = Registries.BLOCK.get(id);
+            if (block == null) return BlockAir.STATE;
             return block.getProperties().getDefaultState();
         }
         return Registries.BLOCKSTATE.get(i);

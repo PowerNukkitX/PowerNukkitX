@@ -7,7 +7,7 @@ public class ItemEnderDragonSpawnEgg extends ItemSpawnEgg {
 
     @Override
     public int getEntityNetworkId() {
-        return;
+        return 53;
     }
 
     @Override

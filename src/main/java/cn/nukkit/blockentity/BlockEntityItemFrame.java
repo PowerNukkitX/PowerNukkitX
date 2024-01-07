@@ -113,8 +113,8 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
                 itemTag.putShort("Damage", networkDamage);
                 itemTag.putString("Name", namespacedId);
             }
-            if (item instanceof ItemBlock itemBlock) {
-                itemTag.putCompound("Block", NBTIO.putBlockHelper(itemBlock.getBlock()));
+            if (item.isBlock()) {
+                itemTag.putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag());
             }
             tag.putCompound("Item", itemTag)
                     .putByte("ItemRotation", this.getItemRotation());
@@ -169,7 +169,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
             }
         }
 
-        setItem(Item.getItemBlock(BlockID.AIR, 0, 1), true);
+        setItem(Item.get(BlockID.AIR, 0, 1), true);
         setItemRotation(0);
         spawnToAll();
         level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEM_FRAME_REMOVED);

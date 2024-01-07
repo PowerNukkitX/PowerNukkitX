@@ -1,42 +1,22 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockAnvil;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemID;
-import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Position;
-import cn.nukkit.nbt.tag.CompoundTag;
-import io.netty.util.internal.StringUtil;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.stream.Stream;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class AnvilInventory extends FakeBlockUIComponent {
-    public static final int ANVIL_INPUT_UI_SLOT = 1;
-    public static final int ANVIL_MATERIAL_UI_SLOT = 2;
-    public static final int ANVIL_OUTPUT_UI_SLOT = 3;
-    public static final int OFFSET = 1;
-    public static final int TARGET = 0;
-    public static final int SACRIFICE = 1;
-    public static final int RESULT = ANVIL_OUTPUT_UI_SLOT - 1; //1: offset
+public class AnvilInventory extends BlockTypeInventory {
+    public AnvilInventory(BlockAnvil inventory) {
+        super(inventory, InventoryType.ANVIL);
+    }
 
-    private int cost;
-    private String newItemName;
-
-    @NotNull
-    private Item currentResult = Item.AIR;
-
-    public AnvilInventory(PlayerUIInventory playerUI, Position position) {
-        super(playerUI, InventoryType.ANVIL, OFFSET, position);
+    @Override
+    public BlockAnvil getHolder() {
+        return (BlockAnvil) super.getHolder();
     }
 
     @Override
@@ -52,8 +32,8 @@ public class AnvilInventory extends FakeBlockUIComponent {
             }
         }
 
-        clear(TARGET);
-        clear(SACRIFICE);
+        clear(0);
+        clear(1);
 
         who.resetCraftingGridType();
     }
@@ -65,63 +45,38 @@ public class AnvilInventory extends FakeBlockUIComponent {
     }
 
     public Item getInputSlot() {
-        return this.getItem(TARGET);
+        return this.getItem(0);
     }
 
     public Item getMaterialSlot() {
-        return this.getItem(SACRIFICE);
+        return this.getItem(1);
     }
 
     public Item getOutputSlot() {
-        return this.getItem(RESULT);
+        return this.getItem(2);
     }
 
-    public boolean setFirstItem(Item item, boolean send) {
-        return setItem(SACRIFICE, item, send);
+    public boolean setInputSlot(Item item) {
+        return setInputSlot(item, true);
     }
 
-    public boolean setFirstItem(Item item) {
-        return setFirstItem(item, true);
+    public boolean setInputSlot(Item item, boolean send) {
+        return setItem(0, item, send);
     }
 
-    public boolean setSecondItem(Item item, boolean send) {
-        return setItem(SACRIFICE, item, send);
+    public boolean setMaterialSlot(Item item) {
+        return setMaterialSlot(item, true);
     }
 
-    public boolean setSecondItem(Item item) {
-        return setSecondItem(item, true);
+    public boolean setMaterialSlot(Item item, boolean send) {
+        return setItem(1, item, send);
     }
 
-    private boolean setResult(Item item, boolean send) {
+    public boolean setOutputSlot(Item item) {
+        return setOutputSlot(item, true);
+    }
+
+    public boolean setOutputSlot(Item item, boolean send) {
         return setItem(2, item, send);
-    }
-
-    private boolean setResult(Item item) {
-        if (item == null || item.isNull()) {
-            this.currentResult = Item.AIR;
-        } else {
-            this.currentResult = item.clone();
-        }
-        return true;
-    }
-
-    private static int getRepairCost(Item item) {
-        return item.hasCompoundTag() && item.getNamedTag().contains("RepairCost") ? item.getNamedTag().getInt("RepairCost") : 0;
-    }
-
-    public int getCost() {
-        return this.cost;
-    }
-
-    public void setCost(int cost) {
-        this.cost = cost;
-    }
-
-    public String getNewItemName() {
-        return newItemName;
-    }
-
-    public void setNewItemName(String newItemName) {
-        this.newItemName = newItemName;
     }
 }

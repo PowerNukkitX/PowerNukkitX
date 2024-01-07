@@ -1,16 +1,23 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.BlockAnvil;
+import cn.nukkit.block.BlockBeacon;
+import cn.nukkit.blockentity.BlockEntityBeacon;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
 
 /**
  * @author Rover656
  */
-public class BeaconInventory extends FakeBlockUIComponent {
+public class BeaconInventory extends BlockTypeInventory {
+    public BeaconInventory(BlockEntityBeacon blockEntityBeacon) {
+        super(blockEntityBeacon, InventoryType.BEACON);
+    }
 
-    public BeaconInventory(PlayerUIInventory playerUI, Position position) {
-        super(playerUI, InventoryType.BEACON, 27, position);
+    @Override
+    public BlockEntityBeacon getHolder() {
+        return (BlockEntityBeacon) super.getHolder();
     }
 
     @Override
@@ -23,7 +30,7 @@ public class BeaconInventory extends FakeBlockUIComponent {
                 this.getHolder().getLevel().dropItem(this.getHolder().add(0.5, 0.5, 0.5), drop);
             }
         }
-        
+
         this.clear(0);
     }
 }

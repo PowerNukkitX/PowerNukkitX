@@ -744,7 +744,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 setDataProperty(new IntEntityData(DATA_DISPLAY_OFFSET, offSet));
             }
         } else {
-            int display = blockInside == null ? 0 : blockInside.getId() | blockInside.getDamage() << 16;
+            int display = blockInside == null ? 0 : blockInside.getRuntimeId();
             if (display == 0) {
                 setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 0));
                 return;
@@ -762,8 +762,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         int offSet;
         namedTag.putBoolean("CustomDisplayTile", hasDisplay);
         if (hasDisplay) {
-            display = blockInside.getId()
-                    | blockInside.getDamage() << 16;
+            display = blockInside.getRuntimeId();
             offSet = getDataPropertyInt(DATA_DISPLAY_OFFSET);
             namedTag.putInt("DisplayTile", display);
             namedTag.putInt("DisplayOffset", offSet);
@@ -801,7 +800,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             if (block.isNormalBlock()) {
                 blockInside = block;
                 //              Runtimeid
-                int display = blockInside.getId() | blockInside.getBlockState().specialValue() << 16;
+                int display = blockInside.getRuntimeId();
                 setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 1));
                 setDataProperty(new IntEntityData(DATA_DISPLAY_ITEM, display));
                 setDisplayBlockOffset(6);

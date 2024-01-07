@@ -7,6 +7,6 @@ public class ItemMusicDiscRelic extends ItemMusicDisc {
 
     @Override
     public String getSoundId() {
-        return;
+        return "record.relic";
     }
 }

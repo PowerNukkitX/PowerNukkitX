@@ -47,7 +47,7 @@ public class GiveCommand extends VanillaCommand {
         }
 
         Item item = list.getResult(1);
-        if (item.isNull() && item.getId() != 0) {
+        if (item.isNull()) {
             log.addError("commands.give.item.notFound", item.getDisplayName()).output();
             return 0;
         }

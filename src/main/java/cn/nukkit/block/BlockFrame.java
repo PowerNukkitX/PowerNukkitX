@@ -14,6 +14,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
@@ -31,7 +32,8 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     public static final BlockProperties PROPERTIES = new BlockProperties(FRAME, FACING_DIRECTION, ITEM_FRAME_MAP_BIT, ITEM_FRAME_PHOTO_BIT);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -44,7 +46,8 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     }
 
     @Override
-    @NotNull public BlockFace getBlockFace() {
+    @NotNull
+    public BlockFace getBlockFace() {
         return BlockFace.fromIndex(getPropertyValue(FACING_DIRECTION));
     }
 
@@ -70,12 +73,14 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.ITEM_FRAME;
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityItemFrame> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityItemFrame> getBlockEntityClass() {
         return BlockEntityItemFrame.class;
     }
 
@@ -108,12 +113,11 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     }
 
     @Override
-    public int onTouch(@Nullable Player player, PlayerInteractEvent.Action action) {
+    public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @org.jetbrains.annotations.Nullable Player player, PlayerInteractEvent.@NotNull Action action) {
         onUpdate(Level.BLOCK_UPDATE_TOUCH);
         if (player != null && action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
-            return getOrCreateBlockEntity().dropItem(player) ? 1 : 0;
+            getOrCreateBlockEntity().dropItem(player);
         }
-        return 0;
     }
 
     @Override

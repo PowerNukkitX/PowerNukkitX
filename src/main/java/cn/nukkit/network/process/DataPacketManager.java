@@ -51,6 +51,7 @@ public final class DataPacketManager {
                 new RequestNetworkSettingsProcessor(),
                 new LoginProcessor(),
                 new ClientToServerHandshakeProcessor(),
+                new InventoryTransactionProcessor(),
                 new ResourcePackClientResponseProcessor(),
                 new ResourcePackChunkRequestProcessor(),
                 new SetLocalPlayerAsInitializedProcessor(),

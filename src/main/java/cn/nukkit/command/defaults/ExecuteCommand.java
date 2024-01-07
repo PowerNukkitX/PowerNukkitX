@@ -340,7 +340,7 @@ public class ExecuteCommand extends VanillaCommand {
                 Position pos = list.getResult(2);
                 Block block = pos.getLevelBlock();
                 Block blockName = list.getResult(3);
-                int id = blockName.getId();
+                String id = blockName.getId();
                 String isIF = list.getResult(0);
 
                 boolean matched = block.getId() == id;
@@ -362,11 +362,11 @@ public class ExecuteCommand extends VanillaCommand {
                 Position pos = list.getResult(2);
                 Block block = pos.getLevelBlock();
                 Block blockName = list.getResult(3);
-                int id = blockName.getId();
+                String id = blockName.getId();
                 int data = list.getResult(4);
                 String isIF = list.getResult(0);
 
-                boolean matched = id == block.getId() && (data == -1 || data == block.getDamage());
+                boolean matched = id == block.getId() && (data == -1 || data == block.getBlockState().specialValue());
                 boolean shouldMatch = isIF.equals("if");
                 boolean condition = (matched && shouldMatch) || (!matched && !shouldMatch);
 

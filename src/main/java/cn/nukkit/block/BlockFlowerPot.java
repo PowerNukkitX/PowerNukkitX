@@ -267,7 +267,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
          */
         default CompoundTag getPlantBlockTag() {
             var block = (Block) this;
-            var tag = NBTIO.putBlockHelper(block);
+            var tag = block.getBlockState().getBlockStateTag();
             tag.setName("PlantBlock");
             var item = block.toItem();
             //only exist in PNX

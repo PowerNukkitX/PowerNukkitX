@@ -164,19 +164,14 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
     }
 
     @Override
-    public boolean mustSilkTouch(Vector3 vector, int layer, BlockFace face, Item item, Player player) {
+    public boolean isSilkTouch(Vector3 vector, int layer, BlockFace face, Item item, Player player) {
         if (player != null) {
             BlockEntityBeehive beehive = getBlockEntity();
             if (beehive != null && !beehive.isEmpty()) {
                 return true;
             }
         }
-        return super.mustSilkTouch(vector, layer, face, item, player);
-    }
-
-    @Override
-    public boolean mustDrop(Vector3 vector, int layer, BlockFace face, Item item, Player player) {
-        return mustSilkTouch(vector, layer, face, item, player) || super.mustDrop(vector, layer, face, item, player);
+        return super.isSilkTouch(vector, layer, face, item, player);
     }
 
     @Override
@@ -186,7 +181,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
     
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{Item.getItemBlock(BlockID.BEEHIVE)};
+        return new Item[]{Item.get(BlockID.BEEHIVE)};
     }
 
     @Override

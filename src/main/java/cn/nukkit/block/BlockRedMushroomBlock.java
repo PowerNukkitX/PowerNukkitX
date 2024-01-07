@@ -41,7 +41,7 @@ public class BlockRedMushroomBlock extends BlockSolid {
     public Item[] getDrops(Item item) {
         if (new NukkitRandomSource().nextRange(1, 20) == 1) {
             return new Item[]{
-                    Item.getItemBlock(RED_MUSHROOM_BLOCK)
+                    Item.get(RED_MUSHROOM_BLOCK)
             };
         } else {
             return Item.EMPTY_ARRAY;

@@ -4,6 +4,7 @@ import cn.nukkit.PlayerHandle;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCommandBlock;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCommandBlock;
 import cn.nukkit.blockentity.ICommandBlock;
@@ -27,25 +28,25 @@ public class CommandBlockUpdateProcessor extends DataPacketProcessor<CommandBloc
                     switch (pk.commandBlockMode) {
                         case ICommandBlock.MODE_REPEATING:
                             if (cmdBlock.getId() != BlockID.REPEATING_COMMAND_BLOCK) {
-                                cmdBlock = Block.get(BlockID.REPEATING_COMMAND_BLOCK, cmdBlock.getDamage());
+                                cmdBlock = Block.get(BlockID.REPEATING_COMMAND_BLOCK).setPropertyValues(cmdBlock.getPropertyValues());
                                 commandBlock.scheduleUpdate();
                             }
                             break;
                         case ICommandBlock.MODE_CHAIN:
                             if (cmdBlock.getId() != BlockID.CHAIN_COMMAND_BLOCK) {
-                                cmdBlock = Block.get(BlockID.CHAIN_COMMAND_BLOCK, cmdBlock.getDamage());
+                                cmdBlock = Block.get(BlockID.CHAIN_COMMAND_BLOCK).setPropertyValues(cmdBlock.getPropertyValues());
                             }
                             break;
                         case ICommandBlock.MODE_NORMAL:
                         default:
                             if (cmdBlock.getId() != BlockID.COMMAND_BLOCK) {
-                                cmdBlock = Block.get(BlockID.COMMAND_BLOCK, cmdBlock.getDamage());
+                                cmdBlock = Block.get(BlockID.COMMAND_BLOCK).setPropertyValues(cmdBlock.getPropertyValues());
                             }
                             break;
                     }
 
                     boolean conditional = pk.isConditional;
-                    cmdBlock.setPropertyValue(BlockCommandBlock.CONDITIONAL_BIT, conditional);
+                    cmdBlock.setPropertyValue(CommonBlockProperties.CONDITIONAL_BIT, conditional);
 
                     commandBlock.setCommand(pk.command);
                     commandBlock.setName(pk.name);

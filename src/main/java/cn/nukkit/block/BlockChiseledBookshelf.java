@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityChiseledBookshelf;
+import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBook;
 import cn.nukkit.item.ItemBookWritable;
@@ -26,7 +27,8 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
     public static final BlockProperties PROPERTIES = new BlockProperties(CHISELED_BOOKSHELF, BOOKS_STORED, CommonBlockProperties.DIRECTION);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -72,49 +74,54 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityChiseledBookshelf> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityChiseledBookshelf> getBlockEntityClass() {
         return BlockEntityChiseledBookshelf.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.CHISELED_BOOKSHELF;
     }
 
     @Override
-    public void onPlayerRightClick(@NotNull Player player, Item item, BlockFace face, Vector3 clickPoint) {
-        BlockFace blockFace = getBlockFace();
-        if (player.getHorizontalFacing().getOpposite() == blockFace) {
-            /*
-             * south z==1  The lower left corner is the origin
-             * east  x==1  The lower right corner is the origin
-             * west  x==0  The lower left corner is the origin
-             * north z==0  The lower right corner is the origin
-             */
-            Vector2 clickPos = switch (blockFace) {
-                case NORTH -> new Vector2(1 - clickPoint.getX(), clickPoint.getY());
-                case SOUTH -> new Vector2(clickPoint.getX(), clickPoint.getY());
-                case WEST -> new Vector2(clickPoint.getZ(), clickPoint.getY());
-                case EAST -> new Vector2(1 - clickPoint.getZ(), clickPoint.getY());
-                default -> throw new IllegalArgumentException(blockFace.toString());
-            };
-            int index = getRegion(clickPos);
-            BlockEntityChiseledBookshelf blockEntity = this.getBlockEntity();
-            if (blockEntity != null) {
-                if (blockEntity.hasBook(index)) {
-                    Item book = blockEntity.removeBook(index);
-                    player.getInventory().addItem(book);
-                } else if (item instanceof ItemBook || item instanceof ItemEnchantedBook || item instanceof ItemBookWritable) {
-                    Item itemClone = item.clone();
-                    if (!player.isCreative()) {
-                        itemClone.setCount(itemClone.getCount() - 1);
-                        player.getInventory().setItemInHand(itemClone);
+    public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player, PlayerInteractEvent.@NotNull Action action) {
+        if(action== PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK){
+            BlockFace blockFace = getBlockFace();
+            assert player != null;
+            if (player.getHorizontalFacing().getOpposite() == blockFace) {
+                /*
+                 * south z==1  The lower left corner is the origin
+                 * east  x==1  The lower right corner is the origin
+                 * west  x==0  The lower left corner is the origin
+                 * north z==0  The lower right corner is the origin
+                 */
+                Vector2 clickPos = switch (blockFace) {
+                    case NORTH -> new Vector2(1 - fx, fy);
+                    case SOUTH -> new Vector2(fx, fy);
+                    case WEST -> new Vector2(fz, fy);
+                    case EAST -> new Vector2(1 - fz, fy);
+                    default -> throw new IllegalArgumentException(blockFace.toString());
+                };
+                int index = getRegion(clickPos);
+                BlockEntityChiseledBookshelf blockEntity = this.getBlockEntity();
+                if (blockEntity != null) {
+                    if (blockEntity.hasBook(index)) {
+                        Item book = blockEntity.removeBook(index);
+                        player.getInventory().addItem(book);
+                    } else if (item instanceof ItemBook || item instanceof ItemEnchantedBook || item instanceof ItemBookWritable) {
+                        Item itemClone = item.clone();
+                        if (!player.isCreative()) {
+                            itemClone.setCount(itemClone.getCount() - 1);
+                            player.getInventory().setItemInHand(itemClone);
+                        }
+                        itemClone.setCount(1);
+                        blockEntity.setBook(itemClone, index);
                     }
-                    itemClone.setCount(1);
-                    blockEntity.setBook(itemClone, index);
+                    this.setPropertyValue(BOOKS_STORED, blockEntity.getBooksStoredBit());
+                    this.getLevel().setBlock(this, this, true);
                 }
-                this.setPropertyValue(BOOKS_STORED, blockEntity.getBooksStoredBit());
-                this.getLevel().setBlock(this, this, true);
             }
         }
     }

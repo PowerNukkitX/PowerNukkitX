@@ -32,16 +32,17 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
 
                 BlockVector3 blockPos = action.getPosition();
                 BlockFace blockFace = BlockFace.fromIndex(action.getFacing());
-                if (playerHandle.getLastBlockAction() != null && playerHandle.getLastBlockAction().getAction() == PlayerActionType.PREDICT_DESTROY_BLOCK &&
-                        action.getAction() == PlayerActionType.CONTINUE_DESTROY_BLOCK) {
+                if (playerHandle.getLastBlockAction() != null &&
+                        playerHandle.getLastBlockAction().getAction() == PlayerActionType.PREDICT_DESTROY_BLOCK &&
+                        action.getAction() == PlayerActionType.CONTINUE_DESTROY_BLOCK) {//破坏完一个方块后接着破坏下一个方块
                     playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
-                }
-
-                BlockVector3 lastBreakPos = playerHandle.getLastBlockAction() == null ? null : playerHandle.getLastBlockAction().getPosition();
-                if (lastBreakPos != null && (lastBreakPos.getX() != blockPos.getX() ||
-                        lastBreakPos.getY() != blockPos.getY() || lastBreakPos.getZ() != blockPos.getZ())) {
-                    playerHandle.onBlockBreakAbort(lastBreakPos.asVector3(), BlockFace.DOWN);
-                    playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
+                }else{
+                    BlockVector3 lastBreakPos = playerHandle.getLastBlockAction() == null ? null : playerHandle.getLastBlockAction().getPosition();
+                    if (lastBreakPos != null && (lastBreakPos.getX() != blockPos.getX() ||
+                            lastBreakPos.getY() != blockPos.getY() || lastBreakPos.getZ() != blockPos.getZ())) {
+                        playerHandle.onBlockBreakAbort(lastBreakPos.asVector3(), BlockFace.DOWN);
+                        playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
+                    }
                 }
 
                 switch (action.getAction()) {

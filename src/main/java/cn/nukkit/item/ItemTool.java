@@ -77,7 +77,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
                     return Item.get(ItemID.NETHERITE_HOE);
                 }
                 if (toolType == TYPE_HANDS_ONLY) {
-                    return Item.getItemBlock(BlockID.AIR);
+                    return Item.AIR;
                 }
                 return Item.get(ItemID.NETHERITE_PICKAXE);
             }

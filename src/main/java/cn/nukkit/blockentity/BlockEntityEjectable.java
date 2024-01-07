@@ -134,7 +134,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
 
     @Override
     public void onBreak() {
-        for (Item content : inventory.getContents().values()) {
+        for (Item content : inventory.getContents()) {
             level.dropItem(this, content);
         }
     }

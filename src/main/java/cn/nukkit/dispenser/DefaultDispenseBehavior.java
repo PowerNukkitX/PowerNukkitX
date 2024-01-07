@@ -2,6 +2,7 @@ package cn.nukkit.dispenser;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockDispenser;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.EntityArmorInventory;
 import cn.nukkit.inventory.EntityInventoryHolder;

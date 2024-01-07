@@ -4,6 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.BeaconInventory;
+import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
@@ -15,10 +17,12 @@ import java.util.Map;
 /**
  * @author Rover656
  */
-public class BlockEntityBeacon extends BlockEntitySpawnable {
+public class BlockEntityBeacon extends BlockEntitySpawnable implements InventoryHolder {
+    private final BeaconInventory beaconInventory;
 
     public BlockEntityBeacon(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+        this.beaconInventory = new BeaconInventory(this);
     }
 
     @Override
@@ -104,7 +108,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
             return true;
         }
 
-        for(Map.Entry<Long, Player> entry : players.entrySet()) {
+        for (Map.Entry<Long, Player> entry : players.entrySet()) {
             Player p = entry.getValue();
 
             //If the player is in range
@@ -253,7 +257,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
 
         this.getLevel().addSound(this, Sound.BEACON_POWER);
 
-        BeaconInventory inv = (BeaconInventory)player.getWindowById(Player.BEACON_WINDOW_ID);
+        BeaconInventory inv = (BeaconInventory) player.getWindowById(Player.BEACON_WINDOW_ID);
 
         inv.setItem(0, new ItemBlock(Block.get(BlockID.AIR), 0, 0));
         return true;
@@ -263,5 +267,18 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
         return ((primary == Effect.SPEED || primary == Effect.HASTE) && powerLevel >= 1) ||
                 ((primary == Effect.DAMAGE_RESISTANCE || primary == Effect.JUMP) && powerLevel >= 2) ||
                 (primary == Effect.STRENGTH && powerLevel >= 3);
+    }
+
+    @Override
+    public void close() {
+        if (!closed) {
+            this.beaconInventory.getViewers().forEach(p -> this.beaconInventory.close(p));
+            super.close();
+        }
+    }
+
+    @Override
+    public Inventory getInventory() {
+        return beaconInventory;
     }
 }

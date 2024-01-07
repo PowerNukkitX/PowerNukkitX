@@ -68,7 +68,7 @@ public class BlockObsidian extends BlockSolid {
     @Override
     public void afterRemoval(Block newBlock, boolean update) {
         if (update) {
-            onBreak(Item.getItemBlock(BlockID.AIR));
+            onBreak(Item.AIR);
         }
     }
 

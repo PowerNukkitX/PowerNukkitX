@@ -5,8 +5,6 @@ import cn.nukkit.block.Block;
 /**
  * 实现此接口的区块应该拥有一个能够并行访问的方块缓存，通常每tick都会调用clear。
  */
-
-
 public interface TickCachedBlockStore {
     void clearCachedStore();
 

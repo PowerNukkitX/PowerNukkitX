@@ -132,8 +132,8 @@ public class CraftingDataPacket extends DataPacket {
                     this.putString(smithing.getRecipeId());
                     //todo 1.19.80还没有模板，下个版本再加入
                     this.putRecipeIngredient(new DefaultDescriptor(Item.AIR));
-                    this.putRecipeIngredient(new DefaultDescriptor(smithing.getEquipment()));
-                    this.putRecipeIngredient(new DefaultDescriptor(smithing.getIngredient()));
+                    this.putRecipeIngredient(smithing.getEquipment());
+                    this.putRecipeIngredient(smithing.getIngredient());
                     this.putSlot(smithing.getResult(), true);
                     this.putString(CRAFTING_TAG_SMITHING_TABLE);
                     this.putUnsignedVarInt(recipeNetworkId++);
@@ -163,7 +163,7 @@ public class CraftingDataPacket extends DataPacket {
                 case FURNACE, FURNACE_DATA, SMOKER, SMOKER_DATA, BLAST_FURNACE, BLAST_FURNACE_DATA, CAMPFIRE, CAMPFIRE_DATA -> {
                     SmeltingRecipe smelting = (SmeltingRecipe) recipe;
                     Item input = smelting.getInput();
-                    this.putVarInt(input.getId());
+                    this.putVarInt(input.getRuntimeId());
                     if (recipe.getType().name().endsWith("_DATA")) {
                         this.putVarInt(input.getDamage());
                     }

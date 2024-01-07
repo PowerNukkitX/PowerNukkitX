@@ -32,13 +32,17 @@ import java.util.concurrent.ThreadLocalRandom;
 
 
 public class EntityIntelligentHuman extends EntityIntelligent implements EntityInventoryHolder, IHuman {
+    @Override
+    public @NotNull String getIdentifier() {
+        return PLAYER;
+    }
+
     protected UUID uuid;
     protected byte[] rawUUID;
     protected Skin skin;
     protected FakeHumanInventory inventory;
     protected FakeHumanEnderChestInventory enderChestInventory;
     protected FakeHumanOffhandInventory offhandInventory;
-
     public EntityIntelligentHuman(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -71,10 +75,6 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     @Override
     protected float getBaseOffset() {
         return 1.62f;
-    }
-
-    private int getNetworkId() {
-        return -1;
     }
 
     public Skin getSkin() {
@@ -298,7 +298,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
 
             if (armor.getDamage() >= armor.getMaxDurability()) {
                 getLevel().addSound(this, Sound.RANDOM_BREAK);
-                return Item.getItemBlock(BlockID.AIR, 0, 0);
+                return Item.get(BlockID.AIR, 0, 0);
             }
         }
 

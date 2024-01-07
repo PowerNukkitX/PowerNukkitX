@@ -77,7 +77,7 @@ public class ProfessionArmor extends Profession {
                         .setTier(2)
                         .setTraderExp(10)
                         .build())
-                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,36), Item.getItemBlock(BlockID.BELL, 0 ,1))
+                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,36), Item.get(BlockID.BELL, 0 ,1))
                         .setMaxUses(12)
                         .setRewardExp((byte) 1)
                         .setTier(2)

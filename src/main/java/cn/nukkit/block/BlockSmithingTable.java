@@ -1,20 +1,23 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.inventory.SmithingInventory;
+import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
 
-public class BlockSmithingTable extends BlockSolid {
+public class BlockSmithingTable extends BlockSolid implements BlockInventoryHolder {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(SMITHING_TABLE);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -37,12 +40,34 @@ public class BlockSmithingTable extends BlockSolid {
     }
 
     @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @org.jetbrains.annotations.Nullable Player player) {
+        setInventoryMetaData(this);
+        return super.place(item, block, target, face, fx, fy, fz, player);
+    }
+
+    @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         if (player == null) {
             return false;
         }
 
-        player.addWindow(new SmithingInventory(player.getUIInventory(), this), Player.SMITHING_WINDOW_ID);
+        player.addWindow(getInventory(), Player.SMITHING_WINDOW_ID);
+        return true;
+    }
+
+    @Override
+    public Supplier<BlockTypeInventory> getBlockInventorySupplier() {
+        return () -> new SmithingInventory(this);
+    }
+
+    @Override
+    public Inventory getInventory() {
+        return getInventoryMetaData(this);
+    }
+
+    @Override
+    public boolean onBreak(Item item) {
+        removeInventoryMetaData(this);
         return true;
     }
 

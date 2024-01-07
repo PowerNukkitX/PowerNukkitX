@@ -44,8 +44,8 @@ public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
                 itemTag.putShort("Damage", networkDamage);
                 itemTag.putString("Name", namespacedId);
             }
-            if (item instanceof ItemBlock itemBlock) {
-                itemTag.putCompound("Block", NBTIO.putBlockHelper(itemBlock.getBlock()));
+            if (item.isBlock()) {
+                itemTag.putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag());
             }
             tag.putCompound("Item", itemTag)
                     .putByte("ItemRotation", this.getItemRotation());

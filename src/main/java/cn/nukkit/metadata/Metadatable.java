@@ -8,12 +8,15 @@ import java.util.List;
  * @author MagicDroidX (Nukkit Project)
  */
 public interface Metadatable {
+    void setMetadata(String metadataKey, MetadataValue newMetadataValue);
 
-    void setMetadata(String metadataKey, MetadataValue newMetadataValue) throws Exception;
+    List<MetadataValue> getMetadata(String metadataKey);
 
-    List<MetadataValue> getMetadata(String metadataKey) throws Exception;
+    MetadataValue getMetadata(String metadataKey, Plugin plugin);
 
-    boolean hasMetadata(String metadataKey) throws Exception;
+    boolean hasMetadata(String metadataKey);
 
-    void removeMetadata(String metadataKey, Plugin owningPlugin) throws Exception;
+    boolean hasMetadata(String metadataKey, Plugin plugin);
+
+    void removeMetadata(String metadataKey, Plugin owningPlugin);
 }

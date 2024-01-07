@@ -11,7 +11,8 @@ public class CraftingEventProcessor extends DataPacketProcessor<CraftingEventPac
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull CraftingEventPacket pk) {
         Player player = playerHandle.player;
-        if (player.craftingType == Player.CRAFTING_BIG && pk.type == CraftingEventPacket.TYPE_WORKBENCH
+        //todo check craft
+        /*if (player.craftingType == Player.CRAFTING_BIG && pk.type == CraftingEventPacket.TYPE_WORKBENCH
                 || player.craftingType == Player.CRAFTING_SMALL && pk.type == CraftingEventPacket.TYPE_INVENTORY) {
             if (playerHandle.getCraftingTransaction() != null) {
                 playerHandle.getCraftingTransaction().setReadyToExecute(true);
@@ -19,7 +20,7 @@ public class CraftingEventProcessor extends DataPacketProcessor<CraftingEventPac
                     playerHandle.getCraftingTransaction().setPrimaryOutput(pk.output[0]);
                 }
             }
-        }
+        }*/
     }
 
     @Override

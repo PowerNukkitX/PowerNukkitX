@@ -4,8 +4,6 @@ import cn.nukkit.blockentity.BlockEntityDispenser;
 
 
 public class DispenserInventory extends EjectableInventory {
-
-
     public DispenserInventory(BlockEntityDispenser blockEntity) {
         super(blockEntity, InventoryType.DISPENSER);
     }

@@ -20,11 +20,6 @@ public class BlockEntityBarrel extends BlockEntitySpawnableContainer implements 
     }
 
     @Override
-    public int getSize() {
-        return 27;
-    }
-
-    @Override
     public CompoundTag getSpawnCompound() {
         return new CompoundTag()
                 .putString("id", BlockEntity.BARREL)

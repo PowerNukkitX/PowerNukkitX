@@ -32,6 +32,7 @@ import cn.nukkit.network.protocol.SetEntityDataPacket;
 import cn.nukkit.potion.Effect;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 
@@ -241,7 +242,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             }
             return true;
         } else if (!item.isNull()) {
-            Item itemtoAddToArmorStand = Item.getItemBlock(BlockID.AIR);
+            Item itemtoAddToArmorStand = Item.AIR;
             if (!handItem.isNull()) {
                 if (handItem.equals(item, true, true)) {
                     // Attempted to replace with the same item type
@@ -262,7 +263,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
                     itemToSetToPlayerInv.count--;
                 } else {
                     itemtoAddToArmorStand = handItem.clone();
-                    itemToSetToPlayerInv = Item.getItemBlock(BlockID.AIR);
+                    itemToSetToPlayerInv = Item.AIR;
                 }
                 player.getInventory().setItem(player.getInventory().getHeldItemIndex(), itemToSetToPlayerInv);
             }
@@ -359,7 +360,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         pos.y = y + 1.4;
         level.dropItem(byAttack ? pos : this, Item.get(ItemID.ARMOR_STAND));
         level.dropItem(pos, armorInventory.getChestplate());
-        equipmentInventory.getContents().values().forEach(items -> this.level.dropItem(this, items));
+        Arrays.stream(equipmentInventory.getContents()).forEach(items -> this.level.dropItem(this, items));
         equipmentInventory.clearAll();
 
         pos.y = y + 1.8;

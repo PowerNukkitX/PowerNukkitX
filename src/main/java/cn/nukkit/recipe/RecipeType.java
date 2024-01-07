@@ -25,9 +25,6 @@ public enum RecipeType {
     STONECUTTER(0),
     CARTOGRAPHY(0),
     REPAIR(-1),
-
-    @DeprecationDetails(since = "1.19.63-r2", reason = "Use SMITHING_TRANSFORM instead", replaceWith = "SMITHING_TRANSFORM")
-    SMITHING(8),
     // For mods
     MOD_PROCESS(0);
 

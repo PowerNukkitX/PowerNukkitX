@@ -9,7 +9,7 @@ public class ItemTraderLlamaSpawnEgg extends ItemSpawnEgg {
 
     @Override
     public int getEntityNetworkId() {
-        return;
+        return 157;
     }
 
     @Override

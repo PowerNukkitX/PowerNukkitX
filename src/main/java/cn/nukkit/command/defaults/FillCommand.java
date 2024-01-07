@@ -1,6 +1,7 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -50,10 +51,10 @@ public class FillCommand extends VanillaCommand {
         Position from = list.getResult(0);
         Position to = list.getResult(1);
         Block tileName = list.getResult(2);
-        int tileId = tileName.getId();
+        String tileId = tileName.getId();
         int tileData = 0;
         FillMode oldBlockHandling = FillMode.REPLACE;
-        int replaceTileId;
+        String replaceTileId;
         int replaceDataValue = -1;
 
         AxisAlignedBB aabb = new SimpleAxisAlignedBB(Math.min(from.getX(), to.getX()), Math.min(from.getY(), to.getY()), Math.min(from.getZ(), to.getZ()), Math.max(from.getX(), to.getX()), Math.max(from.getY(), to.getY()), Math.max(from.getZ(), to.getZ()));
@@ -98,8 +99,8 @@ public class FillCommand extends VanillaCommand {
                                     boolean isBorderZ = z == NukkitMath.floorDouble(from.z) || z == NukkitMath.floorDouble(to.z);
                                     boolean isBorderY = y == NukkitMath.floorDouble(from.y) || y == NukkitMath.floorDouble(to.y);
 
-                                    if (isBorderX|| isBorderZ || isBorderY) {
-                                        level.setBlock(x, y, z, Block.get(tileId, tileData), false, true);
+                                    if (isBorderX || isBorderZ || isBorderY) {
+                                        level.setBlock(x, y, z, getBlockWithDamage(tileId, tileData), false, true);
                                         ++count;
                                     }
                                 }
@@ -116,7 +117,7 @@ public class FillCommand extends VanillaCommand {
                                     boolean isBorderY = y == NukkitMath.floorDouble(from.y) || y == NukkitMath.floorDouble(to.y);
 
                                     if (isBorderX || isBorderZ || isBorderY) {
-                                        block = Block.get(tileId, tileData);
+                                        block = getBlockWithDamage(tileId, tileData);
                                     } else {
                                         block = Block.get(Block.AIR);
                                     }
@@ -130,7 +131,7 @@ public class FillCommand extends VanillaCommand {
                     case REPLACE -> {
                         blocks = getLevelBlocks(level, aabb);
                         for (Block block : blocks) {
-                            level.setBlock(block, Block.get(tileId, tileData));
+                            level.setBlock(block, getBlockWithDamage(tileId, tileData));
                             ++count;
                         }
                     }
@@ -138,7 +139,7 @@ public class FillCommand extends VanillaCommand {
                         blocks = getLevelBlocks(level, aabb);
                         for (Block block : blocks) {
                             level.useBreakOn(block, null, null, null, true);
-                            level.setBlock(block, Block.get(tileId, tileData));
+                            level.setBlock(block, getBlockWithDamage(tileId, tileData));
                             ++count;
                         }
                     }
@@ -146,7 +147,7 @@ public class FillCommand extends VanillaCommand {
                         blocks = getLevelBlocks(level, aabb);
                         for (Block block : blocks) {
                             if (block.getId() == Block.AIR) {
-                                level.setBlock(block, Block.get(tileId, tileData));
+                                level.setBlock(block, getBlockWithDamage(tileId, tileData));
                                 ++count;
                             }
                         }
@@ -162,20 +163,8 @@ public class FillCommand extends VanillaCommand {
                 }
                 blocks = getLevelBlocks(level, aabb);
                 for (Block block : blocks) {
-                    if (replaceTileId != -1) {
-                        if (replaceDataValue == -1) {
-                            if (block.getId() == replaceTileId) {
-                                level.setBlock(block, Block.get(tileId, tileData));
-                                ++count;
-                            }
-                        } else {
-                            if (block.getId() == replaceTileId && block.getDamage() == replaceDataValue) {
-                                level.setBlock(block, Block.get(tileId, tileData));
-                                ++count;
-                            }
-                        }
-                    } else {
-                        level.setBlock(block, Block.get(tileId, tileData));
+                    if (block.getId() == replaceTileId) {
+                        level.setBlock(block, getBlockWithDamage(tileId, tileData));
                         ++count;
                     }
                 }
@@ -192,6 +181,12 @@ public class FillCommand extends VanillaCommand {
             log.addSuccess("commands.fill.success", String.valueOf(count));
             return 1;
         }
+    }
+
+    private Block getBlockWithDamage(String id, int damage) {
+        Block block = Block.get(id);
+        BlockState blockState = block.getProperties().getBlockState((short) damage);
+        return blockState.toBlock();
     }
 
     private enum FillMode {

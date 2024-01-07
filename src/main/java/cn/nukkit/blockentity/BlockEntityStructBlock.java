@@ -1,5 +1,6 @@
 package cn.nukkit.blockentity;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.property.enums.StructureBlockType;
 import cn.nukkit.inventory.Inventory;
@@ -32,10 +33,12 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     private String structureName;
     private BlockVector3 size;
     private BlockVector3 offset;
+    private final StructBlockInventory structBlockInventory;
 
 
     public BlockEntityStructBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+        this.structBlockInventory = new StructBlockInventory(this);
     }
 
     @Override
@@ -193,7 +196,17 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
 
     @Override
     public Inventory getInventory() {
-        return new StructBlockInventory(this);
+        return this.structBlockInventory;
+    }
+
+    @Override
+    public void close() {
+        if(!closed){
+            for (Player player : this.getInventory().getViewers()) {
+                this.getInventory().close(player);
+            }
+            super.close();
+        }
     }
 
     public void updateSetting(StructureBlockUpdatePacket packet) {

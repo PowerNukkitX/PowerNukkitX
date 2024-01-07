@@ -213,12 +213,12 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
         Item target = null;
 
         Inventory inv = blockEntity.getInventory();
-        for (Entry<Integer, Item> entry : inv.getContents().entrySet()) {
-            Item item = entry.getValue();
-
+        Item[] contents = inv.getContents();
+        for (int i = 0; i < contents.length; i++) {
+            Item item = contents[i];
             if (!item.isNull() && rand.nextInt(r++) == 0) {
                 target = item;
-                slot = entry.getKey();
+                slot = i;
             }
         }
 

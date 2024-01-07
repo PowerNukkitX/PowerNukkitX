@@ -1,6 +1,7 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
@@ -50,7 +51,7 @@ public class CloneCommand extends VanillaCommand {
         Position destination = list.getResult(2);
         MaskMode maskMode = MaskMode.REPLACE;
         CloneMode cloneMode = CloneMode.NORMAL;
-        int tileId = 0;
+        String tileId = BlockID.AIR;
         int tileData = 0;
         switch (result.getKey()) {
             case "default" -> {
@@ -150,7 +151,7 @@ public class CloneCommand extends VanillaCommand {
                     Block block = blocks[i];
                     Block destinationBlock = destinationBlocks[i];
 
-                    if (block.getId() == tileId && block.getDamage() == tileData) {
+                    if (block.getId() == tileId && block.getBlockState().specialValue() == tileData) {
                         block.cloneTo(destinationBlock);
                         ++count;
 

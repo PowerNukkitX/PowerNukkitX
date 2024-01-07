@@ -7,7 +7,7 @@ public class ItemIronGolemSpawnEgg extends ItemSpawnEgg {
 
     @Override
     public int getEntityNetworkId() {
-        return;
+        return 20;
     }
 
     @Override

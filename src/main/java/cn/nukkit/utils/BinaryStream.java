@@ -443,7 +443,7 @@ public class BinaryStream {
         if (blockRuntimeId == 0) {
             item = Item.get(Registries.ITEM_RUNTIMEID.getIdentifier(runtimeId), damage, count);
         } else {
-            item = Item.getItemBlock(Registries.ITEM_RUNTIMEID.getIdentifier(runtimeId), damage, count);
+            item = Item.get(Registries.ITEM_RUNTIMEID.getIdentifier(runtimeId), damage, count);
             BlockState blockState = Registries.BLOCKSTATE.get(blockRuntimeId);
             if (blockState != null) {
                 item.setBlockUnsafe(blockState.toBlock());

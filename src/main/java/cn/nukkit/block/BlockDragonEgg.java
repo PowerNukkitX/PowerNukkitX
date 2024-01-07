@@ -2,12 +2,16 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.event.block.BlockFromToEvent;
+import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockDragonEgg extends BlockFallable {
@@ -65,15 +69,13 @@ public class BlockDragonEgg extends BlockFallable {
     }
 
     @Override
-    public int onTouch(@Nullable Player player, Action action) {
+    public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player, PlayerInteractEvent.@NotNull Action action) {
         if (player != null && (action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK)) {
             if (player.isCreative() && action == Action.LEFT_CLICK_BLOCK) {
-                return 0;
+                return;
             }
             onUpdate(Level.BLOCK_UPDATE_TOUCH);
-            return 1;
         }
-        return 0;
     }
 
     public void teleport() {

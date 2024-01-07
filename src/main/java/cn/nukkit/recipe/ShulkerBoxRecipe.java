@@ -4,6 +4,7 @@ import cn.nukkit.item.Item;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author joserobjr
@@ -23,6 +24,10 @@ public class ShulkerBoxRecipe extends ShapelessRecipe {
 
     public ShulkerBoxRecipe(String recipeId, int priority, Item result, List<ItemDescriptor> ingredients) {
         super(recipeId, priority, result, ingredients);
+    }
+
+    public ShulkerBoxRecipe(String recipeId, UUID uuid, int priority, Item result, List<ItemDescriptor> ingredients) {
+        super(recipeId, uuid, priority, result, ingredients);
     }
 
     @Override

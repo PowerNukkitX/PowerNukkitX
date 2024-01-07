@@ -32,52 +32,54 @@ import static cn.nukkit.recipe.Recipe.matchItemList;
  * @author joserobjr
  * @since 2020-09-28
  */
-
-
 @ToString
-public class SmithingRecipe extends ShapelessRecipe {
-    //被锻造的物品
-    private final Item base;
-    //锻造模板
-    private final Item template;
-    //锻造所用的材料
-    private final Item addition;
-    //输出结果
-    private final Item result;
+public class SmithingRecipe implements Recipe {
+    private final String recipeId;
+    private final ItemDescriptor base;//被锻造的物品
+    private final ItemDescriptor addition; //锻造所用的材料
+    private final ItemDescriptor template;//锻造模板
+    private final Item result; //输出结果
+
     private final List<Item> ingredientsAggregate;
+    private final List<String> needTags;
 
-    //todo 不知道锻造台是否支持item_tag以及其他类型的配方输入,当前的配方文件中不存在,等待未来检查
-
-
-    public SmithingRecipe(String recipeId, int priority, Collection<Item> ingredients, Item result) {
-        super(recipeId, priority, result, ingredients);
-        this.base = (Item) ingredients.toArray()[0];
-        this.addition = (Item) ingredients.toArray()[1];
-        this.template = (Item) ingredients.toArray()[2];
+    public SmithingRecipe(String recipeId, Item result, ItemDescriptor base, ItemDescriptor addition, ItemDescriptor template) {
+        this.recipeId = recipeId;
+        this.needTags = new ArrayList<>();
+        this.base = base;
+        this.addition = addition;
+        this.template = template;
         this.result = result;
-
-        ArrayList<Item> aggregation = new ArrayList<>(2);
-
-        for (Item item : new Item[]{base, addition}) {
-            if (item.getCount() < 1) {
-                throw new IllegalArgumentException("Recipe Ingredient amount was not 1 (value: " + item.getCount() + ")");
-            }
-            boolean found = false;
-            for (Item existingIngredient : aggregation) {
-                if (existingIngredient.equals(item, item.hasMeta(), item.hasCompoundTag())) {
-                    existingIngredient.setCount(existingIngredient.getCount() + item.getCount());
-                    found = true;
-                    break;
+        this.ingredientsAggregate = new ArrayList<>();
+        for (ItemDescriptor itemDescriptor : List.of(base, addition, template)) {
+            switch (itemDescriptor.getType()) {
+                case DEFAULT -> {
+                    var item = itemDescriptor.toItem();
+                    if (item.getCount() < 1) {
+                        throw new IllegalArgumentException("Recipe '" + recipeId + "' Ingredient amount was not 1 (value: " + item.getCount() + ")");
+                    }
+                    boolean found = false;
+                    for (Item existingIngredient : this.ingredientsAggregate) {
+                        if (existingIngredient.equals(item, item.hasMeta(), item.hasCompoundTag())) {
+                            existingIngredient.setCount(existingIngredient.getCount() + item.getCount());
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                        this.ingredientsAggregate.add(item.clone());
+                    this.ingredientsAggregate.sort(CraftingManager.recipeComparator);
+                }
+                case ITEM_TAG -> this.needTags.add(((ItemTagDescriptor) itemDescriptor).getItemTag());
+                default -> {
                 }
             }
-            if (!found) {
-                aggregation.add(item.clone());
-            }
         }
+    }
 
-        aggregation.trimToSize();
-        aggregation.sort(CraftingManager.recipeComparator);
-        this.ingredientsAggregate = Collections.unmodifiableList(aggregation);
+    @Override
+    public String getRecipeId() {
+        return recipeId;
     }
 
     @Override
@@ -116,20 +118,24 @@ public class SmithingRecipe extends ShapelessRecipe {
         return RecipeType.SMITHING_TRANSFORM;
     }
 
-    public Item getTemplate() {
+    public ItemDescriptor getTemplate() {
         return template;
     }
 
-    public Item getEquipment() {
+    public ItemDescriptor getEquipment() {
         return base;
     }
 
-    public Item getIngredient() {
+    public ItemDescriptor getIngredient() {
         return addition;
     }
 
     public List<Item> getIngredientsAggregate() {
         return ingredientsAggregate;
+    }
+
+    public List<String> getNeedTags() {
+        return needTags;
     }
 
     public boolean matchItems(List<Item> inputList) {

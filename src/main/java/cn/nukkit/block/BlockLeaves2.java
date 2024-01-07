@@ -44,6 +44,6 @@ public class BlockLeaves2 extends BlockLeaves {
 
     @Override
     protected Item getSapling() {
-        return Item.getItemBlock(BlockID.SAPLING, getPropertyValue(NEW_LEAF_TYPE).ordinal() + 4);
+        return Item.get(BlockID.SAPLING, getPropertyValue(NEW_LEAF_TYPE).ordinal() + 4);
     }
 }

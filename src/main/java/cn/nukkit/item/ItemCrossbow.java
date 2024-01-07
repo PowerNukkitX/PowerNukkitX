@@ -48,7 +48,7 @@ public class ItemCrossbow extends ItemTool {
             Item itemArrow;
             Inventory inventory = player.getOffhandInventory();
             if (!this.canLoad(itemArrow = inventory.getItem(0))) {
-                for (Item item : (inventory = player.getInventory()).getContents().values()) {
+                for (Item item : (inventory = player.getInventory()).getContents()) {
                     if (this.canLoad(item)) {
                         itemArrow = item;
                         break;

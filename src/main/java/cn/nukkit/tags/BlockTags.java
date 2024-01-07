@@ -48,6 +48,7 @@ public final class BlockTags {
 
     //PNX only
     public static final String PNX_WOOL = "pnx:wool";
+    public static final String PNX_SHULKERBOX = "pnx:shulkerbox";
 
 
     private static final Object2ObjectOpenHashMap<String, Set<String>> TAG_2_BLOCKS = new Object2ObjectOpenHashMap<>();

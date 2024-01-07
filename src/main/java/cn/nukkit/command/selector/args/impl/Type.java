@@ -9,6 +9,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.level.Location;
 import cn.nukkit.network.protocol.AddEntityPacket;
+import cn.nukkit.registry.Registries;
 import com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,7 +21,7 @@ import java.util.function.Predicate;
 
 public class Type extends CachedSimpleSelectorArgument {
 
-    public static final Map<Integer, String> ENTITY_ID2TYPE = AddEntityPacket.LEGACY_IDS;
+    public static final Map<Integer, String> ENTITY_ID2TYPE = Registries.ENTITY.getEntityId2NetworkIdMap();
     public static final Map<String, Integer> ENTITY_TYPE2ID;
 
     static {

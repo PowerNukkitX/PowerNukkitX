@@ -97,7 +97,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
 
     @Override
     public void onBreak() {
-        for (Item content : inventory.getContents().values()) {
+        for (Item content : inventory.getContents()) {
             level.dropItem(this, content);
         }
         this.inventory.clearAll();

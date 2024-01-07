@@ -19,7 +19,8 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
     public static final BlockProperties PROPERTIES = new BlockProperties(BEACON);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -32,12 +33,14 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityBeacon> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityBeacon> getBlockEntityClass() {
         return BlockEntityBeacon.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.BEACON;
     }
 
@@ -92,8 +95,8 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
             return false;
         }
 
-        getOrCreateBlockEntity();
-        player.addWindow(new BeaconInventory(player.getUIInventory(), this), Player.BEACON_WINDOW_ID);
+        BlockEntityBeacon blockEntityBeacon = getOrCreateBlockEntity();
+        player.addWindow(blockEntityBeacon.getInventory(), Player.BEACON_WINDOW_ID);
         return true;
     }
 
@@ -108,7 +111,7 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
     }
 
     @Override
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 }

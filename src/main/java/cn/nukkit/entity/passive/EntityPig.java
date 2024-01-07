@@ -112,7 +112,7 @@ public class EntityPig extends EntityAnimal implements EntityWalkable {
 
     @Override
     public boolean isBreedingItem(Item item) {
-        int id = item.getId();
+        String id = item.getId();
 
         return id == Item.CARROT || id == Item.POTATO || id == Item.BEETROOT;
     }

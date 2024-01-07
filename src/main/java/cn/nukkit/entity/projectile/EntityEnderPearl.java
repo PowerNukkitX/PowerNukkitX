@@ -65,7 +65,7 @@ public class EntityEnderPearl extends EntityProjectile {
         if (this.isCollided && this.shootingEntity instanceof Player) {
             boolean portal = false;
             for (Block collided : this.getCollisionBlocks()) {
-                if (collided.getId() == Block.NETHER_PORTAL) {
+                if (collided.getId() == Block.PORTAL) {
                     portal = true;
                 }
             }

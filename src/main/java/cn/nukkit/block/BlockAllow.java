@@ -5,8 +5,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 
@@ -43,11 +43,6 @@ public class BlockAllow extends BlockSolid {
     }
 
     @Override
-    public boolean isBreakable(Item item) {
-        return false;
-    }
-
-    @Override
     public boolean canBePushed() {
         return false;
     }
@@ -72,12 +67,12 @@ public class BlockAllow extends BlockSolid {
     }
 
     @Override
-    public boolean isBreakable(Vector3 vector, int layer, BlockFace face, Item item, @Nullable Player player, boolean setBlockDestroy) {
+    public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         if (player != null && (!player.isCreative() || !player.isOp())) {
             return false;
         }
 
-        return super.isBreakable(vector, layer, face, item, player, setBlockDestroy);
+        return super.isBreakable(vector, layer, face, item, player);
     }
 
     @Override

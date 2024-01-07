@@ -58,7 +58,7 @@ public class BlockDeepslate extends BlockSolid {
             return Item.EMPTY_ARRAY;
         }
 
-        return new Item[]{Item.getItemBlock(BlockID.COBBLED_DEEPSLATE)};
+        return new Item[]{Item.get(BlockID.COBBLED_DEEPSLATE)};
     }
 
     @Override

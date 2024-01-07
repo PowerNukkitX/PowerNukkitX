@@ -56,20 +56,12 @@ public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.Flowe
     }
     
     private boolean isSupportValid() {
-        //TODO IMPLEMENT ALL TERRACOTTA
-        switch (down().getId()) {
-            case SAND:
-            case TERRACOTTA:
-            case STAINED_TERRACOTTA:
-            case DIRT:
-            case PODZOL:
-            case GRASS:
-            case MOSS_BLOCK:
-            case MYCELIUM:
-                return true;
-            default:
-                return false;
-        }
+        Block down = down();
+        if(down instanceof BlockHardenedClay)  return true;
+        return switch (down.getId()) {
+            case SAND, DIRT, PODZOL, GRASS, MOSS_BLOCK, MYCELIUM -> true;
+            default -> false;
+        };
     }
 
     @Override

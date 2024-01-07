@@ -16,8 +16,6 @@ import java.util.Set;
  * @author MagicDroidX (Nukkit Project)
  */
 public interface Inventory {
-    BiMap<Integer, Integer> getNetworkSlotBiMap();
-
     int MAX_STACK = 64;
 
     /**
@@ -103,7 +101,7 @@ public interface Inventory {
     @ApiStatus.Internal
     Item[] getContents();
 
-    void setContents(Item[] items);
+    void setContents(Map<Integer, Item> items);
 
     void sendContents(Player player);
 

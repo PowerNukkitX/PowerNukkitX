@@ -20,6 +20,7 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.block.BlockSmithingTable;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
 import cn.nukkit.recipe.SmithingRecipe;
@@ -31,24 +32,12 @@ import javax.annotation.Nullable;
  * @author joserobjr
  * @since 2020-09-28
  */
+public class SmithingInventory extends BlockTypeInventory {
+    private Item currentResult = Item.AIR;
 
 
-public class SmithingInventory extends FakeBlockUIComponent {
-    private static final int EQUIPMENT = 0;
-    private static final int INGREDIENT = 1;
-
-
-    public static final int SMITHING_EQUIPMENT_UI_SLOT = 51;
-
-
-    public static final int SMITHING_INGREDIENT_UI_SLOT = 52;
-
-
-    private Item currentResult = AIR_ITEM;
-
-
-    public SmithingInventory(PlayerUIInventory playerUI, Position position) {
-        super(playerUI, InventoryType.SMITHING_TABLE, 51, position);
+    public SmithingInventory(BlockSmithingTable table) {
+        super(table, InventoryType.SMITHING_TABLE);
     }
 
     public @Nullable SmithingRecipe matchRecipe() {
@@ -57,7 +46,7 @@ public class SmithingInventory extends FakeBlockUIComponent {
 
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
-        if (index == EQUIPMENT || index == INGREDIENT) {
+        if (index == 0 || index == 1) {
             updateResult();
         }
         super.onSlotChange(index, before, send);
@@ -67,7 +56,7 @@ public class SmithingInventory extends FakeBlockUIComponent {
         Item result;
         SmithingRecipe recipe = matchRecipe();
         if (recipe == null) {
-            result =  AIR_ITEM;
+            result =  Item.AIR;
         } else {
             result = recipe.getFinalResult(getEquipment());
         }
@@ -83,25 +72,25 @@ public class SmithingInventory extends FakeBlockUIComponent {
     @NotNull public Item getResult() {
         SmithingRecipe recipe = matchRecipe();
         if (recipe == null) {
-            return AIR_ITEM;
+            return Item.AIR;
         }
         return recipe.getFinalResult(getEquipment());
     }
 
     public Item getEquipment() {
-        return getItem(EQUIPMENT);
+        return getItem(0);
     }
 
     public void setEquipment(Item equipment) {
-        setItem(EQUIPMENT, equipment);
+        setItem(0, equipment);
     }
 
     public Item getIngredient() {
-        return getItem(INGREDIENT);
+        return getItem(1);
     }
 
     public void setIngredient(Item ingredient) {
-        setItem(INGREDIENT, ingredient);
+        setItem(1, ingredient);
     }
 
     @Override
@@ -115,11 +104,10 @@ public class SmithingInventory extends FakeBlockUIComponent {
         super.onClose(who);
         who.craftingType = Player.CRAFTING_SMALL;
 
-        who.giveItem(getItem(EQUIPMENT), getItem(INGREDIENT));
+        who.giveItem(getItem(0), getItem(1));
         
-        this.clear(EQUIPMENT);
-        this.clear(INGREDIENT);
-        playerUI.clear(50);
+        this.clear(0);
+        this.clear(1);
     }
 
     @NotNull public Item getCurrentResult() {

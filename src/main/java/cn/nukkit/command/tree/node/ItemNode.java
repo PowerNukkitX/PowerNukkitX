@@ -12,7 +12,7 @@ import cn.nukkit.item.Item;
 public class ItemNode extends ParamNode<Item> {
     @Override
     public void fill(String arg) {
-        Item item = Item.fromString(arg);
+        Item item = Item.get(arg);
         if (item.isNull()) {
             error();
             return;

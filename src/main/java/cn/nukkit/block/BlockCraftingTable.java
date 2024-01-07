@@ -58,7 +58,7 @@ public class BlockCraftingTable extends BlockSolid {
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         if (player != null) {
             player.craftingType = Player.CRAFTING_BIG;
-            player.setCraftingGrid(player.getUIInventory().getBigCraftingGrid());
+//            player.setCraftingGrid(player.getUIInventory().getBigCraftingGrid());
             ContainerOpenPacket pk = new ContainerOpenPacket();
             pk.windowId = -1;
             pk.type = 1;
