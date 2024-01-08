@@ -5,8 +5,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.utils.OK;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -16,7 +17,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class BiomeRegistry extends BaseRegistry<Integer, BiomeRegistry.BiomeDefinition, BiomeRegistry.BiomeDefinition> {
+public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefinition, BiomeRegistry.BiomeDefinition> {
     private static final Int2ObjectOpenHashMap<BiomeDefinition> DEFINITIONS = new Int2ObjectOpenHashMap<>(0xFF);
     private static final Object2IntOpenHashMap<String> NAME2ID = new Object2IntOpenHashMap<>(0xFF);
     private static final List<CompoundTag> REGISTRY = new ArrayList<>(0xFF);
@@ -25,7 +26,7 @@ public class BiomeRegistry extends BaseRegistry<Integer, BiomeRegistry.BiomeDefi
     @Override
     public void init() {
         try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("biome_id_and_type.json")) {
-            Gson gson = new Gson();
+            Gson gson = new GsonBuilder().setObjectToNumberStrategy(JsonReader::nextInt).create();
             Map<String, ?> map = gson.fromJson(new InputStreamReader(stream), Map.class);
             for (var e : map.entrySet()) {
                 NAME2ID.put(e.getKey(), Integer.parseInt(((Map<String, ?>) e.getValue()).get("id").toString()));

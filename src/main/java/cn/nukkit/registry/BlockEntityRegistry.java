@@ -1,11 +1,10 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.blockentity.*;
-import cn.nukkit.utils.OK;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-public class BlockEntityRegistry extends BaseRegistry<String, Class<? extends BlockEntity>, Class<? extends BlockEntity>> implements BlockEntityID {
+public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Class<? extends BlockEntity>, Class<? extends BlockEntity>> {
     private static final BiMap<String, Class<? extends BlockEntity>> knownBlockEntities = HashBiMap.create(35);
 
     @Override

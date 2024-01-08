@@ -2,10 +2,9 @@ package cn.nukkit.registry;
 
 import cn.nukkit.level.generator.Flat;
 import cn.nukkit.level.generator.Generator;
-import cn.nukkit.utils.OK;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
-public class GeneratorRegistry extends BaseRegistry<String, Class<? extends Generator>, Class<? extends Generator>> {
+public class GeneratorRegistry implements IRegistry<String, Class<? extends Generator>, Class<? extends Generator>> {
     private static final Object2ObjectOpenHashMap<String, Class<? extends Generator>> REGISTRY = new Object2ObjectOpenHashMap<>();
 
     @Override

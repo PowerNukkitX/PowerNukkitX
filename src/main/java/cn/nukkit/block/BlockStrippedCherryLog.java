@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.WoodType;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockStrippedCherryLog extends BlockWoodStripped {
@@ -27,5 +28,10 @@ public class BlockStrippedCherryLog extends BlockWoodStripped {
     @Override
     public BlockState getStrippedState() {
         return BlockStrippedAcaciaLog.PROPERTIES.getDefaultState();
+    }
+
+    @Override
+    public WoodType getWoodType() {
+        throw new UnsupportedOperationException();
     }
 }

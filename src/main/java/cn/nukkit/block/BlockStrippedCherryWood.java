@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
@@ -59,5 +60,10 @@ public class BlockStrippedCherryWood extends BlockWoodStripped {
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         return false;
+    }
+
+    @Override
+    public WoodType getWoodType() {
+        throw new UnsupportedOperationException();
     }
 }

@@ -30,4 +30,8 @@ public abstract class BlockWoodStripped extends BlockWood {
     public boolean onActivate(@NotNull Item item, Player player) {
         return false;
     }
+
+    @Override
+    public void setWoodType(WoodType woodType) {
+    }
 }

@@ -5,7 +5,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockProperties;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Level;
-import cn.nukkit.utils.OK;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.sunlan.fastreflection.FastConstructor;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -20,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * @author Cool_Loong | Mcayear | KoshakMineDEV | WWMB | Draglis
  */
-public final class BlockRegistry extends BaseRegistry<String, Block, Class<? extends Block>> implements BlockID {
+public final class BlockRegistry implements BlockID, IRegistry<String, Block, Class<? extends Block>> {
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
     private static final Set<String> KEYSET = new HashSet<>();
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Block>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();

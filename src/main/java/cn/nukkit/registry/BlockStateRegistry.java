@@ -1,7 +1,6 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.block.BlockState;
-import cn.nukkit.utils.OK;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -10,7 +9,7 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * @author Cool_Loong
  */
-public final class BlockStateRegistry extends BaseRegistry<Integer, BlockState, BlockState> {
+public final class BlockStateRegistry implements IRegistry<Integer, BlockState, BlockState> {
     private static final Int2ObjectOpenHashMap<BlockState> REGISTRY = new Int2ObjectOpenHashMap<>();
 
     @Override

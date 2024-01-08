@@ -10,7 +10,6 @@ import cn.nukkit.entity.projectile.*;
 import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.utils.OK;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -23,7 +22,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.util.*;
 
 @Slf4j
-public class EntityRegistry extends BaseRegistry<EntityRegistry.EntityDefinition, Class<? extends Entity>, Class<? extends Entity>> implements EntityID {
+public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.EntityDefinition, Class<? extends Entity>, Class<? extends Entity>> {
     private static final Object2ObjectOpenHashMap<String, Class<? extends Entity>> CLASS = new Object2ObjectOpenHashMap<>();
     private static final Object2IntOpenHashMap<String> ID2RID = new Object2IntOpenHashMap<>();
     private static final Int2ObjectArrayMap<String> RID2ID = new Int2ObjectArrayMap<>();

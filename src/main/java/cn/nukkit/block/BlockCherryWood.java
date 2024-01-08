@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,6 +34,15 @@ public class BlockCherryWood extends BlockWood {
 
     public void setStripped(boolean stripped) {
         setPropertyValue(CommonBlockProperties.STRIPPED_BIT, stripped);
+    }
+
+    @Override
+    public void setWoodType(WoodType woodType) {
+    }
+
+    @Override
+    public WoodType getWoodType() {
+        throw new UnsupportedOperationException();
     }
 
     @Override

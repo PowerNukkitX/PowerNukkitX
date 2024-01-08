@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.WoodType;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockStrippedMangroveWood extends BlockWoodStripped {
@@ -22,5 +23,10 @@ public class BlockStrippedMangroveWood extends BlockWoodStripped {
     @Override
     public String getName() {
         return "Stripped Mangrove Wood";
+    }
+
+    @Override
+    public WoodType getWoodType() {
+        return WoodType.OAK;
     }
 }

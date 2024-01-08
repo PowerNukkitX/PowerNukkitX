@@ -3,7 +3,6 @@ package cn.nukkit.registry;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
-import cn.nukkit.utils.OK;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 import java.io.IOException;
@@ -11,7 +10,7 @@ import java.io.IOException;
 /**
  * @author Cool_Loong
  */
-public class BlockState2ItemMetaRegistry extends BaseRegistry<String, Integer, Integer> {
+public class BlockState2ItemMetaRegistry implements IRegistry<String, Integer, Integer> {
     //blockid#meta -> blockhash
     private static final Object2IntOpenHashMap<String> MAP = new Object2IntOpenHashMap<>();
 

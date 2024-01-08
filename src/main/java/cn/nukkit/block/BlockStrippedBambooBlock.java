@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,7 +12,8 @@ public class BlockStrippedBambooBlock extends BlockWoodStripped {
     public static final BlockProperties PROPERTIES = new BlockProperties(STRIPPED_BAMBOO_BLOCK, PILLAR_AXIS);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -25,6 +27,11 @@ public class BlockStrippedBambooBlock extends BlockWoodStripped {
 
     public String getName() {
         return "Stripped Bamboo Block";
+    }
+
+    @Override
+    public WoodType getWoodType() {
+        throw new UnsupportedOperationException();
     }
 
     @Override

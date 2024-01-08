@@ -1,14 +1,12 @@
 package cn.nukkit.registry;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.utils.OK;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 
-public class FuelRegistry extends BaseRegistry<String, Integer, Integer> {
+public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
     private static final Object2IntOpenHashMap<String> REGISTRY = new Object2IntOpenHashMap<>();
 
     @Override
@@ -53,6 +51,7 @@ public class FuelRegistry extends BaseRegistry<String, Integer, Integer> {
         register0(BlockID.SPRUCE_FENCE_GATE, 300);
         register0(BlockID.DARK_OAK_FENCE_GATE, 300);
 
+        register0(BlockID.OAK_STAIRS, 300);
         register0(BlockID.ACACIA_STAIRS, 300);
         register0(BlockID.BAMBOO_STAIRS, 300);
         register0(BlockID.BIRCH_STAIRS, 300);
@@ -76,24 +75,24 @@ public class FuelRegistry extends BaseRegistry<String, Integer, Integer> {
         register0(ItemID.DARK_OAK_SIGN, 200);
 
         register0(BlockID.SAPLING, 100);
+        register0(ItemID.STICK, 100);
+        register0(BlockID.AZALEA, 100);
+        register0(ItemID.BOWL, 100);
+
         register0(ItemID.WOODEN_AXE, 200);
         register0(ItemID.WOODEN_PICKAXE, 200);
         register0(ItemID.WOODEN_SWORD, 200);
         register0(ItemID.WOODEN_SHOVEL, 200);
         register0(ItemID.WOODEN_HOE, 200);
-        register0(ItemID.STICK, 100);
-        register0(BlockID.OAK_STAIRS, 300);
-        register0(BlockID.SPRUCE_STAIRS, 300);
-        register0(BlockID.BIRCH_STAIRS, 300);
-        register0(BlockID.JUNGLE_STAIRS, 300);
+        register0(ItemID.BOW, 200);
+
         register0(BlockID.TRAPDOOR, 300);
         register0(BlockID.CRAFTING_TABLE, 300);
         register0(BlockID.BOOKSHELF, 300);
         register0(BlockID.CHEST, 300);
-        register0(ItemID.BUCKET, 20000);
         register0(BlockID.LADDER, 300);
-        register0(ItemID.BOW, 200);
-        register0(ItemID.BOWL, 100);
+        register0(ItemID.LAVA_BUCKET, 20000);
+
         register0(BlockID.CHERRY_WOOD, 300);
         register0(BlockID.MANGROVE_WOOD, 300);
         register0(BlockID.STRIPPED_CHERRY_WOOD, 300);
@@ -133,12 +132,14 @@ public class FuelRegistry extends BaseRegistry<String, Integer, Integer> {
         register0(BlockID.LECTERN, 300);
         register0(BlockID.COMPOSTER, 300);
         register0(BlockID.BARREL, 300);
-        register0(BlockID.AZALEA, 100);
     }
 
     @Override
-    public Integer get(String key) {
-        return REGISTRY.get(key);
+    public Integer get(Item key) {
+        String hash;
+        if (key.isBlock()) hash = key.getBlockId() + "#" + key.getDamage();
+        else hash = key.getId() + "#" + key.getDamage();
+        return REGISTRY.get(hash);
     }
 
     /**
@@ -146,17 +147,17 @@ public class FuelRegistry extends BaseRegistry<String, Integer, Integer> {
      * @return fuel duration, if it cannot be used as fuel, return -1.
      */
     public int getFuelDuration(@NotNull Item item) {
-        int id = REGISTRY.getInt(item.getId());
+        int id = REGISTRY.getInt(item.getId() + "#" + item.getDamage());
         if (id == 0 && item.isBlock()) {
-            id = REGISTRY.getInt(item.getBlockId());
+            id = REGISTRY.getInt(item.getBlockId() + "#" + item.getDamage());
         }
         return id;
     }
 
     public boolean isFuel(@NotNull Item item) {
-        boolean b = REGISTRY.containsKey(item.getId());
+        boolean b = REGISTRY.containsKey(item.getId() + "#" + item.getDamage());
         if (!b && item.isBlock()) {
-            b = REGISTRY.containsKey(item.getBlockId());
+            b = REGISTRY.containsKey(item.getBlockId() + "#" + item.getDamage());
         }
         return b;
     }
@@ -167,8 +168,11 @@ public class FuelRegistry extends BaseRegistry<String, Integer, Integer> {
     }
 
     @Override
-    public void register(String key, Integer value) throws RegisterException {
-        if (REGISTRY.putIfAbsent(key, value.intValue()) == 0) {
+    public void register(Item key, Integer value) throws RegisterException {
+        String hash;
+        if (key.isBlock()) hash = key.getBlockId() + "#" + key.getDamage();
+        else hash = key.getId() + "#" + key.getDamage();
+        if (REGISTRY.putIfAbsent(hash, value.intValue()) == 0) {
         } else {
             throw new RegisterException("This Fuel has already been registered with the key: " + key);
         }
@@ -176,7 +180,21 @@ public class FuelRegistry extends BaseRegistry<String, Integer, Integer> {
 
     private void register0(String key, Integer value) {
         try {
-            register(key, value);
+            if (REGISTRY.putIfAbsent(key + "#0", value.intValue()) == 0) {
+            } else {
+                throw new RegisterException("This Fuel has already been registered with the key: " + key);
+            }
+        } catch (RegisterException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void register1(String key, int meta, Integer value) {
+        try {
+            if (REGISTRY.putIfAbsent(key + "#" + meta, value.intValue()) == 0) {
+            } else {
+                throw new RegisterException("This Fuel has already been registered with the key: " + key);
+            }
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

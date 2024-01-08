@@ -8,7 +8,6 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.utils.OK;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,7 +20,7 @@ import java.util.Map;
  * @author Cool_Loong
  */
 @Slf4j
-public class CreativeItemRegistry extends BaseRegistry<Integer, Item, Item> implements ItemID {
+public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, Item> {
     private static final Int2ObjectLinkedOpenHashMap<Item> MAP = new Int2ObjectLinkedOpenHashMap<>();
 
     @Override
