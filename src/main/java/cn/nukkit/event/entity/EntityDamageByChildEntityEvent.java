@@ -1,11 +1,17 @@
 package cn.nukkit.event.entity;
 
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.HandlerList;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityDamageByChildEntityEvent extends EntityDamageByEntityEvent {
+    private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final Entity childEntity;
 

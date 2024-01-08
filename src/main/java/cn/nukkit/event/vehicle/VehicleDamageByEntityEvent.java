@@ -15,8 +15,11 @@ import lombok.Getter;
 
 public final class VehicleDamageByEntityEvent extends VehicleDamageEvent implements Cancellable {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final Entity attacker;
 

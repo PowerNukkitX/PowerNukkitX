@@ -11,8 +11,11 @@ import lombok.Getter;
 
 public class TurtleEggHatchEvent extends BlockEvent implements Cancellable {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private int eggsHatching;
     private Block newState;

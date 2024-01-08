@@ -10,8 +10,11 @@ import lombok.Getter;
  */
 public class BlockRedstoneEvent extends BlockEvent {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private int oldPower;
     private int newPower;

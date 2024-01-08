@@ -6,8 +6,11 @@ import cn.nukkit.level.Position;
 import lombok.Getter;
 
 public class PlayerRespawnEvent extends PlayerEvent {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private Position position;//Respawn Position
     @Deprecated

@@ -8,8 +8,11 @@ import lombok.Getter;
 
 public class PlayerFormRespondedEvent extends PlayerEvent {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     protected FormWindow window;
     protected int formID;

@@ -10,8 +10,11 @@ import lombok.Getter;
 
 public class RepairItemEvent extends InventoryEvent implements Cancellable {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final Player player;
     private final Item oldItem;

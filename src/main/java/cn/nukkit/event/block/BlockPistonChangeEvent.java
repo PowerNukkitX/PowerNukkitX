@@ -13,8 +13,11 @@ import lombok.Getter;
 @Deprecated
 public class BlockPistonChangeEvent extends BlockEvent {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private int oldPower;
     private int newPower;

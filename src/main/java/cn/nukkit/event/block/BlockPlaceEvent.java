@@ -12,8 +12,11 @@ import lombok.Getter;
  */
 public class BlockPlaceEvent extends BlockEvent implements Cancellable {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     protected final Block blockReplace;
     protected final Block blockAgainst;

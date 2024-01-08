@@ -13,8 +13,11 @@ import javax.annotation.Nullable;
 @Setter
 public class ScoreboardLineChangeEvent extends ScoreboardEvent {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private @Nullable final IScoreboardLine line;
     private int newValue;

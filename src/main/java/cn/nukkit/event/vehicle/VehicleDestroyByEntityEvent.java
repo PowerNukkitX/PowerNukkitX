@@ -12,11 +12,10 @@ import cn.nukkit.event.HandlerList;
  */
 
 public final class VehicleDestroyByEntityEvent extends VehicleDestroyEvent implements Cancellable {
-
-    private static final HandlerList HANDLER_LIST = new HandlerList();
+    private static final HandlerList handlers = new HandlerList();
 
     public static HandlerList getHandlers() {
-        return HANDLER_LIST;
+        return handlers;
     }
 
     private final Entity destroyer;

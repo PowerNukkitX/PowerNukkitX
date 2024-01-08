@@ -7,9 +7,11 @@ import cn.nukkit.network.protocol.DataPacket;
 import lombok.Getter;
 
 public class BatchPacketsEvent extends ServerEvent implements Cancellable {
-
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private Player[] players;
     private DataPacket[] packets;

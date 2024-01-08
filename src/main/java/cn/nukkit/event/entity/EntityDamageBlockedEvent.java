@@ -8,8 +8,11 @@ import lombok.Getter;
 
 public class EntityDamageBlockedEvent extends EntityEvent implements Cancellable {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final EntityDamageEvent damage;
     private boolean knockBackAttacker;

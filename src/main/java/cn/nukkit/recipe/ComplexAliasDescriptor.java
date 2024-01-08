@@ -4,7 +4,6 @@ import cn.nukkit.item.Item;
 import lombok.Value;
 
 @Value
-
 public class ComplexAliasDescriptor implements ItemDescriptor {
     String name;
 
@@ -20,7 +19,7 @@ public class ComplexAliasDescriptor implements ItemDescriptor {
 
     @Override
     public ItemDescriptor clone() throws CloneNotSupportedException {
-        return null;
+        return (ItemDescriptor) super.clone();
     }
 
     @Override

@@ -9,7 +9,6 @@ import cn.nukkit.math.Vector3;
 
 
 public class ComposterEmptyEvent extends BlockEvent implements Cancellable {
-
     private static final HandlerList handlers = new HandlerList();
 
     private final Player player;

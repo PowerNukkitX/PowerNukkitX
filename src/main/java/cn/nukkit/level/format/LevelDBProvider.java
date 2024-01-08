@@ -29,6 +29,7 @@ import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteBatch;
+import org.iq80.leveldb.util.FileUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
@@ -240,7 +241,7 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public DimensionData getDimensionData() {
-        return level.getDimensionData();
+        return dimensionData;
     }
 
     @Override
@@ -697,6 +698,10 @@ public class LevelDBProvider implements LevelProvider {
                     .useMsaGamertagsOnly(d.getBoolean("useMsaGamertagsOnly"))
                     .worldStartCount(d.getLong("worldStartCount"))
                     .worldPolicies(LevelDat.WorldPolicies.builder().build())
+                    .generatorName(d.getString("generatorName"))//PNX Custom field
+                    .generatorOptions(d.getString("generatorOptions"))//PNX Custom field
+                    .raining(d.getBoolean("raining"))//PNX Custom field
+                    .thundering(d.getBoolean("thundering"))//PNX Custom field
                     .build();
         } catch (FileNotFoundException e) {
             log.error("The level.dat file does not exist!");
@@ -808,6 +813,12 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.put("showtags", worldData.getGameRules().getGameRules().get(GameRule.SHOW_TAGS).getTag());
         levelDat.put("spawnradius", worldData.getGameRules().getGameRules().get(GameRule.SPAWN_RADIUS).getTag());
         levelDat.put("tntexplodes", worldData.getGameRules().getGameRules().get(GameRule.TNT_EXPLODES).getTag());
+
+        //PNX Custom field
+        levelDat.putString("generatorName", worldData.getGeneratorName());
+        levelDat.putString("generatorOptions", worldData.getGeneratorOptions());
+        levelDat.putBoolean("raining", worldData.isRaining());
+        levelDat.putBoolean("thundering", worldData.isThundering());
         return levelDat;
     }
 }

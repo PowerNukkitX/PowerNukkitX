@@ -271,7 +271,6 @@ public class CraftingManager {
             pk.addStonecutterRecipe(recipe);
         }
         pk.tryEncode();
-        //TODO: find out whats wrong with compression
         packet = pk.compress(Deflater.BEST_COMPRESSION);
     }
 
@@ -599,7 +598,6 @@ public class CraftingManager {
 
     @SneakyThrows
     private void loadRecipes() {
-        var gson = new GsonBuilder().create();
         //load xp config
         var furnaceXpConfig = new Config(Config.JSON);
         try (var r = Server.class.getClassLoader().getResourceAsStream("furnace_xp.json")) {
@@ -648,6 +646,10 @@ public class CraftingManager {
             for (Map<String, Object> recipe : recipes) {
                 int type = Utils.toInt(recipe.get("type"));
                 Recipe re = switch (type) {
+                    case 9 -> {
+                        //todo trim smithing recipe
+                        yield null;
+                    }
                     case 4 -> {
                         UUID uuid = UUID.fromString(recipe.get("uuid").toString());
                         yield new MultiRecipe(uuid);
@@ -675,7 +677,7 @@ public class CraftingManager {
                             case "furnace" -> new FurnaceRecipe(result, input);
                             case "blast_furnace" -> new BlastFurnaceRecipe(result, input);
                             case "smoker" -> new SmokerRecipe(result, input);
-                            case "campfire" -> new CampfireRecipe(result, input);
+                            case "campfire", "soul_campfire" -> new CampfireRecipe(result, input);
                             default -> throw new IllegalStateException("Unexpected value: " + craftingBlock);
                         };
                         var xp = furnaceXpConfig.getDouble(input.getId() + ":" + input.getDamage());
@@ -687,7 +689,9 @@ public class CraftingManager {
                     default -> throw new IllegalStateException("Unexpected value: " + recipe);
                 };
                 if (re == null) {
-                    log.warn("Load recipe {} with null!", recipe.toString().substring(0, 20));
+                    if (type != 9) {//todo trim smithing recipe
+                        log.warn("Load recipe {} with null!", recipe.toString().substring(0, 60));
+                    }
                     continue;
                 }
                 this.registerRecipe(re);
@@ -745,9 +749,10 @@ public class CraftingManager {
             itemDescriptors.add(recipeItem);
         }
         return switch (craftingBlock) {
-            case "crafting_table" -> new ShapelessRecipe(id, uuid, priority, resultItem, itemDescriptors);
+            case "crafting_table", "deprecated" -> new ShapelessRecipe(id, uuid, priority, resultItem, itemDescriptors);
             case "shulker_box" -> new ShulkerBoxRecipe(id, uuid, priority, resultItem, itemDescriptors);
-            case "stonecutter" -> new StonecutterRecipe(id, uuid, priority, resultItem, itemDescriptors.get(0).toItem());
+            case "stonecutter" ->
+                    new StonecutterRecipe(id, uuid, priority, resultItem, itemDescriptors.get(0).toItem());
             case "cartography_table" -> new CartographyRecipe(id, uuid, priority, resultItem, itemDescriptors);
             default -> null;
         };
@@ -785,46 +790,55 @@ public class CraftingManager {
     }
 
     private ItemDescriptor parseRecipeItem(Map<String, Object> data) {
-        if (data.containsKey("type") && data.get("type").toString().equals("item_tag")) {
-            var itemTag = data.get("itemTag").toString();
-            int count = data.containsKey("count") ? ((Number) data.get("count")).intValue() : 1;
-            return new ItemTagDescriptor(itemTag, count);
-        } else {
-            Item item;
-
-            String name = null;
-            if (data.containsKey("id")) {
-                name = data.get("id").toString();
-            } else if (data.containsKey("itemId")) {
-                name = data.get("itemId").toString();
-            }
-            if (name == null) return null;
-
-            int count = data.containsKey("count") ? ((Number) data.get("count")).intValue() : 1;
-
-            String nbt = (String) data.get("nbt");
-            byte[] nbtBytes = nbt != null ? Base64.getDecoder().decode(nbt) : EmptyArrays.EMPTY_BYTES;
-
-            Integer meta = null;
-            if (data.containsKey("damage")) {
-                meta = Utils.toInt(data.get("damage"));
-            } else if (data.containsKey("auxValue")) {
-                meta = Utils.toInt(data.get("auxValue"));
-            }
-            if (meta != null) {
-                if (meta == Short.MAX_VALUE) {
-                    item = Item.get(name).createFuzzyCraftingRecipe();
-                } else {
-                    item = Item.get(name, meta);
+        String type = data.containsKey("type") ? data.get("type").toString() : "default";
+        ItemDescriptorType itemDescriptorType = ItemDescriptorType.valueOf(type.toUpperCase(Locale.ENGLISH));
+        return switch (itemDescriptorType) {
+            case DEFAULT -> {
+                Item item;
+                String name = null;
+                if (data.containsKey("id")) {
+                    name = data.get("id").toString();
+                } else if (data.containsKey("itemId")) {
+                    name = data.get("itemId").toString();
                 }
-            } else {
-                item = Item.get(name);
-            }
+                if (name == null) yield null;
 
-            item.setCount(count);
-            item.setCompoundTag(nbtBytes);
-            return new DefaultDescriptor(item);
-        }
+                int count = data.containsKey("count") ? ((Number) data.get("count")).intValue() : 1;
+
+                String nbt = (String) data.get("nbt");
+                byte[] nbtBytes = nbt != null ? Base64.getDecoder().decode(nbt) : EmptyArrays.EMPTY_BYTES;
+
+                Integer meta = null;
+                if (data.containsKey("damage")) {
+                    meta = Utils.toInt(data.get("damage"));
+                } else if (data.containsKey("auxValue")) {
+                    meta = Utils.toInt(data.get("auxValue"));
+                }
+                if (meta != null) {
+                    if (meta == Short.MAX_VALUE) {
+                        item = Item.get(name).createFuzzyCraftingRecipe();
+                    } else {
+                        item = Item.get(name, meta);
+                    }
+                } else {
+                    item = Item.get(name);
+                }
+
+                item.setCount(count);
+                item.setCompoundTag(nbtBytes);
+                yield new DefaultDescriptor(item);
+            }
+            case COMPLEX_ALIAS -> {
+                String name = data.get("name").toString();
+                yield new ComplexAliasDescriptor(name);
+            }
+            case ITEM_TAG -> {
+                var itemTag = data.get("itemTag").toString();
+                int count = data.containsKey("count") ? ((Number) data.get("count")).intValue() : 1;
+                yield new ItemTagDescriptor(itemTag, count);
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + type);
+        };
     }
 
     public static class Entry {

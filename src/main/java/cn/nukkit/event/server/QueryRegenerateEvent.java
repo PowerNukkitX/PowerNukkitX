@@ -22,8 +22,11 @@ import java.util.Map;
 public class QueryRegenerateEvent extends ServerEvent {
     //alot todo
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private static final String GAME_ID = "MINECRAFTPE";
 

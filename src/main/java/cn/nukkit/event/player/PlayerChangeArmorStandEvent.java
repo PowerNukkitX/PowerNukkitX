@@ -9,8 +9,11 @@ import lombok.Getter;
 
 
 public class PlayerChangeArmorStandEvent extends PlayerEvent implements Cancellable {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final Entity armorStand;
     private final int slot;

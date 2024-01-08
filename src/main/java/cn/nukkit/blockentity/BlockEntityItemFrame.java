@@ -5,7 +5,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFrame;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.item.EntityItem;
-import cn.nukkit.event.block.ItemFrameDropItemEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
@@ -149,14 +148,6 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
             return null;
         }
 
-        ItemFrameDropItemEvent event = new ItemFrameDropItemEvent(player, getLevelBlock(), this, drop);
-        level.getServer().getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
-            if (player != null) {
-                spawnTo(player);
-            }
-            return null;
-        }
 
         EntityItem itemEntity = null;
         if (this.getItemDropChance() > ThreadLocalRandom.current().nextFloat()) {

@@ -8,8 +8,11 @@ import cn.nukkit.math.BlockFace;
 import lombok.Getter;
 
 public class PlayerBucketFillEvent extends PlayerBucketEvent {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     public PlayerBucketFillEvent(Player who, Block blockClicked, BlockFace blockFace, Block liquid, Item bucket, Item itemInHand) {
         super(who, blockClicked, blockFace, liquid, bucket, itemInHand);

@@ -10,8 +10,11 @@ import lombok.Getter;
  * @since 15-10-26
  */
 public class EntityBlockChangeEvent extends EntityEvent implements Cancellable {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final Block from;
     private final Block to;

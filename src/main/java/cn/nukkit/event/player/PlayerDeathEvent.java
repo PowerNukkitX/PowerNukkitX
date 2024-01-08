@@ -11,8 +11,11 @@ import cn.nukkit.lang.TranslationContainer;
 import lombok.Getter;
 
 public class PlayerDeathEvent extends EntityDeathEvent implements Cancellable {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private TextContainer deathMessage;
     private boolean keepInventory = false;

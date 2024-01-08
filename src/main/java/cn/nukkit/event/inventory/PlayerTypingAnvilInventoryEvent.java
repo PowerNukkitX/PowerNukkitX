@@ -37,8 +37,11 @@ import javax.annotation.Nullable;
 
 @ToString
 public class PlayerTypingAnvilInventoryEvent extends InventoryEvent {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final Player player;
     private final String previousName;

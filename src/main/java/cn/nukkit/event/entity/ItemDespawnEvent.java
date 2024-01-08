@@ -9,8 +9,11 @@ import lombok.Getter;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemDespawnEvent extends EntityEvent implements Cancellable {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     public ItemDespawnEvent(EntityItem item) {
         this.entity = item;

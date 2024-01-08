@@ -6,8 +6,11 @@ import cn.nukkit.event.HandlerList;
 import lombok.Getter;
 
 public class PlayerToggleGlideEvent extends PlayerEvent implements Cancellable {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     protected final boolean isGliding;
 

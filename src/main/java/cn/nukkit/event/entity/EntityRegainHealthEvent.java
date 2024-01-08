@@ -9,8 +9,11 @@ import lombok.Getter;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityRegainHealthEvent extends EntityEvent implements Cancellable {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     public static final int CAUSE_REGEN = 0;
     public static final int CAUSE_EATING = 1;

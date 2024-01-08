@@ -5,8 +5,11 @@ import cn.nukkit.event.HandlerList;
 import lombok.Getter;
 
 public class PlayerChunkRequestEvent extends PlayerEvent {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final int chunkX;
     private final int chunkZ;

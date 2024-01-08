@@ -17,8 +17,11 @@ import lombok.Getter;
 
 public class CraftItemEvent extends Event implements Cancellable {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final Recipe recipe;
     private final Player player;

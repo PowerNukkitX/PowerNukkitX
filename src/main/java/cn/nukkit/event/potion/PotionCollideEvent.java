@@ -12,8 +12,11 @@ import lombok.Getter;
  */
 public class PotionCollideEvent extends PotionEvent implements Cancellable {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final EntitySplashPotion thrownPotion;
 

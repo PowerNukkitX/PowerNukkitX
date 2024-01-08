@@ -10,8 +10,11 @@ import lombok.Getter;
  */
 public class RedstoneUpdateEvent extends BlockUpdateEvent {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     public RedstoneUpdateEvent(Block source) {
         super(source);

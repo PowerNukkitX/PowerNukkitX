@@ -16,8 +16,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     protected @Nullable final Block blockTouched;
     protected @Nullable final BlockFace blockFace;

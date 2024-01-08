@@ -16,8 +16,11 @@ import java.util.Set;
  */
 public class EntityExplodeEvent extends EntityEvent implements Cancellable {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     protected final Position position;
     protected List<Block> blocks;

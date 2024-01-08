@@ -12,8 +12,11 @@ import lombok.Getter;
  */
 public class FurnaceBurnEvent extends BlockEvent implements Cancellable {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final BlockEntityFurnace furnace;
     private final Item fuel;

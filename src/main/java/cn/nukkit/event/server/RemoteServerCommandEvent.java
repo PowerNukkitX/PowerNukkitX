@@ -10,8 +10,11 @@ import lombok.Getter;
  * @author Tee7even
  */
 public class RemoteServerCommandEvent extends ServerCommandEvent {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     public RemoteServerCommandEvent(CommandSender sender, String command) {
         super(sender, command);

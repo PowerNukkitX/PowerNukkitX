@@ -7,8 +7,11 @@ import lombok.Getter;
 
 
 public class ConsoleCommandOutputEvent extends ServerEvent implements Cancellable {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     protected final CommandSender sender;
     protected String message;

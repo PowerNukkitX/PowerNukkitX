@@ -8,8 +8,11 @@ import lombok.Getter;
 
 public class EntityExitVehicleEvent extends VehicleEvent implements Cancellable {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final cn.nukkit.entity.Entity riding;
 

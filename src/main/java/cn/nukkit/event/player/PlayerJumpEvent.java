@@ -5,8 +5,11 @@ import cn.nukkit.event.HandlerList;
 import lombok.Getter;
 
 public class PlayerJumpEvent extends PlayerEvent {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     public PlayerJumpEvent(Player player){
         this.player = player;

@@ -12,8 +12,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PlayerChatEvent extends PlayerMessageEvent implements Cancellable {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     protected Set<CommandSender> recipients = new HashSet<>();
     protected String format;

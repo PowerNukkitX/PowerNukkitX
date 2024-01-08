@@ -14,8 +14,11 @@ import java.util.Objects;
 
 public class StructureGrowEvent extends LevelEvent implements Cancellable {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final Block block;
     private final List<Block> blocks;

@@ -6,8 +6,11 @@ import cn.nukkit.lang.TextContainer;
 import lombok.Getter;
 
 public class PlayerJoinEvent extends PlayerEvent {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     protected TextContainer joinMessage;
 

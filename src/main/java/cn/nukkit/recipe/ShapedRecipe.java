@@ -220,12 +220,8 @@ public class ShapedRecipe implements CraftingRecipe {
     }
 
     public ItemDescriptor getNewIngredient(int x, int y) {
-        try {
-            var res = this.newIngredients.get(this.shape[y].charAt(x));
-            return res != null ? res.clone() : new DefaultDescriptor(Item.AIR);
-        } catch (CloneNotSupportedException ignore) {
-            return null;
-        }
+        var res = this.newIngredients.get(this.shape[y].charAt(x));
+        return res == null ? new DefaultDescriptor(Item.AIR) : res;
     }
 
     public String[] getShape() {

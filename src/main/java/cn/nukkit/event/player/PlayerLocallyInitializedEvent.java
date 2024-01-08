@@ -9,8 +9,11 @@ import lombok.Getter;
  */
 
 public class PlayerLocallyInitializedEvent extends PlayerEvent {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     public PlayerLocallyInitializedEvent(Player player) {
         this.player = player;

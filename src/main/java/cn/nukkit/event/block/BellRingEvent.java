@@ -9,8 +9,11 @@ import lombok.Getter;
 
 public class BellRingEvent extends BlockEvent implements Cancellable {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final RingCause cause;
     private final Entity entity;

@@ -20,8 +20,11 @@ import javax.annotation.Nullable;
 
 
 public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     protected final Player player;
     protected final Item item;

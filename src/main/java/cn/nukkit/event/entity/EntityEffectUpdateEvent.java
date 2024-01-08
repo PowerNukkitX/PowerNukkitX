@@ -8,8 +8,11 @@ import lombok.Getter;
 
 
 public class EntityEffectUpdateEvent extends EntityEvent implements Cancellable {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private Effect oldEffect;
     private Effect newEffect;

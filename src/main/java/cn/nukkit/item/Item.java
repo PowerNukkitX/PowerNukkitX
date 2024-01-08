@@ -823,7 +823,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public final int getRuntimeId() {
-        if (this.block.isAir()) return getAirRuntimeId();
+        if (this.isNull()) return getAirRuntimeId();
         int i = Registries.ITEM_RUNTIMEID.getInt(this.getId());
         if (i == Integer.MAX_VALUE) {
             i = Registries.ITEM_RUNTIMEID.getInt(this.getBlockId());

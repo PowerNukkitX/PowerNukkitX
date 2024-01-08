@@ -7,8 +7,11 @@ import lombok.Getter;
 
 public class ConduitActivateEvent extends BlockEvent {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     public ConduitActivateEvent(Block block) {
         super(block);

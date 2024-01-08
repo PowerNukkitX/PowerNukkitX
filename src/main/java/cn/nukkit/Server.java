@@ -719,6 +719,7 @@ public class Server {
             Registries.CREATIVE.init();
             Registries.BIOME.init();
             Registries.FUEL.init();
+            Registries.GENERATOR.init();
             Effect.init();
             Attribute.init();
             BlockComposter.init();
@@ -1055,7 +1056,7 @@ public class Server {
         try {
             while (this.isRunning.get()) {
                 try {
-                    this.tick();
+                    //this.tick();
 
                     long next = this.nextTick;
                     long current = System.currentTimeMillis();
@@ -2619,7 +2620,7 @@ public class Server {
         }
 
         if (provider == null) {
-            provider = LevelProviderManager.getProviderByName(this.getConfig().get("level-settings.default-format", "anvil"));
+            provider = LevelProviderManager.getProviderByName(this.getConfig().get("level-settings.default-format", "leveldb"));
         }
 
         String path;

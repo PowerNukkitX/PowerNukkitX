@@ -41,13 +41,10 @@ public class AdventureSettings implements Cloneable {
 
     private final Map<Type, Boolean> values = new EnumMap<>(Type.class);
     @Getter
-
-
     private PlayerPermission playerPermission;
+
     @Getter
     @Setter
-
-
     private CommandPermission commandPermission;
     private Player player;
 

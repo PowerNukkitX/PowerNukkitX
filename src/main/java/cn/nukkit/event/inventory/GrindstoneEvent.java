@@ -33,8 +33,11 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class GrindstoneEvent extends InventoryEvent implements Cancellable {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final @NotNull Item firstItem;
     private final @NotNull Item resultItem;

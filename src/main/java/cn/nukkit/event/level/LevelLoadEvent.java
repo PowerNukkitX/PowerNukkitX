@@ -9,8 +9,11 @@ import lombok.Getter;
  */
 public class LevelLoadEvent extends LevelEvent {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     public LevelLoadEvent(Level level) {
         super(level);

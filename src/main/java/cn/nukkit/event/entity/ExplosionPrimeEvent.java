@@ -11,8 +11,11 @@ import lombok.Getter;
  * Called when a entity decides to explode
  */
 public class ExplosionPrimeEvent extends EntityEvent implements Cancellable {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     protected double force;
     private boolean blockBreaking;

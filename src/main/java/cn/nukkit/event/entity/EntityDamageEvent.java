@@ -15,8 +15,11 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityDamageEvent extends EntityEvent implements Cancellable {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final DamageCause cause;
     private final Map<DamageModifier, Float> modifiers;

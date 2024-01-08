@@ -7,8 +7,11 @@ import cn.nukkit.event.HandlerList;
 import lombok.Getter;
 
 public class PlayerDialogRespondedEvent extends PlayerEvent {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     protected FormWindowDialog dialog;
 

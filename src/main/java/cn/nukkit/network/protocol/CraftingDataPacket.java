@@ -15,9 +15,7 @@ import java.util.stream.Stream;
  */
 @ToString
 public class CraftingDataPacket extends DataPacket {
-
     public static final byte NETWORK_ID = ProtocolInfo.CRAFTING_DATA_PACKET;
-
     public static final String CRAFTING_TAG_CRAFTING_TABLE = "crafting_table";
     public static final String CRAFTING_TAG_CARTOGRAPHY_TABLE = "cartography_table";
     public static final String CRAFTING_TAG_STONECUTTER = "stonecutter";

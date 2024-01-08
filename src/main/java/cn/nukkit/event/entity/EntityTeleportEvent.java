@@ -11,8 +11,11 @@ import lombok.Getter;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityTeleportEvent extends EntityEvent implements Cancellable {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private Location from;
     private Location to;

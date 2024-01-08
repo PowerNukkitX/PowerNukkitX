@@ -10,8 +10,11 @@ import lombok.Getter;
  */
 public class ServerCommandEvent extends ServerEvent implements Cancellable {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     protected String command;
 

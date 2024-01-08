@@ -11,8 +11,11 @@ import lombok.Getter;
  * @since 2016/1/14
  */
 public class PlayerEatFoodEvent extends PlayerEvent implements Cancellable {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
     private Food food;
 
     public PlayerEatFoodEvent(Player player, Food food) {

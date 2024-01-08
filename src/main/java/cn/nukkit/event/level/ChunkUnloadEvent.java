@@ -10,8 +10,11 @@ import lombok.Getter;
  */
 public class ChunkUnloadEvent extends ChunkEvent implements Cancellable {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     public ChunkUnloadEvent(IChunk chunk) {
         super(chunk);

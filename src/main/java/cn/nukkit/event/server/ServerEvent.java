@@ -5,5 +5,5 @@ import cn.nukkit.event.Event;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-abstract public class ServerEvent extends Event {
+public abstract class ServerEvent extends Event {
 }

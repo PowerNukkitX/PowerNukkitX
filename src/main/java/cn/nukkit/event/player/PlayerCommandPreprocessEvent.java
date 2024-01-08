@@ -6,8 +6,11 @@ import cn.nukkit.event.HandlerList;
 import lombok.Getter;
 
 public class PlayerCommandPreprocessEvent extends PlayerMessageEvent implements Cancellable {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     public PlayerCommandPreprocessEvent(Player player, String message) {
         this.player = player;

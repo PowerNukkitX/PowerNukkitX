@@ -10,8 +10,11 @@ import java.util.UUID;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class PlayerDataSerializeEvent extends ServerEvent {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final Optional<String> name;
     private final Optional<UUID> uuid;

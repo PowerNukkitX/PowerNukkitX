@@ -33,8 +33,11 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class SmithingTableEvent extends InventoryEvent implements Cancellable {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final @NotNull Item equipmentItem;
     private final @NotNull Item resultItem;

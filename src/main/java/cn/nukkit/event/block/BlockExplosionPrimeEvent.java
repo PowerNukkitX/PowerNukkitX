@@ -34,8 +34,11 @@ import javax.annotation.Nullable;
 
 public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private double force;
     private boolean blockBreaking;

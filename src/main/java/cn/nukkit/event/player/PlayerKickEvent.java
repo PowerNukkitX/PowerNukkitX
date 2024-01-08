@@ -7,8 +7,11 @@ import cn.nukkit.lang.TextContainer;
 import lombok.Getter;
 
 public class PlayerKickEvent extends PlayerEvent implements Cancellable {
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     public enum Reason {
         NEW_CONNECTION,

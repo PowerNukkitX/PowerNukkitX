@@ -587,6 +587,10 @@ public class BinaryStream {
                 this.putString(molangDescriptor.getTagExpression());
                 this.putByte((byte) molangDescriptor.getMolangVersion());
             }
+            case COMPLEX_ALIAS -> {
+                ComplexAliasDescriptor complexAliasDescriptor = (ComplexAliasDescriptor) itemDescriptor;
+                this.putString(complexAliasDescriptor.getName());
+            }
             case ITEM_TAG -> {
                 ItemTagDescriptor tagDescriptor = (ItemTagDescriptor) itemDescriptor;
                 this.putString(tagDescriptor.getItemTag());

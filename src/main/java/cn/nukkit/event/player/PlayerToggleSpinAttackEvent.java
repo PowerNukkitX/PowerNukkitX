@@ -12,8 +12,11 @@ import lombok.Getter;
 
 public class PlayerToggleSpinAttackEvent extends PlayerEvent implements Cancellable {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final boolean isSpinAttacking;
 

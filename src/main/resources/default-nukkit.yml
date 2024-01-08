@@ -24,7 +24,7 @@ debug:
   - LevelChunkPacket
 
 level-settings:
- default-format: anvil
+ default-format: leveldb
  auto-tick-rate: true
  auto-tick-rate-limit: 20
  base-tick-rate: 1

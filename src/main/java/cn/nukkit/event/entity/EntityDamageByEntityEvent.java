@@ -1,6 +1,7 @@
 package cn.nukkit.event.entity;
 
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.potion.Effect;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,11 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityDamageByEntityEvent extends EntityDamageEvent {
+    private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private @NotNull final Entity damager;
 

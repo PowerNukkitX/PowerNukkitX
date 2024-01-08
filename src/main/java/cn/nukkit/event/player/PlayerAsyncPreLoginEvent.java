@@ -22,8 +22,11 @@ import java.util.function.Consumer;
  */
 public class PlayerAsyncPreLoginEvent extends PlayerEvent {
 
-    @Getter
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private final String name;
     private final UUID uuid;
