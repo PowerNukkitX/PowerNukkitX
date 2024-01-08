@@ -10,14 +10,16 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.TRIGGERED_BIT;
 
 
 public class BlockDropper extends BlockDispenser {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(DROPPER);
+    public static final BlockProperties PROPERTIES = new BlockProperties(DROPPER, FACING_DIRECTION, TRIGGERED_BIT);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -35,12 +37,14 @@ public class BlockDropper extends BlockDispenser {
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityDropper> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityDropper> getBlockEntityClass() {
         return BlockEntityDropper.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.DROPPER;
     }
 

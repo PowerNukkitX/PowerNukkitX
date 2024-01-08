@@ -7,13 +7,16 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.block.property.CommonBlockProperties.*;
+import static cn.nukkit.block.property.CommonBlockProperties.CORAL_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.CORAL_HANG_TYPE_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.DEAD_BIT;
 
 public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_FAN_HANG, CORAL_FAN_DIRECTION, CORAL_HANG_TYPE_BIT, DEAD_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_FAN_HANG, CORAL_DIRECTION, CORAL_HANG_TYPE_BIT, DEAD_BIT);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -61,7 +64,7 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        int face = getPropertyValue(CORAL_FAN_DIRECTION);
+        int face = getPropertyValue(CORAL_DIRECTION);
         return switch (face) {
             case 0 -> BlockFace.WEST;
             case 1 -> BlockFace.EAST;

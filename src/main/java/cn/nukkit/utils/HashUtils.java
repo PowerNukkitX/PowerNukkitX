@@ -64,23 +64,28 @@ public class HashUtils {
     }
 
 
-    public static long fnv164(byte[] data) {
+    public static long fnv164(final byte[] data) {
         long hash = FNV1_64_INIT;
-        for (byte datum : data) {
-            hash *= FNV1_PRIME_64;
+        for (final byte datum : data) {
             hash ^= (datum & 0xff);
+            hash *= FNV1_PRIME_64;
         }
-
         return hash;
     }
 
     @SneakyThrows
     public int fnv1a_32_nbt(CompoundTag tag) {
+        if (tag.getString("name").equals("minecraft:unknown")) {
+            return -2; // This is special case
+        }
         return fnv1a_32(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
     }
 
     @SneakyThrows
     public int fnv1a_32_nbt_palette(CompoundTag tag) {
+        if (tag.getString("name").equals("minecraft:unknown")) {
+            return -2; // This is special case
+        }
         CompoundTag states = new CompoundTag(new TreeMap<>());
         for (var e : tag.getCompound("states").getTags().entrySet()) {
             states.put(e.getKey(), e.getValue());
@@ -92,9 +97,11 @@ public class HashUtils {
         return fnv1a_32(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
     }
 
-    public int fnv1a_32(byte[] data) {
+    //CPU Ryzen PRO 5850U, 16G, Win11
+    //Throughput 15736.451 ± 337.778  ops/ms
+    public int fnv1a_32(final byte[] data) {
         int hash = FNV1_32_INIT;
-        for (byte datum : data) {
+        for (final byte datum : data) {
             hash ^= (datum & 0xff);
             hash *= FNV1_PRIME_32;
         }

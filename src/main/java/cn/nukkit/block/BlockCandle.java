@@ -22,7 +22,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.LIT;
 
 
 public class BlockCandle extends BlockFlowable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(BLACK_CANDLE, CANDLES, LIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CANDLE, CANDLES, LIT);
 
     @Override
     @NotNull public BlockProperties getProperties() {

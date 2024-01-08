@@ -12,8 +12,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @ExtendWith(PNXTestExtension.class)
 public class BlockPropertiesTest {
@@ -21,17 +20,19 @@ public class BlockPropertiesTest {
     @Test
     @SneakyThrows
     void BlockPaletteTest() {
-        List<String> errorList = new ArrayList<>();
+        HashMap<String, String> errors = new HashMap<>();
         try (var stream = BlockProperties.class.getClassLoader().getResourceAsStream("block_palette.nbt")) {
             CompoundTag nbt = NBTIO.readCompressed(stream);
             ListTag<CompoundTag> blocks = nbt.getList("blocks", CompoundTag.class);
             for (var b : blocks.getAll()) {
                 int i = HashUtils.fnv1a_32_nbt_palette(b);
                 BlockState blockState = Registries.BLOCKSTATE.get(i);
-                if (blockState == null)
-                    errorList.add("palette not match vanilla,expected: " + i + " block: " + b.toSNBT(4));
+                if (blockState == null) {
+                    errors.put(b.getString("name"), "palette not match vanilla,expected: " + i + " block: " + b.getString("name"));
+                }
             }
         }
-        System.out.println(errorList);
+        Assertions.assertEquals(184, errors.size());//Version 1.20.50, There are now a total of 184 blocks for 1.21 content or educational content
+//        errors.values().forEach(System.out::println);
     }
 }

@@ -1,7 +1,7 @@
 package cn.nukkit.block;
 
 
-public class BlockBlueIce extends BlockIcePacked {
+public class BlockBlueIce extends BlockPackedIce {
     public static final BlockProperties PROPERTIES = new BlockProperties(BLUE_ICE);
 
     public BlockBlueIce() {

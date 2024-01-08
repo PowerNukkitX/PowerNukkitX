@@ -12,6 +12,15 @@ public class BlockCherryLeaves extends BlockLeaves {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_LEAVES,PERSISTENT_BIT, UPDATE_BIT);
 
+    public BlockCherryLeaves() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockCherryLeaves(BlockState blockState) {
+        super(blockState);
+    }
+
+
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;

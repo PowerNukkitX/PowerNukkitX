@@ -1,15 +1,17 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 
 public class BlockCarvedPumpkin extends BlockPumpkin {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CARVED_PUMPKIN);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CARVED_PUMPKIN, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -20,12 +22,12 @@ public class BlockCarvedPumpkin extends BlockPumpkin {
     public BlockCarvedPumpkin(BlockState blockstate) {
         super(blockstate);
     }
-    
+
     @Override
     public String getName() {
         return "Carved Pumpkin";
     }
-    
+
     @Override
     public boolean canBeActivated() {
         return false;

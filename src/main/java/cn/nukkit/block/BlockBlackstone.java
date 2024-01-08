@@ -7,17 +7,18 @@ import org.jetbrains.annotations.NotNull;
 public class BlockBlackstone extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(BLACKSTONE);
 
-    @Override
-    @NotNull public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
     public BlockBlackstone() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
-    protected BlockBlackstone(BlockState blockState) {
+    public BlockBlackstone(BlockState blockState) {
         super(blockState);
+    }
+
+    @Override
+    @NotNull
+    public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override
