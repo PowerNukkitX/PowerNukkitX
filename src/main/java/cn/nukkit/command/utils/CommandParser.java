@@ -34,8 +34,6 @@ import java.util.stream.Collectors;
  */
 @Deprecated
 @DeprecationDetails(since = "1.19.60-r1", reason = "Using the new ParamTree instead", replaceWith = "ParamTree")
-
-
 @Getter
 public class CommandParser {
 

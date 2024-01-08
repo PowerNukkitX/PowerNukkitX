@@ -428,7 +428,7 @@ public class Int2ObjectNonBlockingMap<TypeV>
      * Auto-boxing version of {@link #get(int)}.
      */
     public TypeV get(Object key) {
-        return (key instanceof Integer) ? get(key) : null;
+        return (key instanceof Integer k) ? get(k.intValue()) : null;
     }
 
     /**

@@ -455,7 +455,7 @@ public class Chunk implements IChunk {
 
     @Override
     public boolean isLightPopulated() {
-        return extraData.getBoolean("LightPopulated");
+        return extraData.contains("LightPopulated") && extraData.getBoolean("LightPopulated");
     }
 
     @Override
@@ -841,6 +841,7 @@ public class Chunk implements IChunk {
             if (heightMap == null) heightMap = new short[256];
             if (entities == null) entities = new ArrayList<>();
             if (blockEntities == null) blockEntities = new ArrayList<>();
+            if (extraData == null) extraData = new CompoundTag();
             return new Chunk(
                     state,
                     chunkX,

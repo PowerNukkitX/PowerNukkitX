@@ -1056,7 +1056,7 @@ public class Server {
         try {
             while (this.isRunning.get()) {
                 try {
-                    //this.tick();
+                    this.tick();
 
                     long next = this.nextTick;
                     long current = System.currentTimeMillis();

@@ -12,8 +12,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * FreezableArrayManager负责管理所有AutoFreezable的ByteArrayWrapper<br/>
  * 这包括计算温度，冻结和解冻
  */
-
-
 public class FreezableArrayManager {
     protected ConcurrentHashMap<Integer, WeakConcurrentSet<AutoFreezable>> tickArrayMap;
     public final boolean enable;
@@ -164,6 +162,7 @@ public class FreezableArrayManager {
         if (!enable) return;
         var dt = currentTick % cycleTick;
         var set = tickArrayMap.get(dt);
+        if (set == null) return;
         // 冻结数组
         var start = System.currentTimeMillis();
         // 清理死引用
