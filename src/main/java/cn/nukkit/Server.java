@@ -17,6 +17,8 @@ import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
 import cn.nukkit.event.server.*;
+import cn.nukkit.level.blockstateupdater.BlockStateUpdater;
+import cn.nukkit.level.blockstateupdater.BlockStateUpdaterBase;
 import cn.nukkit.level.format.LevelDBProvider;
 import cn.nukkit.recipe.CraftingManager;
 import cn.nukkit.recipe.Recipe;
@@ -554,9 +556,9 @@ public class Server {
                 put("generator-settings", "");
                 put("level-name", "world");
                 put("level-seed", "");
-                put("level-type", "flat");
-                put("allow-nether", true);
-                put("allow-the_end", true);
+                put("level-type", "flat");//todo replace to overworld
+                put("allow-nether", false);
+                put("allow-the_end", false);
                 put("use-terra", false);
                 put("enable-experiment-mode", true);
                 put("enable-query", true);
@@ -574,9 +576,9 @@ public class Server {
             }
         });
         // Allow Nether? (determines if we create a nether world if one doesn't exist on startup)
-        this.allowNether = this.properties.getBoolean("allow-nether", false);
+        this.allowNether = this.properties.getBoolean("allow-nether", true);
 
-        this.allowTheEnd = this.properties.getBoolean("allow-the_end", false);
+        this.allowTheEnd = this.properties.getBoolean("allow-the_end", true);
 
         this.useTerra = this.properties.getBoolean("use-terra", false);
 
@@ -707,9 +709,10 @@ public class Server {
             Registries.ENTITY.init();
             Profession.init();
             Registries.BLOCKENTITY.init();
-            String acacia = BlockTags.ACACIA;
-            String arrow = ItemTags.ARROW;
-            String warm = BiomeTags.WARM;
+            String a = BlockTags.ACACIA;
+            String b = ItemTags.ARROW;
+            String c = BiomeTags.WARM;
+            BlockStateUpdater d = BlockStateUpdaterBase.INSTANCE;
             Registries.BLOCKSTATE_ITEMMETA.init();
             Registries.BLOCK.init();
             Enchantment.init();

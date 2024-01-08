@@ -1,7 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import lombok.NoArgsConstructor;
-import org.powernukkit.version.Version;
+import cn.nukkit.utils.version.Version;
 
 import java.util.UUID;
 

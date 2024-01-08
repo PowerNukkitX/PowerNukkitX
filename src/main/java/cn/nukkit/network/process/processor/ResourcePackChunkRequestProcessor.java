@@ -8,7 +8,7 @@ import cn.nukkit.network.protocol.ResourcePackChunkDataPacket;
 import cn.nukkit.network.protocol.ResourcePackChunkRequestPacket;
 import cn.nukkit.resourcepacks.ResourcePack;
 import org.jetbrains.annotations.NotNull;
-import org.powernukkit.version.Version;
+import cn.nukkit.utils.version.Version;
 
 public class ResourcePackChunkRequestProcessor extends DataPacketProcessor<ResourcePackChunkRequestPacket> {
     @Override

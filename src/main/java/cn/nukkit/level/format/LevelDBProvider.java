@@ -13,6 +13,7 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.network.protocol.types.GameType;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
@@ -600,7 +601,7 @@ public class LevelDBProvider implements LevelProvider {
             gameRules.setGameRule(GameRule.SHOW_TAGS, d.getBoolean("showtags"));
             gameRules.setGameRule(GameRule.SPAWN_RADIUS, d.getInt("spawnradius"));
             gameRules.setGameRule(GameRule.TNT_EXPLODES, d.getBoolean("tntexplodes"));
-            return LevelDat.builder()
+            LevelDat.LevelDatBuilder levelDatBuilder = LevelDat.builder()
                     .biomeOverride(d.getString("BiomeOverride"))
                     .centerMapsToOrigin(d.getBoolean("CenterMapsToOrigin"))
                     .confirmedPlatformLockedContent(d.getBoolean("ConfirmedPlatformLockedContent"))
@@ -615,7 +616,7 @@ public class LevelDBProvider implements LevelProvider {
                     .lastPlayed(d.getLong("LastPlayed"))
                     .name(d.getString("LevelName"))
                     .limitedWorldOriginPoint(new BlockVector3(d.getInt("LimitedWorldOriginX"), d.getInt("LimitedWorldOriginY"), d.getInt("LimitedWorldOriginZ")))
-                    .minimumCompatibleClientVersion(SemVersion.from(d.getIntArray("MinimumCompatibleClientVersion")))
+                    .minimumCompatibleClientVersion(SemVersion.from(d.getList("MinimumCompatibleClientVersion", IntTag.class)))
                     .multiplayerGame(d.getBoolean("MultiplayerGame"))
                     .multiplayerGameIntent(d.getBoolean("MultiplayerGameIntent"))
                     .netherScale(d.getInt("NetherScale"))
@@ -677,7 +678,7 @@ public class LevelDBProvider implements LevelProvider {
                     .isRandomSeedAllowed(d.getBoolean("isRandomSeedAllowed"))
                     .isSingleUseWorld(d.getBoolean("isSingleUseWorld"))
                     .isWorldTemplateOptionLocked(d.getBoolean("isWorldTemplateOptionLocked"))
-                    .lastOpenedWithVersion(SemVersion.from(d.getIntArray("lastOpenedWithVersion")))
+                    .lastOpenedWithVersion(SemVersion.from(d.getList("lastOpenedWithVersion", IntTag.class)))
                     .lightningLevel(d.getFloat("lightningLevel"))
                     .lightningTime(d.getInt("lightningTime"))
                     .limitedWorldDepth(d.getInt("limitedWorldDepth"))
@@ -697,12 +698,20 @@ public class LevelDBProvider implements LevelProvider {
                     .texturePacksRequired(d.getBoolean("texturePacksRequired"))
                     .useMsaGamertagsOnly(d.getBoolean("useMsaGamertagsOnly"))
                     .worldStartCount(d.getLong("worldStartCount"))
-                    .worldPolicies(LevelDat.WorldPolicies.builder().build())
-                    .generatorName(d.getString("generatorName"))//PNX Custom field
-                    .generatorOptions(d.getString("generatorOptions"))//PNX Custom field
-                    .raining(d.getBoolean("raining"))//PNX Custom field
-                    .thundering(d.getBoolean("thundering"))//PNX Custom field
-                    .build();
+                    .worldPolicies(LevelDat.WorldPolicies.builder().build());
+            if (d.contains("generatorName")) {
+                levelDatBuilder.generatorName(d.getString("generatorName"));//PNX Custom field
+            }
+            if (d.contains("generatorOptions")) {
+                levelDatBuilder.generatorOptions(d.getString("generatorOptions"));//PNX Custom field
+            }
+            if (d.contains("raining")) {
+                levelDatBuilder.raining(d.getBoolean("raining"));//PNX Custom field
+            }
+            if (d.contains("thundering")) {
+                levelDatBuilder.thundering(d.getBoolean("thundering"));//PNX Custom field
+            }
+            return levelDatBuilder.build();
         } catch (FileNotFoundException e) {
             log.error("The level.dat file does not exist!");
         }
@@ -728,7 +737,8 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.putInt("LimitedWorldOriginX", worldData.getLimitedWorldOriginPoint().getX());
         levelDat.putInt("LimitedWorldOriginY", worldData.getLimitedWorldOriginPoint().getY());
         levelDat.putInt("LimitedWorldOriginZ", worldData.getLimitedWorldOriginPoint().getZ());
-        levelDat.putIntArray("MinimumCompatibleClientVersion", worldData.getMinimumCompatibleClientVersion().toArray());
+        levelDat.putList("MinimumCompatibleClientVersion", worldData.getMinimumCompatibleClientVersion().toTag());
+        levelDat.putList("lastOpenedWithVersion", worldData.getLastOpenedWithVersion().toTag());
         levelDat.putBoolean("MultiplayerGame", worldData.isMultiplayerGame());
         levelDat.putBoolean("MultiplayerGameIntent", worldData.isMultiplayerGameIntent());
         levelDat.putInt("NetherScale", worldData.getNetherScale());

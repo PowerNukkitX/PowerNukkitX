@@ -9,7 +9,7 @@ import cn.nukkit.network.protocol.ResourcePackDataInfoPacket;
 import cn.nukkit.network.protocol.ResourcePackStackPacket;
 import cn.nukkit.resourcepacks.ResourcePack;
 import org.jetbrains.annotations.NotNull;
-import org.powernukkit.version.Version;
+import cn.nukkit.utils.version.Version;
 
 public class ResourcePackClientResponseProcessor extends DataPacketProcessor<ResourcePackClientResponsePacket> {
     @Override

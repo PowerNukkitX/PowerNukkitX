@@ -7,10 +7,12 @@ import cn.nukkit.utils.SemVersion;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.Value;
 
 @Getter
 @Builder
+@ToString
 public class LevelDat {
     @Builder.Default
     String biomeOverride = "";
@@ -265,6 +267,7 @@ public class LevelDat {
 
     @Value
     @Builder
+    @ToString
     public static class Abilities {
         @Builder.Default
         boolean attackMobs = true;
@@ -314,6 +317,7 @@ public class LevelDat {
 
     @Value
     @Builder
+    @ToString
     public static class Experiments {
         @Builder.Default
         boolean experimentsEverUsed = false;
@@ -337,6 +341,7 @@ public class LevelDat {
 
     @Value
     @Builder
+    @ToString
     public static class WorldPolicies {
     }
 }

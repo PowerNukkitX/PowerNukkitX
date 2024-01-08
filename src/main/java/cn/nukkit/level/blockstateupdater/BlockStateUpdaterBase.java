@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -22,14 +23,13 @@ public class BlockStateUpdaterBase implements BlockStateUpdater {
     static {
         JsonObject node;
         try (InputStream stream = BlockStateUpdater.class.getClassLoader().getResourceAsStream("legacy_block_data_map.json")) {
-            node = (JsonObject) JSON_MAPPER.toJsonTree(stream);
+            assert stream != null;
+            node = (JsonObject) JSON_MAPPER.toJsonTree(JSON_MAPPER.fromJson(new InputStreamReader(stream), Map.class));
         } catch (IOException e) {
             throw new AssertionError("Error loading legacy block data map", e);
         }
 
-        Iterator<Map.Entry<String, JsonElement>> iterator = node.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, JsonElement> entry = iterator.next();
+        for (Map.Entry<String, JsonElement> entry : node.entrySet()) {
             String name = entry.getKey();
             JsonArray stateNodes = entry.getValue().getAsJsonArray();
 
