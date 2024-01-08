@@ -523,9 +523,12 @@ public class BinaryStream {
         putLShort(item.getCount());//write item count
         putUnsignedVarInt(item.getDamage());//write damage value
 
-        putBoolean(item.isUsingNetId()); // isUsingNetId
-        if (!instanceItem && item.isUsingNetId()) {
-            putVarInt(item.getNetId()); // netId
+
+        if (!instanceItem) {
+            putBoolean(item.isUsingNetId()); // isUsingNetId
+            if (item.isUsingNetId()) {
+                putVarInt(item.getNetId()); // netId
+            }
         }
 
         putVarInt(item.isBlock() ? item.getBlockUnsafe().getRuntimeId() : 0);

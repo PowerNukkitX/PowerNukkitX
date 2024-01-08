@@ -166,18 +166,19 @@ public interface IHuman extends InventoryHolder {
         var inventory = this.getInventory();
         if (human.namedTag.contains("Inventory") && human.namedTag.get("Inventory") instanceof ListTag) {
             ListTag<CompoundTag> inventoryList = human.namedTag.getList("Inventory", CompoundTag.class);
-            for (CompoundTag item : inventoryList.getAll()) {
-                int slot = item.getByte("Slot");
-                if (slot >= 0 && slot < 9) { //hotbar
-                    //Old hotbar saving stuff, remove it (useless now)
-                    inventoryList.remove(item);
-                } else if (slot >= 100 && slot < 104) {
-                    inventory.setItem(inventory.getSize() + slot - 100, NBTIO.getItemHelper(item));
-                } else if (slot == -106) {
-                    this.getOffhandInventory().setItem(0, NBTIO.getItemHelper(item));
-                } else {
-                    inventory.setItem(slot - 9, NBTIO.getItemHelper(item));
-                }
+            for (int i = 0; i < inventoryList.size(); ++i) {
+                CompoundTag compoundTag = inventoryList.get(i);
+                int slot = compoundTag.getByte("Slot");
+                inventory.setItem(slot, NBTIO.getItemHelper(compoundTag));
+            }
+        }
+        var offhandInventory = this.getOffhandInventory();
+        if (human.namedTag.contains("OffHandInventory") && human.namedTag.get("OffHandInventory") instanceof ListTag) {
+            ListTag<CompoundTag> inventoryList = human.namedTag.getList("OffHandInventory", CompoundTag.class);
+            for (int i = 0; i < inventoryList.size(); ++i) {
+                CompoundTag compoundTag = inventoryList.get(i);
+                int slot = compoundTag.getByte("Slot");
+                offhandInventory.setItem(slot, NBTIO.getItemHelper(compoundTag));
             }
         }
         if (human.namedTag.contains("EnderItems") && human.namedTag.get("EnderItems") instanceof ListTag) {
@@ -192,20 +193,11 @@ public interface IHuman extends InventoryHolder {
         boolean isIntelligentHuman = this instanceof EntityIntelligentHuman;
 
         //EntityHumanType
-        ListTag<CompoundTag> inventoryTag = null;
+        ListTag<CompoundTag> inventoryTag = new ListTag<>("Inventory");
         if (this.getInventory() != null) {
-            inventoryTag = new ListTag<>("Inventory");
-            human.namedTag.putList(inventoryTag);
-
-            int slotCount = Player.SURVIVAL_SLOTS + 9;
-            for (int slot = 9; slot < slotCount; ++slot) {
-                Item item = this.getInventory().getItem(slot - 9);//from 9+
-                inventoryTag.add(NBTIO.putItemHelper(item, slot));
-            }
-
-            for (int slot = 100; slot < 104; ++slot) {
-                Item item = this.getInventory().getItem(this.getInventory().getSize() + slot - 100);
-                if (item != null && !item.isNull()) {
+            for (int slot = 0; slot < this.getInventory().getType().getSize(); ++slot) {
+                Item item = this.getInventory().getItem(slot);
+                if (!item.isNull()) {
                     inventoryTag.add(NBTIO.putItemHelper(item, slot));
                 }
             }
@@ -215,17 +207,16 @@ public interface IHuman extends InventoryHolder {
                 human.namedTag.putInt("SelectedInventorySlot", ((PlayerInventory) this.getInventory()).getHeldItemIndex());
             }
         }
+        human.namedTag.putList(inventoryTag);
 
+        ListTag<CompoundTag> offhandInventory = new ListTag<>("OffhandInventory");
         if (this.getOffhandInventory() != null) {
             Item item = this.getOffhandInventory().getItem(0);
             if (!item.isNull()) {
-                if (inventoryTag == null) {
-                    inventoryTag = new ListTag<>("Inventory");
-                    human.namedTag.putList(inventoryTag);
-                }
-                inventoryTag.add(NBTIO.putItemHelper(item, -106));
+                offhandInventory.add(NBTIO.putItemHelper(item, 0));
             }
         }
+        human.namedTag.putList(offhandInventory);
 
         human.namedTag.putList(new ListTag<CompoundTag>("EnderItems"));
         if (this.getEnderChestInventory() != null) {

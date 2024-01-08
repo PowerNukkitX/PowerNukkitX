@@ -50,6 +50,7 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
             }
             REGISTRY.defaultReturnValue(Integer.MAX_VALUE);
             trim();
+            generatePalette();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -13,7 +13,7 @@ import java.util.Set;
  * @author MagicDroidX (Nukkit Project)
  */
 public final class InventoryType {
-    public static final InventoryType NONE = new InventoryType(-1, "None", -9);
+    public static final InventoryType NONE = new InventoryType(0, "None", -9);
 
     /**
      * 27 slots
@@ -125,20 +125,14 @@ public final class InventoryType {
      */
     public static final InventoryType BEACON = new InventoryType(1, "Beacon", 13);
 
-    /**
-     * -1 slots
-     */
-    public static final InventoryType STRUCTURE_BLOCK = new InventoryType(-1, "StructureBlock", 14);
+    public static final InventoryType STRUCTURE_BLOCK = new InventoryType(0, "StructureBlock", 14);
 
     /**
      * 3 slots
      */
     public static final InventoryType TRADING = new InventoryType(3, "Villager Trade", 15);
 
-    /**
-     * -1 slots
-     */
-    public static final InventoryType COMMAND_BLOCK = new InventoryType(-1, "CommandBlock", 16);
+    public static final InventoryType COMMAND_BLOCK = new InventoryType(0, "CommandBlock", 16);
 
     /**
      * 1 slot

@@ -129,10 +129,6 @@ public class Chunk implements IChunk {
         }
     }
 
-    private ChunkSection getSectionInternal(int fY) {
-        return this.sections[fY - getDimensionData().getMinSectionY()];
-    }
-
     @Override
     public void setSection(int fY, ChunkSection section) {
         long stamp = blockLock.writeLock();
@@ -193,7 +189,7 @@ public class Chunk implements IChunk {
         try {
             for (; ; stamp = blockLock.readLock()) {
                 if (stamp == 0L) continue;
-                BlockState result = getSectionInternal(y >> 4).getBlockState(x, y & 0x0f, z, layer);
+                BlockState result = getOrCreateSection(y >> 4).getBlockState(x, y & 0x0f, z, layer);
                 if (!blockLock.validate(stamp)) continue;
                 return result;
             }
@@ -232,7 +228,7 @@ public class Chunk implements IChunk {
         try {
             for (; ; stamp = lightLock.readLock()) {
                 if (stamp == 0L) continue;
-                int result = getSectionInternal(y).getBlockSkyLight(x, y & 0x0f, z);
+                int result = getOrCreateSection(y).getBlockSkyLight(x, y & 0x0f, z);
                 if (!lightLock.validate(stamp)) continue;
                 return result;
             }
@@ -258,7 +254,7 @@ public class Chunk implements IChunk {
         try {
             for (; ; stamp = lightLock.readLock()) {
                 if (stamp == 0L) continue;
-                int result = getSectionInternal(y).getBlockLight(x, y & 0x0f, z);
+                int result = getOrCreateSection(y).getBlockLight(x, y & 0x0f, z);
                 if (!lightLock.validate(stamp)) continue;
                 return result;
             }
@@ -433,7 +429,7 @@ public class Chunk implements IChunk {
         try {
             for (; ; stamp = heightAndBiomeLock.readLock()) {
                 if (stamp == 0L) continue;
-                int result = getSection(y >> 4).getBiomeId(x, y & 0x0f, z);
+                int result = getOrCreateSection(y >> 4).getBiomeId(x, y & 0x0f, z);
                 if (!heightAndBiomeLock.validate(stamp)) continue;
                 return result;
             }

@@ -1467,6 +1467,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
             itemComponentPacket.setEntries(entries.values().toArray(ItemComponentPacket.Entry.EMPTY_ARRAY));
         }*/
+        itemComponentPacket.setEntries(ItemComponentPacket.Entry.EMPTY_ARRAY);
         this.dataPacket(itemComponentPacket);
 
         this.dataPacket(new BiomeDefinitionListPacket());

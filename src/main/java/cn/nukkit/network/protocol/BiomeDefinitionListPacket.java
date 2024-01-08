@@ -1,31 +1,18 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.Nukkit;
+import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.registry.Registries;
 import com.google.common.io.ByteStreams;
 import lombok.ToString;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteOrder;
 
-@ToString(exclude = "tag")
+@ToString
 public class BiomeDefinitionListPacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.BIOME_DEFINITION_LIST_PACKET;
-
-    //原版群系定义数据
-    private static final byte[] TAG;
-
-    static {
-        try (InputStream inputStream = Nukkit.class.getModule().getResourceAsStream("biome_definitions_full.nbt")) {
-            if (inputStream == null) {
-                throw new AssertionError("Could not find biome_definitions.dat");
-            }
-            //noinspection UnstableApiUsage
-            TAG = ByteStreams.toByteArray(inputStream);
-        } catch (Exception e) {
-            throw new AssertionError("Error whilst loading biome_definitions.dat", e);
-        }
-    }
-
-    public byte[] tag = TAG;
 
     @Override
     public byte pid() {
@@ -39,6 +26,6 @@ public class BiomeDefinitionListPacket extends DataPacket {
     @Override
     public void encode() {
         this.reset();
-        this.put(tag);
+        this.put(Registries.BIOME.getBiomeDefinitionListPacketData());
     }
 }

@@ -39,20 +39,7 @@ public class PopulationTask extends AsyncTask {
 
     @Override
     public void onRun() {
-        syncGen(0);
-    }
-
-    private void syncGen(int i) {
-        if (i == chunks.length) {
-            generationTask();
-        } else {
-            IChunk chunk = chunks[i];
-            if (chunk != null) {
-                synchronized (chunk) {
-                    syncGen(i + 1);
-                }
-            }
-        }
+        generationTask();
     }
 
     private void generationTask() {

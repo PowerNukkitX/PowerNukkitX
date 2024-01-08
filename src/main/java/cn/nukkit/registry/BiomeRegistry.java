@@ -2,6 +2,7 @@ package cn.nukkit.registry;
 
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.LinkedCompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
@@ -14,6 +15,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.ByteOrder;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,8 +39,8 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
 
         try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("biome_definitions.nbt")) {
             CompoundTag compoundTag = NBTIO.readCompressed(stream);
+            compoundTag = new CompoundTag(new TreeMap<>(compoundTag.getTags()));
             Map<String, Tag> tags = compoundTag.getTags();
-
             for (var e : tags.entrySet()) {
                 int id = NAME2ID.getInt(e.getKey());
                 CompoundTag value = (CompoundTag) e.getValue();
@@ -85,12 +87,12 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
     }
 
     public byte[] getBiomeDefinitionListPacketData() {
-        CompoundTag compoundTag = new CompoundTag();
+        LinkedCompoundTag compoundTag = new LinkedCompoundTag();
         for (var r : REGISTRY) {
             compoundTag.putCompound(r.getString("name_hash"), r);
         }
         try {
-            return NBTIO.writeNetwork(compoundTag);
+            return NBTIO.write(compoundTag, ByteOrder.BIG_ENDIAN, true);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

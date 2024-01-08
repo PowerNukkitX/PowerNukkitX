@@ -918,8 +918,7 @@ public class Level implements Metadatable {
 
                 if (this.isThundering()) {
                     Map<Long, IChunk> chunks = getChunks();
-                    if (chunks instanceof Long2ObjectOpenHashMap) {
-                        Long2ObjectOpenHashMap<IChunk> fastChunks = (Long2ObjectOpenHashMap<IChunk>) chunks;
+                    if (chunks instanceof Long2ObjectOpenHashMap<IChunk> fastChunks) {
                         ObjectIterator<? extends Long2ObjectMap.Entry<IChunk>> iter = fastChunks.long2ObjectEntrySet().fastIterator();
                         while (iter.hasNext()) {
                             Long2ObjectMap.Entry<IChunk> entry = iter.next();
@@ -1298,10 +1297,9 @@ public class Level implements Metadatable {
                 }
 
                 for (ChunkSection section : chunk.getSections()) {
-                    if (section.isEmpty()) {
+                    if (section == null || section.isEmpty()) {
                         continue;
                     }
-                    int Y = section.y();
                     for (int i = 0; i < tickSpeed; ++i) {
                         int lcg = this.getUpdateLCG();
                         int x = lcg & 0x0f;
@@ -1310,6 +1308,7 @@ public class Level implements Metadatable {
                         BlockState state = section.getBlockState(x, y, z);
                         if (randomTickBlocks.contains(state.getIdentifier())) {
                             Block block = Block.get(state);
+                            block.setLevel(this);
                             block.onUpdate(BLOCK_UPDATE_RANDOM);
                         }
                     }
