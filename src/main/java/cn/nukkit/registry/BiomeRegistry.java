@@ -87,7 +87,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
     }
 
     public byte[] getBiomeDefinitionListPacketData() {
-        LinkedCompoundTag compoundTag = new LinkedCompoundTag();
+        CompoundTag compoundTag = new CompoundTag(new TreeMap<>());
         for (var r : REGISTRY) {
             compoundTag.putCompound(r.getString("name_hash"), r);
         }

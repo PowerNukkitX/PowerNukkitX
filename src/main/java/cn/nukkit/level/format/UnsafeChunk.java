@@ -32,6 +32,18 @@ public class UnsafeChunk {
         return this.chunk.tiles;
     }
 
+    private void setChanged() {
+        this.chunk.changes.incrementAndGet();
+    }
+
+    private void setChanged(boolean changed) {
+        if (changed) {
+            setChanged();
+        } else {
+            chunk.changes.set(0);
+        }
+    }
+
     /**
      * Gets or create section.
      *
@@ -49,18 +61,6 @@ public class UnsafeChunk {
         return chunk.sections[offsetY];
     }
 
-    private void setChanged() {
-        this.chunk.changes.incrementAndGet();
-    }
-
-    private void setChanged(boolean changed) {
-        if (changed) {
-            setChanged();
-        } else {
-            chunk.changes.set(0);
-        }
-    }
-
     public ChunkSection getSection(int fY) {
         return this.chunk.sections[fY - getDimensionData().getMinSectionY()];
     }
@@ -71,11 +71,15 @@ public class UnsafeChunk {
     }
 
     public BlockState getBlockState(int x, int y, int z) {
-        return getSection(y >> 4).getBlockState(x, y & 0x0f, z, 0);
+        ChunkSection section = getSection(y >> 4);
+        if(section==null) return BlockAir.STATE;
+        return section.getBlockState(x, y & 0x0f, z, 0);
     }
 
     public BlockState getBlockState(int x, int y, int z, int layer) {
-        return getSection(y >> 4).getBlockState(x, y & 0x0f, z, layer);
+        ChunkSection section = getSection(y >> 4);
+        if(section==null) return BlockAir.STATE;
+        return section.getBlockState(x, y & 0x0f, z, layer);
     }
 
     public BlockState getAndSetBlockState(int x, int y, int z, BlockState blockstate, int layer) {
@@ -87,7 +91,9 @@ public class UnsafeChunk {
     }
 
     public int getBlockSkyLight(int x, int y, int z) {
-        return getSection(y >> 4).getBlockSkyLight(x, y & 0x0f, z);
+        ChunkSection section = getSection(y >> 4);
+        if(section==null) return 0;
+        return section.getBlockSkyLight(x, y & 0x0f, z);
     }
 
     public void setBlockSkyLight(int x, int y, int z, int level) {
@@ -95,7 +101,9 @@ public class UnsafeChunk {
     }
 
     public int getBlockLight(int x, int y, int z) {
-        return getSection(y >> 4).getBlockLight(x, y & 0x0f, z);
+        ChunkSection section = getSection(y >> 4);
+        if(section==null) return 0;
+        return section.getBlockLight(x, y & 0x0f, z);
     }
 
     public void setBlockLight(int x, int y, int z, int level) {
@@ -139,7 +147,9 @@ public class UnsafeChunk {
     }
 
     public int getBiomeId(int x, int y, int z) {
-        return getSection(y >> 4).getBiomeId(x, y & 0x0f, z);
+        ChunkSection section = getSection(y >> 4);
+        if(section==null) return 0;
+        return section.getBiomeId(x, y & 0x0f, z);
     }
 
     public void setBiomeId(int x, int y, int z, int biomeId) {

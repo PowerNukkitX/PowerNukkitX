@@ -8,6 +8,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -111,7 +112,8 @@ public class Chunk implements IChunk {
 
     @Override
     public boolean isSectionEmpty(int fY) {
-        return this.getSection(fY - getDimensionData().getMinSectionY()).isEmpty();
+        ChunkSection section = this.getSection(fY - getDimensionData().getMinSectionY());
+        return section == null || section.isEmpty();
     }
 
     @Override
@@ -127,6 +129,10 @@ public class Chunk implements IChunk {
         } finally {
             if (StampedLock.isReadLockStamp(stamp)) blockLock.unlockRead(stamp);
         }
+    }
+
+    private ChunkSection getSectionInternal(int fY) {
+        return this.sections[fY - getDimensionData().getMinSectionY()];
     }
 
     @Override
@@ -189,7 +195,9 @@ public class Chunk implements IChunk {
         try {
             for (; ; stamp = blockLock.readLock()) {
                 if (stamp == 0L) continue;
-                BlockState result = getOrCreateSection(y >> 4).getBlockState(x, y & 0x0f, z, layer);
+                ChunkSection sectionInternal = getSectionInternal(y >> 4);
+                if (sectionInternal == null) return BlockAir.STATE;
+                BlockState result = sectionInternal.getBlockState(x, y & 0x0f, z, layer);
                 if (!blockLock.validate(stamp)) continue;
                 return result;
             }
@@ -228,7 +236,9 @@ public class Chunk implements IChunk {
         try {
             for (; ; stamp = lightLock.readLock()) {
                 if (stamp == 0L) continue;
-                int result = getOrCreateSection(y).getBlockSkyLight(x, y & 0x0f, z);
+                ChunkSection sectionInternal = getSectionInternal(y);
+                if (sectionInternal == null) return 0;
+                int result = sectionInternal.getBlockSkyLight(x, y & 0x0f, z);
                 if (!lightLock.validate(stamp)) continue;
                 return result;
             }
@@ -254,7 +264,9 @@ public class Chunk implements IChunk {
         try {
             for (; ; stamp = lightLock.readLock()) {
                 if (stamp == 0L) continue;
-                int result = getOrCreateSection(y).getBlockLight(x, y & 0x0f, z);
+                ChunkSection sectionInternal = getSectionInternal(y);
+                if (sectionInternal == null) return 0;
+                int result = sectionInternal.getBlockLight(x, y & 0x0f, z);
                 if (!lightLock.validate(stamp)) continue;
                 return result;
             }
@@ -416,7 +428,9 @@ public class Chunk implements IChunk {
         long stamp3 = lightLock.writeLock();
         try {
             unsafeChunkConsumer.accept(new UnsafeChunk(this));
-        } finally {
+        }catch (Exception e){
+            log.error("An error occurred while executing chunk batch operation {}",e.getMessage());
+        }finally {
             lightLock.unlockWrite(stamp3);
             heightAndBiomeLock.unlockWrite(stamp2);
             blockLock.unlockWrite(stamp1);
@@ -429,7 +443,9 @@ public class Chunk implements IChunk {
         try {
             for (; ; stamp = heightAndBiomeLock.readLock()) {
                 if (stamp == 0L) continue;
-                int result = getOrCreateSection(y >> 4).getBiomeId(x, y & 0x0f, z);
+                ChunkSection sectionInternal = getSectionInternal(y);
+                if (sectionInternal == null) return BiomeID.PLAINS;
+                int result = sectionInternal.getBiomeId(x, y & 0x0f, z);
                 if (!heightAndBiomeLock.validate(stamp)) continue;
                 return result;
             }
@@ -595,7 +611,7 @@ public class Chunk implements IChunk {
             boolean changed = false;
             if (this.entityNBT != null) {
                 for (CompoundTag nbt : entityNBT) {
-                    if (!nbt.contains("id")) {
+                    if (!nbt.contains("identifier")) {
                         this.setChanged();
                         continue;
                     }
@@ -604,7 +620,7 @@ public class Chunk implements IChunk {
                         changed = true;
                         continue;
                     }
-                    Entity entity = Entity.createEntity(nbt.getString("id"), this, nbt);
+                    Entity entity = Entity.createEntity(nbt.getString("identifier"), this, nbt);
                     if (entity != null) {
                         changed = true;
                     }
