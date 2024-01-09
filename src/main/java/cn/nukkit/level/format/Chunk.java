@@ -401,7 +401,7 @@ public class Chunk implements IChunk {
                         }
 
                         // START of checks for the next block
-                        BlockState blockState = getBlockState(x, y, z);
+                        BlockState blockState = unsafe.getBlockState(x, y, z);
                         Block block = Block.get(blockState);
 
                         if (!block.isTransparent()) { // if we encounter an opaque block, all the blocks under it will
