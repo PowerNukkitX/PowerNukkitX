@@ -6,6 +6,7 @@ import cn.nukkit.nbt.tag.LinkedCompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.nbt.tag.TreeMapCompoundTag;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
@@ -38,8 +39,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
         }
 
         try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("biome_definitions.nbt")) {
-            CompoundTag compoundTag = NBTIO.readCompressed(stream);
-            compoundTag = new CompoundTag(new TreeMap<>(compoundTag.getTags()));
+            TreeMapCompoundTag compoundTag = NBTIO.readCompressedTreeMapCompoundTag(stream, ByteOrder.BIG_ENDIAN);
             Map<String, Tag> tags = compoundTag.getTags();
             for (var e : tags.entrySet()) {
                 int id = NAME2ID.getInt(e.getKey());
@@ -87,7 +87,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
     }
 
     public byte[] getBiomeDefinitionListPacketData() {
-        CompoundTag compoundTag = new CompoundTag(new TreeMap<>());
+        TreeMapCompoundTag compoundTag = new TreeMapCompoundTag();
         for (var r : REGISTRY) {
             compoundTag.putCompound(r.getString("name_hash"), r);
         }

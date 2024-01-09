@@ -4974,7 +4974,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
 
     public Optional<Inventory> getTopWindow() {
-        return Optional.of(topWindows);
+        return Optional.ofNullable(topWindows);
     }
 
     /**

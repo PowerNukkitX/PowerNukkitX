@@ -7,6 +7,7 @@ import cn.nukkit.level.format.bitarray.BitArray;
 import cn.nukkit.level.format.bitarray.BitArrayVersion;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.stream.NBTInputStream;
+import cn.nukkit.nbt.stream.NBTOutputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.HashUtils;
@@ -82,8 +83,10 @@ public final class Palette<V> {
         byteBuf.writeByte(Palette.getPaletteHeader(this.bitArray.version(), false));
         for (int word : this.bitArray.words()) byteBuf.writeIntLE(word);
         byteBuf.writeIntLE(this.palette.size());
-        try (final ByteBufOutputStream bufOutputStream = new ByteBufOutputStream(byteBuf)) {
-            for (V value : this.palette) NBTIO.write(serializer.serialize(value), bufOutputStream);
+        try (final ByteBufOutputStream bufOutputStream = new ByteBufOutputStream(byteBuf);) {
+            for (V value : this.palette) {
+                NBTIO.write(serializer.serialize(value), bufOutputStream, ByteOrder.LITTLE_ENDIAN);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

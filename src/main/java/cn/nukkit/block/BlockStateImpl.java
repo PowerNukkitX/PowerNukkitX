@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.CompoundTagView;
+import cn.nukkit.nbt.tag.LinkedCompoundTag;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.HashUtils;
 import com.google.common.base.Preconditions;
@@ -33,7 +34,7 @@ record BlockStateImpl(String identifier,
                 case BOOLEAN -> states.putByte(value.getPropertyType().getName(), (byte) value.getSerializedValue());
             }
         }
-        return new CompoundTagView(new CompoundTag()
+        return new CompoundTagView(new LinkedCompoundTag()
                 .putString("name", identifier)
                 .putCompound("states", states)
                 .putInt("version", ProtocolInfo.BLOCK_STATE_VERSION_NO_REVISION));

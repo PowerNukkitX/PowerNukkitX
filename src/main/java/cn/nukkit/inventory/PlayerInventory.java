@@ -181,35 +181,35 @@ public class PlayerInventory extends BaseInventory {
     }
 
     public Item getHelmet() {
-        return this.getItem(this.getSize());
+        return this.getItem(this.getSize() - 4);
     }
 
     public Item getChestplate() {
-        return this.getItem(this.getSize() + 1);
+        return this.getItem(this.getSize() - 3);
     }
 
     public Item getLeggings() {
-        return this.getItem(this.getSize() + 2);
+        return this.getItem(this.getSize() - 2);
     }
 
     public Item getBoots() {
-        return this.getItem(this.getSize() + 3);
+        return this.getItem(this.getSize() - 1);
     }
 
     public boolean setHelmet(Item helmet) {
-        return this.setItem(this.getSize(), helmet);
+        return this.setItem(this.getSize() - 4, helmet);
     }
 
     public boolean setChestplate(Item chestplate) {
-        return this.setItem(this.getSize() + 1, chestplate);
+        return this.setItem(this.getSize() - 3, chestplate);
     }
 
     public boolean setLeggings(Item leggings) {
-        return this.setItem(this.getSize() + 2, leggings);
+        return this.setItem(this.getSize() - 2, leggings);
     }
 
     public boolean setBoots(Item boots) {
-        return this.setItem(this.getSize() + 3, boots);
+        return this.setItem(this.getSize() - 1, boots);
     }
 
     @Override
@@ -298,7 +298,7 @@ public class PlayerInventory extends BaseInventory {
     public Item[] getArmorContents() {
         Item[] armor = new Item[4];
         for (int i = 0; i < 4; i++) {
-            armor[i] = this.getItem(this.getSize() + i);
+            armor[i] = this.getItem(this.getSize() + i - 4);
         }
 
         return armor;
@@ -466,7 +466,7 @@ public class PlayerInventory extends BaseInventory {
 
         CreativeContentPacket pk = new CreativeContentPacket();
 
-        pk.entries =  Registries.CREATIVE.getCreativeItems();
+        pk.entries = Registries.CREATIVE.getCreativeItems();
 
         p.dataPacket(pk);
     }

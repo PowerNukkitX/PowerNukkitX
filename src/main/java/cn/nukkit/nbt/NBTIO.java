@@ -9,6 +9,7 @@ import cn.nukkit.nbt.stream.NBTOutputStream;
 import cn.nukkit.nbt.stream.PGZIPOutputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.nbt.tag.TreeMapCompoundTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.ThreadCache;
@@ -117,6 +118,14 @@ public class NBTIO {
         throw new IOException("Root tag must be a named compound tag");
     }
 
+    public static TreeMapCompoundTag readTreeMapCompoundTag(InputStream inputStream, ByteOrder endianness, boolean network) throws IOException {
+        Tag tag = Tag.readNamedTagTreeMap(new NBTInputStream(inputStream, endianness, network));
+        if (tag instanceof TreeMapCompoundTag) {
+            return (TreeMapCompoundTag) tag;
+        }
+        throw new IOException("Root tag must be a named compound tag");
+    }
+
     public static Tag readTag(InputStream inputStream, ByteOrder endianness, boolean network) throws IOException {
         return Tag.readNamedTag(new NBTInputStream(inputStream, endianness, network));
     }
@@ -145,6 +154,13 @@ public class NBTIO {
         try (InputStream gzip = new GZIPInputStream(inputStream);
              InputStream buffered = new BufferedInputStream(gzip)) {
             return read(buffered, endianness);
+        }
+    }
+
+    public static TreeMapCompoundTag readCompressedTreeMapCompoundTag(InputStream inputStream, ByteOrder endianness) throws IOException {
+        try (InputStream gzip = new GZIPInputStream(inputStream);
+             InputStream buffered = new BufferedInputStream(gzip)) {
+            return readTreeMapCompoundTag(buffered, endianness,false);
         }
     }
 

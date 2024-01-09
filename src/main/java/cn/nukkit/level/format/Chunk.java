@@ -428,12 +428,12 @@ public class Chunk implements IChunk {
         long stamp3 = lightLock.writeLock();
         try {
             unsafeChunkConsumer.accept(new UnsafeChunk(this));
-        }catch (Exception e){
-            log.error("An error occurred while executing chunk batch operation {}",e.getMessage());
-        }finally {
-            lightLock.unlockWrite(stamp3);
-            heightAndBiomeLock.unlockWrite(stamp2);
+        } catch (Exception e) {
+            log.error("An error occurred while executing chunk batch operation {}", e.getStackTrace());
+        } finally {
             blockLock.unlockWrite(stamp1);
+            heightAndBiomeLock.unlockWrite(stamp2);
+            lightLock.unlockWrite(stamp3);
         }
     }
 

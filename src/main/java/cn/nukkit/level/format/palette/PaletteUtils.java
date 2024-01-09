@@ -5,6 +5,7 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.SemVersion;
+import cn.nukkit.utils.VarInt;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.Pair;
 

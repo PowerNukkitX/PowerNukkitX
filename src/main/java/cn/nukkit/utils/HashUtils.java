@@ -3,6 +3,7 @@ package cn.nukkit.utils;
 import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.TreeMapCompoundTag;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
@@ -86,7 +87,12 @@ public class HashUtils {
         if (tag.getString("name").equals("minecraft:unknown")) {
             return -2; // This is special case
         }
-        CompoundTag states = new CompoundTag(new TreeMap<>());
+        CompoundTag states;
+        if (tag instanceof TreeMapCompoundTag) {
+            states = tag;
+        } else {
+            states = new CompoundTag(new TreeMap<>());
+        }
         for (var e : tag.getCompound("states").getTags().entrySet()) {
             states.put(e.getKey(), e.getValue());
         }

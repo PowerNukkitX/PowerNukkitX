@@ -110,15 +110,13 @@ public class LevelDBChunkSerializer {
         for (int ySection = minSectionY; ySection <= dimensionInfo.getMaxSectionY(); ySection++) {
             byte[] bytes = db.get(LevelDBKeyUtil.CHUNK_SECTION_PREFIX.getKey(builder.getChunkX(), builder.getChunkZ(), ySection, dimensionInfo));
             if (bytes != null) {
-                ByteBuf byteBuf = null;
+                ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
                 try {
-                    byteBuf = ByteBufAllocator.DEFAULT.ioBuffer(bytes.length);
                     byteBuf.writeBytes(bytes);
                     byte subChunkVersion = byteBuf.readByte();
                     int layers = 2;
                     switch (subChunkVersion) {
-                        case 9:
-                        case 8:
+                        case 8, 9:
                             layers = byteBuf.readByte();//layers
                             if (subChunkVersion == 9) {
                                 byteBuf.readByte();//sectionY not use
@@ -142,16 +140,13 @@ public class LevelDBChunkSerializer {
                                 });
                             }
                             sections[ySection - minSectionY] = section;
-                            break;
                     }
                 } finally {
-                    if (byteBuf != null) {
-                        byteBuf.release();
-                    }
+                    byteBuf.release();
                 }
             }
+            builder.sections(sections);
         }
-        builder.sections(sections);
     }
 
     //write biomeAndHeight

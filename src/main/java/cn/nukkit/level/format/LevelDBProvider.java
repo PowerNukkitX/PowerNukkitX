@@ -153,7 +153,7 @@ public class LevelDBProvider implements LevelProvider {
         return chunk;
     }
 
-    public Chunk readChunk(int x, int z) throws IOException {
+    public IChunk readChunk(int x, int z) throws IOException {
         Chunk.Builder builder = Chunk.builder()
                 .chunkX(x)
                 .chunkZ(z)
@@ -262,46 +262,49 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     public final void serializeToNetwork(IChunk chunk, BiConsumer<BinaryStream, Integer> callback) {
-        final var byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
         chunk.batchProcess(unsafeChunk -> {
-            final ChunkSection[] sections = unsafeChunk.getSections();
+            final var byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
+            try {
 
-            int subChunkCount = unsafeChunk.getDimensionData().getChunkSectionCount() - 1; // index
-            while (subChunkCount >= 0 && (sections[subChunkCount] == null || sections[subChunkCount].isEmpty())) {
-                subChunkCount--;
-            }
-            subChunkCount++; // length
+                final ChunkSection[] sections = unsafeChunk.getSections();
 
-            //write block
-            for (int i = 0; i < subChunkCount; i++) {
-                sections[i].writeToNetwork(byteBuf);
-            }
-            // Write biomes
-            Palette<Integer> lastBiomes = null;
-            for (int i = 0; i < subChunkCount; i++) {
-                sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue, lastBiomes);
-                lastBiomes = sections[i].biomes();
-            }
-            byteBuf.writeByte(0); // edu- border blocks
-            // Extra Data length. Replaced by second block layer.
-            VarInts.writeUnsignedInt(byteBuf, 0);
-
-            // Block entities
-            final Collection<BlockEntity> tiles = unsafeChunk.getBlockEntities().values();
-            final List<CompoundTag> tagList = new ObjectArrayList<>();
-            for (BlockEntity blockEntity : tiles) {
-                if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
-                    tagList.add(blockEntitySpawnable.getSpawnCompound());
+                int subChunkCount = unsafeChunk.getDimensionData().getChunkSectionCount() - 1; // index
+                while (subChunkCount >= 0 && (sections[subChunkCount] == null || sections[subChunkCount].isEmpty())) {
+                    subChunkCount--;
                 }
+                subChunkCount++; // length
+
+                //write block
+                for (int i = 0; i < subChunkCount; i++) {
+                    sections[i].writeToNetwork(byteBuf);
+                }
+                // Write biomes
+                Palette<Integer> lastBiomes = null;
+                for (int i = 0; i < subChunkCount; i++) {
+                    sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue, lastBiomes);
+                    lastBiomes = sections[i].biomes();
+                }
+                byteBuf.writeByte(0); // edu- border blocks
+
+                // Block entities
+                final Collection<BlockEntity> tiles = unsafeChunk.getBlockEntities().values();
+                final List<CompoundTag> tagList = new ObjectArrayList<>();
+                for (BlockEntity blockEntity : tiles) {
+                    if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
+                        tagList.add(blockEntitySpawnable.getSpawnCompound());
+                    }
+                }
+                try (ByteBufOutputStream stream = new ByteBufOutputStream(byteBuf)) {
+                    NBTIO.write(tagList, stream, ByteOrder.LITTLE_ENDIAN, true);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                byte[] data = new byte[byteBuf.readableBytes()];
+                byteBuf.readBytes(data);
+                callback.accept(new BinaryStream(data), subChunkCount);
+            } finally {
+                byteBuf.release();
             }
-            try (ByteBufOutputStream stream = new ByteBufOutputStream(byteBuf)) {
-                NBTIO.write(tagList, stream, ByteOrder.LITTLE_ENDIAN, true);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            byte[] data = new byte[byteBuf.readableBytes()];
-            byteBuf.getBytes(byteBuf.readableBytes(), data);
-            callback.accept(new BinaryStream(data), subChunkCount);
         });
     }
 
@@ -551,7 +554,12 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public synchronized void close() {
-        this.unloadChunks();
+        try {
+            this.unloadChunks();
+            db.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
