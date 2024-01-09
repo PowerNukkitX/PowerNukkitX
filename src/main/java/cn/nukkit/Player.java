@@ -833,12 +833,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.unloadChunk(Level.getHashX(index), Level.getHashZ(index));
         }
 
-        if (!loadQueue.isEmpty()) {
-            NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
-            packet.position = this.asBlockVector3();
-            packet.radius = viewDistance << 4;
-            this.dataPacket(packet);
-        }
         return true;
     }
 
@@ -2580,6 +2574,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void sendChunk(int x, int z, int subChunkCount, byte[] payload) {
+        NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
+        packet.position = this.asBlockVector3();
+        packet.radius = viewDistance << 4;
+        this.dataPacket(packet);
+
         LevelChunkPacket pk = new LevelChunkPacket();
         pk.chunkX = x;
         pk.chunkZ = z;

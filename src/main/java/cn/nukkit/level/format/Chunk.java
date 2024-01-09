@@ -348,20 +348,21 @@ public class Chunk implements IChunk {
         long stamp1 = heightAndBiomeLock.writeLock();
         long stamp2 = blockLock.writeLock();
         try {
-            int max = getHighestBlockAt(x, z, false);
+            UnsafeChunk unsafeChunk = new UnsafeChunk(this);
+            int max = unsafeChunk.getHighestBlockAt(x, z, false);
             int y;
             for (y = max; y >= 0; --y) {
-                BlockState blockState = getBlockState(x, y, z);
+                BlockState blockState = unsafeChunk.getBlockState(x, y, z);
                 Block block = Block.get(blockState);
                 if (block.getLightFilter() > 1 || block.diffusesSkyLight()) {
                     break;
                 }
             }
-            setHeightMap(x, z, y + 1);
+            unsafeChunk.setHeightMap(x, z, y + 1);
             return y + 1;
         } finally {
-            blockLock.unlockWrite(stamp2);
             heightAndBiomeLock.unlockWrite(stamp1);
+            blockLock.unlockWrite(stamp2);
         }
     }
 

@@ -34,6 +34,12 @@ public class ChunkTest {
     }
 
     @Test
+    void test_recalculateHeightMapColumn(LevelDBProvider levelDBProvider) {
+        IChunk chunk = levelDBProvider.getChunk(0, 0);
+        chunk.recalculateHeightMapColumn(0, 0);
+    }
+
+    @Test
     void test_populateSkyLight(LevelDBProvider levelDBProvider) {
         IChunk chunk = levelDBProvider.getChunk(0, 0);
         chunk.populateSkyLight();
