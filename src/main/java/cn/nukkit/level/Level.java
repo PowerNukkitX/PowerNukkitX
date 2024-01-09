@@ -1870,7 +1870,7 @@ public class Level implements Metadatable {
     }
 
     public Block getBlock(int x, int y, int z, int layer, boolean load) {
-        BlockState fullState;
+        BlockState fullState = BlockAir.PROPERTIES.getDefaultState();
         if (isYInRange(y)) {
             int cx = x >> 4;
             int cz = z >> 4;
@@ -1882,11 +1882,7 @@ public class Level implements Metadatable {
             }
             if (chunk != null) {
                 fullState = chunk.getBlockState(x & 0xF, y, z & 0xF, layer);
-            } else {
-                fullState = BlockAir.PROPERTIES.getDefaultState();
             }
-        } else {
-            fullState = BlockAir.PROPERTIES.getDefaultState();
         }
         Block block = Registries.BLOCK.get(fullState, x, y, z, layer, this);
         setBlock(x, y, z, layer, block, false, false); // Update set to false to fix PowerNukkit#650
