@@ -30,7 +30,7 @@ public class PlayerInputPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

@@ -9,7 +9,7 @@ public class ServerPostMovePositionPacket extends DataPacket {
     public Vector3f position;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

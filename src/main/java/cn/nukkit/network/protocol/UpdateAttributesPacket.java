@@ -16,7 +16,7 @@ public class UpdateAttributesPacket extends DataPacket {
     public long frame;//tick
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

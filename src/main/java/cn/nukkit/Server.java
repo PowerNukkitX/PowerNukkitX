@@ -1,15 +1,12 @@
 package cn.nukkit;
 
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockComposter;
-import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.command.*;
 import cn.nukkit.command.function.FunctionManager;
 import cn.nukkit.console.NukkitConsole;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.entity.data.property.EntityProperty;
@@ -22,7 +19,6 @@ import cn.nukkit.level.blockstateupdater.BlockStateUpdaterBase;
 import cn.nukkit.level.format.LevelDBProvider;
 import cn.nukkit.recipe.CraftingManager;
 import cn.nukkit.recipe.Recipe;
-import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.lang.LangCode;
@@ -44,7 +40,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.CompressBatchedTask;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.RakNetInterface;
 import cn.nukkit.network.SourceInterface;
@@ -84,9 +79,7 @@ import cn.nukkit.utils.bugreport.ExceptionHandler;
 import cn.nukkit.utils.collection.FreezableArrayManager;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.io.Files;
 import io.netty.buffer.ByteBuf;
-import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongLists;
@@ -261,16 +254,10 @@ public class Server {
     private final String dataPath;
     private final String pluginPath;
     private final String commandDataPath;
-
     private final Set<UUID> uniquePlayers = new HashSet<>();
-
-    private QueryHandler queryHandler;
-
     private QueryRegenerateEvent queryRegenerateEvent;
-
     private Config properties;
     private Config config;
-
     private final Map<InetSocketAddress, Player> players = new HashMap<>();
 
     private final Map<UUID, Player> playerList = new HashMap<>();
@@ -706,6 +693,7 @@ public class Server {
         NukkitMetrics.startNow(this);
 
         {//init block
+            Registries.PACKET.init();
             Registries.ENTITY.init();
             Profession.init();
             Registries.BLOCKENTITY.init();
@@ -806,7 +794,7 @@ public class Server {
 
                 Map<String, Object> options = new HashMap<>();
                 String[] opts = (this.getConfig("worlds." + name + ".generator", Registries.GENERATOR.get("flat").getSimpleName())).split(":");
-                Class<? extends Generator> generator =  Registries.GENERATOR.get(opts[0]);
+                Class<? extends Generator> generator = Registries.GENERATOR.get(opts[0]);
                 if (opts.length > 1) {
                     StringBuilder preset = new StringBuilder();
                     for (int i = 1; i < opts.length; i++) {
@@ -1019,10 +1007,6 @@ public class Server {
     }
 
     public void start() {
-        if (this.getPropertyBoolean("enable-query", true)) {
-            this.queryHandler = new QueryHandler();
-        }
-
         for (BanEntry entry : this.getIPBans().getEntires().values()) {
             try {
                 this.network.blockAddress(InetAddress.getByName(entry.getName()), -1);
@@ -1165,10 +1149,9 @@ public class Server {
         }
     }
 
-    private boolean tick() {
+    private void tick() {
         long tickTime = System.currentTimeMillis();
 
-        // TODO
         long time = tickTime - this.nextTick;
         if (time < -25) {
             try {
@@ -1180,7 +1163,7 @@ public class Server {
 
         long tickTimeNano = System.nanoTime();
         if ((tickTime - this.nextTick) < -25) {
-            return false;
+            return;
         }
 
         ++this.tickCounter;
@@ -1207,9 +1190,6 @@ public class Server {
             if ((this.tickCounter & 0b111111111) == 0) {
                 try {
                     this.getPluginManager().callEvent(this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5));
-                    if (this.queryHandler != null) {
-                        this.queryHandler.regenerateInfo();
-                    }
                 } catch (Exception e) {
                     log.error(e);
                 }
@@ -1268,7 +1248,6 @@ public class Server {
             this.nextTick += 50;
         }
 
-        return true;
     }
 
     public long getNextTick() {
@@ -1626,7 +1605,6 @@ public class Server {
      */
     public static void broadcastPacket(Collection<Player> players, DataPacket packet) {
         packet.tryEncode();
-
         for (Player player : players) {
             player.dataPacket(packet);
         }
@@ -1643,93 +1621,6 @@ public class Server {
 
         for (Player player : players) {
             player.dataPacket(packet);
-        }
-    }
-
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
-            reason = "Packet management was refactored, batching is done automatically near the RakNet layer")
-    @Deprecated
-    public void batchPackets(Player[] players, DataPacket[] packets) {
-        this.batchPackets(players, packets, false);
-    }
-
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
-            reason = "Packet management was refactored, batching is done automatically near the RakNet layer")
-    @Deprecated
-    public void batchPackets(Player[] players, DataPacket[] packets, boolean forceSync) {
-        if (players == null || packets == null || players.length == 0 || packets.length == 0) {
-            return;
-        }
-
-        BatchPacketsEvent ev = new BatchPacketsEvent(players, packets, forceSync);
-        getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
-            return;
-        }
-
-        byte[][] payload = new byte[packets.length * 2][];
-        for (int i = 0; i < packets.length; i++) {
-            DataPacket p = packets[i];
-            int idx = i * 2;
-            p.tryEncode();
-            byte[] buf = p.getBuffer();
-            payload[idx] = Binary.writeUnsignedVarInt(buf.length);
-            payload[idx + 1] = buf;
-            packets[i] = null;
-        }
-
-        List<InetSocketAddress> targets = new ArrayList<>();
-        for (Player p : players) {
-            if (p.isConnected()) {
-                targets.add(p.getRawSocketAddress());
-            }
-        }
-
-        if (!forceSync && this.networkCompressionAsync) {
-            this.getScheduler().scheduleAsyncTask(new CompressBatchedTask(payload, targets, this.networkCompressionLevel));
-        } else {
-            try {
-                byte[] data = Binary.appendBytes(payload);
-                if (Server.getInstance().isEnableSnappy()) {
-                    this.broadcastPacketsCallback(SnappyCompression.compress(data), targets);
-                } else {
-                    this.broadcastPacketsCallback(Network.deflateRaw(data, this.networkCompressionLevel), targets);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    public void broadcastPacketsCallback(byte[] data, List<InetSocketAddress> targets) {
-        BatchPacket pk = new BatchPacket();
-        pk.payload = data;
-
-        for (InetSocketAddress i : targets) {
-            if (this.players.containsKey(i)) {
-                this.players.get(i).dataPacket(pk);
-            }
-        }
-    }
-
-    public void handlePacket(InetSocketAddress address, ByteBuf payload) {
-        try {
-            if (!payload.isReadable(3)) {
-                return;
-            }
-            byte[] prefix = new byte[2];
-            payload.readBytes(prefix);
-
-            if (!Arrays.equals(prefix, new byte[]{(byte) 0xfe, (byte) 0xfd})) {
-                return;
-            }
-            if (this.queryHandler != null) {
-                this.queryHandler.handle(address, payload);
-            }
-        } catch (Exception e) {
-            log.error("Error whilst handling packet", e);
-
-            this.network.blockAddress(address.getAddress(), -1);
         }
     }
 
@@ -2419,7 +2310,8 @@ public class Server {
         return freezableArrayManager;
     }
 
-    @NotNull public PositionTrackingService getPositionTrackingService() {
+    @NotNull
+    public PositionTrackingService getPositionTrackingService() {
         return positionTrackingService;
     }
 

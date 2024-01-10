@@ -11,7 +11,7 @@ public class StopSoundPacket extends DataPacket {
     public boolean stopAll;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

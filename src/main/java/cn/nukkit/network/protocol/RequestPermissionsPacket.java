@@ -28,7 +28,7 @@ public class RequestPermissionsPacket extends DataPacket{
     public int customPermissions;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.REQUEST_PERMISSIONS_PACKET;
     }
 

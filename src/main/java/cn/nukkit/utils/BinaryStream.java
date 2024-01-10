@@ -15,8 +15,6 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.network.LittleEndianByteBufInputStream;
-import cn.nukkit.network.LittleEndianByteBufOutputStream;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
@@ -97,6 +95,7 @@ public class BinaryStream {
     }
 
     public byte[] getBuffer() {
+        if (count == 0) return null;
         return Arrays.copyOf(buffer, count);
     }
 

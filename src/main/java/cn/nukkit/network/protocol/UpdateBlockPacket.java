@@ -27,7 +27,7 @@ public class UpdateBlockPacket extends DataPacket {
     public int dataLayer = 0;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

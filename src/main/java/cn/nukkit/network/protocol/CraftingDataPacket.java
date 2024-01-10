@@ -206,7 +206,7 @@ public class CraftingDataPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

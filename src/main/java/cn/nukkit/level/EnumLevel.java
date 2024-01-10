@@ -46,7 +46,7 @@ public enum EnumLevel {
 
         // The End
         if (Server.getInstance().isTheEndAllowed() && !Server.getInstance().loadLevel("the_end")) {
-            Server.getInstance().getLogger().info("No level called \"the_end\" found, creating default the end level.");
+           log.info("No level called \"the_end\" found, creating default the end level.");
             long seed = System.currentTimeMillis();
             Class<? extends Generator> generator = Registries.GENERATOR.get("the_end");
             Server.getInstance().generateLevel("the_end", seed, generator);
@@ -58,7 +58,7 @@ public enum EnumLevel {
         THE_END.level = Server.getInstance().getLevelByName("the_end");
 
         if (THE_END.level == null) {
-            Server.getInstance().getLogger().alert("No level called \"the_end\" found or the end is disabled in server properties! The End functionality will be disabled.");
+            log.warn("No level called \"the_end\" found or the end is disabled in server properties! The End functionality will be disabled.");
         }
     }
 

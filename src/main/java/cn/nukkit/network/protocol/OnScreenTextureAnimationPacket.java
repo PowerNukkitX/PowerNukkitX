@@ -5,7 +5,7 @@ public class OnScreenTextureAnimationPacket extends DataPacket {
     public int effectId;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.ON_SCREEN_TEXTURE_ANIMATION_PACKET;
     }
 

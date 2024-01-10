@@ -19,7 +19,7 @@ public class SyncEntityPropertyPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

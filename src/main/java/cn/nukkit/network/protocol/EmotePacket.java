@@ -18,7 +18,7 @@ public class EmotePacket extends DataPacket {
     public byte flags;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

@@ -25,7 +25,7 @@ public class MoveEntityAbsolutePacket extends DataPacket {
     public boolean forceMoveLocalEntity;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

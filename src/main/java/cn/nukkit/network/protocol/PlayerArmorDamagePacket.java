@@ -13,7 +13,7 @@ public class PlayerArmorDamagePacket extends DataPacket {
     public final int[] damage = new int[4];
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

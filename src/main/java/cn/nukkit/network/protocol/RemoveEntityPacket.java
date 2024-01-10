@@ -12,7 +12,7 @@ public class RemoveEntityPacket extends DataPacket {
     public long eid;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

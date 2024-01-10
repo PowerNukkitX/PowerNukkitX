@@ -1,6 +1,7 @@
 package cn.nukkit.entity.projectile;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.mob.EntityBlaze;
 import cn.nukkit.level.Level;
@@ -20,10 +21,11 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntitySnowball extends EntityProjectile {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return SNOWBALL;
     }
-    
+
     private static final byte[] particleCounts = new byte[24];
     private static int particleIndex = 0;
 
@@ -49,7 +51,6 @@ public class EntitySnowball extends EntityProjectile {
         return particleCounts[index];
     }
 
-    
 
     @Override
     public float getWidth() {
@@ -109,7 +110,9 @@ public class EntitySnowball extends EntityProjectile {
         int chunkX = (int) x >> 4;
         int chunkZ = (int) z >> 4;
         Level level = this.level;
-        level.getServer().batchPackets(level.getChunkPlayers(chunkX, chunkZ).values().toArray(Player.EMPTY_ARRAY), allPackets);
+        for (var p : allPackets) {
+            Server.broadcastPacket(level.getChunkPlayers(chunkX, chunkZ).values(), p);
+        }
     }
 
     @Override

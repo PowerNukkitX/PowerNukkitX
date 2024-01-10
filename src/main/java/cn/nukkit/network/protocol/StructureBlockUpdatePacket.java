@@ -13,7 +13,7 @@ public class StructureBlockUpdatePacket extends DataPacket {
     public boolean waterlogged;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.STRUCTURE_BLOCK_UPDATE_PACKET;
     }
 

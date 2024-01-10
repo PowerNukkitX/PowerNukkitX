@@ -75,7 +75,7 @@ public class NPCRequestPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.NPC_REQUEST_PACKET;
     }
 

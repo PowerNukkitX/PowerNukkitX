@@ -12,7 +12,7 @@ public class ShowProfilePacket extends DataPacket {
     public String xuid;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

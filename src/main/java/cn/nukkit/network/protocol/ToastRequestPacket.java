@@ -9,7 +9,7 @@ public class ToastRequestPacket extends DataPacket{
     public String content = "";
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.TOAST_REQUEST_PACKET;
     }
 

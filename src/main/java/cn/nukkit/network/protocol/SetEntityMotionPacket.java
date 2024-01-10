@@ -15,7 +15,7 @@ public class SetEntityMotionPacket extends DataPacket {
     public float motionZ;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

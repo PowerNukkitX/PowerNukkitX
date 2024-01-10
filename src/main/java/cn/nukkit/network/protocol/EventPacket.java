@@ -10,7 +10,7 @@ public class EventPacket extends DataPacket {
     public byte unknown2;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.EVENT_PACKET;
     }
 

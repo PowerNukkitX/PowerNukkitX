@@ -20,7 +20,7 @@ public class PlayerFogPacket extends DataPacket {
     private List<Fog> fogStack = new ArrayList<>();
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.PLAYER_FOG_PACKET;
     }
 

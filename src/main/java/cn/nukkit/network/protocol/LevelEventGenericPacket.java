@@ -14,7 +14,7 @@ public class LevelEventGenericPacket extends DataPacket {
     public CompoundTag tag;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

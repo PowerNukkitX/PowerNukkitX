@@ -13,7 +13,7 @@ public class AnvilDamagePacket extends DataPacket {
     public int z;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.ANVIL_DAMAGE_PACKET;
     }
 

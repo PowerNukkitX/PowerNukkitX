@@ -6,7 +6,7 @@ import lombok.ToString;
 public class SetLastHurtByPacket extends DataPacket {
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.SET_LAST_HURT_BY_PACKET;
     }
 

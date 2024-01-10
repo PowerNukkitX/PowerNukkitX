@@ -11,13 +11,8 @@ public class ToggleCrafterSlotRequestPacket extends DataPacket {
     public boolean disabled;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return (byte) NETWORK_ID;
-    }
-
-    @Override
-    public int packetId() {
-        return NETWORK_ID;
     }
 
     @Override

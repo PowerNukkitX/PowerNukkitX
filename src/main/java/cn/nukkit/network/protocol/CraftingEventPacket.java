@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.item.Item;
 import cn.nukkit.utils.BinaryStream;
 import lombok.EqualsAndHashCode;
@@ -53,7 +52,7 @@ public class CraftingEventPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

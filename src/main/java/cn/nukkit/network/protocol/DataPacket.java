@@ -5,7 +5,6 @@ import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.network.Network;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.BinaryStream;
-import com.nukkitx.network.raknet.RakNetReliability;
 
 import javax.annotation.Nonnegative;
 
@@ -13,25 +12,12 @@ import javax.annotation.Nonnegative;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class DataPacket extends BinaryStream implements Cloneable {
-
     public static final DataPacket[] EMPTY_ARRAY = new DataPacket[0];
-
     public volatile boolean isEncoded = false;
-    private int channel = 0;
+    private int senderSubClientId;
+    private int targetSubClientId;
 
-    public RakNetReliability reliability = RakNetReliability.RELIABLE_ORDERED;
-
-    @Deprecated(since = "1.19.70")
-    @DeprecationDetails(since = "1.19.70-r1", reason = "pid could be more than 255, so it should be an int",
-            replaceWith = "packetId()")
-    public abstract byte pid();
-
-    /**
-     * @return The id of the packet
-     */
-    public @Nonnegative int packetId() {
-        return ProtocolInfo.toNewProtocolID(this.pid());
-    }
+    public abstract int pid();
 
     /**
      * @return The protocol version of the packet. If it is lower than CURRENT_PROTOCOL, pnx will try to translate it.
@@ -102,5 +88,21 @@ public abstract class DataPacket extends BinaryStream implements Cloneable {
             throw new RuntimeException(e);
         }
         return batch;
+    }
+
+    public int getTargetSubClientId() {
+        return targetSubClientId;
+    }
+
+    public void setTargetSubClientId(int targetSubClientId) {
+        this.targetSubClientId = targetSubClientId;
+    }
+
+    public int getSenderSubClientId() {
+        return senderSubClientId;
+    }
+
+    public void setSenderSubClientId(int senderSubClientId) {
+        this.senderSubClientId = senderSubClientId;
     }
 }

@@ -63,7 +63,7 @@ public class AvailableCommandsPacket extends DataPacket {
     public final List<CommandEnumConstraintData> constraints = new ObjectArrayList<>();
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

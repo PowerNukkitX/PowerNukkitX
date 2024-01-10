@@ -15,7 +15,7 @@ import lombok.ToString;
 public class AddEntityPacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.ADD_ENTITY_PACKET;
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

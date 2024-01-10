@@ -20,7 +20,7 @@ public class TickSyncPacket extends DataPacket {
     private long responseTimestamp;
     
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
     

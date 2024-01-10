@@ -10,7 +10,7 @@ public class CodeBuilderSourcePacket extends DataPacket {
     private String value;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.CODE_BUILDER_SOURCE_PACKET;
     }
 

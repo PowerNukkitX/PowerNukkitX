@@ -659,10 +659,8 @@ public class Level implements Metadatable {
             }
         } else {
             if (packets != null) {
-                if (packets.length == 1) {
-                    Server.broadcastPacket(players, packets[0]);
-                } else {
-                    this.server.batchPackets(players, packets, false);
+                for (var p : packets) {
+                    Server.broadcastPacket(players, p);
                 }
             }
         }
@@ -1232,7 +1230,9 @@ public class Level implements Metadatable {
             }
             packets.add(updateBlockPacket);
         }
-        this.server.batchPackets(target, packets.toArray(DataPacket.EMPTY_ARRAY));
+        for (var p : packets) {
+            Server.broadcastPacket(target, p);
+        }
     }
 
     private void tickChunks() {

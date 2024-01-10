@@ -10,7 +10,7 @@ public class DimensionDataPacket extends DataPacket {
     private final List<DimensionData> definitions = new ObjectArrayList<>();
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.DIMENSION_DATA_PACKET;
     }
 

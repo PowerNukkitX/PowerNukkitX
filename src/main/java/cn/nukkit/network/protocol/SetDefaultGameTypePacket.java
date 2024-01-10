@@ -7,7 +7,7 @@ public class SetDefaultGameTypePacket extends DataPacket {
     public int gamemode;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

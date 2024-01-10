@@ -6,7 +6,7 @@ public class MapCreateLockedCopyPacket extends DataPacket {
     public long newMapId;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.MAP_CREATE_LOCKED_COPY_PACKET;
     }
 

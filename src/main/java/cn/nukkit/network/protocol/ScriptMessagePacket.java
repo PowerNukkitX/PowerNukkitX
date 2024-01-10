@@ -6,7 +6,7 @@ public class ScriptMessagePacket extends DataPacket {
     private String message;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.SCRIPT_MESSAGE_PACKET;
     }
 

@@ -4,14 +4,13 @@ import cn.nukkit.Player;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.network.SourceInterface;
-import lombok.Getter;
 
 import java.net.InetSocketAddress;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class PlayerCreationEvent extends Event {
+public class PlayerAsyncCreationEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
 
@@ -20,14 +19,12 @@ public class PlayerCreationEvent extends Event {
     }
 
     private final SourceInterface interfaz;
-    private final Long clientId;
     private final InetSocketAddress socketAddress;
     private Class<? extends Player> baseClass;
     private Class<? extends Player> playerClass;
 
-    public PlayerCreationEvent(SourceInterface interfaz, Class<? extends Player> baseClass, Class<? extends Player> playerClass, Long clientId, InetSocketAddress socketAddress) {
+    public PlayerAsyncCreationEvent(SourceInterface interfaz, Class<? extends Player> baseClass, Class<? extends Player> playerClass, InetSocketAddress socketAddress) {
         this.interfaz = interfaz;
-        this.clientId = clientId;
         this.socketAddress = socketAddress;
 
         this.baseClass = baseClass;
@@ -48,10 +45,6 @@ public class PlayerCreationEvent extends Event {
 
     public InetSocketAddress getSocketAddress() {
         return socketAddress;
-    }
-
-    public Long getClientId() {
-        return clientId;
     }
 
     public Class<? extends Player> getBaseClass() {

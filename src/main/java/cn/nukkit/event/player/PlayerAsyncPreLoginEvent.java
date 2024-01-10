@@ -40,14 +40,6 @@ public class PlayerAsyncPreLoginEvent extends PlayerEvent {
 
     private final List<Consumer<Server>> scheduledActions = new ArrayList<>();
 
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "LoginChainData and Skin were added by refactoring this constructor",
-            replaceWith = "PlayerAsyncPreLoginEvent(String name, UUID uuid, LoginChainData chainData, Skin skin, String address, int port)")
-    public PlayerAsyncPreLoginEvent(String name, UUID uuid, String address, int port) {
-        // TODO PowerNukkit: I think this might cause an exception...
-        this(name, uuid, ClientChainData.of(EmptyArrays.EMPTY_BYTES), null, address, port);
-    }
-
     public PlayerAsyncPreLoginEvent(String name, UUID uuid, LoginChainData chainData, Skin skin, String address, int port) {
         this.name = name;
         this.uuid = uuid;

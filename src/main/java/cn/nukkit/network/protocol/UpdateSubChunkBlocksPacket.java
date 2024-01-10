@@ -21,7 +21,7 @@ public class UpdateSubChunkBlocksPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.UPDATE_SUB_CHUNK_BLOCKS_PACKET;
     }
 

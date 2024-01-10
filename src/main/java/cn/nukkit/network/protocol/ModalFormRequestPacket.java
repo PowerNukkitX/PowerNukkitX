@@ -9,7 +9,7 @@ public class ModalFormRequestPacket extends DataPacket {
     public String data;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.MODAL_FORM_REQUEST_PACKET;
     }
 

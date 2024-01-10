@@ -15,7 +15,7 @@ public class VideoStreamConnectPacket extends DataPacket {
     public byte action;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

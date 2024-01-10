@@ -27,7 +27,7 @@ public class UpdateAdventureSettingsPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.UPDATE_ADVENTURE_SETTINGS_PACKET;
     }
 }

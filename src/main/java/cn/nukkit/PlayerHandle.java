@@ -13,21 +13,20 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.SourceInterface;
+import cn.nukkit.network.connection.BedrockServerSession;
 import cn.nukkit.network.protocol.PlayerFogPacket;
 import cn.nukkit.network.protocol.types.PlayerBlockActionData;
-import cn.nukkit.network.session.NetworkPlayerSession;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.DummyBossBar;
 import cn.nukkit.utils.LoginChainData;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.collect.BiMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2BooleanLinkedOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -43,7 +42,7 @@ public final class PlayerHandle {
         this.player = player;
     }
 
-    public NetworkPlayerSession getNetworkSession() {
+    public BedrockServerSession getNetworkSession() {
         return player.networkSession;
     }
 
@@ -95,7 +94,7 @@ public final class PlayerHandle {
         return player.windowIndex;
     }
 
-    public Long2ObjectLinkedOpenHashMap<Boolean> getLoadQueue() {
+    public Long2BooleanLinkedOpenHashMap getLoadQueue() {
         return player.loadQueue;
     }
 
@@ -195,12 +194,8 @@ public final class PlayerHandle {
         player.sleeping = sleeping;
     }
 
-    public Long getClientID() {
-        return player.clientID;
-    }
-
-    public void setClientID(Long clientID) {
-        player.clientID = clientID;
+    public Integer getSubClientId() {
+        return player.subClientId;
     }
 
     public int getChunkLoadCount() {

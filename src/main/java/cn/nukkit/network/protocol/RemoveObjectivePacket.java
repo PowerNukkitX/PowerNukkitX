@@ -6,7 +6,7 @@ public class RemoveObjectivePacket extends DataPacket {
     public String objectiveName;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.REMOVE_OBJECTIVE_PACKET;
     }
 

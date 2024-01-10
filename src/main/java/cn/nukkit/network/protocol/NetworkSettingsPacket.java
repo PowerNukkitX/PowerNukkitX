@@ -14,7 +14,7 @@ public class NetworkSettingsPacket extends DataPacket {
     public float clientThrottleScalar;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.NETWORK_SETTINGS_PACKET;
     }
 

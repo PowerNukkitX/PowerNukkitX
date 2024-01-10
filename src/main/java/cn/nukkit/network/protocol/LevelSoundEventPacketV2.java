@@ -41,7 +41,7 @@ public class LevelSoundEventPacketV2 extends LevelSoundEventPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 }

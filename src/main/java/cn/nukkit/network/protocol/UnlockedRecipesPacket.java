@@ -12,7 +12,7 @@ public class UnlockedRecipesPacket extends DataPacket {
     public final List<String> unlockedRecipes = new ObjectArrayList<>();
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.UNLOCKED_RECIPES_PACKET;
     }
 

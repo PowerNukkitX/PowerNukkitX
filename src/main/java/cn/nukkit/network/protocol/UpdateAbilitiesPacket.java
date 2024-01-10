@@ -80,7 +80,7 @@ public class UpdateAbilitiesPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.UPDATE_ABILITIES_PACKET;
     }
 }

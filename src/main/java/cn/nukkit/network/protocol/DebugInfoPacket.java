@@ -10,7 +10,7 @@ public class DebugInfoPacket extends DataPacket {
     public String data;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

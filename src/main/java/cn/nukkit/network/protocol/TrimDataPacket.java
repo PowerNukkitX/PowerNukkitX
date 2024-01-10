@@ -18,17 +18,8 @@ public class TrimDataPacket extends DataPacket {
     private final List<TrimPattern> patterns = new ObjectArrayList<>();
     private final List<TrimMaterial> materials = new ObjectArrayList<>();
 
-    @Override
-    public int packetId() {
+    public int pid() {
         return NETWORK_ID;
-    }
-
-    @Deprecated(since = "1.19.70")
-    @DeprecationDetails(since = "1.19.70-r1", reason = "pid could be more than 255, so it should be an int",
-            replaceWith = "packetId()")
-    @Override
-    public byte pid() {
-        return (byte) 255;
     }
 
     @Override

@@ -11,7 +11,7 @@ public class MobEquipmentPacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.MOB_EQUIPMENT_PACKET;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

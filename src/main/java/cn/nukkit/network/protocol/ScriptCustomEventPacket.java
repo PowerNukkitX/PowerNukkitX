@@ -13,7 +13,7 @@ public class ScriptCustomEventPacket extends DataPacket {
     public byte[] eventData;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.SCRIPT_CUSTOM_EVENT_PACKET;
     }
 

@@ -55,7 +55,7 @@ public class ResourcePackChunkDataPacket extends AbstractResourcePackDataPacket 
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 }

@@ -12,7 +12,7 @@ public class SetTimePacket extends DataPacket {
     public int time;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

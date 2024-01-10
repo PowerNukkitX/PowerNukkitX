@@ -10,7 +10,7 @@ public class SetPlayerGameTypePacket extends DataPacket {
     public final static byte NETWORK_ID = ProtocolInfo.SET_PLAYER_GAME_TYPE_PACKET;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

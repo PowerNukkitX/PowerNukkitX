@@ -14,7 +14,7 @@ public class ShowCreditsPacket extends DataPacket {
     public int status;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

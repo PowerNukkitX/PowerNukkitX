@@ -41,7 +41,7 @@ public class PlayerAuthInputPacket extends DataPacket {
     private Vector2f analogMoveVector;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

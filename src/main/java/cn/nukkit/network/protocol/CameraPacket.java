@@ -9,7 +9,7 @@ public class CameraPacket extends DataPacket {
     public long playerUniqueId;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.CAMERA_PACKET;
     }
 

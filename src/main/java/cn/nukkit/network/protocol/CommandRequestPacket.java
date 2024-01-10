@@ -34,7 +34,7 @@ public class CommandRequestPacket extends DataPacket {
     public int version;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

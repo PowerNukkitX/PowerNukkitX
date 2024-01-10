@@ -13,7 +13,7 @@ public class LessonProgressPacket extends DataPacket {
     public String activityId;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

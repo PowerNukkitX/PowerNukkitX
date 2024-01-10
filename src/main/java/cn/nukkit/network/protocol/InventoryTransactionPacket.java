@@ -55,7 +55,7 @@ public class InventoryTransactionPacket extends DataPacket {
     public boolean isTradeItemPart = false;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.INVENTORY_TRANSACTION_PACKET;
     }
 

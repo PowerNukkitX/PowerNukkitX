@@ -14,7 +14,7 @@ public class EmoteListPacket extends DataPacket {
     public final List<UUID> pieceIds = new ObjectArrayList<>();
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

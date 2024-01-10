@@ -16,7 +16,7 @@ public class BlockEntityDataPacket extends DataPacket {
     public byte[] namedTag;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

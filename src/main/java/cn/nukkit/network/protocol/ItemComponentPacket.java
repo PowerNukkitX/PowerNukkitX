@@ -3,7 +3,6 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MainLogger;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.IOException;
@@ -31,7 +30,7 @@ public class ItemComponentPacket extends DataPacket {
     }
     
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
     

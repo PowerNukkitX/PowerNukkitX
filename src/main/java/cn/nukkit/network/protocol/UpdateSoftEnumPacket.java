@@ -12,7 +12,7 @@ public class UpdateSoftEnumPacket extends DataPacket {
     public Type type = Type.SET;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.UPDATE_SOFT_ENUM_PACKET;
     }
 

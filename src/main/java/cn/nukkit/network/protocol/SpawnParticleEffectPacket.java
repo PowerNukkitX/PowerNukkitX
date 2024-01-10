@@ -19,7 +19,7 @@ public class SpawnParticleEffectPacket extends DataPacket {
     public Optional<String> molangVariablesJson = Optional.empty();
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

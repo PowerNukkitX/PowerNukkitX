@@ -15,7 +15,7 @@ public class PlaySoundPacket extends DataPacket {
     public float pitch;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

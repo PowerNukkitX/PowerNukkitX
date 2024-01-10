@@ -10,7 +10,7 @@ public class NetworkChunkPublisherUpdatePacket extends DataPacket {
     public int radius;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.NETWORK_CHUNK_PUBLISHER_UPDATE_PACKET;
     }
 

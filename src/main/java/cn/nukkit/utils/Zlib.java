@@ -3,6 +3,7 @@ package cn.nukkit.utils;
 import cn.nukkit.Server;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.network.Network;
+import cn.nukkit.network.connection.netty.codec.compression.ZlibCompressionCodec;
 import cn.powernukkitx.libdeflate.Libdeflate;
 import lombok.extern.log4j.Log4j2;
 
@@ -19,6 +20,7 @@ public abstract class Zlib {
         providers[2] = new ZlibThreadLocal();
         provider = providers[2];
     }
+
     public static void setProvider(int providerIndex) {
         var lang = Server.getInstance() == null ? new BaseLang("eng") : Server.getInstance().getLanguage();
         switch (providerIndex) {
@@ -38,9 +40,10 @@ public abstract class Zlib {
                 break;
             case 3:
                 if (Libdeflate.isAvailable()) {
-                    Network.libDeflateAvailable = true;
-                    if (providers[providerIndex] == null)
+                    ZlibCompressionCodec.libDeflateAvailable = true;
+                    if (providers[providerIndex] == null) {
                         providers[providerIndex] = new LibDeflateThreadLocal();
+                    }
                 } else {
                     log.warn(lang.tr("nukkit.zlib.unavailable"));
                     providerIndex = 2;
@@ -61,17 +64,17 @@ public abstract class Zlib {
         log.info(lang.tr("nukkit.zlib.selected") + ": {} ({})", providerIndex, provider.getClass().getCanonicalName());
     }
 
-    
+
     public static byte[] deflate(byte[] data) throws IOException {
         return deflate(data, Deflater.DEFAULT_COMPRESSION);
     }
 
-    
+
     public static byte[] deflate(byte[] data, int level) throws IOException {
         return provider.deflate(data, level);
     }
 
-    
+
     public static byte[] deflate(byte[][] data, int level) throws IOException {
         return provider.deflate(data, level);
     }

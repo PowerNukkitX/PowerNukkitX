@@ -14,16 +14,8 @@ public class CompressedBiomeDefinitionListPacket extends DataPacket {
     private CompoundTag definitions;
 
     @Override
-    public int packetId() {
+    public int pid() {
         return NETWORK_ID;
-    }
-
-    @Deprecated(since = "1.19.70")
-    @DeprecationDetails(since = "1.19.70-r1", reason = "pid could be more than 255, so it should be an int",
-            replaceWith = "packetId()")
-    @Override
-    public byte pid() {
-        return (byte) 255;
     }
 
     protected static final byte[] COMPRESSED_INDICATOR = new byte[]{(byte) 0xe4, (byte) 0x92, 0x3f, 0x43, 0x4f, 0x4d, 0x50, 0x52, 0x45, 0x53, 0x53, 0x45, 0x44}; // __?COMPRESSED

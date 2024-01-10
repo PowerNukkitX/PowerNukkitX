@@ -14,7 +14,7 @@ public class LecternUpdatePacket extends DataPacket {
     public boolean dropBook;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

@@ -32,7 +32,7 @@ public class CompletedUsingItemPacket extends DataPacket {
 
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

@@ -42,7 +42,7 @@ public class BossEventPacket extends DataPacket {
     public int overlay;
     
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

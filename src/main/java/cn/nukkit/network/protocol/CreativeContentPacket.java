@@ -12,7 +12,7 @@ public class CreativeContentPacket extends DataPacket {
     public Item[] entries = Item.EMPTY_ARRAY;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

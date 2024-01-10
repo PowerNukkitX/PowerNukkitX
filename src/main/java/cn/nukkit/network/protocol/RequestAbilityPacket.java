@@ -29,7 +29,7 @@ public class RequestAbilityPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.REQUEST_ABILITY_PACKET;
     }
 }

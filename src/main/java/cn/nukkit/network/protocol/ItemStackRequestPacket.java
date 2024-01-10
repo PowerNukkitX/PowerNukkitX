@@ -18,7 +18,7 @@ public class ItemStackRequestPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.ITEM_STACK_REQUEST_PACKET;
     }
 

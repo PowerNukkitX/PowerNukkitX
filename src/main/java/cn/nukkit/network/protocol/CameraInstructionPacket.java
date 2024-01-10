@@ -21,15 +21,7 @@ public class CameraInstructionPacket extends DataPacket {
     private ClearInstruction clearInstruction;
 
     @Override
-    @Deprecated
-    public byte pid() {
-        return (byte) packetId();
-    }
-
-    @Nonnegative
-
-    @Override
-    public int packetId() {
+    public int pid() {
         return ProtocolInfo.CAMERA_INSTRUCTION_PACKET;
     }
 

@@ -6,7 +6,7 @@ public class PlayerStartItemCoolDownPacket extends DataPacket {
     private int coolDownDuration;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.PLAYER_START_ITEM_COOL_DOWN_PACKET;
     }
 

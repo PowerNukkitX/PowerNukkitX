@@ -244,16 +244,21 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <!-- 不要换成NKX的依赖，这个版本具有特定接口 -->
-            <groupId>cn.powernukkitx.PowerNukkitX-Network</groupId>
-            <artifactId>raknet</artifactId>
-            <version>1.6.28-PNX.5</version>
+            <groupId>org.cloudburstmc.netty</groupId>
+            <artifactId>netty-transport-raknet</artifactId>
+            <version>1.0.0.CR1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.nukkitx</groupId>
-            <artifactId>natives</artifactId>
-            <version>1.0.3</version>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport-classes-epoll</artifactId>
+            <version>4.1.101.Final</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.bitbucket.b_c</groupId>
+            <artifactId>jose4j</artifactId>
+            <version>0.9.3</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

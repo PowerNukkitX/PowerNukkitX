@@ -6,7 +6,7 @@ public class ClientCacheStatusPacket extends DataPacket {
     public boolean supported;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

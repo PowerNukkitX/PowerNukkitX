@@ -14,7 +14,7 @@ public class ChangeMobPropertyPacket extends DataPacket {
     private float floatValue;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.CHANGE_MOB_PROPERTY_PACKET;
     }
 

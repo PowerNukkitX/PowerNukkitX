@@ -47,7 +47,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
     public static final int ENTITIES_UPDATE = 0x08;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

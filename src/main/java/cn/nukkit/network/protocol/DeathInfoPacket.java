@@ -10,7 +10,7 @@ public class DeathInfoPacket extends DataPacket{
     public TranslationContainer translation;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

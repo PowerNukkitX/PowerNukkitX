@@ -2,57 +2,134 @@ package cn.nukkit.network;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.event.player.PlayerCreationEvent;
+import cn.nukkit.event.player.PlayerAsyncCreationEvent;
 import cn.nukkit.event.server.QueryRegenerateEvent;
-import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.connection.BedrockPeer;
+import cn.nukkit.network.connection.BedrockPong;
+import cn.nukkit.network.connection.BedrockServerSession;
+import cn.nukkit.network.connection.netty.initializer.BedrockServerInitializer;
+import cn.nukkit.network.newquery.QueryEventListener;
+import cn.nukkit.network.newquery.codec.QueryPacketCodec;
+import cn.nukkit.network.newquery.handler.QueryPacketHandler;
 import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.network.session.NetworkPlayerSession;
-import cn.nukkit.network.session.RakNetPlayerSession;
 import cn.nukkit.utils.Utils;
-import static cn.nukkit.utils.Utils.dynamic;
 import com.google.common.base.Strings;
-import com.nukkitx.network.raknet.RakNetServer;
-import com.nukkitx.network.raknet.RakNetServerListener;
-import com.nukkitx.network.raknet.RakNetServerSession;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.socket.DatagramPacket;
-import io.netty.util.internal.PlatformDependent;
-import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollDatagramChannel;
+import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.DatagramChannel;
+import io.netty.channel.socket.nio.NioDatagramChannel;
+import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.netty.channel.raknet.RakChannelFactory;
+import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
 
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * @author MagicDroidX (Nukkit Project)
- */
-@Log4j2
-public class RakNetInterface implements RakNetServerListener, AdvancedSourceInterface {
+import static cn.nukkit.utils.Utils.dynamic;
 
+@Slf4j
+public class RakNetInterface implements SourceInterface {
+    private final Map<InetSocketAddress, BedrockServerSession> serverSessionMap = new ConcurrentHashMap<>();
+    private final Map<InetAddress, Long> blockIpMap = new HashMap<>();
+    private final Channel channel;
     private final Server server;
-
+    private BedrockPong pong;
     private Network network;
 
-    private final RakNetServer raknet;
-    private final Map<InetSocketAddress, RakNetPlayerSession> sessions = new HashMap<>();
-    private final Queue<RakNetPlayerSession> sessionCreationQueue = PlatformDependent.newMpscQueue();
-
-    private byte[] advertisement;
-
     public RakNetInterface(Server server) {
+        this.pong = new BedrockPong()
+                .edition("MCPE")
+                .motd(server.getMotd())
+                .subMotd(server.getSubMotd())
+                .playerCount(server.getOnlinePlayers().size())
+                .maximumPlayerCount(server.getMaxPlayers())
+                .gameType(Server.getGamemodeString(server.getDefaultGamemode(), true))
+                .protocolVersion(ProtocolInfo.CURRENT_PROTOCOL)
+                .version(server.getVersion())
+                .ipv4Port(server.getPort());
+
         this.server = server;
-
+        int nettyThreadNumber = 4;
+        Class<? extends DatagramChannel> oclass;
+        EventLoopGroup eventloopgroup;
+        if (Epoll.isAvailable()) {
+            oclass = EpollDatagramChannel.class;
+            eventloopgroup = new EpollEventLoopGroup(nettyThreadNumber, (new ThreadFactoryBuilder()).setNameFormat("Netty Server IO #%d").build());
+        } else {
+            oclass = NioDatagramChannel.class;
+            eventloopgroup = new NioEventLoopGroup(nettyThreadNumber, (new ThreadFactoryBuilder()).setNameFormat("Netty Server IO #%d").build());
+        }
         InetSocketAddress bindAddress = new InetSocketAddress(Strings.isNullOrEmpty(this.server.getIp()) ? "0.0.0.0" : this.server.getIp(), this.server.getPort());
+        this.channel = new ServerBootstrap()
+                .channelFactory(RakChannelFactory.server(oclass))
+                .option(RakChannelOption.RAK_ADVERTISEMENT, pong.toByteBuf())
+                .group(eventloopgroup)
+                .childHandler(new BedrockServerInitializer() {
+                    @Override
+                    protected void postInitChannel(Channel channel) {
+                        if (RakNetInterface.this.server.getPropertyBoolean("enable-query", true)) {
+                            channel.pipeline().addFirst()
+                                    .addFirst("queryPacketCodec", new QueryPacketCodec())
+                                    .addFirst("queryPacketHandler", new QueryPacketHandler(address -> RakNetInterface.this.server.getQueryInformation()));
+                        }
+                    }
 
-        this.raknet = new RakNetServer(bindAddress, Runtime.getRuntime().availableProcessors());
-        this.raknet.setProtocolVersion(11);
-        this.raknet.bind().join();
-        this.raknet.setListener(this);
+                    @Override
+                    public BedrockServerSession createSession0(BedrockPeer peer, int subClientId) {
+                        BedrockServerSession session = new BedrockServerSession(peer, subClientId);
+                        InetSocketAddress address = (InetSocketAddress) session.getSocketAddress();
+                        try {
+                            PlayerAsyncCreationEvent event = new PlayerAsyncCreationEvent(RakNetInterface.this, Player.class, Player.class, address);
+                            RakNetInterface.this.server.getPluginManager().callEvent(event);
+
+                            Constructor<? extends Player> constructor = event.getPlayerClass().getConstructor(SourceInterface.class, Integer.class, InetSocketAddress.class);
+                            Player player = constructor.newInstance(RakNetInterface.this, subClientId, event.getSocketAddress());
+                            RakNetInterface.this.serverSessionMap.put(event.getSocketAddress(), session);
+                            RakNetInterface.this.server.addPlayer(address, player);
+                            session.setPlayer(player);
+                        } catch (Exception e) {
+                            log.error("Failed to create player", e);
+                            session.disconnect("Internal error");
+                            RakNetInterface.this.serverSessionMap.remove(address);
+                        }
+                        return session;
+                    }
+
+                    @Override
+                    protected void initSession(BedrockServerSession session) {
+                        session.setLogging(true);
+                    }
+                })
+                .bind(bindAddress)
+                .syncUninterruptibly()
+                .channel();
+    }
+
+
+    @Override
+    public void blockAddress(InetAddress address) {
+        blockIpMap.put(address, -1L);
+    }
+
+    @Override
+    public void blockAddress(InetAddress address, int timeout) {
+        blockIpMap.put(address, (long) timeout);
+    }
+
+    @Override
+    public void unblockAddress(InetAddress address) {
+        blockIpMap.remove(address);
     }
 
     @Override
@@ -61,51 +138,8 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
     }
 
     @Override
-    public boolean process() {
-        RakNetPlayerSession session;
-        while ((session = this.sessionCreationQueue.poll()) != null) {
-            InetSocketAddress address = session.getRakNetSession().getAddress();
-
-            try {
-                PlayerCreationEvent event = new PlayerCreationEvent(this, Player.class, Player.class, null, address);
-                this.server.getPluginManager().callEvent(event);
-
-                this.sessions.put(event.getSocketAddress(), session);
-
-                Constructor<? extends Player> constructor = event.getPlayerClass().getConstructor(SourceInterface.class, Long.class, InetSocketAddress.class);
-                Player player = constructor.newInstance(this, event.getClientId(), event.getSocketAddress());
-                this.server.addPlayer(address, player);
-                session.setPlayer(player);
-            } catch (Exception e) {
-                Server.getInstance().getLogger().error("Failed to create player", e);
-                session.disconnect("Internal error");
-                this.sessions.remove(address);
-            }
-        }
-
-        Iterator<RakNetPlayerSession> iterator = this.sessions.values().iterator();
-        while (iterator.hasNext()) {
-            RakNetPlayerSession nukkitSession = iterator.next();
-            Player player = nukkitSession.getPlayer();
-            if (nukkitSession.getDisconnectReason() != null) {
-                player.close(player.getLeaveMessage(), nukkitSession.getDisconnectReason(), false);
-                iterator.remove();
-            } else {
-                nukkitSession.serverTick();
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public int getNetworkLatency(Player player) {
-        RakNetServerSession session = this.raknet.getSession(player.getRawSocketAddress());
-        return session == null ? -1 : (int) session.getPing();
-    }
-
-    @Override
-    public NetworkPlayerSession getSession(InetSocketAddress address) {
-        return this.sessions.get(address);
+    public BedrockServerSession getSession(InetSocketAddress address) {
+        return this.serverSessionMap.get(address);
     }
 
     @Override
@@ -115,42 +149,10 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
 
     @Override
     public void close(Player player, String reason) {
-        NetworkPlayerSession playerSession = this.getSession(player.getRawSocketAddress());
+        BedrockServerSession playerSession = this.getSession(player.getRawSocketAddress());
         if (playerSession != null) {
             playerSession.disconnect(reason);
         }
-    }
-
-    @Override
-    public void shutdown() {
-        this.sessions.values().forEach(session -> session.disconnect("Shutdown"));
-        this.raknet.close();
-    }
-
-    @Override
-    public void emergencyShutdown() {
-        this.sessions.values().forEach(session -> session.disconnect("Shutdown"));
-        this.raknet.close();
-    }
-
-    @Override
-    public void blockAddress(InetAddress address) {
-        this.raknet.block(address);
-    }
-
-    @Override
-    public void blockAddress(InetAddress address, int timeout) {
-        this.raknet.block(address, timeout, TimeUnit.SECONDS);
-    }
-
-    @Override
-    public void unblockAddress(InetAddress address) {
-        this.raknet.unblock(address);
-    }
-
-    @Override
-    public void sendRawPacket(InetSocketAddress socketAddress, ByteBuf payload) {
-        this.raknet.send(socketAddress, payload);
     }
 
     @Override
@@ -159,91 +161,36 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
         String[] names = name.split("!@#");  //Split double names within the program
         String motd = Utils.rtrim(names[0].replace(";", "\\;"), '\\');
         String subMotd = names.length > 1 ? Utils.rtrim(names[1].replace(";", "\\;"), '\\') : "";
-        StringJoiner joiner = new StringJoiner(";")
-                .add("MCPE")
-                .add(motd)
-                .add(Integer.toString(ProtocolInfo.CURRENT_PROTOCOL))
-                .add(dynamic(info.getVersion()))
-                .add(Integer.toString(info.getPlayerCount()))
-                .add(Integer.toString(info.getMaxPlayerCount()))
-                .add(Long.toString(this.raknet.getGuid()))
-                .add(subMotd)
-                .add(Server.getGamemodeString(this.server.getDefaultGamemode(), true))
-                .add("1");
-
-        this.advertisement = joiner.toString().getBytes(StandardCharsets.UTF_8);
+        this.pong = new BedrockPong()
+                .edition("MCPE")
+                .motd(motd)
+                .subMotd(subMotd)
+                .playerCount(info.getPlayerCount())
+                .maximumPlayerCount(info.getMaxPlayerCount())
+                .gameType(Server.getGamemodeString(this.server.getDefaultGamemode(), true))
+                .protocolVersion(ProtocolInfo.CURRENT_PROTOCOL)
+                .version(info.getVersion())
+                .ipv4Port(server.getPort());
     }
 
     @Override
-    public Integer putPacket(Player player, DataPacket packet) {
-        return this.putPacket(player, packet, false);
-    }
-
-    @Override
-    public Integer putPacket(Player player, DataPacket packet, boolean needACK) {
-        return this.putPacket(player, packet, needACK, false);
-    }
-
-    @Override
-    public Integer putPacket(Player player, DataPacket packet, boolean needACK, boolean immediate) {
-        RakNetPlayerSession session = this.sessions.get(player.getRawSocketAddress());
-
-        if (session != null) {
-            if (!immediate) {
-                session.sendPacket(packet);
+    public void process() {
+        Iterator<BedrockServerSession> iterator = this.serverSessionMap.values().iterator();
+        while (iterator.hasNext()) {
+            BedrockServerSession nukkitSession = iterator.next();
+            Player player = nukkitSession.getPlayer();
+            if (nukkitSession.getDisconnectReason() != null) {
+                player.close(player.getLeaveMessage(), nukkitSession.getDisconnectReason(), false);
+                iterator.remove();
             } else {
-                packet.tryEncode();
-                session.sendImmediatePacket(packet);
+                nukkitSession.serverTick();
             }
         }
-
-        return null;
     }
 
     @Override
-    public boolean onConnectionRequest(@NotNull InetSocketAddress address, @NotNull InetSocketAddress realAddress) {
-        return true;
-    }
-
-    @Override
-    public byte[] onQuery(@NotNull InetSocketAddress inetSocketAddress) {
-        return this.advertisement;
-    }
-
-    @Override
-    public void onSessionCreation(RakNetServerSession session) {
-        // We need to make sure this gets put into the correct thread local hashmap
-        // for ticking or race conditions will occur.
-        session.setMaximumStaleDatagrams(server.getMaximumStaleDatagrams());
-        if (session.getEventLoop().inEventLoop()) {
-            this.onSessionCreation0(session);
-        } else {
-            session.getEventLoop().execute(() -> this.onSessionCreation0(session));
-        }
-    }
-
-    private void onSessionCreation0(RakNetServerSession session) {
-        RakNetPlayerSession nukkitSession = new RakNetPlayerSession(this, session);
-        session.setListener(nukkitSession);
-        this.sessionCreationQueue.offer(nukkitSession);
-    }
-
-    @Override
-    public void onUnhandledDatagram(@NotNull ChannelHandlerContext ctx, DatagramPacket datagramPacket) {
-        this.server.handlePacket(datagramPacket.sender(), datagramPacket.content());
-    }
-
-    @Override
-    public Integer putResourcePacket(Player player, DataPacket packet) {
-        RakNetPlayerSession session = this.sessions.get(player.getRawSocketAddress());
-        if (session != null) {
-            packet.tryEncode();
-            session.sendResourcePacket(packet.clone());
-        }
-        return null;
-    }
-
-    public Network getNetwork() {
-        return this.network;
+    public void shutdown() {
+        this.serverSessionMap.values().forEach(session -> session.disconnect("Shutdown"));
+        this.channel.close();
     }
 }

@@ -98,7 +98,7 @@ public class EntityEventPacket extends DataPacket {
     public static final int DRINK_MILK = 78;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

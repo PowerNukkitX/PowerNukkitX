@@ -1,8 +1,10 @@
 package cn.nukkit.network;
 
+import cn.nukkit.network.connection.netty.codec.compression.ZlibCompressionCodec;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.SnappyCompression;
+import cn.nukkit.utils.Zlib;
 
 
 public interface CompressionProvider {
@@ -22,12 +24,12 @@ public interface CompressionProvider {
     CompressionProvider ZLIB = new CompressionProvider() {
         @Override
         public byte[] compress(BinaryStream packet, int level) throws Exception {
-            return Network.deflateRaw(packet.getBuffer(), level);
+            return Zlib.deflate(packet.getBuffer(), level);
         }
 
         @Override
         public byte[] decompress(byte[] compressed) throws Exception {
-            return Network.inflateRaw(compressed);
+            return Zlib.inflate(compressed);
         }
     };
 

@@ -8,7 +8,7 @@ import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.event.player.PlayerAsyncPreLoginEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.event.player.PlayerPreLoginEvent;
-import cn.nukkit.network.encryption.PrepareEncryptionTask;
+import cn.nukkit.network.connection.util.PrepareEncryptionTask;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.LoginPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
@@ -145,15 +145,13 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
                     if (!playerHandle.player.isConnected()) {
                         return;
                     }
-                    if (this.getHandshakeJwt() == null || this.getEncryptionKey() == null || this.getEncryptionCipher() == null || this.getDecryptionCipher() == null) {
+                    if (this.getHandshakeJwt() == null || this.getEncryptionKey() == null) {
                         playerHandle.player.close("", "Network Encryption error");
                         return;
                     }
                     ServerToClientHandshakePacket pk = new ServerToClientHandshakePacket();
                     pk.setJwt(this.getHandshakeJwt());
-                    playerHandle.player.forceDataPacket(pk, () -> {
-                        playerHandle.getNetworkSession().setEncryption(this.getEncryptionKey(), this.getEncryptionCipher(), this.getDecryptionCipher());
-                    });
+                    playerHandle.player.forceDataPacket(pk, () -> playerHandle.getNetworkSession().enableEncryption(this.getEncryptionKey()));
                 }
             });
         } else {

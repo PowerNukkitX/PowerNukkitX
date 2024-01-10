@@ -14,7 +14,7 @@ public class PlayerEnchantOptionsPacket extends DataPacket {
     public final List<EnchantOptionData> options = new ArrayList<>();
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

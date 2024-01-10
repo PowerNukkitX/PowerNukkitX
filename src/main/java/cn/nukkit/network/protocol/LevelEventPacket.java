@@ -168,7 +168,7 @@ public class LevelEventPacket extends DataPacket {
     public int data = 0;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

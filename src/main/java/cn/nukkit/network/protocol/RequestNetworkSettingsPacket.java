@@ -10,7 +10,7 @@ public class RequestNetworkSettingsPacket extends DataPacket {
     public int protocolVersion;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET;
     }
 

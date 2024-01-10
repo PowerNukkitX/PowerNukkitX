@@ -1,4 +1,4 @@
-package cn.nukkit.network.encryption;
+package cn.nukkit.network.connection.util;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
@@ -18,8 +18,6 @@ public class PrepareEncryptionTask extends AsyncTask {
 
     private String handshakeJwt;
     private SecretKey encryptionKey;
-    private Cipher encryptionCipher;
-    private Cipher decryptionCipher;
 
     public PrepareEncryptionTask(Player player) {
         this.player = player;
@@ -34,11 +32,9 @@ public class PrepareEncryptionTask extends AsyncTask {
 
             byte[] token = EncryptionUtils.generateRandomToken();
 
-            this.encryptionKey = EncryptionUtils.getSecretKey(privateKeyPair.getPrivate(), EncryptionUtils.generateKey(this.player.getLoginChainData().getIdentityPublicKey()), token);
-            this.handshakeJwt = EncryptionUtils.createHandshakeJwt(privateKeyPair, token).serialize();
 
-            this.encryptionCipher = EncryptionUtils.createCipher(true, true, this.encryptionKey);
-            this.decryptionCipher = EncryptionUtils.createCipher(true, false, this.encryptionKey);
+            this.encryptionKey = EncryptionUtils.getSecretKey(privateKeyPair.getPrivate(), EncryptionUtils.parseKey(this.player.getLoginChainData().getIdentityPublicKey()), token);
+            this.handshakeJwt = EncryptionUtils.createHandshakeJwt(privateKeyPair, token);
         } catch (Exception e) {
             log.error("Failed to prepare encryption", e);
         }
@@ -55,13 +51,5 @@ public class PrepareEncryptionTask extends AsyncTask {
 
     public SecretKey getEncryptionKey() {
         return this.encryptionKey;
-    }
-
-    public Cipher getEncryptionCipher() {
-        return this.encryptionCipher;
-    }
-
-    public Cipher getDecryptionCipher() {
-        return this.decryptionCipher;
     }
 }

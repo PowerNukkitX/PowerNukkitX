@@ -12,4 +12,5 @@ public final class Registries {
     public static final BiomeRegistry BIOME = new BiomeRegistry();
     public static final GeneratorRegistry GENERATOR = new GeneratorRegistry();
     public static final FuelRegistry FUEL = new FuelRegistry();
+    public static final PacketRegistry PACKET = new PacketRegistry();
 }

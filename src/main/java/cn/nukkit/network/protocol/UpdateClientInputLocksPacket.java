@@ -14,7 +14,7 @@ public class UpdateClientInputLocksPacket extends DataPacket {
 
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.UPDATE_CLIENT_INPUT_LOCKS;
     }
 

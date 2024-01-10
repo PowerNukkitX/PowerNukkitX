@@ -53,12 +53,11 @@ import cn.nukkit.math.*;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.nbt.tag.*;
 import cn.nukkit.network.CompressionProvider;
-import cn.nukkit.network.Network;
 import cn.nukkit.network.SourceInterface;
+import cn.nukkit.network.connection.BedrockServerSession;
 import cn.nukkit.network.process.DataPacketManager;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.*;
-import cn.nukkit.network.session.NetworkPlayerSession;
 import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
@@ -85,16 +84,17 @@ import com.google.common.collect.Sets;
 import io.netty.util.internal.EmptyArrays;
 import io.netty.util.internal.PlatformDependent;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.longs.Long2BooleanLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2BooleanMap;
+import it.unimi.dsi.fastutil.longs.Long2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -168,7 +168,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final int GRINDSTONE_WINDOW_ID = dynamic(5);
     public static final int SMITHING_WINDOW_ID = dynamic(6);
     public final HashSet<String> achievements = new HashSet<>();
-    public final Map<Long, Boolean> usedChunks = new Long2ObjectOpenHashMap<>();
+    //标记当前玩家那些区块被加载，key为chunk hash，value=true代表区块已经加载(即已经发送区块包),false代表未加载
+    public final Long2BooleanOpenHashMap usedChunks = new Long2BooleanOpenHashMap();
     public boolean playedBefore;
     public boolean spawned = false;
     public boolean loggedIn = false;
@@ -201,9 +202,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected long breakingBlockTime = 0;
     protected double blockBreakProgress = 0;
     protected final SourceInterface interfaz;
-    protected final NetworkPlayerSession networkSession;
+    protected final BedrockServerSession networkSession;
     protected final InetSocketAddress rawSocketAddress;
-    protected final Long2ObjectLinkedOpenHashMap<Boolean> loadQueue = new Long2ObjectLinkedOpenHashMap<>();
+    //标记着哪些区块需要加载
+    protected final Long2BooleanLinkedOpenHashMap loadQueue = new Long2BooleanLinkedOpenHashMap();
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
     protected final int chunksPerTick;
     protected final int spawnThreshold;
@@ -240,7 +242,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     protected int startAction = -1;
     protected Vector3 sleeping = null;
-    protected Long clientID = null;
+    protected Integer subClientId = null;
     protected int chunkLoadCount = 0;
     protected int nextChunkOrderRun = 1;
     protected Vector3 newPosition = null;
@@ -358,7 +360,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private Boolean openSignFront = null;
     protected Boolean flySneaking = false;
 
-    public Player(SourceInterface interfaz, Long clientID, InetSocketAddress socketAddress) {
+    public Player(SourceInterface interfaz, Integer clientID, InetSocketAddress socketAddress) {
         super(null, new CompoundTag());
         this.interfaz = interfaz;
         this.networkSession = interfaz.getSession(socketAddress);
@@ -367,7 +369,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.lastBreak = -1;
         this.rawSocketAddress = socketAddress;
         this.socketAddress = socketAddress;
-        this.clientID = clientID;
+        this.subClientId = clientID;
         this.loaderId = Level.generateChunkLoaderId(this);
         this.chunksPerTick = this.server.getConfig("chunk-sending.per-tick", 8);
         this.spawnThreshold = this.server.getConfig("chunk-sending.spawn-threshold", 56);
@@ -564,7 +566,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 if (clone.getId() == handItem.getId() || handItem.isNull()) {
                     inventory.setItemInHand(handItem);
                 } else {
-                    server.getLogger().debug("Tried to set item " + handItem.getId() + " but " + this.username + " had item " + clone.getId() + " in their hand slot");
+                    log.debug("Tried to set item " + handItem.getId() + " but " + this.username + " had item " + clone.getId() + " in their hand slot");
                 }
                 inventory.sendHeldItem(this.getViewers().values());
             } else if (handItem == null)
@@ -622,9 +624,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (!loadQueue.isEmpty()) {
             int count = 0;
-            ObjectIterator<Long2ObjectMap.Entry<Boolean>> iter = loadQueue.long2ObjectEntrySet().fastIterator();
+            ObjectIterator<Long2BooleanMap.Entry> iter = loadQueue.long2BooleanEntrySet().fastIterator();
             while (iter.hasNext()) {
-                Long2ObjectMap.Entry<Boolean> entry = iter.next();
+                Long2BooleanMap.Entry entry = iter.next();
                 long index = entry.getLongKey();
 
                 if (count >= this.chunksPerTick) {
@@ -754,11 +756,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (!this.connected) {
             return false;
         }
+        loadQueue.clear();
 
         this.nextChunkOrderRun = 200;
 
-        loadQueue.clear();
-        Long2ObjectOpenHashMap<Boolean> lastChunk = new Long2ObjectOpenHashMap<>(this.usedChunks);
+        Long2BooleanOpenHashMap lastChunk = new Long2BooleanOpenHashMap(this.usedChunks);//All chunks loaded in the last tick
 
         int centerX = (int) this.x >> 4;
         int centerZ = (int) this.z >> 4;
@@ -767,9 +769,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         int radiusSqr = radius * radius;
         long index;
 
-        //player center chunk
-        if (this.usedChunks.get(index = Level.chunkHash(centerX, centerZ)) != Boolean.TRUE) {
-            this.loadQueue.put(index, Boolean.TRUE);
+        //player current chunk
+        if (!this.usedChunks.get(index = Level.chunkHash(centerX, centerZ))) {//If the chunk is not loaded
+            this.loadQueue.put(index, true);//put the chunk to loadQueue
         }
         lastChunk.remove(index);
         for (int r = 1; r <= radius; r++) {
@@ -778,59 +780,59 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 int distanceSqr = rr + i * i;
                 if (distanceSqr > radiusSqr) continue;
                 //right includes upper right corner
-                if (this.usedChunks.get(index = Level.chunkHash(centerX + r, centerZ + i)) != Boolean.TRUE) {
-                    this.loadQueue.put(index, Boolean.TRUE);
+                if (!this.usedChunks.get(index = Level.chunkHash(centerX + r, centerZ + i))) {
+                    this.loadQueue.put(index, true);
                 }
                 lastChunk.remove(index);
 
                 //right includes lower right corner
-                if (this.usedChunks.get(index = Level.chunkHash(centerX + r, centerZ - i)) != Boolean.TRUE) {
-                    this.loadQueue.put(index, Boolean.TRUE);
+                if (!this.usedChunks.get(index = Level.chunkHash(centerX + r, centerZ - i))) {
+                    this.loadQueue.put(index, true);
                 }
                 lastChunk.remove(index);
 
                 //left includes upper left corner
-                if (this.usedChunks.get(index = Level.chunkHash(centerX - r, centerZ + i)) != Boolean.TRUE) {
-                    this.loadQueue.put(index, Boolean.TRUE);
+                if (!this.usedChunks.get(index = Level.chunkHash(centerX - r, centerZ + i))) {
+                    this.loadQueue.put(index, true);
                 }
                 lastChunk.remove(index);
 
                 //left includes lower left corner
-                if (this.usedChunks.get(index = Level.chunkHash(centerX - r, centerZ - i)) != Boolean.TRUE) {
-                    this.loadQueue.put(index, Boolean.TRUE);
+                if (!this.usedChunks.get(index = Level.chunkHash(centerX - r, centerZ - i))) {
+                    this.loadQueue.put(index, true);
                 }
                 lastChunk.remove(index);
 
                 //Exclude duplicate corners
                 if (i != r) {
                     //top
-                    if (this.usedChunks.get(index = Level.chunkHash(centerX + i, centerZ + r)) != Boolean.TRUE) {
-                        this.loadQueue.put(index, Boolean.TRUE);
+                    if (!this.usedChunks.get(index = Level.chunkHash(centerX + i, centerZ + r))) {
+                        this.loadQueue.put(index, true);
                     }
                     lastChunk.remove(index);
 
-                    if (this.usedChunks.get(index = Level.chunkHash(centerX - i, centerZ + r)) != Boolean.TRUE) {
-                        this.loadQueue.put(index, Boolean.TRUE);
+                    if (!this.usedChunks.get(index = Level.chunkHash(centerX - i, centerZ + r))) {
+                        this.loadQueue.put(index, true);
                     }
                     lastChunk.remove(index);
 
                     //end
-                    if (this.usedChunks.get(index = Level.chunkHash(centerX + i, centerZ - r)) != Boolean.TRUE) {
-                        this.loadQueue.put(index, Boolean.TRUE);
+                    if (!this.usedChunks.get(index = Level.chunkHash(centerX + i, centerZ - r))) {
+                        this.loadQueue.put(index, true);
                     }
                     lastChunk.remove(index);
-                    if (this.usedChunks.get(index = Level.chunkHash(centerX - i, centerZ - r)) != Boolean.TRUE) {
-                        this.loadQueue.put(index, Boolean.TRUE);
+                    if (!this.usedChunks.get(index = Level.chunkHash(centerX - i, centerZ - r))) {
+                        this.loadQueue.put(index, true);
                     }
                     lastChunk.remove(index);
                 }
             }
         }
 
-        LongIterator keys = lastChunk.keySet().iterator();
+        LongIterator keys = lastChunk.keySet().longIterator();
         while (keys.hasNext()) {
             index = keys.nextLong();
-            this.unloadChunk(Level.getHashX(index), Level.getHashZ(index));
+            this.unloadChunk(Level.getHashX(index), Level.getHashZ(index), this.level);
         }
 
         return true;
@@ -2439,7 +2441,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     entity.despawnFrom(this);
                 }
             }
-
             this.usedChunks.remove(index);
         }
         level.unregisterChunkLoader(this, x, z);
@@ -2545,14 +2546,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    @ApiStatus.Internal
     public void sendChunk(int x, int z, DataPacket packet) {
         if (!this.connected) {
             return;
         }
 
-        this.usedChunks.put(Level.chunkHash(x, z), Boolean.TRUE);
+        this.usedChunks.put(Level.chunkHash(x, z), true);
         this.chunkLoadCount++;
-
         this.dataPacket(packet);
 
         if (this.spawned) {
@@ -3253,6 +3254,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return entity;
     }
 
+    @ApiStatus.Internal
     public void checkNetwork() {
         if (!this.isOnline()) {
             return;
@@ -5138,32 +5140,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.isConnected();
     }
 
-    public static BatchPacket getChunkCacheFromData(int chunkX, int chunkZ, int subChunkCount, byte[] payload) {
-        LevelChunkPacket pk = new LevelChunkPacket();
-        pk.chunkX = chunkX;
-        pk.chunkZ = chunkZ;
-        pk.subChunkCount = subChunkCount;
-        pk.data = payload;
-        pk.encode();
-
-        BatchPacket batch = new BatchPacket();
-        byte[][] batchPayload = new byte[2][];
-        byte[] buf = pk.getBuffer();
-        batchPayload[0] = Binary.writeUnsignedVarInt(buf.length);
-        batchPayload[1] = buf;
-        byte[] data = Binary.appendBytes(batchPayload);
-        try {
-            if (Server.getInstance().isEnableSnappy()) {
-                batch.payload = SnappyCompression.compress(data);
-            } else {
-                batch.payload = Network.deflateRaw(data, Server.getInstance().networkCompressionLevel);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return batch;
-    }
-
     /**
      * @return 该玩家是否开启饮食系统<br>Whether the player is on the food system
      */
@@ -5597,7 +5573,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.timeSinceRest = timeSinceRest;
     }
 
-    public NetworkPlayerSession getNetworkSession() {
+    public BedrockServerSession getNetworkSession() {
         return this.networkSession;
     }
 
@@ -5703,7 +5679,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
             log.trace("Resource Outbound {}: {}", this.getName(), packet);
         }
-        this.interfaz.putResourcePacket(this, packet);
+        this.dataPacket(packet);
         return true;
     }
 

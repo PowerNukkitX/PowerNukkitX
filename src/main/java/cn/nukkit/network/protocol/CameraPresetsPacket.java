@@ -14,7 +14,7 @@ public class CameraPresetsPacket extends DataPacket {
     private final List<CameraPreset> presets = new ObjectArrayList<>();
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.CAMERA_PRESETS_PACKET;
     }
 

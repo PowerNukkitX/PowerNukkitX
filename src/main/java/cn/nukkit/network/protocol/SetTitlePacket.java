@@ -31,7 +31,7 @@ public class SetTitlePacket extends DataPacket {
     public String platformOnlineId = "";
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

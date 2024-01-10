@@ -15,7 +15,7 @@ public class BlockPickRequestPacket extends DataPacket {
     public int selectedSlot;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

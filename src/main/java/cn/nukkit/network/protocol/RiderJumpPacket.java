@@ -16,7 +16,7 @@ public class RiderJumpPacket extends DataPacket {
     public int unknown;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

@@ -8,14 +8,7 @@ public class AgentAnimationPacket extends DataPacket {
     public long runtimeEntityId;
 
     @Override
-    public byte pid() {
-        return (byte) ProtocolInfo.AGENT_ANIMATION;
-    }
-
-    @Nonnegative
-
-    @Override
-    public int packetId() {
+    public int pid() {
         return ProtocolInfo.AGENT_ANIMATION;
     }
 

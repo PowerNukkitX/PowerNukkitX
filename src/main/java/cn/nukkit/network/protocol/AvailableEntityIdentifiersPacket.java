@@ -1,10 +1,8 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.Nukkit;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 import lombok.ToString;
 
 import java.io.BufferedInputStream;
@@ -37,7 +35,7 @@ public class AvailableEntityIdentifiersPacket extends DataPacket {
     public byte[] tag = TAG;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

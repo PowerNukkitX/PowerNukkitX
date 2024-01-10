@@ -1,4 +1,4 @@
-package cn.nukkit.network;
+package cn.nukkit.utils;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;

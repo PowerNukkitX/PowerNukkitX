@@ -14,7 +14,7 @@ public class LabTablePacket extends DataPacket {
     public LabTableReactionType reactionType;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

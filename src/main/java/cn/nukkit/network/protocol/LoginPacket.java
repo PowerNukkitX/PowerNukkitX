@@ -33,7 +33,7 @@ public class LoginPacket extends DataPacket {
     public long issueUnixTime = -1;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 
