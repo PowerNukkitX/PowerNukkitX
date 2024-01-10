@@ -12,7 +12,7 @@ import java.util.UUID;
 @ToString
 public class PlayerListPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.PLAYER_LIST_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.PLAYER_LIST_PACKET;
 
     public static final byte TYPE_ADD = 0;
     public static final byte TYPE_REMOVE = 1;

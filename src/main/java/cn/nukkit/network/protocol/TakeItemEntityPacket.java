@@ -8,7 +8,7 @@ import lombok.ToString;
 @ToString
 public class TakeItemEntityPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.TAKE_ITEM_ENTITY_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.TAKE_ITEM_ENTITY_PACKET;
 
     public long entityId;
     public long target;

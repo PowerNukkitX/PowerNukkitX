@@ -15,7 +15,7 @@ import java.util.List;
 public class AnimateEntityPacket extends DataPacket {
 
 
-    public static final byte NETWORK_ID = ProtocolInfo.ANIMATE_ENTITY_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.ANIMATE_ENTITY_PACKET;
 
     private String animation;
     private String nextState;

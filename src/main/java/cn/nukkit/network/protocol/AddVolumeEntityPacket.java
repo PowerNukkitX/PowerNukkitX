@@ -6,7 +6,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public class AddVolumeEntityPacket extends DataPacket {
 
 
-    public static final byte NETWORK_ID = ProtocolInfo.ADD_VOLUME_ENTITY_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.ADD_VOLUME_ENTITY_PACKET;
 
     private long id;
     private CompoundTag data;

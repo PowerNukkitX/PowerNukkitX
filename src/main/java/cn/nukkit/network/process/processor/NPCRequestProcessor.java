@@ -64,6 +64,6 @@ public class NPCRequestProcessor extends DataPacketProcessor<NPCRequestPacket> {
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.NPC_REQUEST_PACKET);
+        return ProtocolInfo.NPC_REQUEST_PACKET;
     }
 }

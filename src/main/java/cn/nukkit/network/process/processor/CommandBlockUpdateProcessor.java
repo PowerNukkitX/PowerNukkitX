@@ -70,6 +70,6 @@ public class CommandBlockUpdateProcessor extends DataPacketProcessor<CommandBloc
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.COMMAND_BLOCK_UPDATE_PACKET);
+        return ProtocolInfo.COMMAND_BLOCK_UPDATE_PACKET;
     }
 }

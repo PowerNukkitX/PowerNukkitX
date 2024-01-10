@@ -9,7 +9,7 @@ import java.nio.ByteOrder;
 public class SyncEntityPropertyPacket extends DataPacket {
 
 
-    public static final byte NETWORK_ID = ProtocolInfo.SYNC_ENTITY_PROPERTY_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.SYNC_ENTITY_PROPERTY_PACKET;
 
     private CompoundTag data;
 

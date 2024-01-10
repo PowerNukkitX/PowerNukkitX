@@ -5,7 +5,7 @@ import lombok.ToString;
 
 @ToString
 public class BiomeDefinitionListPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.BIOME_DEFINITION_LIST_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.BIOME_DEFINITION_LIST_PACKET;
 
     @Override
     public int pid() {

@@ -28,6 +28,6 @@ public class ServerSettingsRequestProcessor extends DataPacketProcessor<ServerSe
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.SERVER_SETTINGS_REQUEST_PACKET);
+        return ProtocolInfo.SERVER_SETTINGS_REQUEST_PACKET;
     }
 }

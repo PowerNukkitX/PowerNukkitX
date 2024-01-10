@@ -8,9 +8,6 @@ import cn.nukkit.network.connection.BedrockPeer;
 import cn.nukkit.network.connection.BedrockPong;
 import cn.nukkit.network.connection.BedrockServerSession;
 import cn.nukkit.network.connection.netty.initializer.BedrockServerInitializer;
-import cn.nukkit.network.newquery.QueryEventListener;
-import cn.nukkit.network.newquery.codec.QueryPacketCodec;
-import cn.nukkit.network.newquery.handler.QueryPacketHandler;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.Utils;
 import com.google.common.base.Strings;
@@ -56,8 +53,8 @@ public class RakNetInterface implements SourceInterface {
                 .maximumPlayerCount(server.getMaxPlayers())
                 .gameType(Server.getGamemodeString(server.getDefaultGamemode(), true))
                 .protocolVersion(ProtocolInfo.CURRENT_PROTOCOL)
-                .version(server.getVersion())
-                .ipv4Port(server.getPort());
+                .ipv4Port(server.getPort())
+                .ipv6Port(server.getPort());
 
         this.server = server;
         int nettyThreadNumber = 4;
@@ -70,7 +67,7 @@ public class RakNetInterface implements SourceInterface {
             oclass = NioDatagramChannel.class;
             eventloopgroup = new NioEventLoopGroup(nettyThreadNumber, (new ThreadFactoryBuilder()).setNameFormat("Netty Server IO #%d").build());
         }
-        InetSocketAddress bindAddress = new InetSocketAddress(Strings.isNullOrEmpty(this.server.getIp()) ? "0.0.0.0" : this.server.getIp(), this.server.getPort());
+        InetSocketAddress bindAddress = new InetSocketAddress(Strings.isNullOrEmpty(this.server.getIp()) ? "127.0.0.1" : this.server.getIp(), this.server.getPort());
         this.channel = new ServerBootstrap()
                 .channelFactory(RakChannelFactory.server(oclass))
                 .option(RakChannelOption.RAK_ADVERTISEMENT, pong.toByteBuf())
@@ -78,11 +75,10 @@ public class RakNetInterface implements SourceInterface {
                 .childHandler(new BedrockServerInitializer() {
                     @Override
                     protected void postInitChannel(Channel channel) {
-                        if (RakNetInterface.this.server.getPropertyBoolean("enable-query", true)) {
-                            channel.pipeline().addFirst()
-                                    .addFirst("queryPacketCodec", new QueryPacketCodec())
-                                    .addFirst("queryPacketHandler", new QueryPacketHandler(address -> RakNetInterface.this.server.getQueryInformation()));
-                        }
+                        /*if (RakNetInterface.this.server.getPropertyBoolean("enable-query", true)) {
+                            channel.pipeline().addLast("queryPacketCodec", new QueryPacketCodec())
+                                    .addLast("queryPacketHandler", new QueryPacketHandler(address -> RakNetInterface.this.server.getQueryInformation()));
+                        }*/
                     }
 
                     @Override
@@ -93,9 +89,9 @@ public class RakNetInterface implements SourceInterface {
                             PlayerAsyncCreationEvent event = new PlayerAsyncCreationEvent(RakNetInterface.this, Player.class, Player.class, address);
                             RakNetInterface.this.server.getPluginManager().callEvent(event);
 
+                            RakNetInterface.this.serverSessionMap.put(event.getSocketAddress(), session);
                             Constructor<? extends Player> constructor = event.getPlayerClass().getConstructor(SourceInterface.class, Integer.class, InetSocketAddress.class);
                             Player player = constructor.newInstance(RakNetInterface.this, subClientId, event.getSocketAddress());
-                            RakNetInterface.this.serverSessionMap.put(event.getSocketAddress(), session);
                             RakNetInterface.this.server.addPlayer(address, player);
                             session.setPlayer(player);
                         } catch (Exception e) {
@@ -150,7 +146,7 @@ public class RakNetInterface implements SourceInterface {
     @Override
     public void close(Player player, String reason) {
         BedrockServerSession playerSession = this.getSession(player.getRawSocketAddress());
-        if (playerSession != null) {
+        if (playerSession != null && playerSession.isConnected()) {
             playerSession.disconnect(reason);
         }
     }

@@ -21,7 +21,6 @@ import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.SemVersion;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
-import com.nukkitx.network.VarInts;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;

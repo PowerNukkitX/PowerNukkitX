@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 public class NPCDialoguePacket extends DataPacket {
 
 
-    public static final byte NETWORK_ID = ProtocolInfo.NPC_DIALOGUE_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.NPC_DIALOGUE_PACKET;
     
     private static final NPCDialogAction[] ACTIONS = NPCDialogAction.values();
     

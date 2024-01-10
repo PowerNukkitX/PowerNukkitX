@@ -84,6 +84,6 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.INTERACT_PACKET);
+        return ProtocolInfo.INTERACT_PACKET;
     }
 }

@@ -8,7 +8,7 @@ import lombok.ToString;
 @ToString
 public class RequestChunkRadiusPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.REQUEST_CHUNK_RADIUS_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.REQUEST_CHUNK_RADIUS_PACKET;
 
     public int radius;
 

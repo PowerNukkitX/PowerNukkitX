@@ -13,7 +13,7 @@ import lombok.ToString;
 public class PositionTrackingDBClientRequestPacket extends DataPacket {
 
 
-    public static final byte NETWORK_ID = ProtocolInfo.POS_TRACKING_CLIENT_REQUEST_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.POS_TRACKING_CLIENT_REQUEST_PACKET;
     
     private static final Action[] ACTIONS = Action.values();
     

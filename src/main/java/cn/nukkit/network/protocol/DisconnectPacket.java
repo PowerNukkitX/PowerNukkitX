@@ -8,7 +8,7 @@ import lombok.ToString;
  */
 @ToString
 public class DisconnectPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.DISCONNECT_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.DISCONNECT_PACKET;
 
     public DisconnectFailReason reason = DisconnectFailReason.UNKNOWN;
     public boolean hideDisconnectionScreen = false;

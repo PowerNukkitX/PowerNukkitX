@@ -6,7 +6,7 @@ import lombok.ToString;
 
 @ToString
 public class UpdateBlockSyncedPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.UPDATE_BLOCK_SYNCED_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.UPDATE_BLOCK_SYNCED_PACKET;
     public long actorUniqueId;
     public BlockSyncType updateType;
 

@@ -14,7 +14,7 @@ import java.util.UUID;
  */
 @ToString
 public class AddPlayerPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.ADD_PLAYER_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.ADD_PLAYER_PACKET;
 
     @Override
     public int pid() {

@@ -47,6 +47,6 @@ public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket>
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.ENTITY_EVENT_PACKET);
+        return ProtocolInfo.ENTITY_EVENT_PACKET;
     }
 }

@@ -8,7 +8,7 @@ import lombok.ToString;
 @ToString
 public class MobEffectPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.MOB_EFFECT_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.MOB_EFFECT_PACKET;
 
     @Override
     public int pid() {

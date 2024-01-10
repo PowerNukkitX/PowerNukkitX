@@ -27,6 +27,6 @@ public class RiderJumpProcessor extends DataPacketProcessor<RiderJumpPacket> {
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(RiderJumpPacket.NETWORK_ID);
+        return RiderJumpPacket.NETWORK_ID;
     }
 }

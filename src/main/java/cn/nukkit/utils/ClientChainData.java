@@ -1,7 +1,7 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.Server;
-import cn.nukkit.network.encryption.EncryptionUtils;
+import cn.nukkit.network.connection.util.EncryptionUtils;
 import cn.nukkit.network.protocol.LoginPacket;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;

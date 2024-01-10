@@ -10,7 +10,7 @@ import java.util.List;
 @ToString
 public class ResourcePacksInfoPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.RESOURCE_PACKS_INFO_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.RESOURCE_PACKS_INFO_PACKET;
 
     public boolean mustAccept;
     public boolean scripting;

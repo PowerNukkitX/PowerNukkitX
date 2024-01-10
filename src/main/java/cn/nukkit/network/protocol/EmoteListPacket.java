@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @ToString
 public class EmoteListPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.EMOTE_LIST_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.EMOTE_LIST_PACKET;
     public long runtimeId;
     public final List<UUID> pieceIds = new ObjectArrayList<>();
 

@@ -6,7 +6,7 @@ import lombok.ToString;
 
 @ToString
 public class LessonProgressPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.LESSON_PROGRESS_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.LESSON_PROGRESS_PACKET;
 
     public LessonAction action;
     public int score;

@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 
 public class LevelEventGenericPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.LEVEL_EVENT_GENERIC_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.LEVEL_EVENT_GENERIC_PACKET;
 
     public int eventId;
     public CompoundTag tag;

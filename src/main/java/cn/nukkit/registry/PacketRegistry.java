@@ -86,7 +86,6 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.ANIMATE_PACKET, AnimatePacket.class);
         this.register0(ProtocolInfo.ANVIL_DAMAGE_PACKET, AnvilDamagePacket.class);
         this.register0(ProtocolInfo.AVAILABLE_COMMANDS_PACKET, AvailableCommandsPacket.class);
-        this.register0(ProtocolInfo.BATCH_PACKET, BatchPacket.class);
         this.register0(ProtocolInfo.BLOCK_ENTITY_DATA_PACKET, BlockEntityDataPacket.class);
         this.register0(ProtocolInfo.BLOCK_EVENT_PACKET, BlockEventPacket.class);
         this.register0(ProtocolInfo.BLOCK_PICK_REQUEST_PACKET, BlockPickRequestPacket.class);
@@ -235,8 +234,8 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.SET_DEFAULT_GAME_TYPE_PACKET, SetDefaultGameTypePacket.class);
         this.register0(ProtocolInfo.STRUCTURE_BLOCK_UPDATE_PACKET, StructureBlockUpdatePacket.class);
         // new packet id system
-        this.register0(ProtocolInfo.toNewProtocolID(ProtocolInfo.CAMERA_PRESETS_PACKET), CameraPresetsPacket.class);
-        this.register0(ProtocolInfo.toNewProtocolID(ProtocolInfo.UNLOCKED_RECIPES_PACKET), UnlockedRecipesPacket.class);
+        this.register0(ProtocolInfo.CAMERA_PRESETS_PACKET, CameraPresetsPacket.class);
+        this.register0(ProtocolInfo.UNLOCKED_RECIPES_PACKET, UnlockedRecipesPacket.class);
         this.register0(ProtocolInfo.CAMERA_INSTRUCTION_PACKET, CameraInstructionPacket.class);
         this.register0(ProtocolInfo.COMPRESSED_BIOME_DEFINITIONS_LIST, CompressedBiomeDefinitionListPacket.class);
         this.register0(ProtocolInfo.TRIM_DATA, TrimDataPacket.class);

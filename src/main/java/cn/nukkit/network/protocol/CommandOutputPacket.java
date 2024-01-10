@@ -10,7 +10,7 @@ import java.util.List;
 
 @ToString
 public class CommandOutputPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.COMMAND_OUTPUT_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.COMMAND_OUTPUT_PACKET;
 
     public final List<CommandOutputMessage> messages = new ObjectArrayList<>();
     public CommandOriginData commandOriginData;

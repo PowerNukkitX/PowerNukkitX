@@ -2,6 +2,7 @@ package cn.nukkit;
 
 import cn.nukkit.AdventureSettings.Type;
 import cn.nukkit.api.DeprecationDetails;
+import cn.nukkit.api.UsedByReflection;
 import cn.nukkit.block.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.Block;
@@ -360,6 +361,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private Boolean openSignFront = null;
     protected Boolean flySneaking = false;
 
+    @UsedByReflection
     public Player(SourceInterface interfaz, Integer clientID, InetSocketAddress socketAddress) {
         super(null, new CompoundTag());
         this.interfaz = interfaz;
@@ -417,11 +419,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
         }
         return null;
-    }
-
-    @SneakyThrows
-    private List<DataPacket> unpackBatchedPackets(BatchPacket packet) {
-        return this.server.getNetwork().unpackBatchedPackets(packet, this.server.isEnableSnappy() ? CompressionProvider.SNAPPY : CompressionProvider.ZLIB);
     }
 
     protected void onBlockBreakContinue(Vector3 pos, BlockFace face) {
@@ -2637,49 +2634,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
-    @DeprecationDetails(by = "Cloudburst Nukkit", since = "2019-05-08", replaceWith = "dataPacket(DataPacket)",
-            reason = "ACKs are handled by the RakNet layer only")
-    @Deprecated
-    public int dataPacket(DataPacket packet, boolean needACK) {
-        return dataPacket(packet) ? 0 : -1;
-    }
-
-    /**
-     * 0 is true
-     * -1 is false
-     * other is identifer
-     *
-     * @param packet packet to send
-     * @return packet successfully sent
-     */
-    @Deprecated
-    @DeprecationDetails(by = "Cloudburst Nukkit", since = "1.4.0.0-PN", replaceWith = "dataPacket(DataPacket)",
-            reason = "Direct packets are no longer allowed")
-    public boolean directDataPacket(DataPacket packet) {
-        return this.dataPacket(packet);
-    }
-
-    @DeprecationDetails(by = "Cloudburst Nukkit", since = "2019-05-08", replaceWith = "dataPacket(DataPacket)",
-            reason = "ACK are handled by the RakNet layer and direct packets are no longer allowed")
-    @Deprecated
-    public int directDataPacket(DataPacket packet, boolean needACK) {
-        return this.dataPacket(packet) ? 0 : -1;
-    }
-
-    public void forceDataPacket(DataPacket packet, Runnable callback) {
-        this.networkSession.sendImmediatePacket(packet, (callback == null ? () -> {
-        } : callback));
-    }
-
-    /**
-     * 得到该玩家的网络延迟。
-     * <p>
-     * Get the network latency of the player.
-     *
-     * @return int
-     */
-    public int getPing() {
-        return this.interfaz.getNetworkLatency(this);
+    public void forceDataPacket(DataPacket packet) {
+        this.networkSession.sendPacketImmediately(packet);
     }
 
     public boolean sleepOn(Vector3 pos) {
@@ -3289,9 +3245,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-        if (!verified && packet.packetId() != ProtocolInfo.toNewProtocolID(ProtocolInfo.LOGIN_PACKET)
-                && packet.packetId() != ProtocolInfo.toNewProtocolID(ProtocolInfo.BATCH_PACKET)
-                && packet.packetId() != ProtocolInfo.toNewProtocolID(ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET)) {
+        if (!verified && packet.pid() != ProtocolInfo.LOGIN_PACKET && packet.pid() != ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET) {
             log.warn("Ignoring {} from {} due to player not verified yet", packet.getClass().getSimpleName(), getAddress());
             if (unverifiedPackets++ > 100) {
                 this.close("", "Too many failed login attempts");
@@ -3304,15 +3258,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (ev.isCancelled()) {
             return;
         }
-        if (packet.packetId() == ProtocolInfo.toNewProtocolID(ProtocolInfo.BATCH_PACKET)) {
-            List<DataPacket> dataPackets = unpackBatchedPackets((BatchPacket) packet);
-            dataPackets.forEach(this::handleDataPacket);
-            return;
-        }
         if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
             log.trace("Inbound {}: {}", this.getName(), packet);
         }
-        if (DataPacketManager.canProcess(packet.getProtocolUsed(), packet.packetId())) {
+        if (DataPacketManager.canProcess(packet.getProtocolUsed(), packet.pid())) {
             DataPacketManager.processPacket(this.playerHandle, packet);
         }
     }
@@ -5663,7 +5612,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
             log.trace("Immediate Outbound {}: {}", this.getName(), packet);
         }
-        this.getNetworkSession().sendImmediatePacket(packet);
+        this.getNetworkSession().sendPacketImmediately(packet);
         return true;
     }
 

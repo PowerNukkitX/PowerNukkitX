@@ -7,7 +7,7 @@ import static cn.nukkit.utils.Utils.dynamic;
 
 @ToString
 public class LevelSoundEventPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.LEVEL_SOUND_EVENT_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.LEVEL_SOUND_EVENT_PACKET;
 
     public static final int SOUND_ITEM_USE_ON = 0;
     public static final int SOUND_HIT = 1;

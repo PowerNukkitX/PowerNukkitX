@@ -5,7 +5,7 @@ import lombok.ToString;
 
 @ToString
 public class CreatePhotoPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.CREATE_PHOTO_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.CREATE_PHOTO_PACKET;
     public long id;
     public String photoName;
     public String photoItemName;

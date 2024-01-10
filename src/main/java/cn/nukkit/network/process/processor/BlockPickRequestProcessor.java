@@ -96,6 +96,6 @@ public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequ
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.BLOCK_PICK_REQUEST_PACKET);
+        return ProtocolInfo.BLOCK_PICK_REQUEST_PACKET;
     }
 }

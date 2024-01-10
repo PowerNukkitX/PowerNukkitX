@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class ResourcePackDataInfoPacket extends AbstractResourcePackDataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.RESOURCE_PACK_DATA_INFO_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.RESOURCE_PACK_DATA_INFO_PACKET;
 
     public static final int TYPE_INVALID = 0;
     public static final int TYPE_ADDON = 1;

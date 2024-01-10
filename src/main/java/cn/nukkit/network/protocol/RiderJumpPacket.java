@@ -5,7 +5,7 @@ import lombok.ToString;
 @ToString
 public class RiderJumpPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.RIDER_JUMP_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.RIDER_JUMP_PACKET;
 
     /**
      * This is jumpStrength.

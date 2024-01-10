@@ -23,7 +23,7 @@ import java.util.UUID;
 @ToString
 public class StartGamePacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.START_GAME_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.START_GAME_PACKET;
 
     public static final int GAME_PUBLISH_SETTING_NO_MULTI_PLAY = 0;
     public static final int GAME_PUBLISH_SETTING_INVITE_ONLY = 1;

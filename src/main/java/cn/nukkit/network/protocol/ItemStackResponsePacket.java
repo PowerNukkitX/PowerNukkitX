@@ -11,7 +11,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 public class ItemStackResponsePacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.ITEM_STACK_RESPONSE_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.ITEM_STACK_RESPONSE_PACKET;
 
     private final List<ItemStackResponse> entries = new ArrayList<>();
 

@@ -21,6 +21,6 @@ public class SetLocalPlayerAsInitializedProcessor extends DataPacketProcessor<Se
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET);
+        return ProtocolInfo.SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET;
     }
 }

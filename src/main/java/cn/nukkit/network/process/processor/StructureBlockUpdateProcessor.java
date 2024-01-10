@@ -31,6 +31,6 @@ public class StructureBlockUpdateProcessor extends DataPacketProcessor<Structure
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.STRUCTURE_BLOCK_UPDATE_PACKET);
+        return ProtocolInfo.STRUCTURE_BLOCK_UPDATE_PACKET;
     }
 }

@@ -151,7 +151,8 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
                     }
                     ServerToClientHandshakePacket pk = new ServerToClientHandshakePacket();
                     pk.setJwt(this.getHandshakeJwt());
-                    playerHandle.player.forceDataPacket(pk, () -> playerHandle.getNetworkSession().enableEncryption(this.getEncryptionKey()));
+                    playerHandle.getNetworkSession().enableEncryption(this.getEncryptionKey());
+                    playerHandle.player.forceDataPacket(pk);
                 }
             });
         } else {
@@ -161,6 +162,6 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.LOGIN_PACKET);
+        return ProtocolInfo.LOGIN_PACKET;
     }
 }

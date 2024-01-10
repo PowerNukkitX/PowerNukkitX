@@ -11,29 +11,27 @@ import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
 
 import java.util.List;
 
-public abstract class BedrockPacketCodec extends MessageToMessageCodec<ByteBuf, DataPacket> {
+public abstract class BedrockPacketCodec extends MessageToMessageCodec<ByteBuf, BedrockPacketWrapper> {
 
     public static final String NAME = "bedrock-packet-codec";
     private static final InternalLogger log = InternalLoggerFactory.getInstance(BedrockPacketCodec.class);
 
     @Override
-    protected final void encode(ChannelHandlerContext ctx, DataPacket msg, List<Object> out) throws Exception {
-        byte[] buffer = msg.getBuffer();
-        ByteBuf buf = ctx.alloc().buffer(128);
-        if (buffer != null) {
+    protected final void encode(ChannelHandlerContext ctx, BedrockPacketWrapper msg, List<Object> out) throws Exception {
+        if (msg.getPacketBuffer() != null) {
             // We have a pre-encoded packet buffer, just use that.
-            encodeHeader(buf, msg);
-            buf.writeBytes(buffer);
-            out.add(buf.retain());
+            out.add(msg.getPacketBuffer().retain());
         } else {
+            ByteBuf buf = ctx.alloc().buffer(128);
             try {
+                DataPacket packet = msg.getPacket();
+                msg.setPacketId(packet.pid());
                 encodeHeader(buf, msg);
-                msg.tryEncode();
-                buffer = msg.getBuffer();
-                buf.writeBytes(buffer);
+                packet.tryEncode();
+                buf.writeBytes(packet.getBuffer());
                 out.add(buf.retain());
             } catch (Throwable t) {
-                log.error("Error encoding packet {}", msg, t);
+                log.error("Error encoding packet {}", msg.getPacket(), t);
             } finally {
                 buf.release();
             }
@@ -54,7 +52,7 @@ public abstract class BedrockPacketCodec extends MessageToMessageCodec<ByteBuf, 
                 return;
             }
             byte[] data = new byte[msg.readableBytes()];
-            msg.writeBytes(data);
+            msg.readBytes(data);
             dataPacket.setBuffer(data);
             dataPacket.decode();
             wrapper.setPacket(dataPacket);
@@ -67,7 +65,7 @@ public abstract class BedrockPacketCodec extends MessageToMessageCodec<ByteBuf, 
         }
     }
 
-    public abstract void encodeHeader(ByteBuf buf, DataPacket msg);
+    public abstract void encodeHeader(ByteBuf buf, BedrockPacketWrapper msg);
 
     public abstract void decodeHeader(ByteBuf buf, BedrockPacketWrapper msg);
 }

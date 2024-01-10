@@ -37,6 +37,6 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.CONTAINER_CLOSE_PACKET);
+        return ProtocolInfo.CONTAINER_CLOSE_PACKET;
     }
 }

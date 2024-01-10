@@ -7,7 +7,7 @@ import lombok.ToString;
  */
 @ToString
 public class ShowProfilePacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.SHOW_PROFILE_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.SHOW_PROFILE_PACKET;
 
     public String xuid;
 

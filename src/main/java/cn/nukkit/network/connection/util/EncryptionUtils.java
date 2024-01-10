@@ -221,6 +221,10 @@ public class EncryptionUtils {
         return MOJANG_PUBLIC_KEY;
     }
 
+    public static ECPublicKey getOldMojangPublicKey() {
+        return OLD_MOJANG_PUBLIC_KEY;
+    }
+
     public static Cipher createCipher(boolean gcm, boolean encrypt, SecretKey key) {
         try {
             byte[] iv;
@@ -237,7 +241,8 @@ public class EncryptionUtils {
             Cipher cipher = Cipher.getInstance(transformation);
             cipher.init(encrypt ? Cipher.ENCRYPT_MODE : Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
             return cipher;
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) {
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException |
+                 InvalidAlgorithmParameterException e) {
             throw new AssertionError("Unable to initialize required encryption", e);
         }
     }

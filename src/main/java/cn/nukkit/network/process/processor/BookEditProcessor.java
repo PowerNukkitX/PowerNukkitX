@@ -64,6 +64,6 @@ public class BookEditProcessor extends DataPacketProcessor<BookEditPacket> {
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.BOOK_EDIT_PACKET);
+        return ProtocolInfo.BOOK_EDIT_PACKET;
     }
 }

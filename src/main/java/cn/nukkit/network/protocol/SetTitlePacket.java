@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  */
 @ToString
 public class SetTitlePacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.SET_TITLE_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.SET_TITLE_PACKET;
 
     private static final TitleAction[] TITLE_ACTIONS = TitleAction.values();
 

@@ -45,6 +45,6 @@ public class MobEquipmentProcessor extends DataPacketProcessor<MobEquipmentPacke
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.MOB_EQUIPMENT_PACKET);
+        return ProtocolInfo.MOB_EQUIPMENT_PACKET;
     }
 }

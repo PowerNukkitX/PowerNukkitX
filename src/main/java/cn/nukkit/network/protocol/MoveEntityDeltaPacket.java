@@ -4,7 +4,7 @@ import lombok.ToString;
 
 @ToString
 public class MoveEntityDeltaPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.MOVE_ENTITY_DELTA_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.MOVE_ENTITY_DELTA_PACKET;
 
     public static final int FLAG_HAS_X = 0B1;
     public static final int FLAG_HAS_Y = 0B10;

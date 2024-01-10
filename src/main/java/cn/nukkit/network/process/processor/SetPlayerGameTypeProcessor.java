@@ -25,6 +25,6 @@ public class SetPlayerGameTypeProcessor extends DataPacketProcessor<SetPlayerGam
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.SET_PLAYER_GAME_TYPE_PACKET);
+        return ProtocolInfo.SET_PLAYER_GAME_TYPE_PACKET;
     }
 }

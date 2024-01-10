@@ -20,6 +20,6 @@ public class ClientToServerHandshakeProcessor extends DataPacketProcessor<Client
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.CLIENT_TO_SERVER_HANDSHAKE_PACKET);
+        return ProtocolInfo.CLIENT_TO_SERVER_HANDSHAKE_PACKET;
     }
 }

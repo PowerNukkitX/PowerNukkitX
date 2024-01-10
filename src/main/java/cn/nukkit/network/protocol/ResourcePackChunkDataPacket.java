@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class ResourcePackChunkDataPacket extends AbstractResourcePackDataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.RESOURCE_PACK_CHUNK_DATA_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.RESOURCE_PACK_CHUNK_DATA_PACKET;
 
     public UUID packId;
     private Version packVersion;

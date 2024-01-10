@@ -271,7 +271,7 @@ public class CraftingManager {
             pk.addStonecutterRecipe(recipe);
         }
         pk.tryEncode();
-        packet = pk.compress(Deflater.BEST_COMPRESSION);
+        packet = pk;
     }
 
     public FurnaceRecipe matchFurnaceRecipe(Item input) {

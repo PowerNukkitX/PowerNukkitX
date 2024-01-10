@@ -4,7 +4,7 @@ package cn.nukkit.network.protocol;
 public class RemoveVolumeEntityPacket extends DataPacket {
 
 
-    public static final byte NETWORK_ID = ProtocolInfo.REMOVE_VOLUME_ENTITY_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.REMOVE_VOLUME_ENTITY_PACKET;
 
     private long id;
     /**

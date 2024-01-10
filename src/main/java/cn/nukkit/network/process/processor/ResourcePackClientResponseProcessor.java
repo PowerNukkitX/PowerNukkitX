@@ -68,6 +68,6 @@ public class ResourcePackClientResponseProcessor extends DataPacketProcessor<Res
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET);
+        return ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET;
     }
 }

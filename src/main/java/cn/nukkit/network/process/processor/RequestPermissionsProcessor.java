@@ -27,6 +27,6 @@ public class RequestPermissionsProcessor extends DataPacketProcessor<RequestPerm
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.REQUEST_PERMISSIONS_PACKET);
+        return ProtocolInfo.REQUEST_PERMISSIONS_PACKET;
     }
 }

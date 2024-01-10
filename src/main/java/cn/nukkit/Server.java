@@ -43,11 +43,9 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.RakNetInterface;
 import cn.nukkit.network.SourceInterface;
-import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.PlayerListPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.network.query.QueryHandler;
 import cn.nukkit.network.rcon.RCON;
 import cn.nukkit.permission.BanEntry;
 import cn.nukkit.permission.BanList;
@@ -525,7 +523,7 @@ public class Server {
                 put("motd", "PowerNukkitX Server");
                 put("sub-motd", "https://powernukkitx.cn");
                 put("server-port", 19132);
-                put("server-ip", "0.0.0.0");
+                put("server-ip", "127.0.0.1");
                 put("view-distance", 12);
                 put("white-list", false);
                 put("achievements", true);
@@ -2662,7 +2660,7 @@ public class Server {
      * @return 服务器网络地址<br>server ip
      */
     public String getIp() {
-        return this.getPropertyString("server-ip", "0.0.0.0");
+        return this.getPropertyString("server-ip", "127.0.0.1");
     }
 
     /**

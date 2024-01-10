@@ -5,7 +5,7 @@ import cn.nukkit.lang.TranslationContainer;
 
 public class DeathInfoPacket extends DataPacket{
 
-    public static final byte NETWORK_ID = ProtocolInfo.DEATH_INFO_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.DEATH_INFO_PACKET;
 
     public TranslationContainer translation;
 

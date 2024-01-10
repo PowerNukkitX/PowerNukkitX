@@ -57,6 +57,6 @@ public class AnimateProcessor extends DataPacketProcessor<AnimatePacket> {
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.ANIMATE_PACKET);
+        return ProtocolInfo.ANIMATE_PACKET;
     }
 }

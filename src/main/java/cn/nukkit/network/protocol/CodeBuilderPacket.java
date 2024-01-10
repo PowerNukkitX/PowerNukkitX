@@ -5,7 +5,7 @@ import lombok.ToString;
 
 @ToString
 public class CodeBuilderPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.CODE_BUILDER_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.CODE_BUILDER_PACKET;
     public boolean isOpening;
     public String url = "";
 

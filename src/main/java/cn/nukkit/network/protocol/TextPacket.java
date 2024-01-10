@@ -10,7 +10,7 @@ import lombok.ToString;
 @ToString
 public class TextPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.TEXT_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.TEXT_PACKET;
 
     @Override
     public int pid() {

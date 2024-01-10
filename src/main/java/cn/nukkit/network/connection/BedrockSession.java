@@ -22,7 +22,7 @@ public abstract class BedrockSession {
     protected final BedrockPeer peer;
     protected final int subClientId;
     protected boolean logging;
-    protected String disconnectReason = BedrockDisconnectReasons.UNKNOWN;
+    protected String disconnectReason;
     private final Queue<DataPacket> inbound = PlatformDependent.newSpscQueue();
     private Player player;
 

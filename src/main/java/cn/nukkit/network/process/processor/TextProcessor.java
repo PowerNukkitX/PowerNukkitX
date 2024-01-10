@@ -26,6 +26,6 @@ public class TextProcessor extends DataPacketProcessor<TextPacket> {
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.TEXT_PACKET);
+        return ProtocolInfo.TEXT_PACKET;
     }
 }

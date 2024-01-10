@@ -33,6 +33,6 @@ public class PositionTrackingDBClientRequestProcessor extends DataPacketProcesso
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.POS_TRACKING_CLIENT_REQUEST_PACKET);
+        return ProtocolInfo.POS_TRACKING_CLIENT_REQUEST_PACKET;
     }
 }

@@ -23,12 +23,13 @@ public class RequestNetworkSettingsProcessor extends DataPacketProcessor<Request
         PacketCompressionAlgorithm algorithm;
         if (Server.getInstance().isEnableSnappy()) {
             algorithm = PacketCompressionAlgorithm.SNAPPY;
-        } else  {
+        } else {
             algorithm = PacketCompressionAlgorithm.ZLIB;
         }
         settingsPacket.compressionAlgorithm = algorithm;
         settingsPacket.compressionThreshold = 1; // compress everything
-        player.forceDataPacket(settingsPacket, () -> playerHandle.getNetworkSession().setCompression(CompressionProvider.from(algorithm)));
+        playerHandle.getNetworkSession().setCompression(algorithm);
+        player.forceDataPacket(settingsPacket);
         if (!ProtocolInfo.SUPPORTED_PROTOCOLS.contains(protocolVersion)) {
             if (protocolVersion < ProtocolInfo.CURRENT_PROTOCOL) {
                 message = "disconnectionScreen.outdatedClient";
@@ -41,6 +42,6 @@ public class RequestNetworkSettingsProcessor extends DataPacketProcessor<Request
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET);
+        return ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET;
     }
 }

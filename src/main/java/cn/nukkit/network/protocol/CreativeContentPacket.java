@@ -6,7 +6,7 @@ import lombok.ToString;
 
 @ToString
 public class CreativeContentPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.CREATIVE_CONTENT_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.CREATIVE_CONTENT_PACKET;
 
 
     public Item[] entries = Item.EMPTY_ARRAY;

@@ -25,6 +25,6 @@ public class CraftingEventProcessor extends DataPacketProcessor<CraftingEventPac
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.CRAFTING_EVENT_PACKET);
+        return ProtocolInfo.CRAFTING_EVENT_PACKET;
     }
 }

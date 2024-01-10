@@ -8,7 +8,7 @@ import lombok.ToString;
  */
 @ToString
 public class InventorySlotPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.INVENTORY_SLOT_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.INVENTORY_SLOT_PACKET;
 
     @Override
     public int pid() {

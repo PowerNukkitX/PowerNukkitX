@@ -98,7 +98,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.INVENTORY_TRANSACTION_PACKET);
+        return ProtocolInfo.INVENTORY_TRANSACTION_PACKET;
     }
 
     private void handleUseItemOnEntity(@NotNull PlayerHandle playerHandle, @NotNull InventoryTransactionPacket pk) {

@@ -1,6 +1,6 @@
 package cn.nukkit.level.format.bitarray;
 
-import com.nukkitx.network.VarInts;
+import cn.nukkit.utils.ByteBufVarInt;
 import io.netty.buffer.ByteBuf;
 
 /**
@@ -15,11 +15,11 @@ public interface BitArray {
     int get(int index);
 
     default void writeSizeToNetwork(ByteBuf buffer, int size) {
-        VarInts.writeInt(buffer, size);
+        ByteBufVarInt.writeInt(buffer, size);
     }
 
     default int readSizeFromNetwork(ByteBuf buffer) {
-        return VarInts.readInt(buffer);
+        return ByteBufVarInt.readInt(buffer);
     }
 
     int size();

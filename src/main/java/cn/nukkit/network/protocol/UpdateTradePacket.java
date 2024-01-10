@@ -10,7 +10,7 @@ import java.nio.ByteOrder;
 @ToString
 public class UpdateTradePacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.UPDATE_TRADE_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.UPDATE_TRADE_PACKET;
 
     public byte containerId;
     public byte containerType = 15; //trading id

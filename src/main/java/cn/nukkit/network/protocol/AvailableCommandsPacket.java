@@ -4,7 +4,7 @@ import cn.nukkit.command.data.*;
 import cn.nukkit.network.protocol.types.CommandEnumConstraintData;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.SequencedHashSet;
-import com.nukkitx.network.util.Preconditions;
+import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.ToString;
@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.function.ObjIntConsumer;
 
 import static cn.nukkit.utils.Utils.dynamic;
-import static com.nukkitx.network.util.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -22,7 +22,7 @@ import static com.nukkitx.network.util.Preconditions.checkArgument;
 @ToString
 public class AvailableCommandsPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.AVAILABLE_COMMANDS_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.AVAILABLE_COMMANDS_PACKET;
 
     private static final ObjIntConsumer<BinaryStream> WRITE_BYTE = (s, v) -> s.putByte((byte) v);
     private static final ObjIntConsumer<BinaryStream> WRITE_SHORT = BinaryStream::putLShort;

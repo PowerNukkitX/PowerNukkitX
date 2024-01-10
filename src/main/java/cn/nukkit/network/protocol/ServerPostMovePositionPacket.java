@@ -4,7 +4,7 @@ import cn.nukkit.math.Vector3f;
 
 public class ServerPostMovePositionPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.SERVER_POST_MOVE_POSITION;
+    public static final int NETWORK_ID = ProtocolInfo.SERVER_POST_MOVE_POSITION;
 
     public Vector3f position;
 

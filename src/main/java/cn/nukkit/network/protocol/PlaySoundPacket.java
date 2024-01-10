@@ -5,7 +5,7 @@ import lombok.ToString;
 @ToString
 public class PlaySoundPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.PLAY_SOUND_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.PLAY_SOUND_PACKET;
 
     public String name;
     public int x;

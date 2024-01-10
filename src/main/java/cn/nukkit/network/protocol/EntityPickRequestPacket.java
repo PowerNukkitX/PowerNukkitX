@@ -5,7 +5,7 @@ import lombok.ToString;
 @ToString
 public class EntityPickRequestPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.ENTITY_PICK_REQUEST_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.ENTITY_PICK_REQUEST_PACKET;
 
     @Override
     public int pid() {

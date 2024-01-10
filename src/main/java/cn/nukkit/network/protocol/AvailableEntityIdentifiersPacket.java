@@ -11,7 +11,7 @@ import java.nio.ByteOrder;
 
 @ToString(exclude = {"tag"})
 public class AvailableEntityIdentifiersPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.AVAILABLE_ENTITY_IDENTIFIERS_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.AVAILABLE_ENTITY_IDENTIFIERS_PACKET;
 
     private static final byte[] TAG;
 

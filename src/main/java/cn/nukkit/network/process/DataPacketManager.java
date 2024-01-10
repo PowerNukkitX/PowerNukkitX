@@ -37,12 +37,12 @@ public final class DataPacketManager {
             throw new IllegalArgumentException("Packet protocol " + packet.getProtocolUsed() + " does not match current protocol " + ProtocolInfo.CURRENT_PROTOCOL
                     + ". Multi-version support is not implemented yet.");
         }
-        var processor = CURRENT_PROTOCOL_PROCESSORS.get(packet.packetId());
+        var processor = CURRENT_PROTOCOL_PROCESSORS.get(packet.pid());
         if (processor != null) {
             //noinspection unchecked
             processor.handle(playerHandle, packet);
         } else {
-            throw new UnsupportedOperationException("No processor found for packet " + packet.getClass().getName() + " with id " + packet.packetId() + ".");
+            throw new UnsupportedOperationException("No processor found for packet " + packet.getClass().getName() + " with id " + packet.pid() + ".");
         }
     }
 

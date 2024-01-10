@@ -15,7 +15,7 @@ import java.nio.ByteOrder;
 public class ItemComponentPacket extends DataPacket {
 
 
-    public static final byte NETWORK_ID = ProtocolInfo.ITEM_COMPONENT_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.ITEM_COMPONENT_PACKET;
     
 
     private Entry[] entries = Entry.EMPTY_ARRAY;

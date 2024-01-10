@@ -9,7 +9,7 @@ import lombok.ToString;
 @ToString
 public class MovePlayerPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.MOVE_PLAYER_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.MOVE_PLAYER_PACKET;
 
     public static final int MODE_NORMAL = 0;
     public static final int MODE_RESET = 1;//MODE_RESPAWN

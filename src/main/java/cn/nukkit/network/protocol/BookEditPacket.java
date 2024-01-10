@@ -5,7 +5,7 @@ import lombok.ToString;
 @ToString
 public class BookEditPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.BOOK_EDIT_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.BOOK_EDIT_PACKET;
 
     public Action action;
     public int inventorySlot;

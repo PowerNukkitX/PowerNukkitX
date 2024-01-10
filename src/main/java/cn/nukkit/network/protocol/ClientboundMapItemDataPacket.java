@@ -19,7 +19,7 @@ import java.util.List;
 @ToString
 public class ClientboundMapItemDataPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.CLIENTBOUND_MAP_ITEM_DATA_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.CLIENTBOUND_MAP_ITEM_DATA_PACKET;
     public static final long[] EMPTY_LONGS = new long[0];
 
     public long[] eids = EMPTY_LONGS;

@@ -10,10 +10,11 @@ import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.utils.ByteBufVarInt;
 import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.SemVersion;
+import cn.nukkit.utils.VarInt;
 import com.google.common.base.Objects;
-import com.nukkitx.network.VarInts;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
@@ -76,7 +77,7 @@ public final class Palette<V> {
         readWords(byteBuf, readBitArrayVersion(byteBuf));
 
         final int size = this.bitArray.readSizeFromNetwork(byteBuf);
-        for (int i = 0; i < size; i++) this.palette.add(deserializer.deserialize(VarInts.readInt(byteBuf)));
+        for (int i = 0; i < size; i++) this.palette.add(deserializer.deserialize(ByteBufVarInt.readInt(byteBuf)));
     }
 
     public void writeToStoragePersistent(ByteBuf byteBuf, cn.nukkit.level.format.palette.PersistentDataSerializer<V> serializer) {
@@ -221,7 +222,7 @@ public final class Palette<V> {
         for (int word : this.bitArray.words()) byteBuf.writeIntLE(word);
 
         this.bitArray.writeSizeToNetwork(byteBuf, this.palette.size());
-        for (V value : this.palette) VarInts.writeInt(byteBuf, serializer.serialize(value));
+        for (V value : this.palette) ByteBufVarInt.writeInt(byteBuf, serializer.serialize(value));
     }
 
     private BitArrayVersion readBitArrayVersion(ByteBuf byteBuf) {

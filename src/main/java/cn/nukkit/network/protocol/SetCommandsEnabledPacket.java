@@ -5,7 +5,7 @@ import lombok.ToString;
 @ToString
 public class SetCommandsEnabledPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.SET_COMMANDS_ENABLED_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.SET_COMMANDS_ENABLED_PACKET;
 
     public boolean enabled;
 

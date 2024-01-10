@@ -39,6 +39,6 @@ public class RequestAbilityProcessor extends DataPacketProcessor<RequestAbilityP
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.REQUEST_ABILITY_PACKET);
+        return ProtocolInfo.REQUEST_ABILITY_PACKET;
     }
 }
