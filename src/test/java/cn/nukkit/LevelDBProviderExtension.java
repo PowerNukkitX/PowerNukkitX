@@ -3,7 +3,6 @@ package cn.nukkit;
 import cn.nukkit.level.DimensionEnum;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.LevelDBProvider;
-import cn.nukkit.registry.BlockRegistry;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.extension.AfterAllCallback;
@@ -15,7 +14,6 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 import org.mockito.Mockito;
 
 import java.io.File;
-import java.nio.file.Files;
 
 public class LevelDBProviderExtension implements BeforeAllCallback, AfterAllCallback, ParameterResolver {
     static Level level = Mockito.mock(Level.class);

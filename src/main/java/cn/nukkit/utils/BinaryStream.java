@@ -240,8 +240,8 @@ public class BinaryStream {
         this.putByte((byte) (bool ? 1 : 0));
     }
 
-    public int getByte() {
-        return this.buffer[this.offset++] & 0xff;
+    public byte getByte() {
+        return (byte) (this.buffer[this.offset++] & 0xff);
     }
 
     public void putByte(byte b) {
@@ -795,7 +795,7 @@ public class BinaryStream {
         return new EntityLink(
                 getEntityUniqueId(),
                 getEntityUniqueId(),
-                (byte) getByte(),
+                getByte(),
                 getBoolean(),
                 getBoolean()
         );

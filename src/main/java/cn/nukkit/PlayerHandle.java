@@ -33,8 +33,6 @@ import java.util.UUID;
  * A PlayerHandle is used to access a player's protected data.
  */
 @SuppressWarnings("ClassCanBeRecord")
-
-
 public final class PlayerHandle {
     public final @NotNull Player player;
 

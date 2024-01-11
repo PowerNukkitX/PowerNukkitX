@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadFactory;
 
 import static cn.nukkit.utils.Utils.dynamic;
 
@@ -45,6 +46,10 @@ public class RakNetInterface implements SourceInterface {
     private Network network;
 
     public RakNetInterface(Server server) {
+        this(server, 4, new ThreadFactoryBuilder().setNameFormat("Netty Server IO #%d").build());
+    }
+
+    public RakNetInterface(Server server, int nettyThreadNumber, ThreadFactory threadFactory) {
         this.pong = new BedrockPong()
                 .edition("MCPE")
                 .motd(server.getMotd())
@@ -57,15 +62,14 @@ public class RakNetInterface implements SourceInterface {
                 .ipv6Port(server.getPort());
 
         this.server = server;
-        int nettyThreadNumber = 4;
         Class<? extends DatagramChannel> oclass;
         EventLoopGroup eventloopgroup;
         if (Epoll.isAvailable()) {
             oclass = EpollDatagramChannel.class;
-            eventloopgroup = new EpollEventLoopGroup(nettyThreadNumber, (new ThreadFactoryBuilder()).setNameFormat("Netty Server IO #%d").build());
+            eventloopgroup = new EpollEventLoopGroup(nettyThreadNumber, threadFactory);
         } else {
             oclass = NioDatagramChannel.class;
-            eventloopgroup = new NioEventLoopGroup(nettyThreadNumber, (new ThreadFactoryBuilder()).setNameFormat("Netty Server IO #%d").build());
+            eventloopgroup = new NioEventLoopGroup(nettyThreadNumber, threadFactory);
         }
         InetSocketAddress bindAddress = new InetSocketAddress(Strings.isNullOrEmpty(this.server.getIp()) ? "127.0.0.1" : this.server.getIp(), this.server.getPort());
         this.channel = new ServerBootstrap()

@@ -30,6 +30,10 @@ public class NetworkSettingsPacket extends DataPacket {
 
     @Override
     public void decode() {
-        throw new UnsupportedOperationException();
+        this.compressionThreshold = getLShort();
+        this.compressionAlgorithm = PacketCompressionAlgorithm.values()[getLShort()];
+        this.clientThrottleEnabled = getBoolean();
+        this.clientThrottleThreshold = getByte();
+        this.clientThrottleScalar = getLFloat();
     }
 }

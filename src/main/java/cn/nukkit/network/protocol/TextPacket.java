@@ -39,7 +39,7 @@ public class TextPacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.type = (byte) getByte();
+        this.type = getByte();
         this.isLocalized = this.getBoolean() || type == TYPE_TRANSLATION;
         switch (type) {
             case TYPE_CHAT:

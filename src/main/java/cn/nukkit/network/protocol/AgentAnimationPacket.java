@@ -14,7 +14,7 @@ public class AgentAnimationPacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.animation = (byte) getByte();
+        this.animation = getByte();
         this.runtimeEntityId = getEntityRuntimeId();
     }
 

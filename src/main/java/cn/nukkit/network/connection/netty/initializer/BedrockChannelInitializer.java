@@ -23,6 +23,10 @@ public abstract class BedrockChannelInitializer<T extends BedrockSession> extend
 
     @Override
     protected final void initChannel(Channel channel) throws Exception {
+        // Decode
+        // RAKNET_FRAME_CODEC -> CompressionCodec -> BATCH_DECODER ->  BedrockPacketCodec -> BedrockPeer
+        // Encode
+        // BedrockPeer -> BedrockPacketCodec-> BATCH_ENCODER -> CompressionCodec -> RAKNET_FRAME_CODEC
         this.preInitChannel(channel);
 
         channel.pipeline()

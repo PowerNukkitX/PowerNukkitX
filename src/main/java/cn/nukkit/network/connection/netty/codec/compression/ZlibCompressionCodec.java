@@ -30,6 +30,7 @@ public class ZlibCompressionCodec extends MessageToMessageCodec<ByteBuf, ByteBuf
 
     @Override
     protected void encode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
+        msg.retain();
         ByteBuf outBuf = ctx.alloc().ioBuffer(msg.readableBytes() << 3);
         try {
             final byte[] data = new byte[msg.readableBytes()];

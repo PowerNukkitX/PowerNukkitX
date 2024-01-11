@@ -228,6 +228,7 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.REQUEST_ABILITY_PACKET, RequestAbilityPacket.class);
         this.register0(ProtocolInfo.UPDATE_ABILITIES_PACKET, UpdateAbilitiesPacket.class);
         this.register0(ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET, RequestNetworkSettingsPacket.class);
+        this.register0(ProtocolInfo.NETWORK_SETTINGS_PACKET, NetworkSettingsPacket.class);
         this.register0(ProtocolInfo.UPDATE_ADVENTURE_SETTINGS_PACKET, UpdateAdventureSettingsPacket.class);
         this.register0(ProtocolInfo.UPDATE_CLIENT_INPUT_LOCKS, UpdateClientInputLocksPacket.class);
         this.register0(ProtocolInfo.PLAYER_FOG_PACKET, PlayerFogPacket.class);
