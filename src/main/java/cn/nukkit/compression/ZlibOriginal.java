@@ -1,6 +1,7 @@
-package cn.nukkit.utils;
+package cn.nukkit.compression;
 
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
+import cn.nukkit.utils.ThreadCache;
 
 import java.io.IOException;
 import java.util.zip.DataFormatException;
@@ -8,31 +9,6 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 public class ZlibOriginal implements ZlibProvider {
-
-    @Override
-    public byte[] deflate(byte[][] datas, int level) throws IOException {
-        Deflater deflater = new Deflater(level);
-        byte[] buffer = new byte[1024];
-        FastByteArrayOutputStream bos = ThreadCache.fbaos.get();
-        bos.reset();
-        try {
-            for (byte[] data : datas) {
-                deflater.setInput(data);
-                while (!deflater.needsInput()) {
-                    int i = deflater.deflate(buffer);
-                    bos.write(buffer, 0, i);
-                }
-            }
-            deflater.finish();
-            while (!deflater.finished()) {
-                int i = deflater.deflate(buffer);
-                bos.write(buffer, 0, i);
-            }
-        } finally {
-            deflater.end();
-        }
-        return bos.toByteArray();
-    }
 
     @Override
     public byte[] deflate(byte[] data, int level) throws IOException {

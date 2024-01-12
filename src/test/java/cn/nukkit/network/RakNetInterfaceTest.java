@@ -2,6 +2,7 @@ package cn.nukkit.network;
 
 import cn.nukkit.GameMockExtension;
 import cn.nukkit.Server;
+import cn.nukkit.compression.NativeByteBufZlib;
 import cn.nukkit.network.connection.netty.codec.compression.ZlibCompressionCodec;
 import cn.nukkit.network.connection.netty.initializer.BedrockChannelInitializer;
 import cn.nukkit.network.protocol.DataPacket;
@@ -10,7 +11,6 @@ import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.ByteBufVarInt;
-import cn.nukkit.utils.Zlib;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -21,21 +21,16 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import io.netty.handler.codec.MessageToMessageCodec;
-import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.netty.channel.raknet.RakChannelFactory;
 import org.cloudburstmc.netty.channel.raknet.RakClientChannel;
 import org.cloudburstmc.netty.channel.raknet.RakConstants;
 import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
-import org.cloudburstmc.netty.channel.raknet.packet.RakDatagramPacket;
 import org.cloudburstmc.netty.channel.raknet.packet.RakMessage;
-import org.cloudburstmc.netty.handler.codec.raknet.common.RakDatagramCodec;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.net.InetSocketAddress;
-import java.util.Arrays;
 
 @Slf4j
 @ExtendWith(GameMockExtension.class)
@@ -72,16 +67,10 @@ public class RakNetInterfaceTest {
                                             log.error("Client receive a Invalid packet for frame ID!");
                                             System.exit(1);
                                         }
-                                        //uncompress
-                                        byte[] bytes = new byte[content.readableBytes()];
-                                        content.readBytes(bytes);
-                                        byte[] inflate = ZlibCompressionCodec.inflateRaw(bytes);
-                                        ByteBuf infBuf = Unpooled.wrappedBuffer(inflate);
-                                        //uncompress
 
                                         //batch packet
-                                        int packetLength = ByteBufVarInt.readUnsignedInt(infBuf);
-                                        ByteBuf byteBuf = infBuf.readSlice(packetLength);
+                                        int packetLength = ByteBufVarInt.readUnsignedInt(content);
+                                        ByteBuf byteBuf = content.readSlice(packetLength);
 
                                         //decode to game packet
                                         int header = ByteBufVarInt.readUnsignedInt(byteBuf);

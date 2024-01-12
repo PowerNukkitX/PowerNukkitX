@@ -1,15 +1,12 @@
 package cn.nukkit.network.connection.netty.codec.compression;
 
+import cn.nukkit.compression.CompressionProvider;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
-import cn.nukkit.utils.SnappyCompression;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 
 import java.util.List;
-
-import static sun.misc.Unsafe.ARRAY_BYTE_BASE_OFFSET;
 
 public class SnappyCompressionCodec extends MessageToMessageCodec<ByteBuf, ByteBuf> implements CompressionCodec {
     public static final String NAME = "compression-codec";
@@ -22,7 +19,7 @@ public class SnappyCompressionCodec extends MessageToMessageCodec<ByteBuf, ByteB
         try {
             byte[] data = new byte[msg.readableBytes()];
             msg.readBytes(data);
-            byte[] compress = SnappyCompression.compress(data);
+            byte[] compress = CompressionProvider.SNAPPY.compress(data,7);
             output.writeBytes(compress);
             out.add(output.retain());
         } finally {
@@ -37,7 +34,7 @@ public class SnappyCompressionCodec extends MessageToMessageCodec<ByteBuf, ByteB
         try {
             byte[] data = new byte[msg.readableBytes()];
             msg.readBytes(data);
-            byte[] compress = SnappyCompression.decompress(data);
+            byte[] compress = CompressionProvider.SNAPPY.decompress(data);
             output.writeBytes(compress);
             out.add(output.retain());
         } finally {
@@ -48,7 +45,7 @@ public class SnappyCompressionCodec extends MessageToMessageCodec<ByteBuf, ByteB
 
     @Override
     public int getLevel() {
-        return -1;
+        return 1;
     }
 
     @Override

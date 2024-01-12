@@ -3,13 +3,9 @@ package cn.nukkit.network.connection.util;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.scheduler.AsyncTask;
-import com.nimbusds.jose.jwk.Curve;
 import lombok.extern.log4j.Log4j2;
 
-import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 
 @Log4j2
 public class PrepareEncryptionTask extends AsyncTask {
@@ -26,15 +22,14 @@ public class PrepareEncryptionTask extends AsyncTask {
     @Override
     public void onRun() {
         try {
-            KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
-            generator.initialize(Curve.P_384.toECParameterSpec());
-            KeyPair privateKeyPair = generator.generateKeyPair();
-
-            byte[] token = EncryptionUtils.generateRandomToken();
-
-
-            this.encryptionKey = EncryptionUtils.getSecretKey(privateKeyPair.getPrivate(), EncryptionUtils.parseKey(this.player.getLoginChainData().getIdentityPublicKey()), token);
-            this.handshakeJwt = EncryptionUtils.createHandshakeJwt(privateKeyPair, token);
+            var clientKey = EncryptionUtils.parseKey(player.getLoginChainData().getIdentityPublicKey());
+            var encryptionKeyPair = EncryptionUtils.createKeyPair();
+            var encryptionToken = EncryptionUtils.generateRandomToken();
+            encryptionKey = EncryptionUtils.getSecretKey(
+                    encryptionKeyPair.getPrivate(), clientKey,
+                    encryptionToken
+            );
+            this.handshakeJwt = EncryptionUtils.createHandshakeJwt(encryptionKeyPair, encryptionToken);
         } catch (Exception e) {
             log.error("Failed to prepare encryption", e);
         }

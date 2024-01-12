@@ -75,9 +75,9 @@ import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.bugreport.ExceptionHandler;
 import cn.nukkit.utils.collection.FreezableArrayManager;
+import cn.nukkit.compression.ZlibChooser;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongLists;
@@ -610,7 +610,7 @@ public class Server {
         ServerScheduler.WORKERS = (int) poolSize;
 
         this.networkZlibProvider = this.getConfig("network.zlib-provider", 2);
-        Zlib.setProvider(this.networkZlibProvider);
+        ZlibChooser.setProvider(this.networkZlibProvider);
 
         this.maximumStaleDatagrams = this.getConfig("network.maximum-stale-datagrams", 512);
         this.networkCompressionLevel = this.getConfig("network.compression-level", 7);

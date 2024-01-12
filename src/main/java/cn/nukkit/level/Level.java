@@ -259,7 +259,6 @@ public class Level implements Metadatable {
     private int chunkPopulationQueueSize = 2;
     private boolean autoSave;
     private BlockMetadataStore blockMetadata;
-    private Position temporalPosition;
     private final Vector3 temporalVector;
     private final int chunkTickRadius;
     private final int chunksPerTicks;
@@ -334,7 +333,6 @@ public class Level implements Metadatable {
         this.chunkTickList.clear();
         this.clearChunksOnTick = this.server.getConfig("chunk-ticking.clear-tick-list", true);
         this.cacheChunks = this.server.getConfig("chunk-sending.cache-chunks", false);
-        this.temporalPosition = new Position(0, 0, 0, this);
         this.temporalVector = new Vector3(0, 0, 0);
         this.tickRate = 1;
 
@@ -509,7 +507,6 @@ public class Level implements Metadatable {
 
         this.provider = null;
         this.blockMetadata = null;
-        this.temporalPosition = null;
         this.server.getLevels().remove(this.levelId);
         this.generators.remove();
     }

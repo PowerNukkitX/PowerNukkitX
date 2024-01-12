@@ -12,8 +12,8 @@ import cn.nukkit.plugin.PluginDescription;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.HumanStringComparator;
 import cn.nukkit.utils.Utils;
-import com.nimbusds.jose.util.IOUtils;
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.core.util.IOUtils;
 import org.iq80.leveldb.util.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -200,7 +200,8 @@ public class DebugPasteCommand extends TestCommand implements CoreCommand {
     private static String eval(String... command) {
         try {
             try (InputStream in = Runtime.getRuntime().exec(command).getInputStream()) {
-                return IOUtils.readInputStreamToString(in, Charset.defaultCharset()).trim();
+                InputStreamReader inputStreamReader = new InputStreamReader(in);
+                return IOUtils.toString(inputStreamReader).trim();
             }
         } catch (Exception e) {
             return e.toString().trim();

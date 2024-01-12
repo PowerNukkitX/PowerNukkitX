@@ -2,6 +2,7 @@ package cn.nukkit.level.generator.task;
 
 import cn.nukkit.Server;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.scheduler.AsyncTask;
 
@@ -41,6 +42,7 @@ public class LightPopulationTask extends AsyncTask {
             }
 
             level.generateChunkCallback(chunk.getX(), chunk.getZ(), chunk);
+            chunk.setChunkState(ChunkState.FINISHED);
         }
     }
 }

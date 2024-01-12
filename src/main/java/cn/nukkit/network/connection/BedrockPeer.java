@@ -1,5 +1,6 @@
 package cn.nukkit.network.connection;
 
+import cn.nukkit.compression.NativeByteBufZlib;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
@@ -140,7 +141,7 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
             throw new IllegalArgumentException("Compression is already set");
         }
         ChannelHandler compressionHandler = switch (algorithm) {
-            case ZLIB -> new ZlibCompressionCodec(true);
+            case ZLIB ->  new ZlibCompressionCodec(NativeByteBufZlib.RAW);
             case SNAPPY -> new SnappyCompressionCodec();
         };
         this.channel.pipeline().addBefore(BedrockBatchDecoder.NAME, CompressionCodec.NAME, compressionHandler);

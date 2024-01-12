@@ -1,7 +1,10 @@
-package cn.nukkit.utils;
+package cn.nukkit.compression;
 
 import cn.nukkit.Server;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
+import cn.nukkit.utils.PNXLibDeflater;
+import cn.nukkit.utils.PNXLibInflater;
+import cn.nukkit.utils.ThreadCache;
 import cn.powernukkitx.libdeflate.CompressionType;
 import cn.powernukkitx.libdeflate.LibdeflateCompressor;
 import cn.powernukkitx.libdeflate.LibdeflateDecompressor;
@@ -9,7 +12,6 @@ import cn.powernukkitx.libdeflate.LibdeflateDecompressor;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Arrays;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
@@ -31,21 +33,6 @@ public class LibDeflateThreadLocal implements ZlibProvider {
             return ByteBuffer.allocateDirect(maximumSizePerChunk).order(ByteOrder.nativeOrder());
         }
     });
-
-    // compress
-    @Override
-    public byte[] deflate(byte[][] datas, int level) throws IOException {
-        var deflater = DEFLATER.get();
-        var bos = ThreadCache.fbaos.get();
-        bos.reset();
-        for (var data : datas) {
-            bos.write(data, 0, data.length);
-        }
-        var data = bos.toByteArray();
-        byte[] buffer = deflater.getCompressBound(data.length, CompressionType.ZLIB) < 8192 ? BUFFER.get() : new byte[data.length];
-        int compressedSize = deflater.compress(data, buffer, CompressionType.ZLIB);
-        return Arrays.copyOf(buffer, compressedSize);
-    }
 
     @Override
     public byte[] deflate(byte[] data, int level) throws IOException {

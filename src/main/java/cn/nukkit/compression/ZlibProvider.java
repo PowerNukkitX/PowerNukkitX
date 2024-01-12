@@ -1,4 +1,4 @@
-package cn.nukkit.utils;
+package cn.nukkit.compression;
 
 import java.io.IOException;
 
@@ -6,7 +6,6 @@ import java.io.IOException;
  * @author ScraMTeam
  */
 interface ZlibProvider {
-    byte[] deflate(byte[][] data, int level) throws IOException;
 
     byte[] deflate(byte[] data, int level) throws IOException;
 

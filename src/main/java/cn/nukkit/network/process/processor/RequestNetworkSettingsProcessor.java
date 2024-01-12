@@ -2,7 +2,6 @@ package cn.nukkit.network.process.processor;
 
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
-import cn.nukkit.network.CompressionProvider;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.NetworkSettingsPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -28,8 +27,10 @@ public class RequestNetworkSettingsProcessor extends DataPacketProcessor<Request
         }
         settingsPacket.compressionAlgorithm = algorithm;
         settingsPacket.compressionThreshold = 1; // compress everything
-        playerHandle.getNetworkSession().setCompression(algorithm);
+        //In raknet version 11, the client does not enable packet compression by default,but the server will tell client what the
+        //compression algorithm through NetworkSettingsPacket
         player.forceDataPacket(settingsPacket);
+        playerHandle.getNetworkSession().setCompression(algorithm);//so send the NetworkSettingsPacket packet before set the session compression
         if (!ProtocolInfo.SUPPORTED_PROTOCOLS.contains(protocolVersion)) {
             if (protocolVersion < ProtocolInfo.CURRENT_PROTOCOL) {
                 message = "disconnectionScreen.outdatedClient";

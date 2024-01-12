@@ -1,10 +1,8 @@
-package cn.nukkit.network;
+package cn.nukkit.compression;
 
-import cn.nukkit.network.connection.netty.codec.compression.ZlibCompressionCodec;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import cn.nukkit.utils.BinaryStream;
-import cn.nukkit.utils.SnappyCompression;
-import cn.nukkit.utils.Zlib;
+import org.xerial.snappy.Snappy;
 
 
 public interface CompressionProvider {
@@ -16,6 +14,11 @@ public interface CompressionProvider {
         }
 
         @Override
+        public byte[] compress(byte[] data, int level) throws Exception {
+            return data;
+        }
+
+        @Override
         public byte[] decompress(byte[] compressed) throws Exception {
             return compressed;
         }
@@ -24,12 +27,17 @@ public interface CompressionProvider {
     CompressionProvider ZLIB = new CompressionProvider() {
         @Override
         public byte[] compress(BinaryStream packet, int level) throws Exception {
-            return Zlib.deflate(packet.getBuffer(), level);
+            return ZlibChooser.deflate(packet.getBuffer(), level);
+        }
+
+        @Override
+        public byte[] compress(byte[] data, int level) throws Exception {
+            return ZlibChooser.deflate(data);
         }
 
         @Override
         public byte[] decompress(byte[] compressed) throws Exception {
-            return Zlib.inflate(compressed);
+            return ZlibChooser.inflate(compressed);
         }
     };
 
@@ -37,17 +45,24 @@ public interface CompressionProvider {
     CompressionProvider SNAPPY = new CompressionProvider() {
         @Override
         public byte[] compress(BinaryStream packet, int level) throws Exception {
-            return SnappyCompression.compress(packet.getBuffer());
+            return Snappy.compress(packet.getBuffer());
+        }
+
+        @Override
+        public byte[] compress(byte[] data, int level) throws Exception {
+            return Snappy.compress(data);
         }
 
         @Override
         public byte[] decompress(byte[] compressed) throws Exception {
-            return SnappyCompression.decompress(compressed);
+            return Snappy.uncompress(compressed);
         }
     };
 
 
     byte[] compress(BinaryStream packet, int level) throws Exception;
+
+    byte[] compress(byte[] data, int level) throws Exception;
 
     byte[] decompress(byte[] compressed) throws Exception;
 

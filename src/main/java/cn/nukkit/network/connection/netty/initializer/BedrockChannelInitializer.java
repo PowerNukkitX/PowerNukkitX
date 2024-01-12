@@ -1,5 +1,6 @@
 package cn.nukkit.network.connection.netty.initializer;
 
+import cn.nukkit.compression.NativeByteBufZlib;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
@@ -49,10 +50,10 @@ public abstract class BedrockChannelInitializer<T extends BedrockSession> extend
             case 7:
             case 8:
             case 9:
-                channel.pipeline().addLast(CompressionCodec.NAME, new ZlibCompressionCodec(false));
+                channel.pipeline().addLast(CompressionCodec.NAME, new ZlibCompressionCodec(NativeByteBufZlib.DEFAULT));
                 break;
             case 10: // Zlib Raw
-                channel.pipeline().addLast(CompressionCodec.NAME, new ZlibCompressionCodec(true));
+                channel.pipeline().addLast(CompressionCodec.NAME, new ZlibCompressionCodec(NativeByteBufZlib.RAW));
                 break;
             case 11: // No compression on initial packet request
                 break;

@@ -138,7 +138,7 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
         });
 
         server.getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, playerHandle.getPreLoginEventTask());
-        if (server.enabledNetworkEncryption && playerHandle.getLoginChainData().isXboxAuthed()) {
+        if (server.enabledNetworkEncryption) {
             server.getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new PrepareEncryptionTask(playerHandle.player) {
                 @Override
                 public void onCompletion(Server server) {
@@ -151,8 +151,8 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
                     }
                     ServerToClientHandshakePacket pk = new ServerToClientHandshakePacket();
                     pk.setJwt(this.getHandshakeJwt());
-                    playerHandle.getNetworkSession().enableEncryption(this.getEncryptionKey());
                     playerHandle.player.forceDataPacket(pk);
+                    playerHandle.getNetworkSession().enableEncryption(this.getEncryptionKey());
                 }
             });
         } else {
