@@ -36,7 +36,7 @@ public class EntityLingeringPotion extends EntitySplashPotion {
         super.splash(collidedWith);
         saveNBT();
         ListTag<?> pos = (ListTag<?>) namedTag.getList("Pos", CompoundTag.class).copy();
-        EntityAreaEffectCloud entity = (EntityAreaEffectCloud) Entity.createEntity("AreaEffectCloud", getChunk(),
+        EntityAreaEffectCloud entity = (EntityAreaEffectCloud) Entity.createEntity(Entity.AREA_EFFECT_CLOUD, getChunk(),
                 new CompoundTag().putList(pos)
                         .putList(new ListTag<>("Rotation")
                                 .add(new FloatTag("", 0))

@@ -20,10 +20,9 @@ public class PaletteUtils {
     public static Pair<Integer, SemVersion> fastReadBlockHash(NBTInputStream input, ByteBuf byteBuf) {
         try {
             byteBuf.markReaderIndex();
-            int start = byteBuf.readerIndex();
             int typeId = input.readUnsignedByte();
             input.skipBytes(input.readUnsignedShort()); //Skip Root tag name
-            return deserialize(input, byteBuf, typeId, 16, start);
+            return deserialize(input, byteBuf, typeId, 16);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -32,8 +31,7 @@ public class PaletteUtils {
     private static Pair<Integer, SemVersion> deserialize(NBTInputStream input,
                                                          ByteBuf byteBuf,
                                                          int type,
-                                                         int maxDepth,
-                                                         int start
+                                                         int maxDepth
     ) throws IOException {
         if (maxDepth < 0) {
             throw new IllegalArgumentException("NBT compound is too deeply nested");
@@ -61,23 +59,23 @@ public class PaletteUtils {
                         if (version != ProtocolInfo.BLOCK_STATE_VERSION_NO_REVISION) {
                             return Pair.of(null, getSemVersion(version));
                         }
-                        byte[] result = new byte[end - start];
+                        byte[] result = new byte[end - byteBuf.readerIndex()];
                         byteBuf.readBytes(result);
                         result[result.length - 1] = 0;//because an End Tag be put when at the end serialize tag
 
                         input.skipBytes(input.readUnsignedShort());//UTF
-                        deserialize(input, byteBuf, nbtType, maxDepth - 1, start);//Value
+                        deserialize(input, byteBuf, nbtType, maxDepth - 1);//Value
                         input.skipBytes(1);//end tag
                         return Pair.of(HashUtils.fnv1a_32(result), null);
                     }
-                    deserialize(input, byteBuf, nbtType, maxDepth - 1, start);
+                    deserialize(input, byteBuf, nbtType, maxDepth - 1);
                 }
             }
             case Tag.TAG_List -> {
                 int typeId = input.readUnsignedByte();
                 int listLength = input.readInt();
                 for (int i = 0; i < listLength; i++) {
-                    deserialize(input, byteBuf, typeId, maxDepth - 1, start);
+                    deserialize(input, byteBuf, typeId, maxDepth - 1);
                 }
             }
             case Tag.TAG_Int_Array -> input.skipBytes(input.readInt() * 4);

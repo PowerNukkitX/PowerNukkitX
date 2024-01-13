@@ -316,19 +316,6 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
     }
 
-    public Entity create(Object type, Position source, Object... args) {
-        IChunk chunk = source.getLevel().getChunk((int) source.x >> 4, (int) source.z >> 4);
-        if (chunk == null) return null;
-
-        CompoundTag nbt = Entity.getDefaultNBT(
-                source.add(0.5, 0, 0.5),
-                null,
-                new Random().nextFloat() * 360, 0
-        );
-
-        return Entity.createEntity(type.toString(), chunk, nbt, args);
-    }
-
     public int getPickupMode() {
         return this.pickupMode;
     }

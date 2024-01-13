@@ -47,7 +47,7 @@ public class LevelDBChunkSerializer {
             try {
                 writeBatch.put(LevelDBKeyUtil.VERSION.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getProvider().getDimensionData()), new byte[]{IChunk.VERSION});
                 writeBatch.put(LevelDBKeyUtil.CHUNK_FINALIZED_STATE.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getDimensionData()), Unpooled.buffer(4).writeIntLE(unsafeChunk.getChunkState().ordinal() - 1).array());
-                writeBatch.put(LevelDBKeyUtil.PNX_EXTRA_DATA.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getProvider().getDimensionData()), NBTIO.write(unsafeChunk.getExtraData()));
+                writeBatch.put(LevelDBKeyUtil.PNX_EXTRA_DATA.getKey(unsafeChunk.getX(), unsafeChunk.getZ()), NBTIO.write(unsafeChunk.getExtraData()));
                 serializeBlock(writeBatch, unsafeChunk);
                 serializeHeightAndBiome(writeBatch, unsafeChunk);
                 serializeTileAndEntity(writeBatch, unsafeChunk);
@@ -71,7 +71,7 @@ public class LevelDBChunkSerializer {
         } else {
             builder.state(ChunkState.values()[Unpooled.wrappedBuffer(finalized).readIntLE() + 1]);
         }
-        byte[] extraData = db.get(LevelDBKeyUtil.PNX_EXTRA_DATA.getKey(builder.getChunkX(), builder.getChunkZ(), builder.getDimensionData()));
+        byte[] extraData = db.get(LevelDBKeyUtil.PNX_EXTRA_DATA.getKey(builder.getChunkX(), builder.getChunkZ()));
         if (extraData != null) {
             builder.extraData(NBTIO.read(extraData));
         }
@@ -135,6 +135,7 @@ public class LevelDBChunkSerializer {
                                     BlockState blockState = Registries.BLOCKSTATE.get(hash);
                                     if (blockState == null) {
                                         log.error("missing block hash: " + hash);
+                                        return BlockAir.STATE;
                                     }
                                     return blockState;
                                 });

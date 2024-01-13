@@ -37,9 +37,23 @@ public class PopulationTask extends AsyncTask {
         }
     }
 
+
     @Override
     public void onRun() {
-        generationTask();
+        syncGen(0);
+    }
+
+    private void syncGen(int i) {
+        if (i == chunks.length) {
+            generationTask();
+        } else {
+            IChunk chunk = chunks[i];
+            if (chunk != null) {
+                synchronized (chunk) {
+                    syncGen(i + 1);
+                }
+            }
+        }
     }
 
     private void generationTask() {
@@ -146,6 +160,13 @@ public class PopulationTask extends AsyncTask {
             }
 
             level.generateChunkCallback(centerChunk.getX(), centerChunk.getZ(), centerChunk, isPopulated);
+
+            //需要在全部地形生成完毕后再尝试生成结构
+            //todo: 不应该写在这里，往前放更合理，但是会有NPE:(
+            var generator = level.getGenerator();
+           /* if (generator.shouldGenerateStructures()) {
+                generator.populateStructure(centerChunk.getX(), centerChunk.getZ());
+            }*/
 
             // 如果区块有修改就重新计算高度图
             for (IChunk chunk : this.chunks) {

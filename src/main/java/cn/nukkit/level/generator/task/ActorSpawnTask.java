@@ -21,7 +21,7 @@ public class ActorSpawnTask extends Task {
     @Override
     public void onRun(int currentTick) {
         ListTag<DoubleTag> pos = this.nbt.getList("Pos", DoubleTag.class);
-        Entity entity = Entity.createEntity(this.nbt.getString("id"),
+        Entity entity = Entity.createEntity(this.nbt.getString("identifier"),
                 this.level.getChunk((int) pos.get(0).data >> 4, (int) pos.get(2).data >> 4), this.nbt);
         if (entity != null) {
             entity.spawnToAll();

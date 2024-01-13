@@ -65,7 +65,7 @@ public class ItemArmorStand extends Item {
             return false;
         }
 
-        Entity entity = Entity.createEntity(Registries.ENTITY.getEntityNetworkId(EntityID.ARMOR_STAND), chunk, nbt);
+        Entity entity = Entity.createEntity(Entity.ARMOR_STAND, chunk, nbt);
         if (entity == null) {
             return false;
         }

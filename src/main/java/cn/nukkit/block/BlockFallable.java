@@ -62,7 +62,7 @@ public abstract class BlockFallable extends BlockSolid {
             nbt.put(customTag.getName(), customTag.copy());
         }
 
-        EntityFallingBlock fall = (EntityFallingBlock) Entity.createEntity("FallingSand", this.getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
+        EntityFallingBlock fall = (EntityFallingBlock) Entity.createEntity(Entity.FALLING_BLOCK, this.getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
 
         if (fall != null) {
             fall.spawnToAll();

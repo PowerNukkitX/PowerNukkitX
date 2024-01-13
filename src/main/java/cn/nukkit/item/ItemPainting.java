@@ -115,7 +115,7 @@ public class ItemPainting extends Item {
                         .add(new FloatTag("0", direction * 90))
                         .add(new FloatTag("1", 0)));
 
-        EntityPainting entity = (EntityPainting) Entity.createEntity("Painting", chunk, nbt);
+        EntityPainting entity = (EntityPainting) Entity.createEntity(Entity.PAINTING, chunk, nbt);
 
         if (entity == null) {
             return false;

@@ -64,7 +64,7 @@ public class ItemEndCrystal extends Item {
             nbt.putString("CustomName", this.getCustomName());
         }
 
-        Entity entity = Entity.createEntity("EndCrystal", chunk, nbt);
+        Entity entity = Entity.createEntity(Entity.ENDER_CRYSTAL, chunk, nbt);
 
         if (entity != null) {
             if (player.isAdventure() || player.isSurvival()) {

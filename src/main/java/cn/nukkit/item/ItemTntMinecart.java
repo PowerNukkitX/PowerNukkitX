@@ -40,7 +40,7 @@ public class ItemTntMinecart extends Item {
             if (type.isAscending()) {
                 adjacent = 0.5D;
             }
-            EntityTntMinecart minecart = (EntityTntMinecart) Entity.createEntity("MinecartTnt",
+            EntityTntMinecart minecart = (EntityTntMinecart) Entity.createEntity(Entity.TNT_MINECART,
                     level.getChunk(target.getFloorX() >> 4, target.getFloorZ() >> 4), new CompoundTag("")
                             .putList(new ListTag<>("Pos")
                                     .add(new DoubleTag("", target.getX() + 0.5))

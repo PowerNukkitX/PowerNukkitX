@@ -17,7 +17,7 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
             return;
         }
 
-       /* if (playerHandle.getWindowIndex().containsKey(pk.windowId)) {
+        if (playerHandle.getWindowIndex().containsKey(pk.windowId)) {
             player.getServer().getPluginManager().callEvent(new InventoryCloseEvent(playerHandle.getWindowIndex().get(pk.windowId), player));
             if (pk.windowId == ContainerIds.INVENTORY) playerHandle.setInventoryOpen(false);
             playerHandle.setClosingWindowId(pk.windowId);
@@ -32,7 +32,7 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
             pk2.wasServerInitiated = false;
             pk2.windowId = -1;
             player.dataPacket(pk2);
-        }*/
+        }
     }
 
     @Override

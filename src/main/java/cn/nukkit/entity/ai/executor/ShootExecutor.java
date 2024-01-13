@@ -176,7 +176,7 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
         double p = (double) pullBowTick / 20;
         double f = Math.min((p * p + p * 2) / 3, 1) * 3;
 
-        EntityArrow arrow = (EntityArrow) Entity.createEntity("Arrow", entity.chunk, nbt, entity, f == 2);
+        EntityArrow arrow = (EntityArrow) Entity.createEntity(Entity.ARROW, entity.chunk, nbt, entity, f == 2);
 
         if (arrow == null) {
             return;

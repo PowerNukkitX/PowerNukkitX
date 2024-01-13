@@ -831,12 +831,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.unloadChunk(Level.getHashX(index), Level.getHashZ(index));
         }
 
-        if (!loadQueue.isEmpty()) {
-            NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
-            packet.position = this.asBlockVector3();
-            packet.radius = viewDistance << 4;
-            this.dataPacket(packet);
-        }
         return true;
     }
 
@@ -3275,6 +3269,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (!this.isOnline()) {
             return;
         }
+
+        NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
+        packet.position = this.asBlockVector3();
+        packet.radius = viewDistance << 4;
+        this.dataPacket(packet);
 
         if (this.nextChunkOrderRun-- <= 0 || this.chunk == null) {
             this.orderChunks();

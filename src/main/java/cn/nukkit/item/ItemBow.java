@@ -100,7 +100,7 @@ public class ItemBow extends ItemTool {
         double p = (double) ticksUsed / 20;
         double f = Math.min((p * p + p * 2) / 3, 1) * 3.5;
 
-        EntityArrow arrow = (EntityArrow) Entity.createEntity("Arrow", player.chunk, nbt, player, f == 2);
+        EntityArrow arrow = (EntityArrow) Entity.createEntity(Entity.ARROW, player.chunk, nbt, player, f == 2);
 
         if (arrow == null) {
             return false;

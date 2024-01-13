@@ -250,7 +250,7 @@ public class EntityFishingHook extends SlenderProjectile {
             this.getServer().getPluginManager().callEvent(event);
 
             if (!event.isCancelled()) {
-                EntityItem itemEntity = (EntityItem) Entity.createEntity(Registries.ENTITY.getEntityNetworkId(EntityID.ITEM),
+                EntityItem itemEntity = (EntityItem) Entity.createEntity(Entity.ITEM,
                         this.level.getChunk((int) this.x >> 4, (int) this.z >> 4, true),
                         Entity.getDefaultNBT(
                                         pos,
