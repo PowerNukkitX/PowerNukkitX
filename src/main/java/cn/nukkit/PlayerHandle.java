@@ -7,6 +7,12 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.transaction.CraftingTransaction;
+import cn.nukkit.inventory.transaction.EnchantTransaction;
+import cn.nukkit.inventory.transaction.GrindstoneTransaction;
+import cn.nukkit.inventory.transaction.RepairItemTransaction;
+import cn.nukkit.inventory.transaction.SmithingTransaction;
+import cn.nukkit.inventory.transaction.TradingTransaction;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
@@ -21,7 +27,6 @@ import cn.nukkit.utils.DummyBossBar;
 import cn.nukkit.utils.LoginChainData;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.collect.BiMap;
-import it.unimi.dsi.fastutil.longs.Long2BooleanLinkedOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.InetSocketAddress;
@@ -56,8 +61,8 @@ public final class PlayerHandle {
         player.forceSendEmptyChunks();
     }
 
-    public void removeWindow0(Inventory inventory, boolean isResponse) {
-        player.removeWindow0(inventory, isResponse);
+    public void removeWindow(Inventory inventory, boolean isResponse) {
+        player.removeWindow(inventory, isResponse);
     }
 
     public void onBlock(Entity entity, EntityDamageEvent e, boolean animate) {
@@ -90,10 +95,6 @@ public final class PlayerHandle {
 
     public Map<Integer, Inventory> getWindowIndex() {
         return player.windowIndex;
-    }
-
-    public Long2BooleanLinkedOpenHashMap getLoadQueue() {
-        return player.loadQueue;
     }
 
     public Map<UUID, Player> getHiddenPlayers() {
@@ -150,6 +151,54 @@ public final class PlayerHandle {
 
     public boolean isRemoveFormat() {
         return player.removeFormat;
+    }
+
+    public CraftingTransaction getCraftingTransaction() {
+        return player.craftingTransaction;
+    }
+
+    public void setCraftingTransaction(CraftingTransaction craftingTransaction) {
+        player.craftingTransaction = craftingTransaction;
+    }
+
+    public EnchantTransaction getEnchantTransaction() {
+        return player.enchantTransaction;
+    }
+
+    public void setEnchantTransaction(EnchantTransaction enchantTransaction) {
+        player.enchantTransaction = enchantTransaction;
+    }
+
+    public RepairItemTransaction getRepairItemTransaction() {
+        return player.repairItemTransaction;
+    }
+
+    public void setRepairItemTransaction(RepairItemTransaction repairItemTransaction) {
+        player.repairItemTransaction = repairItemTransaction;
+    }
+
+    public GrindstoneTransaction getGrindstoneTransaction() {
+        return player.grindstoneTransaction;
+    }
+
+    public void setGrindstoneTransaction(GrindstoneTransaction grindstoneTransaction) {
+        player.grindstoneTransaction = grindstoneTransaction;
+    }
+
+    public SmithingTransaction getSmithingTransaction() {
+        return player.smithingTransaction;
+    }
+
+    public void setSmithingTransaction(SmithingTransaction smithingTransaction) {
+        player.smithingTransaction = smithingTransaction;
+    }
+
+    public TradingTransaction getTradingTransaction() {
+        return player.tradingTransaction;
+    }
+
+    public void setTradingTransaction(TradingTransaction tradingTransaction) {
+        player.tradingTransaction = tradingTransaction;
     }
 
     public String getUsername() {

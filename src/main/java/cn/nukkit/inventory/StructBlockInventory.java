@@ -1,6 +1,8 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+
+
 import cn.nukkit.blockentity.BlockEntityStructBlock;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
@@ -15,9 +17,12 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class StructBlockInventory extends BlockTypeInventory {
+
+public class StructBlockInventory implements Inventory {
+    protected final BlockEntityStructBlock holder;
+
     public StructBlockInventory(BlockEntityStructBlock holder) {
-        super(holder, InventoryType.STRUCTURE_BLOCK);
+        this.holder = holder;
     }
 
     @Override
@@ -36,7 +41,17 @@ public class StructBlockInventory extends BlockTypeInventory {
     }
 
     @Override
+    public String getName() {
+        return this.holder.getName();
+    }
+
+    @Override
+    public String getTitle() {
+        return this.getName();
+    }
+
     @NotNull
+    @Override
     public Item getItem(int index) {
         return Item.AIR;
     }
@@ -62,8 +77,8 @@ public class StructBlockInventory extends BlockTypeInventory {
     }
 
     @Override
-    public Item[] getContents() {
-        return Item.EMPTY_ARRAY;
+    public Map<Integer, Item> getContents() {
+        return Collections.emptyMap();
     }
 
     @Override
@@ -158,7 +173,7 @@ public class StructBlockInventory extends BlockTypeInventory {
 
     @Override
     public InventoryType getType() {
-        return InventoryType.STRUCTURE_BLOCK;
+        return InventoryType.STRUCTURE_EDITOR;
     }
 
     @Override
@@ -172,10 +187,17 @@ public class StructBlockInventory extends BlockTypeInventory {
             ContainerOpenPacket pk = new ContainerOpenPacket();
             pk.windowId = who.getWindowId(this);
             pk.type = getType().getNetworkType();
-            pk.x = holder.getFloorX();
-            pk.y = holder.getFloorY();
-            pk.z = holder.getFloorZ();
-            pk.entityId = who.getId();
+            InventoryHolder holder = this.getHolder();
+            if (holder instanceof Vector3) {
+                pk.x = ((Vector3) holder).getFloorX();
+                pk.y = ((Vector3) holder).getFloorY();
+                pk.z = ((Vector3) holder).getFloorZ();
+            } else {
+                pk.x = pk.y = pk.z = 0;
+            }
+            if (holder instanceof Entity) {
+                pk.entityId = ((Entity) holder).getId();
+            }
             who.dataPacket(pk);
         }
     }

@@ -1,7 +1,6 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntityShulkerBox;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
@@ -23,7 +22,6 @@ public class ShulkerBoxInventory extends ContainerInventory {
         return (BlockEntityShulkerBox) this.holder;
     }
 
-
     @Override
     public void onOpen(Player who) {
         super.onOpen(who);
@@ -43,7 +41,6 @@ public class ShulkerBoxInventory extends ContainerInventory {
             }
         }
     }
-
 
     @Override
     public void onClose(Player who) {

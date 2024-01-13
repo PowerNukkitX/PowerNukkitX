@@ -7,7 +7,6 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.event.player.PlayerMapInfoRequestEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemEmptyMap;
 import cn.nukkit.item.ItemFilledMap;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.MapInfoRequestPacket;
@@ -26,23 +25,21 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
         int index = 0;
         var offhand = false;
 
-        Item[] contents = player.getOffhandInventory().getContents();
-        for (int i = 0; i < contents.length; i++) {
-            Item item1 = contents[i];
+        for (var entry : player.getOffhandInventory().getContents().entrySet()) {
+            var item1 = entry.getValue();
             if (checkMapItemValid(item1, pk)) {
                 mapItem = item1;
-                index = i;
+                index = entry.getKey();                    
                 offhand = true;
             }
         }
 
         if (mapItem == null) {
-            contents = player.getInventory().getContents();
-            for (int i = 0; i < contents.length; i++) {
-                Item item1 = contents[i];
+            for (var entry : player.getInventory().getContents().entrySet()) {
+                var item1 = entry.getValue();
                 if (checkMapItemValid(item1, pk)) {
                     mapItem = item1;
-                    index = i;
+                    index = entry.getKey();
                 }
             }
         }
@@ -74,10 +71,10 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
                     public void onRun() {
                         map.renderMap(player.getLevel(), (player.getFloorX() / 128) << 7, (player.getFloorZ() / 128) << 7, 1);
                         if (finalOffhand) {
-                            if (checkMapItemValid(player.getOffhandInventory().getItemUnsafe(finalIndex), pk))
+                            if (checkMapItemValid(player.getOffhandInventory().getUnclonedItem(finalIndex), pk))
                                 player.getOffhandInventory().setItem(finalIndex, map);
                         } else {
-                            if (checkMapItemValid(player.getInventory().getItemUnsafe(finalIndex), pk))
+                            if (checkMapItemValid(player.getInventory().getUnclonedItem(finalIndex), pk))
                                 player.getInventory().setItem(finalIndex, map);
                         }
                         map.sendImage(player);

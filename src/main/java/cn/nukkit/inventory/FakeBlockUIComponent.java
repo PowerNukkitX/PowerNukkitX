@@ -3,12 +3,32 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.event.inventory.InventoryCloseEvent;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
+import cn.nukkit.level.Position;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
 
-public abstract class BlockTypeInventory extends BaseInventory {
-    BlockTypeInventory(InventoryHolder blockHolder, InventoryType type) {
-        super(blockHolder, type);
+/**
+ * 一个抽象的方块实体UI，提供了一些inventory方法的默认实现
+ */
+public class FakeBlockUIComponent extends PlayerUIComponent {
+    private final InventoryType type;
+
+    FakeBlockUIComponent(PlayerUIInventory playerUI, InventoryType type, int offset, Position position) {
+        super(playerUI, offset, type.getDefaultSize());
+        this.type = type;
+        this.holder = new FakeBlockMenu(this, position);
+    }
+
+
+    @Override
+    public FakeBlockMenu getHolder() {
+        return (FakeBlockMenu) this.holder;
+    }
+
+    @Override
+    public InventoryType getType() {
+        return type;
     }
 
     @Override
@@ -39,9 +59,9 @@ public abstract class BlockTypeInventory extends BaseInventory {
         pk.type = type.getNetworkType();
         InventoryHolder holder = this.getHolder();
         if (holder != null) {
-            pk.x = holder.getFloorX();
-            pk.y = holder.getFloorY();
-            pk.z = holder.getFloorZ();
+            pk.x = (int) ((Vector3) holder).getX();
+            pk.y = (int) ((Vector3) holder).getY();
+            pk.z = (int) ((Vector3) holder).getZ();
         } else {
             pk.x = pk.y = pk.z = 0;
         }

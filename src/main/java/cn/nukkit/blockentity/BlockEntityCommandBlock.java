@@ -52,13 +52,13 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     protected boolean powered;
     protected int tickDelay;
     protected boolean executingOnFirstTick; //TODO: ???
+
     protected PermissibleBase perm;
+    protected final Set<Player> viewers = Sets.newHashSet();
     protected int currentTick;
-    protected CommandBlockInventory inventory;
 
     public BlockEntityCommandBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        this.inventory = new CommandBlockInventory(this);
     }
 
     @Override
@@ -229,8 +229,8 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         return blockId.equals(BlockID.COMMAND_BLOCK) || blockId.equals(BlockID.CHAIN_COMMAND_BLOCK) || blockId.equals(BlockID.REPEATING_COMMAND_BLOCK);
     }
 
-    @Override
     @NotNull
+    @Override
     public String getName() {
         return this.hasName() ? this.namedTag.getString(TAG_CUSTOM_NAME) : "!";
     }
@@ -332,9 +332,9 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @Override
     public int getMode() {
         Block block = this.getLevelBlock();
-        if (block.getId().equals(BlockID.REPEATING_COMMAND_BLOCK)) {
+        if (block.getId() == BlockID.REPEATING_COMMAND_BLOCK) {
             return MODE_REPEATING;
-        } else if (block.getId().equals(BlockID.CHAIN_COMMAND_BLOCK)) {
+        } else if (block.getId() == BlockID.CHAIN_COMMAND_BLOCK) {
             return MODE_CHAIN;
         }
         return MODE_NORMAL;
@@ -559,8 +559,8 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         return this;
     }
 
-    @Override
     @NotNull
+    @Override
     public Location getLocation() {
         return Location.fromObject(this.getPosition(), this.getLevel());
     }
@@ -617,7 +617,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public Inventory getInventory() {
-        return inventory;
+        return new CommandBlockInventory(this, this.viewers);
     }
 
     @Override
@@ -631,8 +631,8 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @Override
     public void close() {
         if (!closed) {
-            for (Player player : this.getInventory().getViewers()) {
-                this.getInventory().close(player);
+            for (Player player : new HashSet<>(this.getInventory().getViewers())) {
+                player.removeWindow(this.getInventory());
             }
             super.close();
         }

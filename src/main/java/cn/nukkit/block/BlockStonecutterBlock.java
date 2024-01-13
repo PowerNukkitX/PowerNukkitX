@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
-public class BlockStonecutterBlock extends BlockTransparent implements Faceable, BlockInventoryHolder {
+public class BlockStonecutterBlock extends BlockTransparent implements Faceable{
 
     public static final BlockProperties PROPERTIES = new BlockProperties(STONECUTTER_BLOCK, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
@@ -57,7 +57,6 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable,
         setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getHorizontalIndex()) : BlockFace.SOUTH);
 
         this.getLevel().setBlock(block, this, true, true);
-        setInventoryMetaData(this);
         return true;
     }
 
@@ -69,25 +68,9 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable,
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         if (player != null) {
-            player.addWindow(getInventory(), ContainerIds.NONE);
+            player.addWindow(new StonecutterInventory(player.getUIInventory(), this), ContainerIds.NONE);
             player.craftingType = Player.CRAFTING_STONECUTTER;
         }
-        return true;
-    }
-
-    @Override
-    public Supplier<BlockTypeInventory> getBlockInventorySupplier() {
-        return () -> new StonecutterInventory(this);
-    }
-
-    @Override
-    public Inventory getInventory() {
-        return getInventoryMetaData(this);
-    }
-
-    @Override
-    public boolean onBreak(Item item) {
-        removeInventoryMetaData(this);
         return true;
     }
 

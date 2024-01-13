@@ -7,7 +7,6 @@ import cn.nukkit.block.BlockCampfire;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.event.inventory.CampfireSmeltEvent;
 import cn.nukkit.inventory.CampfireInventory;
-import cn.nukkit.recipe.CampfireRecipe;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
@@ -15,10 +14,10 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.recipe.CampfireRecipe;
 
 import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
-
 
 public class BlockEntityCampfire extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer {
 
@@ -62,7 +61,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
         boolean isLit = block instanceof BlockCampfire && !((BlockCampfire) block).isExtinguished();
         for (int slot = 0; slot < inventory.getSize(); slot++) {
             Item item = inventory.getItem(slot);
-            if (item == null || item.getId() == BlockID.AIR || item.getCount() <= 0) {
+            if (item == null || item.isNull() || item.getCount() <= 0) {
                 burnTime[slot] = 0;
                 recipes[slot] = null;
             } else if (!keepItem[slot]) {
@@ -158,7 +157,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
 
     @Override
     public void onBreak() {
-        for (Item content : inventory.getContents()) {
+        for (Item content : inventory.getContents().values()) {
             level.dropItem(this, content);
         }
     }

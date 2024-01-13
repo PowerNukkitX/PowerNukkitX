@@ -19,7 +19,11 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.io.*;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -237,7 +241,7 @@ public class PositionTrackingService implements Closeable {
 
             @Override
             public boolean hasNext() {
-                return next < 4;
+                return next <= 4;
             }
 
             @Override
@@ -246,7 +250,8 @@ public class PositionTrackingService implements Closeable {
                     case 0 -> player.getInventory();
                     case 1 -> player.getCursorInventory();
                     case 2 -> player.getOffhandInventory();
-                    case 3 -> player.getTopWindow().orElse(null);
+                    case 3 -> player.getCraftingGrid();
+                    case 4 -> player.getTopWindow().orElse(null);
                     default -> throw new NoSuchElementException();
                 };
             }

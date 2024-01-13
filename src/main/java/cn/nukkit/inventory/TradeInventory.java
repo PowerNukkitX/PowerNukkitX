@@ -1,6 +1,9 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+
+
+import cn.nukkit.entity.passive.EntityVillager;
 import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;

@@ -2,10 +2,11 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.DoNotModify;
+
+
+
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventorySlotPacket;
-import com.google.common.collect.BiMap;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -16,6 +17,7 @@ import java.util.Set;
  * @author MagicDroidX (Nukkit Project)
  */
 public interface Inventory {
+
     int MAX_STACK = 64;
 
     /**
@@ -39,6 +41,11 @@ public interface Inventory {
     String getName();
 
     /**
+     * 获取该库存的标题
+     */
+    String getTitle();
+
+    /**
      * 获取该库存指定索引处的物品
      *
      * @param index the index
@@ -54,9 +61,10 @@ public interface Inventory {
      * @param index the index
      * @return the item
      */
+    
+    
     @DoNotModify
-    @ApiStatus.Internal
-    default Item getItemUnsafe(int index) {
+    default Item getUnclonedItem(int index) {
         //你需要覆写它来实现
         return getItem(index);
     }
@@ -83,11 +91,15 @@ public interface Inventory {
     boolean setItem(int index, Item item, boolean send);
 
     /**
+     * Now it is only called by {@link cn.nukkit.inventory.transaction.action.SlotChangeAction} and {@link cn.nukkit.inventory.transaction.EnchantTransaction}
+     *
      * @param player player that will receive the changes
      * @param index  index of the item
      * @param item   item to set
      * @return true if the item was set
      */
+    
+    
     default boolean setItemByPlayer(Player player, int index, Item item, boolean send) {
         return setItem(index, item, send);
     }
@@ -98,8 +110,7 @@ public interface Inventory {
 
     Item[] removeItem(Item... slots);
 
-    @ApiStatus.Internal
-    Item[] getContents();
+    Map<Integer, Item> getContents();
 
     void setContents(Map<Integer, Item> items);
 
@@ -139,8 +150,6 @@ public interface Inventory {
 
     void clearAll();
 
-    int getFreeSpace(Item item);
-
     boolean isFull();
 
     boolean isEmpty();
@@ -170,9 +179,9 @@ public interface Inventory {
      */
     void onSlotChange(int index, Item before, boolean send);
 
-
+    
     void addListener(InventoryListener listener);
 
-
+    
     void removeListener(InventoryListener listener);
 }

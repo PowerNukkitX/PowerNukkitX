@@ -1,23 +1,17 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.BlockStonecutter;
-import cn.nukkit.block.BlockStonecutterBlock;
+
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
 
 
-public class StonecutterInventory extends BlockTypeInventory {
-
-    public StonecutterInventory(BlockStonecutterBlock block) {
-        super(block, InventoryType.STONECUTTER);
+public class StonecutterInventory extends FakeBlockUIComponent {
+    
+    public StonecutterInventory(PlayerUIInventory playerUI, Position position) {
+        super(playerUI, InventoryType.STONECUTTER, 3, position);
     }
-
-    @Override
-    public BlockStonecutterBlock getHolder() {
-        return (BlockStonecutterBlock) super.getHolder();
-    }
-
+    
     @Override
     public void onClose(Player who) {
         super.onClose(who);

@@ -32,7 +32,6 @@ import cn.nukkit.network.protocol.SetEntityDataPacket;
 import cn.nukkit.potion.Effect;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 
@@ -360,7 +359,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         pos.y = y + 1.4;
         level.dropItem(byAttack ? pos : this, Item.get(ItemID.ARMOR_STAND));
         level.dropItem(pos, armorInventory.getChestplate());
-        Arrays.stream(equipmentInventory.getContents()).forEach(items -> this.level.dropItem(this, items));
+        equipmentInventory.getContents().values().forEach(items -> this.level.dropItem(this, items));
         equipmentInventory.clearAll();
 
         pos.y = y + 1.8;

@@ -3,11 +3,10 @@ package cn.nukkit.entity.data;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.utils.*;
 import com.google.common.base.Preconditions;
+import com.nimbusds.jose.shaded.json.JSONObject;
+import com.nimbusds.jose.shaded.json.JSONValue;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.jose4j.json.internal.json_simple.JSONObject;
-import org.jose4j.json.internal.json_simple.JSONValue;
-import org.jose4j.json.internal.json_simple.parser.ParseException;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -93,13 +92,11 @@ public class Skin {
             return false;
         }
         try {
-            JSONObject object = (JSONObject) JSONValue.parseWithException(skinResourcePatch);
+            JSONObject object = (JSONObject) JSONValue.parse(skinResourcePatch);
             JSONObject geometry = (JSONObject) object.get("geometry");
             return geometry.containsKey("default") && geometry.get("default") instanceof String;
         } catch (ClassCastException | NullPointerException e) {
             return false;
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
         }
     }
 

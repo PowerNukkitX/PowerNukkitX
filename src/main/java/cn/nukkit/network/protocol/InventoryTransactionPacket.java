@@ -1,9 +1,9 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.network.protocol.types.ReleaseItemData;
-import cn.nukkit.network.protocol.types.TransactionData;
-import cn.nukkit.network.protocol.types.UseItemData;
-import cn.nukkit.network.protocol.types.UseItemOnEntityData;
+import cn.nukkit.inventory.transaction.data.ReleaseItemData;
+import cn.nukkit.inventory.transaction.data.TransactionData;
+import cn.nukkit.inventory.transaction.data.UseItemData;
+import cn.nukkit.inventory.transaction.data.UseItemOnEntityData;
 import cn.nukkit.network.protocol.types.LegacySetItemSlotData;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -43,6 +43,7 @@ public class InventoryTransactionPacket extends DataPacket {
     public NetworkInventoryAction[] actions;
     public TransactionData transactionData;
     public final List<LegacySetItemSlotData> legacySlots = new ObjectArrayList<>();
+
     public int legacyRequestId;
 
     /**

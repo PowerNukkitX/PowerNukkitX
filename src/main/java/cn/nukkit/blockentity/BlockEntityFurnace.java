@@ -15,7 +15,6 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.ContainerSetDataPacket;
-import cn.nukkit.recipe.RecipeInventoryHolder;
 import cn.nukkit.recipe.SmeltingRecipe;
 
 import java.util.HashSet;
@@ -25,7 +24,9 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX
  */
 public class BlockEntityFurnace extends BlockEntitySpawnable implements InventoryHolder, RecipeInventoryHolder, BlockEntityContainer, BlockEntityNameable {
+
     protected FurnaceInventory inventory;
+
     protected int burnTime;
     protected int burnDuration;
     protected int cookTime;
@@ -140,7 +141,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
 
     @Override
     public void onBreak() {
-        for (Item content : inventory.getContents()) {
+        for (Item content : inventory.getContents().values()) {
             level.dropItem(this, content);
         }
         this.inventory.clearAll();
@@ -250,7 +251,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         if (burnTime > 0 && ev.isBurning()) {
             fuel.setCount(fuel.getCount() - 1);
             if (fuel.getCount() == 0) {
-                if (fuel.getId() == Item.BUCKET && ((ItemBucket) fuel).isLava()) {
+                if (fuel.getId() == Item.BUCKET && ((ItemBucket)fuel).isLava()) {
                     fuel.setDamage(0);
                     fuel.setCount(1);
                 } else {

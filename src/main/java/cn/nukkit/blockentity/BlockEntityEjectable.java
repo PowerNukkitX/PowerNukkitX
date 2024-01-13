@@ -10,9 +10,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 
-
 public abstract class BlockEntityEjectable extends BlockEntitySpawnable implements BlockEntityContainer, BlockEntityNameable, InventoryHolder {
-
 
     protected EjectableInventory inventory;
 
@@ -23,9 +21,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
 
     protected abstract EjectableInventory createInventory();
 
-
     protected abstract String getBlockEntityName();
-
 
     @Override
     public void loadNBT() {
@@ -116,7 +112,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
     public String getName() {
         return this.hasName() ? this.namedTag.getString("CustomName") : getBlockEntityName();
     }
-    
+
     @Override
     public boolean hasName() {
         return this.namedTag.contains("CustomName");
@@ -134,7 +130,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
 
     @Override
     public void onBreak() {
-        for (Item content : inventory.getContents()) {
+        for (Item content : inventory.getContents().values()) {
             level.dropItem(this, content);
         }
     }

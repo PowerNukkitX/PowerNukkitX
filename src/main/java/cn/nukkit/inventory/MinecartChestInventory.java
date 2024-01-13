@@ -1,5 +1,6 @@
 package cn.nukkit.inventory;
 
+
 import cn.nukkit.entity.item.EntityChestMinecart;
 
 public class MinecartChestInventory extends ContainerInventory {

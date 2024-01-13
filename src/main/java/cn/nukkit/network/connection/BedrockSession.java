@@ -9,6 +9,7 @@ import io.netty.util.internal.logging.InternalLoggerFactory;
 import org.apache.logging.log4j.message.FormattedMessage;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
+import org.cloudburstmc.netty.handler.codec.raknet.common.RakSessionCodec;
 
 import javax.crypto.SecretKey;
 import java.net.SocketAddress;
@@ -162,5 +163,9 @@ public abstract class BedrockSession {
 
     public void setPlayer(Player player) {
         this.player = player;
+    }
+
+    public long getPing() {
+        return peer.getPing();
     }
 }

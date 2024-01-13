@@ -118,6 +118,12 @@ public class RakNetInterface implements SourceInterface {
 
 
     @Override
+    public int getNetworkLatency(Player player) {
+        BedrockServerSession session = this.serverSessionMap.get(player.getRawSocketAddress());
+        return session == null ? -1 : (int) session.getPing();
+    }
+
+    @Override
     public void blockAddress(InetAddress address) {
         blockIpMap.put(address, -1L);
     }

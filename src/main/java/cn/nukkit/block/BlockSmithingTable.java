@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 
-public class BlockSmithingTable extends BlockSolid implements BlockInventoryHolder {
+public class BlockSmithingTable extends BlockSolid {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(SMITHING_TABLE);
 
@@ -41,7 +41,6 @@ public class BlockSmithingTable extends BlockSolid implements BlockInventoryHold
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @org.jetbrains.annotations.Nullable Player player) {
-        setInventoryMetaData(this);
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
 
@@ -51,23 +50,7 @@ public class BlockSmithingTable extends BlockSolid implements BlockInventoryHold
             return false;
         }
 
-        player.addWindow(getInventory(), Player.SMITHING_WINDOW_ID);
-        return true;
-    }
-
-    @Override
-    public Supplier<BlockTypeInventory> getBlockInventorySupplier() {
-        return () -> new SmithingInventory(this);
-    }
-
-    @Override
-    public Inventory getInventory() {
-        return getInventoryMetaData(this);
-    }
-
-    @Override
-    public boolean onBreak(Item item) {
-        removeInventoryMetaData(this);
+        player.addWindow(new SmithingInventory(player.getUIInventory(), this), Player.SMITHING_WINDOW_ID);
         return true;
     }
 

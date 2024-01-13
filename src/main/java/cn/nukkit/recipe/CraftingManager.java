@@ -1,7 +1,6 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.Server;
-import cn.nukkit.inventory.BlastFurnaceRecipe;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemPotion;

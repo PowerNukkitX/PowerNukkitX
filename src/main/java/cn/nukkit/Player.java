@@ -1,11 +1,9 @@
 package cn.nukkit;
 
 import cn.nukkit.AdventureSettings.Type;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.UsedByReflection;
+import cn.nukkit.api.*;
 import cn.nukkit.block.*;
 import cn.nukkit.block.customblock.CustomBlock;
-import cn.nukkit.block.Block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySign;
@@ -39,6 +37,7 @@ import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.inventory.*;
+import cn.nukkit.inventory.transaction.*;
 import cn.nukkit.item.*;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.CommandOutputContainer;
@@ -81,20 +80,19 @@ import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
+import com.google.gson.annotations.Since;
 import io.netty.util.internal.EmptyArrays;
 import io.netty.util.internal.PlatformDependent;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.Long2BooleanLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.longs.Long2BooleanMap;
-import it.unimi.dsi.fastutil.longs.Long2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -168,8 +166,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final int GRINDSTONE_WINDOW_ID = dynamic(5);
     public static final int SMITHING_WINDOW_ID = dynamic(6);
     public final HashSet<String> achievements = new HashSet<>();
-    //标记当前玩家那些区块被加载，key为chunk hash，value=true代表区块已经加载(即已经发送区块包),false代表未加载
-    public final Long2BooleanOpenHashMap usedChunks = new Long2BooleanOpenHashMap();
+    public final Map<Long, Boolean> usedChunks = new Long2ObjectOpenHashMap<>();
     public boolean playedBefore;
     public boolean spawned = false;
     public boolean loggedIn = false;
@@ -203,22 +200,25 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected double blockBreakProgress = 0;
     protected final SourceInterface interfaz;
     protected final BedrockServerSession networkSession;
+    protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
+    protected final BiMap<Integer, Inventory> windowIndex = windows.inverse();
+    protected final Set<Integer> permanentWindows = new IntOpenHashSet();
     protected final InetSocketAddress rawSocketAddress;
-    //标记着哪些区块需要加载
-    protected final Long2BooleanLinkedOpenHashMap loadQueue = new Long2BooleanLinkedOpenHashMap();
+    protected final Long2ObjectLinkedOpenHashMap<Boolean> loadQueue = new Long2ObjectLinkedOpenHashMap<>();
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
     protected final int chunksPerTick;
     protected final int spawnThreshold;
-    protected int windowCnt = 1;
+    protected int windowCnt = 4;
     protected int closingWindowId = Integer.MIN_VALUE;
     protected int messageLimitCounter = 2;
-    protected final PlayerCursorInventory playerCursorInventory;
-    protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
-    protected final Map<Integer, Inventory> windowIndex = windows.inverse();
-    /**
-     * The player's currently open external inventory (such as a chest or trade)
-     */
-    protected Inventory topWindows;
+    protected PlayerUIInventory playerUIInventory;
+    protected CraftingGrid craftingGrid;
+    protected CraftingTransaction craftingTransaction;
+    protected EnchantTransaction enchantTransaction;
+    protected RepairItemTransaction repairItemTransaction;
+    protected GrindstoneTransaction grindstoneTransaction;
+    protected SmithingTransaction smithingTransaction;
+    protected TradingTransaction tradingTransaction;
     protected long randomClientId;
     protected boolean connected = true;
     protected InetSocketAddress socketAddress;
@@ -386,7 +386,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.uuid = null;
         this.rawUUID = null;
 
-        this.playerCursorInventory = new PlayerCursorInventory(this);
         this.creationTime = System.currentTimeMillis();
     }
 
@@ -620,9 +619,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (!loadQueue.isEmpty()) {
             int count = 0;
-            ObjectIterator<Long2BooleanMap.Entry> iter = loadQueue.long2BooleanEntrySet().fastIterator();
+            ObjectIterator<Long2ObjectMap.Entry<Boolean>> iter = loadQueue.long2ObjectEntrySet().fastIterator();
             while (iter.hasNext()) {
-                Long2BooleanMap.Entry entry = iter.next();
+                Long2ObjectMap.Entry<Boolean> entry = iter.next();
                 long index = entry.getLongKey();
 
                 if (count >= this.chunksPerTick) {
@@ -659,6 +658,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Override
     protected void initEntity() {
         super.initEntity();
+        this.addDefaultWindows();
     }
 
     /**
@@ -752,11 +752,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (!this.connected) {
             return false;
         }
-        loadQueue.clear();
 
         this.nextChunkOrderRun = 200;
 
-        Long2BooleanOpenHashMap lastChunk = new Long2BooleanOpenHashMap(this.usedChunks);//All chunks loaded in the last tick
+        loadQueue.clear();
+        Long2ObjectOpenHashMap<Boolean> lastChunk = new Long2ObjectOpenHashMap<>(this.usedChunks);
 
         int centerX = (int) this.x >> 4;
         int centerZ = (int) this.z >> 4;
@@ -765,9 +765,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         int radiusSqr = radius * radius;
         long index;
 
-        //player current chunk
-        if (!this.usedChunks.get(index = Level.chunkHash(centerX, centerZ))) {//If the chunk is not loaded
-            this.loadQueue.put(index, true);//put the chunk to loadQueue
+        //player center chunk
+        if (this.usedChunks.get(index = Level.chunkHash(centerX, centerZ)) != Boolean.TRUE) {
+            this.loadQueue.put(index, Boolean.TRUE);
         }
         lastChunk.remove(index);
         for (int r = 1; r <= radius; r++) {
@@ -776,61 +776,67 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 int distanceSqr = rr + i * i;
                 if (distanceSqr > radiusSqr) continue;
                 //right includes upper right corner
-                if (!this.usedChunks.get(index = Level.chunkHash(centerX + r, centerZ + i))) {
-                    this.loadQueue.put(index, true);
+                if (this.usedChunks.get(index = Level.chunkHash(centerX + r, centerZ + i)) != Boolean.TRUE) {
+                    this.loadQueue.put(index, Boolean.TRUE);
                 }
                 lastChunk.remove(index);
 
                 //right includes lower right corner
-                if (!this.usedChunks.get(index = Level.chunkHash(centerX + r, centerZ - i))) {
-                    this.loadQueue.put(index, true);
+                if (this.usedChunks.get(index = Level.chunkHash(centerX + r, centerZ - i)) != Boolean.TRUE) {
+                    this.loadQueue.put(index, Boolean.TRUE);
                 }
                 lastChunk.remove(index);
 
                 //left includes upper left corner
-                if (!this.usedChunks.get(index = Level.chunkHash(centerX - r, centerZ + i))) {
-                    this.loadQueue.put(index, true);
+                if (this.usedChunks.get(index = Level.chunkHash(centerX - r, centerZ + i)) != Boolean.TRUE) {
+                    this.loadQueue.put(index, Boolean.TRUE);
                 }
                 lastChunk.remove(index);
 
                 //left includes lower left corner
-                if (!this.usedChunks.get(index = Level.chunkHash(centerX - r, centerZ - i))) {
-                    this.loadQueue.put(index, true);
+                if (this.usedChunks.get(index = Level.chunkHash(centerX - r, centerZ - i)) != Boolean.TRUE) {
+                    this.loadQueue.put(index, Boolean.TRUE);
                 }
                 lastChunk.remove(index);
 
                 //Exclude duplicate corners
                 if (i != r) {
                     //top
-                    if (!this.usedChunks.get(index = Level.chunkHash(centerX + i, centerZ + r))) {
-                        this.loadQueue.put(index, true);
+                    if (this.usedChunks.get(index = Level.chunkHash(centerX + i, centerZ + r)) != Boolean.TRUE) {
+                        this.loadQueue.put(index, Boolean.TRUE);
                     }
                     lastChunk.remove(index);
 
-                    if (!this.usedChunks.get(index = Level.chunkHash(centerX - i, centerZ + r))) {
-                        this.loadQueue.put(index, true);
+                    if (this.usedChunks.get(index = Level.chunkHash(centerX - i, centerZ + r)) != Boolean.TRUE) {
+                        this.loadQueue.put(index, Boolean.TRUE);
                     }
                     lastChunk.remove(index);
 
                     //end
-                    if (!this.usedChunks.get(index = Level.chunkHash(centerX + i, centerZ - r))) {
-                        this.loadQueue.put(index, true);
+                    if (this.usedChunks.get(index = Level.chunkHash(centerX + i, centerZ - r)) != Boolean.TRUE) {
+                        this.loadQueue.put(index, Boolean.TRUE);
                     }
                     lastChunk.remove(index);
-                    if (!this.usedChunks.get(index = Level.chunkHash(centerX - i, centerZ - r))) {
-                        this.loadQueue.put(index, true);
+                    if (this.usedChunks.get(index = Level.chunkHash(centerX - i, centerZ - r)) != Boolean.TRUE) {
+                        this.loadQueue.put(index, Boolean.TRUE);
                     }
                     lastChunk.remove(index);
                 }
             }
         }
 
-        LongIterator keys = lastChunk.keySet().longIterator();
+        LongIterator keys = lastChunk.keySet().iterator();
         while (keys.hasNext()) {
             index = keys.nextLong();
-            this.unloadChunk(Level.getHashX(index), Level.getHashZ(index), this.level);
+            this.unloadChunk(Level.getHashX(index), Level.getHashZ(index));
         }
 
+        if (!loadQueue.isEmpty()) {
+            NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
+            packet.position = this.asBlockVector3();
+            packet.radius = viewDistance << 4;
+            this.dataPacket(packet);
+        }
         return true;
     }
 
@@ -1104,6 +1110,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.clientMovements.offer(newPosition);
         }
     }
+
 
     //NK原始处理移动的方法
     @Deprecated
@@ -1430,7 +1437,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.generator = (byte) ((this.level.getDimension() + 1) & 0xff); //0 旧世界, 1 主世界, 2 下界, 3末地
         startGamePacket.serverAuthoritativeMovement = getServer().getServerAuthoritativeMovement();
         startGamePacket.blockNetworkIdsHashed = true;//enable blockhash
-        startGamePacket.isInventoryServerAuthoritative = true;//enable itemstackrequest packet
         //写入自定义方块数据
 //        startGamePacket.blockProperties.addAll(Block.getCustomBlockDefinitionList());
         startGamePacket.playerPropertyData = EntityProperty.getPlayerPropertyCache();
@@ -1691,6 +1697,28 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+
+    protected void removeWindow(Inventory inventory, boolean isResponse) {
+        inventory.close(this);
+        if (isResponse && !this.permanentWindows.contains(this.getWindowId(inventory))) {
+            this.windows.remove(inventory);
+            updateTrackingPositions(true);
+        }
+    }
+
+    protected void addDefaultWindows() {
+        this.addWindow(this.getInventory(), ContainerIds.INVENTORY, true, true);
+
+        this.playerUIInventory = new PlayerUIInventory(this);
+        this.addWindow(this.playerUIInventory, ContainerIds.UI, true);
+        this.addWindow(this.offhandInventory, ContainerIds.OFFHAND, true, true);
+
+        this.craftingGrid = this.playerUIInventory.getCraftingGrid();
+        this.addWindow(this.craftingGrid, ContainerIds.NONE, true);
+
+        //TODO: more windows
+    }
+
     @Override
     protected float getBaseOffset() {
         return super.getBaseOffset();
@@ -1740,6 +1768,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public float getSoulSpeedMultiplier() {
         return this.soulSpeedMultiplier;
     }
+
 
     /**
      * 返回{@link Player#startAction}的值
@@ -1829,6 +1858,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public BlockEnderChest getViewingEnderChest() {
         return viewingEnderChest;
     }
+
 
     /**
      * 设置{@link Player#viewingEnderChest}值为chest
@@ -1940,6 +1970,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.adventureSettings.update();
     }
 
+
     /**
      * 设置{@link #inAirTicks}为0
      * <p>
@@ -1957,6 +1988,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public boolean getAllowFlight() {
         return this.getAdventureSettings().get(Type.ALLOW_FLIGHT);
     }
+
 
     /**
      * 设置允许修改世界(未知原因设置完成之后，玩家不允许挖掘方块，但是可以放置方块)
@@ -2375,6 +2407,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.sleeping != null;
     }
 
+
     /**
      * @return {@link #inAirTicks}
      */
@@ -2437,6 +2470,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     entity.despawnFrom(this);
                 }
             }
+
             this.usedChunks.remove(index);
         }
         level.unregisterChunkLoader(this, x, z);
@@ -2477,6 +2511,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @return 床、重生锚的位置，或在未知时为空。<br>The position of a bed, respawn anchor, or null when unknown.
      */
+
+
     @Deprecated
     @DeprecationDetails(since = "1.19.60-r1", reason = "same #getSpawn")
     public Position getSpawnBlock() {
@@ -2490,7 +2526,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @param pos 出生点位置
      */
-
     public void setSpawn(@Nullable Vector3 pos) {
         if (pos != null) {
             Level level;
@@ -2513,6 +2548,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+
     /**
      * 设置保存玩家重生位置的方块的位置。当未知时可能为空。
      * <p>
@@ -2522,6 +2558,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @param spawnBlock 床位或重生锚的位置<br>The position of a bed or respawn anchor
      */
+
+
     public void setSpawnBlock(@Nullable Vector3 spawnBlock) {
         if (spawnBlock == null) {
             this.spawnBlockPosition = null;
@@ -2542,14 +2580,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-    @ApiStatus.Internal
     public void sendChunk(int x, int z, DataPacket packet) {
         if (!this.connected) {
             return;
         }
 
-        this.usedChunks.put(Level.chunkHash(x, z), true);
+        this.usedChunks.put(Level.chunkHash(x, z), Boolean.TRUE);
         this.chunkLoadCount++;
+
         this.dataPacket(packet);
 
         if (this.spawned) {
@@ -2571,11 +2609,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void sendChunk(int x, int z, int subChunkCount, byte[] payload) {
-        NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
-        packet.position = this.asBlockVector3();
-        packet.radius = viewDistance << 4;
-        this.dataPacket(packet);
-
         LevelChunkPacket pk = new LevelChunkPacket();
         pk.chunkX = x;
         pk.chunkZ = z;
@@ -2585,9 +2618,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.sendChunk(x, z, pk);
     }
 
+
     public void updateTrackingPositions() {
         updateTrackingPositions(false);
     }
+
 
     public void updateTrackingPositions(boolean delayed) {
         Server server = getServer();
@@ -2629,12 +2664,24 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
             log.trace("Outbound {}: {}", this.getName(), packet);
         }
-        this.getNetworkSession().sendPacket(packet);
+        this.networkSession.sendPacket(packet);
         return true;
     }
 
+
     public void forceDataPacket(DataPacket packet) {
         this.networkSession.sendPacketImmediately(packet);
+    }
+
+    /**
+     * 得到该玩家的网络延迟。
+     * <p>
+     * Get the network latency of the player.
+     *
+     * @return int
+     */
+    public int getPing() {
+        return this.interfaz.getNetworkLatency(this);
     }
 
     public boolean sleepOn(Vector3 pos) {
@@ -2894,6 +2941,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
+
     public AxisAlignedBB reCalcOffsetBoundingBox() {
         float dx = this.getWidth() / 2;
         float dz = this.getWidth() / 2;
@@ -2938,9 +2986,23 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return false;
     }
 
+    public void sendAttributes() {
+        UpdateAttributesPacket pk = new UpdateAttributesPacket();
+        pk.entityId = this.getId();
+        pk.entries = new Attribute[]{
+                Attribute.getAttribute(Attribute.MAX_HEALTH).setMaxValue(this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0),
+                Attribute.getAttribute(Attribute.MAX_HUNGER).setValue(this.getFoodData().getLevel()),
+                Attribute.getAttribute(Attribute.MOVEMENT_SPEED).setValue(this.getMovementSpeed()),
+                Attribute.getAttribute(Attribute.EXPERIENCE_LEVEL).setValue(this.getExperienceLevel()),
+                Attribute.getAttribute(Attribute.EXPERIENCE).setValue(((float) this.getExperience()) / calculateRequireExperience(this.getExperienceLevel()))
+        };
+        this.dataPacket(pk);
+    }
+
     /**
      * 将迷雾设定发送到客户端
      */
+
     public void sendFogStack() {
         var pk = new PlayerFogPacket();
         pk.setFogStack(this.fogStack);
@@ -3209,7 +3271,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return entity;
     }
 
-    @ApiStatus.Internal
     public void checkNetwork() {
         if (!this.isOnline()) {
             return;
@@ -3428,6 +3489,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.sendMessage(message.getText());
     }
 
+
     public void sendCommandOutput(CommandOutputContainer container) {
         if (this.level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
             var pk = new CommandOutputPacket();
@@ -3446,6 +3508,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @param text JSON文本<br>Json text
      */
+
     public void sendRawTextMessage(RawText text) {
         TextPacket pk = new TextPacket();
         pk.type = TextPacket.TYPE_OBJECT;
@@ -3587,6 +3650,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @param text JSON文本<br>JSON text
      */
+
     public void setRawTextSubTitle(RawText text) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_SUBTITLE_JSON;
@@ -3619,12 +3683,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @param text JSON文本<br>JSON text
      */
+
     public void setRawTextTitle(RawText text) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_TITLE_JSON;
         pk.text = text.toRawText();
         this.dataPacket(pk);
     }
+
 
     /**
      * {@code subtitle=null,fadeIn=20,stay=20,fadeOut=5}
@@ -3664,6 +3730,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.setTitle(Strings.isNullOrEmpty(title) ? " " : title);
     }
 
+
     /**
      * fadein=1,duration=0,fadeout=1
      *
@@ -3698,6 +3765,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @see #setRawTextActionBar(RawText, int, int, int)
      */
+
     public void setRawTextActionBar(RawText text) {
         this.setRawTextActionBar(text, 1, 0, 1);
     }
@@ -3712,6 +3780,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param duration 持续时间
      * @param fadeout  淡出时间
      */
+
     public void setRawTextActionBar(RawText text, int fadein, int duration, int fadeout) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_ACTIONBAR_JSON;
@@ -3721,6 +3790,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.fadeOutTime = fadeout;
         this.dataPacket(pk);
     }
+
 
     @Override
     public void close() {
@@ -3965,16 +4035,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+
     @Override
     public String getOriginalName() {
         return "Player";
     }
 
-    @Override
     @NotNull
+    @Override
     public String getName() {
         return this.username;
     }
+
 
     public LangCode getLanguageCode() {
         return LangCode.valueOf(this.getLoginChainData().getLanguageCode());
@@ -4140,22 +4212,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
 
                 if (this.inventory != null) {
-                    Item[] contents = this.inventory.getContents();
-                    for (int i = 0; i < contents.length; i++) {
-                        Item item = contents[i];
+                    new HashMap<>(this.inventory.slots).forEach((slot, item) -> {
                         if (!item.keepOnDeath()) {
-                            this.inventory.clear(i);
+                            this.inventory.clear(slot);
                         }
-                    }
+                    });
                 }
                 if (this.offhandInventory != null) {
-                    Item[] contents = this.offhandInventory.getContents();
-                    for (int i = 0; i < contents.length; i++) {
-                        Item item = contents[i];
+                    new HashMap<>(this.offhandInventory.slots).forEach((slot, item) -> {
                         if (!item.keepOnDeath()) {
-                            this.inventory.clear(i);
+                            this.offhandInventory.clear(slot);
                         }
-                    }
+                    });
                 }
             }
 
@@ -4242,6 +4310,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.expLevel;
     }
 
+
     /**
      * playLevelUpSound=false
      *
@@ -4292,6 +4361,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+
     /**
      * {@code level = this.getExperienceLevel(),playLevelUpSound=false}
      *
@@ -4300,6 +4370,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void setExperience(int exp) {
         setExperience(exp, this.getExperienceLevel());
     }
+
 
     /**
      * playLevelUpSound=false
@@ -4370,6 +4441,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.syncAttribute(attribute);
         }
     }
+
 
     /**
      * @see #sendExperienceLevel(int)
@@ -4730,6 +4802,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return id;
     }
 
+
     /**
      * book=true
      *
@@ -4894,36 +4967,89 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param id 窗口id<br>the window id
      */
     public Inventory getWindowById(int id) {
-        return this.windows.inverse().get(id);
+        return this.windowIndex.get(id);
     }
 
+    /**
+     * {@code forceId=null isPermanent=false alwaysOpen = false}
+     *
+     * @see #addWindow(Inventory, Integer, boolean, boolean)
+     */
     public int addWindow(Inventory inventory) {
         return this.addWindow(inventory, null);
     }
 
+    /**
+     * {@code isPermanent=false alwaysOpen = false}
+     *
+     * @see #addWindow(Inventory, Integer, boolean, boolean)
+     */
     public int addWindow(Inventory inventory, Integer forceId) {
+        return addWindow(inventory, forceId, false);
+    }
+
+    /**
+     * alwaysOpen = false
+     *
+     * @see #addWindow(Inventory, Integer, boolean, boolean)
+     */
+    public int addWindow(Inventory inventory, Integer forceId, boolean isPermanent) {
+        return addWindow(inventory, forceId, isPermanent, false);
+    }
+
+    /**
+     * 添加一个{@link Inventory}窗口显示到该玩家
+     *
+     * @param inventory   这个库存窗口<br>the inventory
+     * @param forceId     强制指定window id,若和现有window重复将会删除它并替换,为null则自动分配<br>Force the window id to be specified, if it is duplicated with an existing window, it will be deleted and replaced,if is null is automatically assigned.
+     * @param isPermanent 如果为true将会把Inventory存放到{@link #permanentWindows}<br>If true it will store the Inventory in {@link #permanentWindows}
+     * @param alwaysOpen  如果为true即使玩家未{@link #spawned}也会添加改玩家为指定inventory的viewer<br>If true, even if the player is not {@link #spawned}, it will add the player as viewer to the specified inventory.
+     * @return 返回窗口id，可以利用id通过{@link #windowIndex}重新获取该Inventory<br>Return the window id, you can use the id to retrieve the Inventory via {@link #windowIndex}
+     */
+
+    public int addWindow(Inventory inventory, Integer forceId, boolean isPermanent, boolean alwaysOpen) {
         if (this.windows.containsKey(inventory)) {
             return this.windows.get(inventory);
         }
         int cnt;
         if (forceId == null) {
-            this.windowCnt = cnt = Math.max(1, ++this.windowCnt % 100);
+            this.windowCnt = cnt = Math.max(4, ++this.windowCnt % 99);
         } else {
             cnt = forceId;
         }
+        this.windows.forcePut(inventory, cnt);
+
+        if (isPermanent) {
+            this.permanentWindows.add(cnt);
+        }
 
         if (this.spawned && inventory.open(this)) {
-            this.windows.forcePut(inventory, cnt);
-            this.topWindows = inventory;
-            updateTrackingPositions(true);
+            if (!isPermanent) {
+                updateTrackingPositions(true);
+            }
             return cnt;
+        } else if (!alwaysOpen) {
+            this.removeWindow(inventory);
+
+            return -1;
+        } else {
+            inventory.getViewers().add(this);
         }
-        return -1;
+
+        if (!isPermanent) {
+            updateTrackingPositions(true);
+        }
+
+        return cnt;
     }
 
-
     public Optional<Inventory> getTopWindow() {
-        return Optional.ofNullable(topWindows);
+        for (Entry<Inventory, Integer> entry : this.windows.entrySet()) {
+            if (!this.permanentWindows.contains(entry.getValue())) {
+                return Optional.of(entry.getKey());
+            }
+        }
+        return Optional.empty();
     }
 
     /**
@@ -4934,15 +5060,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param inventory the inventory
      */
     public void removeWindow(Inventory inventory) {
-        this.removeWindow0(inventory, false);
-    }
-
-    protected void removeWindow0(Inventory inventory, boolean isResponse) {
-        inventory.close(this);
-        if (isResponse) {
-            this.windows.remove(inventory);
-            updateTrackingPositions(true);
-        }
+        this.removeWindow(inventory, false);
     }
 
     /**
@@ -4951,12 +5069,23 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * Commonly used for refreshing.
      */
     public void sendAllInventories() {
-        getInventory().sendArmorContents(this);
-        getOffhandInventory().sendContents(this);
         getCursorInventory().sendContents(this);
         for (Inventory inv : this.windows.keySet()) {
             inv.sendContents(this);
+
+            if (inv instanceof PlayerInventory) {
+                ((PlayerInventory) inv).sendArmorContents(this);
+            }
         }
+    }
+
+    /**
+     * 获取该玩家的{@link PlayerUIInventory}
+     * <p>
+     * Gets ui inventory of the player.
+     */
+    public PlayerUIInventory getUIInventory() {
+        return playerUIInventory;
     }
 
     /**
@@ -4965,15 +5094,36 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * Gets cursor inventory of the player.
      */
     public PlayerCursorInventory getCursorInventory() {
-        return playerCursorInventory;
+        return this.playerUIInventory.getCursorInventory();
+    }
+
+    /**
+     * 获取该玩家的{@link CraftingGrid}
+     * <p>
+     * Gets crafting grid of the player.
+     */
+    public CraftingGrid getCraftingGrid() {
+        return this.craftingGrid;
+    }
+
+    /**
+     * 设置该玩家的{@link CraftingGrid}
+     * <p>
+     * Sets crafting grid.
+     *
+     * @param grid {@link CraftingGrid}
+     */
+    public void setCraftingGrid(CraftingGrid grid) {
+        this.craftingGrid = grid;
+        this.addWindow(grid, ContainerIds.NONE);
     }
 
     /**
      * Reset crafting grid type.
      */
     public void resetCraftingGridType() {
-        /*if (this.craftingGrid != null) {
-            Item[] drops = this.inventory.addItem(this.craftingGrid.getContents());
+        if (this.craftingGrid != null) {
+            Item[] drops = this.inventory.addItem(this.craftingGrid.getContents().values().toArray(Item.EMPTY_ARRAY));
 
             if (drops.length > 0) {
                 for (Item drop : drops) {
@@ -5000,7 +5150,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
 
             this.craftingType = CRAFTING_SMALL;
-        }*/
+        }
     }
 
     /**
@@ -5016,9 +5166,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * 清空{@link #windows}
      * <p>
      * Remove all windows.
+     *
+     * @param permanent 如果为false则会跳过删除{@link #permanentWindows}里面对应的window<br>If false, it will skip deleting the corresponding window in {@link #permanentWindows}
      */
     public void removeAllWindows(boolean permanent) {
-        for (Entry<Integer, Inventory> entry : new ArrayList<>(this.windows.inverse().entrySet())) {
+        for (Entry<Integer, Inventory> entry : new ArrayList<>(this.windowIndex.entrySet())) {
+            if (!permanent && this.permanentWindows.contains(entry.getKey())) {
+                continue;
+            }
             this.removeWindow(entry.getValue());
         }
     }
@@ -5329,7 +5484,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                         if (item.getBlockUnsafe() instanceof BlockWood) {
                             this.awardAchievement("mineWood");
-                        } else if (item.getId() == Item.DIAMOND) {
+                        } else if (Objects.equals(item.getId(), Item.DIAMOND)) {
                             this.awardAchievement("diamond");
                         }
 
@@ -5507,15 +5662,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @param items The items to give to the player.
      */
+
+
     public void giveItem(Item... items) {
         for (Item failed : getInventory().addItem(items)) {
             getLevel().dropItem(this, failed);
         }
     }
 
+
     public int getTimeSinceRest() {
         return timeSinceRest;
     }
+
 
     public void setTimeSinceRest(int timeSinceRest) {
         this.timeSinceRest = timeSinceRest;
@@ -5526,8 +5685,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     // TODO: Support Translation Parameters
-
-
     public void sendPopupJukebox(String message) {
         TextPacket pk = new TextPacket();
         pk.type = TextPacket.TYPE_JUKEBOX_POPUP;
@@ -5542,9 +5699,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+
     public void sendWhisper(String message) {
         this.sendWhisper("", message);
     }
+
 
     public void sendWhisper(String source, String message) {
         TextPacket pk = new TextPacket();
@@ -5554,9 +5713,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+
     public void sendAnnouncement(String message) {
         this.sendAnnouncement("", message);
     }
+
 
     public void sendAnnouncement(String source, String message) {
         TextPacket pk = new TextPacket();
@@ -5566,6 +5727,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+
     public void completeUsingItem(int itemId, int action) {
         CompletedUsingItemPacket pk = new CompletedUsingItemPacket();
         pk.itemId = itemId;
@@ -5573,9 +5735,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+
     public boolean isShowingCredits() {
         return showingCredits;
     }
+
 
     public void setShowingCredits(boolean showingCredits) {
         this.showingCredits = showingCredits;
@@ -5587,17 +5751,21 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+
     public void showCredits() {
         this.setShowingCredits(true);
     }
+
 
     public boolean hasSeenCredits() {
         return showingCredits;
     }
 
+
     public void setHasSeenCredits(boolean hasSeenCredits) {
         this.hasSeenCredits = hasSeenCredits;
     }
+
 
     public boolean dataPacketImmediately(DataPacket packet) {
         if (!this.connected) {
@@ -5614,6 +5782,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.getNetworkSession().sendPacketImmediately(packet);
         return true;
     }
+
 
     public boolean dataResourcePacket(DataPacket packet) {
         if (!this.connected) {
@@ -5641,6 +5810,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param shakeType   the shake type
      * @param shakeAction the shake action
      */
+
     public void shakeCamera(float intensity, float duration, CameraShakePacket.CameraShakeType shakeType, CameraShakePacket.CameraShakeAction shakeAction) {
         CameraShakePacket packet = new CameraShakePacket();
         packet.intensity = intensity;
@@ -5722,7 +5892,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         //client won't storage the score of a scoreboard,so we should send the score to client
         SetScorePacket pk2 = new SetScorePacket();
-        pk2.infos = scoreboard.getLines().values().stream().map(line -> line.toNetworkInfo()).filter(line -> line != null).collect(Collectors.toList());
+        pk2.infos = scoreboard.getLines().values().stream().map(IScoreboardLine::toNetworkInfo).filter(Objects::nonNull).collect(Collectors.toList());
         pk2.action = SetScorePacket.Action.SET;
         this.dataPacket(pk2);
 
@@ -5788,6 +5958,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void setFlySneaking(boolean sneaking) {
         this.flySneaking = sneaking;
     }
+
 
     public boolean isFlySneaking() {
         return this.flySneaking;

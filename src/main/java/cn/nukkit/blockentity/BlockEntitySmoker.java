@@ -2,10 +2,10 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.inventory.InventoryType;
-import cn.nukkit.recipe.SmeltingRecipe;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.recipe.SmeltingRecipe;
 
 
 public class BlockEntitySmoker extends BlockEntityFurnace {

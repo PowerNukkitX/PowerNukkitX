@@ -20,7 +20,6 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.block.BlockSmithingTable;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
 import cn.nukkit.recipe.SmithingRecipe;
@@ -32,31 +31,50 @@ import javax.annotation.Nullable;
  * @author joserobjr
  * @since 2020-09-28
  */
-public class SmithingInventory extends BlockTypeInventory {
-    private Item currentResult = Item.AIR;
 
 
-    public SmithingInventory(BlockSmithingTable table) {
-        super(table, InventoryType.SMITHING_TABLE);
+public class SmithingInventory extends FakeBlockUIComponent {
+    private static final int EQUIPMENT = 0;
+    private static final int INGREDIENT = 1;
+    
+    
+    
+    public static final int SMITHING_EQUIPMENT_UI_SLOT = 51;
+
+    
+    
+    public static final int SMITHING_INGREDIENT_UI_SLOT = 52;
+
+    private Item currentResult = AIR_ITEM;
+
+    
+    
+    public SmithingInventory(PlayerUIInventory playerUI, Position position) {
+        super(playerUI, InventoryType.SMITHING_TABLE, 51, position);
     }
 
-    public @Nullable SmithingRecipe matchRecipe() {
+    
+    
+    @Nullable
+    public SmithingRecipe matchRecipe() {
         return Server.getInstance().getCraftingManager().matchSmithingRecipe(getEquipment(), getIngredient());
     }
 
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
-        if (index == 0 || index == 1) {
+        if (index == EQUIPMENT || index == INGREDIENT) {
             updateResult();
         }
         super.onSlotChange(index, before, send);
     }
 
+    
+    
     public void updateResult() {
         Item result;
         SmithingRecipe recipe = matchRecipe();
         if (recipe == null) {
-            result =  Item.AIR;
+            result =  AIR_ITEM;
         } else {
             result = recipe.getFinalResult(getEquipment());
         }
@@ -69,28 +87,39 @@ public class SmithingInventory extends BlockTypeInventory {
         this.currentResult = result;
     }
 
-    @NotNull public Item getResult() {
+    
+    
+    @NotNull
+    public Item getResult() {
         SmithingRecipe recipe = matchRecipe();
         if (recipe == null) {
-            return Item.AIR;
+            return AIR_ITEM;
         }
         return recipe.getFinalResult(getEquipment());
     }
 
+    
+    
     public Item getEquipment() {
-        return getItem(0);
+        return getItem(EQUIPMENT);
     }
 
+    
+    
     public void setEquipment(Item equipment) {
-        setItem(0, equipment);
+        setItem(EQUIPMENT, equipment);
     }
 
+    
+    
     public Item getIngredient() {
-        return getItem(1);
+        return getItem(INGREDIENT);
     }
 
+    
+    
     public void setIngredient(Item ingredient) {
-        setItem(1, ingredient);
+        setItem(INGREDIENT, ingredient);
     }
 
     @Override
@@ -104,13 +133,14 @@ public class SmithingInventory extends BlockTypeInventory {
         super.onClose(who);
         who.craftingType = Player.CRAFTING_SMALL;
 
-        who.giveItem(getItem(0), getItem(1));
+        who.giveItem(getItem(EQUIPMENT), getItem(INGREDIENT));
         
-        this.clear(0);
-        this.clear(1);
+        this.clear(EQUIPMENT);
+        this.clear(INGREDIENT);
+        playerUI.clear(50);
     }
 
-    @NotNull public Item getCurrentResult() {
+    public @NotNull Item getCurrentResult() {
         return currentResult;
     }
 }

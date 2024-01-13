@@ -29,7 +29,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.*;
  * @author Pub4Game
  * @since 27.12.2015
  */
-public class BlockAnvil extends BlockFallable implements Faceable, BlockInventoryHolder {
+public class BlockAnvil extends BlockFallable implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(ANVIL, DAMAGE, MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
@@ -102,30 +102,13 @@ public class BlockAnvil extends BlockFallable implements Faceable, BlockInventor
                 getLevel().addSound(this, Sound.RANDOM_ANVIL_LAND, 1, 0.8F, players);
             }
         }
-        setInventoryMetaData(this);
-        return true;
-    }
-
-    @Override
-    public Supplier<BlockTypeInventory> getBlockInventorySupplier() {
-        return () -> new AnvilInventory(this);
-    }
-
-    @Override
-    public Inventory getInventory() {
-        return getInventoryMetaData(this);
-    }
-
-    @Override
-    public boolean onBreak(Item item) {
-        removeInventoryMetaData(this);
         return true;
     }
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         if (player != null) {
-            player.addWindow(getInventory(), Player.ANVIL_WINDOW_ID);
+            player.addWindow(new AnvilInventory(player.getUIInventory(), this), Player.ANVIL_WINDOW_ID);
         }
         return true;
     }

@@ -285,7 +285,7 @@ public class Explosion {
                     this.level.dropItem(block.add(0.5, 0.5, 0.5), block.toItem());
                     inventoryHolder.getInventory().clearAll();
                 } else {
-                    for (Item drop : inventoryHolder.getInventory().getContents()) {
+                    for (Item drop : inventoryHolder.getInventory().getContents().values()) {
                         this.level.dropItem(block.add(0.5, 0.5, 0.5), drop);
                     }
                     inventoryHolder.getInventory().clearAll();

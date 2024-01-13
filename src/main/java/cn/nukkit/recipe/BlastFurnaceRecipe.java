@@ -1,19 +1,14 @@
-package cn.nukkit.inventory;
+package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.recipe.CraftingManager;
-import cn.nukkit.recipe.RecipeType;
-import cn.nukkit.recipe.SmeltingRecipe;
 
 import javax.annotation.Nullable;
 import java.util.List;
-
 
 public class BlastFurnaceRecipe implements SmeltingRecipe {
     private final Item output;
     private Item ingredient;
     private final String recipeId;
-
 
     public BlastFurnaceRecipe(Item result, Item ingredient) {
         this(null, result, ingredient);

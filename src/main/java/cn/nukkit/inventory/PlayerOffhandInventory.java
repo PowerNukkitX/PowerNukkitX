@@ -16,6 +16,11 @@ public class PlayerOffhandInventory extends BaseInventory {
     }
 
     @Override
+    public void setSize(int size) {
+        throw new UnsupportedOperationException("Offhand can only carry one item at a time");
+    }
+
+    @Override
     public void onSlotChange(int index, Item before, boolean send) {
         EntityHuman holder = this.getHolder();
         if (holder instanceof Player player) {

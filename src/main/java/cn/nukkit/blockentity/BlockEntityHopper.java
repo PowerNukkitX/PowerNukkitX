@@ -1,7 +1,11 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.*;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockComposter;
+import cn.nukkit.block.BlockHopper;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.HopperSearchItemEvent;
 import cn.nukkit.event.inventory.InventoryMoveItemEvent;
@@ -19,7 +23,6 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.recipe.RecipeInventoryHolder;
 import cn.nukkit.registry.Registries;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +42,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
     private AxisAlignedBB pickupArea;
 
-    @Getter
     private boolean disabled;
 
     private final BlockVector3 temporalVector = new BlockVector3();
@@ -197,6 +199,10 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         return inventory;
     }
 
+    public boolean isDisabled() {
+        return disabled;
+    }
+
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
     }
@@ -297,11 +303,12 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
     @Override
     public void onBreak() {
-        for (Item content : inventory.getContents()) {
+        for (Item content : inventory.getContents().values()) {
             level.dropItem(this, content);
         }
         this.inventory.clearAll();
     }
+
 
     public boolean pushItemsIntoMinecart() {
         if (getMinecartInvPushTo() != null) {

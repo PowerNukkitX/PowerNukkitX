@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Supplier;
 
 
-public class BlockGrindstone extends BlockTransparent implements Faceable, BlockInventoryHolder {
+public class BlockGrindstone extends BlockTransparent implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(GRINDSTONE, CommonBlockProperties.ATTACHMENT, CommonBlockProperties.DIRECTION);
 
     @Override
@@ -149,7 +149,6 @@ public class BlockGrindstone extends BlockTransparent implements Faceable, Block
             return false;
         }
         this.level.setBlock(this, this, true, true);
-        setInventoryMetaData(this);
         return true;
     }
 
@@ -220,24 +219,8 @@ public class BlockGrindstone extends BlockTransparent implements Faceable, Block
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         if (player != null) {
-            player.addWindow(getInventory(), Player.GRINDSTONE_WINDOW_ID);
+            player.addWindow(new GrindstoneInventory(player.getUIInventory(), this), Player.GRINDSTONE_WINDOW_ID);
         }
-        return true;
-    }
-
-    @Override
-    public Supplier<BlockTypeInventory> getBlockInventorySupplier() {
-        return () -> new GrindstoneInventory(this);
-    }
-
-    @Override
-    public Inventory getInventory() {
-        return getInventoryMetaData(this);
-    }
-
-    @Override
-    public boolean onBreak(Item item) {
-        removeInventoryMetaData(this);
         return true;
     }
 }

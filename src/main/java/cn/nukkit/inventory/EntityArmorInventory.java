@@ -12,21 +12,24 @@ import java.util.Set;
 
 
 public class EntityArmorInventory extends BaseInventory {
+
+    private final Entity entity;
+
     public static final int SLOT_HEAD = 0;
     public static final int SLOT_CHEST = 1;
     public static final int SLOT_LEGS = 2;
     public static final int SLOT_FEET = 3;
-    private final Entity entity;
-
 
     /**
      * @param entity an Entity which implements {@link InventoryHolder}.
      * @throws ClassCastException if the entity does not implements {@link InventoryHolder}
      */
+
     public EntityArmorInventory(Entity entity) {
         super((InventoryHolder) entity, InventoryType.ENTITY_ARMOR);
         this.entity = entity;
     }
+
 
     public Entity getEntity() {
         return entity;
@@ -47,17 +50,21 @@ public class EntityArmorInventory extends BaseInventory {
         return 4;
     }
 
+
     public Item getHelmet(){
         return this.getItem(SLOT_HEAD);
     }
+
 
     public Item getChestplate(){
         return this.getItem(SLOT_CHEST);
     }
 
+
     public Item getLeggings(){
         return this.getItem(SLOT_LEGS);
     }
+
 
     public Item getBoots(){
         return this.getItem(SLOT_FEET);

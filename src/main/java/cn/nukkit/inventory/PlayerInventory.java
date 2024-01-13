@@ -29,10 +29,29 @@ import java.util.Collection;
  * @author MagicDroidX (Nukkit Project)
  */
 public class PlayerInventory extends BaseInventory {
+
     protected int itemInHandIndex = 0;
+    private int[] hotbar;
 
     public PlayerInventory(EntityHumanType player) {
-        super(player, InventoryType.PLAYER_INVENTORY);
+        super(player, InventoryType.PLAYER);
+        this.hotbar = new int[this.getHotbarSize()];
+
+        for (int i = 0; i < this.hotbar.length; i++) {
+            this.hotbar[i] = i;
+        }
+
+    }
+
+    @Override
+    public int getSize() {
+        return super.getSize() - 4;
+    }
+
+    @Override
+    public void setSize(int size) {
+        super.setSize(size + 4);
+        this.sendContents(this.getViewers());
     }
 
     /**
@@ -48,7 +67,8 @@ public class PlayerInventory extends BaseInventory {
             return false;
         }
 
-        if (this.getHolder() instanceof Player player) {
+        if (this.getHolder() instanceof Player) {
+            Player player = (Player) this.getHolder();
             PlayerItemHeldEvent ev = new PlayerItemHeldEvent(player, this.getItem(slot), slot);
             this.getHolder().getLevel().getServer().getPluginManager().callEvent(ev);
 
@@ -70,6 +90,16 @@ public class PlayerInventory extends BaseInventory {
 
     private boolean isHotbarSlot(int slot) {
         return slot >= 0 && slot <= this.getHotbarSize();
+    }
+
+    @Deprecated
+    public int getHotbarSlotIndex(int index) {
+        return index;
+    }
+
+    @Deprecated
+    public void setHotbarSlotIndex(int index, int slot) {
+
     }
 
     public int getHeldItemIndex() {
@@ -181,35 +211,35 @@ public class PlayerInventory extends BaseInventory {
     }
 
     public Item getHelmet() {
-        return this.getItem(this.getSize() - 4);
+        return this.getItem(this.getSize());
     }
 
     public Item getChestplate() {
-        return this.getItem(this.getSize() - 3);
+        return this.getItem(this.getSize() + 1);
     }
 
     public Item getLeggings() {
-        return this.getItem(this.getSize() - 2);
+        return this.getItem(this.getSize() + 2);
     }
 
     public Item getBoots() {
-        return this.getItem(this.getSize() - 1);
+        return this.getItem(this.getSize() + 3);
     }
 
     public boolean setHelmet(Item helmet) {
-        return this.setItem(this.getSize() - 4, helmet);
+        return this.setItem(this.getSize(), helmet);
     }
 
     public boolean setChestplate(Item chestplate) {
-        return this.setItem(this.getSize() - 3, chestplate);
+        return this.setItem(this.getSize() + 1, chestplate);
     }
 
     public boolean setLeggings(Item leggings) {
-        return this.setItem(this.getSize() - 2, leggings);
+        return this.setItem(this.getSize() + 2, leggings);
     }
 
     public boolean setBoots(Item boots) {
-        return this.setItem(this.getSize() - 1, boots);
+        return this.setItem(this.getSize() + 3, boots);
     }
 
     @Override
@@ -225,7 +255,7 @@ public class PlayerInventory extends BaseInventory {
     private boolean setItem(int index, Item item, boolean send, boolean ignoreArmorEvents) {
         if (index < 0 || index >= this.size) {
             return false;
-        } else if (item.isNull()) {
+        } else if (item.isNull() || item.getCount() <= 0) {
             return this.clear(index);
         }
 
@@ -248,49 +278,50 @@ public class PlayerInventory extends BaseInventory {
             item = ev.getNewItem();
         }
         Item old = this.getItem(index);
-        this.slots[index] = item.clone();
+        this.slots.put(index, item.clone());
         this.onSlotChange(index, old, send);
         return true;
     }
 
     @Override
     public boolean clear(int index, boolean send) {
-        if (checkIndex(index)) return false;
-        Item item = new ItemBlock(Block.get(BlockID.AIR), null, 0);
-        Item old = this.slots[index];
-        if (index >= this.getSize() && index < this.size) {
-            EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder(), old, item, index);
-            Server.getInstance().getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
-                if (index >= this.size) {
-                    this.sendArmorSlot(index, this.getViewers());
-                } else {
-                    this.sendSlot(index, this.getViewers());
+        if (this.slots.containsKey(index)) {
+            Item item = new ItemBlock(Block.get(BlockID.AIR), null, 0);
+            Item old = this.slots.get(index);
+            if (index >= this.getSize() && index < this.size) {
+                EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder(), old, item, index);
+                Server.getInstance().getPluginManager().callEvent(ev);
+                if (ev.isCancelled()) {
+                    if (index >= this.size) {
+                        this.sendArmorSlot(index, this.getViewers());
+                    } else {
+                        this.sendSlot(index, this.getViewers());
+                    }
+                    return false;
                 }
-                return false;
-            }
-            item = ev.getNewItem();
-        } else {
-            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder(), old, item, index);
-            Server.getInstance().getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
-                if (index >= this.size) {
-                    this.sendArmorSlot(index, this.getViewers());
-                } else {
-                    this.sendSlot(index, this.getViewers());
+                item = ev.getNewItem();
+            } else {
+                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder(), old, item, index);
+                Server.getInstance().getPluginManager().callEvent(ev);
+                if (ev.isCancelled()) {
+                    if (index >= this.size) {
+                        this.sendArmorSlot(index, this.getViewers());
+                    } else {
+                        this.sendSlot(index, this.getViewers());
+                    }
+                    return false;
                 }
-                return false;
+                item = ev.getNewItem();
             }
-            item = ev.getNewItem();
-        }
 
-        if (item.getId() != BlockID.AIR) {
-            this.slots[index] = item.clone();
-        } else {
-            this.slots[index] = Item.AIR;
-        }
+            if (!item.isNull()) {
+                this.slots.put(index, item.clone());
+            } else {
+                this.slots.remove(index);
+            }
 
-        this.onSlotChange(index, old, send);
+            this.onSlotChange(index, old, send);
+        }
 
         return true;
     }
@@ -298,7 +329,7 @@ public class PlayerInventory extends BaseInventory {
     public Item[] getArmorContents() {
         Item[] armor = new Item[4];
         for (int i = 0; i < 4; i++) {
-            armor[i] = this.getItem(this.getSize() + i - 4);
+            armor[i] = this.getItem(this.getSize() + i);
         }
 
         return armor;
@@ -349,7 +380,7 @@ public class PlayerInventory extends BaseInventory {
                 items[i] = new ItemBlock(Block.get(BlockID.AIR), null, 0);
             }
 
-            if (items[i].getId() == BlockID.AIR) {
+            if (items[i].isNull()) {
                 this.clear(this.getSize() + i);
             } else {
                 this.setItem(this.getSize() + i, items[i]);
@@ -460,15 +491,36 @@ public class PlayerInventory extends BaseInventory {
     }
 
     public void sendCreativeContents() {
-        if (!(this.getHolder() instanceof Player p)) {
+        if (!(this.getHolder() instanceof Player)) {
             return;
         }
+        Player p = (Player) this.getHolder();
 
         CreativeContentPacket pk = new CreativeContentPacket();
 
         pk.entries = Registries.CREATIVE.getCreativeItems();
 
         p.dataPacket(pk);
+    }
+
+    //由于NK从PlayerInventory中分离了盔甲栏，并且getSize值修改为36，但实际上slots最大容量为40，按照逻辑应该将solts size也减4
+    @Override
+    public int getFreeSpace(Item item) {
+        int maxStackSize = Math.min(item.getMaxStackSize(), this.getMaxStackSize());
+        int slots = this.slots.size() > 36 ? this.slots.size() - 4 : this.slots.size();
+        int space = (this.getSize() - slots) * maxStackSize;
+
+        for (Item slot : this.getContents().values()) {
+            if (slot == null || slot.isNull()) {
+                space += maxStackSize;
+                continue;
+            }
+
+            if (slot.equals(item, true, true)) {
+                space += maxStackSize - slot.getCount();
+            }
+        }
+        return space;
     }
 
     @Override

@@ -2,6 +2,8 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+
+
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.item.Item;
@@ -13,7 +15,6 @@ import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
 import cn.nukkit.network.protocol.UpdateEquipmentPacket;
-import cn.nukkit.utils.Identifier;
 
 import java.io.IOException;
 import java.util.List;
@@ -62,7 +63,7 @@ public class HorseInventory extends BaseInventory {
                 this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED, false);
                 this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_CAN_POWER_JUMP, false);
             } else {
-                this.getHolder().getLevel().addLevelSoundEvent(this.getHolder(), LevelSoundEventPacket.SOUND_SADDLE, -1, new Identifier(this.getHolder().getIdentifier()).getNamespace(), false, false);
+                this.getHolder().getLevel().addLevelSoundEvent(this.getHolder(), LevelSoundEventPacket.SOUND_SADDLE, -1, this.getHolder().getIdentifier(), false, false);
                 this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SADDLED);
                 this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED);
                 this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_CAN_POWER_JUMP);
@@ -73,7 +74,7 @@ public class HorseInventory extends BaseInventory {
             }
             MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
             mobArmorEquipmentPacket.eid = this.getHolder().getId();
-            mobArmorEquipmentPacket.slots = new Item[]{Item.AIR.clone(), this.getHorseArmor(), Item.AIR.clone(), Item.AIR.clone()};
+            mobArmorEquipmentPacket.slots = new Item[]{Item.AIR, this.getHorseArmor(), Item.AIR, Item.AIR};
             Server.broadcastPacket(this.getViewers(), mobArmorEquipmentPacket);
         }
     }

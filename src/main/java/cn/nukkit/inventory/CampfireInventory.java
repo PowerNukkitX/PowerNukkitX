@@ -1,16 +1,18 @@
 package cn.nukkit.inventory;
 
+
 import cn.nukkit.blockentity.BlockEntityCampfire;
 import cn.nukkit.item.Item;
 
 
 public class CampfireInventory extends ContainerInventory {
 
-
+    
     public CampfireInventory(BlockEntityCampfire campfire) {
         super(campfire, InventoryType.CAMPFIRE);
     }
 
+    
     public CampfireInventory(BlockEntityCampfire furnace, InventoryType inventoryType) {
         super(furnace, inventoryType);
     }

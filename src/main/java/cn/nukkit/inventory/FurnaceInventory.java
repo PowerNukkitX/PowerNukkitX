@@ -1,6 +1,8 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+
+
 import cn.nukkit.blockentity.BlockEntityFurnace;
 import cn.nukkit.item.Item;
 
@@ -13,6 +15,7 @@ public class FurnaceInventory extends ContainerInventory {
         super(furnace, InventoryType.FURNACE);
     }
 
+    
     public FurnaceInventory(BlockEntityFurnace furnace, InventoryType inventoryType) {
         super(furnace, inventoryType);
     }
@@ -46,6 +49,7 @@ public class FurnaceInventory extends ContainerInventory {
         return this.setItem(0, item);
     }
 
+    
     @Override
     public boolean setItemByPlayer(Player player, int index, Item item, boolean send) {
         if (index == 2 && (item.isNull() || item.getCount() == 0)) {

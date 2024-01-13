@@ -5,9 +5,12 @@ import cn.nukkit.Player;
 /**
  * @author CreeperFace
  */
-public class PlayerCursorInventory extends BaseInventory {
-    public PlayerCursorInventory(Player player) {
-        super(player, InventoryType.CURSOR);
+public class PlayerCursorInventory extends PlayerUIComponent {
+    private final PlayerUIInventory playerUI;
+
+    PlayerCursorInventory(PlayerUIInventory playerUI) {
+        super(playerUI, 0, 1);
+        this.playerUI = playerUI;
     }
 
     /**
@@ -17,11 +20,16 @@ public class PlayerCursorInventory extends BaseInventory {
      */
     @Override
     public Player getHolder() {
-        return (Player) holder;
+        return playerUI.getHolder();
     }
-
+    
     @Override
     public InventoryType getType() {
         return InventoryType.CURSOR;
+    }
+
+    @Override
+    public void sendContents(Player... players) {
+        playerUI.sendSlot(0, players);
     }
 }

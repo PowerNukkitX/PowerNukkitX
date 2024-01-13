@@ -21,7 +21,6 @@ public class PlayerEnderChestInventory extends BaseInventory {
         return (EntityHuman) this.holder;
     }
 
-    
     @Override
     public void onOpen(Player who) {
         if (who != this.getHolder()) {
@@ -60,7 +59,6 @@ public class PlayerEnderChestInventory extends BaseInventory {
         }
     }
 
-    
     @Override
     public void onClose(Player who) {
         ContainerClosePacket containerClosePacket = new ContainerClosePacket();

@@ -11,6 +11,8 @@ import java.net.InetSocketAddress;
  * @author MagicDroidX (Nukkit Project)
  */
 public interface SourceInterface {
+    int getNetworkLatency(Player player);
+
     void blockAddress(InetAddress address);
 
     void blockAddress(InetAddress address, int timeout);

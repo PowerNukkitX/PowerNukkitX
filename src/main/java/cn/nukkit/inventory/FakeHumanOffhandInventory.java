@@ -1,6 +1,8 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+
+
 import cn.nukkit.entity.EntityIntelligentHuman;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
@@ -15,6 +17,11 @@ import cn.nukkit.network.protocol.types.ContainerIds;
 public class FakeHumanOffhandInventory extends BaseInventory {
     public FakeHumanOffhandInventory(EntityIntelligentHuman holder) {
         super(holder, InventoryType.OFFHAND);
+    }
+
+    @Override
+    public void setSize(int size) {
+        throw new UnsupportedOperationException("Offhand can only carry one item at a time");
     }
 
     @Override

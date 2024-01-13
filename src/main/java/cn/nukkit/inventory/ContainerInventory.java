@@ -21,6 +21,18 @@ public abstract class ContainerInventory extends BaseInventory {
         super(holder, type);
     }
 
+    public ContainerInventory(InventoryHolder holder, InventoryType type, Map<Integer, Item> items) {
+        super(holder, type, items);
+    }
+
+    public ContainerInventory(InventoryHolder holder, InventoryType type, Map<Integer, Item> items, Integer overrideSize) {
+        super(holder, type, items, overrideSize);
+    }
+
+    public ContainerInventory(InventoryHolder holder, InventoryType type, Map<Integer, Item> items, Integer overrideSize, String overrideTitle) {
+        super(holder, type, items, overrideSize, overrideTitle);
+    }
+
     @Override
     public void onOpen(Player who) {
         if (!who.getAdventureSettings().get(AdventureSettings.Type.OPEN_CONTAINERS))

@@ -27,8 +27,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public abstract class EntityHumanType extends EntityCreature implements IHuman {
 
     protected PlayerInventory inventory;
-    protected PlayerOffhandInventory offhandInventory;
     protected PlayerEnderChestInventory enderChestInventory;
+    protected PlayerOffhandInventory offhandInventory;
 
     public EntityHumanType(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -57,18 +57,9 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
     @Override
     public Item[] getDrops() {
         if (this.inventory != null) {
-            List<Item> result = new ArrayList<>();
-            for (var i : this.inventory.getContents()) {
-                if (!i.keepOnDeath()) {
-                    result.add(i);
-                }
-            }
-            for (var i : this.offhandInventory.getContents()) {
-                if (!i.keepOnDeath()) {
-                    result.add(i);
-                }
-            }
-            return result.toArray(Item.EMPTY_ARRAY);
+            List<Item> drops = new ArrayList<>(this.inventory.getContents().values());
+            drops.addAll(this.offhandInventory.getContents().values());
+            return drops.stream().filter(item -> !item.keepOnDeath()).toList().toArray(Item.EMPTY_ARRAY);
         }
         return Item.EMPTY_ARRAY;
     }
@@ -156,12 +147,6 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
 
     @Override
     protected boolean applyNameTag(@NotNull Player player, @NotNull Item item) {
-        return false;
-    }
-
-    @Deprecated
-    @Override
-    public boolean applyNameTag(Item item) {
         return false;
     }
 

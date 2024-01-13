@@ -1,10 +1,20 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+
+
+
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import static cn.nukkit.inventory.BaseInventory.AIR_ITEM;
+
+
 
 public class InventorySlice implements Inventory {
     @NotNull
@@ -55,11 +65,16 @@ public class InventorySlice implements Inventory {
     }
 
     @Override
+    public String getTitle() {
+        return rawInv.getTitle();
+    }
+
     @NotNull
+    @Override
     public Item getItem(int index) {
         // check whether the index is in the range
         if (index < 0 || index >= getSize()) {
-            return Item.AIR;
+            return AIR_ITEM;
         }
         return rawInv.getItem(index + startSlot);
     }
@@ -106,11 +121,12 @@ public class InventorySlice implements Inventory {
         return rawInv.removeItem(slots);
     }
 
+    @NotNull
     @Override
-    public Item[] getContents() {
-        var map = new Item[endSlot - startSlot];
+    public Map<Integer, Item> getContents() {
+        var map = new HashMap<Integer, Item>();
         for (int i = startSlot; i < endSlot; i++) {
-            map[i - startSlot] = rawInv.getItem(i);
+            map.put(i - startSlot, rawInv.getItem(i));
         }
         return map;
     }
@@ -162,7 +178,7 @@ public class InventorySlice implements Inventory {
         int count = Math.max(1, item.getCount());
         boolean checkDamage = item.hasMeta() && item.getDamage() >= 0;
         boolean checkTag = item.getCompoundTag() != null;
-        for (Item i : this.getContents()) {
+        for (Item i : this.getContents().values()) {
             if (item.equals(i, checkDamage, checkTag)) {
                 count -= i.getCount();
                 if (count <= 0) {
@@ -179,13 +195,12 @@ public class InventorySlice implements Inventory {
         Map<Integer, Item> slots = new HashMap<>();
         boolean checkDamage = item.hasMeta() && item.getDamage() >= 0;
         boolean checkTag = item.getCompoundTag() != null;
-        Item[] contents = this.getContents();
-        for (int i = 0; i < contents.length; i++) {
-            Item value = contents[i];
-            if (item.equals(value, checkDamage, checkTag)) {
-                slots.put(i, value);
+        for (Map.Entry<Integer, Item> entry : this.getContents().entrySet()) {
+            if (item.equals(entry.getValue(), checkDamage, checkTag)) {
+                slots.put(entry.getKey(), entry.getValue());
             }
         }
+
         return slots;
     }
 
@@ -194,11 +209,9 @@ public class InventorySlice implements Inventory {
         int count = Math.max(1, item.getCount());
         boolean checkDamage = item.hasMeta();
         boolean checkTag = item.getCompoundTag() != null;
-        Item[] contents = this.getContents();
-        for (int i = 0; i < contents.length; i++) {
-            Item value = contents[i];
-            if (item.equals(value, checkDamage, checkTag) && (value.getCount() == count || (!exact && value.getCount() > count))) {
-                return i;
+        for (Map.Entry<Integer, Item> entry : this.getContents().entrySet()) {
+            if (item.equals(entry.getValue(), checkDamage, checkTag) && (entry.getValue().getCount() == count || (!exact && entry.getValue().getCount() > count))) {
+                return entry.getKey();
             }
         }
 
@@ -229,11 +242,9 @@ public class InventorySlice implements Inventory {
     public void remove(Item item) {
         boolean checkDamage = item.hasMeta();
         boolean checkTag = item.getCompoundTag() != null;
-        Item[] contents = this.getContents();
-        for (int i = 0; i < contents.length; i++) {
-            Item value = contents[i];
-            if (item.equals(value, checkDamage, checkTag)) {
-                this.clear(i);
+        for (Map.Entry<Integer, Item> entry : this.getContents().entrySet()) {
+            if (item.equals(entry.getValue(), checkDamage, checkTag)) {
+                this.clear(entry.getKey());
             }
         }
     }
@@ -250,34 +261,11 @@ public class InventorySlice implements Inventory {
         }
     }
 
-    protected int getFillSize() {
-        return (int) Arrays.stream(this.getContents()).filter(i -> !i.isNull()).count();
-    }
-
-    @Override
-    public int getFreeSpace(Item item) {
-        int maxStackSize = Math.min(item.getMaxStackSize(), this.getMaxStackSize());
-        int space = (this.getSize() - getFillSize()) * maxStackSize;
-
-        for (Item slot : this.getContents()) {
-            if (slot == null || slot.isNull()) {
-                space += maxStackSize;
-                continue;
-            }
-
-            if (slot.equals(item, true, true)) {
-                space += maxStackSize - slot.getCount();
-            }
-        }
-        return space;
-    }
-
     @Override
     public boolean isFull() {
         for (int i = startSlot; i < endSlot; ++i) {
             var item = rawInv.getItem(i);
-            if (item == null || item.isNull() || item.getCount() < item.getMaxStackSize() ||
-                    item.getCount() < this.getMaxStackSize()) {
+            if (item == null || item.isNull() || item.getCount() < item.getMaxStackSize() || item.getCount() < this.getMaxStackSize()) {
                 return false;
             }
         }
@@ -291,7 +279,7 @@ public class InventorySlice implements Inventory {
             return false;
         }
 
-        for (Item item : this.getContents()) {
+        for (Item item : this.getContents().values()) {
             if (item != null && !item.isNull()) {
                 return false;
             }
@@ -344,11 +332,13 @@ public class InventorySlice implements Inventory {
         rawInv.onSlotChange(index + startSlot, before, send);
     }
 
+    
     @Override
     public void addListener(InventoryListener listener) {
         rawInv.addListener(((inventory, oldItem, slot) -> listener.onInventoryChanged(this, oldItem, slot - startSlot)));
     }
 
+    
     @Override
     public void removeListener(InventoryListener listener) {
         rawInv.removeListener(((inventory, oldItem, slot) -> listener.onInventoryChanged(this, oldItem, slot - startSlot)));

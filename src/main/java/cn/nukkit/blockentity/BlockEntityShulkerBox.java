@@ -2,7 +2,6 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockBlackShulkerBox;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockUndyedShulkerBox;
 import cn.nukkit.inventory.BaseInventory;
@@ -40,7 +39,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
         ListTag<CompoundTag> list = (ListTag<CompoundTag>) this.namedTag.getList("Items");
         for (CompoundTag compound : list.getAll()) {
             Item item = NBTIO.getItemHelper(compound);
-            this.inventory.getContents()[compound.getByte("Slot")] = item;
+            this.inventory.slots.put(compound.getByte("Slot"), item);
         }
 
         if (!this.namedTag.contains("facing")) {

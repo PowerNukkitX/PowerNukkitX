@@ -9,10 +9,10 @@ package cn.nukkit.block.property.enums;
 public enum Damage {
     UNDAMAGED,
     SLIGHTLY_DAMAGED,
-    BROKEN,
-    VERY_DAMAGED;
+    VERY_DAMAGED,
+    BROKEN;
 
-    public Damage next(){
-        return values()[this.ordinal()+1];
+    public Damage next() {
+        return values()[this.ordinal() + 1];
     }
 }

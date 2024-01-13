@@ -175,8 +175,8 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     @Override
     public Item[] getDrops() {
         if (this.inventory != null) {
-            List<Item> drops = new ArrayList<>(List.of(this.inventory.getContents()));
-            drops.addAll(List.of(this.offhandInventory.getContents()));
+            List<Item> drops = new ArrayList<>(this.inventory.getContents().values());
+            drops.addAll(this.offhandInventory.getContents().values());
             return drops.stream().filter(item -> !item.keepOnDeath()).toList().toArray(Item.EMPTY_ARRAY);
         }
         return Item.EMPTY_ARRAY;

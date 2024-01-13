@@ -1,6 +1,5 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.Player;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.property.enums.StructureBlockType;
 import cn.nukkit.inventory.Inventory;
@@ -13,7 +12,6 @@ import cn.nukkit.network.protocol.types.StructureAnimationMode;
 import cn.nukkit.network.protocol.types.StructureMirror;
 import cn.nukkit.network.protocol.types.StructureRedstoneSaveMode;
 import cn.nukkit.network.protocol.types.StructureRotation;
-
 
 public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStructBlock {
     private StructureAnimationMode animationMode;
@@ -33,12 +31,10 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     private String structureName;
     private BlockVector3 size;
     private BlockVector3 offset;
-    private final StructBlockInventory structBlockInventory;
 
 
     public BlockEntityStructBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        this.structBlockInventory = new StructBlockInventory(this);
     }
 
     @Override
@@ -196,17 +192,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
 
     @Override
     public Inventory getInventory() {
-        return this.structBlockInventory;
-    }
-
-    @Override
-    public void close() {
-        if(!closed){
-            for (Player player : this.getInventory().getViewers()) {
-                this.getInventory().close(player);
-            }
-            super.close();
-        }
+        return new StructBlockInventory(this);
     }
 
     public void updateSetting(StructureBlockUpdatePacket packet) {

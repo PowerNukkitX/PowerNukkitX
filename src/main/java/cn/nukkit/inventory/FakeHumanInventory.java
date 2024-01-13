@@ -2,6 +2,8 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+
+
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.EntityIntelligentHuman;
@@ -21,19 +23,34 @@ import java.util.Collection;
  * 这个Inventory是一个hack实现，用来实现{@link EntityIntelligentHuman}的背包实现，它无法被open 和 close，因为虚拟人类不会自己打开物品栏<p>
  * 它的{@link FakeHumanInventory#viewers}永远为空,因为不允许打开它
  */
+
+
 public class FakeHumanInventory extends BaseInventory {
     protected int itemInHandIndex = 0;
+    private int[] hotbar;
 
     public FakeHumanInventory(EntityIntelligentHuman player) {
-        super(player, InventoryType.PLAYER_INVENTORY);
+        super(player, InventoryType.PLAYER);
+        this.hotbar = new int[this.getHotbarSize()];
+        for (int i = 0; i < this.hotbar.length; i++) {
+            this.hotbar[i] = i;
+        }
+    }
+
+    @Override
+    public int getSize() {
+        return super.getSize() - 4;
+    }
+
+    @Override
+    public void setSize(int size) {
+        super.setSize(size + 4);
     }
 
     /**
      * 判断这个格子位置是否在物品栏(0-9)
-     * <br>
-     * Determine if this grid position is in the item column (0-9)
      *
-     * @param slot 格子位置<br>grid position
+     * @param slot 格子位置
      */
     public boolean isHotbarSlot(int slot) {
         return slot >= 0 && slot <= this.getHotbarSize();
@@ -41,8 +58,6 @@ public class FakeHumanInventory extends BaseInventory {
 
     /**
      * 获取{@link EntityIntelligentHuman}的手持物品的索引位置
-     * <br>
-     * Get the index location of {@link EntityIntelligentHuman}'s handheld items
      */
     public int getHeldItemIndex() {
         return this.itemInHandIndex;
@@ -50,10 +65,8 @@ public class FakeHumanInventory extends BaseInventory {
 
     /**
      * 设置{@link EntityIntelligentHuman}的手持物品的格子位置
-     * <br>
-     * Setting the grid position of {@link EntityIntelligentHuman}'s handheld items
      *
-     * @param slot 索引位置<br>index position
+     * @param slot 索引位置
      */
     public void setHeldItemSlot(int slot) {
         if (!isHotbarSlot(slot)) {
@@ -65,8 +78,6 @@ public class FakeHumanInventory extends BaseInventory {
 
     /**
      * 获取{@link EntityIntelligentHuman}的手持物品
-     * <br>
-     * Get the handheld item of {@link EntityIntelligentHuman}
      */
     public Item getItemInHand() {
         Item item = this.getItem(this.getHeldItemIndex());
@@ -79,8 +90,6 @@ public class FakeHumanInventory extends BaseInventory {
 
     /**
      * 设置{@link EntityIntelligentHuman}的手持物品，这个方法会自动刷新客户端显示
-     * <br>
-     * Get the handheld item of {@link EntityIntelligentHuman}
      */
     public boolean setItemInHand(Item item) {
         return this.setItem(this.getHeldItemIndex(), item);
@@ -88,8 +97,6 @@ public class FakeHumanInventory extends BaseInventory {
 
     /**
      * 发送数据包给客户端，这个方法可以刷新被更改的手持物品显示
-     * <br>
-     * Sends a packet to the client, this method refreshes the display of altered handheld items
      */
     public void sendHeldItem(Player... players) {
         Item item = this.getItemInHand();
@@ -106,8 +113,6 @@ public class FakeHumanInventory extends BaseInventory {
 
     /**
      * 发送数据包给客户端，这个方法可以刷新被更改的手持物品显示
-     * <br>
-     * Sends a packet to the client, this method refreshes the display of altered handheld items
      */
     public void sendHeldItem(Collection<Player> players) {
         this.sendHeldItem(players.toArray(Player.EMPTY_ARRAY));
@@ -129,8 +134,6 @@ public class FakeHumanInventory extends BaseInventory {
 
     /**
      * 获取物品栏大小
-     * <br>
-     * Get item bar size
      */
     public int getHotbarSize() {
         return 9;
@@ -138,10 +141,8 @@ public class FakeHumanInventory extends BaseInventory {
 
     /**
      * 获取盔甲栏对应索引位置的物品
-     * <br>
-     * Get the item at the corresponding index position in the armor bar
      *
-     * @param index 索引位置(0-4)<br>index position (0-4)
+     * @param index 索引位置(0-4)
      */
     public Item getArmorItem(int index) {
         return this.getItem(this.getSize() + index);
@@ -149,11 +150,9 @@ public class FakeHumanInventory extends BaseInventory {
 
     /**
      * 设置盔甲栏对应索引位置的物品
-     * <br>
-     * Setting the item corresponding to the index position of the armor bar
      *
-     * @param index 索引位置(0-4)<br>index position (0-4)
-     * @param item  要设置的物品<br>item to be set
+     * @param index 索引位置(0-4)
+     * @param item  要设置的物品
      */
     public boolean setArmorItem(int index, Item item) {
         return this.setArmorItem(index, item, false);
@@ -161,12 +160,10 @@ public class FakeHumanInventory extends BaseInventory {
 
     /**
      * 设置盔甲栏对应索引位置的物品
-     * <br>
-     * Setting the item corresponding to the index position of the armor bar
      *
-     * @param index             索引位置(0-4)<br>index position (0-4)
-     * @param item              要设置的物品<br>item to be set
-     * @param ignoreArmorEvents 是否忽略盔甲更新事件<br>Whether to ignore armor update events
+     * @param index             索引位置(0-4)
+     * @param item              要设置的物品
+     * @param ignoreArmorEvents 是否忽略盔甲更新事件
      */
     public boolean setArmorItem(int index, Item item, boolean ignoreArmorEvents) {
         return this.setItem(this.getSize() + index, item, ignoreArmorEvents);
@@ -174,8 +171,6 @@ public class FakeHumanInventory extends BaseInventory {
 
     /**
      * 获取盔甲栏中头盔位置对应的物品
-     * <br>
-     * Get the item corresponding to the helmet position in the armor bar
      */
     public Item getHelmet() {
         return this.getItem(this.getSize());
@@ -183,8 +178,6 @@ public class FakeHumanInventory extends BaseInventory {
 
     /**
      * 获取盔甲栏中胸甲位置对应的物品
-     * <br>
-     * Get the item corresponding to the breastplate position in the armor bar
      */
     public Item getChestplate() {
         return this.getItem(this.getSize() + 1);
@@ -192,8 +185,6 @@ public class FakeHumanInventory extends BaseInventory {
 
     /**
      * 获取盔甲栏中裤腿位置对应的物品
-     * <br>
-     * Get the item corresponding to the pants leg position in the armor bar
      */
     public Item getLeggings() {
         return this.getItem(this.getSize() + 2);
@@ -201,8 +192,6 @@ public class FakeHumanInventory extends BaseInventory {
 
     /**
      * 获取盔甲栏中鞋子位置对应的物品
-     * <br>
-     * Get the item corresponding to the shoe position in the armor bar
      */
     public Item getBoots() {
         return this.getItem(this.getSize() + 3);
@@ -210,8 +199,6 @@ public class FakeHumanInventory extends BaseInventory {
 
     /**
      * 设置盔甲栏中头盔位置对应的物品
-     * <br>
-     * Setting the item corresponding to the helmet position in the armor bar
      *
      * @param helmet the helmet
      * @return the helmet
@@ -222,8 +209,6 @@ public class FakeHumanInventory extends BaseInventory {
 
     /**
      * 设置盔甲栏中胸甲位置对应的物品
-     * <br>
-     * Setting the item corresponding to the breastplate position in the armor bar
      *
      * @param chestplate the chestplate
      * @return the chestplate
@@ -234,8 +219,6 @@ public class FakeHumanInventory extends BaseInventory {
 
     /**
      * 设置盔甲栏中裤腿位置对应的物品
-     * <br>
-     * Setting the item corresponding to the pants leg position in the armor bar
      *
      * @param leggings the leggings
      * @return the leggings
@@ -246,8 +229,6 @@ public class FakeHumanInventory extends BaseInventory {
 
     /**
      * 设置盔甲栏中鞋子位置对应的物品
-     * <br>
-     * Setting the item corresponding to the shoe position in the armor bar
      *
      * @param boots the boots
      * @return the boots
@@ -291,49 +272,50 @@ public class FakeHumanInventory extends BaseInventory {
             item = ev.getNewItem();
         }
         Item old = this.getItem(index);
-        this.slots[index] = item.clone();
+        this.slots.put(index, item.clone());
         this.onSlotChange(index, old, send);
         return true;
     }
 
     @Override
     public boolean clear(int index, boolean send) {
-        if (checkIndex(index)) return false;
-        Item item = new ItemBlock(Block.get(BlockID.AIR), null, 0);
-        Item old = this.slots[index];
-        if (index >= this.getSize() && index < this.size) {
-            EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder(), old, item, index);
-            Server.getInstance().getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
-                if (index >= this.size) {
-                    this.sendArmorSlot(index, this.getViewers());
-                } else {
-                    this.sendSlot(index, this.getViewers());
+        if (this.slots.containsKey(index)) {
+            Item item = new ItemBlock(Block.get(BlockID.AIR), null, 0);
+            Item old = this.slots.get(index);
+            if (index >= this.getSize() && index < this.size) {
+                EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder(), old, item, index);
+                Server.getInstance().getPluginManager().callEvent(ev);
+                if (ev.isCancelled()) {
+                    if (index >= this.size) {
+                        this.sendArmorSlot(index, this.getViewers());
+                    } else {
+                        this.sendSlot(index, this.getViewers());
+                    }
+                    return false;
                 }
-                return false;
-            }
-            item = ev.getNewItem();
-        } else {
-            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder(), old, item, index);
-            Server.getInstance().getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
-                if (index >= this.size) {
-                    this.sendArmorSlot(index, this.getViewers());
-                } else {
-                    this.sendSlot(index, this.getViewers());
+                item = ev.getNewItem();
+            } else {
+                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder(), old, item, index);
+                Server.getInstance().getPluginManager().callEvent(ev);
+                if (ev.isCancelled()) {
+                    if (index >= this.size) {
+                        this.sendArmorSlot(index, this.getViewers());
+                    } else {
+                        this.sendSlot(index, this.getViewers());
+                    }
+                    return false;
                 }
-                return false;
+                item = ev.getNewItem();
             }
-            item = ev.getNewItem();
-        }
 
-        if (!item.isNull()) {
-            this.slots[index] = item.clone();
-        } else {
-            this.slots[index] = Item.AIR;
-        }
+            if (!item.isNull()) {
+                this.slots.put(index, item.clone());
+            } else {
+                this.slots.remove(index);
+            }
 
-        this.onSlotChange(index, old, send);
+            this.onSlotChange(index, old, send);
+        }
         return true;
     }
 
@@ -410,6 +392,7 @@ public class FakeHumanInventory extends BaseInventory {
         }
     }
 
+
     /**
      * @see #sendArmorContents(Player[])
      */
@@ -446,11 +429,31 @@ public class FakeHumanInventory extends BaseInventory {
         }
     }
 
+
     /**
      * @see #sendArmorSlot(int, Player[])
      */
     public void sendArmorSlot(int index, Collection<Player> players) {
         this.sendArmorSlot(index, players.toArray(Player.EMPTY_ARRAY));
+    }
+
+    @Override
+    public int getFreeSpace(Item item) {
+        int maxStackSize = Math.min(item.getMaxStackSize(), this.getMaxStackSize());
+        int slots = this.slots.size() > 36 ? this.slots.size() - 4 : this.slots.size();
+        int space = (this.getSize() - slots) * maxStackSize;
+
+        for (Item slot : this.getContents().values()) {
+            if (slot == null || slot.isNull()) {
+                space += maxStackSize;
+                continue;
+            }
+
+            if (slot.equals(item, true, true)) {
+                space += maxStackSize - slot.getCount();
+            }
+        }
+        return space;
     }
 
     @Override

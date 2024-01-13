@@ -27,6 +27,7 @@ import cn.nukkit.network.connection.netty.codec.compression.ZlibCompressionCodec
 import cn.nukkit.network.connection.netty.codec.encryption.BedrockEncryptionDecoder;
 import cn.nukkit.network.connection.netty.codec.encryption.BedrockEncryptionEncoder;
 import cn.nukkit.network.connection.util.EncryptionUtils;
+import org.cloudburstmc.netty.handler.codec.raknet.common.RakSessionCodec;
 
 import javax.crypto.SecretKey;
 import java.net.SocketAddress;
@@ -249,5 +250,10 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
         if (evt instanceof RakDisconnectReason) {
             onRakNetDisconnect(ctx, (RakDisconnectReason) evt);
         }
+    }
+
+    public long getPing() {
+        RakSessionCodec rakSessionCodec = this.channel.pipeline().get(RakSessionCodec.class);
+        return rakSessionCodec.getPing();
     }
 }
