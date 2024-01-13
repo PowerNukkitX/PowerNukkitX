@@ -160,7 +160,7 @@ public class NBTIO {
     public static TreeMapCompoundTag readCompressedTreeMapCompoundTag(InputStream inputStream, ByteOrder endianness) throws IOException {
         try (InputStream gzip = new GZIPInputStream(inputStream);
              InputStream buffered = new BufferedInputStream(gzip)) {
-            return readTreeMapCompoundTag(buffered, endianness,false);
+            return readTreeMapCompoundTag(buffered, endianness, false);
         }
     }
 

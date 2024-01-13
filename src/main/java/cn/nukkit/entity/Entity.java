@@ -1431,7 +1431,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             if (player == this) {
                 continue;
             }
-            player.dataPacket(pk.clone());
+            player.dataPacket(pk);
         }
         if (this instanceof Player) {
             ((Player) this).dataPacket(pk);

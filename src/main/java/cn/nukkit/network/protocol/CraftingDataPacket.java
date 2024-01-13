@@ -75,12 +75,6 @@ public class CraftingDataPacket extends DataPacket {
     }
 
     @Override
-    public DataPacket clean() {
-        entries = new ArrayList<>();
-        return super.clean();
-    }
-
-    @Override
     public void decode() {
 
     }

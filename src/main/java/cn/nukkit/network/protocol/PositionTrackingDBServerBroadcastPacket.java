@@ -139,11 +139,6 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
         return NETWORK_ID;
     }
 
-    @Override
-    public PositionTrackingDBServerBroadcastPacket clone() {
-        return (PositionTrackingDBServerBroadcastPacket) super.clone();
-    }
-
     public enum Action {
 
 

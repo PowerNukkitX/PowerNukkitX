@@ -453,7 +453,7 @@ public class PlayerInventory extends BaseInventory {
                 continue;
             }
             pk.inventoryId = id;
-            player.dataPacket(pk.clone());
+            player.dataPacket(pk);
 
         }
     }
@@ -485,7 +485,7 @@ public class PlayerInventory extends BaseInventory {
                     continue;
                 }
                 pk.inventoryId = id;
-                player.dataPacket(pk.clone());
+                player.dataPacket(pk);
             }
         }
     }

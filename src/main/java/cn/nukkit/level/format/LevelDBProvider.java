@@ -251,7 +251,7 @@ public class LevelDBProvider implements LevelProvider {
             throw new ChunkException("Invalid Chunk Set");
         }
         long timestamp = chunk.getChanges();
-        BiConsumer<BinaryStream, Integer> callback = (stream, subchunks) -> this.getLevel().chunkRequestCallback(timestamp, X, Z, subchunks, stream.getBuffer());
+        BiConsumer<byte[], Integer> callback = (stream, subchunks) -> this.getLevel().chunkRequestCallback(timestamp, X, Z, subchunks, stream);
         return new AsyncTask() {
             @Override
             public void onRun() {
@@ -260,7 +260,7 @@ public class LevelDBProvider implements LevelProvider {
         };
     }
 
-    public final void serializeToNetwork(IChunk chunk, BiConsumer<BinaryStream, Integer> callback) {
+    public final void serializeToNetwork(IChunk chunk, BiConsumer<byte[], Integer> callback) {
         chunk.batchProcess(unsafeChunk -> {
             final var byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
             try {
@@ -300,7 +300,7 @@ public class LevelDBProvider implements LevelProvider {
                 }
                 byte[] data = new byte[byteBuf.readableBytes()];
                 byteBuf.readBytes(data);
-                callback.accept(new BinaryStream(data), subChunkCount);
+                callback.accept(data, subChunkCount);
             } finally {
                 byteBuf.release();
             }
