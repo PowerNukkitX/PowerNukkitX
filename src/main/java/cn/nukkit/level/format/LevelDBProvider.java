@@ -125,7 +125,11 @@ public class LevelDBProvider implements LevelProvider {
         boolean isValid = (new File(path + "/level.dat").exists()) && new File(path + "/db/").isDirectory();
         if (isValid) {
             for (File file : Objects.requireNonNull(new File(path + "/db/").listFiles())) {
-                if (!file.getName().endsWith(".ldb") && !file.getName().endsWith(".log") && !file.getName().equals("CURRENT") && !file.getName().startsWith("MANIFEST-")) {
+                if (!(file.getName().endsWith(".ldb") || file.getName().endsWith(".log") ||
+                        file.getName().equals("CURRENT") || file.getName().startsWith("MANIFEST-")
+                        || file.getName().equals("FIXED_MANIFEST") || file.getName().equals("LOCK")
+                        || file.getName().equals("LOG") || file.getName().equals("LOG.old")
+                )) {
                     isValid = false;
                     break;
                 }

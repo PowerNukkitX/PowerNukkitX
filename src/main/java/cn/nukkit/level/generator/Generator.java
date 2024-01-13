@@ -1,39 +1,42 @@
 package cn.nukkit.level.generator;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
-import cn.nukkit.utils.random.NukkitRandomSource;
-import cn.nukkit.scheduler.AsyncTask;
-import cn.nukkit.utils.random.RandomSource;
+import cn.nukkit.level.format.IChunk;
+import com.google.common.base.Preconditions;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
+@Slf4j
 public abstract class Generator implements BlockID {
-    protected ChunkManager chunkManager;
-    protected RandomSource random;
-    protected Level level;
     protected final Map<String, Object> options;
+    protected Level level;
+    private final Map<GenerateStage, GenerateStage> stages;
+    private GenerateStage start;
+    private GenerateStage end;
 
     public Generator(Map<String, Object> options) {
         this.options = options;
+        this.stages = new LinkedHashMap<>();
     }
 
-    public Level getLevel() {
-        return level;
-    }
-
-    public RandomSource getRandom() {
-        return random;
-    }
-
-    public ChunkManager getChunkManager() {
-        return chunkManager;
+    protected void addStage(GenerateStage generateStage) {
+        if (start == null) {
+            start = generateStage;
+            end = generateStage;
+            return;
+        }
+        stages.put(end, generateStage);
+        end = generateStage;
     }
 
     public Map<String, Object> getSettings() {
@@ -44,42 +47,40 @@ public abstract class Generator implements BlockID {
         this.level = level;
     }
 
-    public void setChunkManager(ChunkManager chunkManager) {
-        this.chunkManager = chunkManager;
-    }
-
-    public void setRandom(NukkitRandomSource random) {
-        this.random = random;
-    }
-
     public abstract String getName();
 
     public abstract DimensionData getDimensionData();
 
-    public abstract void generateChunk(int chunkX, int chunkZ);
-
-    public abstract void populateChunk(int chunkX, int chunkZ);
-
-    /**
-     * 处理需要计算的异步地形生成任务<br/>
-     * 有特殊需求的地形生成器可以覆写此方法并提供自己的逻辑<br/>
-     * 默认采用Server类的fjp线程池
-     *
-     * @param task 地形生成任务
-     */
-
-    public void handleAsyncChunkPopTask(AsyncTask task) {
-        Server.getInstance().computeThreadPool.submit(task);
+    public Future<Void> generate(IChunk chunk) {
+        return generate(chunk, end);
     }
 
-    /**
-     * 处理需要计算的异步结构生成任务<br/>
-     * 有特殊需求的地形生成器可以覆写此方法并提供自己的逻辑<br/>
-     * 默认采用Server类的fjp线程池
-     *
-     * @param task 结构生成任务
-     */
-    public void handleAsyncStructureGenTask(AsyncTask task) {
-        Server.getInstance().computeThreadPool.submit(task);
+    public Future<Void> generate(IChunk chunk, GenerateStage to) {
+        final ChunkGenerateContext context = new ChunkGenerateContext(this, level, chunk);
+        FutureTask<Void> future = new FutureTask<>(() -> {
+            final Thread thread = Thread.currentThread();
+            generate0(context, start, to, () -> {
+                IChunk c = context.getChunk();
+                level.setChunk(c.getX(), c.getZ(), c);
+                LockSupport.unpark(thread);
+            });
+            LockSupport.park();
+        }, null);
+        new Thread(future).start();
+        return future;
+    }
+
+    private void generate0(final ChunkGenerateContext context, final GenerateStage generationStage, final GenerateStage to, final Runnable callback) {
+        if (to == generationStage) {
+            generationStage.getExecutor().execute(() -> {
+                generationStage.apply(context);
+                callback.run();
+            });
+            return;
+        }
+        generationStage.getExecutor().execute(() -> {
+            generationStage.apply(context);
+            generate0(context, stages.get(generationStage), to, callback);
+        });
     }
 }

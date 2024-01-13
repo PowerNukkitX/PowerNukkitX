@@ -461,20 +461,12 @@ public final class PlayerHandle {
         player.processLogin();
     }
 
-    public void sendNextChunk() {
-        player.sendNextChunk();
-    }
-
     public void initEntity() {
         player.initEntity();
     }
 
     public void doFirstSpawn() {
         player.doFirstSpawn();
-    }
-
-    public boolean orderChunks() {
-        return player.orderChunks();
     }
 
     public void checkGroundState(double movX, double movY, double movZ, double dx, double dy, double dz) {

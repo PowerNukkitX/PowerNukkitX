@@ -80,20 +80,17 @@ import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
-import com.google.gson.annotations.Since;
 import io.netty.util.internal.EmptyArrays;
 import io.netty.util.internal.PlatformDependent;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
-import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -146,7 +143,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final int CRAFTING_STONECUTTER = 1001;
     public static final int CRAFTING_CARTOGRAPHY = 1002;
     public static final int CRAFTING_SMITHING = 1003;
-
     /**
      * 村民交易window id
      * <p>
@@ -166,7 +162,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final int GRINDSTONE_WINDOW_ID = dynamic(5);
     public static final int SMITHING_WINDOW_ID = dynamic(6);
     public final HashSet<String> achievements = new HashSet<>();
-    public final Map<Long, Boolean> usedChunks = new Long2ObjectOpenHashMap<>();
     public boolean playedBefore;
     public boolean spawned = false;
     public boolean loggedIn = false;
@@ -204,7 +199,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected final BiMap<Integer, Inventory> windowIndex = windows.inverse();
     protected final Set<Integer> permanentWindows = new IntOpenHashSet();
     protected final InetSocketAddress rawSocketAddress;
-    protected final Long2ObjectLinkedOpenHashMap<Boolean> loadQueue = new Long2ObjectLinkedOpenHashMap<>();
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
     protected final int chunksPerTick;
     protected final int spawnThreshold;
@@ -356,6 +350,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected Entity lastBeAttackEntity = null;
     private boolean foodEnabled = true;
     private final @NotNull PlayerHandle playerHandle = new PlayerHandle(this);
+    protected final PlayerChunkManager playerChunkManager;
     private boolean needDimensionChangeACK = false;
     private Boolean openSignFront = null;
     protected Boolean flySneaking = false;
@@ -386,6 +381,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.uuid = null;
         this.rawUUID = null;
 
+        this.playerChunkManager = new PlayerChunkManager(this);
         this.creationTime = System.currentTimeMillis();
     }
 
@@ -612,49 +608,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-    protected void sendNextChunk() {
-        if (!this.connected) {
-            return;
-        }
-
-        if (!loadQueue.isEmpty()) {
-            int count = 0;
-            ObjectIterator<Long2ObjectMap.Entry<Boolean>> iter = loadQueue.long2ObjectEntrySet().fastIterator();
-            while (iter.hasNext()) {
-                Long2ObjectMap.Entry<Boolean> entry = iter.next();
-                long index = entry.getLongKey();
-
-                if (count >= this.chunksPerTick) {
-                    break;
-                }
-                int chunkX = Level.getHashX(index);
-                int chunkZ = Level.getHashZ(index);
-
-                ++count;
-
-                this.usedChunks.put(index, false);
-                this.level.registerChunkLoader(this, chunkX, chunkZ, false);
-
-                if (!this.level.populateChunk(chunkX, chunkZ)) {
-                    if (this.spawned) {
-                        continue;
-                    } else {
-                        break;
-                    }
-                }
-
-                iter.remove();
-
-                PlayerChunkRequestEvent ev = new PlayerChunkRequestEvent(this, chunkX, chunkZ);
-                this.server.getPluginManager().callEvent(ev);
-                this.level.requestChunk(chunkX, chunkZ, this);
-            }
-        }
-        if (this.chunkLoadCount >= this.spawnThreshold && !this.spawned && loggedIn) {
-            this.doFirstSpawn();
-        }
-    }
-
     @Override
     protected void initEntity() {
         super.initEntity();
@@ -696,7 +649,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.getServer().sendRecipeList(this);
 
 
-        for (long index : this.usedChunks.keySet()) {
+        for (long index : playerChunkManager.getUsedChunks()) {
             int chunkX = Level.getHashX(index);
             int chunkZ = Level.getHashZ(index);
             for (Entity entity : this.level.getChunkEntities(chunkX, chunkZ).values()) {
@@ -746,92 +699,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.getHealth() < 1) {
             this.setHealth(0);
         }
-    }
-
-    protected boolean orderChunks() {
-        if (!this.connected) {
-            return false;
-        }
-
-        this.nextChunkOrderRun = 200;
-
-        loadQueue.clear();
-        Long2ObjectOpenHashMap<Boolean> lastChunk = new Long2ObjectOpenHashMap<>(this.usedChunks);
-
-        int centerX = (int) this.x >> 4;
-        int centerZ = (int) this.z >> 4;
-
-        int radius = spawned ? this.chunkRadius : (int) Math.ceil(Math.sqrt(spawnThreshold));
-        int radiusSqr = radius * radius;
-        long index;
-
-        //player center chunk
-        if (this.usedChunks.get(index = Level.chunkHash(centerX, centerZ)) != Boolean.TRUE) {
-            this.loadQueue.put(index, Boolean.TRUE);
-        }
-        lastChunk.remove(index);
-        for (int r = 1; r <= radius; r++) {
-            int rr = r * r;
-            for (int i = 0; i <= r; i++) {
-                int distanceSqr = rr + i * i;
-                if (distanceSqr > radiusSqr) continue;
-                //right includes upper right corner
-                if (this.usedChunks.get(index = Level.chunkHash(centerX + r, centerZ + i)) != Boolean.TRUE) {
-                    this.loadQueue.put(index, Boolean.TRUE);
-                }
-                lastChunk.remove(index);
-
-                //right includes lower right corner
-                if (this.usedChunks.get(index = Level.chunkHash(centerX + r, centerZ - i)) != Boolean.TRUE) {
-                    this.loadQueue.put(index, Boolean.TRUE);
-                }
-                lastChunk.remove(index);
-
-                //left includes upper left corner
-                if (this.usedChunks.get(index = Level.chunkHash(centerX - r, centerZ + i)) != Boolean.TRUE) {
-                    this.loadQueue.put(index, Boolean.TRUE);
-                }
-                lastChunk.remove(index);
-
-                //left includes lower left corner
-                if (this.usedChunks.get(index = Level.chunkHash(centerX - r, centerZ - i)) != Boolean.TRUE) {
-                    this.loadQueue.put(index, Boolean.TRUE);
-                }
-                lastChunk.remove(index);
-
-                //Exclude duplicate corners
-                if (i != r) {
-                    //top
-                    if (this.usedChunks.get(index = Level.chunkHash(centerX + i, centerZ + r)) != Boolean.TRUE) {
-                        this.loadQueue.put(index, Boolean.TRUE);
-                    }
-                    lastChunk.remove(index);
-
-                    if (this.usedChunks.get(index = Level.chunkHash(centerX - i, centerZ + r)) != Boolean.TRUE) {
-                        this.loadQueue.put(index, Boolean.TRUE);
-                    }
-                    lastChunk.remove(index);
-
-                    //end
-                    if (this.usedChunks.get(index = Level.chunkHash(centerX + i, centerZ - r)) != Boolean.TRUE) {
-                        this.loadQueue.put(index, Boolean.TRUE);
-                    }
-                    lastChunk.remove(index);
-                    if (this.usedChunks.get(index = Level.chunkHash(centerX - i, centerZ - r)) != Boolean.TRUE) {
-                        this.loadQueue.put(index, Boolean.TRUE);
-                    }
-                    lastChunk.remove(index);
-                }
-            }
-        }
-
-        LongIterator keys = lastChunk.keySet().iterator();
-        while (keys.hasNext()) {
-            index = keys.nextLong();
-            this.unloadChunk(Level.getHashX(index), Level.getHashZ(index));
-        }
-
-        return true;
     }
 
     @Override
@@ -974,16 +841,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         //before check
         if (distance > 128) {
             invalidMotion = true;
-        } else if (this.chunk == null || !this.chunk.isGenerated()) {
+        } else if (this.chunk == null || !chunk.getChunkState().canSend()) {
             IChunk chunk = this.level.getChunk(clientPos.getChunkX() >> 4, clientPos.getChunkX() >> 4, false);
-            if (chunk == null || !chunk.isGenerated()) {
+            this.chunk = chunk;
+            if (this.chunk == null || !chunk.getChunkState().canSend()) {
                 invalidMotion = true;
                 this.nextChunkOrderRun = 0;
-            } else {
                 if (this.chunk != null) {
                     this.chunk.removeEntity(this);
                 }
-                this.chunk = chunk;
             }
         }
 
@@ -2458,17 +2324,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void unloadChunk(int x, int z, Level level) {
         level = level == null ? this.level : level;
         long index = Level.chunkHash(x, z);
-        if (this.usedChunks.containsKey(index)) {
+        if (playerChunkManager.getUsedChunks().contains(index)) {
             for (Entity entity : level.getChunkEntities(x, z).values()) {
                 if (entity != this) {
                     entity.despawnFrom(this);
                 }
             }
 
-            this.usedChunks.remove(index);
+            playerChunkManager.getUsedChunks().remove(index);
         }
         level.unregisterChunkLoader(this, x, z);
-        this.loadQueue.remove(index);
     }
 
     /**
@@ -2579,9 +2444,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-        this.usedChunks.put(Level.chunkHash(x, z), Boolean.TRUE);
         this.chunkLoadCount++;
-
+        this.playerChunkManager.getUsedChunks().add(Level.chunkHash(x, z));
         this.dataPacket(packet);
 
         if (this.spawned) {
@@ -3270,17 +3134,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-        NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
-        packet.position = this.asBlockVector3();
-        packet.radius = viewDistance << 4;
-        this.dataPacket(packet);
-
         if (this.nextChunkOrderRun-- <= 0 || this.chunk == null) {
-            this.orderChunks();
+            playerChunkManager.tick();
         }
 
-        if (!this.loadQueue.isEmpty() || !this.spawned) {
-            this.sendNextChunk();
+        if (this.chunkLoadCount >= this.spawnThreshold && !this.spawned && loggedIn) {
+            this.doFirstSpawn();
         }
     }
 
@@ -3889,12 +3748,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.hiddenPlayers.clear();
 
             this.removeAllWindows(true);
-
-            for (long index : new ArrayList<>(this.usedChunks.keySet())) {
-                int chunkX = Level.getHashX(index);
-                int chunkZ = Level.getHashZ(index);
+            LongIterator iterator = this.playerChunkManager.getUsedChunks().iterator();
+            while (iterator.hasNext()) {
+                long l = iterator.nextLong();
+                int chunkX = Level.getHashX(l);
+                int chunkZ = Level.getHashZ(l);
                 this.level.unregisterChunkLoader(this, chunkX, chunkZ);
-                this.usedChunks.remove(index);
+                iterator.remove();
 
                 for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
                     if (entity != this) {
@@ -3925,8 +3785,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     String.valueOf(this.getPort()),
                     this.getServer().getLanguage().tr(reason)));
             this.windows.clear();
-            this.usedChunks.clear();
-            this.loadQueue.clear();
+            this.playerChunkManager.getUsedChunks().clear();
             this.hasSpawned.clear();
             this.spawnPosition = null;
 
@@ -5209,7 +5068,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @Override
     public void onChunkChanged(IChunk chunk) {
-        this.usedChunks.remove(Level.chunkHash(chunk.getX(), chunk.getZ()));
+        this.playerChunkManager.getUsedChunks().remove(Level.chunkHash(chunk.getX(), chunk.getZ()));
     }
 
     @Override
@@ -5217,10 +5076,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     }
 
-    @Override
-    public void onChunkPopulated(IChunk chunk) {
-
-    }
 
     @Override
     public void onChunkUnloaded(IChunk chunk) {
@@ -5285,12 +5140,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.dataPacket(spawnPosition);
 
             // Remove old chunks
-            for (long index : new ArrayList<>(this.usedChunks.keySet())) {
+            for (long index : new ArrayList<>(playerChunkManager.getUsedChunks())) {
                 int chunkX = Level.getHashX(index);
                 int chunkZ = Level.getHashZ(index);
                 this.unloadChunk(chunkX, chunkZ, oldLevel);
             }
-            this.usedChunks.clear();
+            playerChunkManager.getUsedChunks().clear();
 
             SetTimePacket setTime = new SetTimePacket();
             setTime.time = level.getTime();
@@ -5334,6 +5189,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public synchronized void setLocale(Locale locale) {
         this.locale.set(locale);
+    }
+
+    @UnmodifiableView
+    public Set<Long> getUsedChunks() {
+        return Collections.unmodifiableSet(playerChunkManager.getUsedChunks());
     }
 
     @Override
@@ -5963,4 +5823,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.flySneaking;
     }
 
+    public int getChunkSendCountPerTick() {
+        return chunksPerTick;
+    }
 }

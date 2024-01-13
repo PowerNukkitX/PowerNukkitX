@@ -1,7 +1,6 @@
 package cn.nukkit.level.generator.object.legacytree;
 
 import cn.nukkit.block.property.enums.WoodType;
-import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.utils.random.RandomSource;
 

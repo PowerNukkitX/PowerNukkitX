@@ -1,7 +1,6 @@
 package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.BlockID;
-import cn.nukkit.level.ChunkManager;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.RandomSource;
 

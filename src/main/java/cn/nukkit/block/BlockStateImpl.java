@@ -26,7 +26,7 @@ record BlockStateImpl(String identifier,
 ) implements BlockState {
     private static CompoundTagView buildBlockStateTag(String identifier, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
         //build block state tag
-        var states = new CompoundTag("", new TreeMap<>());
+        var states = new CompoundTag("states", new TreeMap<>());
         for (var value : propertyValues) {
             switch (value.getPropertyType().getType()) {
                 case INT -> states.putInt(value.getPropertyType().getName(), (int) value.getSerializedValue());
@@ -34,7 +34,7 @@ record BlockStateImpl(String identifier,
                 case BOOLEAN -> states.putByte(value.getPropertyType().getName(), (byte) value.getSerializedValue());
             }
         }
-        return new CompoundTagView(new LinkedCompoundTag()
+        return new CompoundTagView(new LinkedCompoundTag("")
                 .putString("name", identifier)
                 .putCompound("states", states)
                 .putInt("version", ProtocolInfo.BLOCK_STATE_VERSION_NO_REVISION));

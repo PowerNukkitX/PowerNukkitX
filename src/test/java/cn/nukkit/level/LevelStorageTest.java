@@ -3,10 +3,13 @@ package cn.nukkit.level;
 import cn.nukkit.BlockRegistryExtension;
 import cn.nukkit.LevelDBProviderExtension;
 import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockOakLog;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockWoodenButton;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.LevelDBProvider;
+import cn.nukkit.level.format.bitarray.BitArray;
+import cn.nukkit.level.format.bitarray.BitArrayVersion;
 import cn.nukkit.level.format.palette.Palette;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -15,12 +18,14 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.HashUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.io.FileOutputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,6 +48,26 @@ public class LevelStorageTest {
         IChunk chunk = levelDBProvider.getChunk(0, 0);
         Assertions.assertNotNull(chunk);
         Assertions.assertEquals("minecraft:cauldron", chunk.getBlockState(0, 284, 0).getIdentifier());
+    }
+
+    @Test
+    @SneakyThrows
+    void testWriteChunk(LevelDBProvider levelDBProvider) {
+        IChunk chunk = levelDBProvider.getChunk(0, 0);
+        chunk.setBlockState(0, 50, 0, BlockOakLog.PROPERTIES.getDefaultState());
+        levelDBProvider.writeChunk(chunk);
+        chunk.setX(1);
+        chunk.setZ(1);
+        levelDBProvider.writeChunk(chunk);
+        chunk.setX(2);
+        chunk.setZ(2);
+        levelDBProvider.writeChunk(chunk);
+        IChunk c1 = levelDBProvider.getChunk(0, 0);
+        IChunk c2 = levelDBProvider.getChunk(1, 1);
+        IChunk c3 = levelDBProvider.getChunk(2, 2);
+        Assertions.assertEquals("minecraft:oak_log", c1.getBlockState(0, 50, 0).getIdentifier());
+        Assertions.assertEquals("minecraft:oak_log", c2.getBlockState(0, 50, 0).getIdentifier());
+        Assertions.assertEquals("minecraft:oak_log", c3.getBlockState(0, 50, 0).getIdentifier());
     }
 
     @Test
@@ -81,26 +106,5 @@ public class LevelStorageTest {
         IChunk newChunk = levelDBProvider.readChunk(0, 0);
         Assertions.assertNotNull(newChunk);
         Assertions.assertEquals("minecraft:wooden_button", chunk.getBlockState(0, 100, 0).getIdentifier());
-    }
-
-    @SneakyThrows
-    @Test
-    void testAirStateHash() {
-        CompoundTag tag = BlockAir.STATE.getBlockStateTag();
-        CompoundTag newTag = new CompoundTag(new HashMap<>(tag.getTags()));
-        CompoundTag states;
-        states = new CompoundTag(new TreeMap<>());
-        for (var e : newTag.getCompound("states").getTags().entrySet()) {
-            states.put(e.getKey(), e.getValue());
-        }
-        newTag.put("states", states);
-        if (newTag.contains("version")) {
-            newTag.remove("version");
-        }
-        byte[] write = NBTIO.write(newTag, ByteOrder.LITTLE_ENDIAN);
-        System.out.println(new String(BlockAir.STATE.getBlockStateTag().toSNBT(4)));
-        System.out.println(new String(new byte[]{0, 0}));
-        System.out.println(new String(new byte[]{5, 0, 66, 108, 111, 99, 107}));
-        System.out.println(Arrays.toString(write));
     }
 }

@@ -59,7 +59,6 @@ public class Network {
     }
 
     record NetWorkStatisticData(long upload, long download) {
-
     }
 
     public double getUpload() {

@@ -80,11 +80,11 @@ public final class Palette<V> {
         for (int i = 0; i < size; i++) this.palette.add(deserializer.deserialize(ByteBufVarInt.readInt(byteBuf)));
     }
 
-    public void writeToStoragePersistent(ByteBuf byteBuf, cn.nukkit.level.format.palette.PersistentDataSerializer<V> serializer) {
+    public void writeToStoragePersistent(ByteBuf byteBuf, PersistentDataSerializer<V> serializer) {
         byteBuf.writeByte(Palette.getPaletteHeader(this.bitArray.version(), false));
         for (int word : this.bitArray.words()) byteBuf.writeIntLE(word);
         byteBuf.writeIntLE(this.palette.size());
-        try (final ByteBufOutputStream bufOutputStream = new ByteBufOutputStream(byteBuf);) {
+        try (final ByteBufOutputStream bufOutputStream = new ByteBufOutputStream(byteBuf)) {
             for (V value : this.palette) {
                 NBTIO.write(serializer.serialize(value), bufOutputStream, ByteOrder.LITTLE_ENDIAN);
             }
@@ -115,9 +115,9 @@ public final class Palette<V> {
     }
 
     private void addBlockPalette(ByteBuf byteBuf,
-                                 cn.nukkit.level.format.palette.RuntimeDataDeserializer<V> deserializer,
+                                 RuntimeDataDeserializer<V> deserializer,
                                  NBTInputStream input) throws IOException {
-        Pair<Integer, SemVersion> p = cn.nukkit.level.format.palette.PaletteUtils.fastReadBlockHash(input, byteBuf);
+        Pair<Integer, SemVersion> p = PaletteUtils.fastReadBlockHash(input, byteBuf);
         if (p.left() == null) {
             CompoundTag oldBlockNbt = (CompoundTag) Tag.readNamedTag(input);
             SemVersion semVersion = p.right();

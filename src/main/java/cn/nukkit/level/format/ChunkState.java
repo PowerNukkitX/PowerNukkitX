@@ -9,5 +9,9 @@ public enum ChunkState {
     NEW,
     GENERATED,
     POPULATED,
-    FINISHED
+    FINISHED;
+
+    public boolean canSend() {
+        return this.ordinal() >= 2;
+    }
 }

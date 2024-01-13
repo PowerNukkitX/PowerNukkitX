@@ -60,7 +60,7 @@ public class PaletteUtils {
                             return Pair.of(null, getSemVersion(version));
                         }
                         byte[] result = new byte[end - byteBuf.readerIndex()];
-                        byteBuf.readBytes(result);
+                        input.readFully(result);
                         result[result.length - 1] = 0;//because an End Tag be put when at the end serialize tag
 
                         input.skipBytes(input.readUnsignedShort());//UTF

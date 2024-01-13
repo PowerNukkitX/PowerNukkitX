@@ -1175,13 +1175,12 @@ public class Server {
 
         this.checkTickUpdates(this.tickCounter, tickTime);
 
-        for (Player player : new ArrayList<>(this.players.values())) {
+        for (Player player : this.players.values()) {
             player.checkNetwork();
         }
 
         if ((this.tickCounter & 0b1111) == 0) {
             this.titleTick();
-            this.network.resetStatistics();
             this.maxTick = 20;
             this.maxUse = 0;
 

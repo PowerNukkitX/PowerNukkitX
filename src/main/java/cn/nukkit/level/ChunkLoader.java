@@ -29,7 +29,5 @@ public interface ChunkLoader {
 
     void onChunkUnloaded(IChunk chunk);
 
-    void onChunkPopulated(IChunk chunk);
-
     void onBlockChanged(Vector3 block);
 }

@@ -196,7 +196,11 @@ public class RakNetInterface implements SourceInterface {
 
     @Override
     public void shutdown() {
-        this.serverSessionMap.values().forEach(session -> session.disconnect("Shutdown"));
+        this.serverSessionMap.values().forEach(session -> {
+            if (session.isConnected()) {
+                session.disconnect("Shutdown");
+            }
+        });
         this.channel.close();
     }
 }
