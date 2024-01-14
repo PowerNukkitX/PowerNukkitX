@@ -4,12 +4,17 @@ import cn.nukkit.GameMockExtension;
 import cn.nukkit.block.BlockDiamondOre;
 import cn.nukkit.block.BlockGoldOre;
 import cn.nukkit.level.biome.BiomeID;
+import cn.nukkit.level.format.Chunk;
+import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.LevelDBProvider;
+import cn.nukkit.level.format.UnsafeChunk;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,6 +43,18 @@ public class ChunkTest {
     void test_populateSkyLight(LevelDBProvider levelDBProvider) {
         IChunk chunk = levelDBProvider.getChunk(0, 0);
         chunk.populateSkyLight();
+    }
+
+    @Test
+    @SneakyThrows
+    void test_getOrCreateSection(LevelDBProvider levelDBProvider) {
+        IChunk chunk = levelDBProvider.getChunk(0, 0);
+        Method getOrCreateSection = Chunk.class.getDeclaredMethod("getOrCreateSection", int.class);
+        getOrCreateSection.setAccessible(true);
+        ChunkSection s1 = (ChunkSection) getOrCreateSection.invoke(chunk, -4);
+        Assertions.assertEquals(-4, s1.y());
+        ChunkSection s2 = (ChunkSection) getOrCreateSection.invoke(chunk, 19);
+        Assertions.assertEquals(19, s2.y());
     }
 
     @Test

@@ -4,6 +4,7 @@ import cn.nukkit.block.BlockBedrock;
 import cn.nukkit.block.BlockDirt;
 import cn.nukkit.block.BlockGrass;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 
@@ -32,6 +33,9 @@ public final class GenerateStages {
                             chunk.setBlockState(x, y, z, bedrock);
                         } else if (y == 4) chunk.setBlockState(x, y, z, grass);
                         else chunk.setBlockState(x, y, z, dirt);
+                    }
+                    for (int i = context.getGenerator().getDimensionData().getMinSectionY(); i < context.getGenerator().getDimensionData().getMinSectionY(); i++) {
+                        chunk.setBiomeId(x, i, z, BiomeID.PLAINS);
                     }
                 }
             }

@@ -46,7 +46,7 @@ public class RakNetInterface implements SourceInterface {
     private Network network;
 
     public RakNetInterface(Server server) {
-        this(server, 4, new ThreadFactoryBuilder().setNameFormat("Netty Server IO #%d").build());
+        this(server, Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setNameFormat("Netty Server IO #%d").build());
     }
 
     public RakNetInterface(Server server, int nettyThreadNumber, ThreadFactory threadFactory) {

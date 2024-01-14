@@ -271,26 +271,45 @@ public class LevelDBProvider implements LevelProvider {
             try {
 
                 final ChunkSection[] sections = unsafeChunk.getSections();
-                Int2ObjectArrayMap<ChunkSection> mapSections = new Int2ObjectArrayMap<>();
+                /*int subChunkCount = 0;
                 for (int i = 0; i < sections.length; i++) {
                     final ChunkSection section = sections[i];
                     if (section == null || section.isEmpty()) {
-                        continue;
+                        break;
                     }
-                    mapSections.put(i, section);
+                    subChunkCount++;
                 }
+                subChunkCount++;//length
 
                 //write block
-                for (var entry : mapSections.int2ObjectEntrySet()) {
-                    entry.getValue().writeToNetwork(byteBuf);
+                for (int i = 0; i < subChunkCount; i++) {
+                    assert sections[i] != null;
+                    sections[i].writeToNetwork(byteBuf);
                 }
                 // Write biomes
                 Palette<Integer> lastBiomes = null;
-                for (var entry : mapSections.int2ObjectEntrySet()) {
-                    ChunkSection value = entry.getValue();
-                    value.biomes().writeToNetwork(byteBuf, Integer::intValue, lastBiomes);
-                    lastBiomes = value.biomes();
+                for (int i = 0; i < subChunkCount; i++) {
+                    sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue, lastBiomes);
+                    lastBiomes = sections[i].biomes();
+                }*/
+
+                int subChunkCount = unsafeChunk.getDimensionData().getChunkSectionCount() - 1; // index
+                while (subChunkCount >= 0 && (sections[subChunkCount] == null || sections[subChunkCount].isEmpty())) {
+                    subChunkCount--;
                 }
+                subChunkCount++; // length
+
+                //write block
+                for (int i = 0; i < subChunkCount; i++) {
+                    sections[i].writeToNetwork(byteBuf);
+                }
+                // Write biomes
+                Palette<Integer> lastBiomes = null;
+                for (int i = 0; i < subChunkCount; i++) {
+                    sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue, lastBiomes);
+                    lastBiomes = sections[i].biomes();
+                }
+
                 byteBuf.writeByte(0); // edu- border blocks
 
                 // Block entities
@@ -308,7 +327,7 @@ public class LevelDBProvider implements LevelProvider {
                 }
                 byte[] data = new byte[byteBuf.readableBytes()];
                 byteBuf.readBytes(data);
-                callback.accept(data, mapSections.size());
+                callback.accept(data, subChunkCount);
             } finally {
                 byteBuf.release();
             }

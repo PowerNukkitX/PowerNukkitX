@@ -53,10 +53,10 @@ public class Chunk implements IChunk {
     protected final StampedLock blockLock;
     protected final StampedLock heightAndBiomeLock;
     protected final StampedLock lightLock;
+    protected final LevelProvider provider;
     protected boolean isInit;
     protected List<CompoundTag> blockEntityNBT;
     protected List<CompoundTag> entityNBT;
-    protected LevelProvider provider;
 
     private Chunk(
             final int chunkX,
@@ -602,7 +602,6 @@ public class Chunk implements IChunk {
         for (BlockEntity blockEntity : new ArrayList<>(this.getBlockEntities().values())) {
             blockEntity.close();
         }
-        this.provider = null;
         return true;
     }
 
