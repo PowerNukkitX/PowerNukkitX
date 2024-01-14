@@ -1,6 +1,6 @@
 package cn.nukkit.block;
 
-import cn.nukkit.BlockRegistryExtension;
+import cn.nukkit.GameMockExtension;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.*;
 
-@ExtendWith(BlockRegistryExtension.class)
+@ExtendWith(GameMockExtension.class)
 public class BlockPropertiesTest {
 
     @Test

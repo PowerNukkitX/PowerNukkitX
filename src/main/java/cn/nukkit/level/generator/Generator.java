@@ -4,8 +4,8 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
-import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -49,6 +49,7 @@ public abstract class Generator implements BlockID {
 
     public abstract String getName();
 
+    @NotNull
     public abstract DimensionData getDimensionData();
 
     public Future<Void> generate(IChunk chunk) {

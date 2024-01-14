@@ -213,8 +213,8 @@ public class Chunk implements IChunk {
             setChanged();
             return getOrCreateSection(y >> 4).getAndSetBlockState(x, y & 0x0f, z, blockstate, layer);
         } finally {
-            removeInvalidTile(x, y, z);
             blockLock.unlockWrite(stamp);
+            removeInvalidTile(x, y, z);
         }
     }
 
@@ -225,8 +225,8 @@ public class Chunk implements IChunk {
             setChanged();
             getOrCreateSection(y >> 4).setBlockState(x, y & 0x0f, z, blockstate, layer);
         } finally {
-            removeInvalidTile(x, y, z);
             blockLock.unlockWrite(stamp);
+            removeInvalidTile(x, y, z);
         }
     }
 

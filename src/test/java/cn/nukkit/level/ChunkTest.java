@@ -1,24 +1,19 @@
 package cn.nukkit.level;
 
-import cn.nukkit.BlockRegistryExtension;
-import cn.nukkit.LevelDBProviderExtension;
+import cn.nukkit.GameMockExtension;
 import cn.nukkit.block.BlockDiamondOre;
 import cn.nukkit.block.BlockGoldOre;
-import cn.nukkit.block.BlockOre;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.LevelDBProvider;
-import cn.nukkit.registry.BlockRegistry;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
-@ExtendWith({BlockRegistryExtension.class, LevelDBProviderExtension.class})
+@ExtendWith({GameMockExtension.class})
 public class ChunkTest {
     @Test
     void testSetBlockState(LevelDBProvider levelDBProvider) {

@@ -2111,7 +2111,6 @@ public class Level implements Metadatable {
      * @param update 是否进行方块更新
      * @return 是否设置成功
      */
-
     public boolean setBlock(int x, int y, int z, int layer, Block block, boolean direct, boolean update) {
         if (!isYInRange(y) || layer < 0 || layer > this.requireProvider().getMaximumLayer()) {
             return false;
@@ -3239,7 +3238,7 @@ public class Level implements Metadatable {
 
     @SuppressWarnings("deprecation")
     public void requestChunk(int x, int z, Player player) {
-        Preconditions.checkState(player.getLoaderId() > 0, player.getName() + " has no chunk loader");
+        Preconditions.checkArgument(player.getLoaderId() > 0, player.getName() + " has no chunk loader");
         long index = Level.chunkHash(x, z);
         var casLock = new AtomicBoolean(false);
         Int2ObjectNonBlockingMap<Player> playerInt2ObjectMap = this.chunkSendQueue.computeIfAbsent(index, (key) -> {

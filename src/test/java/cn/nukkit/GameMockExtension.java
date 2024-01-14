@@ -1,20 +1,42 @@
 package cn.nukkit;
 
+import cn.nukkit.block.BlockComposter;
 import cn.nukkit.command.SimpleCommandMap;
+import cn.nukkit.dispenser.DispenseBehaviorRegister;
+import cn.nukkit.entity.Attribute;
+import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.event.server.QueryRegenerateEvent;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.blockstateupdater.BlockStateUpdater;
+import cn.nukkit.level.blockstateupdater.BlockStateUpdaterBase;
+import cn.nukkit.level.format.LevelDBProvider;
+import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.level.generator.Flat;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.RakNetInterface;
 import cn.nukkit.network.SourceInterface;
+import cn.nukkit.network.connection.BedrockServerSession;
 import cn.nukkit.permission.BanList;
 import cn.nukkit.plugin.PluginManager;
+import cn.nukkit.potion.Effect;
+import cn.nukkit.potion.Potion;
+import cn.nukkit.registry.BlockRegistry;
+import cn.nukkit.registry.RegisterException;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.ServerScheduler;
+import cn.nukkit.tags.BiomeTags;
+import cn.nukkit.tags.BlockTags;
+import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.Config;
-import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.collection.FreezableArrayManager;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -22,6 +44,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -30,7 +53,7 @@ import java.util.concurrent.locks.LockSupport;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.doCallRealMethod;
 
-public class GameMockExtension extends MockitoExtension {
+public class GameMockExtension extends MockitoExtension implements BeforeAllCallback, AfterAllCallback {
     final static Server server = mock(Server.class);
     static BanList banList = mock(BanList.class);
     static BaseLang baseLang = mock(BaseLang.class);
@@ -43,10 +66,40 @@ public class GameMockExtension extends MockitoExtension {
     static QueryRegenerateEvent queryRegenerateEvent;
     static RakNetInterface rakNetInterface;
     static MockedStatic<Server> serverMockedStatic;
-    static GameMockExtension gameMockExtension;
+    final static GameMockExtension gameMockExtension;
+    final static BlockRegistry BLOCK_REGISTRY;
+    final static Player player;
+    static Level level;
 
     static {
         Registries.PACKET.init();
+        Registries.ENTITY.init();
+        Profession.init();
+        Registries.BLOCKENTITY.init();
+        String a = BlockTags.ACACIA;
+        String b = ItemTags.ARROW;
+        String c = BiomeTags.WARM;
+        BlockStateUpdater d = BlockStateUpdaterBase.INSTANCE;
+        Registries.BLOCKSTATE_ITEMMETA.init();
+        Registries.BLOCK.init();
+        Enchantment.init();
+        Registries.ITEM_RUNTIMEID.init();
+        Potion.init();
+        Registries.ITEM.init();
+        Registries.CREATIVE.init();
+        Registries.BIOME.init();
+        Registries.FUEL.init();
+        Registries.GENERATOR.init();
+        Effect.init();
+        Attribute.init();
+        BlockComposter.init();
+        DispenseBehaviorRegister.init();
+        BLOCK_REGISTRY = Registries.BLOCK;
+        try {
+            Registries.GENERATOR.register("normal", Flat.class);
+        } catch (RegisterException e) {
+            throw new RuntimeException(e);
+        }
         config = new Config(new File("src/test/resources/default-nukkit.yml"));
         try {
             FieldUtils.writeDeclaredField(server, "config", config, true);
@@ -95,6 +148,9 @@ public class GameMockExtension extends MockitoExtension {
         when(server.getQueryInformation()).thenReturn(queryRegenerateEvent);
         when(server.getNetwork()).thenCallRealMethod();
         when(server.isEnableSnappy()).thenCallRealMethod();
+        when(server.getAutoSave()).thenReturn(true);
+        when(server.getTick()).thenReturn(1);
+        when(server.getViewDistance()).thenReturn(4);
 
         try {
             FieldUtils.writeDeclaredField(server, "levelArray", Level.EMPTY_ARRAY, true);
@@ -114,16 +170,46 @@ public class GameMockExtension extends MockitoExtension {
         gameMockExtension = new GameMockExtension();
     }
 
+    //mock player
+    static {
+        SourceInterface sourceInterface = mock(SourceInterface.class);
+        BedrockServerSession serverSession = mock(BedrockServerSession.class);
+        when(sourceInterface.getSession(any())).thenReturn(serverSession);
+        doNothing().when(serverSession).sendPacketImmediately(any());
+        doNothing().when(serverSession).sendPacket(any());
+        player = new Player(sourceInterface, 0, new InetSocketAddress("1.1.1.1", 55555));
+        player.loggedIn = true;
+        player.verified = true;
+        player.username = "test";
+        player.iusername = "test";
+    }
+
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext context) throws ParameterResolutionException {
         boolean b = super.supportsParameter(parameterContext, context);
-        return b || parameterContext.getParameter().getType() == GameMockExtension.class;
+        return b || parameterContext.getParameter().getType() == GameMockExtension.class ||
+                parameterContext.getParameter().getType().equals(BlockRegistry.class)
+                || parameterContext.getParameter().getType().equals(LevelDBProvider.class)
+                || parameterContext.getParameter().getType().equals(Player.class)
+                || parameterContext.getParameter().getType().equals(Level.class);
     }
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext context) throws ParameterResolutionException {
         if (parameterContext.getParameter().getType() == GameMockExtension.class) {
             return gameMockExtension;
+        }
+        if (parameterContext.getParameter().getType().equals(BlockRegistry.class)) {
+            return BLOCK_REGISTRY;
+        }
+        if (parameterContext.getParameter().getType().equals(LevelDBProvider.class)) {
+            return level.getProvider();
+        }
+        if (parameterContext.getParameter().getType().equals(Level.class)) {
+            return level;
+        }
+        if (parameterContext.getParameter().getType().equals(Player.class)) {
+            return player;
         }
         return super.resolveParameter(parameterContext, context);
     }
@@ -155,5 +241,21 @@ public class GameMockExtension extends MockitoExtension {
         t.setDaemon(true);
         t.start();
         LockSupport.park();
+    }
+
+    @Override
+    public void beforeAll(ExtensionContext context) throws Exception {
+        FileUtils.copyDirectory(new File("src/test/resources/level"), new File("src/test/resources/newlevel"));
+        level = new Level(Server.getInstance(), "newlevel", "src/test/resources/newlevel", LevelDBProvider.class);
+        level.initLevel();
+
+        player.level = level;
+        player.setPosition(new Vector3(0, 100, 0));
+    }
+
+    @Override
+    public void afterAll(ExtensionContext context) throws Exception {
+        level.close();
+        FileUtils.deleteDirectory(new File("src/test/resources/newlevel"));
     }
 }

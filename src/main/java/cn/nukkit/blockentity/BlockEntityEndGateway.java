@@ -135,7 +135,7 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
                 int chunkZ = (exitPortal.getZ() >> 4) + z;
                 IChunk chunk = this.getLevel().getChunk(chunkX, chunkZ, false);
                 if (chunk == null || !(chunk.isGenerated() || chunk.isPopulated())) {
-                    this.getLevel().generateChunk(chunkX, chunkZ, true);
+                    this.getLevel().generateChunk(chunkX, chunkZ);
                 }
             }
         }

@@ -46,7 +46,6 @@ public class RakNetInterfaceTest {
 
     @Test
     void test(GameMockExtension gameMockExtension) {
-        Network network = Server.getInstance().getNetwork();
         int mtu = RakConstants.MAXIMUM_MTU_SIZE;
         System.out.println("Testing client with MTU " + mtu);
         System.out.println(Server.getInstance());
