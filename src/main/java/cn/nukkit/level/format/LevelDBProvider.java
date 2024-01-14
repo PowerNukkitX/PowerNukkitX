@@ -130,6 +130,7 @@ public class LevelDBProvider implements LevelProvider {
                         file.getName().equals("CURRENT") || file.getName().startsWith("MANIFEST-")
                         || file.getName().equals("FIXED_MANIFEST") || file.getName().equals("LOCK")
                         || file.getName().equals("LOG") || file.getName().equals("LOG.old")
+                        || file.getName().equals("lost")
                 )) {
                     isValid = false;
                     break;
@@ -270,42 +271,42 @@ public class LevelDBProvider implements LevelProvider {
             final var byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
             try {
 
-                final ChunkSection[] sections = unsafeChunk.getSections();
-                /*int subChunkCount = 0;
-                for (int i = 0; i < sections.length; i++) {
-                    final ChunkSection section = sections[i];
-                    if (section == null || section.isEmpty()) {
-                        break;
-                    }
-                    subChunkCount++;
-                }
-                subChunkCount++;//length
+                ChunkSection[] sections = unsafeChunk.getSections();
 
+                boolean first = true;
+                int firstExist = -1;
+                int r = -1;
+                int l;
+                int subChunkCount = unsafeChunk.getDimensionData().getChunkSectionCount() - 1;
+                while (subChunkCount >= 0) {
+                    if (sections[subChunkCount] != null) {
+                        if (first) {
+                            firstExist = subChunkCount;
+                            r = subChunkCount;
+                            first = false;
+                        }
+                        l = subChunkCount;
+                        if (r - l == 1) {
+                            r = l;
+                        } else if (r - l > 1) {
+                            for (int i = l + 1; i < r; i++) {
+                                unsafeChunk.setSection(i + getDimensionData().getMinSectionY(), new ChunkSection((byte) (i + getDimensionData().getMinSectionY())));
+                            }
+                            r = l;
+                        }
+                    }
+                    subChunkCount--;
+                }
+                firstExist++;
+                sections = unsafeChunk.getSections();
                 //write block
-                for (int i = 0; i < subChunkCount; i++) {
+                for (int i = 0; i < firstExist; i++) {
                     assert sections[i] != null;
                     sections[i].writeToNetwork(byteBuf);
                 }
                 // Write biomes
                 Palette<Integer> lastBiomes = null;
-                for (int i = 0; i < subChunkCount; i++) {
-                    sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue, lastBiomes);
-                    lastBiomes = sections[i].biomes();
-                }*/
-
-                int subChunkCount = unsafeChunk.getDimensionData().getChunkSectionCount() - 1; // index
-                while (subChunkCount >= 0 && (sections[subChunkCount] == null || sections[subChunkCount].isEmpty())) {
-                    subChunkCount--;
-                }
-                subChunkCount++; // length
-
-                //write block
-                for (int i = 0; i < subChunkCount; i++) {
-                    sections[i].writeToNetwork(byteBuf);
-                }
-                // Write biomes
-                Palette<Integer> lastBiomes = null;
-                for (int i = 0; i < subChunkCount; i++) {
+                for (int i = 0; i < firstExist; i++) {
                     sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue, lastBiomes);
                     lastBiomes = sections[i].biomes();
                 }
@@ -327,7 +328,7 @@ public class LevelDBProvider implements LevelProvider {
                 }
                 byte[] data = new byte[byteBuf.readableBytes()];
                 byteBuf.readBytes(data);
-                callback.accept(data, subChunkCount);
+                callback.accept(data, firstExist);
             } finally {
                 byteBuf.release();
             }

@@ -13,6 +13,7 @@ public class GeneratorRegistry implements IRegistry<String, Class<? extends Gene
     public void init() {
         try {
             register("flat", Flat.class);
+            register("normal", Flat.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }
