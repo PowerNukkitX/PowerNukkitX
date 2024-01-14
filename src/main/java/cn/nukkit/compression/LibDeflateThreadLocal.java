@@ -25,7 +25,7 @@ public class LibDeflateThreadLocal implements ZlibProvider {
     private static final ThreadLocal<ByteBuffer> DIRECT_BUFFER = ThreadLocal.withInitial(() -> {
         var maximumSizePerChunk = 1024 * 1024;
         if (Server.getInstance() != null) {
-            maximumSizePerChunk = Server.getInstance().getMaximumSizePerChunk();
+            maximumSizePerChunk = Server.getInstance().compressionBufferSize();
         }
         if (maximumSizePerChunk < 8192 || maximumSizePerChunk > 1024 * 1024 * 16) {
             return null;

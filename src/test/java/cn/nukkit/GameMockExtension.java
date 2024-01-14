@@ -6,6 +6,10 @@ import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.event.server.QueryRegenerateEvent;
+import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.PlayerEnderChestInventory;
+import cn.nukkit.inventory.PlayerInventory;
+import cn.nukkit.inventory.PlayerOffhandInventory;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.level.Level;
@@ -44,11 +48,15 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import sun.misc.Unsafe;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.LockSupport;
 
@@ -121,7 +129,7 @@ public class GameMockExtension extends MockitoExtension implements BeforeAllCall
 
         doCallRealMethod().when(baseLang).tr(anyString());
         when(baseLang.tr(anyString(), anyString())).thenAnswer(t -> "mock tr " + t.getArgument(0));
-
+        when(simpleCommandMap.getCommands()).thenReturn(Collections.EMPTY_MAP);
         pluginManager = new PluginManager(server, simpleCommandMap);
         when(server.getPluginManager()).thenReturn(pluginManager);
 
@@ -150,13 +158,18 @@ public class GameMockExtension extends MockitoExtension implements BeforeAllCall
         when(server.getQueryInformation()).thenReturn(queryRegenerateEvent);
         when(server.getNetwork()).thenCallRealMethod();
         when(server.isEnableSnappy()).thenCallRealMethod();
-        when(server.getAutoSave()).thenReturn(true);
+        when(server.getAutoSave()).thenReturn(false);
         when(server.getTick()).thenReturn(1);
         when(server.getViewDistance()).thenReturn(4);
         CraftingManager mock = mock(CraftingManager.class);
         when(mock.matchBrewingRecipe(any(), any())).thenReturn(null);
         when(server.getCraftingManager()).thenReturn(mock);
-
+        ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+        when(server.getComputeThreadPool()).thenReturn(pool);
+        when(server.getCommandMap()).thenReturn(simpleCommandMap);
+        when(server.getScoreboardManager()).thenReturn(null);
+        when(server.getChunkUnloadDelay()).thenReturn(100);
+        doNothing().when(server).sendRecipeList(any());
         try {
             FieldUtils.writeDeclaredField(server, "levelArray", Level.EMPTY_ARRAY, true);
             FieldUtils.writeDeclaredField(server, "autoSave", false, true);
@@ -187,6 +200,17 @@ public class GameMockExtension extends MockitoExtension implements BeforeAllCall
         player.verified = true;
         player.username = "test";
         player.iusername = "test";
+        player.setInventories(new Inventory[]{
+                new PlayerInventory(player),
+                new PlayerOffhandInventory(player),
+                new PlayerEnderChestInventory(player)
+        });
+        try {
+            FieldUtils.writeDeclaredField(player, "foodData", new PlayerFood(player, 20, 20), true);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override

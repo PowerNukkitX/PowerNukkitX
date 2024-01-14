@@ -1,6 +1,7 @@
 package cn.nukkit.level;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.event.player.PlayerChunkRequestEvent;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
@@ -84,7 +85,17 @@ public final class PlayerChunkManager {
     private void removeOutOfRadiusChunks() {
         Sets.SetView<Long> difference = Sets.difference(sentChunks, inRadiusChunks);
         //卸载超出范围的区块
-        difference.forEach(hash -> player.getLevel().unloadChunkRequest(Level.getHashX(hash), Level.getHashZ(hash)));
+        difference.forEach(hash -> {
+            int x = Level.getHashX(hash);
+            int z = Level.getHashZ(hash);
+            if (player.level.unregisterChunkLoader(player, x, z)) {
+                for (Entity entity : player.level.getChunkEntities(x, z).values()) {
+                    if (entity != player) {
+                        entity.despawnFrom(player);
+                    }
+                }
+            }
+        });
         //剩下sentChunks和inRadiusChunks的交集
         sentChunks.removeAll(difference);
     }

@@ -11,6 +11,7 @@ public final class Registries {
     public static final ItemRuntimeIdRegistry ITEM_RUNTIMEID = new ItemRuntimeIdRegistry();
     public static final BiomeRegistry BIOME = new BiomeRegistry();
     public static final GeneratorRegistry GENERATOR = new GeneratorRegistry();
+    public static final GenerateStageRegistry GENERATE_STAGE = new GenerateStageRegistry();
     public static final FuelRegistry FUEL = new FuelRegistry();
     public static final PacketRegistry PACKET = new PacketRegistry();
 }

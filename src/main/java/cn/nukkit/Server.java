@@ -220,16 +220,9 @@ public class Server {
      */
     public int networkCompressionLevel = 7;
     private int networkZlibProvider = 0;
-
-
-    private int maximumStaleDatagrams = 512;
-
-
-    private int maximumSizePerChunk = 1048576;
-
-
+    private int maxCompressionBufferSize = 1048576;
+    private int chunkUnloadDelay = 15000;
     private int serverAuthoritativeMovementMode = 0;
-
     private boolean autoTickRate = true;
     private int autoTickRateLimit = 20;
     private boolean alwaysTickPlayers = false;
@@ -612,7 +605,6 @@ public class Server {
         this.networkZlibProvider = this.getConfig("network.zlib-provider", 2);
         ZlibChooser.setProvider(this.networkZlibProvider);
 
-        this.maximumStaleDatagrams = this.getConfig("network.maximum-stale-datagrams", 512);
         this.networkCompressionLevel = this.getConfig("network.compression-level", 7);
         this.networkCompressionAsync = this.getConfig("network.async-compression", true);
 
@@ -621,6 +613,7 @@ public class Server {
         this.alwaysTickPlayers = this.getConfig("level-settings.always-tick-players", false);
         this.baseTickRate = this.getConfig("level-settings.base-tick-rate", 1);
         this.redstoneEnabled = this.getConfig("level-settings.tick-redstone", true);
+        this.chunkUnloadDelay = this.getConfig("level-settings.chunk-unload-delay", 15000);
         this.safeSpawn = this.getConfig().getBoolean("settings.safe-spawn", true);
         this.forceSkinTrusted = this.getConfig().getBoolean("player.force-skin-trusted", false);
         this.checkMovement = this.getConfig().getBoolean("player.check-movement", true);
@@ -632,9 +625,9 @@ public class Server {
         };
         this.enabledNetworkEncryption = this.properties.getBoolean("network-encryption", true);
 
-        this.maximumSizePerChunk = this.getConfig("chunk-saving.maximum-size-per-chunk", 1048576);
+        this.maxCompressionBufferSize = this.getConfig("chunk-saving.maximum-size-per-chunk", 1048576);
         //unlimited if value == -1
-        if (this.maximumSizePerChunk < 0) this.maximumSizePerChunk = Integer.MAX_VALUE;
+        if (this.maxCompressionBufferSize < 0) this.maxCompressionBufferSize = Integer.MAX_VALUE;
 
         this.scheduler = new ServerScheduler();
 
@@ -709,6 +702,7 @@ public class Server {
             Registries.BIOME.init();
             Registries.FUEL.init();
             Registries.GENERATOR.init();
+            Registries.GENERATE_STAGE.init();
             Effect.init();
             Attribute.init();
             BlockComposter.init();
@@ -3076,12 +3070,16 @@ public class Server {
         return this.getConfig("settings.waterdogpe", false);
     }
 
-    public int getMaximumStaleDatagrams() {
-        return this.maximumStaleDatagrams;
+    public int compressionBufferSize() {
+        return maxCompressionBufferSize;
     }
 
-    public int getMaximumSizePerChunk() {
-        return maximumSizePerChunk;
+    public int getChunkUnloadDelay() {
+        return chunkUnloadDelay;
+    }
+
+    public void setChunkUnloadDelay(int chunkUnloadDelay) {
+        this.chunkUnloadDelay = chunkUnloadDelay;
     }
 
     public int getServerAuthoritativeMovement() {
@@ -3118,6 +3116,10 @@ public class Server {
 
     public ServerScheduler getScheduler() {
         return scheduler;
+    }
+
+    public ForkJoinPool getComputeThreadPool() {
+        return computeThreadPool;
     }
 
     //todo NukkitConsole 会阻塞关不掉

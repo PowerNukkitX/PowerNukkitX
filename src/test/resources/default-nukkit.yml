@@ -10,9 +10,9 @@ settings:
  download-spark: true
 
 network:
- maximum-stale-datagrams: 512
  batch-threshold: 256
  compression-level: 7
+ compression-buffer-size: 1048576
  async-compression: false
  zlib-provider: 2
  snappy: false
@@ -30,15 +30,12 @@ level-settings:
  base-tick-rate: 1
  always-tick-players: false
  tick-redstone: true
-
-chunk-saving:
- maximum-size-per-chunk: 1048576
+ chunk-unload-delay: 15000
 
 chunk-sending:
  per-tick: 8
  max-chunks: 192
  spawn-threshold: 56
- cache-chunks: false
 
 chunk-ticking:
  per-tick: 40
@@ -47,8 +44,7 @@ chunk-ticking:
  clear-tick-list: false
 
 chunk-generation:
- queue-size: 8
- population-queue-size: 8
+ queue-size: 16
 
 ticks-per:
  animal-spawns: 400
@@ -69,7 +65,6 @@ memory-compression:
   single-operation: 1
   batch-operation: 32
 
-
 spawn-limits:
  monsters: 70
  animals: 15
@@ -85,6 +80,6 @@ player:
 aliases:
 
 worlds:
- #world:
- # seed: 404
- # generator: FLAT:2;7,59x1,3x3,2;1;decoration(treecount=80 grasscount=45)
+#world:
+# seed: 404
+# generator: FLAT:2;7,59x1,3x3,2;1;decoration(treecount=80 grasscount=45)

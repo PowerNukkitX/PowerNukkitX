@@ -23,6 +23,7 @@ import cn.nukkit.utils.SemVersion;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.iq80.leveldb.CompressionType;
@@ -270,22 +271,25 @@ public class LevelDBProvider implements LevelProvider {
             try {
 
                 final ChunkSection[] sections = unsafeChunk.getSections();
-
-                int subChunkCount = unsafeChunk.getDimensionData().getChunkSectionCount() - 1; // index
-                while (subChunkCount >= 0 && (sections[subChunkCount] == null || sections[subChunkCount].isEmpty())) {
-                    subChunkCount--;
+                Int2ObjectArrayMap<ChunkSection> mapSections = new Int2ObjectArrayMap<>();
+                for (int i = 0; i < sections.length; i++) {
+                    final ChunkSection section = sections[i];
+                    if (section == null || section.isEmpty()) {
+                        continue;
+                    }
+                    mapSections.put(i, section);
                 }
-                subChunkCount++; // length
 
                 //write block
-                for (int i = 0; i < subChunkCount; i++) {
-                    sections[i].writeToNetwork(byteBuf);
+                for (var entry : mapSections.int2ObjectEntrySet()) {
+                    entry.getValue().writeToNetwork(byteBuf);
                 }
                 // Write biomes
                 Palette<Integer> lastBiomes = null;
-                for (int i = 0; i < subChunkCount; i++) {
-                    sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue, lastBiomes);
-                    lastBiomes = sections[i].biomes();
+                for (var entry : mapSections.int2ObjectEntrySet()) {
+                    ChunkSection value = entry.getValue();
+                    value.biomes().writeToNetwork(byteBuf, Integer::intValue, lastBiomes);
+                    lastBiomes = value.biomes();
                 }
                 byteBuf.writeByte(0); // edu- border blocks
 
@@ -304,7 +308,7 @@ public class LevelDBProvider implements LevelProvider {
                 }
                 byte[] data = new byte[byteBuf.readableBytes()];
                 byteBuf.readBytes(data);
-                callback.accept(data, subChunkCount);
+                callback.accept(data, mapSections.size());
             } finally {
                 byteBuf.release();
             }
@@ -485,7 +489,7 @@ public class LevelDBProvider implements LevelProvider {
         long index = Level.chunkHash(X, Z);
         IChunk chunk = this.chunks.get(index);
         if (chunk != null && chunk.unload(false, safe)) {
-            lastChunk.set(null);
+            lastChunk.remove();
             this.chunks.remove(index, chunk);
             return true;
         }

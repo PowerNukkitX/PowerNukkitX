@@ -2324,16 +2324,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void unloadChunk(int x, int z, Level level) {
         level = level == null ? this.level : level;
         long index = Level.chunkHash(x, z);
-        if (playerChunkManager.getUsedChunks().contains(index)) {
-            for (Entity entity : level.getChunkEntities(x, z).values()) {
-                if (entity != this) {
-                    entity.despawnFrom(this);
+        if (level.unregisterChunkLoader(this, x, z)) {
+            if (playerChunkManager.getUsedChunks().contains(index)) {
+                for (Entity entity : level.getChunkEntities(x, z).values()) {
+                    if (entity != this) {
+                        entity.despawnFrom(this);
+                    }
                 }
+                playerChunkManager.getUsedChunks().remove(index);
             }
-
-            playerChunkManager.getUsedChunks().remove(index);
         }
-        level.unregisterChunkLoader(this, x, z);
     }
 
     /**

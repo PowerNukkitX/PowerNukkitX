@@ -17,16 +17,20 @@ public class Flat extends Generator {
 
     public Flat(Map<String, Object> options) {
         super(options);
-        addStage(GenerateStages.FLAT_GENERATE);
-        if (Server.getInstance().getConfig("chunk-ticking.light-updates", false)) {
-            addStage(GenerateStages.LIGHT_POPULATION);
-        }
-        addStage(GenerateStages.FINISHED);
     }
 
     @Override
     public String getName() {
         return "flat";
+    }
+
+    @Override
+    public void stages(GenerateStage.Builder builder) {
+        builder = builder.start(GenerateStages.FLAT_GENERATE);
+        if (Server.getInstance().getConfig("chunk-ticking.light-updates", false)) {
+            builder.next(GenerateStages.LIGHT_POPULATION);
+        }
+        builder.next(GenerateStages.FINISHED);
     }
 
     @Override

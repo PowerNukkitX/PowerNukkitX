@@ -60,7 +60,6 @@ import cn.nukkit.scheduler.BlockUpdateScheduler;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.collection.nb.Int2ObjectNonBlockingMap;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
-import cn.nukkit.utils.random.NukkitRandomSource;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.longs.*;
@@ -70,10 +69,10 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.awt.*;
 import java.lang.ref.SoftReference;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Queue;
 import java.util.*;
@@ -82,7 +81,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -120,10 +118,8 @@ public class Level implements Metadatable {
     private static int levelIdCounter = 1;
     private static int chunkLoaderCounter = 1;
     // endregion finals - number finals
-
     private static final Set<String> randomTickBlocks = new HashSet<>(64);  // The blocks that can randomly tick
     private static final Entity[] ENTITY_BUFFER = new Entity[512];
-
     private int serverLoadLevelTick = 0;
 
     static {
@@ -201,6 +197,8 @@ public class Level implements Metadatable {
     @NonComputationAtomic
     private final Long2ObjectNonBlockingMap<Entity> entities = new Long2ObjectNonBlockingMap<>();
     private final ConcurrentLinkedQueue<BlockEntity> updateBlockEntities = new ConcurrentLinkedQueue<>();
+    private final ConcurrentHashMap<Long, Boolean> chunkGenerationQueue = new ConcurrentHashMap<>();
+    private int chunkGenerationQueueSize = 8;
     private final Server server;
     private final int levelId;
     // Loaders still remain single-threaded
@@ -310,6 +308,7 @@ public class Level implements Metadatable {
 
         this.chunkTickRadius = Math.min(this.server.getViewDistance(),
                 Math.max(1, this.server.getConfig("chunk-ticking.tick-radius", 4)));
+        this.chunkGenerationQueueSize = this.server.getConfig("chunk-generation.queue-size", 8);
         this.chunksPerTicks = this.server.getConfig("chunk-ticking.per-tick", 40);
         this.chunkTickList.clear();
         this.clearChunksOnTick = this.server.getConfig("chunk-ticking.clear-tick-list", true);
@@ -784,27 +783,30 @@ public class Level implements Metadatable {
         }
     }
 
-    public void unregisterChunkLoader(ChunkLoader loader, int chunkX, int chunkZ) {
-        int hash = loader.getLoaderId();
-        long index = Level.chunkHash(chunkX, chunkZ);
-        Map<Integer, ChunkLoader> chunkLoadersIndex = this.chunkLoaders.get(index);
+    public boolean unregisterChunkLoader(ChunkLoader loader, int chunkX, int chunkZ) {
+        int loaderId = loader.getLoaderId();
+        long chunkHash = Level.chunkHash(chunkX, chunkZ);
+        Map<Integer, ChunkLoader> chunkLoadersIndex = this.chunkLoaders.get(chunkHash);
         if (chunkLoadersIndex != null) {
-            ChunkLoader oldLoader = chunkLoadersIndex.remove(hash);
+            ChunkLoader oldLoader = chunkLoadersIndex.remove(loaderId);
             if (oldLoader != null) {
                 if (chunkLoadersIndex.isEmpty()) {
-                    this.chunkLoaders.remove(index);
-                    this.unloadChunkRequest(chunkX, chunkZ, true);
+                    this.chunkLoaders.remove(chunkHash);
+                    return this.unloadChunkRequest(chunkX, chunkZ, true);
                 }
 
-                int count = this.loaderCounter.get(hash);
+                int count = this.loaderCounter.get(loaderId);
                 if (--count == 0) {
-                    this.loaderCounter.remove(hash);
-                    this.loaders.remove(hash);
+                    this.loaderCounter.remove(loaderId);
+                    this.loaders.remove(loaderId);
                 } else {
-                    this.loaderCounter.put(hash, count);
+                    this.loaderCounter.put(loaderId, count);
                 }
+                return true;
             }
+            return false;
         }
+        return false;
     }
 
     public void checkTime() {
@@ -3268,7 +3270,7 @@ public class Level implements Metadatable {
             int z = getHashZ(index);
             AsyncTask task = this.requireProvider().requestChunkTask(x, z);
             if (task != null) {
-                allChunkRequestTask.add(CompletableFuture.runAsync(task, server.computeThreadPool));
+                allChunkRequestTask.add(CompletableFuture.runAsync(task, server.getComputeThreadPool()));
             }
         }
         if (!allChunkRequestTask.isEmpty()) {
@@ -3518,9 +3520,11 @@ public class Level implements Metadatable {
         return true;
     }
 
-    public boolean isSpawnChunk(int X, int Z) {
+    public boolean isSpawnChunk(int x, int z) {
         Vector3 spawn = this.requireProvider().getSpawn();
-        return Math.abs(X - (spawn.getFloorX() >> 4)) <= 1 && Math.abs(Z - (spawn.getFloorZ() >> 4)) <= 1;
+        int spawnCX = spawn.getFloorX() >> 4;
+        int spawnCZ = spawn.getFloorZ() >> 4;
+        return x == spawnCX && z == spawnCZ;
     }
 
     public Position getSafeSpawn() {
@@ -3652,8 +3656,18 @@ public class Level implements Metadatable {
     }
 
     public void generateChunk(int x, int z) {
+        generateChunk(x, z, false);
+    }
+
+    public void generateChunk(int x, int z, boolean force) {
+        if (this.chunkGenerationQueue.size() >= this.chunkGenerationQueueSize && !force) {
+            return;
+        }
         IChunk chunk = this.getChunk(x, z, true);
-        this.generator.generate(chunk);//async
+        long index = Level.chunkHash(x, z);
+        if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
+            this.generator.asyncGenerate(chunk, (c) -> chunkGenerationQueue.remove(c.getChunk().getIndex()));//async
+        }
     }
 
     /**
@@ -3663,7 +3677,6 @@ public class Level implements Metadatable {
      *
      * @return the list
      */
-
     public List<CompletableFuture<Void>> asyncChunkGarbageCollection() {
         var gcBlockEntities = CompletableFuture.runAsync(() -> {
             // remove all invaild block entities.
@@ -3777,16 +3790,16 @@ public class Level implements Metadatable {
             LongList toRemove = null;
             for (var entry : unloadQueue.fastEntrySet()) {
                 long index = entry.getLongKey();
-
                 if (isChunkInUse(index)) {
                     continue;
                 }
-
+                int hashX = Level.getHashX(index);
+                int hashZ = Level.getHashZ(index);
                 if (!force) {
                     long time = entry.getValue();
                     if (maxUnload <= 0) {
                         break;
-                    } else if (time > (now - 30000)) {
+                    } else if (time > (now - Server.getInstance().getChunkUnloadDelay())) {
                         continue;
                     }
                 }
@@ -3841,7 +3854,7 @@ public class Level implements Metadatable {
 
                 if (!force) {
                     long time = entry.getValue();
-                    if (time > (now - 30000)) {
+                    if (time > (now - Server.getInstance().getChunkUnloadDelay())) {
                         continue;
                     }
                 }

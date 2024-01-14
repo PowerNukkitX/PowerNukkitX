@@ -10,9 +10,9 @@ settings:
   download-spark: true
 
 network:
-  maximum-stale-datagrams: 512
   batch-threshold: 256
   compression-level: 7
+  compression-buffer-size: 1048576
   async-compression: false
   zlib-provider: 2
   snappy: false
@@ -30,9 +30,7 @@ level-settings:
   base-tick-rate: 1
   always-tick-players: false
   tick-redstone: true
-
-chunk-saving:
-  maximum-size-per-chunk: 1048576
+  chunk-unload-delay: 15000
 
 chunk-sending:
   per-tick: 8
@@ -66,7 +64,6 @@ memory-compression:
     melting: 16
     single-operation: 1
     batch-operation: 32
-
 
 spawn-limits:
   monsters: 70

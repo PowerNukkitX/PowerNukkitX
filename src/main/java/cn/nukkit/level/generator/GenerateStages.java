@@ -17,6 +17,11 @@ public final class GenerateStages {
         static final BlockState dirt = BlockDirt.PROPERTIES.getDefaultState();
 
         @Override
+        public String name() {
+            return "flat_generate";
+        }
+
+        @Override
         public void apply(ChunkGenerateContext context) {
             IChunk chunk = context.getChunk();
             for (int x = 0; x < 16; x++) {
@@ -35,6 +40,11 @@ public final class GenerateStages {
     };
 
     public static final GenerateStage LIGHT_POPULATION = new GenerateStage() {
+        @Override
+        public String name() {
+            return "light_population";
+        }
+
         @Override
         public void apply(ChunkGenerateContext context) {
             final IChunk chunk = context.getChunk();
@@ -55,6 +65,11 @@ public final class GenerateStages {
             IChunk chunk = context.getChunk();
             chunk.setChunkState(ChunkState.FINISHED);
             context.getLevel().setChunk(chunk.getX(), chunk.getZ(), chunk, false);
+        }
+
+        @Override
+        public String name() {
+            return "finished";
         }
     };
 }
