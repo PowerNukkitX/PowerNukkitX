@@ -236,7 +236,7 @@ public class Chunk implements IChunk {
         try {
             for (; ; stamp = lightLock.readLock()) {
                 if (stamp == 0L) continue;
-                ChunkSection sectionInternal = getSectionInternal(y);
+                ChunkSection sectionInternal = getSectionInternal(y >> 4);
                 if (sectionInternal == null) return 0;
                 int result = sectionInternal.getBlockSkyLight(x, y & 0x0f, z);
                 if (!lightLock.validate(stamp)) continue;
@@ -264,7 +264,7 @@ public class Chunk implements IChunk {
         try {
             for (; ; stamp = lightLock.readLock()) {
                 if (stamp == 0L) continue;
-                ChunkSection sectionInternal = getSectionInternal(y);
+                ChunkSection sectionInternal = getSectionInternal(y >> 4);
                 if (sectionInternal == null) return 0;
                 int result = sectionInternal.getBlockLight(x, y & 0x0f, z);
                 if (!lightLock.validate(stamp)) continue;
@@ -444,7 +444,7 @@ public class Chunk implements IChunk {
         try {
             for (; ; stamp = heightAndBiomeLock.readLock()) {
                 if (stamp == 0L) continue;
-                ChunkSection sectionInternal = getSectionInternal(y);
+                ChunkSection sectionInternal = getSectionInternal(y >> 4);
                 if (sectionInternal == null) return BiomeID.PLAINS;
                 int result = sectionInternal.getBiomeId(x, y & 0x0f, z);
                 if (!heightAndBiomeLock.validate(stamp)) continue;
