@@ -1857,9 +1857,7 @@ public class Level implements Metadatable {
                 fullState = chunk.getBlockState(x & 0xF, y, z & 0xF, layer);
             }
         }
-        Block block = Registries.BLOCK.get(fullState, x, y, z, layer, this);
-        setBlock(x, y, z, layer, block, false, false); // Update set to false to fix PowerNukkit#650
-        return block;
+        return Registries.BLOCK.get(fullState, x, y, z, layer, this);
     }
 
     public String getBlockIdAt(int x, int y, int z) {

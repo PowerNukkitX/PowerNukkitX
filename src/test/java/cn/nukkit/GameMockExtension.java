@@ -23,6 +23,7 @@ import cn.nukkit.permission.BanList;
 import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
+import cn.nukkit.recipe.CraftingManager;
 import cn.nukkit.registry.BlockRegistry;
 import cn.nukkit.registry.RegisterException;
 import cn.nukkit.registry.Registries;
@@ -41,6 +42,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
@@ -151,6 +153,9 @@ public class GameMockExtension extends MockitoExtension implements BeforeAllCall
         when(server.getAutoSave()).thenReturn(true);
         when(server.getTick()).thenReturn(1);
         when(server.getViewDistance()).thenReturn(4);
+        CraftingManager mock = mock(CraftingManager.class);
+        when(mock.matchBrewingRecipe(any(), any())).thenReturn(null);
+        when(server.getCraftingManager()).thenReturn(mock);
 
         try {
             FieldUtils.writeDeclaredField(server, "levelArray", Level.EMPTY_ARRAY, true);
