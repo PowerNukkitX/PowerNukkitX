@@ -88,18 +88,18 @@ public class ItemBoat extends Item {
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (face != BlockFace.UP || block instanceof BlockFlowingWater) return false;
         EntityBoat boat = (EntityBoat) Entity.createEntity(Entity.BOAT,
-                level.getChunk(block.getFloorX() >> 4, block.getFloorZ() >> 4), new CompoundTag("")
-                        .putList(new ListTag<DoubleTag>("Pos")
-                                .add(new DoubleTag("", block.getX() + 0.5))
-                                .add(new DoubleTag("", block.getY() - (target instanceof BlockFlowingWater ? 0.375 : 0)))
-                                .add(new DoubleTag("", block.getZ() + 0.5)))
-                        .putList(new ListTag<DoubleTag>("Motion")
-                                .add(new DoubleTag("", 0))
-                                .add(new DoubleTag("", 0))
-                                .add(new DoubleTag("", 0)))
-                        .putList(new ListTag<FloatTag>("Rotation")
-                                .add(new FloatTag("", (float) ((player.yaw + 90f) % 360)))
-                                .add(new FloatTag("", 0)))
+                level.getChunk(block.getFloorX() >> 4, block.getFloorZ() >> 4), new CompoundTag()
+                        .putList("Pos", new ListTag<DoubleTag>()
+                                .add(new DoubleTag(block.getX() + 0.5))
+                                .add(new DoubleTag(block.getY() - (target instanceof BlockFlowingWater ? 0.375 : 0)))
+                                .add(new DoubleTag(block.getZ() + 0.5)))
+                        .putList("Motion", new ListTag<DoubleTag>()
+                                .add(new DoubleTag(0))
+                                .add(new DoubleTag(0))
+                                .add(new DoubleTag(0)))
+                        .putList("Rotation", new ListTag<FloatTag>()
+                                .add(new FloatTag((float) ((player.yaw + 90f) % 360)))
+                                .add(new FloatTag(0)))
                         .putInt("Variant", getBoatId())
         );
 

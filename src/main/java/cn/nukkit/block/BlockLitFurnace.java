@@ -23,7 +23,8 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
     public static final BlockProperties PROPERTIES = new BlockProperties(LIT_FURNACE, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -41,12 +42,14 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityFurnace> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityFurnace> getBlockEntityClass() {
         return BlockEntityFurnace.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.FURNACE;
     }
 
@@ -79,7 +82,7 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getHorizontalIndex()) : BlockFace.SOUTH);
 
-        CompoundTag nbt = new CompoundTag().putList(new ListTag<>("Items"));
+        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>());
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());

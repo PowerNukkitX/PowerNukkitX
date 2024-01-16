@@ -57,7 +57,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         this.inventory = new FurnaceInventory(this, getInventoryType());
 
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
-            this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+            this.namedTag.putList("Items", new ListTag<CompoundTag>());
         }
 
         for (int i = 0; i < this.getSize(); i++) {
@@ -154,7 +154,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
 
     @Override
     public void saveNBT() {
-        this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+        this.namedTag.putList("Items", new ListTag<CompoundTag>());
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
@@ -251,7 +251,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         if (burnTime > 0 && ev.isBurning()) {
             fuel.setCount(fuel.getCount() - 1);
             if (fuel.getCount() == 0) {
-                if (fuel.getId() == Item.BUCKET && ((ItemBucket)fuel).isLava()) {
+                if (fuel.getId() == Item.BUCKET && ((ItemBucket) fuel).isLava()) {
                     fuel.setDamage(0);
                     fuel.setCount(1);
                 } else {

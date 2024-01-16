@@ -124,7 +124,7 @@ public record ChunkSection(byte y,
         return blockLayer[0].isEmpty() && blockLayer[0].get(0) == BlockAir.PROPERTIES.getDefaultState();
     }
 
-    public void writeToNetwork(ByteBuf byteBuf) {
+    public void writeToBuf(ByteBuf byteBuf) {
         byteBuf.writeByte(VERSION);
         //block layer count
         byteBuf.writeByte(LAYER_COUNT);

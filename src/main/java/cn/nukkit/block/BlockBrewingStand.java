@@ -19,10 +19,11 @@ import java.util.Map;
 
 public class BlockBrewingStand extends BlockTransparent implements BlockEntityHolder<BlockEntityBrewingStand> {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(BREWING_STAND , CommonBlockProperties.BREWING_STAND_SLOT_A_BIT, CommonBlockProperties.BREWING_STAND_SLOT_B_BIT, CommonBlockProperties.BREWING_STAND_SLOT_C_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BREWING_STAND, CommonBlockProperties.BREWING_STAND_SLOT_A_BIT, CommonBlockProperties.BREWING_STAND_SLOT_B_BIT, CommonBlockProperties.BREWING_STAND_SLOT_C_BIT);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -74,7 +75,7 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
         getLevel().setBlock(block, this, true, true);
 
         CompoundTag nbt = new CompoundTag()
-                .putList(new ListTag<>("Items"))
+                .putList("Items", new ListTag<>())
                 .putString("id", BlockEntity.BREWING_STAND)
                 .putInt("x", (int) this.x)
                 .putInt("y", (int) this.y)
@@ -104,7 +105,7 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
                 brewing = (BlockEntityBrewingStand) t;
             } else {
                 CompoundTag nbt = new CompoundTag()
-                        .putList(new ListTag<>("Items"))
+                        .putList("Items", new ListTag<>())
                         .putString("id", BlockEntity.BREWING_STAND)
                         .putInt("x", (int) this.x)
                         .putInt("y", (int) this.y)
@@ -189,12 +190,14 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityBrewingStand> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityBrewingStand> getBlockEntityClass() {
         return BlockEntityBrewingStand.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.BREWING_STAND;
     }
 }

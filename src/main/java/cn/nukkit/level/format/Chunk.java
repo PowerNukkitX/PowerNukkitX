@@ -430,7 +430,7 @@ public class Chunk implements IChunk {
         try {
             unsafeChunkConsumer.accept(new UnsafeChunk(this));
         } catch (Exception e) {
-            log.error("An error occurred while executing chunk batch operation {}", e.getMessage());
+            log.error("An error occurred while executing chunk batch operation", e);
         } finally {
             blockLock.unlockWrite(stamp1);
             heightAndBiomeLock.unlockWrite(stamp2);

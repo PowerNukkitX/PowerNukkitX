@@ -33,7 +33,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
         potionId = namedTag.getShort("PotionId");
         int potionType = (potionId & 0xFFFF) == 0xFFFF ? PotionType.EMPTY.potionTypeData : PotionType.NORMAL.potionTypeData;
         if (namedTag.getBoolean("SplashPotion")) {
-            potionType =  PotionType.SPLASH.potionTypeData;
+            potionType = PotionType.SPLASH.potionTypeData;
             namedTag.remove("SplashPotion");
         }
 
@@ -162,7 +162,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
                 .putInt("y", (int) this.y)
                 .putInt("z", (int) this.z)
                 .putBoolean("isMovable", isMovable())
-                .putList(new ListTag<>("Items"))
+                .putList("Items", new ListTag<>())
                 .putShort("PotionId", (short) namedTag.getShort("PotionId"))
                 .putShort("PotionType", (short) namedTag.getShort("PotionType"));
         if (namedTag.contains("CustomColor")) {

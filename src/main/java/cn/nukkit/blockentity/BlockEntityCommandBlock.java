@@ -120,7 +120,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         if (this.namedTag.contains(TAG_LAST_OUTPUT_PARAMS)) {
             this.lastOutputParams = (ListTag<StringTag>) this.namedTag.getList(TAG_LAST_OUTPUT_PARAMS);
         } else {
-            this.lastOutputParams = new ListTag<>(TAG_LAST_OUTPUT_PARAMS);
+            this.lastOutputParams = new ListTag<>();
         }
 
         if (this.namedTag.contains(TAG_LP_COMMAND_MODE)) {
@@ -181,7 +181,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
             this.namedTag.putString(TAG_LAST_OUTPUT, this.lastOutput);
         }
         if (this.lastOutputParams != null) {
-            this.namedTag.putList(this.lastOutputParams);
+            this.namedTag.putList(TAG_LAST_OUTPUT_PARAMS, this.lastOutputParams);
         }
         this.namedTag.putInt(TAG_LP_COMMAND_MODE, this.lastOutputCommandMode);
         this.namedTag.putBoolean(TAG_LP_CONDIONAL_MODE, this.lastOutputCondionalMode);
@@ -215,7 +215,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
             nbt.putString(TAG_LAST_OUTPUT, this.lastOutput);
         }
         if (this.lastOutputParams != null) {
-            nbt.putList(this.lastOutputParams);
+            nbt.putList(TAG_LAST_OUTPUT_PARAMS, this.lastOutputParams);
         }
         if (this.hasName()) {
             nbt.putString(TAG_CUSTOM_NAME, this.getName());
@@ -580,9 +580,9 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         if (this.isTrackingOutput()) {
             this.lastOutput = message.getText();
             if (message instanceof TranslationContainer translationContainer) {
-                ListTag<StringTag> newParams = new ListTag<>(TAG_LAST_OUTPUT_PARAMS);
+                ListTag<StringTag> newParams = new ListTag<>();
                 for (String param : translationContainer.getParameters()) {
-                    newParams.add(new StringTag("", param));
+                    newParams.add(new StringTag(param));
                 }
                 this.lastOutputParams = newParams;
             }

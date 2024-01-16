@@ -11,24 +11,11 @@ import java.util.Objects;
 public class StringTag extends Tag {
     public String data;
 
-    public StringTag(String name) {
-        super(name);
+    public StringTag() {
     }
 
-    
-    public StringTag(String name, @NotNull String data) {
-        super(name);
+    public StringTag(@NotNull String data) {
         this.data = Preconditions.checkNotNull(data, "Empty string not allowed");
-    }
-
-    @Override
-    void write(NBTOutputStream dos) throws IOException {
-        dos.writeUTF(data);
-    }
-
-    @Override
-    void load(NBTInputStream dis) throws IOException {
-        data = dis.readUTF();
     }
 
     @Override
@@ -43,7 +30,7 @@ public class StringTag extends Tag {
 
     @Override
     public String toString() {
-        return "StringTag " + this.getName() + " (data: " + data + ")";
+        return "StringTag " + " (data: " + data + ")";
     }
 
     @Override
@@ -58,7 +45,7 @@ public class StringTag extends Tag {
 
     @Override
     public Tag copy() {
-        return new StringTag(getName(), data);
+        return new StringTag(data);
     }
 
     @Override

@@ -48,7 +48,7 @@ public class Geometry implements NBTData {
         for (var entry : boneVisibilities.entrySet()) {
             boneVisibility.putString(entry.getKey(), entry.getValue());
         }
-        CompoundTag compoundTag = new CompoundTag("minecraft:geometry")
+        CompoundTag compoundTag = new CompoundTag()
                 .putString("identifier", geometryName)
                 .putByte("legacyBlockLightAbsorption", 0)
                 .putByte("legacyTopRotation", 0);

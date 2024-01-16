@@ -17,20 +17,17 @@ import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.network.protocol.types.GameType;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
-import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.SemVersion;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteBatch;
-import org.iq80.leveldb.util.FileUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
@@ -66,6 +63,11 @@ public class LevelDBProvider implements LevelProvider {
     public LevelDBProvider(Level level, String path, Options options) throws IOException {
         this.level = level;
         this.path = Path.of(path);
+        File folder = this.path.toFile();
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+        if (!folder.isDirectory()) throw new IllegalArgumentException("The path must be a folder");
 
         var levelDat = readLevelDat();
         if (levelDat == null) {
@@ -302,7 +304,7 @@ public class LevelDBProvider implements LevelProvider {
                 //write block
                 for (int i = 0; i < firstExist; i++) {
                     assert sections[i] != null;
-                    sections[i].writeToNetwork(byteBuf);
+                    sections[i].writeToBuf(byteBuf);
                 }
                 // Write biomes
                 Palette<Integer> lastBiomes = null;
@@ -582,7 +584,6 @@ public class LevelDBProvider implements LevelProvider {
     @Override
     public synchronized void close() {
         try {
-            this.unloadChunks();
             db.close();
         } catch (IOException e) {
             throw new RuntimeException(e);

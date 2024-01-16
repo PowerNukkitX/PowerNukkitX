@@ -17,11 +17,11 @@ public record Permutation(Component component, String condition, String[] blockT
     @Override
     public CompoundTag toCompoundTag() {
         CompoundTag result = new CompoundTag()
-                .putCompound(component.toCompoundTag())
+                .putCompound("components", component.toCompoundTag())
                 .putString("condition", condition);
         ListTag<StringTag> stringTagListTag = new ListTag<>();
         for (String s : blockTags) {
-            stringTagListTag.add(new StringTag("", s));
+            stringTagListTag.add(new StringTag(s));
         }
         if (stringTagListTag.size() > 0) {
             result.putList("blockTags", stringTagListTag);

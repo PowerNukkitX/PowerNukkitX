@@ -117,7 +117,7 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getHorizontalIndex()) : BlockFace.SOUTH);
 
-        CompoundTag nbt = new CompoundTag().putList(new ListTag<>("Items"));
+        CompoundTag nbt = new CompoundTag().putList("Items",new ListTag<>());
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());

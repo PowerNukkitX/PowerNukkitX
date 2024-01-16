@@ -44,13 +44,13 @@ public class BlockEntitySign extends BlockEntitySpawnable {
             getLines(true);
         } else {
             this.frontText[0] = "";
-            this.namedTag.putCompound(new CompoundTag(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, String.join("\n", new String[]{""})));
+            this.namedTag.putCompound(TAG_FRONT_TEXT, new CompoundTag().putString(TAG_TEXT_BLOB, String.join("\n", new String[]{""})));
         }
         if (namedTag.containsCompound(TAG_BACK_TEXT)) {
             getLines(false);
         } else {
             this.backText[0] = "";
-            this.namedTag.putCompound(new CompoundTag(TAG_BACK_TEXT).putString(TAG_TEXT_BLOB, String.join("\n", new String[]{""})));
+            this.namedTag.putCompound(TAG_BACK_TEXT, new CompoundTag().putString(TAG_TEXT_BLOB, String.join("\n", new String[]{""})));
         }
 
         // Check old text to sanitize
@@ -270,13 +270,13 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     public CompoundTag getSpawnCompound() {
         return new CompoundTag()
                 .putString("id", BlockEntity.SIGN)
-                .putCompound(new CompoundTag(TAG_FRONT_TEXT)
+                .putCompound(TAG_FRONT_TEXT,new CompoundTag()
                         .putString(TAG_TEXT_BLOB, this.namedTag.getCompound(TAG_FRONT_TEXT).getString(TAG_TEXT_BLOB))
                         .putInt(TAG_TEXT_COLOR, this.getColor(true).getARGB())
                         .putBoolean(TAG_GLOWING_TEXT, this.isGlowing())
                         .putBoolean(TAG_PERSIST_FORMATTING, true)
                 )
-                .putCompound(new CompoundTag(TAG_BACK_TEXT)
+                .putCompound(TAG_BACK_TEXT,new CompoundTag()
                         .putString(TAG_TEXT_BLOB, this.namedTag.getCompound(TAG_BACK_TEXT).getString(TAG_TEXT_BLOB))
                         .putInt(TAG_TEXT_COLOR, this.getColor(false).getARGB())
                         .putBoolean(TAG_GLOWING_TEXT, this.isGlowing(false))

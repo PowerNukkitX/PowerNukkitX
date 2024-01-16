@@ -71,8 +71,8 @@ public class EntityFireworksRocket extends Entity {
                     .putBoolean("FireworkTrail", false)
                     .putByte("FireworkType", ItemFireworkRocket.FireworkExplosion.ExplosionType.CREEPER_SHAPED.ordinal());
 
-            tag.putCompound("Fireworks", new CompoundTag("Fireworks")
-                    .putList(new ListTag<CompoundTag>("Explosions").add(ex))
+            tag.putCompound("Fireworks", new CompoundTag()
+                    .putList("Explosions",new ListTag<CompoundTag>().add(ex))
                     .putByte("Flight", 1)
             );
 

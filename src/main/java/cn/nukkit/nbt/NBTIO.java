@@ -14,14 +14,13 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.ThreadCache;
 import com.google.common.base.Preconditions;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
-import java.util.TreeMap;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
@@ -29,7 +28,7 @@ import java.util.zip.GZIPInputStream;
 /**
  * A Named Binary Tag library for Nukkit Project
  */
-@Log4j2
+@Slf4j
 public class NBTIO {
 
     public static CompoundTag putItemHelper(Item item) {
@@ -37,7 +36,7 @@ public class NBTIO {
     }
 
     public static CompoundTag putItemHelper(Item item, Integer slot) {
-        CompoundTag tag = new CompoundTag((String) null)
+        CompoundTag tag = new CompoundTag()
                 .putByte("Count", item.getCount())
                 .putShort("Damage", item.getDamage());
         tag.putString("Name", item.getId());
@@ -75,7 +74,7 @@ public class NBTIO {
             BlockState blockState = getBlockStateHelper(block);
             if (blockState != null) item.setBlockUnsafe(blockState.toBlock());
         }
-        if (item.getDamage() == 0) {
+        if (item.getDamage() != 0) {
             item.setDamage(damage);
         }
         item.setCount(amount);
@@ -110,26 +109,6 @@ public class NBTIO {
         return read(inputStream, endianness, false);
     }
 
-    public static CompoundTag read(InputStream inputStream, ByteOrder endianness, boolean network) throws IOException {
-        Tag tag = Tag.readNamedTag(new NBTInputStream(inputStream, endianness, network));
-        if (tag instanceof CompoundTag) {
-            return (CompoundTag) tag;
-        }
-        throw new IOException("Root tag must be a named compound tag");
-    }
-
-    public static TreeMapCompoundTag readTreeMapCompoundTag(InputStream inputStream, ByteOrder endianness, boolean network) throws IOException {
-        Tag tag = Tag.readNamedTagTreeMap(new NBTInputStream(inputStream, endianness, network));
-        if (tag instanceof TreeMapCompoundTag) {
-            return (TreeMapCompoundTag) tag;
-        }
-        throw new IOException("Root tag must be a named compound tag");
-    }
-
-    public static Tag readTag(InputStream inputStream, ByteOrder endianness, boolean network) throws IOException {
-        return Tag.readNamedTag(new NBTInputStream(inputStream, endianness, network));
-    }
-
     public static CompoundTag read(byte[] data) throws IOException {
         return read(data, ByteOrder.BIG_ENDIAN);
     }
@@ -146,22 +125,12 @@ public class NBTIO {
         }
     }
 
-    public static CompoundTag readCompressed(InputStream inputStream) throws IOException {
-        return readCompressed(inputStream, ByteOrder.BIG_ENDIAN);
-    }
-
-    public static CompoundTag readCompressed(InputStream inputStream, ByteOrder endianness) throws IOException {
-        try (InputStream gzip = new GZIPInputStream(inputStream);
-             InputStream buffered = new BufferedInputStream(gzip)) {
-            return read(buffered, endianness);
+    public static CompoundTag read(InputStream inputStream, ByteOrder endianness, boolean network) throws IOException {
+        Object tag = new NBTInputStream(inputStream, endianness, network).readTag();
+        if (tag instanceof CompoundTag) {
+            return (CompoundTag) tag;
         }
-    }
-
-    public static TreeMapCompoundTag readCompressedTreeMapCompoundTag(InputStream inputStream, ByteOrder endianness) throws IOException {
-        try (InputStream gzip = new GZIPInputStream(inputStream);
-             InputStream buffered = new BufferedInputStream(gzip)) {
-            return readTreeMapCompoundTag(buffered, endianness, false);
-        }
+        throw new IOException("Root tag must be a named compound tag");
     }
 
     public static CompoundTag readCompressed(byte[] data) throws IOException {
@@ -176,15 +145,24 @@ public class NBTIO {
         }
     }
 
+    public static CompoundTag readCompressed(InputStream inputStream) throws IOException {
+        return readCompressed(inputStream, ByteOrder.BIG_ENDIAN);
+    }
+
+    public static CompoundTag readCompressed(InputStream inputStream, ByteOrder endianness) throws IOException {
+        InputStream gzip = new GZIPInputStream(inputStream);
+        InputStream buffered = new BufferedInputStream(gzip);
+        return read(buffered, endianness);
+    }
+
     public static CompoundTag readNetworkCompressed(InputStream inputStream) throws IOException {
         return readNetworkCompressed(inputStream, ByteOrder.BIG_ENDIAN);
     }
 
     public static CompoundTag readNetworkCompressed(InputStream inputStream, ByteOrder endianness) throws IOException {
-        try (InputStream gzip = new GZIPInputStream(inputStream);
-             InputStream buffered = new BufferedInputStream(gzip)) {
-            return read(buffered, endianness);
-        }
+        InputStream gzip = new GZIPInputStream(inputStream);
+        InputStream buffered = new BufferedInputStream(gzip);
+        return read(buffered, endianness);
     }
 
     public static CompoundTag readNetworkCompressed(byte[] data) throws IOException {
@@ -207,18 +185,6 @@ public class NBTIO {
         return write(tag, endianness, false);
     }
 
-    public static byte[] write(CompoundTag tag, ByteOrder endianness, boolean network) throws IOException {
-        return write((Tag) tag, endianness, network);
-    }
-
-    public static byte[] write(Tag tag, ByteOrder endianness, boolean network) throws IOException {
-        FastByteArrayOutputStream baos = ThreadCache.fbaos.get().reset();
-        try (NBTOutputStream stream = new NBTOutputStream(baos, endianness, network)) {
-            Tag.writeNamedTag(tag, stream);
-            return baos.toByteArray();
-        }
-    }
-
     public static byte[] write(Collection<CompoundTag> tags) throws IOException {
         return write(tags, ByteOrder.BIG_ENDIAN);
     }
@@ -231,8 +197,16 @@ public class NBTIO {
         FastByteArrayOutputStream baos = ThreadCache.fbaos.get().reset();
         try (NBTOutputStream stream = new NBTOutputStream(baos, endianness, network)) {
             for (CompoundTag tag : tags) {
-                Tag.writeNamedTag(tag, stream);
+                stream.writeTag(tag);
             }
+            return baos.toByteArray();
+        }
+    }
+
+    public static byte[] write(CompoundTag tag, ByteOrder endianness, boolean network) throws IOException {
+        FastByteArrayOutputStream baos = ThreadCache.fbaos.get().reset();
+        try (NBTOutputStream stream = new NBTOutputStream(baos, endianness, network)) {
+            stream.writeTag(tag);
             return baos.toByteArray();
         }
     }
@@ -256,21 +230,22 @@ public class NBTIO {
     }
 
     public static void write(CompoundTag tag, OutputStream outputStream, ByteOrder endianness, boolean network) throws IOException {
-        Tag.writeNamedTag(tag, new NBTOutputStream(outputStream, endianness, network));
+        NBTOutputStream stream = new NBTOutputStream(outputStream, endianness, network);
+        stream.writeTag(tag);
     }
 
     public static void write(Collection<CompoundTag> tags, OutputStream outputStream, ByteOrder endianness, boolean network) throws IOException {
         try (NBTOutputStream stream = new NBTOutputStream(outputStream, endianness, network)) {
             for (CompoundTag tag : tags) {
-                Tag.writeNamedTag(tag, stream);
+                stream.writeTag(tag);
             }
         }
     }
 
-    public static byte[] writeNetwork(Tag tag) throws IOException {
+    public static byte[] writeNetwork(CompoundTag tag) throws IOException {
         FastByteArrayOutputStream baos = ThreadCache.fbaos.get().reset();
         try (NBTOutputStream stream = new NBTOutputStream(baos, ByteOrder.LITTLE_ENDIAN, true)) {
-            Tag.writeNamedTag(tag, stream);
+            stream.writeTag(tag);
         }
         return baos.toByteArray();
     }
@@ -356,18 +331,31 @@ public class NBTIO {
     }
 
     public static byte[] writeValue(CompoundTag tag, ByteOrder endianness, boolean network) throws IOException {
-        return writeValue((Tag) tag, endianness, network);
-    }
-
-    public static byte[] writeValue(Tag tag, ByteOrder endianness, boolean network) throws IOException {
         FastByteArrayOutputStream baos = ThreadCache.fbaos.get().reset();
         try (NBTOutputStream stream = new NBTOutputStream(baos, endianness, network)) {
-            Tag.writeValue(tag, stream);
+            stream.writeValue(tag);
             return baos.toByteArray();
         }
     }
 
-    public static CompoundTag readCompoundValue(InputStream inputStream, ByteOrder endianness, boolean network) throws IOException {
-        return Tag.readCompoundValue(new NBTInputStream(inputStream, endianness, network));
+    public static CompoundTag readValue(InputStream inputStream, ByteOrder endianness, boolean network) throws IOException {
+        NBTInputStream nbtInputStream = new NBTInputStream(inputStream, endianness, network);
+        return nbtInputStream.readValue(Tag.TAG_Compound);
+    }
+
+    public static TreeMapCompoundTag readTreeMapCompoundTag(InputStream inputStream, ByteOrder endianness, boolean network) throws IOException {
+        NBTInputStream nbtInputStream = new NBTInputStream(inputStream, endianness, network);
+        Object nbt = nbtInputStream.readTag();
+        if (nbt instanceof CompoundTag tag) {
+            return new TreeMapCompoundTag(tag.getTags());
+        }
+        throw new IOException("Root tag must be a named compound tag");
+    }
+
+    public static TreeMapCompoundTag readCompressedTreeMapCompoundTag(InputStream inputStream, ByteOrder endianness) throws IOException {
+        try (InputStream gzip = new GZIPInputStream(inputStream);
+             InputStream buffered = new BufferedInputStream(gzip)) {
+            return readTreeMapCompoundTag(buffered, endianness, false);
+        }
     }
 }

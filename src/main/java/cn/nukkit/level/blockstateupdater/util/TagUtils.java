@@ -76,7 +76,7 @@ public class TagUtils {
         } else if (mutable instanceof Double v) {
             return new DoubleTag(v);
         } else if (mutable instanceof String v) {
-            return new StringTag("", v);
+            return new StringTag( v);
         } else if (mutable instanceof byte[] v) {
             return new ByteArrayTag(v);
         } else if (mutable instanceof int[] v) {

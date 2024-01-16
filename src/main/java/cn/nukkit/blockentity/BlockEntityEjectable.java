@@ -29,7 +29,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         this.inventory = createInventory();
 
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
-            this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+            this.namedTag.putList("Items", new ListTag<CompoundTag>());
         }
 
         for (int i = 0; i < this.getSize(); i++) {
@@ -100,7 +100,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
 
     @Override
     public void saveNBT() {
-        this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+        this.namedTag.putList("Items", new ListTag<CompoundTag>());
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }

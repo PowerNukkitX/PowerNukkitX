@@ -145,7 +145,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
         public CompoundTag toNBT() {
             ListTag<StringTag> stringTagListTag = new ListTag<>();
             for (var s : tags) {
-                stringTagListTag.add(new StringTag("", s));
+                stringTagListTag.add(new StringTag( s));
             }
             return new CompoundTag()
                     .putFloat("ash", ash)

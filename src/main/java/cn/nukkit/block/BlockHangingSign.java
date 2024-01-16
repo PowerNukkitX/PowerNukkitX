@@ -23,12 +23,14 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityHangingSign> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityHangingSign> getBlockEntityClass() {
         return BlockEntityHangingSign.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.HANGING_SIGN;
     }
 
@@ -111,8 +113,8 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
             getLevel().setBlock(block, this, true);
         }
         if (item.hasCustomBlockData()) {
-            for (Tag aTag : item.getCustomBlockData().getAllTags()) {
-                nbt.put(aTag.getName(), aTag);
+            for (var e : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(e.getKey(), e.getValue());
             }
         }
 

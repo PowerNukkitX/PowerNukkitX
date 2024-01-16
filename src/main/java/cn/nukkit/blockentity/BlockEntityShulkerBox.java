@@ -33,7 +33,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
         this.inventory = new ShulkerBoxInventory(this);
 
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
-            this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+            this.namedTag.putList("Items", new ListTag<CompoundTag>());
         }
 
         ListTag<CompoundTag> list = (ListTag<CompoundTag>) this.namedTag.getList("Items");
@@ -59,7 +59,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
 
     @Override
     public void saveNBT() {
-        this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+        this.namedTag.putList("Items", new ListTag<CompoundTag>());
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }

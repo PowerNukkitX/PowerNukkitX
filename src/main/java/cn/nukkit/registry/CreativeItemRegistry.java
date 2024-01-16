@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -26,9 +27,10 @@ import java.util.stream.IntStream;
 @Slf4j
 public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, Item> {
     private static final Int2ObjectLinkedOpenHashMap<Item> MAP = new Int2ObjectLinkedOpenHashMap<>();
-
+    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
     @Override
     public void init() {
+        if (isLoad.getAndSet(true)) return;
         try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("creative_items.nbt")) {
             CompoundTag compoundTag = NBTIO.readCompressed(input);
             TreeMap<Integer, Tag> tagTreeMap = new TreeMap<>();
@@ -42,7 +44,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                     int blockStateHash = tag.getInt("blockStateHash");
                     BlockState blockState = Registries.BLOCKSTATE.get(blockStateHash);
                     if (blockState == null) {
-                        log.warn("Item {} block state Hash cannot be found!", tag.getString("name"));
+                        log.warn("Item {} block state Hash cannot be found, hash {}!", tag.getString("name"), blockStateHash);
                         continue;
                     }
                     Block block = Registries.BLOCK.get(blockState);

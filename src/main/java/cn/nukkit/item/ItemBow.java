@@ -83,17 +83,17 @@ public class ItemBow extends ItemTool {
         arrowLocation.setY(player.y + player.getEyeHeight() + directionVector.getY());
 
         CompoundTag nbt = new CompoundTag()
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", arrowLocation.x))
-                        .add(new DoubleTag("", arrowLocation.y))
-                        .add(new DoubleTag("", arrowLocation.z)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", -Math.sin(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag("", -Math.sin(player.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag("", Math.cos(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI))))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", (player.yaw > 180 ? 360 : 0) - (float) player.yaw))
-                        .add(new FloatTag("", (float) -player.pitch)))
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(arrowLocation.x))
+                        .add(new DoubleTag(arrowLocation.y))
+                        .add(new DoubleTag(arrowLocation.z)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(-Math.sin(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(-Math.sin(player.pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(Math.cos(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI))))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag((player.yaw > 180 ? 360 : 0) - (float) player.yaw))
+                        .add(new FloatTag((float) -player.pitch)))
                 .putShort("Fire", flame ? 45 * 60 : 0)
                 .putDouble("damage", damage);
 

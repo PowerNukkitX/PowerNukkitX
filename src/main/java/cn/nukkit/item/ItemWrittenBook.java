@@ -27,7 +27,7 @@ public class ItemWrittenBook extends ItemBookWritable {
     }
 
     public Item writeBook(String author, String title, String[] pages) {
-        ListTag<CompoundTag> pageList = new ListTag<>("pages");
+        ListTag<CompoundTag> pageList = new ListTag<>();
         for (String page : pages) {
             pageList.add(createPageTag(page));
         }
@@ -40,7 +40,7 @@ public class ItemWrittenBook extends ItemBookWritable {
 
         tag.putString("author", author);
         tag.putString("title", title);
-        tag.putList(pages);
+        tag.putList("pages", pages);
 
         tag.putInt("generation", GENERATION_ORIGINAL);
         tag.putString("xuid", "");

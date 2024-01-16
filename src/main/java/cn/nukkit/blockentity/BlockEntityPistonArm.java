@@ -64,7 +64,8 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 this.y + (pushDirection.getYOffset() * progress),
                 this.z + (pushDirection.getZOffset() * progress)
                 //带动站在移动方块上的实体
-        ).addCoord(0, pushDirection.getAxis().isHorizontal() ? 0.25 : 0, 0);;
+        ).addCoord(0, pushDirection.getAxis().isHorizontal() ? 0.25 : 0, 0);
+        ;
         for (var entity : this.level.getCollidingEntities(bb))
             moveEntity(entity, pushDirection);
     }
@@ -212,7 +213,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                     ));
                 }
             }
-        } else namedTag.putList(new ListTag<>("AttachedBlocks"));
+        } else namedTag.putList("AttachedBlocks", new ListTag<>());
     }
 
     public void saveNBT() {
@@ -222,7 +223,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         this.namedTag.putFloat("Progress", this.progress);
         this.namedTag.putFloat("LastProgress", this.lastProgress);
         this.namedTag.putBoolean("powered", this.powered);
-        this.namedTag.putList(getAttachedBlocks());
+        this.namedTag.putList("AttachedBlocks", getAttachedBlocks());
         this.namedTag.putInt("facing", this.facing.getIndex());
         this.namedTag.putBoolean("Sticky", this.sticky);
         this.namedTag.putBoolean("Extending", this.extending);
@@ -239,19 +240,19 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 .putFloat("Progress", this.progress)
                 .putFloat("LastProgress", this.lastProgress)
                 .putBoolean("isMovable", this.movable)
-                .putList(getAttachedBlocks())
-                .putList(new ListTag<>("BreakBlocks"))
+                .putList("AttachedBlocks", getAttachedBlocks())
+                .putList("BreakBlocks", new ListTag<>())
                 .putBoolean("Sticky", this.sticky)
                 .putByte("State", this.state)
                 .putByte("NewState", this.newState);
     }
 
     protected ListTag<IntTag> getAttachedBlocks() {
-        var attachedBlocks = new ListTag<IntTag>("AttachedBlocks");
+        var attachedBlocks = new ListTag<IntTag>();
         for (var block : this.attachedBlocks) {
-            attachedBlocks.add(new IntTag("", block.x));
-            attachedBlocks.add(new IntTag("", block.y));
-            attachedBlocks.add(new IntTag("", block.z));
+            attachedBlocks.add(new IntTag( block.x));
+            attachedBlocks.add(new IntTag( block.y));
+            attachedBlocks.add(new IntTag( block.z));
         }
         return attachedBlocks;
     }

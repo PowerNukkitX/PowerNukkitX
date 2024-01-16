@@ -44,7 +44,8 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
     public static final BlockProperties PROPERTIES = new BlockProperties(DISPENSER, FACING_DIRECTION, CommonBlockProperties.TRIGGERED_BIT);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -67,7 +68,8 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.DISPENSER;
     }
 
@@ -82,7 +84,8 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityEjectable> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityEjectable> getBlockEntityClass() {
         return BlockEntityDispenser.class;
     }
 
@@ -156,7 +159,7 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
             }
         }
 
-        CompoundTag nbt = new CompoundTag().putList(new ListTag<>("Items"));
+        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>());
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
@@ -168,7 +171,7 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
                 nbt.put(tag.getKey(), tag.getValue());
             }
         }
-        
+
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 

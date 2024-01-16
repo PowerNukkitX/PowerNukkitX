@@ -38,7 +38,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
      * <p>
      * Definition builder for custom simple item
      *
-     * @param item             the item
+     * @param item the item
      * @return the custom item definition . simple builder
      */
     public static CustomItemDefinition.SimpleBuilder customBuilder(CustomItem item) {
@@ -50,7 +50,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
      * <p>
      * Definition builder for custom simple item
      *
-     * @param item             the item
+     * @param item the item
      */
     public static CustomItemDefinition.SimpleBuilder simpleBuilder(ItemCustom item) {
         return new CustomItemDefinition.SimpleBuilder(item);
@@ -61,7 +61,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
      * <p>
      * Definition builder for custom tools
      *
-     * @param item             the item
+     * @param item the item
      */
     public static CustomItemDefinition.ToolBuilder toolBuilder(ItemCustomTool item) {
         return new CustomItemDefinition.ToolBuilder(item);
@@ -72,7 +72,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
      * <p>
      * Definition builder for custom armor
      *
-     * @param item             the item
+     * @param item the item
      */
     public static CustomItemDefinition.ArmorBuilder armorBuilder(ItemCustomArmor item) {
         return new CustomItemDefinition.ArmorBuilder(item);
@@ -83,7 +83,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
      * <p>
      * Definition builder for custom food or potion
      *
-     * @param item             the item
+     * @param item the item
      */
     public static CustomItemDefinition.EdibleBuilder edibleBuilder(ItemCustomEdible item) {
         return new CustomItemDefinition.EdibleBuilder(item);
@@ -239,11 +239,11 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             Arrays.stream(tags).forEach(Identifier::assertValid);
             var list = this.nbt.getCompound("components").getList("item_tags", StringTag.class);
             if (list == null) {
-                list = new ListTag<>("item_tags");
-                this.nbt.getCompound("components").putList(list);
+                list = new ListTag<>();
+                this.nbt.getCompound("components").putList("item_tags", list);
             }
             for (var s : tags) {
-                list.add(new StringTag("", s));
+                list.add(new StringTag(s));
             }
             return this;
         }
@@ -325,30 +325,30 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                         .getCompound("minecraft:repairable")
                         .getList("repair_items", CompoundTag.class);
 
-                var items = new ListTag<CompoundTag>("items");
+                var items = new ListTag<CompoundTag>();
                 for (var name : repairItemNames) {
                     items.add(new CompoundTag().putString("name", name));
                 }
 
                 repair_items.add(new CompoundTag()
-                        .putList(items)
+                        .putList("items", items)
                         .putCompound("repair_amount", new CompoundTag()
                                 .putString("expression", molang)
                                 .putInt("version", 1)));
             } else {
-                var repair_items = new ListTag<CompoundTag>("repair_items");
-                var items = new ListTag<CompoundTag>("items");
+                var repair_items = new ListTag<CompoundTag>();
+                var items = new ListTag<CompoundTag>();
                 for (var name : repairItemNames) {
                     items.add(new CompoundTag().putString("name", name));
                 }
                 repair_items.add(new CompoundTag()
-                        .putList(items)
+                        .putList("items", items)
                         .putCompound("repair_amount", new CompoundTag()
                                 .putString("expression", molang)
                                 .putInt("version", 1)));
                 this.nbt.getCompound("components")
                         .putCompound("minecraft:repairable", new CompoundTag()
-                                .putList(repair_items));
+                                .putList("repair_items", repair_items));
             }
             return this;
         }
@@ -358,9 +358,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         private final ItemCustomTool item;
         private final List<CompoundTag> blocks = new ArrayList<>();
         private final List<String> blockTags = new ArrayList<>();
-        private final CompoundTag diggerRoot = new CompoundTag("minecraft:digger")
+        private final CompoundTag diggerRoot = new CompoundTag().putCompound("minecraft:digger", new CompoundTag()
                 .putBoolean("use_efficiency", true)
-                .putList(new ListTag<>("destroy_speeds"));
+                .putList("destroy_speeds", new ListTag<>()));
         private Integer speed = null;
 
         public static Map<String, Map<String, DigProperty>> toolBlocks = new HashMap<>();
@@ -532,7 +532,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
 
         public ToolBuilder isWeapon() {
             if (this.item.getAttackDamage() > 0 && !this.nbt.getCompound("components").containsCompound("minecraft:weapon")) {
-                this.nbt.getCompound("components").putCompound(new CompoundTag("minecraft:weapon"));
+                this.nbt.getCompound("components").putCompound("minecraft:weapon", new CompoundTag());
             }
             return this;
         }

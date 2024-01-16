@@ -38,7 +38,8 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
     public static final BlockProperties PROPERTIES = new BlockProperties(HOPPER, CommonBlockProperties.FACING_DIRECTION, TOGGLE_BIT);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -51,12 +52,14 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityHopper> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityHopper> getBlockEntityClass() {
         return BlockEntityHopper.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.HOPPER;
     }
 
@@ -98,7 +101,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
             }
         }
 
-        CompoundTag nbt = new CompoundTag().putList(new ListTag<>("Items"));
+        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>());
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 

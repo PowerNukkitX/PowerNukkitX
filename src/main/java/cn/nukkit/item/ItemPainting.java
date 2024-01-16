@@ -103,17 +103,17 @@ public class ItemPainting extends Item {
         CompoundTag nbt = new CompoundTag()
                 .putByte("Direction", direction)
                 .putString("Motive", motive.title)
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("0", position.x))
-                        .add(new DoubleTag("1", position.y))
-                        .add(new DoubleTag("2", position.z)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("0", 0))
-                        .add(new DoubleTag("1", 0))
-                        .add(new DoubleTag("2", 0)))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("0", direction * 90))
-                        .add(new FloatTag("1", 0)));
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(position.x))
+                        .add(new DoubleTag(position.y))
+                        .add(new DoubleTag(position.z)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0)))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag(direction * 90))
+                        .add(new FloatTag(0)));
 
         EntityPainting entity = (EntityPainting) Entity.createEntity(Entity.PAINTING, chunk, nbt);
 

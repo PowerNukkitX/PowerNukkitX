@@ -8,15 +8,7 @@ import java.io.IOException;
 public class EndTag extends Tag {
 
     public EndTag() {
-        super(null);
-    }
-
-    @Override
-    void load(NBTInputStream dis) throws IOException {
-    }
-
-    @Override
-    void write(NBTOutputStream dos) throws IOException {
+        super();
     }
 
     @Override
@@ -45,7 +37,7 @@ public class EndTag extends Tag {
     }
 
     @Override
-    public Object parseValue() {
+    public Void parseValue() {
         return null;
     }
 }

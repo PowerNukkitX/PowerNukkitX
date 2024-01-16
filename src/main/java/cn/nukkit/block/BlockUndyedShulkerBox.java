@@ -37,17 +37,20 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
     }
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityShulkerBox> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityShulkerBox> getBlockEntityClass() {
         return BlockEntityShulkerBox.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.SHULKER_BOX;
     }
 
@@ -97,7 +100,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         if (!inv.isEmpty()) {
             CompoundTag nbt = item.getNamedTag();
             if (nbt == null) {
-                nbt = new CompoundTag("");
+                nbt = new CompoundTag();
             }
 
             ListTag<CompoundTag> items = new ListTag<>();
@@ -133,7 +136,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
 
         // This code gets executed when the player has broken the shulker box and placed it back (©Kevims 2020)
         if (t != null && t.contains("Items")) {
-            nbt.putList(t.getList("Items"));
+            nbt.putList("Items", t.getList("Items"));
         }
 
         // This code gets executed when the player has copied the shulker box in creative mode (©Kevims 2020)

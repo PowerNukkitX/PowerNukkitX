@@ -103,22 +103,22 @@ public class ItemFireworkRocket extends Item {
     }
 
     public void clearExplosions() {
-        this.getNamedTag().getCompound("Fireworks").putList(new ListTag<CompoundTag>("Explosions"));
+        this.getNamedTag().getCompound("Fireworks").putList("Explosions", new ListTag<CompoundTag>());
     }
 
     private void spawnFirework(Level level, Vector3 pos) {
         CompoundTag nbt = new CompoundTag()
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", pos.x + 0.5))
-                        .add(new DoubleTag("", pos.y + 0.5))
-                        .add(new DoubleTag("", pos.z + 0.5)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", 0))
-                        .add(new DoubleTag("", 0))
-                        .add(new DoubleTag("", 0)))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", 0))
-                        .add(new FloatTag("", 0)))
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(pos.x + 0.5))
+                        .add(new DoubleTag(pos.y + 0.5))
+                        .add(new DoubleTag(pos.z + 0.5)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0)))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag(0))
+                        .add(new FloatTag(0)))
                 .putCompound("FireworkItem", NBTIO.putItemHelper(this));
 
         EntityFireworksRocket entity = (EntityFireworksRocket) Entity.createEntity(Entity.FIREWORKS_ROCKET, level.getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4), nbt);
@@ -129,17 +129,17 @@ public class ItemFireworkRocket extends Item {
 
     private void spawnElytraFirework(Level level, Vector3 pos, Player player) {
         CompoundTag nbt = new CompoundTag()
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", pos.x + 0.5))
-                        .add(new DoubleTag("", pos.y + 0.5))
-                        .add(new DoubleTag("", pos.z + 0.5)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", 0))
-                        .add(new DoubleTag("", 0))
-                        .add(new DoubleTag("", 0)))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", 0))
-                        .add(new FloatTag("", 0)))
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(pos.x + 0.5))
+                        .add(new DoubleTag(pos.y + 0.5))
+                        .add(new DoubleTag(pos.z + 0.5)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0)))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag(0))
+                        .add(new FloatTag(0)))
                 .putCompound("FireworkItem", NBTIO.putItemHelper(this));
 
         EntityElytraFirework entity = new EntityElytraFirework(player.getChunk(), nbt, player);

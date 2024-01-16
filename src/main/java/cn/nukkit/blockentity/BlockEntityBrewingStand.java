@@ -54,7 +54,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         super.loadNBT();
         inventory = new BrewingInventory(this);
         if (!namedTag.contains("Items") || !(namedTag.get("Items") instanceof ListTag)) {
-            namedTag.putList(new ListTag<>("Items"));
+            namedTag.putList("Items", new ListTag<>());
         }
 
         for (int i = 0; i < getSize(); i++) {
@@ -112,7 +112,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     @Override
     public void saveNBT() {
         super.saveNBT();
-        namedTag.putList(new ListTag<>("Items"));
+        namedTag.putList("Items", new ListTag<>());
         for (int index = 0; index < getSize(); index++) {
             this.setItem(index, inventory.getItem(index));
         }
@@ -271,7 +271,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     }
 
     private MixRecipe[] matchRecipes(boolean quickTest) {
-        MixRecipe[] recipes = new MixRecipe[quickTest? 1 : 3];
+        MixRecipe[] recipes = new MixRecipe[quickTest ? 1 : 3];
         Item ingredient = inventory.getIngredient();
         CraftingManager craftingManager = getLevel().getServer().getCraftingManager();
         for (int i = 0; i < 3; i++) {
@@ -345,21 +345,21 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
 
             String id = potion.getId();
             if ((id == ItemID.POTION || id == ItemID.SPLASH_POTION || id == ItemID.LINGERING_POTION) && potion.getCount() > 0) {
-                switch (i){
-                    case 1-> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_A_BIT,true);
-                    case 2-> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_B_BIT,true);
-                    case 3-> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_C_BIT,true);
+                switch (i) {
+                    case 1 -> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_A_BIT, true);
+                    case 2 -> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_B_BIT, true);
+                    case 3 -> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_C_BIT, true);
                 }
-            }else {
-                switch (i){
-                    case 1-> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_A_BIT,false);
-                    case 2-> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_B_BIT,false);
-                    case 3-> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_C_BIT,false);
+            } else {
+                switch (i) {
+                    case 1 -> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_A_BIT, false);
+                    case 2 -> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_B_BIT, false);
+                    case 3 -> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_C_BIT, false);
                 }
             }
         }
         this.level.setBlock(block, block, false, false);
-        
+
         if (brewTime != MAX_BREW_TIME && matchRecipes(true)[0] == null) {
             stopBrewing();
         }
@@ -393,6 +393,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
 
         return nbt;
     }
+
     @Override
     public Inventory getIngredientView() {
         return new InventorySlice(this.inventory, 0, 1);

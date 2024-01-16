@@ -1154,20 +1154,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             nbt.putString("Level", this.level.getName());
             Position spawnLocation = this.level.getSafeSpawn();
             nbt.getList("Pos", DoubleTag.class)
-                    .add(new DoubleTag("0", spawnLocation.x))
-                    .add(new DoubleTag("1", spawnLocation.y))
-                    .add(new DoubleTag("2", spawnLocation.z));
+                    .add(new DoubleTag(spawnLocation.x))
+                    .add(new DoubleTag(spawnLocation.y))
+                    .add(new DoubleTag(spawnLocation.z));
         } else {
             this.setLevel(level);
         }
 
-        for (Tag achievement : nbt.getCompound("Achievements").getAllTags()) {
-            if (!(achievement instanceof ByteTag)) {
+        for (var e : nbt.getCompound("Achievements").getEntrySet()) {
+            if (!(e.getValue() instanceof ByteTag)) {
                 continue;
             }
 
-            if (((ByteTag) achievement).getData() > 0) {
-                this.achievements.add(achievement.getName());
+            if (((ByteTag) e.getValue()).getData() > 0) {
+                this.achievements.add(e.getKey());
             }
         }
 
@@ -1214,10 +1214,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         //以下两个List的元素一一对应
         if (!this.namedTag.contains("fogIdentifiers")) {
-            this.namedTag.putList(new ListTag<StringTag>("fogIdentifiers"));
+            this.namedTag.putList("fogIdentifiers", new ListTag<StringTag>());
         }
         if (!this.namedTag.contains("userProvidedFogIds")) {
-            this.namedTag.putList(new ListTag<StringTag>("userProvidedFogIds"));
+            this.namedTag.putList("userProvidedFogIds", new ListTag<StringTag>());
         }
         var fogIdentifiers = this.namedTag.getList("fogIdentifiers", StringTag.class);
         var userProvidedFogIds = this.namedTag.getList("userProvidedFogIds", StringTag.class);
@@ -3876,14 +3876,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.namedTag.putInt("foodLevel", this.getFoodData().getLevel());
             this.namedTag.putFloat("foodSaturationLevel", this.getFoodData().getFoodSaturationLevel());
 
-            var fogIdentifiers = new ListTag<StringTag>("fogIdentifiers");
-            var userProvidedFogIds = new ListTag<StringTag>("userProvidedFogIds");
+            var fogIdentifiers = new ListTag<StringTag>();
+            var userProvidedFogIds = new ListTag<StringTag>();
             this.fogStack.forEach(fog -> {
-                fogIdentifiers.add(new StringTag("", fog.identifier().toString()));
-                userProvidedFogIds.add(new StringTag("", fog.userProvidedId()));
+                fogIdentifiers.add(new StringTag(fog.identifier().toString()));
+                userProvidedFogIds.add(new StringTag(fog.userProvidedId()));
             });
-            this.namedTag.putList(fogIdentifiers);
-            this.namedTag.putList(userProvidedFogIds);
+            this.namedTag.putList("fogIdentifiers", fogIdentifiers);
+            this.namedTag.putList("userProvidedFogIds", userProvidedFogIds);
 
             this.namedTag.putInt("TimeSinceRest", this.timeSinceRest);
 
@@ -5452,17 +5452,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     public void startFishing(Item fishingRod) {
         CompoundTag nbt = new CompoundTag()
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", x))
-                        .add(new DoubleTag("", y + this.getEyeHeight()))
-                        .add(new DoubleTag("", z)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", -Math.sin(yaw / 180 + Math.PI) * Math.cos(pitch / 180 * Math.PI)))
-                        .add(new DoubleTag("", -Math.sin(pitch / 180 * Math.PI)))
-                        .add(new DoubleTag("", Math.cos(yaw / 180 * Math.PI) * Math.cos(pitch / 180 * Math.PI))))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", (float) yaw))
-                        .add(new FloatTag("", (float) pitch)));
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(x))
+                        .add(new DoubleTag(y + this.getEyeHeight()))
+                        .add(new DoubleTag(z)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(-Math.sin(yaw / 180 + Math.PI) * Math.cos(pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(-Math.sin(pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(Math.cos(yaw / 180 * Math.PI) * Math.cos(pitch / 180 * Math.PI))))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag((float) yaw))
+                        .add(new FloatTag((float) pitch)));
         double f = 1.1;
         EntityFishingHook fishingHook = new EntityFishingHook(chunk, nbt, this);
         fishingHook.setMotion(new Vector3(-Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)) * f * f, -Math.sin(Math.toRadians(pitch)) * f * f,

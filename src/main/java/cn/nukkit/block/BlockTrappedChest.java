@@ -21,7 +21,8 @@ public class BlockTrappedChest extends BlockChest {
     public static final BlockProperties PROPERTIES = new BlockProperties(TRAPPED_CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -61,8 +62,8 @@ public class BlockTrappedChest extends BlockChest {
         }
 
         this.getLevel().setBlock(block, this, true, true);
-        CompoundTag nbt = new CompoundTag("")
-                .putList(new ListTag<>("Items"))
+        CompoundTag nbt = new CompoundTag()
+                .putList("Items", new ListTag<>())
                 .putString("id", BlockEntity.CHEST)
                 .putInt("x", (int) this.x)
                 .putInt("y", (int) this.y)

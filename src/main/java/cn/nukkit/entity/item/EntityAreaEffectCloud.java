@@ -286,7 +286,7 @@ public class EntityAreaEffectCloud extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        ListTag<CompoundTag> effectsTag = new ListTag<>("mobEffects");
+        ListTag<CompoundTag> effectsTag = new ListTag<>();
         for (Effect effect : cloudEffects) {
             effectsTag.add(new CompoundTag().putByte("Id", effect.getId())
                     .putBoolean("Ambient", effect.isAmbient())
@@ -296,7 +296,7 @@ public class EntityAreaEffectCloud extends Entity {
             );
         }
         //TODO Do we really need to save the entity data to nbt or is it already saved somewhere?
-        namedTag.putList(effectsTag);
+        namedTag.putList("mobEffects",effectsTag);
         namedTag.putInt("ParticleColor", getPotionColor());
         namedTag.putShort("PotionId", getPotionId());
         namedTag.putInt("Duration", getDuration());

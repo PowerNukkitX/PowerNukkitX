@@ -14,7 +14,7 @@ public class ProfessionFarmer extends Profession {
 
     @Override
     public ListTag<Tag> buildTrades(int seed) {
-        ListTag<Tag> recipes = new ListTag<>("Recipes");
+        ListTag<Tag> recipes = new ListTag<>();
 
         recipes.add(RecipeBuildUtils.of(Item.get(Item.WHEAT,0,20), Item.get(Item.EMERALD))
                         .setMaxUses(16)

@@ -10,7 +10,6 @@ import cn.nukkit.level.format.palette.Palette;
 import cn.nukkit.level.util.LevelDBKeyUtil;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.registry.BlockStateRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.Utils;
 import io.netty.buffer.ByteBuf;
@@ -82,8 +81,8 @@ public class LevelDBChunkSerializer {
 
     //serialize chunk section
     private void serializeBlock(WriteBatch writeBatch, UnsafeChunk chunk) {
-        for (int ySection = chunk.getProvider().getDimensionData().getMinSectionY(); ySection <= chunk.getProvider().getDimensionData().getMaxSectionY(); ySection++) {
-            ChunkSection section = chunk.getSection(ySection);
+        ChunkSection[] sections = chunk.getSections();
+        for (var section : sections) {
             if (section == null) {
                 continue;
             }
@@ -91,11 +90,11 @@ public class LevelDBChunkSerializer {
             try {
                 buffer.writeByte(ChunkSection.VERSION);
                 buffer.writeByte(ChunkSection.LAYER_COUNT);
-                buffer.writeByte(ySection);
+                buffer.writeByte(section.y());
                 for (int i = 0; i < ChunkSection.LAYER_COUNT; i++) {
                     section.blockLayer()[i].writeToStoragePersistent(buffer, BlockState::getBlockStateTag);
                 }
-                writeBatch.put(LevelDBKeyUtil.CHUNK_SECTION_PREFIX.getKey(chunk.getX(), chunk.getZ(), ySection, chunk.getProvider().getDimensionData()), Utils.convertByteBuf2Array(buffer));
+                writeBatch.put(LevelDBKeyUtil.CHUNK_SECTION_PREFIX.getKey(chunk.getX(), chunk.getZ(), section.y(), chunk.getProvider().getDimensionData()), Utils.convertByteBuf2Array(buffer));
             } finally {
                 buffer.release();
             }

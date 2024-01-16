@@ -173,8 +173,8 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
                 .putByte("ItemRotation", 0)
                 .putFloat("ItemDropChance", 1.0f);
         if (item.hasCustomBlockData()) {
-            for (Tag aTag : item.getCustomBlockData().getAllTags()) {
-                nbt.put(aTag.getName(), aTag);
+            for (var e : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(e.getKey(), e.getValue());
             }
         }
         BlockEntityItemFrame frame = BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt);

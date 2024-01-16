@@ -13,12 +13,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.*;
 
-@ExtendWith(GameMockExtension.class)
 public class BlockPropertiesTest {
 
     @Test
     @SneakyThrows
     void BlockPaletteTest() {
+        Registries.BLOCK.init();
         HashMap<String, String> errors = new HashMap<>();
         try (var stream = BlockProperties.class.getClassLoader().getResourceAsStream("block_palette.nbt")) {
             CompoundTag nbt = NBTIO.readCompressed(stream);
@@ -31,7 +31,7 @@ public class BlockPropertiesTest {
                 }
             }
         }
+        //errors.values().forEach(System.out::println);
         Assertions.assertEquals(184, errors.size());//Version 1.20.50, There are now a total of 184 blocks for 1.21 content or educational content
-//        errors.values().forEach(System.out::println);
     }
 }

@@ -44,8 +44,8 @@ public class ItemShield extends ItemTool {
         }
         var tag = this.getNamedTag();
         var item = new ItemBanner();
-        for (var each : item.getNamedTag().getTags().values()) {
-            tag.put(each.getName(), each);
+        for (var e : item.getNamedTag().getEntrySet()) {
+            tag.put(e.getKey(), e.getValue());
         }
         if (this.getNamedTag().containsInt("Base")) {
             item.setBaseColor(DyeColor.getByDyeData(this.getNamedTag().getInt("Base")));
@@ -64,8 +64,8 @@ public class ItemShield extends ItemTool {
         } else {
             tag = this.getNamedTag();
         }
-        for (var each : banner.getNamedTag().getTags().values()) {
-            tag.put(each.getName(), each);
+        for (var e : banner.getNamedTag().getEntrySet()) {
+            tag.put(e.getKey(), e.getValue());
         }
         tag.putInt("Base", banner.getBaseColor());
         this.setNamedTag(tag);

@@ -7,19 +7,10 @@ import java.io.IOException;
 
 public class DoubleTag extends NumberTag<Double> {
     public double data;
-
+    public DoubleTag() {
+    }
 
     public DoubleTag(double data) {
-        super("");
-        this.data = data;
-    }
-
-    public DoubleTag(String name) {
-        super(name);
-    }
-
-    public DoubleTag(String name, double data) {
-        super(name);
         this.data = data;
     }
 
@@ -34,16 +25,6 @@ public class DoubleTag extends NumberTag<Double> {
     }
 
     @Override
-    void write(NBTOutputStream dos) throws IOException {
-        dos.writeDouble(data);
-    }
-
-    @Override
-    void load(NBTInputStream dis) throws IOException {
-        data = dis.readDouble();
-    }
-
-    @Override
     public Double parseValue() {
         return this.data;
     }
@@ -55,7 +36,7 @@ public class DoubleTag extends NumberTag<Double> {
 
     @Override
     public String toString() {
-        return "DoubleTag " + this.getName() + " (data: " + data + ")";
+        return "DoubleTag " +" (data: " + data + ")";
     }
 
     @Override
@@ -70,7 +51,7 @@ public class DoubleTag extends NumberTag<Double> {
 
     @Override
     public Tag copy() {
-        return new DoubleTag(getName(), data);
+        return new DoubleTag(data);
     }
 
     @Override

@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.EntityDefinition, Class<? extends Entity>, Class<? extends Entity>> {
@@ -27,9 +28,10 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     private static final Object2IntOpenHashMap<String> ID2RID = new Object2IntOpenHashMap<>();
     private static final Int2ObjectArrayMap<String> RID2ID = new Int2ObjectArrayMap<>();
     private static final Object2ObjectOpenHashMap<String, EntityRegistry.EntityDefinition> DEFINITIONS = new Object2ObjectOpenHashMap<>();
-
+    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
     @Override
     public void init() {
+        if (isLoad.getAndSet(true)) return;
         registerInternal(new EntityDefinition(CHICKEN, "", 10, true, true), EntityChicken.class);
         registerInternal(new EntityDefinition(COW, "", 11, true, true), EntityCow.class);
         registerInternal(new EntityDefinition(PIG, "", 12, true, true), EntityPig.class);

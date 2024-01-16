@@ -49,13 +49,13 @@ public class TradeInventory extends BaseInventory {
         pk1.traderUniqueEntityId = villager.getId();
         pk1.playerUniqueEntityId = who.getId();
         pk1.displayName = villager.getDisplayName();
-        var tierExpRequirements = new ListTag<CompoundTag>("TierExpRequirements");
+        var tierExpRequirements = new ListTag<CompoundTag>();
         for (int i = 0, len = villager.tierExpRequirement.length; i < len; ++i) {
             tierExpRequirements.add(i, new CompoundTag().putInt(String.valueOf(i), villager.tierExpRequirement[i]));
         }
         pk1.offers = new CompoundTag()
-                .putList(villager.getRecipes())
-                .putList(tierExpRequirements);
+                .putList("Recipes",villager.getRecipes())
+                .putList("TierExpRequirements", tierExpRequirements);
         pk1.newTradingUi = true;
         pk1.usingEconomyTrade = true;
         who.dataPacket(pk1);

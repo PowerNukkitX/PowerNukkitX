@@ -10,6 +10,7 @@ import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.nbt.tag.TreeMapCompoundTag;
 import cn.nukkit.utils.ByteBufVarInt;
 import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.SemVersion;
@@ -119,14 +120,14 @@ public final class Palette<V> {
                                  NBTInputStream input) throws IOException {
         Pair<Integer, SemVersion> p = PaletteUtils.fastReadBlockHash(input, byteBuf);
         if (p.left() == null) {
-            CompoundTag oldBlockNbt = (CompoundTag) Tag.readNamedTag(input);
+            CompoundTag oldBlockNbt = (CompoundTag) input.readTag();
             SemVersion semVersion = p.right();
             int version = CompoundTagUpdaterContext.makeVersion(semVersion.major(), semVersion.minor(), semVersion.patch());
             CompoundTag newNbtMap = BlockStateUpdaters.updateBlockState(oldBlockNbt, version);
-            var states = new TreeMap<>(newNbtMap.getCompound("states").getTags());
+            var states = new TreeMapCompoundTag(newNbtMap.getCompound("states").getTags());
             var newBlockNbt = new CompoundTag()
                     .putString("name", newNbtMap.getString("name"))
-                    .putCompound("states", new CompoundTag("", states));
+                    .putCompound("states", states);
             this.palette.add(deserializer.deserialize(HashUtils.fnv1a_32_nbt(newBlockNbt)));
         } else {
             this.palette.add(deserializer.deserialize(p.left()));

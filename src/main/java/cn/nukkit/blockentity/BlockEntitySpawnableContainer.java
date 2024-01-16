@@ -26,7 +26,7 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
         super.loadNBT();
         this.inventory = requireContainerInventory();
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
-            this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+            this.namedTag.putList("Items", new ListTag<CompoundTag>());
         }
 
         ListTag<CompoundTag> list = (ListTag<CompoundTag>) this.namedTag.getList("Items");
@@ -57,7 +57,7 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+        this.namedTag.putList("Items", new ListTag<CompoundTag>());
         for (int index = 0; index < this.getInventory().getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
@@ -105,6 +105,7 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
 
     /**
      * 继承于此类的容器方块实体必须实现此方法
+     *
      * @return ContainerInventory
      */
     protected abstract ContainerInventory requireContainerInventory();

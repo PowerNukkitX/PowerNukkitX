@@ -30,7 +30,7 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
     private Action action;
     private int trackingId;
     private CompoundTag tag;
-    
+
     private CompoundTag requireTag() {
         if (tag == null) {
             tag = new CompoundTag()
@@ -71,10 +71,10 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
     }
 
     public void setPosition(int x, int y, int z) {
-        requireTag().putList(new ListTag<>("pos")
-                .add(new IntTag("", x))
-                .add(new IntTag("", y))
-                .add(new IntTag("", z))
+        requireTag().putList("pos", new ListTag<>()
+                .add(new IntTag(x))
+                .add(new IntTag(y))
+                .add(new IntTag(z))
         );
     }
 
@@ -117,7 +117,7 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
         putByte((byte) action.ordinal());
         putVarInt(trackingId);
         try {
-            put(NBTIO.writeNetwork(tag != null? tag : new CompoundTag()));
+            put(NBTIO.writeNetwork(tag != null ? tag : new CompoundTag()));
         } catch (IOException e) {
             throw new EncoderException(e);
         }
@@ -127,7 +127,7 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
     public void decode() {
         action = ACTIONS[getByte()];
         trackingId = getVarInt();
-        try(FastByteArrayInputStream inputStream = new FastByteArrayInputStream(get())) {
+        try (FastByteArrayInputStream inputStream = new FastByteArrayInputStream(get())) {
             tag = NBTIO.readNetworkCompressed(inputStream);
         } catch (IOException e) {
             throw new EncoderException(e);

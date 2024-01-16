@@ -1,5 +1,6 @@
 package cn.nukkit.nbt.stream;
 
+import cn.nukkit.nbt.tag.*;
 import cn.nukkit.utils.VarInt;
 
 import java.io.DataInput;
@@ -8,14 +9,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
+@SuppressWarnings("unchecked")
 public class NBTInputStream implements DataInput, AutoCloseable {
     private final DataInputStream stream;
     private final ByteOrder endianness;
     private final boolean network;
+    private final AtomicBoolean closed = new AtomicBoolean(false);
 
     public NBTInputStream(InputStream stream) {
         this(stream, ByteOrder.BIG_ENDIAN);
@@ -158,6 +165,91 @@ public class NBTInputStream implements DataInput, AutoCloseable {
 
     @Override
     public void close() throws IOException {
+        closed.set(true);
         this.stream.close();
+    }
+
+    public Object readTag() throws IOException {
+        return this.readTag(16);
+    }
+
+    public Object readTag(int maxDepth) throws IOException {
+        if (this.closed.get()) {
+            throw new IllegalStateException("Trying to read from a closed reader!");
+        } else {
+            int typeId = this.readUnsignedByte();
+            this.readUTF();
+            return this.deserialize(typeId, maxDepth);
+        }
+    }
+
+    public <T extends Tag> T readValue(int type) throws IOException {
+        return this.readValue(type, 16);
+    }
+
+    public <T extends Tag> T readValue(int type, int maxDepth) throws IOException {
+        if (this.closed.get()) {
+            throw new IllegalStateException("Trying to read from a closed reader!");
+        } else {
+            return (T) this.deserialize(type, maxDepth);
+        }
+    }
+
+    private Tag deserialize(int type, int maxDepth) throws IOException {
+        if (maxDepth < 0) {
+            throw new IllegalArgumentException("NBT compound is too deeply nested");
+        } else {
+            int arraySize;
+            switch (type) {
+                case Tag.TAG_End:
+                    return null;
+                case Tag.TAG_Byte:
+                    return new ByteTag(readByte());
+                case Tag.TAG_Short:
+                    return new ShortTag(readShort());
+                case Tag.TAG_Int:
+                    return new IntTag(readInt());
+                case Tag.TAG_Long:
+                    return new LongTag(readLong());
+                case Tag.TAG_Float:
+                    return new FloatTag(readFloat());
+                case Tag.TAG_Double:
+                    return new DoubleTag(readDouble());
+                case Tag.TAG_Byte_Array:
+                    arraySize = this.readInt();
+                    byte[] bytes = new byte[arraySize];
+                    this.readFully(bytes);
+                    return new ByteArrayTag(bytes);
+                case Tag.TAG_String:
+                    return new StringTag(this.readUTF());
+                case Tag.TAG_Compound:
+                    LinkedHashMap<String, Tag> map = new LinkedHashMap<>();
+                    int nbtType;
+                    while ((nbtType = this.readUnsignedByte()) != Tag.TAG_End) {
+                        String name = this.readUTF();
+                        map.put(name, deserialize(nbtType, maxDepth - 1));
+                    }
+                    return new CompoundTag(map);
+                case Tag.TAG_List:
+                    int typeId = this.readUnsignedByte();
+                    int listLength = this.readInt();
+                    List<Tag> list = new ArrayList<>(listLength);
+
+                    for (int i = 0; i < listLength; ++i) {
+                        list.add(this.deserialize(typeId, maxDepth - 1));
+                    }
+                    return new ListTag<>(typeId, list);
+                case Tag.TAG_Int_Array:
+                    arraySize = this.readInt();
+                    int[] ints = new int[arraySize];
+
+                    for (int i = 0; i < arraySize; ++i) {
+                        ints[i] = this.readInt();
+                    }
+                    return new IntArrayTag(ints);
+                default:
+                    throw new IllegalArgumentException("Unknown type " + type);
+            }
+        }
     }
 }

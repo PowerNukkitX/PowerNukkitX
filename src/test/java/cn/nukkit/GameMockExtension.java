@@ -16,8 +16,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.blockstateupdater.BlockStateUpdater;
 import cn.nukkit.level.blockstateupdater.BlockStateUpdaterBase;
 import cn.nukkit.level.format.LevelDBProvider;
-import cn.nukkit.level.format.LevelProvider;
-import cn.nukkit.level.generator.Flat;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.RakNetInterface;
@@ -29,7 +27,6 @@ import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
 import cn.nukkit.recipe.CraftingManager;
 import cn.nukkit.registry.BlockRegistry;
-import cn.nukkit.registry.RegisterException;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.ServerScheduler;
 import cn.nukkit.tags.BiomeTags;
@@ -39,19 +36,15 @@ import cn.nukkit.utils.Config;
 import cn.nukkit.utils.collection.FreezableArrayManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import sun.misc.Unsafe;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,8 +53,12 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.LockSupport;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class GameMockExtension extends MockitoExtension implements BeforeAllCallback, AfterAllCallback {
     final static Server server = mock(Server.class);
@@ -105,11 +102,6 @@ public class GameMockExtension extends MockitoExtension implements BeforeAllCall
         BlockComposter.init();
         DispenseBehaviorRegister.init();
         BLOCK_REGISTRY = Registries.BLOCK;
-        try {
-            Registries.GENERATOR.register("normal", Flat.class);
-        } catch (RegisterException e) {
-            throw new RuntimeException(e);
-        }
         config = new Config(new File("src/test/resources/default-nukkit.yml"));
         try {
             FieldUtils.writeDeclaredField(server, "config", config, true);

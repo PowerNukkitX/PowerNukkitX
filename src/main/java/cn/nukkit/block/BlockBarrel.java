@@ -38,17 +38,20 @@ public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHold
     }
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.BARREL;
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityBarrel> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityBarrel> getBlockEntityClass() {
         return BlockEntityBarrel.class;
     }
 
@@ -72,7 +75,7 @@ public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHold
             }
         }
 
-        CompoundTag nbt = new CompoundTag().putList(new ListTag<>("Items"));
+        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>());
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());

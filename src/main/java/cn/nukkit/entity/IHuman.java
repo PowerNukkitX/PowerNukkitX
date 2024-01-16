@@ -193,8 +193,8 @@ public interface IHuman extends InventoryHolder {
         //EntityHumanType
         ListTag<CompoundTag> inventoryTag = null;
         if (this.getInventory() != null) {
-            inventoryTag = new ListTag<>("Inventory");
-            human.namedTag.putList(inventoryTag);
+            inventoryTag = new ListTag<>();
+            human.namedTag.putList("Inventory", inventoryTag);
 
             for (int slot = 0; slot < 9; ++slot) {
                 inventoryTag.add(new CompoundTag()
@@ -229,14 +229,14 @@ public interface IHuman extends InventoryHolder {
             Item item = this.getOffhandInventory().getItem(0);
             if (!item.isNull()) {
                 if (inventoryTag == null) {
-                    inventoryTag = new ListTag<>("Inventory");
-                    human.namedTag.putList(inventoryTag);
+                    inventoryTag = new ListTag<>();
+                    human.namedTag.putList("Inventory", inventoryTag);
                 }
                 inventoryTag.add(NBTIO.putItemHelper(item, -106));
             }
         }
 
-        human.namedTag.putList(new ListTag<CompoundTag>("EnderItems"));
+        human.namedTag.putList("EnderItems", new ListTag<CompoundTag>());
         if (this.getEnderChestInventory() != null) {
             for (int slot = 0; slot < 27; ++slot) {
                 Item item = this.getEnderChestInventory().getItem(slot);
@@ -270,7 +270,7 @@ public interface IHuman extends InventoryHolder {
 
             List<SkinAnimation> animations = skin.getAnimations();
             if (!animations.isEmpty()) {
-                ListTag<CompoundTag> animationsTag = new ListTag<>("AnimatedImageData");
+                ListTag<CompoundTag> animationsTag = new ListTag<>();
                 for (SkinAnimation animation : animations) {
                     animationsTag.add(new CompoundTag()
                             .putFloat("Frames", animation.frames)
@@ -280,12 +280,12 @@ public interface IHuman extends InventoryHolder {
                             .putInt("AnimationExpression", animation.expression)
                             .putByteArray("Image", animation.image.data));
                 }
-                skinTag.putList(animationsTag);
+                skinTag.putList("AnimatedImageData", animationsTag);
             }
 
             List<PersonaPiece> personaPieces = skin.getPersonaPieces();
             if (!personaPieces.isEmpty()) {
-                ListTag<CompoundTag> piecesTag = new ListTag<>("PersonaPieces");
+                ListTag<CompoundTag> piecesTag = new ListTag<>();
                 for (PersonaPiece piece : personaPieces) {
                     piecesTag.add(new CompoundTag().putString("PieceId", piece.id)
                             .putString("PieceType", piece.type)
@@ -293,18 +293,19 @@ public interface IHuman extends InventoryHolder {
                             .putBoolean("IsDefault", piece.isDefault)
                             .putString("ProductId", piece.productId));
                 }
+                skinTag.putList("PersonaPieces", piecesTag);
             }
-
             List<PersonaPieceTint> tints = skin.getTintColors();
             if (!tints.isEmpty()) {
-                ListTag<CompoundTag> tintsTag = new ListTag<>("PieceTintColors");
+                ListTag<CompoundTag> tintsTag = new ListTag<>();
                 for (PersonaPieceTint tint : tints) {
-                    ListTag<StringTag> colors = new ListTag<>("Colors");
-                    colors.setAll(tint.colors.stream().map(s -> new StringTag("", s)).collect(Collectors.toList()));
+                    ListTag<StringTag> colors = new ListTag<>();
+                    colors.setAll(tint.colors.stream().map(StringTag::new).collect(Collectors.toList()));
                     tintsTag.add(new CompoundTag()
                             .putString("PieceType", tint.pieceType)
-                            .putList(colors));
+                            .putList("Colors", colors));
                 }
+                skinTag.putList("PieceTintColors", tintsTag);
             }
 
             if (!skin.getPlayFabId().isEmpty()) {

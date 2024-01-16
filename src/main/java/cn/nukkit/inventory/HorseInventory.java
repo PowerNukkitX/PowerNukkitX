@@ -29,10 +29,10 @@ public class HorseInventory extends BaseInventory {
     }
 
     static {
-        ListTag<CompoundTag> saddle = new ListTag<CompoundTag>().add(new CompoundTag().putCompound(new CompoundTag("slotItem").putShort("Aux", Short.MAX_VALUE).putString("Name", "minecraft:saddle")));
+        ListTag<CompoundTag> saddle = new ListTag<CompoundTag>().add(new CompoundTag().putCompound("slotItem", new CompoundTag().putShort("Aux", Short.MAX_VALUE).putString("Name", "minecraft:saddle")));
         ListTag<CompoundTag> horseArmor = new ListTag<>();
         for (var h : List.of("minecraft:leather_horse_armor", "minecraft:iron_horse_armor", "minecraft:golden_horse_armor", "minecraft:diamond_horse_armor")) {
-            horseArmor.add(new CompoundTag().putCompound(new CompoundTag("slotItem").putShort("Aux", Short.MAX_VALUE).putString("Name", h)));
+            horseArmor.add(new CompoundTag().putCompound("slotItem", new CompoundTag().putShort("Aux", Short.MAX_VALUE).putString("Name", h)));
         }
         slot0 = new CompoundTag().putList("acceptedItems", saddle).putInt("slotNumber", 0);
         slot1 = new CompoundTag().putList("acceptedItems", horseArmor).putInt("slotNumber", 1);
@@ -105,11 +105,11 @@ public class HorseInventory extends BaseInventory {
         Item saddle = getSaddle();
         Item horseArmor = getHorseArmor();
         if (!saddle.isNull()) {
-            slots.add(slot0.clone().putCompound(new CompoundTag("item").putString("Name", saddle.getId()).putShort("Aux", Short.MAX_VALUE)));
-        } else slots.add(slot0.clone());
+            slots.add(slot0.copy().putCompound("item", new CompoundTag().putString("Name", saddle.getId()).putShort("Aux", Short.MAX_VALUE)));
+        } else slots.add(slot0.copy());
         if (!horseArmor.isNull()) {
-            slots.add(slot1.clone().putCompound(new CompoundTag("item").putString("Name", horseArmor.getId()).putShort("Aux", Short.MAX_VALUE)));
-        } else slots.add(slot1.clone());
+            slots.add(slot1.copy().putCompound("item", new CompoundTag().putString("Name", horseArmor.getId()).putShort("Aux", Short.MAX_VALUE)));
+        } else slots.add(slot1.copy());
         var nbt = new CompoundTag().putList("slots", slots);
         UpdateEquipmentPacket updateEquipmentPacket = new UpdateEquipmentPacket();
         updateEquipmentPacket.windowId = who.getWindowId(this);

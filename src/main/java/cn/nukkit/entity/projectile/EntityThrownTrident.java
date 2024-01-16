@@ -39,10 +39,11 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityThrownTrident extends SlenderProjectile {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return THROWN_TRIDENT;
     }
-    
+
     private static final String TAG_PICKUP = "pickup";
     private static final String TAG_TRIDENT = "Trident";
     private static final String TAG_FAVORED_SLOT = "favoredSlot";
@@ -84,7 +85,6 @@ public class EntityThrownTrident extends SlenderProjectile {
         this(chunk, nbt, shootingEntity);
     }
 
-    
 
     @Override
     public float getLength() {
@@ -160,15 +160,15 @@ public class EntityThrownTrident extends SlenderProjectile {
 
         this.namedTag.put(TAG_TRIDENT, NBTIO.putItemHelper(this.trident));
         this.namedTag.putByte(TAG_PICKUP, this.pickupMode);
-        this.namedTag.putList(new ListTag<DoubleTag>("CollisionPos")
-                .add(new DoubleTag("0", this.collisionPos.x))
-                .add(new DoubleTag("1", this.collisionPos.y))
-                .add(new DoubleTag("2", this.collisionPos.z))
+        this.namedTag.putList("CollisionPos", new ListTag<DoubleTag>()
+                .add(new DoubleTag(this.collisionPos.x))
+                .add(new DoubleTag(this.collisionPos.y))
+                .add(new DoubleTag(this.collisionPos.z))
         );
-        this.namedTag.putList(new ListTag<IntTag>("StuckToBlockPos")
-                .add(new IntTag("0", this.stuckToBlockPos.x))
-                .add(new IntTag("1", this.stuckToBlockPos.y))
-                .add(new IntTag("2", this.stuckToBlockPos.z))
+        this.namedTag.putList("StuckToBlockPos", new ListTag<IntTag>()
+                .add(new IntTag(this.stuckToBlockPos.x))
+                .add(new IntTag(this.stuckToBlockPos.y))
+                .add(new IntTag(this.stuckToBlockPos.z))
         );
         this.namedTag.putInt(TAG_FAVORED_SLOT, this.favoredSlot);
         this.namedTag.putBoolean(TAG_PLAYER, this.player);
@@ -214,7 +214,7 @@ public class EntityThrownTrident extends SlenderProjectile {
         return 8;
     }
 
-    
+
     @Override
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
@@ -269,7 +269,7 @@ public class EntityThrownTrident extends SlenderProjectile {
         super.spawnTo(player);
     }
 
-    
+
     @Override
     public void onCollideWithEntity(Entity entity) {
         if (this.noClip) {

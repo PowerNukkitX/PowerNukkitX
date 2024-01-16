@@ -205,7 +205,6 @@ public abstract class Item implements Cloneable, ItemID {
 
     public Item setCustomBlockData(CompoundTag compoundTag) {
         CompoundTag tags = compoundTag.copy();
-        tags.setName("BlockEntityTag");
 
         CompoundTag tag;
         if (!this.hasCompoundTag()) {
@@ -394,15 +393,15 @@ public abstract class Item implements Cloneable, ItemID {
 
         ListTag<CompoundTag> ench;
         if (!tag.contains("ench")) {
-            ench = new ListTag<>("ench");
-            tag.putList(ench);
+            ench = new ListTag<>();
+            tag.putList("ench", ench);
         } else {
             ench = tag.getList("ench", CompoundTag.class);
         }
         ListTag<CompoundTag> custom_ench;
         if (!tag.contains("custom_ench")) {
-            custom_ench = new ListTag<>("custom_ench");
-            tag.putList(custom_ench);
+            custom_ench = new ListTag<>();
+            tag.putList("custom_ench", custom_ench);
         } else {
             custom_ench = tag.getList("custom_ench", CompoundTag.class);
         }
@@ -452,7 +451,7 @@ public abstract class Item implements Cloneable, ItemID {
             if (tag.contains("display") && tag.get("display") instanceof CompoundTag) {
                 tag.getCompound("display").putString("Name", customName);
             } else {
-                tag.putCompound("display", new CompoundTag("display")
+                tag.putCompound("display", new CompoundTag()
                         .putString("Name", customName)
                 );
             }
@@ -592,7 +591,7 @@ public abstract class Item implements Cloneable, ItemID {
         if (tag.contains("display") && tag.get("display") instanceof CompoundTag) {
             tag.getCompound("display").putString("Name", name);
         } else {
-            tag.putCompound("display", new CompoundTag("display")
+            tag.putCompound("display", new CompoundTag()
                     .putString("Name", name)
             );
         }
@@ -665,16 +664,16 @@ public abstract class Item implements Cloneable, ItemID {
         } else {
             tag = this.getNamedTag();
         }
-        ListTag<StringTag> lore = new ListTag<>("Lore");
+        ListTag<StringTag> lore = new ListTag<>();
 
         for (String line : lines) {
-            lore.add(new StringTag("", line));
+            lore.add(new StringTag(line));
         }
 
         if (!tag.contains("display")) {
-            tag.putCompound("display", new CompoundTag("display").putList(lore));
+            tag.putCompound("display", new CompoundTag().putList("Lore", lore));
         } else {
-            tag.getCompound("display").putList(lore);
+            tag.getCompound("display").putList("Lore", lore);
         }
 
         this.setNamedTag(tag);
@@ -698,7 +697,6 @@ public abstract class Item implements Cloneable, ItemID {
         if (this.cachedNBT == null) {
             this.cachedNBT = parseCompoundTag(this.tags);
         }
-        this.cachedNBT.setName("");
         return this.cachedNBT;
     }
 
@@ -713,7 +711,6 @@ public abstract class Item implements Cloneable, ItemID {
         if (tag.isEmpty()) {
             return this.clearNamedTag();
         }
-        tag.setName(null);
 
         this.cachedNBT = tag;
         this.tags = writeCompoundTag(tag);
@@ -735,7 +732,6 @@ public abstract class Item implements Cloneable, ItemID {
 
     public byte[] writeCompoundTag(CompoundTag tag) {
         try {
-            tag.setName("");
             return NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -1322,7 +1318,7 @@ public abstract class Item implements Cloneable, ItemID {
     public void addCanPlaceOn(Block block) {
         CompoundTag tag = getOrCreateNamedTag();
         ListTag<StringTag> canPlaceOn = tag.getList("CanPlaceOn", StringTag.class);
-        tag.putList(canPlaceOn.add(new StringTag("", block.toItem().getId())));
+        tag.putList("CanPlaceOn", canPlaceOn.add(new StringTag(block.toItem().getId())));
         this.setCompoundTag(tag);
     }
 
@@ -1334,11 +1330,11 @@ public abstract class Item implements Cloneable, ItemID {
 
     public void setCanPlaceOn(Block[] blocks) {
         CompoundTag tag = getOrCreateNamedTag();
-        ListTag<StringTag> canPlaceOn = new ListTag<>("CanPlaceOn");
+        ListTag<StringTag> canPlaceOn = new ListTag<>();
         for (Block block : blocks) {
-            canPlaceOn.add(new StringTag("", block.toItem().getId()));
+            canPlaceOn.add(new StringTag(block.toItem().getId()));
         }
-        tag.putList(canPlaceOn);
+        tag.putList("CanPlaceOn", canPlaceOn);
         this.setCompoundTag(tag);
     }
 
@@ -1355,7 +1351,7 @@ public abstract class Item implements Cloneable, ItemID {
     public void addCanDestroy(Block block) {
         CompoundTag tag = getOrCreateNamedTag();
         ListTag<StringTag> canDestroy = tag.getList("CanDestroy", StringTag.class);
-        tag.putList(canDestroy.add(new StringTag("", block.toItem().getId())));
+        tag.putList("CanDestroy", canDestroy.add(new StringTag(block.toItem().getId())));
         this.setCompoundTag(tag);
     }
 
@@ -1367,11 +1363,11 @@ public abstract class Item implements Cloneable, ItemID {
 
     public void setCanDestroy(Block[] blocks) {
         CompoundTag tag = getOrCreateNamedTag();
-        ListTag<StringTag> canDestroy = new ListTag<>("CanDestroy");
+        ListTag<StringTag> canDestroy = new ListTag<>();
         for (Block block : blocks) {
-            canDestroy.add(new StringTag("", block.toItem().getId()));
+            canDestroy.add(new StringTag(block.toItem().getId()));
         }
-        tag.putList(canDestroy);
+        tag.putList("CanDestroy",canDestroy);
         this.setCompoundTag(tag);
     }
 
