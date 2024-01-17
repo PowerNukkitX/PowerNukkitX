@@ -479,7 +479,9 @@ public class BinaryStream {
             if (Objects.equals(item.getId(), ItemID.SHIELD)) {
                 blockingTicks = stream.readLong();//blockingTicks
             }
-            item.setCompoundTag(compoundTag);
+            if (compoundTag != null) {
+                item.setCompoundTag(compoundTag);
+            }
             Block[] canPlaces = new Block[canPlace.length];
             for (int i = 0; i < canPlace.length; i++) {
                 canPlaces[i] = Block.get(canPlace[i]);

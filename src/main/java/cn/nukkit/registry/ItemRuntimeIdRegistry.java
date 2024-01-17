@@ -1,7 +1,6 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.utils.BinaryStream;
-import cn.nukkit.utils.OK;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -21,6 +20,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer> {
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
     private static final Object2IntOpenHashMap<String> REGISTRY = new Object2IntOpenHashMap<>();
+
+    static {
+        REGISTRY.defaultReturnValue(Integer.MAX_VALUE);
+    }
+
     private static final Int2ObjectOpenHashMap<String> ID2NAME = new Int2ObjectOpenHashMap<>();
     private static byte[] itemPalette;
 
@@ -49,9 +53,8 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
             };
             List<Map<String, Object>> list = gson.fromJson(new InputStreamReader(stream), typeToken.getType());
             for (var v : list) {
-                REGISTRY.put(v.get("name").toString(), Integer.parseInt(v.get("id").toString()));
+                register0(v.get("name").toString(), Integer.parseInt(v.get("id").toString()));
             }
-            REGISTRY.defaultReturnValue(Integer.MAX_VALUE);
             trim();
             generatePalette();
         } catch (IOException e) {
@@ -83,6 +86,12 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
             ID2NAME.put(value.intValue(), key);
         } else {
             throw new RegisterException("The item runtime has been registered!");
+        }
+    }
+
+    private void register0(String key, Integer value) {
+        if (REGISTRY.putIfAbsent(key, value.intValue()) == Integer.MAX_VALUE) {
+            ID2NAME.put(value.intValue(), key);
         }
     }
 }
