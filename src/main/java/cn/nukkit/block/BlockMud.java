@@ -38,10 +38,4 @@ public class BlockMud extends BlockSolid {
     public int getToolType() {
         return ItemTool.TYPE_SHOVEL;
     }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
 }
