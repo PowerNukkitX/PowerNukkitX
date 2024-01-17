@@ -45,7 +45,7 @@ public class SmithingInventory extends FakeBlockUIComponent {
     
     public static final int SMITHING_INGREDIENT_UI_SLOT = 52;
 
-    private Item currentResult = AIR_ITEM;
+    private Item currentResult = Item.AIR;
 
     
     
@@ -74,7 +74,7 @@ public class SmithingInventory extends FakeBlockUIComponent {
         Item result;
         SmithingRecipe recipe = matchRecipe();
         if (recipe == null) {
-            result =  AIR_ITEM;
+            result =  Item.AIR;
         } else {
             result = recipe.getFinalResult(getEquipment());
         }
@@ -93,7 +93,7 @@ public class SmithingInventory extends FakeBlockUIComponent {
     public Item getResult() {
         SmithingRecipe recipe = matchRecipe();
         if (recipe == null) {
-            return AIR_ITEM;
+            return Item.AIR;
         }
         return recipe.getFinalResult(getEquipment());
     }
