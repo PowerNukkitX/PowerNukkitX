@@ -24,11 +24,7 @@ import java.util.*;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BaseInventory implements Inventory {
-
-    public final static Item AIR_ITEM = new ItemBlock(Block.get(BlockID.AIR), null, 0);
-
     protected final InventoryType type;
-
     protected int maxStackSize = Inventory.MAX_STACK;
 
     protected int size;
@@ -108,12 +104,12 @@ public abstract class BaseInventory implements Inventory {
     @NotNull
     @Override
     public Item getItem(int index) {
-        return this.slots.containsKey(index) ? this.slots.get(index).clone() : AIR_ITEM.clone();
+        return this.slots.containsKey(index) ? this.slots.get(index).clone() : Item.AIR;
     }
 
     @Override
     public Item getUnclonedItem(int index) {
-        return this.slots.getOrDefault(index, AIR_ITEM);
+        return this.slots.getOrDefault(index, Item.AIR);
     }
 
     @Override

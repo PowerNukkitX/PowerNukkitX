@@ -8,6 +8,7 @@ public class ConstAirItem extends Item {
     public ConstAirItem() {
         super("minecraft:air");
         this.block = new BlockAir();
+        this.count = 1;
     }
 
     @Override
