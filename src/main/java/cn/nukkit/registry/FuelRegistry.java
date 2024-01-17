@@ -6,11 +6,14 @@ import cn.nukkit.item.ItemID;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
     private static final Object2IntOpenHashMap<String> REGISTRY = new Object2IntOpenHashMap<>();
-
+    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
     @Override
     public void init() {
+        if (isLoad.getAndSet(true)) return;
         register0(BlockID.COAL_BLOCK, 16000);
         register0(ItemID.COAL, 1600);
         register0(BlockID.WOOD, 300);

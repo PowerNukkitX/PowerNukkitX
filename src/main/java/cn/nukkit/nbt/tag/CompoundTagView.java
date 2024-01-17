@@ -24,16 +24,6 @@ public class CompoundTagView extends CompoundTag {
     }
 
     @Override
-    public void write(NBTOutputStream dos) throws IOException {
-        delegate.write(dos);
-    }
-
-    @Override
-    public void load(NBTInputStream dis) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Collection<Tag> getAllTags() {
         return Collections.unmodifiableCollection(delegate.getAllTags());
     }
@@ -94,17 +84,7 @@ public class CompoundTagView extends CompoundTag {
     }
 
     @Override
-    public CompoundTag putList(ListTag<? extends Tag> listTag) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public CompoundTag putList(String name, ListTag<? extends Tag> listTag) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public CompoundTag putCompound(CompoundTag value) {
         throw new UnsupportedOperationException();
     }
 
@@ -288,20 +268,6 @@ public class CompoundTagView extends CompoundTag {
         return delegate.toSNBT(space);
     }
 
-    @Override
-    public void print(String prefix, PrintStream out) {
-        delegate.print(prefix, out);
-    }
-
-    @Override
-    public Tag setName(String name) {
-        return delegate.setName(name);
-    }
-
-    @Override
-    @NotNull public String getName() {
-        return delegate.getName();
-    }
 
     @Override
     public boolean isEmpty() {
@@ -324,17 +290,7 @@ public class CompoundTagView extends CompoundTag {
     }
 
     @Override
-    public void print(PrintStream out) {
-        delegate.print(out);
-    }
-
-    @Override
     public boolean exist(String name) {
         return delegate.exist(name);
-    }
-
-    @Override
-    public CompoundTagView clone() {
-        return new CompoundTagView(delegate.clone());
     }
 }

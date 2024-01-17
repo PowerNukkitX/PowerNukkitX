@@ -14,7 +14,7 @@ public record Transformation(Vector3 translation, Vector3 scale, Vector3 rotatio
         int rx = (rotation.getFloorX() % 360) / 90;
         int ry = (rotation.getFloorY() % 360) / 90;
         int rz = (rotation.getFloorZ() % 360) / 90;
-        return new CompoundTag("minecraft:transformation")
+        return new CompoundTag()
                 .putInt("RX", rx)
                 .putInt("RY", ry)
                 .putInt("RZ", rz)

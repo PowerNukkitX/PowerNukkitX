@@ -4,6 +4,7 @@ import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 import io.netty.util.internal.EmptyArrays;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -11,42 +12,15 @@ import java.io.PrintStream;
 import java.util.*;
 import java.util.Map.Entry;
 
-public class CompoundTag extends Tag implements Cloneable {
+public class CompoundTag extends Tag {
     protected final Map<String, Tag> tags;
 
     public CompoundTag() {
-        this("");
-    }
-
-    public CompoundTag(String name) {
-        this(name, new HashMap<>());
+        this(new HashMap<>());
     }
 
     public CompoundTag(Map<String, Tag> tags) {
-        this("", tags);
-    }
-
-    public CompoundTag(String name, Map<String, Tag> tags) {
-        super(name);
         this.tags = tags;
-    }
-
-    @Override
-    public void write(NBTOutputStream dos) throws IOException {
-        for (Map.Entry<String, Tag> entry : this.tags.entrySet()) {
-            Tag.writeNamedTag(entry.getValue(), entry.getKey(), dos);
-        }
-
-        dos.writeByte(Tag.TAG_End);
-    }
-
-    @Override
-    public void load(NBTInputStream dis) throws IOException {
-        tags.clear();
-        Tag tag;
-        while ((tag = Tag.readNamedTag(dis)).getId() != Tag.TAG_End) {
-            tags.put(tag.getName(), tag);
-        }
     }
 
     public Collection<Tag> getAllTags() {
@@ -59,72 +33,62 @@ public class CompoundTag extends Tag implements Cloneable {
     }
 
     public CompoundTag put(String name, Tag tag) {
-        tags.put(name, tag.setName(name));
+        tags.put(name, tag);
         return this;
     }
 
     public CompoundTag putByte(String name, int value) {
-        tags.put(name, new ByteTag(name, value));
+        tags.put(name, new ByteTag(value));
         return this;
     }
 
     public CompoundTag putShort(String name, int value) {
-        tags.put(name, new ShortTag(name, value));
+        tags.put(name, new ShortTag(value));
         return this;
     }
 
     public CompoundTag putInt(String name, int value) {
-        tags.put(name, new IntTag(name, value));
+        tags.put(name, new IntTag(value));
         return this;
     }
 
     public CompoundTag putLong(String name, long value) {
-        tags.put(name, new LongTag(name, value));
+        tags.put(name, new LongTag(value));
         return this;
     }
 
     public CompoundTag putFloat(String name, float value) {
-        tags.put(name, new FloatTag(name, value));
+        tags.put(name, new FloatTag(value));
         return this;
     }
 
     public CompoundTag putDouble(String name, double value) {
-        tags.put(name, new DoubleTag(name, value));
+        tags.put(name, new DoubleTag(value));
         return this;
     }
 
     public CompoundTag putString(@Nullable String name, @NotNull String value) {
-        tags.put(name, new StringTag(name, value));
+        tags.put(name, new StringTag(value));
         return this;
     }
 
     public CompoundTag putByteArray(String name, byte[] value) {
-        tags.put(name, new ByteArrayTag(name, value));
+        tags.put(name, new ByteArrayTag(value));
         return this;
     }
 
     public CompoundTag putIntArray(String name, int[] value) {
-        tags.put(name, new IntArrayTag(name, value));
-        return this;
-    }
-
-    public CompoundTag putList(ListTag<? extends Tag> listTag) {
-        tags.put(listTag.getName(), listTag);
+        tags.put(name, new IntArrayTag(value));
         return this;
     }
 
     public CompoundTag putList(String name, ListTag<? extends Tag> listTag) {
-        tags.put(name, listTag.setName(name));
-        return this;
-    }
-
-    public CompoundTag putCompound(CompoundTag value) {
-        tags.put(value.getName(), value);
+        tags.put(name, listTag);
         return this;
     }
 
     public CompoundTag putCompound(String name, CompoundTag value) {
-        tags.put(name, value.setName(name));
+        tags.put(name, value);
         return this;
     }
 
@@ -254,12 +218,12 @@ public class CompoundTag extends Tag implements Cloneable {
     }
 
     public CompoundTag getCompound(String name) {
-        if (!tags.containsKey(name)) return new CompoundTag(name);
+        if (!tags.containsKey(name)) return new CompoundTag();
         return (CompoundTag) tags.get(name);
     }
 
     public ListTag<? extends Tag> getList(String name) {
-        if (!tags.containsKey(name)) return new ListTag<>(name);
+        if (!tags.containsKey(name)) return new ListTag<>();
         return (ListTag<? extends Tag>) tags.get(name);
     }
 
@@ -268,11 +232,16 @@ public class CompoundTag extends Tag implements Cloneable {
         if (tags.containsKey(name)) {
             return (ListTag<T>) tags.get(name);
         }
-        return new ListTag<>(name);
+        return new ListTag<>();
     }
 
     public Map<String, Tag> getTags() {
         return new HashMap<>(this.tags);
+    }
+
+    @UnmodifiableView
+    public Set<Map.Entry<String, Tag>> getEntrySet() {
+        return Collections.unmodifiableSet(this.tags.entrySet());
     }
 
     @Override
@@ -294,7 +263,7 @@ public class CompoundTag extends Tag implements Cloneable {
     public String toString() {
         StringJoiner joiner = new StringJoiner(",\n\t");
         tags.forEach((key, tag) -> joiner.add('\'' + key + "' : " + tag.toString().replace("\n", "\n\t")));
-        return "CompoundTag '" + this.getName() + "' (" + tags.size() + " entries) {\n\t" + joiner + "\n}";
+        return "CompoundTag '" +"' (" + tags.size() + " entries) {\n\t" + joiner + "\n}";
     }
 
     @Override
@@ -312,25 +281,13 @@ public class CompoundTag extends Tag implements Cloneable {
         return "{\n" + addSpace + joiner + "\n}";
     }
 
-    @Override
-    public void print(String prefix, PrintStream out) {
-        super.print(prefix, out);
-        out.println(prefix + "{");
-        String orgPrefix = prefix;
-        prefix += "   ";
-        for (Tag tag : tags.values()) {
-            tag.print(prefix, out);
-        }
-        out.println(orgPrefix + "}");
-    }
-
     public boolean isEmpty() {
         return tags.isEmpty();
     }
 
     @Override
     public CompoundTag copy() {
-        CompoundTag tag = new CompoundTag(getName());
+        CompoundTag tag = new CompoundTag();
         for (String key : tags.keySet()) {
             tag.put(key, tags.get(key).copy());
         }
@@ -359,12 +316,5 @@ public class CompoundTag extends Tag implements Cloneable {
      */
     public boolean exist(String name) {
         return tags.containsKey(name);
-    }
-
-    @Override
-    public CompoundTag clone() {
-        CompoundTag nbt = new CompoundTag();
-        this.getTags().forEach((key, value) -> nbt.put(key, value.copy()));
-        return nbt;
     }
 }

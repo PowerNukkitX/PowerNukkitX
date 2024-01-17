@@ -9,40 +9,20 @@ import java.util.Arrays;
 public class IntArrayTag extends Tag {
     public int[] data;
 
+    public IntArrayTag() {
+        this(new int[0]);
+    }
 
     public IntArrayTag(int[] data) {
-        super("");
         this.data = data;
-    }
-
-    public IntArrayTag(String name) {
-        super(name);
-    }
-
-    public IntArrayTag(String name, int[] data) {
-        super(name);
-        this.data = data;
-    }
-
-    @Override
-    void write(NBTOutputStream dos) throws IOException {
-        dos.writeInt(data.length);
-        for (int aData : data) {
-            dos.writeInt(aData);
-        }
-    }
-
-    @Override
-    void load(NBTInputStream dis) throws IOException {
-        int length = dis.readInt();
-        data = new int[length];
-        for (int i = 0; i < length; i++) {
-            data[i] = dis.readInt();
-        }
     }
 
     public int[] getData() {
         return data;
+    }
+
+    public void setData(int[] data) {
+        this.data = data == null ? new int[0] : data;
     }
 
     @Override
@@ -57,7 +37,7 @@ public class IntArrayTag extends Tag {
 
     @Override
     public String toString() {
-        return "IntArrayTag " + this.getName() + " [" + data.length + " bytes]";
+        return "IntArrayTag " + " [" + data.length + " bytes]";
     }
 
     @Override
@@ -78,18 +58,18 @@ public class IntArrayTag extends Tag {
         }
         return false;
     }
-    
+
     @Override
     public int hashCode() {
         int result = super.hashCode();
         result = 31 * result + Arrays.hashCode(data);
         return result;
     }
-    
+
     @Override
     public Tag copy() {
         int[] cp = new int[data.length];
         System.arraycopy(data, 0, cp, 0, data.length);
-        return new IntArrayTag(getName(), cp);
+        return new IntArrayTag(cp);
     }
 }

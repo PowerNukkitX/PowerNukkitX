@@ -44,22 +44,22 @@ public abstract class BlockFallable extends BlockSolid {
 
     protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {
         CompoundTag nbt = new CompoundTag()
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", this.x + 0.5))
-                        .add(new DoubleTag("", this.y))
-                        .add(new DoubleTag("", this.z + 0.5)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", 0))
-                        .add(new DoubleTag("", 0))
-                        .add(new DoubleTag("", 0)))
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(this.x + 0.5))
+                        .add(new DoubleTag(this.y))
+                        .add(new DoubleTag(this.z + 0.5)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0)))
 
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", 0))
-                        .add(new FloatTag("", 0)))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag(0))
+                        .add(new FloatTag(0)))
                 .putCompound("Block", this.blockstate.getBlockStateTag());
 
-        for (Tag customTag : customNbt.getAllTags()) {
-            nbt.put(customTag.getName(), customTag.copy());
+        for (var e : customNbt.getEntrySet()) {
+            nbt.put(e.getKey(), e.getValue().copy());
         }
 
         EntityFallingBlock fall = (EntityFallingBlock) Entity.createEntity(Entity.FALLING_BLOCK, this.getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);

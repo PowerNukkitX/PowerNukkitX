@@ -30,7 +30,7 @@ public class HashUtils {
         }
 
         //build block state tag
-        var states = new CompoundTag("", new TreeMap<>());
+        var states = new TreeMapCompoundTag();
         for (var value : propertyValues) {
             switch (value.getPropertyType().getType()) {
                 case INT -> states.putInt(value.getPropertyType().getName(), (int) value.getSerializedValue());
@@ -50,7 +50,7 @@ public class HashUtils {
             return -2; // This is special case
         }
 
-        var states = new CompoundTag("", new TreeMap<>());
+        var states = new TreeMapCompoundTag();
         for (var value : propertyValues) {
             switch (value.getPropertyType().getType()) {
                 case INT -> states.putInt(value.getPropertyType().getName(), (int) value.getSerializedValue());
@@ -91,7 +91,7 @@ public class HashUtils {
         if (tag instanceof TreeMapCompoundTag) {
             states = tag;
         } else {
-            states = new CompoundTag(new TreeMap<>());
+            states = new TreeMapCompoundTag();
         }
         for (var e : tag.getCompound("states").getTags().entrySet()) {
             states.put(e.getKey(), e.getValue());

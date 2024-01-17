@@ -27,11 +27,10 @@ public class ItemBlock extends Item {
     @Override
     public void setDamage(Integer meta) {
         int i = Registries.BLOCKSTATE_ITEMMETA.get(block.getId(), meta);
-        if (i == 0) {
-            throw new IllegalArgumentException("Unknown meta mapping in block: " + block.getId());
+        if (i != 0) {
+            BlockState blockState = Registries.BLOCKSTATE.get(i);
+            this.block = Registries.BLOCK.get(blockState);
         }
-        BlockState blockState = Registries.BLOCKSTATE.get(i);
-        this.block = Registries.BLOCK.get(blockState);
     }
 
     @Override

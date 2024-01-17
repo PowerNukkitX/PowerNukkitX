@@ -88,25 +88,25 @@ public class RenderOffsets {
     private CompoundTag xyzToCompoundTag(Vector3f pos, Vector3f rot, Vector3f sc) {
         var result = new CompoundTag();
         if (pos != null) {
-            var position = new ListTag<FloatTag>("position");
-            position.add(new FloatTag("", pos.x));
-            position.add(new FloatTag("", pos.y));
-            position.add(new FloatTag("", pos.z));
-            result.putList(position);
+            var position = new ListTag<FloatTag>();
+            position.add(new FloatTag(pos.x));
+            position.add(new FloatTag(pos.y));
+            position.add(new FloatTag(pos.z));
+            result.putList("position", position);
         }
         if (rot != null) {
-            var rotation = new ListTag<FloatTag>("rotation");
-            rotation.add(new FloatTag("", rot.x));
-            rotation.add(new FloatTag("", rot.y));
-            rotation.add(new FloatTag("", rot.z));
-            result.putList(rotation);
+            var rotation = new ListTag<FloatTag>();
+            rotation.add(new FloatTag(rot.x));
+            rotation.add(new FloatTag(rot.y));
+            rotation.add(new FloatTag(rot.z));
+            result.putList("rotation", rotation);
         }
         if (sc != null) {
-            var scale = new ListTag<FloatTag>("scale");
-            scale.add(new FloatTag("", sc.x));
-            scale.add(new FloatTag("", sc.y));
-            scale.add(new FloatTag("", sc.z));
-            result.putList(scale);
+            var scale = new ListTag<FloatTag>();
+            scale.add(new FloatTag(sc.x));
+            scale.add(new FloatTag(sc.y));
+            scale.add(new FloatTag(sc.z));
+            result.putList("scale", scale);
         }
         return result;
     }

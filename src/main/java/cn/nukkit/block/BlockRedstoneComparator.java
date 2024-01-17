@@ -29,12 +29,14 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityComparator> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityComparator> getBlockEntityClass() {
         return BlockEntityComparator.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.COMPARATOR;
     }
 
@@ -191,7 +193,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
         }
 
         try {
-            createBlockEntity(new CompoundTag().putList(new ListTag<>("Items")));
+            createBlockEntity(new CompoundTag().putList("Items", new ListTag<>()));
         } catch (Exception e) {
             log.warn("Failed to create the block entity {} at {}", getBlockEntityType(), getLocation(), e);
             level.setBlock(layer0, 0, layer0, true);

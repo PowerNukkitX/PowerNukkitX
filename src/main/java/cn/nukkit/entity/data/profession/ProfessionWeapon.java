@@ -17,7 +17,7 @@ public class ProfessionWeapon extends Profession {
 
     @Override
     public ListTag<Tag> buildTrades(int seed) {
-        ListTag<Tag> recipes = new ListTag<>("Recipes");
+        ListTag<Tag> recipes = new ListTag<>();
         Random random = new Random(seed);
 
         int[] enchantments = new int[] {Enchantment.ID_DURABILITY, Enchantment.ID_DAMAGE_ALL, Enchantment.ID_VANISHING_CURSE, Enchantment.ID_DAMAGE_SMITE, Enchantment.ID_DAMAGE_ARTHROPODS, Enchantment.ID_LOOTING, Enchantment.ID_FIRE_ASPECT};

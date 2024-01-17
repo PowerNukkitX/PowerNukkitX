@@ -32,8 +32,7 @@ public abstract class Profession {
     }
 
     public ListTag<Tag> buildTrades(int seed) {
-        ListTag<Tag> recipes = new ListTag<>("Recipes");
-        return recipes;
+        return new ListTag<>();
     }
 
     

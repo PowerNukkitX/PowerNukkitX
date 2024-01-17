@@ -17,7 +17,7 @@ public class ProfessionFletcher extends Profession {
 
     @Override
     public ListTag<Tag> buildTrades(int seed) {
-        ListTag<Tag> recipes = new ListTag<>("Recipes");
+        ListTag<Tag> recipes = new ListTag<>();
         Random random = new Random(seed);
 
         Item bow = Item.get(Item.BOW);

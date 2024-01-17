@@ -10,6 +10,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Cool_Loong
@@ -18,6 +19,8 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Item>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
     private static final HashMap<String, CustomItemDefinition> CUSTOM_ITEM_DEFINITIONS = new HashMap<>();
 
+    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+
     @UnmodifiableView
     public Map<String, CustomItemDefinition> getCustomItemDefinition() {
         return Collections.unmodifiableMap(CUSTOM_ITEM_DEFINITIONS);
@@ -25,6 +28,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
 
     @Override
     public void init() {
+        if (isLoad.getAndSet(true)) return;
         register0(ACACIA_BOAT, ItemAcaciaBoat.class);
         register0(ACACIA_CHEST_BOAT, ItemAcaciaChestBoat.class);
         register0(ACACIA_DOOR, ItemAcaciaDoor.class);

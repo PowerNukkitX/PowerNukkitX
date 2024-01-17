@@ -3,6 +3,7 @@ package cn.nukkit.block;
 /**
  * @author Justin
  */
+
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
@@ -27,7 +28,8 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
     public static final BlockProperties PROPERTIES = new BlockProperties(SKULL, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -40,12 +42,14 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.SKULL;
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntitySkull> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntitySkull> getBlockEntityClass() {
         return BlockEntitySkull.class;
     }
 
@@ -105,8 +109,8 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
                 .putByte("SkullType", item.getDamage())
                 .putByte("Rot", (int) Math.floor((player.yaw * 16 / 360) + 0.5) & 0x0f);
         if (item.hasCustomBlockData()) {
-            for (Tag aTag : item.getCustomBlockData().getAllTags()) {
-                nbt.put(aTag.getName(), aTag);
+            for (var e : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(e.getKey(), e.getValue());
             }
         }
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;

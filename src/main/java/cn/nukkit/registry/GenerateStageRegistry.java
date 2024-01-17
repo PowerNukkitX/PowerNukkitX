@@ -7,12 +7,14 @@ import cn.nukkit.level.generator.Generator;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GenerateStageRegistry implements IRegistry<String, GenerateStage, GenerateStage> {
     private static final Object2ObjectOpenHashMap<String, GenerateStage> REGISTRY = new Object2ObjectOpenHashMap<>();
-
+    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
     @Override
     public void init() {
+        if (isLoad.getAndSet(true)) return;
         try {
             this.register(GenerateStages.FINISHED.name(), GenerateStages.FINISHED);
             this.register(GenerateStages.FLAT_GENERATE.name(), GenerateStages.FLAT_GENERATE);

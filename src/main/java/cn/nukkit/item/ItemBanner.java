@@ -54,7 +54,8 @@ public class ItemBanner extends Item {
         this.setDamage(color.getDyeData() & 0x0f);
     }
 
-    @NotNull public DyeColor getBaseDyeColor() {
+    @NotNull
+    public DyeColor getBaseDyeColor() {
         return Objects.requireNonNull(DyeColor.getByDyeData(getBaseColor()));
     }
 
@@ -71,10 +72,10 @@ public class ItemBanner extends Item {
     public void addPattern(BannerPattern pattern) {
         CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
         ListTag<CompoundTag> patterns = tag.getList("Patterns", CompoundTag.class);
-        patterns.add(new CompoundTag("").
+        patterns.add(new CompoundTag().
                 putInt("Color", pattern.color().getDyeData() & 0x0f).
                 putString("Pattern", pattern.type().getName()));
-        tag.putList(patterns);
+        tag.putList("Patterns", patterns);
         this.setNamedTag(tag);
     }
 
@@ -86,7 +87,7 @@ public class ItemBanner extends Item {
     public void removePattern(int index) {
         CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
         ListTag<CompoundTag> patterns = tag.getList("Patterns", CompoundTag.class);
-        if(patterns.size() > index && index >= 0) {
+        if (patterns.size() > index && index >= 0) {
             patterns.remove(index);
         }
         this.setNamedTag(tag);
@@ -101,7 +102,7 @@ public class ItemBanner extends Item {
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", 
+    @DeprecationDetails(since = "1.4.0.0-PN",
             reason = "Does nothing, used to do a backward compatibility but the content and usage were removed by Cloudburst")
     public void correctNBT() {
 

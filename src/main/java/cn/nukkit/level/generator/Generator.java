@@ -66,7 +66,8 @@ public abstract class Generator implements BlockID {
     }
 
     public final void asyncGenerate(IChunk chunk) {
-        asyncGenerate(chunk, end, (c)->{});
+        asyncGenerate(chunk, end, (c) -> {
+        });
     }
 
     public final void asyncGenerate(IChunk chunk, Consumer<ChunkGenerateContext> callback) {
@@ -95,6 +96,7 @@ public abstract class Generator implements BlockID {
 
 
     private void asyncGenerate0(final ChunkGenerateContext context, final GenerateStage start, final GenerateStage to, final Runnable callback) {
+        if (start == null || to == null) return;
         if (to == start || to.name().equals(start.name())) {
             start.getExecutor().execute(() -> {
                 start.apply(context);

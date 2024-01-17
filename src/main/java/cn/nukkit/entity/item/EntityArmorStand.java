@@ -308,11 +308,11 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         this.namedTag.put(TAG_OFFHAND, NBTIO.putItemHelper(this.equipmentInventory.getItemInOffhand()));
 
         if (this.armorInventory != null) {
-            ListTag<CompoundTag> armorTag = new ListTag<>(TAG_ARMOR);
+            ListTag<CompoundTag> armorTag = new ListTag<>();
             for (int i = 0; i < 4; i++) {
                 armorTag.add(NBTIO.putItemHelper(this.armorInventory.getItem(i), i));
             }
-            this.namedTag.putList(armorTag);
+            this.namedTag.putList(TAG_ARMOR,armorTag);
         }
 
         this.namedTag.putInt(TAG_POSE_INDEX, this.getPose());

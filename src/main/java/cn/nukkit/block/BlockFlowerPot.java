@@ -13,6 +13,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 /**
@@ -30,7 +31,8 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     }
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -45,12 +47,14 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityFlowerPot> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityFlowerPot> getBlockEntityClass() {
         return BlockEntityFlowerPot.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.FLOWER_POT;
     }
 
@@ -83,15 +87,16 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
         CompoundTag nbt = new CompoundTag();
         if (item.hasCustomBlockData()) {
-            for (Tag aTag : item.getCustomBlockData().getAllTags()) {
-                nbt.put(aTag.getName(), aTag);
+            for (var e : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(e.getKey(), e.getValue());
             }
         }
 
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 
-    @NotNull public Item getFlower() {
+    @NotNull
+    public Item getFlower() {
         BlockEntityFlowerPot blockEntity = getBlockEntity();
         if (blockEntity == null || !blockEntity.namedTag.containsCompound("PlantBlock")) {
             return Item.AIR;
@@ -103,7 +108,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     }
 
     public boolean setFlower(@Nullable Item item) {
-        if (item!=null && item.isNull()) {
+        if (item != null && item.isNull()) {
             removeFlower();
             return true;
         }
@@ -267,12 +272,10 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         default CompoundTag getPlantBlockTag() {
             var block = (Block) this;
             var tag = block.getBlockState().getBlockStateTag();
-            tag.setName("PlantBlock");
             var item = block.toItem();
-            //only exist in PNX
-            tag.putString("itemId", item.getId());
-            tag.putInt("itemMeta", item.getDamage());
-            return tag;
+            return new CompoundTag().putCompound("PlantBlock", tag)
+                    .putString("itemId", item.getId())
+                    .putInt("itemMeta", item.getDamage()); //only exist in PNX
         }
 
         /**

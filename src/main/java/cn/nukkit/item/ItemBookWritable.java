@@ -72,8 +72,8 @@ public abstract class ItemBookWritable extends Item {
         }
         ListTag<CompoundTag> pages;
         if (!tag.contains("pages") || !(tag.get("pages") instanceof ListTag)) {
-            pages = new ListTag<>("pages");
-            tag.putList(pages);
+            pages = new ListTag<>();
+            tag.putList("pages",pages);
         } else {
             pages = tag.getList("pages", CompoundTag.class);
         }
@@ -98,8 +98,8 @@ public abstract class ItemBookWritable extends Item {
         CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
         ListTag<CompoundTag> pages;
         if (!tag.contains("pages") || !(tag.get("pages") instanceof ListTag)) {
-            pages = new ListTag<>("pages");
-            tag.putList(pages);
+            pages = new ListTag<>();
+            tag.putList("pages",pages);
         } else {
             pages = tag.getList("pages", CompoundTag.class);
         }
@@ -148,8 +148,8 @@ public abstract class ItemBookWritable extends Item {
         CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
         ListTag<CompoundTag> pages;
         if (!tag.contains("pages") || !(tag.get("pages") instanceof ListTag)) {
-            pages = new ListTag<>("pages");
-            tag.putList(pages);
+            pages = new ListTag<>();
+            tag.putList("pages",pages);
         } else {
             pages = tag.getList("pages", CompoundTag.class);
         }
@@ -196,8 +196,8 @@ public abstract class ItemBookWritable extends Item {
         CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
         ListTag<CompoundTag> pages;
         if (!tag.contains("pages") || !(tag.get("pages") instanceof ListTag)) {
-            pages = new ListTag<>("pages");
-            tag.putList(pages);
+            pages = new ListTag<>();
+            tag.putList("pages",pages);
         } else {
             pages = tag.getList("pages", CompoundTag.class);
         }

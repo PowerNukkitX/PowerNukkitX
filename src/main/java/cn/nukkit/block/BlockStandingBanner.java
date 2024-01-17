@@ -28,7 +28,8 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
     public static final BlockProperties PROPERTIES = new BlockProperties(STANDING_BANNER, GROUND_SIGN_DIRECTION);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -41,12 +42,14 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.BANNER;
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityBanner> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityBanner> getBlockEntityClass() {
         return BlockEntityBanner.class;
     }
 
@@ -160,7 +163,7 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
             ListTag<CompoundTag> patterns = banner.namedTag.getList("Patterns", CompoundTag.class);
             if (patterns.size() > 0) {
                 item.setNamedTag((item.hasCompoundTag() ? item.getNamedTag() : new CompoundTag())
-                        .putList(patterns));
+                        .putList("Patterns", patterns));
             }
         }
         return item;

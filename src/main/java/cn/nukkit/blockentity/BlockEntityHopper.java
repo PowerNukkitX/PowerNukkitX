@@ -76,7 +76,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         this.inventory = new HopperInventory(this);
 
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
-            this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+            this.namedTag.putList("Items", new ListTag<CompoundTag>());
         }
 
         for (int i = 0; i < this.getSize(); i++) {
@@ -186,7 +186,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+        this.namedTag.putList("Items", new ListTag<CompoundTag>());
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
@@ -225,7 +225,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         Block blockSide = this.getSide(BlockFace.UP).getTickCachedLevelBlock();
         BlockEntity blockEntity = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
 
-        if(this.getLocation().getLevel() == null) return true;
+        if (this.getLocation().getLevel() == null) return true;
 
         boolean changed = pushItems() || pushItemsIntoMinecart();
 
@@ -365,7 +365,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         BlockFace side = BlockFace.fromIndex(levelBlockState.getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
         Position sidePos = this.getSide(side);
         Block blockSide = sidePos.getLevelBlock(false);
-        if(blockSide.isAir()) return false;
+        if (blockSide.isAir()) return false;
         BlockEntity be = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, side));
 
         //漏斗应该有主动向被锁住的漏斗推送物品的能力
@@ -483,9 +483,9 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                         }
                     } else if (itemToAdd instanceof ItemPotion || itemToAdd instanceof ItemSplashPotion) {
                         Inventory productView = brewingstand.getProductView();
-                        if(productView.canAddItem(itemToAdd)) {
-                            for(int j = 1; j < 4; j++) {
-                                if(inventory.getItem(j).isNull()) {
+                        if (productView.canAddItem(itemToAdd)) {
+                            for (int j = 1; j < 4; j++) {
+                                if (inventory.getItem(j).isNull()) {
                                     inventory.setItem(j, itemToAdd);
                                     item.count--;
                                     pushedItem = true;

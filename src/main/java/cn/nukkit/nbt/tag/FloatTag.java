@@ -7,19 +7,10 @@ import java.io.IOException;
 
 public class FloatTag extends NumberTag<Float> {
     public float data;
-
+    public FloatTag() {
+    }
 
     public FloatTag(float data) {
-        super("");
-        this.data = data;
-    }
-
-    public FloatTag(String name) {
-        super(name);
-    }
-
-    public FloatTag(String name, float data) {
-        super(name);
         this.data = data;
     }
 
@@ -34,16 +25,6 @@ public class FloatTag extends NumberTag<Float> {
     }
 
     @Override
-    void write(NBTOutputStream dos) throws IOException {
-        dos.writeFloat(data);
-    }
-
-    @Override
-    void load(NBTInputStream dis) throws IOException {
-        data = dis.readFloat();
-    }
-
-    @Override
     public Float parseValue() {
         return this.data;
     }
@@ -55,7 +36,7 @@ public class FloatTag extends NumberTag<Float> {
 
     @Override
     public String toString() {
-        return "FloatTag " + this.getName() + " (data: " + data + ")";
+        return "FloatTag " +  " (data: " + data + ")";
     }
 
     @Override
@@ -70,7 +51,7 @@ public class FloatTag extends NumberTag<Float> {
 
     @Override
     public Tag copy() {
-        return new FloatTag(getName(), data);
+        return new FloatTag(data);
     }
 
     @Override
@@ -81,5 +62,4 @@ public class FloatTag extends NumberTag<Float> {
         }
         return false;
     }
-
 }

@@ -16,7 +16,7 @@ public class ProfessionCartographer extends Profession {
 
     @Override
     public ListTag<Tag> buildTrades(int seed) {
-        ListTag<Tag> recipes = new ListTag<>("Recipes");
+        ListTag<Tag> recipes = new ListTag<>();
         Random random = new Random(seed);
 
         recipes.add(RecipeBuildUtils.of(Item.get(Item.PAPER, 0, 24), Item.get(Item.EMERALD))

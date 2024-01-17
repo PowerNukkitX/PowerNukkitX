@@ -10,11 +10,11 @@ import java.util.TreeMap;
 
 public class TreeMapCompoundTag extends CompoundTag {
     public TreeMapCompoundTag() {
-        this("");
+        super(new TreeMap<>());
     }
 
-    public TreeMapCompoundTag(String name) {
-        super(name, new TreeMap<>());
+    public TreeMapCompoundTag(Map<String, Tag> tags) {
+        super(new TreeMap<>(tags));
     }
 
     @Override
@@ -25,11 +25,9 @@ public class TreeMapCompoundTag extends CompoundTag {
     @Override
     public Map<String, Object> parseValue() {
         Map<String, Object> value = new TreeMap<>();
-
         for (Map.Entry<String, Tag> entry : this.tags.entrySet()) {
             value.put(entry.getKey(), entry.getValue().parseValue());
         }
-
         return value;
     }
 

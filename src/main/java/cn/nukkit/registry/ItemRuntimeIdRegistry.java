@@ -13,11 +13,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Cool_Loong
  */
 public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer> {
+    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
     private static final Object2IntOpenHashMap<String> REGISTRY = new Object2IntOpenHashMap<>();
     private static final Int2ObjectOpenHashMap<String> ID2NAME = new Int2ObjectOpenHashMap<>();
     private static byte[] itemPalette;
@@ -39,6 +41,7 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
 
     @Override
     public void init() {
+        if (isLoad.getAndSet(true)) return;
         try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("runtime_item_states.json")) {
             assert stream != null;
             Gson gson = new GsonBuilder().setObjectToNumberStrategy(JsonReader::nextInt).create();

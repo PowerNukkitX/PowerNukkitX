@@ -30,7 +30,8 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent {
             EXPLODE_BIT, ALLOW_UNDERWATER_BIT);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -84,23 +85,23 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent {
         this.getLevel().setBlock(this, Block.get(BlockID.AIR), true);
         double mot = (new NukkitRandomSource()).nextSignedFloat() * Math.PI * 2;
         CompoundTag nbt = new CompoundTag()
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", this.x + 0.5))
-                        .add(new DoubleTag("", this.y))
-                        .add(new DoubleTag("", this.z + 0.5)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", -Math.sin(mot) * 0.02))
-                        .add(new DoubleTag("", 0.2))
-                        .add(new DoubleTag("", -Math.cos(mot) * 0.02)))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", 0))
-                        .add(new FloatTag("", 0)))
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(this.x + 0.5))
+                        .add(new DoubleTag(this.y))
+                        .add(new DoubleTag(this.z + 0.5)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(-Math.sin(mot) * 0.02))
+                        .add(new DoubleTag(0.2))
+                        .add(new DoubleTag(-Math.cos(mot) * 0.02)))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag(0))
+                        .add(new FloatTag(0)))
                 .putShort("Fuse", fuse);
         Entity tnt = Entity.createEntity(Entity.TNT,
                 this.getLevel().getChunk(this.getFloorX() >> 4, this.getFloorZ() >> 4),
                 nbt, source
         );
-        if(tnt == null) {
+        if (tnt == null) {
             return;
         }
         tnt.spawnToAll();
@@ -130,7 +131,9 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent {
                 return true;
             }
             case Item.FIRE_CHARGE -> {
-                if (player != null && !player.isCreative()) { item.count--; }
+                if (player != null && !player.isCreative()) {
+                    item.count--;
+                }
                 this.prime(80, player);
                 return true;
             }
@@ -147,7 +150,7 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent {
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         //TODO: Wither skull, ghast fireball
         if (projectile instanceof EntitySmallFireball ||
-                (projectile.isOnFire() && projectile instanceof EntityArrow) ) {
+                (projectile.isOnFire() && projectile instanceof EntityArrow)) {
             prime(80, projectile);
             return true;
         }

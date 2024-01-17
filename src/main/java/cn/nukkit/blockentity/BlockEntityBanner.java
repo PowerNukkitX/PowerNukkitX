@@ -59,10 +59,10 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
 
     public void addPattern(BannerPattern pattern) {
         ListTag<CompoundTag> patterns = this.namedTag.getList("Patterns", CompoundTag.class);
-        patterns.add(new CompoundTag("").
+        patterns.add(new CompoundTag().
                 putInt("Color", pattern.color().getDyeData() & 0x0f).
                 putString("Pattern", pattern.type().getName()));
-        this.namedTag.putList(patterns);
+        this.namedTag.putList("Patterns", patterns);
     }
 
     public BannerPattern getPattern(int index) {
@@ -71,7 +71,7 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
 
     public void removePattern(int index) {
         ListTag<CompoundTag> patterns = this.namedTag.getList("Patterns", CompoundTag.class);
-        if(patterns.size() > index && index >= 0) {
+        if (patterns.size() > index && index >= 0) {
             patterns.remove(index);
         }
     }
@@ -84,7 +84,7 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
     public CompoundTag getSpawnCompound() {
         return getDefaultCompound(this, BANNER)
                 .putInt("Base", getBaseColor())
-                .putList(this.namedTag.getList("Patterns"))
+                .putList("Patterns", this.namedTag.getList("Patterns"))
                 .putInt("Type", getType())
                 .putByte("color", this.color);
     }

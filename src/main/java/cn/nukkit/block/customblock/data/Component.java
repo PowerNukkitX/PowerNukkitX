@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 @Builder
 @Getter
 public class Component implements NBTData {
-    private final CompoundTag result = new CompoundTag("components");
+    private final CompoundTag result = new CompoundTag();
     @Nullable
     CollisionBox collisionBox;
     @Nullable
@@ -50,13 +50,13 @@ public class Component implements NBTData {
             this.result.putCompound("minecraft:unit_cube", new CompoundTag());
         }
         if (collisionBox != null) {
-            this.result.putCompound(collisionBox.toCompoundTag());
+            this.result.putCompound("minecraft:collision_box", collisionBox.toCompoundTag());
         }
         if (selectionBox != null) {
-            this.result.putCompound(selectionBox.toCompoundTag());
+            this.result.putCompound("minecraft:selection_box", selectionBox.toCompoundTag());
         }
         if (craftingTable != null) {
-            this.result.putCompound(craftingTable.toCompoundTag());
+            this.result.putCompound("minecraft:crafting_table", craftingTable.toCompoundTag());
         }
         if (destructibleByMining != null) {
             this.result.putCompound("minecraft:destructible_by_mining", new CompoundTag()
@@ -83,7 +83,7 @@ public class Component implements NBTData {
                     .putFloat("value", (float) Math.min(friction, 0.9)));
         }
         if (this.geometry != null) {
-            this.result.putCompound(geometry.toCompoundTag());
+            this.result.putCompound("minecraft:geometry", geometry.toCompoundTag());
             this.result.remove("minecraft:unit_cube");
         }
         if (materialInstances != null) {
@@ -92,10 +92,10 @@ public class Component implements NBTData {
                     .putCompound("materials", materialInstances.toCompoundTag()));
         }
         if (transformation != null) {
-            this.result.putCompound(transformation.toCompoundTag());
+            this.result.putCompound("minecraft:transformation", transformation.toCompoundTag());
         }
         if (rotation != null) {
-            this.result.putCompound(new Transformation(new Vector3(0, 0, 0), new Vector3(1, 1, 1), rotation.asVector3()).toCompoundTag());
+            this.result.putCompound("minecraft:transformation", new Transformation(new Vector3(0, 0, 0), new Vector3(1, 1, 1), rotation.asVector3()).toCompoundTag());
         }
         if (clientFriction != null) {
             this.result.putCompound("minecraft:friction", new CompoundTag()

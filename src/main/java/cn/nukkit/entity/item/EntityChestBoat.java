@@ -115,7 +115,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
     public void saveNBT() {
         super.saveNBT();
 
-        this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+        this.namedTag.putList("Items",new ListTag<CompoundTag>());
         if (this.inventory != null) {
             for (int slot = 0; slot < 27; ++slot) {
                 Item item = this.inventory.getItem(slot);

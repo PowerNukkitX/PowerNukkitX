@@ -6,19 +6,12 @@ import java.util.Map;
 
 public class LinkedCompoundTag extends CompoundTag {
     public LinkedCompoundTag() {
-        this("");
+        this(new LinkedHashMap<>());
     }
 
-    public LinkedCompoundTag(String name) {
-        this(name, new LinkedHashMap<>());
-    }
 
     public LinkedCompoundTag(Map<String, Tag> tags) {
-        super("", tags);
-    }
-
-    public LinkedCompoundTag(String name, Map<String, Tag> tags) {
-        super(name, tags);
+        super( tags);
     }
 
     @Override

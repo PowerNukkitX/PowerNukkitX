@@ -12,7 +12,12 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
+import java.util.stream.IntStream;
 
 /**
  * Allay Project 12/21/2023
@@ -22,29 +27,32 @@ import java.util.Map;
 @Slf4j
 public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, Item> {
     private static final Int2ObjectLinkedOpenHashMap<Item> MAP = new Int2ObjectLinkedOpenHashMap<>();
-
+    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
     @Override
     public void init() {
+        if (isLoad.getAndSet(true)) return;
         try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("creative_items.nbt")) {
             CompoundTag compoundTag = NBTIO.readCompressed(input);
-            Map<String, Tag> tags = compoundTag.getTags();
-            for (var entry : tags.entrySet()) {
-                String index = entry.getKey();
+            TreeMap<Integer, Tag> tagTreeMap = new TreeMap<>();
+            compoundTag.getTags().forEach((key, value) -> tagTreeMap.put(Integer.parseInt(key), value));
+
+            for (var entry : tagTreeMap.entrySet()) {
+                int index = entry.getKey();
                 CompoundTag tag = (CompoundTag) entry.getValue();
                 int damage = tag.getInt("damage");
                 if (tag.containsInt("blockStateHash")) {
                     int blockStateHash = tag.getInt("blockStateHash");
                     BlockState blockState = Registries.BLOCKSTATE.get(blockStateHash);
-                    if(blockState == null){
-                        log.warn("Item {} block state Hash cannot be found!",tag.getString("name"));
+                    if (blockState == null) {
+                        log.warn("Item {} block state Hash cannot be found, hash {}!", tag.getString("name"), blockStateHash);
                         continue;
                     }
                     Block block = Registries.BLOCK.get(blockState);
-                    register(Integer.parseInt(index), new ItemBlock(block, damage));
+                    register(index, new ItemBlock(block, damage));
                 } else {
                     String name = tag.getString("name");
                     Item item = Item.get(name, damage);
-                    register(Integer.parseInt(index), item);
+                    register(index, item);
                 }
             }
         } catch (IOException e) {

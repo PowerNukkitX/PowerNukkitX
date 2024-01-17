@@ -1043,12 +1043,12 @@ public class Level implements Metadatable {
             if (b.getProperties() != BlockTallgrass.PROPERTIES && b.getProperties() != BlockWater.PROPERTIES)
                 vector.y += 1;
             CompoundTag nbt = new CompoundTag()
-                    .putList(new ListTag<DoubleTag>("Pos").add(new DoubleTag("", vector.x))
-                            .add(new DoubleTag("", vector.y)).add(new DoubleTag("", vector.z)))
-                    .putList(new ListTag<DoubleTag>("Motion").add(new DoubleTag("", 0))
-                            .add(new DoubleTag("", 0)).add(new DoubleTag("", 0)))
-                    .putList(new ListTag<FloatTag>("Rotation").add(new FloatTag("", 0))
-                            .add(new FloatTag("", 0)));
+                    .putList("Pos", new ListTag<DoubleTag>().add(new DoubleTag(vector.x))
+                            .add(new DoubleTag(vector.y)).add(new DoubleTag(vector.z)))
+                    .putList("Motion", new ListTag<DoubleTag>().add(new DoubleTag(0))
+                            .add(new DoubleTag(0)).add(new DoubleTag(0)))
+                    .putList("Rotation", new ListTag<FloatTag>().add(new FloatTag(0))
+                            .add(new FloatTag(0)));
 
             EntityLightningBolt bolt = new EntityLightningBolt(chunk, nbt);
             LightningStrikeEvent ev = new LightningStrikeEvent(this, bolt);
@@ -2250,19 +2250,18 @@ public class Level implements Metadatable {
         }
 
         CompoundTag itemTag = NBTIO.putItemHelper(item);
-        itemTag.setName("Item");
 
         EntityItem itemEntity = (EntityItem) Entity.createEntity(Entity.ITEM,
                 this.getChunk((int) source.getX() >> 4, (int) source.getZ() >> 4, true),
-                new CompoundTag().putList(new ListTag<DoubleTag>("Pos").add(new DoubleTag("", source.getX()))
-                                .add(new DoubleTag("", source.getY())).add(new DoubleTag("", source.getZ())))
+                new CompoundTag().putList("Pos", new ListTag<DoubleTag>().add(new DoubleTag(source.getX()))
+                                .add(new DoubleTag(source.getY())).add(new DoubleTag(source.getZ())))
 
-                        .putList(new ListTag<DoubleTag>("Motion").add(new DoubleTag("", motion.x))
-                                .add(new DoubleTag("", motion.y)).add(new DoubleTag("", motion.z)))
+                        .putList("Motion", new ListTag<DoubleTag>().add(new DoubleTag(motion.x))
+                                .add(new DoubleTag(motion.y)).add(new DoubleTag(motion.z)))
 
-                        .putList(new ListTag<FloatTag>("Rotation")
-                                .add(new FloatTag("", ThreadLocalRandom.current().nextFloat() * 360))
-                                .add(new FloatTag("", 0)))
+                        .putList("Rotation", new ListTag<FloatTag>()
+                                .add(new FloatTag(ThreadLocalRandom.current().nextFloat() * 360))
+                                .add(new FloatTag(0)))
 
                         .putShort("Health", 5).putCompound("Item", itemTag).putShort("PickupDelay", delay));
 

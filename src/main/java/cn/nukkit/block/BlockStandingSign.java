@@ -23,11 +23,12 @@ import static cn.nukkit.block.property.CommonBlockProperties.GROUND_SIGN_DIRECTI
  * Alias post sign
  */
 @Slf4j
-public class BlockStandingSign extends BlockSignBase implements BlockEntityHolder<BlockEntitySign>{
+public class BlockStandingSign extends BlockSignBase implements BlockEntityHolder<BlockEntitySign> {
     public static final BlockProperties PROPERTIES = new BlockProperties(STANDING_SIGN, GROUND_SIGN_DIRECTION);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -48,12 +49,14 @@ public class BlockStandingSign extends BlockSignBase implements BlockEntityHolde
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntitySign> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntitySign> getBlockEntityClass() {
         return BlockEntitySign.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.SIGN;
     }
 
@@ -102,8 +105,8 @@ public class BlockStandingSign extends BlockSignBase implements BlockEntityHolde
             getLevel().setBlock(block, wall, true);
         }
         if (item.hasCustomBlockData()) {
-            for (Tag aTag : item.getCustomBlockData().getAllTags()) {
-                nbt.put(aTag.getName(), aTag);
+            for (var e : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(e.getKey(), e.getValue());
             }
         }
 

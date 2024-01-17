@@ -158,7 +158,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID{
 
     public CompoundTag getCleanedNBT() {
         this.saveNBT();
-        CompoundTag tag = this.namedTag.clone();
+        CompoundTag tag = this.namedTag.copy();
         tag.remove("x").remove("y").remove("z").remove("id");
         if (!tag.getTags().isEmpty()) {
             return tag;

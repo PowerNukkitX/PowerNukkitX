@@ -4,11 +4,14 @@ import cn.nukkit.blockentity.*;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Class<? extends BlockEntity>, Class<? extends BlockEntity>> {
     private static final BiMap<String, Class<? extends BlockEntity>> knownBlockEntities = HashBiMap.create(35);
-
+    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
     @Override
     public void init() {
+        if (isLoad.getAndSet(true)) return;
         register0(FURNACE, BlockEntityFurnace.class);
         register0(CHEST, BlockEntityChest.class);
         register0(SIGN, BlockEntitySign.class);

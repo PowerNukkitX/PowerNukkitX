@@ -683,17 +683,17 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public @NotNull
     static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion, float yaw, float pitch) {
         return new CompoundTag()
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", pos.x))
-                        .add(new DoubleTag("", pos.y))
-                        .add(new DoubleTag("", pos.z)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", motion != null ? motion.x : 0))
-                        .add(new DoubleTag("", motion != null ? motion.y : 0))
-                        .add(new DoubleTag("", motion != null ? motion.z : 0)))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", yaw))
-                        .add(new FloatTag("", pitch)));
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(pos.x))
+                        .add(new DoubleTag(pos.y))
+                        .add(new DoubleTag(pos.z)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(motion != null ? motion.x : 0))
+                        .add(new DoubleTag(motion != null ? motion.y : 0))
+                        .add(new DoubleTag(motion != null ? motion.z : 0)))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag(yaw))
+                        .add(new FloatTag(pitch)));
     }
 
     /**
@@ -1248,21 +1248,21 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             this.namedTag.putString("uuid", this.entityUniqueId.toString());
         }
 
-        this.namedTag.putList(new ListTag<DoubleTag>("Pos")
-                .add(new DoubleTag("0", this.x))
-                .add(new DoubleTag("1", this.y))
-                .add(new DoubleTag("2", this.z))
+        this.namedTag.putList("Pos", new ListTag<DoubleTag>()
+                .add(new DoubleTag(this.x))
+                .add(new DoubleTag(this.y))
+                .add(new DoubleTag(this.z))
         );
 
-        this.namedTag.putList(new ListTag<DoubleTag>("Motion")
-                .add(new DoubleTag("0", this.motionX))
-                .add(new DoubleTag("1", this.motionY))
-                .add(new DoubleTag("2", this.motionZ))
+        this.namedTag.putList("Motion", new ListTag<DoubleTag>()
+                .add(new DoubleTag(this.motionX))
+                .add(new DoubleTag(this.motionY))
+                .add(new DoubleTag(this.motionZ))
         );
 
-        this.namedTag.putList(new ListTag<FloatTag>("Rotation")
-                .add(new FloatTag("0", (float) this.yaw))
-                .add(new FloatTag("1", (float) this.pitch))
+        this.namedTag.putList("Rotation", new ListTag<FloatTag>()
+                .add(new FloatTag((float) this.yaw))
+                .add(new FloatTag((float) this.pitch))
         );
 
         this.namedTag.putFloat("FallDistance", this.fallDistance);
@@ -1273,9 +1273,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.namedTag.putFloat("Scale", this.scale);
 
         if (!this.effects.isEmpty()) {
-            ListTag<CompoundTag> list = new ListTag<>("ActiveEffects");
+            ListTag<CompoundTag> list = new ListTag<>();
             for (Effect effect : this.effects.values()) {
-                list.add(new CompoundTag(String.valueOf(effect.getId()))
+                list.add(new CompoundTag()
                         .putByte("Id", effect.getId())
                         .putByte("Amplifier", effect.getAmplifier())
                         .putInt("Duration", effect.getDuration())
@@ -1284,18 +1284,18 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 );
             }
 
-            this.namedTag.putList(list);
+            this.namedTag.putList("ActiveEffects", list);
         } else {
             this.namedTag.remove("ActiveEffects");
         }
 
         if (!this.attributes.isEmpty()) {
-            ListTag<CompoundTag> attributes = new ListTag<>("Attributes");
+            ListTag<CompoundTag> attributes = new ListTag<>();
             for (var attribute : this.attributes.values()) {
                 CompoundTag nbt = Attribute.toNBT(attribute);
                 attributes.add(nbt);
             }
-            this.namedTag.putList(attributes);
+            this.namedTag.putList("Attributes", attributes);
         } else {
             this.namedTag.remove("Attributes");
         }
@@ -3373,14 +3373,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
 
     public void addTag(String tag) {
-        this.namedTag.putList(this.namedTag.getList("Tags", StringTag.class).add(new StringTag("", tag)));
+        this.namedTag.putList("Tags", this.namedTag.getList("Tags", StringTag.class).add(new StringTag(tag)));
     }
 
 
     public void removeTag(String tag) {
         ListTag<StringTag> tags = this.namedTag.getList("Tags", StringTag.class);
-        tags.remove(new StringTag("", tag));
-        this.namedTag.putList(tags);
+        tags.remove(new StringTag(tag));
+        this.namedTag.putList("Tags", tags);
     }
 
 

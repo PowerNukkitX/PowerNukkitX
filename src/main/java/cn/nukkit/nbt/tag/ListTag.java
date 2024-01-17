@@ -9,42 +9,23 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ListTag<T extends Tag> extends Tag {
-
     private List<T> list = new ArrayList<>();
 
     public byte type;
 
     public ListTag() {
-        super("");
     }
 
-    public ListTag(String name) {
-        super(name);
+    public ListTag(Collection<T> tags) {
+        Optional<T> first = tags.stream().findFirst();
+        if (first.isEmpty()) throw new IllegalArgumentException("tags cannot be empty");
+        type = tags.stream().findFirst().get().getId();
+        this.list.addAll(tags);
     }
 
-    @Override
-    void write(NBTOutputStream dos) throws IOException {
-        if (list.size() > 0) type = list.get(0).getId();
-        else type = 1;
-
-        dos.writeByte(type);
-        dos.writeInt(list.size());
-        for (T aList : list) aList.write(dos);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    void load(NBTInputStream dis) throws IOException {
-        type = dis.readByte();
-        int size = dis.readInt();
-
-        list = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            Tag tag = Tag.newTag(type, null);
-            tag.load(dis);
-            tag.setName("");
-            list.add((T) tag);
-        }
+    public ListTag(int type, Collection<T> tags) {
+        this.type = (byte) type;
+        this.list.addAll(tags);
     }
 
     @Override
@@ -56,7 +37,7 @@ public class ListTag<T extends Tag> extends Tag {
     public String toString() {
         StringJoiner joiner = new StringJoiner(",\n\t");
         list.forEach(tag -> joiner.add(tag.toString().replace("\n", "\n\t")));
-        return "ListTag '" + this.getName() + "' (" + list.size() + " entries of type " + Tag.getTagName(type) + ") {\n\t" + joiner + "\n}";
+        return "ListTag '" + "' (" + list.size() + " entries of type " + Tag.getTagName(type) + ") {\n\t" + joiner + "\n}";
     }
 
     @Override
@@ -83,27 +64,14 @@ public class ListTag<T extends Tag> extends Tag {
         }
     }
 
-    @Override
-    public void print(String prefix, PrintStream out) {
-        super.print(prefix, out);
-
-        out.println(prefix + "{");
-        String orgPrefix = prefix;
-        prefix += "   ";
-        for (T aList : list) aList.print(prefix, out);
-        out.println(orgPrefix + "}");
-    }
-
     public ListTag<T> add(T tag) {
         type = tag.getId();
-        tag.setName("");
         list.add(tag);
         return this;
     }
 
     public ListTag<T> add(int index, T tag) {
         type = tag.getId();
-        tag.setName("");
 
         if (index >= list.size()) {
             list.add(index, tag);
@@ -145,7 +113,7 @@ public class ListTag<T extends Tag> extends Tag {
     }
 
     public void removeAll(Collection<T> tags) {
-        list.remove(tags);
+        list.removeAll(tags);
     }
 
     public int size() {
@@ -154,7 +122,7 @@ public class ListTag<T extends Tag> extends Tag {
 
     @Override
     public Tag copy() {
-        ListTag<T> res = new ListTag<>(getName());
+        ListTag<T> res = new ListTag<>();
         res.type = type;
         for (T t : list) {
             @SuppressWarnings("unchecked")

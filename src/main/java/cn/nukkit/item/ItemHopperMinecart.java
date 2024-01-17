@@ -40,18 +40,18 @@ public class ItemHopperMinecart extends Item {
                 adjacent = 0.5D;
             }
             EntityHopperMinecart minecart = (EntityHopperMinecart) Entity.createEntity(Entity.HOPPER_MINECART,
-                    level.getChunk(target.getFloorX() >> 4, target.getFloorZ() >> 4), new CompoundTag("")
-                            .putList(new ListTag<>("Pos")
-                                    .add(new DoubleTag("", target.getX() + 0.5))
-                                    .add(new DoubleTag("", target.getY() + 0.0625D + adjacent))
-                                    .add(new DoubleTag("", target.getZ() + 0.5)))
-                            .putList(new ListTag<>("Motion")
-                                    .add(new DoubleTag("", 0))
-                                    .add(new DoubleTag("", 0))
-                                    .add(new DoubleTag("", 0)))
-                            .putList(new ListTag<>("Rotation")
-                                    .add(new FloatTag("", 0))
-                                    .add(new FloatTag("", 0)))
+                    level.getChunk(target.getFloorX() >> 4, target.getFloorZ() >> 4), new CompoundTag()
+                            .putList("Pos", new ListTag<>()
+                                    .add(new DoubleTag(target.getX() + 0.5))
+                                    .add(new DoubleTag(target.getY() + 0.0625D + adjacent))
+                                    .add(new DoubleTag(target.getZ() + 0.5)))
+                            .putList("Motion", new ListTag<>()
+                                    .add(new DoubleTag(0))
+                                    .add(new DoubleTag(0))
+                                    .add(new DoubleTag(0)))
+                            .putList("Rotation", new ListTag<>()
+                                    .add(new FloatTag(0))
+                                    .add(new FloatTag(0)))
             );
 
             if (minecart == null) {
