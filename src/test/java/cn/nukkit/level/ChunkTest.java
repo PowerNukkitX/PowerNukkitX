@@ -7,8 +7,7 @@ import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.level.format.LevelDBProvider;
-import cn.nukkit.level.format.UnsafeChunk;
+import cn.nukkit.level.format.LevelProvider;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,33 +20,33 @@ import java.util.Set;
 @ExtendWith({GameMockExtension.class})
 public class ChunkTest {
     @Test
-    void testSetBlockState(LevelDBProvider levelDBProvider) {
+    void testSetBlockState(LevelProvider levelDBProvider) {
         IChunk chunk = levelDBProvider.getChunk(0, 0);
         chunk.setBlockState(0, 100, 0, BlockGoldOre.PROPERTIES.getDefaultState());
         Assertions.assertEquals(BlockGoldOre.PROPERTIES.getDefaultState(), chunk.getBlockState(0, 100, 0));
     }
 
     @Test
-    void test_recalculateHeightMap(LevelDBProvider levelDBProvider) {
+    void test_recalculateHeightMap(LevelProvider levelDBProvider) {
         IChunk chunk = levelDBProvider.getChunk(0, 0);
         chunk.recalculateHeightMap();
     }
 
     @Test
-    void test_recalculateHeightMapColumn(LevelDBProvider levelDBProvider) {
+    void test_recalculateHeightMapColumn(LevelProvider levelDBProvider) {
         IChunk chunk = levelDBProvider.getChunk(0, 0);
         chunk.recalculateHeightMapColumn(0, 0);
     }
 
     @Test
-    void test_populateSkyLight(LevelDBProvider levelDBProvider) {
+    void test_populateSkyLight(LevelProvider levelDBProvider) {
         IChunk chunk = levelDBProvider.getChunk(0, 0);
         chunk.populateSkyLight();
     }
 
     @Test
     @SneakyThrows
-    void test_getOrCreateSection(LevelDBProvider levelDBProvider) {
+    void test_getOrCreateSection(LevelProvider levelDBProvider) {
         IChunk chunk = levelDBProvider.getChunk(0, 0);
         Method getOrCreateSection = Chunk.class.getDeclaredMethod("getOrCreateSection", int.class);
         getOrCreateSection.setAccessible(true);
@@ -58,7 +57,7 @@ public class ChunkTest {
     }
 
     @Test
-    void testMutiThreadOperate(LevelDBProvider levelDBProvider) {
+    void testMutiThreadOperate(LevelProvider levelDBProvider) {
         final IChunk chunk = levelDBProvider.getChunk(0, 0);
         Set<Thread> threadSet = new HashSet<>();
         for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {

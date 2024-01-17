@@ -18,8 +18,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 
 
@@ -30,8 +28,8 @@ public class LevelStorageTest {
     @SneakyThrows
     static void before() {
         Registries.BLOCK.init();
-        FileUtils.copyDirectory(new File("src/test/resources/level"), new File("src/test/resources/newlevel"));
-        levelDBProvider = new LevelDBProvider(null, "src/test/resources/newlevel");
+        FileUtils.copyDirectory(new File("src/test/resources/level"), new File("src/test/resources/level2"));
+        levelDBProvider = new LevelDBProvider(null, "src/test/resources/level2");
         levelDBProvider.initDimensionData(DimensionEnum.OVERWORLD.getDimensionData());
     }
 
@@ -39,7 +37,7 @@ public class LevelStorageTest {
     @SneakyThrows
     static void after() {
         levelDBProvider.close();
-        FileUtils.deleteDirectory(new File("src/test/resources/newlevel"));
+        FileUtils.deleteDirectory(new File("src/test/resources/level2"));
     }
 
 
@@ -120,7 +118,7 @@ public class LevelStorageTest {
     @Test
     @SneakyThrows
     void testCloseAndLoadAgain() {
-        var newProvider = new LevelDBProvider(null, "src/test/resources/level2");
+        var newProvider = new LevelDBProvider(null, "src/test/resources/level3");
         newProvider.initDimensionData(DimensionEnum.OVERWORLD.getDimensionData());
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
@@ -133,7 +131,7 @@ public class LevelStorageTest {
             }
         }
         newProvider.close();
-        newProvider = new LevelDBProvider(null, "src/test/resources/level2");
+        newProvider = new LevelDBProvider(null, "src/test/resources/level3");
         newProvider.initDimensionData(DimensionEnum.OVERWORLD.getDimensionData());
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
@@ -141,6 +139,6 @@ public class LevelStorageTest {
             }
         }
         newProvider.close();
-        FileUtils.deleteDirectory(new File("src/test/resources/level2"));
+        FileUtils.deleteDirectory(new File("src/test/resources/level3"));
     }
 }

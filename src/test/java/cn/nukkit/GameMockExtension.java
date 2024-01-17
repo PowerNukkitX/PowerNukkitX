@@ -16,6 +16,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.blockstateupdater.BlockStateUpdater;
 import cn.nukkit.level.blockstateupdater.BlockStateUpdaterBase;
 import cn.nukkit.level.format.LevelDBProvider;
+import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.RakNetInterface;
@@ -36,8 +37,6 @@ import cn.nukkit.utils.Config;
 import cn.nukkit.utils.collection.FreezableArrayManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.jupiter.api.extension.AfterAllCallback;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -45,6 +44,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,7 +60,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class GameMockExtension extends MockitoExtension implements BeforeAllCallback, AfterAllCallback {
+public class GameMockExtension extends MockitoExtension {
     final static Server server = mock(Server.class);
     static BanList banList = mock(BanList.class);
     static BaseLang baseLang = mock(BaseLang.class);
@@ -199,10 +199,27 @@ public class GameMockExtension extends MockitoExtension implements BeforeAllCall
         });
         try {
             FieldUtils.writeDeclaredField(player, "foodData", new PlayerFood(player, 20, 20), true);
+            FileUtils.copyDirectory(new File("src/test/resources/level"), new File("src/test/resources/newlevel"));
+            level = new Level(Server.getInstance(), "newlevel", "src/test/resources/newlevel", LevelDBProvider.class);
+            level.initLevel();
+
+            player.level = level;
+            player.setPosition(new Vector3(0, 100, 0));
         } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+        Thread t = new Thread(() -> {
+            level.close();
+            try {
+                FileUtils.deleteDirectory(new File("src/test/resources/newlevel"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        Runtime.getRuntime().addShutdownHook(t);
     }
 
     @Override
@@ -210,7 +227,7 @@ public class GameMockExtension extends MockitoExtension implements BeforeAllCall
         boolean b = super.supportsParameter(parameterContext, context);
         return b || parameterContext.getParameter().getType() == GameMockExtension.class ||
                 parameterContext.getParameter().getType().equals(BlockRegistry.class)
-                || parameterContext.getParameter().getType().equals(LevelDBProvider.class)
+                || parameterContext.getParameter().getType().equals(LevelProvider.class)
                 || parameterContext.getParameter().getType().equals(Player.class)
                 || parameterContext.getParameter().getType().equals(Level.class);
     }
@@ -223,7 +240,7 @@ public class GameMockExtension extends MockitoExtension implements BeforeAllCall
         if (parameterContext.getParameter().getType().equals(BlockRegistry.class)) {
             return BLOCK_REGISTRY;
         }
-        if (parameterContext.getParameter().getType().equals(LevelDBProvider.class)) {
+        if (parameterContext.getParameter().getType().equals(LevelProvider.class)) {
             return level.getProvider();
         }
         if (parameterContext.getParameter().getType().equals(Level.class)) {
@@ -262,21 +279,5 @@ public class GameMockExtension extends MockitoExtension implements BeforeAllCall
         t.setDaemon(true);
         t.start();
         LockSupport.park();
-    }
-
-    @Override
-    public void beforeAll(ExtensionContext context) throws Exception {
-        FileUtils.copyDirectory(new File("src/test/resources/level"), new File("src/test/resources/newlevel"));
-        level = new Level(Server.getInstance(), "newlevel", "src/test/resources/newlevel", LevelDBProvider.class);
-        level.initLevel();
-
-        player.level = level;
-        player.setPosition(new Vector3(0, 100, 0));
-    }
-
-    @Override
-    public void afterAll(ExtensionContext context) throws Exception {
-        level.close();
-        FileUtils.deleteDirectory(new File("src/test/resources/newlevel"));
     }
 }
