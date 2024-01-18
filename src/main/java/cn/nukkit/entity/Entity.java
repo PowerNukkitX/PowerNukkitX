@@ -3585,4 +3585,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         return new PropertySyncData(intArray, floatArray);
     }
+
+    public Map<Integer, Attribute> getAttributes() {
+        return attributes;
+    }
 }

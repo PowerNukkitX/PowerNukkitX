@@ -2,7 +2,6 @@ package cn.nukkit;
 
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.RequestPermissionsPacket;
 import cn.nukkit.network.protocol.UpdateAbilitiesPacket;
 import cn.nukkit.network.protocol.UpdateAdventureSettingsPacket;
@@ -14,7 +13,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -26,19 +29,10 @@ public class AdventureSettings implements Cloneable {
     public static final int PERMISSION_HOST = 2;
     public static final int PERMISSION_AUTOMATION = 3;
     public static final int PERMISSION_ADMIN = 4;
-
-
     public static final String KEY_ABILITIES = "Abilities";
-
-
     public static final String KEY_PLAYER_PERMISSION = "PlayerPermission";
-
-
     public static final String KEY_COMMAND_PERMISSION = "CommandPermission";
-
-
     private static final Map<PlayerAbility, Type> ability2TypeMap = new HashMap<>();
-
     private final Map<Type, Boolean> values = new EnumMap<>(Type.class);
     @Getter
     private PlayerPermission playerPermission;

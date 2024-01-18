@@ -1,6 +1,5 @@
 package cn.nukkit.nbt;
 
-import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.tag.*;
 import cn.nukkit.registry.CreativeItemRegistry;
 import lombok.SneakyThrows;
@@ -43,6 +42,16 @@ public class NbtTest {
         Assertions.assertArrayEquals(new int[]{1, 2, 3, 4, 5}, tag.data);
         Assertions.assertEquals(IntArrayTag.class, tag.getClass());
         Assertions.assertEquals(Tag.TAG_Int_Array, tag.getId());
+    }
+
+    @Test
+    void testListTag() {
+        ListTag<IntTag> tag = new ListTag<>();
+        tag.add(new IntTag(1));
+        tag.add(new IntTag(2));
+        tag.add(new IntTag(3));
+        Assertions.assertEquals(ListTag.class, tag.getClass());
+        Assertions.assertEquals(2, tag.get(1).data);
     }
 
     @Test

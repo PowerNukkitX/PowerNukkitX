@@ -131,7 +131,9 @@ public class PlayerFood {
 
     public void sendFoodLevel(int foodLevel) {
         if (this.getPlayer().spawned) {
-            this.getPlayer().syncAttribute(Attribute.getAttribute(Attribute.MAX_HUNGER).setValue(foodLevel));
+            Attribute attribute = player.getAttributes().computeIfAbsent(Attribute.FOOD, Attribute::getAttribute);
+            attribute.setValue(foodLevel);
+            this.getPlayer().syncAttribute(attribute);
         }
     }
 
@@ -183,8 +185,8 @@ public class PlayerFood {
     }
 
     /**
-     * @deprecated use {@link #setLevel(int)} instead
      * @param foodLevel level
+     * @deprecated use {@link #setLevel(int)} instead
      **/
     @Deprecated
     public void setFoodLevel(int foodLevel) {
@@ -192,9 +194,9 @@ public class PlayerFood {
     }
 
     /**
-     * @deprecated use {@link #setLevel(int, float)} instead
-     * @param foodLevel level
+     * @param foodLevel       level
      * @param saturationLevel saturation
+     * @deprecated use {@link #setLevel(int, float)} instead
      **/
     @Deprecated
     public void setFoodLevel(int foodLevel, float saturationLevel) {

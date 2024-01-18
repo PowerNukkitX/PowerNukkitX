@@ -674,6 +674,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         //Weather
         this.getLevel().sendWeather(this);
 
+        this.setMovementSpeed(DEFAULT_SPEED);
+
         //FoodLevel
         PlayerFood food = this.getFoodData();
         if (food.getLevel() != food.getMaxLevel()) {
@@ -1037,11 +1039,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 if (this.wasInSoulSandCompatible && !downBlock.isSoulSpeedCompatible()) {
                     this.wasInSoulSandCompatible = false;
                     this.soulSpeedMultiplier = 1;
-                    this.sendMovementSpeed(this.movementSpeed);
+                    this.setMovementSpeed(this.getMovementSpeed());
                 } else if (!this.wasInSoulSandCompatible && downBlock.isSoulSpeedCompatible()) {
                     this.wasInSoulSandCompatible = true;
                     this.soulSpeedMultiplier = (soulSpeedLevel * 0.105f) + 1.3f;
-                    this.sendMovementSpeed(this.movementSpeed * this.soulSpeedMultiplier);
+                    this.setMovementSpeed(this.getMovementSpeed() * this.soulSpeedMultiplier);
                 }
             }
 
@@ -1305,7 +1307,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         //注册实体属性
         for (SyncEntityPropertyPacket pk : EntityProperty.getPacketCache()) {
-            this.dataPacketImmediately(pk);
+            this.dataPacket(pk);
         }
 
         //写入自定义物品数据
@@ -1338,7 +1340,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
         });
 
-        this.syncAttributes();
         this.sendPotionEffects(this);
         this.sendData(this);
         this.syncAttributes();
@@ -2362,23 +2363,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
-     * 保存玩家重生位置的方块的位置。当未知时可能为空。
-     * <p>
-     * The block that holds the player respawn position. May be null when unknown.
-     * <p>
-     * 保存着玩家重生位置的方块。当未知时可能为空。
-     *
-     * @return 床、重生锚的位置，或在未知时为空。<br>The position of a bed, respawn anchor, or null when unknown.
-     */
-
-
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "same #getSpawn")
-    public Position getSpawnBlock() {
-        return this.getSpawn();
-    }
-
-    /**
      * 设置玩家的出生点/复活点。
      * <p>
      * Set the player's birth point.
@@ -2417,8 +2401,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @param spawnBlock 床位或重生锚的位置<br>The position of a bed or respawn anchor
      */
-
-
     public void setSpawnBlock(@Nullable Vector3 spawnBlock) {
         if (spawnBlock == null) {
             this.spawnBlockPosition = null;
@@ -2472,7 +2454,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.chunkZ = z;
         pk.subChunkCount = subChunkCount;
         pk.data = payload;
-
         this.sendChunk(x, z, pk);
     }
 
@@ -2493,13 +2474,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
         PositionTrackingService positionTrackingService = server.getPositionTrackingService();
         positionTrackingService.forceRecheck(this);
-    }
-
-    @DeprecationDetails(by = "Cloudburst Nukkit", since = "1.4.0.0-PN", replaceWith = "dataPacket(DataPacket)",
-            reason = "Batching packet is now handled near the RakNet layer")
-    @Deprecated
-    public boolean batchDataPacket(DataPacket packet) {
-        return this.dataPacket(packet);
     }
 
     /**
@@ -4386,7 +4360,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @param speed 属性值<br>the speed value
      */
-
     public void sendMovementSpeed(float speed) {
         Attribute attribute = this.attributes.computeIfAbsent(Attribute.MOVEMENT_SPEED, Attribute::getAttribute);
         attribute.setValue(speed);

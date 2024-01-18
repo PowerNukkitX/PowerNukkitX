@@ -8,8 +8,12 @@ import cn.nukkit.block.BlockMagma;
 import cn.nukkit.entity.data.ShortEntityData;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.weather.EntityWeather;
-import cn.nukkit.event.entity.*;
+import cn.nukkit.event.entity.EntityDamageBlockedEvent;
+import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
+import cn.nukkit.event.entity.EntityDeathEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTurtleHelmet;
 import cn.nukkit.level.GameRule;
@@ -22,12 +26,10 @@ import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.TickCachedBlockIterator;
-import cn.nukkit.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public abstract class EntityLiving extends Entity implements EntityDamageable {
     public final static float DEFAULT_SPEED = 0.1f;
@@ -65,7 +67,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             this.namedTag.putFloat("Health", this.getMaxHealth());
         }
 
-        this.health = this.namedTag.getFloat("Health");
+        setHealth(this.namedTag.getFloat("Health"));
     }
 
     @Override
@@ -95,7 +97,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         ent.applyEntityCollision(this);
     }
 
-    
+
     @Override
     public boolean attack(EntityDamageEvent source) {
         if (this.noDamageTicks > 0 && source.getCause() != DamageCause.SUICIDE) {//ignore it if the cause is SUICIDE
