@@ -6,8 +6,6 @@ import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.NonComputationAtomic;
 import cn.nukkit.block.*;
 import cn.nukkit.block.customblock.CustomBlock;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
@@ -23,7 +21,13 @@ import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.event.block.BlockBreakEvent;
 import cn.nukkit.event.block.BlockPlaceEvent;
 import cn.nukkit.event.block.BlockUpdateEvent;
-import cn.nukkit.event.level.*;
+import cn.nukkit.event.level.ChunkLoadEvent;
+import cn.nukkit.event.level.ChunkUnloadEvent;
+import cn.nukkit.event.level.LevelSaveEvent;
+import cn.nukkit.event.level.LevelUnloadEvent;
+import cn.nukkit.event.level.SpawnChangeEvent;
+import cn.nukkit.event.level.ThunderChangeEvent;
+import cn.nukkit.event.level.WeatherChangeEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.weather.LightningStrikeEvent;
@@ -50,33 +54,55 @@ import cn.nukkit.metadata.BlockMetadataStore;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.*;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.BlockUpdateScheduler;
-import cn.nukkit.utils.*;
+import cn.nukkit.utils.BlockColor;
+import cn.nukkit.utils.BlockUpdateEntry;
+import cn.nukkit.utils.Hash;
+import cn.nukkit.utils.LevelException;
+import cn.nukkit.utils.RedstoneComponent;
+import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.collection.nb.Int2ObjectNonBlockingMap;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.ints.*;
-import it.unimi.dsi.fastutil.longs.*;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2IntMap;
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongList;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.VisibleForTesting;
 
 import java.awt.*;
 import java.lang.ref.SoftReference;
 import java.util.List;
 import java.util.Queue;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -2414,10 +2440,10 @@ public class Level implements Metadatable {
 
         if (createParticles) {
             Map<Integer, Player> players = this.getChunkPlayers((int) target.x >> 4, (int) target.z >> 4);
-            this.addParticle(new DestroyBlockParticle(target.add(0.5), target), players.values());
-            if (player != null && !immediateDestroy) {
+            if (player != null && immediateDestroy) {
                 players.remove(player.getLoaderId());
             }
+            this.addParticle(new DestroyBlockParticle(target.add(0.5), target), players.values());
         }
 
         // Close BlockEntity before we check onBreak
@@ -2440,7 +2466,7 @@ public class Level implements Metadatable {
             if (player != null) {
                 addSound(player, Sound.RANDOM_BREAK);
             }
-            item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
+            item = Item.AIR;
         }
 
         if (this.gameRules.getBoolean(GameRule.DO_TILE_DROPS)) {

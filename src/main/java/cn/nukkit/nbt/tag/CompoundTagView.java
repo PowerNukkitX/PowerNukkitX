@@ -1,12 +1,8 @@
 package cn.nukkit.nbt.tag;
 
-import cn.nukkit.nbt.stream.NBTInputStream;
-import cn.nukkit.nbt.stream.NBTOutputStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -275,8 +271,8 @@ public class CompoundTagView extends CompoundTag {
     }
 
     @Override
-    public CompoundTagView copy() {
-        return new CompoundTagView(delegate.copy());
+    public LinkedCompoundTag copy() {
+        return new LinkedCompoundTag(delegate.copy().getTags());
     }
 
     @Override

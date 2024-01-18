@@ -1560,7 +1560,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return this.age;
     }
 
-    public final int getNetworkId() {
+    public int getNetworkId() {
         return Registries.ENTITY.getEntityNetworkId(getIdentifier().toString());
     }
 

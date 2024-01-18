@@ -115,12 +115,6 @@ import static cn.nukkit.utils.Utils.dynamic;
  */
 @Log4j2
 public class Player extends EntityHuman implements CommandSender, InventoryHolder, ChunkLoader, IPlayer, IScoreboardViewer {
-    @Override
-    @NotNull
-    public String getIdentifier() {
-        return PLAYER;
-    }
-
     /**
      * 一个承载玩家的空数组静态常量
      * <p>

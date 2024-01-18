@@ -1,12 +1,16 @@
 package cn.nukkit.registry;
 
-import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.mob.*;
 import cn.nukkit.entity.passive.*;
-import cn.nukkit.entity.projectile.*;
+import cn.nukkit.entity.projectile.EntityArrow;
+import cn.nukkit.entity.projectile.EntityEgg;
+import cn.nukkit.entity.projectile.EntityEnderPearl;
+import cn.nukkit.entity.projectile.EntitySmallFireball;
+import cn.nukkit.entity.projectile.EntitySnowball;
+import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -15,20 +19,26 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
+import me.sunlan.fastreflection.FastConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.EntityDefinition, Class<? extends Entity>, Class<? extends Entity>> {
     private static final Object2ObjectOpenHashMap<String, Class<? extends Entity>> CLASS = new Object2ObjectOpenHashMap<>();
+    private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Entity>> FAST_NEW = new Object2ObjectOpenHashMap<>();
     private static final Object2IntOpenHashMap<String> ID2RID = new Object2IntOpenHashMap<>();
     private static final Int2ObjectArrayMap<String> RID2ID = new Int2ObjectArrayMap<>();
     private static final Object2ObjectOpenHashMap<String, EntityRegistry.EntityDefinition> DEFINITIONS = new Object2ObjectOpenHashMap<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+
     @Override
     public void init() {
         if (isLoad.getAndSet(true)) return;
@@ -153,7 +163,6 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
 //        registerInternal(new EntityDefinition(SNIFFER, "", 139, true, true), EntitySniffer.class);
         registerInternal(new EntityDefinition(TRADER_LLAMA, "", 157, true, true), EntityTraderLlama.class);
         registerInternal(new EntityDefinition(CHEST_BOAT, "", 218, false, true), EntityChestBoat.class);
-        registerInternal(new EntityDefinition(PLAYER, "minecraft:", 257, false, false), Player.class);
     }
 
     public Class<? extends Entity> getEntityClass(String id) {
@@ -224,7 +233,8 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
 
             try {
                 if (args == null || args.length == 0) {
-                    entity = (Entity) constructor.newInstance(chunk, nbt);
+                    FastConstructor<? extends Entity> fastConstructor = FAST_NEW.get(id);
+                    entity = (Entity) fastConstructor.invoke(chunk, nbt);
                 } else {
                     Object[] objects = new Object[args.length + 2];
 
@@ -239,8 +249,12 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
                     exceptions = new ArrayList<>();
                 }
                 exceptions.add(e);
+            } catch (Throwable e) {
+                if (exceptions == null) {
+                    exceptions = new ArrayList<>();
+                }
+                exceptions.add(new RuntimeException(e));
             }
-
         }
 
         if (entity == null) {
@@ -250,7 +264,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
                     cause.addSuppressed(exceptions.get(i));
                 }
             }
-            log.debug("Could not create an entity of type {} with {} args", id, args == null ? 0 : args.length, cause);
+            log.error("Could not create an entity of type {} with {} args", id, args == null ? 0 : args.length, cause);
         } else {
             return entity;
         }
@@ -265,6 +279,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     @Override
     public void trim() {
         CLASS.trim();
+        FAST_NEW.trim();
         ID2RID.trim();
         DEFINITIONS.trim();
     }
@@ -272,6 +287,11 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     @Override
     public void register(EntityDefinition key, Class<? extends Entity> value) throws RegisterException {
         if (CLASS.putIfAbsent(key.id(), value) == null) {
+            try {
+                FAST_NEW.put(key.id, FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class)));
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
             ID2RID.put(key.id, key.rid);
             RID2ID.put(key.rid, key.id);
             DEFINITIONS.put(key.id, key);
@@ -281,7 +301,6 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     }
 
     private void registerInternal(EntityDefinition key, Class<? extends Entity> value) {
-        RID2ID.put(key.rid, key.id);
         try {
             register(key, value);
         } catch (RegisterException e) {

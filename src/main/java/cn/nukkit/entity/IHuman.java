@@ -18,6 +18,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public interface IHuman extends InventoryHolder {
+    int NETWORK_ID = 257;
+
     default void initHumanEntity(Entity human) {
         boolean isIntelligentHuman = this instanceof EntityIntelligentHuman;
         human.setDataFlag(Entity.DATA_PLAYER_FLAGS, Entity.DATA_PLAYER_FLAG_SLEEP, false);

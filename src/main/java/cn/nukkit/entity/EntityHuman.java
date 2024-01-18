@@ -20,10 +20,6 @@ import java.util.UUID;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityHuman extends EntityHumanType {
-    @Override @NotNull public String getIdentifier() {
-        return PLAYER;
-    }
-
     protected UUID uuid;
     protected byte[] rawUUID;
     protected Skin skin;
@@ -236,5 +232,10 @@ public class EntityHuman extends EntityHumanType {
             shieldOffhand = damageArmor(shieldOffhand, entity, event);
             getOffhandInventory().setItem(0, shieldOffhand);
         }
+    }
+
+    @Override
+    public int getNetworkId() {
+        return super.getNetworkId();
     }
 }

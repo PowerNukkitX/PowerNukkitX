@@ -194,4 +194,14 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
 
         return armor;
     }
+
+    @Override
+    public int getNetworkId() {
+        return NETWORK_ID;
+    }
+
+    @Override
+    public @NotNull String getIdentifier() {
+        return PLAYER;
+    }
 }

@@ -47,7 +47,7 @@ public class NBTIO {
             tag.putCompound("tag", item.getNamedTag());
         }
         if (item.isBlock()) {
-            tag.putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag());
+            tag.putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag().copy());
         }
         return tag;
     }
