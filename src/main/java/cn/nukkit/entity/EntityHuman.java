@@ -236,6 +236,6 @@ public class EntityHuman extends EntityHumanType {
 
     @Override
     public int getNetworkId() {
-        return super.getNetworkId();
+        return NETWORK_ID;
     }
 }
