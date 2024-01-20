@@ -69,8 +69,7 @@ public class InventoryTransaction {
     }
 
     public void addAction(InventoryAction action) {
-        if (action instanceof SlotChangeAction) {
-            SlotChangeAction slotChangeAction = (SlotChangeAction) action;
+        if (action instanceof SlotChangeAction slotChangeAction) {
 
             ListIterator<InventoryAction> iterator = this.actions.listIterator();
 
@@ -174,10 +173,9 @@ public class InventoryTransaction {
         Player who = null;
 
         for (InventoryAction action : this.actions) {
-            if (!(action instanceof SlotChangeAction)) {
+            if (!(action instanceof SlotChangeAction slotChange)) {
                 continue;
             }
-            SlotChangeAction slotChange = (SlotChangeAction) action;
 
             if (slotChange.getInventory().getHolder() instanceof Player) {
                 who = (Player) slotChange.getInventory().getHolder();

@@ -1,8 +1,17 @@
 package cn.nukkit;
 
 import cn.nukkit.AdventureSettings.Type;
-import cn.nukkit.api.*;
-import cn.nukkit.block.*;
+import cn.nukkit.api.DeprecationDetails;
+import cn.nukkit.api.UsedByReflection;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockBed;
+import cn.nukkit.block.BlockEndPortal;
+import cn.nukkit.block.BlockEnderChest;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockLiquid;
+import cn.nukkit.block.BlockRespawnAnchor;
+import cn.nukkit.block.BlockWood;
+import cn.nukkit.block.BlockWool;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
@@ -14,8 +23,18 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.command.utils.RawText;
 import cn.nukkit.dialog.window.FormWindowDialog;
-import cn.nukkit.entity.*;
-import cn.nukkit.entity.data.*;
+import cn.nukkit.entity.Attribute;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityHuman;
+import cn.nukkit.entity.EntityInteractable;
+import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.EntityRideable;
+import cn.nukkit.entity.data.ByteEntityData;
+import cn.nukkit.entity.data.IntPositionEntityData;
+import cn.nukkit.entity.data.ShortEntityData;
+import cn.nukkit.entity.data.Skin;
+import cn.nukkit.entity.data.StringEntityData;
+import cn.nukkit.entity.data.Vector3fEntityData;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.entity.item.EntityItem;
@@ -24,9 +43,13 @@ import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.event.block.WaterFrostEvent;
-import cn.nukkit.event.entity.*;
+import cn.nukkit.event.entity.EntityDamageByBlockEvent;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
+import cn.nukkit.event.entity.EntityPortalEnterEvent;
 import cn.nukkit.event.entity.EntityPortalEnterEvent.PortalType;
+import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.event.inventory.InventoryPickupArrowEvent;
 import cn.nukkit.event.inventory.InventoryPickupItemEvent;
 import cn.nukkit.event.inventory.InventoryPickupTridentEvent;
@@ -36,27 +59,65 @@ import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.form.window.FormWindow;
-import cn.nukkit.inventory.*;
-import cn.nukkit.inventory.transaction.*;
-import cn.nukkit.item.*;
+import cn.nukkit.inventory.BigCraftingGrid;
+import cn.nukkit.inventory.CraftingGrid;
+import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.InventoryHolder;
+import cn.nukkit.inventory.PlayerCursorInventory;
+import cn.nukkit.inventory.PlayerInventory;
+import cn.nukkit.inventory.PlayerUIInventory;
+import cn.nukkit.inventory.transaction.CraftingTransaction;
+import cn.nukkit.inventory.transaction.EnchantTransaction;
+import cn.nukkit.inventory.transaction.GrindstoneTransaction;
+import cn.nukkit.inventory.transaction.RepairItemTransaction;
+import cn.nukkit.inventory.transaction.SmithingTransaction;
+import cn.nukkit.inventory.transaction.TradingTransaction;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemArmor;
+import cn.nukkit.item.ItemArrow;
+import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemShield;
+import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.level.*;
+import cn.nukkit.level.ChunkLoader;
+import cn.nukkit.level.EnumLevel;
+import cn.nukkit.level.GameRule;
+import cn.nukkit.level.Level;
+import cn.nukkit.level.Location;
+import cn.nukkit.level.PlayerChunkManager;
+import cn.nukkit.level.Position;
+import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.PunchBlockParticle;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
-import cn.nukkit.math.*;
+import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.NukkitMath;
+import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.math.Vector2;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.metadata.MetadataValue;
-import cn.nukkit.nbt.tag.*;
+import cn.nukkit.nbt.tag.ByteTag;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.connection.BedrockServerSession;
 import cn.nukkit.network.process.DataPacketManager;
 import cn.nukkit.network.protocol.*;
-import cn.nukkit.network.protocol.types.*;
+import cn.nukkit.network.protocol.types.CommandOriginData;
+import cn.nukkit.network.protocol.types.CommandOutputType;
+import cn.nukkit.network.protocol.types.ContainerIds;
+import cn.nukkit.network.protocol.types.GameType;
+import cn.nukkit.network.protocol.types.PlayerBlockActionData;
 import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
@@ -73,7 +134,12 @@ import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
-import cn.nukkit.utils.*;
+import cn.nukkit.utils.BlockIterator;
+import cn.nukkit.utils.BossBarColor;
+import cn.nukkit.utils.DummyBossBar;
+import cn.nukkit.utils.Identifier;
+import cn.nukkit.utils.LoginChainData;
+import cn.nukkit.utils.TextFormat;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.base.Strings;
@@ -3007,7 +3073,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.checkInteractNearby();
         }
 
-        if (this.spawned && this.dummyBossBars.size() > 0 && currentTick % 100 == 0) {
+        if (this.spawned && !this.dummyBossBars.isEmpty() && currentTick % 100 == 0) {
             this.dummyBossBars.values().forEach(DummyBossBar::updateBossEntityPosition);
         }
 
@@ -4071,6 +4137,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (showMessages && !ev.getDeathMessage().toString().isEmpty()) {
                 this.server.broadcast(ev.getDeathMessage(), Server.BROADCAST_CHANNEL_USERS);
             }
+            this.setDataProperty(new Vector3fEntityData(Entity.DATA_PLAYER_LAST_DEATH_POS, this.getFloorX(), this.getFloorY(), this.getFloorZ()));
 
             RespawnPacket pk = new RespawnPacket();
             Position pos = this.getSpawn();
@@ -4078,7 +4145,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             pk.y = (float) pos.y;
             pk.z = (float) pos.z;
             pk.respawnState = RespawnPacket.STATE_SEARCHING_FOR_SPAWN;
-
+            pk.runtimeEntityId = this.getId();
             this.dataPacket(pk);
         }
     }
@@ -4089,12 +4156,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             health = 0;
         }
         super.setHealth(health);
-        Attribute attr = Attribute.getAttribute(Attribute.MAX_HEALTH);
         Attribute attribute = this.attributes.computeIfAbsent(Attribute.MAX_HEALTH, Attribute::getAttribute);
         attribute.setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
         if (this.spawned) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
-            pk.entries = new Attribute[]{attr};
+            pk.entries = new Attribute[]{attribute};
             pk.entityId = this.id;
             this.dataPacket(pk);
         }
