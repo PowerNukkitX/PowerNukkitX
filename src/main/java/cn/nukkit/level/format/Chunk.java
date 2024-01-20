@@ -344,7 +344,7 @@ public class Chunk implements IChunk {
     }
 
     @Override
-    public int recalculateHeightMapColumn(int chunkX, int chunkZ) {
+    public int recalculateHeightMapColumn(int x, int z) {
         long stamp1 = heightAndBiomeLock.writeLock();
         long stamp2 = blockLock.writeLock();
         try {

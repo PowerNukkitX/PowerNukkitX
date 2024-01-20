@@ -3,8 +3,10 @@ package cn.nukkit.utils;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Attribute;
-import cn.nukkit.entity.data.Skin;
-import cn.nukkit.item.*;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.data.*;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.math.BlockFace;
@@ -21,17 +23,24 @@ import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequestSlotData;
 import cn.nukkit.network.protocol.types.itemstack.request.TextProcessingEventOrigin;
 import cn.nukkit.network.protocol.types.itemstack.request.action.*;
-import cn.nukkit.recipe.*;
+import cn.nukkit.recipe.ComplexAliasDescriptor;
+import cn.nukkit.recipe.DeferredDescriptor;
+import cn.nukkit.recipe.ItemDescriptor;
+import cn.nukkit.recipe.ItemDescriptorType;
+import cn.nukkit.recipe.ItemTagDescriptor;
+import cn.nukkit.recipe.MolangDescriptor;
 import cn.nukkit.registry.Registries;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.util.internal.EmptyArrays;
+import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Array;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -45,13 +54,9 @@ import java.util.function.Function;
  */
 @Log4j2
 public class BinaryStream {
-
-    private static final int FALLBACK_ID = 248;
-
     public int offset;
     private byte[] buffer;
     protected int count;
-
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
     public BinaryStream() {
@@ -142,6 +147,22 @@ public class BinaryStream {
 
     public void putInt(int i) {
         this.put(Binary.writeInt(i));
+    }
+
+    public void putMedium(int i) {
+        putByte((byte) (i >>> 16));
+        putByte((byte) (i >>> 8));
+        putByte((byte) i);
+    }
+
+    public int getMedium() {
+        int value = (getByte() & 0xff) << 16 |
+                (getByte() & 0xff) << 8 |
+                getByte() & 0xff;
+        if ((value & 0x800000) != 0) {
+            value |= 0xff000000;
+        }
+        return value;
     }
 
     public long getLLong() {
@@ -486,13 +507,16 @@ public class BinaryStream {
             for (int i = 0; i < canPlace.length; i++) {
                 canPlaces[i] = Block.get(canPlace[i]);
             }
-            item.setCanPlaceOn(canPlaces);
+            if (canPlaces.length > 0) {
+                item.setCanDestroy(canPlaces);
+            }
             Block[] canBreaks = new Block[canBreak.length];
             for (int i = 0; i < canBreak.length; i++) {
                 canBreaks[i] = Block.get(canBreak[i]);
             }
-            item.setCanPlaceOn(canPlaces);
-            item.setCanDestroy(canBreaks);
+            if (canBreaks.length > 0) {
+                item.setCanPlaceOn(canBreaks);
+            }
             return item;
         } catch (IOException e) {
             throw new IllegalStateException("Unable to read item user data", e);

@@ -162,7 +162,7 @@ public class InventoryTransaction {
     public boolean canExecute() {
         List<Item> haveItems = new ArrayList<>();
         List<Item> needItems = new ArrayList<>();
-        return matchItems(needItems, haveItems) && this.actions.size() > 0 && haveItems.size() == 0 && needItems.size() == 0;
+        return matchItems(needItems, haveItems) && !this.actions.isEmpty() && haveItems.isEmpty() && needItems.isEmpty();
     }
 
     protected boolean callExecuteEvent() {

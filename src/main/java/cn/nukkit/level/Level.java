@@ -1182,7 +1182,6 @@ public class Level implements Metadatable {
         for (Vector3 block : blocks) {
             if (block != null) size++;
         }
-        int packetIndex = 0;
         var packets = new ArrayList<UpdateBlockPacket>(size);
         LongSet chunks = null;
         if (optimizeRebuilds) {
@@ -1208,20 +1207,21 @@ public class Level implements Metadatable {
             updateBlockPacket.z = (int) b.z;
             updateBlockPacket.flags = first ? flags : UpdateBlockPacket.FLAG_NONE;
             updateBlockPacket.dataLayer = dataLayer;
-            int runtimeId;
-            if (b instanceof Block) {
-                runtimeId = ((Block) b).getRuntimeId();
+            long runtimeId;
+            if (b instanceof Block block) {
+                runtimeId = block.getBlockState().unsignedBlockStateHash();
             } else if (b instanceof Vector3WithRuntimeId vRid) {
                 if (dataLayer == 0) {
-                    runtimeId = vRid.getRuntimeIdLayer0();
+                    runtimeId = Integer.toUnsignedLong(vRid.getRuntimeIdLayer0());
                 } else {
-                    runtimeId = vRid.getRuntimeIdLayer1();
+                    runtimeId = Integer.toUnsignedLong(vRid.getRuntimeIdLayer1());
                 }
             } else {
-                runtimeId = getBlockRuntimeId((int) b.x, (int) b.y, (int) b.z, dataLayer);
-                if (runtimeId == Integer.MIN_VALUE) {
+                int hash = getBlockRuntimeId((int) b.x, (int) b.y, (int) b.z, dataLayer);
+                if (hash == Integer.MIN_VALUE) {
                     continue;
                 }
+                runtimeId = Integer.toUnsignedLong(hash);
             }
             try {
                 updateBlockPacket.blockRuntimeId = runtimeId;
@@ -1308,7 +1308,7 @@ public class Level implements Metadatable {
                         int z = lcg >>> 16 & 0x0f;
                         BlockState state = section.getBlockState(x, y, z);
                         if (randomTickBlocks.contains(state.getIdentifier())) {
-                            Block block = Block.get(state);
+                            Block block = Block.get(state, this, x, y, z);
                             block.setLevel(this);
                             block.onUpdate(BLOCK_UPDATE_RANDOM);
                         }
@@ -2539,7 +2539,7 @@ public class Level implements Metadatable {
         Block target = this.getBlock(vector);
         Block block = target.getSide(face);
 
-        if (item.getBlock() instanceof BlockScaffolding && face == BlockFace.UP && block.getId() == BlockID.SCAFFOLDING) {
+        if (item.getBlock() instanceof BlockScaffolding && face == BlockFace.UP && block.getId().equals(BlockID.SCAFFOLDING)) {
             while (block instanceof BlockScaffolding) {
                 block = block.up();
             }
@@ -2559,18 +2559,16 @@ public class Level implements Metadatable {
         int touchStatus = 0;
         if (player != null) {
             PlayerInteractEvent ev = new PlayerInteractEvent(player, item, target, face, target.isAir() ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
+            //                                handle spawn protect
+            if (player.getGamemode() > 2 || (!player.isOp() && isInSpawnRadius(target))) {
+                ev.setCancelled();
+            }
 
-            if (player.getGamemode() > 2) {
-                ev.setCancelled();
-            }
-            //handle spawn protect
-            if (!player.isOp() && isInSpawnRadius(target)) {
-                ev.setCancelled();
-            }
             this.server.getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
                 target.onTouch(vector, item, face, fx, fy, fz, player, ev.getAction());
-                if (((!player.isSneaking() && !player.isFlySneaking()) || player.getInventory().getItemInHand().isNull()) && target.canBeActivated() && target.onActivate(item, player)) {
+                if (((!player.isSneaking() && !player.isFlySneaking()) || player.getInventory().getItemInHand().isNull())
+                        && target.canBeActivated() && target.onActivate(item, player)) {
                     if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
                         addSound(player, Sound.RANDOM_BREAK);
                         item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
@@ -2585,13 +2583,13 @@ public class Level implements Metadatable {
                     }
                 }
             } else {
-                if ((item instanceof ItemBucket) && ((ItemBucket) item).isWater()) {
+                if ((item instanceof ItemBucket itemBucket) && itemBucket.isWater()) {
                     player.getLevel().sendBlocks(new Player[]{player}, new Block[]{Block.get(BlockID.AIR, target)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
                 }
                 return null;
             }
 
-            if ((item instanceof ItemBucket) && ((ItemBucket) item).isWater()) {
+            if ((item instanceof ItemBucket itemBucket) && itemBucket.isWater()) {
                 player.getLevel().sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
             }
         } else if (target.canBeActivated() && target.onActivate(item, player)) {
@@ -2630,8 +2628,9 @@ public class Level implements Metadatable {
             int realCount = 0;
             Entity[] entities = this.getCollidingEntities(hand.getBoundingBox());
             for (Entity e : entities) {
-                if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXpOrb || e instanceof EntityFireworksRocket ||
-                        e instanceof EntityPainting || e == player || (e instanceof Player p && p.isSpectator())) {
+                if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXpOrb ||
+                        e instanceof EntityFireworksRocket || e instanceof EntityPainting || e == player ||
+                        (e instanceof Player p && p.isSpectator())) {
                     continue;
                 }
                 ++realCount;
@@ -2650,8 +2649,7 @@ public class Level implements Metadatable {
         }
 
         if (player != null) {
-            if (!player.getAdventureSettings().get(PlayerAbility.BUILD)
-                    || !block.isBlockChangeAllowed(player))
+            if (!player.getAdventureSettings().get(PlayerAbility.BUILD) || !block.isBlockChangeAllowed(player))
                 return null;
 
             BlockPlaceEvent event = new BlockPlaceEvent(player, hand, block, target, item);

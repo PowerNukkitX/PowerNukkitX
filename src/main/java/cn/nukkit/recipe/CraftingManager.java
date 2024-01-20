@@ -7,7 +7,10 @@ import cn.nukkit.item.ItemPotion;
 import cn.nukkit.network.protocol.CraftingDataPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.potion.Potion;
-import cn.nukkit.utils.*;
+import cn.nukkit.utils.BinaryStream;
+import cn.nukkit.utils.Config;
+import cn.nukkit.utils.MinecraftNamespaceComparator;
+import cn.nukkit.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.netty.util.collection.CharObjectHashMap;
@@ -21,9 +24,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
-import java.util.zip.Deflater;
 
 /**
  * 用于管理合成配方

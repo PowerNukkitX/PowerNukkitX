@@ -19,7 +19,7 @@ public class DyeDispenseBehavior extends DefaultDispenseBehavior {
 
         if (item.isFertilizer()) {
             if (target.isFertilizable()) {
-                target.onActivate(item);
+                target.onActivate(item,null);
             } else {
                 this.success = false;
             }

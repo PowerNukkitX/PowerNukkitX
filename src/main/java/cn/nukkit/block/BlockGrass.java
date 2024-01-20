@@ -69,11 +69,6 @@ public class BlockGrass extends BlockDirt {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item) {
-        return this.onActivate(item, null);
-    }
-
-    @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         if (!this.up().canBeReplaced()) {
             return false;

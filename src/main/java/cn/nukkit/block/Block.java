@@ -236,10 +236,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return true;
     }
 
-    public boolean onActivate(@NotNull Item item) {
-        return this.onActivate(item, null);
-    }
-
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         return false;
     }

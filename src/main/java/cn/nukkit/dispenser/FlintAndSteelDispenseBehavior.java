@@ -38,7 +38,7 @@ public class FlintAndSteelDispenseBehavior extends DefaultDispenseBehavior {
             return item.getDamage() >= item.getMaxDurability() ? null : item;
         } else if (target.getId() == BlockID.TNT) {
             block.level.addSound(block, Sound.RANDOM_CLICK, 1.0f, 1.0f);
-            target.onActivate(item);
+            target.onActivate(item,null);
             item.useOn(target);
             return item.getDamage() >= item.getMaxDurability() ? null : item;
         } else {

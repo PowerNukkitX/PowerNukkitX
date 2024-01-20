@@ -5,11 +5,10 @@ import lombok.ToString;
 
 
 @ToString
-public class UpdateBlockSyncedPacket extends DataPacket {
+public class UpdateBlockSyncedPacket extends UpdateBlockPacket {
     public static final int NETWORK_ID = ProtocolInfo.UPDATE_BLOCK_SYNCED_PACKET;
     public long actorUniqueId;
     public BlockSyncType updateType;
-
 
     @Override
     public int pid() {
@@ -17,13 +16,8 @@ public class UpdateBlockSyncedPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-
-    }
-
-    @Override
     public void encode() {
-        this.reset();
+        super.encode();
         this.putUnsignedVarLong(actorUniqueId);
         this.putUnsignedVarLong(updateType.ordinal());
     }

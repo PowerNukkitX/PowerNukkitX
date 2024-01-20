@@ -517,7 +517,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                 Item itemToAdd = item.clone();
                 itemToAdd.setCount(1);
 
-                if (!composter.onActivate(item)) {
+                if (!composter.onActivate(item,null)) {
                     return false;
                 }
                 item.count--;

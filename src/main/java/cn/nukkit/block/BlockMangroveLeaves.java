@@ -1,9 +1,11 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +67,7 @@ public class BlockMangroveLeaves extends BlockLeaves {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         //todo: 实现红树树叶催化
         return true;
     }

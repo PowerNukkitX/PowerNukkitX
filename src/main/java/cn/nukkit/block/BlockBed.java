@@ -88,10 +88,6 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
         return 1;
     }
 
-    @Override
-    public boolean onActivate(@NotNull Item item) {
-        return this.onActivate(item, null);
-    }
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
