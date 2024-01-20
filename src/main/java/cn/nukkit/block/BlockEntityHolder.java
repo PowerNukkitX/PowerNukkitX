@@ -53,12 +53,12 @@ public interface BlockEntityHolder<E extends BlockEntity> {
         } else {
             initialData = initialData.copy();
         }
-        BlockEntity created = BlockEntity.createBlockEntity(typeName, chunk, 
+        BlockEntity created = BlockEntity.createBlockEntity(typeName, chunk,
                 initialData
-                    .putString("id", typeName)
-                    .putInt("x", getFloorX())
-                    .putInt("y", getFloorY())
-                    .putInt("z", getFloorZ()), 
+                        .putString("id", typeName)
+                        .putInt("x", getFloorX())
+                        .putInt("y", getFloorY())
+                        .putInt("z", getFloorZ()),
                 args);
 
         Class<? extends E> entityClass = getBlockEntityClass();
@@ -86,7 +86,8 @@ public interface BlockEntityHolder<E extends BlockEntity> {
 
     @NotNull String getBlockEntityType();
 
-    @Nullable IChunk getChunk();
+    @Nullable
+    IChunk getChunk();
 
     int getFloorX();
 
@@ -98,16 +99,19 @@ public interface BlockEntityHolder<E extends BlockEntity> {
 
     Level getLevel();
 
-    @Nullable static <E extends BlockEntity, H extends BlockEntityHolder<E>> E setBlockAndCreateEntity(@NotNull H holder) {
+    @Nullable
+    static <E extends BlockEntity, H extends BlockEntityHolder<E>> E setBlockAndCreateEntity(@NotNull H holder) {
         return setBlockAndCreateEntity(holder, true, true);
     }
 
-    @Nullable static <E extends BlockEntity, H extends BlockEntityHolder<E>> E setBlockAndCreateEntity(
+    @Nullable
+    static <E extends BlockEntity, H extends BlockEntityHolder<E>> E setBlockAndCreateEntity(
             @NotNull H holder, boolean direct, boolean update) {
         return setBlockAndCreateEntity(holder, direct, update, null);
     }
 
-    @Nullable static <E extends BlockEntity, H extends BlockEntityHolder<E>> E setBlockAndCreateEntity(
+    @Nullable
+    static <E extends BlockEntity, H extends BlockEntityHolder<E>> E setBlockAndCreateEntity(
             @NotNull H holder, boolean direct, boolean update, @Nullable CompoundTag initialData,
             @Nullable Object... args) {
         Block block = holder.getBlock();
@@ -124,15 +128,17 @@ public interface BlockEntityHolder<E extends BlockEntity> {
                 throw e;
             }
         }
-        
+
         return null;
     }
 
     default Block getBlock() {
-        if (this instanceof Position) {
-            return ((Position) this).getLevelBlock();
-        } else if (this instanceof Vector3) {
-            return getLevel().getBlock((Vector3) this);
+        if (this instanceof Block block) {
+            return block;
+        } else if (this instanceof Position position) {
+            return position.getLevelBlock();
+        } else if (this instanceof Vector3 vector3) {
+            return getLevel().getBlock(vector3);
         } else {
             return getLevel().getBlock(getFloorX(), getFloorY(), getFloorZ());
         }

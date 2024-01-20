@@ -27,6 +27,10 @@ public class MobEquipmentProcessor extends DataPacketProcessor<MobEquipmentPacke
             return;
         }
 
+        if(inv instanceof PlayerInventory inventory && inventory.getHeldItemIndex() == pk.hotbarSlot){
+            return;
+        }
+
         Item item = inv.getItem(pk.hotbarSlot);
 
         if (!item.equals(pk.item)) {
