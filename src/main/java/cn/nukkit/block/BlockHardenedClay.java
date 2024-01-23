@@ -38,4 +38,9 @@ public class BlockHardenedClay extends BlockSolid {
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
+
+    @Override
+    public boolean canHarvestWithHand() {
+        return false;
+    }
 }
