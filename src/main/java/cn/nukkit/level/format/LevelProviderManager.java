@@ -4,6 +4,7 @@ import cn.nukkit.Server;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -13,11 +14,9 @@ import java.util.Map;
 public abstract class LevelProviderManager {
     protected static final Map<String, Class<? extends LevelProvider>> providers = new HashMap<>();
 
-    public static void addProvider(Server server, Class<? extends LevelProvider> clazz) {
-        try {
-            providers.put((String) clazz.getMethod("getProviderName").invoke(null), clazz);
-        } catch (Exception e) {
-            log.error("An error occurred while adding the level provider {}", clazz, e);
+    public static void addProvider(String name, Class<? extends LevelProvider> clazz) {
+        if (providers.putIfAbsent(name.trim().toLowerCase(Locale.ENGLISH), clazz) != null) {
+            log.error("Duplicate registration Level Provider {}", clazz);
         }
     }
 
@@ -32,6 +31,15 @@ public abstract class LevelProviderManager {
             }
         }
         return null;
+    }
+
+    public static String getProviderName(Class<? extends LevelProvider> clazz) {
+        for (var entry : providers.entrySet()) {
+            if (clazz == entry.getValue()) {
+                return entry.getKey();
+            }
+        }
+        return "unknown";
     }
 
     public static Class<? extends LevelProvider> getProviderByName(String name) {

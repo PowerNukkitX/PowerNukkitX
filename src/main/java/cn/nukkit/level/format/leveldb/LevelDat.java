@@ -1,4 +1,4 @@
-package cn.nukkit.level.format;
+package cn.nukkit.level.format.leveldb;
 
 import cn.nukkit.level.GameRules;
 import cn.nukkit.math.BlockVector3;
@@ -173,10 +173,6 @@ public class LevelDat {
     long worldStartCount = 0L;
     @Builder.Default
     WorldPolicies worldPolicies = new WorldPolicies();
-    @Builder.Default
-    String generatorName = "normal";//PNX Custom field
-    @Builder.Default
-    String generatorOptions = "";//PNX Custom field
     @Builder.Default
     boolean raining = false;//PNX Custom field
     @Builder.Default

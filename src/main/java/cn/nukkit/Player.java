@@ -3857,7 +3857,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             namedTag.putInt("SpawnBlockPositionX", spawnBlockPosition.getFloorX())
                     .putInt("SpawnBlockPositionY", spawnBlockPosition.getFloorY())
                     .putInt("SpawnBlockPositionZ", spawnBlockPosition.getFloorZ())
-                    .putString("SpawnBlockLevel", this.spawnBlockPosition.getLevel().getFolderName());
+                    .putString("SpawnBlockLevel", this.spawnBlockPosition.getLevel().getFolderPath());
         }
 
         if (spawnPosition == null) {
@@ -3871,10 +3871,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     .putInt("SpawnY", this.spawnPosition.getFloorY())
                     .putInt("SpawnZ", this.spawnPosition.getFloorZ());
             if (this.spawnPosition.getLevel() != null) {
-                this.namedTag.putString("SpawnLevel", this.spawnPosition.getLevel().getFolderName());
+                this.namedTag.putString("SpawnLevel", this.spawnPosition.getLevel().getFolderPath());
                 this.namedTag.putInt("SpawnDimension", this.spawnPosition.getLevel().getDimension());
             } else {
-                this.namedTag.putString("SpawnLevel", this.server.getDefaultLevel().getFolderName());
+                this.namedTag.putString("SpawnLevel", this.server.getDefaultLevel().getFolderPath());
                 this.namedTag.putInt("SpawnDimension", this.server.getDefaultLevel().getDimension());
             }
         }
@@ -3890,7 +3890,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         saveNBT();
 
         if (this.level != null) {
-            this.namedTag.putString("Level", this.level.getFolderName());
+            this.namedTag.putString("Level", this.level.getFolderPath());
 
             CompoundTag achievements = new CompoundTag();
             for (String achievement : this.achievements) {
@@ -4645,18 +4645,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.setGamemode(this.gamemode, false, null, true);
         }
         return true;
-    }
-
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "same teleport")
-    public void teleportImmediate(Location location) {
-        this.teleportImmediate(location, TeleportCause.PLUGIN);
-    }
-
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "same teleport")
-    public void teleportImmediate(Location location, TeleportCause cause) {
-        this.teleport(location, cause);
     }
 
     /**

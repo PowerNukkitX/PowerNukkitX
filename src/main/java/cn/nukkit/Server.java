@@ -2,8 +2,13 @@ package cn.nukkit;
 
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.BlockComposter;
-import cn.nukkit.command.*;
+import cn.nukkit.command.Command;
+import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.ConsoleCommandSender;
+import cn.nukkit.command.PluginIdentifiableCommand;
+import cn.nukkit.command.SimpleCommandMap;
 import cn.nukkit.command.function.FunctionManager;
+import cn.nukkit.compression.ZlibChooser;
 import cn.nukkit.console.NukkitConsole;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
@@ -13,20 +18,24 @@ import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
-import cn.nukkit.event.server.*;
-import cn.nukkit.level.blockstateupdater.BlockStateUpdater;
-import cn.nukkit.level.blockstateupdater.BlockStateUpdaterBase;
-import cn.nukkit.level.format.LevelDBProvider;
-import cn.nukkit.recipe.CraftingManager;
-import cn.nukkit.recipe.Recipe;
+import cn.nukkit.event.server.PlayerDataSerializeEvent;
+import cn.nukkit.event.server.QueryRegenerateEvent;
+import cn.nukkit.event.server.ServerStartedEvent;
+import cn.nukkit.event.server.ServerStopEvent;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TextContainer;
-import cn.nukkit.level.*;
+import cn.nukkit.level.DimensionEnum;
+import cn.nukkit.level.GameRule;
+import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
+import cn.nukkit.level.blockstateupdater.BlockStateUpdater;
+import cn.nukkit.level.blockstateupdater.BlockStateUpdaterBase;
+import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.LevelProviderManager;
-import cn.nukkit.level.generator.*;
+import cn.nukkit.level.format.leveldb.LevelDBProvider;
 import cn.nukkit.level.tickingarea.manager.SimpleTickingAreaManager;
 import cn.nukkit.level.tickingarea.manager.TickingAreaManager;
 import cn.nukkit.level.tickingarea.storage.JSONTickingAreaStorage;
@@ -51,7 +60,11 @@ import cn.nukkit.permission.BanEntry;
 import cn.nukkit.permission.BanList;
 import cn.nukkit.permission.DefaultPermissions;
 import cn.nukkit.permission.Permissible;
-import cn.nukkit.plugin.*;
+import cn.nukkit.plugin.JSPluginLoader;
+import cn.nukkit.plugin.JavaPluginLoader;
+import cn.nukkit.plugin.Plugin;
+import cn.nukkit.plugin.PluginLoadOrder;
+import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.plugin.js.JSFeatures;
 import cn.nukkit.plugin.js.JSIInitiator;
 import cn.nukkit.plugin.service.NKServiceManager;
@@ -59,6 +72,8 @@ import cn.nukkit.plugin.service.ServiceManager;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
+import cn.nukkit.recipe.CraftingManager;
+import cn.nukkit.recipe.Recipe;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.resourcepacks.ResourcePackManager;
 import cn.nukkit.resourcepacks.loader.JarPluginResourcePackLoader;
@@ -75,9 +90,9 @@ import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.bugreport.ExceptionHandler;
 import cn.nukkit.utils.collection.FreezableArrayManager;
-import cn.nukkit.compression.ZlibChooser;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongLists;
@@ -89,19 +104,33 @@ import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import java.security.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.security.AccessControlContext;
+import java.security.AccessController;
+import java.security.Permission;
+import java.security.Permissions;
+import java.security.PrivilegedAction;
+import java.security.ProtectionDomain;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -255,7 +284,7 @@ public class Server {
 
     private PositionTrackingService positionTrackingService;
 
-    private final Map<Integer, Level> levels = new HashMap<Integer, Level>() {
+    private final Map<Integer, Level> levels = new HashMap<>() {
         @Override
         public Level put(Integer key, Level value) {
             Level result = super.put(key, value);
@@ -767,37 +796,14 @@ public class Server {
 
         this.enablePlugins(PluginLoadOrder.STARTUP);
 
-        LevelProviderManager.addProvider(this, LevelDBProvider.class);
+        LevelProviderManager.addProvider("leveldb", LevelDBProvider.class);
 
-        for (String name : this.getConfig("worlds", new HashMap<String, Object>()).keySet()) {
-            if (!this.loadLevel(name)) {
-                long seed;
-                try {
-                    seed = ((Number) this.getConfig("worlds." + name + ".seed", ThreadLocalRandom.current().nextLong())).longValue();
-                } catch (Exception e) {
-                    try {
-                        seed = this.getConfig("worlds." + name + ".seed").toString().hashCode();
-                    } catch (Exception e2) {
-                        seed = System.currentTimeMillis();
-                        e2.addSuppressed(e);
-                        log.warn("Failed to load the world seed for \"{}\". Generating a random seed", name, e2);
-                    }
-                }
-
-                Map<String, Object> options = new HashMap<>();
-                String[] opts = (this.getConfig("worlds." + name + ".generator", Registries.GENERATOR.get("flat").getSimpleName())).split(":");
-                Class<? extends Generator> generator = Registries.GENERATOR.get(opts[0]);
-                if (opts.length > 1) {
-                    StringBuilder preset = new StringBuilder();
-                    for (int i = 1; i < opts.length; i++) {
-                        preset.append(opts[i]).append(":");
-                    }
-                    preset = new StringBuilder(preset.substring(0, preset.length() - 1));
-
-                    options.put("preset", preset.toString());
-                }
-
-                this.generateLevel(name, seed, generator, options);
+        File file = new File(this.getDataPath() + "/worlds");
+        if (!file.isDirectory()) throw new RuntimeException("worlds isn't directory");
+        //load all world from `worlds` folder
+        for (var f : Objects.requireNonNull(file.listFiles(File::isDirectory))) {
+            if (!this.loadLevel(f.getName())) {
+                this.generateLevel(f.getName(), null);
             }
         }
 
@@ -809,7 +815,11 @@ public class Server {
                 this.setPropertyString("level-name", defaultName);
             }
 
-            if (!this.loadLevel(defaultName)) {//default world not exist
+            if (!this.loadLevel(defaultName)) {
+                //default world not exist
+                //generate the default world
+                HashMap<Integer, LevelConfig.GeneratorConfig> generatorConfig = new HashMap<>();
+                //spawn seed
                 long seed;
                 String seedString = String.valueOf(this.getProperty("level-seed", System.currentTimeMillis()));
                 try {
@@ -817,9 +827,11 @@ public class Server {
                 } catch (NumberFormatException e) {
                     seed = seedString.hashCode();
                 }
-                this.generateLevel(defaultName, seed == 0 ? System.currentTimeMillis() : seed);//generate the default world
+                //todo nether the_end overworld
+                generatorConfig.put(0, new LevelConfig.GeneratorConfig("flat", seed, DimensionEnum.OVERWORLD.getDimensionData(), Collections.EMPTY_MAP));
+                LevelConfig levelConfig = new LevelConfig(this.getConfig().get("level-settings.default-format", "leveldb"), generatorConfig);
+                this.generateLevel(defaultName, levelConfig);
             }
-
             this.setDefaultLevel(this.getLevelByName(defaultName));
         }
 
@@ -833,8 +845,6 @@ public class Server {
 
             return;
         }
-
-        EnumLevel.initLevels();
 
         if (this.getConfig("ticks-per.autosave", 6000) > 0) {
             this.autoSaveTicks = this.getConfig("ticks-per.autosave", 6000);
@@ -1119,7 +1129,7 @@ public class Server {
                 }
             } catch (Exception e) {
                 log.error(this.getLanguage().tr("nukkit.level.tickError",
-                        level.getFolderName(), Utils.getExceptionMessage(e)), e);
+                        level.getFolderPath(), Utils.getExceptionMessage(e)), e);
             }
         }
     }
@@ -2359,7 +2369,7 @@ public class Server {
      * @param defaultLevel 默认游戏世界<br>default game world
      */
     public void setDefaultLevel(Level defaultLevel) {
-        if (defaultLevel == null || (this.isLevelLoaded(defaultLevel.getFolderName()) && defaultLevel != this.defaultLevel)) {
+        if (defaultLevel == null || (this.isLevelLoaded(defaultLevel.getName()) && defaultLevel != this.defaultLevel)) {
             this.defaultLevel = defaultLevel;
         }
     }
@@ -2397,11 +2407,10 @@ public class Server {
      */
     public Level getLevelByName(String name) {
         for (Level level : this.levelArray) {
-            if (level.getFolderName().equalsIgnoreCase(name)) {
+            if (level.getName().equalsIgnoreCase(name)) {
                 return level;
             }
         }
-
         return null;
     }
 
@@ -2431,129 +2440,131 @@ public class Server {
         if (Objects.equals(name.trim(), "")) {
             throw new LevelException("Invalid empty level name");
         }
-        if (this.isLevelLoaded(name)) {
-            return true;
-        } else if (!this.isLevelGenerated(name)) {
-            log.warn(this.getLanguage().tr("nukkit.level.notFound", name));
-
-            return false;
-        }
-
         String path;
-
         if (name.contains("/") || name.contains("\\")) {
             path = name;
         } else {
             path = this.getDataPath() + "worlds/" + name + "/";
         }
+        Path jpath = Path.of(path);
+        if (this.isLevelLoaded(name)) {
+            return true;
+        } else if (!jpath.toFile().exists()) {
+            log.warn(this.getLanguage().tr("nukkit.level.notFound", name));
+            return false;
+        }
 
+        //verify the provider
         Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(path);
-
         if (provider == null) {
-            log.error(this.getLanguage().tr("nukkit.level.loadError", new String[]{name, "Unknown provider"}));
-
+            log.error(this.getLanguage().tr("nukkit.level.loadError", name, "Unknown provider"));
             return false;
         }
 
-        Level level;
-        try {
-            level = new Level(this, name, path, provider);
-        } catch (Exception e) {
-            log.error(this.getLanguage().tr("nukkit.level.loadError", name, e.getMessage()), e);
+        File config = jpath.resolve("config.json").toFile();
+        LevelConfig levelConfig;
+        Gson gson = new Gson();
+        if (config.exists()) {
+            try {
+                levelConfig = gson.fromJson(new FileReader(config), LevelConfig.class);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            Map<Integer, LevelConfig.GeneratorConfig> map = new HashMap<>();
+            //todo nether the_end overworld
+            map.put(0, new LevelConfig.GeneratorConfig("flat", System.currentTimeMillis(),DimensionEnum.OVERWORLD.getDimensionData(), Collections.EMPTY_MAP));
+            levelConfig = new LevelConfig(LevelProviderManager.getProviderName(provider), map);
+            try {
+                config.createNewFile();
+                Files.writeString(config.toPath(), gson.toJson(levelConfig), StandardCharsets.UTF_8, StandardOpenOption.CREATE);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        Class<? extends LevelProvider> providerByName = LevelProviderManager.getProviderByName(levelConfig.format());
+        if (provider != providerByName) {
+            log.error(this.getLanguage().tr("nukkit.level.loadError", name, "Unknown provider"));
             return false;
         }
-
-        this.levels.put(level.getId(), level);
-
-        level.initLevel();
-
-        this.getPluginManager().callEvent(new LevelLoadEvent(level));
-        level.setTickRate(this.baseTickRate);
+        Map<Integer, LevelConfig.GeneratorConfig> generators = levelConfig.generators();
+        for (var entry : generators.entrySet()) {
+            String levelName = name + " Dim" + entry.getKey();
+            Level level;
+            try {
+                level = new Level(this, levelName, path, generators.size(), provider, entry.getValue());
+            } catch (Exception e) {
+                log.error(this.getLanguage().tr("nukkit.level.loadError", name, e.getMessage()), e);
+                return false;
+            }
+            this.levels.put(level.getId(), level);
+            level.initLevel();
+            this.getPluginManager().callEvent(new LevelLoadEvent(level));
+            level.setTickRate(this.baseTickRate);
+        }
         return true;
     }
 
     public boolean generateLevel(String name) {
-        return this.generateLevel(name, new java.util.Random().nextLong());
+        return this.generateLevel(name, null);
     }
 
-    public boolean generateLevel(String name, long seed) {
-        return this.generateLevel(name, seed, null);
-    }
-
-    public boolean generateLevel(String name, long seed, Class<? extends Generator> generator) {
-        return this.generateLevel(name, seed, generator, new HashMap<>());
-    }
-
-    public boolean generateLevel(String name, long seed, Class<? extends Generator> generator, Map<String, Object> options) {
-        return generateLevel(name, seed, generator, options, null);
-    }
-
-    public boolean generateLevel(String name, long seed, Class<? extends Generator> generator, Map<String, Object> options, DimensionData givenDimensionData) {
-        return generateLevel(name, seed, generator, options, null, null);
-    }
-
-    public boolean generateLevel(String name, long seed, Class<? extends Generator> generator, Map<String, Object> options, DimensionData givenDimensionData, Class<? extends LevelProvider> provider) {
-        if (Objects.equals(name.trim(), "") || this.isLevelGenerated(name)) {
+    public boolean generateLevel(String name, @Nullable LevelConfig levelConfig) {
+        if (name.isBlank()) {
             return false;
         }
-
-        if (!options.containsKey("preset")) {
-            options.put("preset", this.getPropertyString("generator-settings", ""));
-        }
-
-        if (generator == null) {
-            generator = Registries.GENERATOR.get(this.getLevelType());
-        }
-
-        if (provider == null) {
-            provider = LevelProviderManager.getProviderByName(this.getConfig().get("level-settings.default-format", "leveldb"));
-        }
-
+//        this.isLevelGenerated(name)
         String path;
-
         if (name.contains("/") || name.contains("\\")) {
             path = name;
         } else {
             path = this.getDataPath() + "worlds/" + name + "/";
         }
 
-        Level level;
-        try {
-            provider.getMethod("generate", String.class, String.class, long.class, Class.class, Map.class).invoke(null, path, name, seed, generator, options);
-
-            level = new Level(this, name, path, provider);
-            this.levels.put(level.getId(), level);
-
-            level.initLevel();
-            level.setTickRate(this.baseTickRate);
-        } catch (Exception e) {
-            log.error(this.getLanguage().tr("nukkit.level.generationError", name, Utils.getExceptionMessage(e)), e);
-            return false;
-        }
-
-        this.getPluginManager().callEvent(new LevelInitEvent(level));
-
-        this.getPluginManager().callEvent(new LevelLoadEvent(level));
-        return true;
-    }
-
-    public boolean isLevelGenerated(String name) {
-        if (Objects.equals(name.trim(), "")) {
-            return false;
-        }
-
-        if (this.getLevelByName(name) == null) {
-            String path;
-
-            if (name.contains("/") || name.contains("\\")) {
-                path = name;
-            } else {
-                path = this.getDataPath() + "worlds/" + name + "/";
+        Gson gson = new Gson();
+        Path jpath = Path.of(path);
+        File config = jpath.resolve("config.json").toFile();
+        if (config.exists()) {
+            try {
+                levelConfig = gson.fromJson(new FileReader(config), LevelConfig.class);
+            } catch (FileNotFoundException e) {
+                log.error("The levelConfig is not exists under the {} path", path);
+                return false;
             }
-
-            return LevelProviderManager.getProvider(path) != null;
+        } else if (levelConfig != null) {
+            try {
+                config.createNewFile();
+                Files.writeString(config.toPath(), gson.toJson(levelConfig), StandardCharsets.UTF_8, StandardOpenOption.CREATE);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            log.error("The levelConfig is not specified and no config.json exists under the {} path", path);
+            return false;
         }
 
+        for (var entry : levelConfig.generators().entrySet()) {
+            LevelConfig.GeneratorConfig generatorConfig = entry.getValue();
+            var provider = LevelProviderManager.getProviderByName(levelConfig.format());
+            Level level;
+            try {
+                provider.getMethod("generate", String.class, String.class, LevelConfig.GeneratorConfig.class).invoke(null, path, name, generatorConfig);
+                String levelName = name + " Dim" + entry.getKey();
+                if (this.isLevelLoaded(levelName)) {
+                    log.warn("level {} has already been loaded!", levelName);
+                    continue;
+                }
+                level = new Level(this, levelName, path, levelConfig.generators().size(), provider, generatorConfig);
+                this.levels.put(level.getId(), level);
+                level.initLevel();
+                level.setTickRate(this.baseTickRate);
+                this.getPluginManager().callEvent(new LevelInitEvent(level));
+                this.getPluginManager().callEvent(new LevelLoadEvent(level));
+            } catch (Exception e) {
+                log.error(this.getLanguage().tr("nukkit.level.generationError", name, Utils.getExceptionMessage(e)), e);
+                return false;
+            }
+        }
         return true;
     }
 

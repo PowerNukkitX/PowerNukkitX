@@ -12,9 +12,10 @@ import java.util.HashMap;
 @ExtendWith(GameMockExtension.class)
 public class GeneratorTest {
     @Test
-    void testCreate(LevelProvider levelProvider) {
-        Flat flat = new Flat(new HashMap<>());
+    void testCreate(Level level, LevelProvider levelProvider) {
+        Flat flat = new Flat(DimensionEnum.OVERWORLD.getDimensionData(), new HashMap<>());
+        flat.setLevel(level);
         IChunk chunk = levelProvider.getChunk(0, 0, true);
-        flat.asyncGenerate(chunk);
+        IChunk iChunk = flat.syncGenerate(chunk);
     }
 }

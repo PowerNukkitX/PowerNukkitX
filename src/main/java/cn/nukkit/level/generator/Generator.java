@@ -21,9 +21,11 @@ public abstract class Generator implements BlockID {
     protected final Map<String, Object> options;
     protected final GenerateStage start;
     protected final GenerateStage end;
+    protected final DimensionData dimensionData;
     protected Level level;
 
-    public Generator(Map<String, Object> options) {
+    public Generator(DimensionData dimensionData, Map<String, Object> options) {
+        this.dimensionData = dimensionData;
         this.options = options;
         GenerateStage.Builder builder = new GenerateStage.Builder();
         stages(builder);
@@ -39,19 +41,25 @@ public abstract class Generator implements BlockID {
         this.level = level;
     }
 
-    public abstract String getName();
-
     public abstract void stages(GenerateStage.Builder builder);
 
+    public abstract String getName();
+
     @NotNull
-    public abstract DimensionData getDimensionData();
+    public final DimensionData getDimensionData() {
+        return dimensionData;
+    }
+
+    public final IChunk syncGenerate(IChunk chunk) {
+        return this.syncGenerate(chunk, end);
+    }
 
     public final IChunk syncGenerate(IChunk chunk, GenerateStage to) {
         final ChunkGenerateContext context = new ChunkGenerateContext(this, level, chunk);
         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
             start.apply(context);
         }, start.getExecutor());
-        GenerateStage now = null;
+        GenerateStage now;
         while ((now = start.getNextStage()) != null) {
             if (now == to || now.name().equals(to.name())) {
                 future = future.thenRunAsync(() -> start.getNextStage().apply(context), start.getExecutor());

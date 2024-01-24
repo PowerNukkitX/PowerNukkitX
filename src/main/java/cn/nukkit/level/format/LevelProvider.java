@@ -3,6 +3,7 @@ package cn.nukkit.level.format;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.format.leveldb.LevelDat;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.scheduler.AsyncTask;
 
@@ -15,17 +16,11 @@ public interface LevelProvider {
     byte ORDER_YZX = 0;
     byte ORDER_ZXY = 1;
 
-    void initDimensionData(DimensionData dimensionData);
-
     DimensionData getDimensionData();
 
     AsyncTask requestChunkTask(int X, int Z);
 
     String getPath();
-
-    String getGenerator();
-
-    Map<String, Object> getGeneratorOptions();
 
     IChunk getLoadedChunk(int X, int Z);
 
@@ -108,7 +103,6 @@ public interface LevelProvider {
 
     void close();
 
-    LevelDat getLevelData();
     void saveLevelData();
 
     void updateLevelName(String name);
@@ -116,7 +110,6 @@ public interface LevelProvider {
     GameRules getGamerules();
 
     void setGameRules(GameRules rules);
-
 
     default int getMaximumLayer() {
         return 1;//two layer 0,1

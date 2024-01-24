@@ -779,6 +779,7 @@ public class Chunk implements IChunk {
         private Builder() {
         }
 
+        @Override
         public Builder chunkX(int chunkX) {
             this.chunkX = chunkX;
             return this;
@@ -789,6 +790,7 @@ public class Chunk implements IChunk {
             return chunkX;
         }
 
+        @Override
         public Builder chunkZ(int chunkZ) {
             this.chunkZ = chunkZ;
             return this;
@@ -799,11 +801,13 @@ public class Chunk implements IChunk {
             return chunkZ;
         }
 
+        @Override
         public Builder state(ChunkState state) {
             this.state = state;
             return this;
         }
 
+        @Override
         public Builder levelProvider(LevelProvider levelProvider) {
             this.levelProvider = levelProvider;
             return this;
@@ -830,11 +834,13 @@ public class Chunk implements IChunk {
             return this;
         }
 
+        @Override
         public Builder entities(List<CompoundTag> entities) {
             this.entities = entities;
             return this;
         }
 
+        @Override
         public Builder blockEntities(List<CompoundTag> blockEntities) {
             this.blockEntities = blockEntities;
             return this;

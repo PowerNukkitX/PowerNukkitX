@@ -5,7 +5,7 @@ import cn.nukkit.block.BlockOakLog;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockWoodenButton;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.level.format.LevelDBProvider;
+import cn.nukkit.level.format.leveldb.LevelDBProvider;
 import cn.nukkit.level.format.palette.Palette;
 import cn.nukkit.registry.Registries;
 import io.netty.buffer.ByteBuf;
@@ -16,6 +16,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.util.Arrays;
@@ -29,8 +30,9 @@ public class LevelStorageTest {
     static void before() {
         Registries.BLOCK.init();
         FileUtils.copyDirectory(new File("src/test/resources/level"), new File("src/test/resources/level2"));
-        levelDBProvider = new LevelDBProvider(null, "src/test/resources/level2");
-        levelDBProvider.initDimensionData(DimensionEnum.OVERWORLD.getDimensionData());
+        Level level = Mockito.mock(Level.class);
+        Mockito.when(level.getDimensionData()).thenReturn(DimensionEnum.OVERWORLD.getDimensionData());
+        levelDBProvider = new LevelDBProvider(level, "src/test/resources/level2");
     }
 
     @AfterAll
@@ -62,13 +64,13 @@ public class LevelStorageTest {
     void testWriteChunk() {
         IChunk chunk = levelDBProvider.getChunk(0, 0);
         chunk.setBlockState(0, 50, 0, BlockOakLog.PROPERTIES.getDefaultState());
-        levelDBProvider.writeChunk(chunk);
+        levelDBProvider.saveChunk(0, 0, chunk);
         chunk.setX(1);
         chunk.setZ(1);
-        levelDBProvider.writeChunk(chunk);
+        levelDBProvider.saveChunk(1, 1, chunk);
         chunk.setX(2);
         chunk.setZ(2);
-        levelDBProvider.writeChunk(chunk);
+        levelDBProvider.saveChunk(2, 2, chunk);
         IChunk c1 = levelDBProvider.getChunk(0, 0);
         IChunk c2 = levelDBProvider.getChunk(1, 1);
         IChunk c3 = levelDBProvider.getChunk(2, 2);
@@ -109,8 +111,8 @@ public class LevelStorageTest {
         IChunk chunk = levelDBProvider.getChunk(0, 0);
         Assertions.assertEquals("minecraft:cauldron", chunk.getBlockState(0, 284, 0).getIdentifier());
         chunk.setBlockState(0, 100, 0, BlockWoodenButton.PROPERTIES.getDefaultState());
-        levelDBProvider.writeChunk(chunk);
-        IChunk newChunk = levelDBProvider.readChunk(0, 0);
+        levelDBProvider.saveChunk(0, 0, chunk);
+        IChunk newChunk = levelDBProvider.getChunk(0, 0);
         Assertions.assertNotNull(newChunk);
         Assertions.assertEquals("minecraft:wooden_button", chunk.getBlockState(0, 100, 0).getIdentifier());
     }
@@ -118,8 +120,9 @@ public class LevelStorageTest {
     @Test
     @SneakyThrows
     void testCloseAndLoadAgain() {
-        var newProvider = new LevelDBProvider(null, "src/test/resources/level3");
-        newProvider.initDimensionData(DimensionEnum.OVERWORLD.getDimensionData());
+        Level level = Mockito.mock(Level.class);
+        Mockito.when(level.getDimensionData()).thenReturn(DimensionEnum.OVERWORLD.getDimensionData());
+        var newProvider = new LevelDBProvider(level, "src/test/resources/level3");
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 IChunk chunk = newProvider.getChunk(i, j, true);
@@ -131,8 +134,8 @@ public class LevelStorageTest {
             }
         }
         newProvider.close();
-        newProvider = new LevelDBProvider(null, "src/test/resources/level3");
-        newProvider.initDimensionData(DimensionEnum.OVERWORLD.getDimensionData());
+
+        newProvider = new LevelDBProvider(level, "src/test/resources/level3");
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 newProvider.getChunk(i, j);

@@ -12,11 +12,13 @@ import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.inventory.PlayerOffhandInventory;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.BaseLang;
+import cn.nukkit.level.DimensionEnum;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.blockstateupdater.BlockStateUpdater;
 import cn.nukkit.level.blockstateupdater.BlockStateUpdaterBase;
-import cn.nukkit.level.format.LevelDBProvider;
+import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.level.format.leveldb.LevelDBProvider;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.RakNetInterface;
@@ -200,7 +202,8 @@ public class GameMockExtension extends MockitoExtension {
         try {
             FieldUtils.writeDeclaredField(player, "foodData", new PlayerFood(player, 20, 20), true);
             FileUtils.copyDirectory(new File("src/test/resources/level"), new File("src/test/resources/newlevel"));
-            level = new Level(Server.getInstance(), "newlevel", "src/test/resources/newlevel", LevelDBProvider.class);
+            level = new Level(Server.getInstance(), "newlevel", "src/test/resources/newlevel",
+                    1, LevelDBProvider.class, new LevelConfig.GeneratorConfig("flat", 114514, DimensionEnum.OVERWORLD.getDimensionData(), new HashMap<>()));
             level.initLevel();
 
             player.level = level;

@@ -1,4 +1,4 @@
-package cn.nukkit.level.format;
+package cn.nukkit.level.format.leveldb;
 
 import cn.nukkit.api.UsedByReflection;
 import cn.nukkit.blockentity.BlockEntity;
@@ -7,15 +7,18 @@ import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.format.Chunk;
+import cn.nukkit.level.format.ChunkSection;
+import cn.nukkit.level.format.IChunk;
+import cn.nukkit.level.format.LevelConfig;
+import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.palette.Palette;
-import cn.nukkit.level.generator.Generator;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.network.protocol.types.GameType;
-import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.SemVersion;
@@ -25,18 +28,27 @@ import io.netty.buffer.ByteBufOutputStream;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.iq80.leveldb.CompressionType;
-import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
-import org.iq80.leveldb.WriteBatch;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 /**
@@ -44,31 +56,28 @@ import java.util.function.BiConsumer;
  */
 @Slf4j
 public class LevelDBProvider implements LevelProvider {
+    static final HashMap<String, LevelDBStorage> CACHE = new HashMap<>();
     private static final byte[] levelDatMagic = new byte[]{10, 0, 0, 0, 68, 11, 0, 0};
     private final ThreadLocal<WeakReference<IChunk>> lastChunk = new ThreadLocal<>();
     protected final Long2ObjectNonBlockingMap<IChunk> chunks = new Long2ObjectNonBlockingMap<>();
-    protected final Path path;
     protected final LevelDat levelDat;
+    protected final LevelDBStorage storage;
     protected final Level level;
-    private final DB db;
-    protected DimensionData dimensionData;
+    protected final Path path;
 
     public LevelDBProvider(Level level, String path) throws IOException {
-        this(level, path, new Options()
-                .createIfMissing(true)
-                .compressionType(CompressionType.ZLIB_RAW)
-                .blockSize(64 * 1024));
-    }
-
-    public LevelDBProvider(Level level, String path, Options options) throws IOException {
-        this.level = level;
+        this.storage = CACHE.computeIfAbsent(path, p -> {
+            try {
+                return new LevelDBStorage(level.getDimSum(), p, new Options()
+                        .createIfMissing(true)
+                        .compressionType(CompressionType.ZLIB_RAW)
+                        .blockSize(64 * 1024));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
         this.path = Path.of(path);
-        File folder = this.path.toFile();
-        if (!folder.exists()) {
-            folder.mkdirs();
-        }
-        if (!folder.isDirectory()) throw new IllegalArgumentException("The path must be a folder");
-
+        this.level = level;
         var levelDat = readLevelDat();
         if (levelDat == null) {
             levelDat = LevelDat.builder().build();
@@ -77,50 +86,20 @@ public class LevelDBProvider implements LevelProvider {
         } else {
             this.levelDat = levelDat;
         }
-
-        File dbFolder = this.path.resolve("db").toFile();
-        try {
-            if (!dbFolder.exists()) dbFolder.mkdirs();
-            db = net.daporkchop.ldbjni.LevelDB.PROVIDER.open(dbFolder, options);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @UsedByReflection
-    public static String getProviderName() {
-        return "leveldb";
-    }
-
-    @UsedByReflection
-    public static void generate(String path, String name, long seed, Class<? extends Generator> generator, Map<String, String> options) throws IOException {
+    public static void generate(String path, String name, LevelConfig.GeneratorConfig generatorConfig) throws IOException {
         File dataDir = new File(path + "/db");
         if (!dataDir.exists() && !dataDir.mkdirs()) {
             throw new IOException("Could not create the directory " + dataDir);
         }
         LevelDat levelData = LevelDat.builder()
-                .generatorName(Registries.GENERATOR.getGeneratorName(generator))
-                .randomSeed(seed)
+                .randomSeed(generatorConfig.seed())
                 .name(name)
                 .lastPlayed(System.currentTimeMillis() / 1000)
-                .generatorOptions(options.getOrDefault("preset", ""))
                 .build();
-        writeLevelDat(Path.of(path), levelData);
-    }
-
-    public static void writeLevelDat(Path path, LevelDat levelDat) {
-        var levelDatNow = path.resolve("level.dat").toFile();
-        try (var output = new FileOutputStream(levelDatNow)) {
-            if (levelDatNow.exists()) {
-                Files.copy(path.resolve("level.dat"), path.resolve("level.dat_old"), StandardCopyOption.REPLACE_EXISTING);
-            } else {
-                levelDatNow.createNewFile();
-            }
-            output.write(levelDatMagic);//magic number
-            NBTIO.write(createWorldDataNBT(levelDat), output, ByteOrder.LITTLE_ENDIAN);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        writeLevelDat(Path.of(path), generatorConfig.dimensionData(), levelData);
     }
 
     @UsedByReflection
@@ -142,10 +121,29 @@ public class LevelDBProvider implements LevelProvider {
         return isValid;
     }
 
+    public static void writeLevelDat(Path path, DimensionData dimensionData, LevelDat levelDat) {
+        String levelDatName = "level.dat";
+        if (dimensionData.getDimensionId() != 0) {
+            levelDatName = "level_Dim%s.dat".formatted(dimensionData.getDimensionId());
+        }
+        var levelDatNow = path.resolve(levelDatName).toFile();
+        try (var output = new FileOutputStream(levelDatNow)) {
+            if (levelDatNow.exists()) {
+                Files.copy(path.resolve(levelDatName), path.resolve(levelDatName + "_old"), StandardCopyOption.REPLACE_EXISTING);
+            } else {
+                levelDatNow.createNewFile();
+            }
+            output.write(levelDatMagic);//magic number
+            NBTIO.write(createWorldDataNBT(levelDat), output, ByteOrder.LITTLE_ENDIAN);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public IChunk loadChunk(long index, int chunkX, int chunkZ, boolean create) {
         IChunk chunk;
         try {
-            chunk = readChunk(chunkX, chunkZ);
+            chunk = storage.readChunk(chunkX, chunkZ, this);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -160,22 +158,6 @@ public class LevelDBProvider implements LevelProvider {
         return chunk;
     }
 
-    public IChunk readChunk(int x, int z) throws IOException {
-        Chunk.Builder builder = Chunk.builder()
-                .chunkX(x)
-                .chunkZ(z)
-                .levelProvider(this);
-        LevelDBChunkSerializer.INSTANCE.deserialize(this.db, builder);
-        return builder.build();
-    }
-
-    public void writeChunk(IChunk chunk) throws IOException {
-        try (WriteBatch writeBatch = this.db.createWriteBatch()) {
-            LevelDBChunkSerializer.INSTANCE.serialize(writeBatch, chunk);
-            this.db.write(writeBatch);
-        }
-    }
-
     public int size() {
         return this.chunks.size();
     }
@@ -187,20 +169,6 @@ public class LevelDBProvider implements LevelProvider {
             iter.next().unload(true, false);
             iter.remove();
         }
-    }
-
-    @Override
-    public String getGenerator() {
-        return this.levelDat.getGeneratorName();
-    }
-
-    @Override
-    public Map<String, Object> getGeneratorOptions() {
-        return new HashMap<>() {
-            {
-                put("preset", LevelDBProvider.this.levelDat.getGeneratorOptions());
-            }
-        };
     }
 
     @Override
@@ -243,13 +211,8 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
-    public void initDimensionData(DimensionData dimensionData) {
-        this.dimensionData = dimensionData;
-    }
-
-    @Override
     public DimensionData getDimensionData() {
-        return dimensionData;
+        return level.getDimensionData();
     }
 
     @Override
@@ -452,7 +415,7 @@ public class LevelDBProvider implements LevelProvider {
         IChunk chunk = this.getChunk(X, Z);
         if (chunk != null) {
             try {
-                writeChunk(chunk);
+                storage.writeChunk(chunk);
             } catch (Exception e) {
                 throw new ChunkException("Error saving chunk (" + X + ", " + Z + ")", e);
             }
@@ -464,20 +427,19 @@ public class LevelDBProvider implements LevelProvider {
         chunk.setX(X);
         chunk.setZ(Z);
         try {
-            writeChunk(chunk);
+            storage.writeChunk(chunk);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    @Override
     public LevelDat getLevelData() {
         return this.levelDat;
     }
 
     @Override
     public void saveLevelData() {
-        writeLevelDat(path, this.levelDat);
+        writeLevelDat(path, getDimensionData(), this.levelDat);
     }
 
     @Override
@@ -572,7 +534,7 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public IChunk getEmptyChunk(int x, int z) {
-        return Chunk.builder().emptyChunk(x, z);
+        return Chunk.builder().levelProvider(this).emptyChunk(x, z);
     }
 
     @Override
@@ -582,12 +544,8 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
-    public synchronized void close() {
-        try {
-            db.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public void close() {
+        storage.close();
     }
 
     @Override
@@ -735,12 +693,6 @@ public class LevelDBProvider implements LevelProvider {
                     .useMsaGamertagsOnly(d.getBoolean("useMsaGamertagsOnly"))
                     .worldStartCount(d.getLong("worldStartCount"))
                     .worldPolicies(LevelDat.WorldPolicies.builder().build());
-            if (d.contains("generatorName")) {
-                levelDatBuilder.generatorName(d.getString("generatorName"));//PNX Custom field
-            }
-            if (d.contains("generatorOptions")) {
-                levelDatBuilder.generatorOptions(d.getString("generatorOptions"));//PNX Custom field
-            }
             if (d.contains("raining")) {
                 levelDatBuilder.raining(d.getBoolean("raining"));//PNX Custom field
             }
@@ -861,8 +813,6 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.put("tntexplodes", worldData.getGameRules().getGameRules().get(GameRule.TNT_EXPLODES).getTag());
 
         //PNX Custom field
-        levelDat.putString("generatorName", worldData.getGeneratorName());
-        levelDat.putString("generatorOptions", worldData.getGeneratorOptions());
         levelDat.putBoolean("raining", worldData.isRaining());
         levelDat.putBoolean("thundering", worldData.isThundering());
         return levelDat;

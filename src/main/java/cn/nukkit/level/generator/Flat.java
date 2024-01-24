@@ -2,9 +2,7 @@ package cn.nukkit.level.generator;
 
 import cn.nukkit.Server;
 import cn.nukkit.level.DimensionData;
-import cn.nukkit.level.DimensionEnum;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -13,15 +11,8 @@ import java.util.Map;
  */
 @Slf4j
 public class Flat extends Generator {
-
-
-    public Flat(Map<String, Object> options) {
-        super(options);
-    }
-
-    @Override
-    public String getName() {
-        return "flat";
+    public Flat(DimensionData dimensionData, Map<String, Object> options) {
+        super(dimensionData, options);
     }
 
     @Override
@@ -34,8 +25,7 @@ public class Flat extends Generator {
     }
 
     @Override
-    @NotNull
-    public DimensionData getDimensionData() {
-        return DimensionEnum.OVERWORLD.getDimensionData();
+    public String getName() {
+        return "flat";
     }
 }

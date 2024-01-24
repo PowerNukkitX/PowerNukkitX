@@ -37,6 +37,7 @@ import cn.nukkit.item.ItemBucket;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.particle.DestroyBlockParticle;
@@ -146,7 +147,6 @@ public class Level implements Metadatable {
     // endregion finals - number finals
     private static final Set<String> randomTickBlocks = new HashSet<>(64);  // The blocks that can randomly tick
     private static final Entity[] ENTITY_BUFFER = new Entity[512];
-    private int serverLoadLevelTick = 0;
 
     static {
         randomTickBlocks.add(BlockID.GRASS);
@@ -270,7 +270,8 @@ public class Level implements Metadatable {
     private LevelProvider provider;
     private float time;
     private int nextTimeSendTick;
-    private final String folderName;
+    private final String name;
+    private final String folderPath;
     private Vector3 mutableBlock;
     private boolean autoSave;
     private BlockMetadataStore blockMetadata;
@@ -289,13 +290,24 @@ public class Level implements Metadatable {
     private long levelCurrentTick = 0;
     private final Map<Long, Map<Integer, Object>> lightQueue = new ConcurrentHashMap<>(8, 0.9f, 1);
     private Iterator<cn.nukkit.utils.collection.nb.LongObjectEntry<Long>> lastUsingUnloadingIter;
+    private final int dimSum;
 
-    public Level(Server server, String name, String path, Class<? extends LevelProvider> provider) {
+    public Level(Server server, String name, String path, int dimSum, Class<? extends LevelProvider> provider, LevelConfig.GeneratorConfig generatorConfig) {
         this.levelId = levelIdCounter++;
+        this.dimSum = dimSum;
         this.blockMetadata = new BlockMetadataStore(this);
         this.server = server;
-        serverLoadLevelTick = server.getTick();
         this.autoSave = server.getAutoSave();
+        this.generatorClass = Registries.GENERATOR.get(generatorConfig.name());
+        try {
+            this.generator = generatorClass.getConstructor(DimensionData.class, Map.class).newInstance(
+                    generatorConfig.dimensionData(),
+                    generatorConfig.preset()
+            );
+            this.generator.setLevel(Level.this);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
 
         try {
             this.provider = provider.getConstructor(Level.class, String.class).newInstance(this, path);
@@ -306,15 +318,8 @@ public class Level implements Metadatable {
         levelProvider.updateLevelName(name);
         log.info(this.server.getLanguage().tr("nukkit.level.preparing", TextFormat.GREEN + levelProvider.getName() + TextFormat.WHITE));
 
-        this.generatorClass = Registries.GENERATOR.get(levelProvider.getGenerator());
-        try {
-            this.generator = generatorClass.getConstructor(Map.class).newInstance(requireProvider().getGeneratorOptions());
-            this.generator.setLevel(Level.this);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-        levelProvider.initDimensionData(this.generator.getDimensionData());
-        this.folderName = name;
+        this.name = name;
+        this.folderPath = path;
         this.time = levelProvider.getTime();
 
         this.raining = levelProvider.isRaining();
@@ -456,7 +461,7 @@ public class Level implements Metadatable {
 
     public void initLevel() {
         this.gameRules = this.requireProvider().getGamerules();
-        log.info("Preparing start region for level \"{}\"", this.getFolderName());
+        log.info("Preparing start region for level \"{}\"", this.getFolderPath());
         Position spawn = this.getSpawnLocation();
         this.generateChunk(spawn.getChunkX(), spawn.getChunkZ());
     }
@@ -486,7 +491,7 @@ public class Level implements Metadatable {
     public final LevelProvider requireProvider() {
         LevelProvider levelProvider = getProvider();
         if (levelProvider == null) {
-            LevelException levelException = new LevelException("The level \"" + getFolderName() + "\" is already closed (have no providers)");
+            LevelException levelException = new LevelException("The level \"" + getFolderPath() + "\" is already closed (have no providers)");
             try {
                 close();
             } catch (Exception e) {
@@ -3643,8 +3648,8 @@ public class Level implements Metadatable {
         return this.requireProvider().getName();
     }
 
-    public String getFolderName() {
-        return this.folderName;
+    public String getFolderPath() {
+        return this.folderPath;
     }
 
     public void stopTime() {
@@ -4109,8 +4114,8 @@ public class Level implements Metadatable {
         this.sendWeather(players.toArray(Player.EMPTY_ARRAY));
     }
 
-    public DimensionData getDimensionData() {
-        return getProvider().getDimensionData();
+    public final DimensionData getDimensionData() {
+        return generator.getDimensionData();
     }
 
     public int getDimension() {
@@ -4559,7 +4564,7 @@ public class Level implements Metadatable {
     @Override
     public String toString() {
         return "Level{" +
-                "folderName='" + folderName + '\'' +
+                "name='" + name + '\'' +
                 ", dimension=" + getDimension() +
                 '}';
     }
@@ -4572,8 +4577,7 @@ public class Level implements Metadatable {
         private BlockFace neighbor;
     }
 
-    public int getServerLoadLevelTick() {
-        return this.serverLoadLevelTick;
+    public int getDimSum() {
+        return dimSum;
     }
-
 }
