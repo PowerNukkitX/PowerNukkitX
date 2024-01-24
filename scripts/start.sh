@@ -1,4 +1,5 @@
 #!/bin/bash
+
 JAR_NAME="powernukkitx"
 LIB_PATH="./libs"
 GRAAL_SDK="graal-sdk-23.0.0.jar"

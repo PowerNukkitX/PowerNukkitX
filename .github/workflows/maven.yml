@@ -57,10 +57,10 @@ jobs:
           cd ../
           mv target/powernukkitx-${{ steps.getVersion.outputs.version }}-shaded.jar target/powernukkitx-full.jar
           mv target/powernukkitx-${{ steps.getVersion.outputs.version }}.jar target/powernukkitx.jar
-          mv scripts/start.cmd target/start.cmd
+          mv scripts/start.bat target/start.bat
           mv scripts/start.sh target/start.sh
           tar -vczf target/libs.tar.gz target/
-          zip -r target/powernukkitx-run-full.zip target/libs target/powernukkitx.jar target/start.cmd target/start.sh
+          zip -r target/powernukkitx-run-full.zip target/libs target/powernukkitx.jar target/start.bat target/start.sh
       - name: Calculate hashes
         run: |
           cd target
