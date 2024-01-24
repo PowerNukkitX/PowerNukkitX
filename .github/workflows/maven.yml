@@ -65,10 +65,10 @@ jobs:
         run: |
           cd target
           mkdir -p hash/sha256 hash/md5
-          sha256sum powernukkitx-full.jar > hash/sha256/powernukkitx-full.jar.sha256
+          sha256sum powernukkitx-shaded.jar > hash/sha256/powernukkitx-shaded.jar.sha256
           sha256sum powernukkitx.jar > hash/sha256/powernukkitx.jar.sha256
           sha256sum libs.tar.gz > hash/sha256/libs.tar.gz.sha256
-          md5sum powernukkitx-full.jar > hash/md5/powernukkitx-full.jar.md5
+          md5sum powernukkitx-shaded.jar > hash/md5/powernukkitx-shaded.jar.md5
           md5sum powernukkitx.jar > hash/md5/powernukkitx.jar.md5
           md5sum libs.tar.gz > hash/md5/libs.tar.gz.md5
       - name: Archive PNX Core
