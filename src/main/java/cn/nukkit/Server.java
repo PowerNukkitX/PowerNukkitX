@@ -493,7 +493,7 @@ public class Server {
                         }
 
                         String[] comments = nukkitYmlLang.getProperty(key).trim().split("\n");
-                        if (key.equals("nukkit.yml.aliases") || key.equals("nukkit.yml.worlds")) {
+                        if (key.equals("nukkit.yml.aliases")) {
                             result.append(line).append(System.lineSeparator());
                             for (String comment : comments) {
                                 result.append(ident).append(" # ").append(comment).append(System.lineSeparator());
