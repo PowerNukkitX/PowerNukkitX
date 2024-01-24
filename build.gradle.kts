@@ -23,6 +23,11 @@ repositories {
     }
 }
 
+java {
+    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_21
+}
+
 dependencies {
     api(libs.org.jetbrains.annotations)
     api(libs.com.github.daniellansun.fast.reflection)
