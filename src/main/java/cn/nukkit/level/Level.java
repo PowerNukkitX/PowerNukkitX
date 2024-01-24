@@ -461,7 +461,7 @@ public class Level implements Metadatable {
 
     public void initLevel() {
         this.gameRules = this.requireProvider().getGamerules();
-        log.info("Preparing start region for level \"{}\"", this.getFolderPath());
+        log.info("Preparing start region for level \"{}\"", this.getName());
         Position spawn = this.getSpawnLocation();
         this.generateChunk(spawn.getChunkX(), spawn.getChunkZ());
     }

@@ -93,6 +93,7 @@ import cn.nukkit.utils.collection.FreezableArrayManager;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongLists;
@@ -808,14 +809,14 @@ public class Server {
         }
 
         if (this.getDefaultLevel() == null) {
-            String defaultName = this.getPropertyString("level-name", "world");
-            if (defaultName == null || defaultName.trim().isEmpty()) {
+            String levelFolder = this.getPropertyString("level-name", "world");
+            if (levelFolder == null || levelFolder.trim().isEmpty()) {
                 log.warn("level-name cannot be null, using default");
-                defaultName = "world";
-                this.setPropertyString("level-name", defaultName);
+                levelFolder = "world";
+                this.setPropertyString("level-name", levelFolder);
             }
 
-            if (!this.loadLevel(defaultName)) {
+            if (!this.loadLevel(levelFolder)) {
                 //default world not exist
                 //generate the default world
                 HashMap<Integer, LevelConfig.GeneratorConfig> generatorConfig = new HashMap<>();
@@ -830,9 +831,9 @@ public class Server {
                 //todo nether the_end overworld
                 generatorConfig.put(0, new LevelConfig.GeneratorConfig("flat", seed, DimensionEnum.OVERWORLD.getDimensionData(), Collections.EMPTY_MAP));
                 LevelConfig levelConfig = new LevelConfig(this.getConfig().get("level-settings.default-format", "leveldb"), generatorConfig);
-                this.generateLevel(defaultName, levelConfig);
+                this.generateLevel(levelFolder, levelConfig);
             }
-            this.setDefaultLevel(this.getLevelByName(defaultName));
+            this.setDefaultLevel(this.getLevelByName(levelFolder + " Dim0"));
         }
 
         this.getTickingAreaManager().loadAllTickingArea();
@@ -970,7 +971,7 @@ public class Server {
 
             log.debug("Stopping all tasks");
             this.scheduler.cancelAllTasks();
-            this.scheduler.mainThreadHeartbeat(Integer.MAX_VALUE);
+            this.scheduler.mainThreadHeartbeat((int) (this.getNextTick() + 10000));
 
             log.debug("Unloading all levels");
             for (Level level : this.levelArray) {
@@ -2447,13 +2448,11 @@ public class Server {
             path = this.getDataPath() + "worlds/" + name + "/";
         }
         Path jpath = Path.of(path);
-        if (this.isLevelLoaded(name)) {
-            return true;
-        } else if (!jpath.toFile().exists()) {
+        path = jpath.toString();
+        if (!jpath.toFile().exists()) {
             log.warn(this.getLanguage().tr("nukkit.level.notFound", name));
             return false;
         }
-
         //verify the provider
         Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(path);
         if (provider == null) {
@@ -2463,7 +2462,7 @@ public class Server {
 
         File config = jpath.resolve("config.json").toFile();
         LevelConfig levelConfig;
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         if (config.exists()) {
             try {
                 levelConfig = gson.fromJson(new FileReader(config), LevelConfig.class);
@@ -2473,7 +2472,7 @@ public class Server {
         } else {
             Map<Integer, LevelConfig.GeneratorConfig> map = new HashMap<>();
             //todo nether the_end overworld
-            map.put(0, new LevelConfig.GeneratorConfig("flat", System.currentTimeMillis(),DimensionEnum.OVERWORLD.getDimensionData(), Collections.EMPTY_MAP));
+            map.put(0, new LevelConfig.GeneratorConfig("flat", System.currentTimeMillis(), DimensionEnum.OVERWORLD.getDimensionData(), Collections.EMPTY_MAP));
             levelConfig = new LevelConfig(LevelProviderManager.getProviderName(provider), map);
             try {
                 config.createNewFile();
@@ -2490,6 +2489,9 @@ public class Server {
         Map<Integer, LevelConfig.GeneratorConfig> generators = levelConfig.generators();
         for (var entry : generators.entrySet()) {
             String levelName = name + " Dim" + entry.getKey();
+            if (this.isLevelLoaded(levelName)) {
+                return true;
+            }
             Level level;
             try {
                 level = new Level(this, levelName, path, generators.size(), provider, entry.getValue());
@@ -2513,7 +2515,6 @@ public class Server {
         if (name.isBlank()) {
             return false;
         }
-//        this.isLevelGenerated(name)
         String path;
         if (name.contains("/") || name.contains("\\")) {
             path = name;
@@ -2521,8 +2522,9 @@ public class Server {
             path = this.getDataPath() + "worlds/" + name + "/";
         }
 
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         Path jpath = Path.of(path);
+        path = jpath.toString();
         File config = jpath.resolve("config.json").toFile();
         if (config.exists()) {
             try {
@@ -2533,6 +2535,7 @@ public class Server {
             }
         } else if (levelConfig != null) {
             try {
+                jpath.toFile().mkdirs();
                 config.createNewFile();
                 Files.writeString(config.toPath(), gson.toJson(levelConfig), StandardCharsets.UTF_8, StandardOpenOption.CREATE);
             } catch (IOException e) {
