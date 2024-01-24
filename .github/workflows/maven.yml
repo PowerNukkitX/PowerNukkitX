@@ -55,7 +55,7 @@ jobs:
           cd target
           ls
           cd ../
-          mv target/powernukkitx-${{ steps.getVersion.outputs.version }}-shaded.jar target/powernukkitx-full.jar
+          mv target/powernukkitx-${{ steps.getVersion.outputs.version }}-shaded.jar target/powernukkitx-shaded.jar
           mv target/powernukkitx-${{ steps.getVersion.outputs.version }}.jar target/powernukkitx.jar
           mv scripts/start.bat target/start.bat
           mv scripts/start.sh target/start.sh
