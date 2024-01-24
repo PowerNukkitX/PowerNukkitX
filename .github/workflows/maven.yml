@@ -6,8 +6,7 @@ jobs:
   check-files:
     name: Check repository files
     runs-on: ubuntu-latest
-    #    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
-    if: false
+    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
     outputs:
       changed-files: ${{ steps.check-changed-files.outputs.all_changed_and_modified_files }}
 
@@ -58,7 +57,10 @@ jobs:
           cd ../
           mv target/powernukkitx-${{ steps.getVersion.outputs.version }}-shaded.jar target/powernukkitx-full.jar
           mv target/powernukkitx-${{ steps.getVersion.outputs.version }}.jar target/powernukkitx.jar
-          tar -vczf target/libs.tar.gz target/libs
+          mv scripts/start.cmd target/start.cmd
+          mv scripts/start.sh target/start.sh
+          tar -vczf target/libs.tar.gz target/
+          zip -r target/powernukkitx-run-full.zip target/libs target/powernukkitx.jar target/start.cmd target/start.sh
       - name: Calculate hashes
         run: |
           cd target
@@ -75,12 +77,18 @@ jobs:
         with:
           name: PowerNukkitX-Core
           path: target/powernukkitx.jar
-      - name: Archive PNX Full
+      - name: Archive PNX SHADED
         uses: actions/upload-artifact@v3
         if: success()
         with:
-          name: PowerNukkitX-Full
-          path: target/powernukkitx-full.jar
+          name: PowerNukkitX-Shaded
+          path: target/powernukkitx-shaded.jar
+      - name: Archive PNX RUN Full
+        uses: actions/upload-artifact@v3
+        if: success()
+        with:
+          name: PowerNukkitX-RUN-Full
+          path: target/powernukkitx-run-full.zip
       - name: Archive Libraries
         uses: actions/upload-artifact@v3
         if: success()
