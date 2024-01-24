@@ -243,17 +243,41 @@ public interface CoreMemoryTypes {
                     })
             );
     /**
-     * 代表实体的颜色，和{@link Entity#DATA_COLOUR}绑定
-     * <p>
+     * 代表实体的颜色，和{@link Entity#DATA_COLOR}绑定
+     * <br>
      * 例如狼的项圈
+     * <br>
+     * Wolf collar, Cat collar, Sheep wool, Tropical Fish base color
      */
-    MemoryType<Byte> COLOUR = new MemoryType<Byte>("minecraft:colour")
+    MemoryType<Byte> COLOR = new MemoryType<Byte>("minecraft:color")
             .withCodec(new NumberMemoryCodec<Byte>("Color")
                     .onInit((data, entity) -> {
                         if (data != null) {
-                            entity.setDataProperty(new ByteEntityData(Entity.DATA_COLOUR, data));
+                            entity.setDataProperty(new ByteEntityData(Entity.DATA_COLOR, data));
                         }
                     })
+            );
+    /**
+     * 代表实体的颜第二色，和{@link Entity#DATA_COLOR_2}绑定
+     * <br>
+     * Tropical Fish secondary color
+     */
+    MemoryType<Byte> COLOR2 = new MemoryType<Byte>("minecraft:color2")
+            .withCodec(new NumberMemoryCodec<Byte>("Color2")
+                    .onInit((data, entity) -> {
+                        if (data != null) {
+                            entity.setDataProperty(new ByteEntityData(Entity.DATA_COLOR_2, data));
+                        }
+                    })
+            );
+    /**
+     * 和{@link Entity#DATA_FLAG_SHEARED}绑定
+     * <p>
+     * Sheep, Snow Golem
+     */
+    MemoryType<Boolean> IS_SHEARED= new MemoryType<>("minecraft:is_sheared", false)
+            .withCodec(new BooleanMemoryCodec("Sheared")
+                    .onInit((data, entity) -> entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SHEARED, data))
             );
     // endregion
 }
