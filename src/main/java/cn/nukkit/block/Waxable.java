@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Location;
@@ -17,16 +15,10 @@ import javax.annotation.Nullable;
  * @author joserobjr
  * @since 2021-06-14
  */
-@PowerNukkitOnly
-@Since("FUTURE")
 public interface Waxable {
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    @NotNull
-    Location getLocation();
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+    @NotNull Location getLocation();
+
     default boolean onActivate(@NotNull Item item, @Nullable Player player) {
         boolean waxed = isWaxed();
         if ((item.getId() != ItemID.HONEYCOMB || waxed) && (!item.isAxe() || !waxed)) {
@@ -38,7 +30,7 @@ public interface Waxable {
             return false;
         }
 
-        Position location = this instanceof Block? (Position) this : getLocation();
+        Position location = this instanceof Block ? (Position) this : getLocation();
         if (player == null || !player.isCreative()) {
             if (waxed) {
                 item.count--;
@@ -50,11 +42,7 @@ public interface Waxable {
         return true;
     }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
     boolean isWaxed();
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
     boolean setWaxed(boolean waxed);
 }

@@ -2,13 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
-import cn.nukkit.blockproperty.value.WoodType;
+import cn.nukkit.block.property.enums.OldLeafType;
+import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.event.block.LeavesDecayEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -26,56 +21,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.block.property.CommonBlockProperties.*;
+
 /**
  * @author Angelic47 (Nukkit Project)
  */
-public class BlockLeaves extends BlockTransparentMeta {
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
-    public static final ArrayBlockProperty<WoodType> OLD_LEAF_TYPE = new ArrayBlockProperty<>("old_leaf_type", true, new WoodType[]{
-            WoodType.OAK, WoodType.SPRUCE, WoodType.BIRCH, WoodType.JUNGLE
-    });
-    
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
-    public static final BooleanBlockProperty PERSISTENT = new BooleanBlockProperty("persistent_bit", false);
-    
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
-    public static final BooleanBlockProperty UPDATE = new BooleanBlockProperty("update_bit", false);
+public class BlockLeaves extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties(LEAVES, OLD_LEAF_TYPE, PERSISTENT_BIT, UPDATE_BIT);
 
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
-    public static final BlockProperties OLD_LEAF_PROPERTIES = new BlockProperties(OLD_LEAF_TYPE, PERSISTENT, UPDATE);
-    
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     private static final BlockFace[] VISIT_ORDER = new BlockFace[]{
             BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.DOWN, BlockFace.UP
     };
-    
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
-    public static final int OAK = 0;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
-    public static final int SPRUCE = 1;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
-    public static final int BIRCH = 2;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
-    public static final int JUNGLE = 3;
 
     public BlockLeaves() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockLeaves(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return LEAVES;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return OLD_LEAF_PROPERTIES;
+    public BlockLeaves(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -87,20 +55,18 @@ public class BlockLeaves extends BlockTransparentMeta {
     public int getToolType() {
         return ItemTool.TYPE_HOE;
     }
-    
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
+
     public WoodType getType() {
-        return getPropertyValue(OLD_LEAF_TYPE);
+        return WoodType.valueOf(getPropertyValue(OLD_LEAF_TYPE).name().toUpperCase());
     }
 
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
     public void setType(WoodType type) {
-        setPropertyValue(OLD_LEAF_TYPE, type);
+        setPropertyValue(OLD_LEAF_TYPE, OldLeafType.valueOf(type.name().toUpperCase()));
     }
 
     @Override
     public String getName() {
-        return getType().getEnglishName() + " Leaves";
+        return getType().name() + " Leaves";
     }
 
     @Override
@@ -108,7 +74,6 @@ public class BlockLeaves extends BlockTransparentMeta {
         return 30;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -136,8 +101,8 @@ public class BlockLeaves extends BlockTransparentMeta {
 
         List<Item> drops = new ArrayList<>(1);
         Enchantment fortuneEnchantment = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
-        
-        int fortune = fortuneEnchantment != null? fortuneEnchantment.getLevel() : 0;
+
+        int fortune = fortuneEnchantment != null ? fortuneEnchantment.getLevel() : 0;
         int appleOdds;
         int stickOdds;
         int saplingOdds;
@@ -174,7 +139,7 @@ public class BlockLeaves extends BlockTransparentMeta {
         if (random.nextInt(saplingOdds) == 0) {
             drops.add(getSapling());
         }
-        
+
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
@@ -199,7 +164,7 @@ public class BlockLeaves extends BlockTransparentMeta {
                 setCheckDecay(true);
                 getLevel().setBlock(this, this, false, false);
             }
-            
+
             // Slowly propagates the need to update instead of peaking down the TPS for huge trees
             for (BlockFace side : BlockFace.values()) {
                 Block other = getSide(side);
@@ -231,27 +196,27 @@ public class BlockLeaves extends BlockTransparentMeta {
         }
         visited.put(hash, distance);
         for (BlockFace face : VISIT_ORDER) {
-            if(findLog(current.getSide(face), distance - 1, visited)) {
+            if (findLog(current.getSide(face), distance - 1, visited)) {
                 return true;
             }
         }
         return false;
     }
-    
+
     public boolean isCheckDecay() {
-        return getBooleanValue(UPDATE);
+        return getPropertyValue(UPDATE_BIT);
     }
 
     public void setCheckDecay(boolean checkDecay) {
-        setBooleanValue(UPDATE, checkDecay);
+        setPropertyValue(UPDATE_BIT, checkDecay);
     }
 
     public boolean isPersistent() {
-        return getBooleanValue(PERSISTENT);
+        return getPropertyValue(PERSISTENT_BIT);
     }
 
     public void setPersistent(boolean persistent) {
-        setBooleanValue(PERSISTENT, persistent);
+        setPropertyValue(PERSISTENT_BIT, persistent);
     }
 
     @Override
@@ -264,25 +229,21 @@ public class BlockLeaves extends BlockTransparentMeta {
     }
 
     protected Item getSapling() {
-        return Item.get(BlockID.SAPLING, getIntValue(OLD_LEAF_TYPE));
+        return Item.get(BlockID.SAPLING, getPropertyValue(OLD_LEAF_TYPE).ordinal());
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean diffusesSkyLight() {
         return true;
     }
 
-
     @Override
-    @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 }

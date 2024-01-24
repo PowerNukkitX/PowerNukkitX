@@ -1,29 +1,38 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.event.block.BlockFromToEvent;
+import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelEventPacket;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockDragonEgg extends BlockFallable {
+    public static final BlockProperties PROPERTIES = new BlockProperties(DRAGON_EGG);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockDragonEgg() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockDragonEgg(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "Dragon Egg";
-    }
-
-    @Override
-    public int getId() {
-        return DRAGON_EGG;
     }
 
     @Override
@@ -46,7 +55,6 @@ public class BlockDragonEgg extends BlockFallable {
         return true;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -60,25 +68,21 @@ public class BlockDragonEgg extends BlockFallable {
         return super.onUpdate(type);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
-    public int onTouch(@Nullable Player player, Action action) {
+    public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player, PlayerInteractEvent.@NotNull Action action) {
         if (player != null && (action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK)) {
             if (player.isCreative() && action == Action.LEFT_CLICK_BLOCK) {
-                return 0;
+                return;
             }
             onUpdate(Level.BLOCK_UPDATE_TOUCH);
-            return 1;
         }
-        return 0;
     }
 
     public void teleport() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < 1000; ++i) {
             Block to = this.getLevel().getBlock(this.add(random.nextInt(-16, 16), random.nextInt(0, 16), random.nextInt(-16, 16)));
-            if (to.getId() == AIR) {
+            if (to.isAir()) {
                 BlockFromToEvent event = new BlockFromToEvent(this, to);
                 this.level.getServer().getPluginManager().callEvent(event);
                 if (event.isCancelled()) return;
@@ -102,13 +106,11 @@ public class BlockDragonEgg extends BlockFallable {
     }
 
     @Override
-    @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    @PowerNukkitOnly
     public boolean sticksToPiston() {
         return false;
     }

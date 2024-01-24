@@ -1,15 +1,12 @@
 package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.mob.EntityWarden;
 import cn.nukkit.level.Sound;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r4")
+
 public class WardenSniffExecutor implements IBehaviorExecutor {
     protected int angerAddition;
     protected int duration;//gt

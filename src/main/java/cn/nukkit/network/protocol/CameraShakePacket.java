@@ -7,7 +7,7 @@ public class CameraShakePacket extends DataPacket {
     public CameraShakeAction shakeAction;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.CAMERA_SHAKE_PACKET;
     }
 

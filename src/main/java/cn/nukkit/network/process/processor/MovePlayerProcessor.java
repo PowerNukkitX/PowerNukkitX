@@ -33,6 +33,6 @@ public class MovePlayerProcessor extends DataPacketProcessor<MovePlayerPacket> {
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.MOVE_PLAYER_PACKET);
+        return ProtocolInfo.MOVE_PLAYER_PACKET;
     }
 }

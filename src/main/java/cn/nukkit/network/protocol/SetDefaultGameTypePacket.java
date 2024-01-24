@@ -1,17 +1,13 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
 public class SetDefaultGameTypePacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.SET_DEFAULT_GAME_TYPE_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.SET_DEFAULT_GAME_TYPE_PACKET;
 
     public int gamemode;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

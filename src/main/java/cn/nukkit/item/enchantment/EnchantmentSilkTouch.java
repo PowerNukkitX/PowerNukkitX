@@ -1,6 +1,5 @@
 package cn.nukkit.item.enchantment;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 
 /**
@@ -31,12 +30,4 @@ public class EnchantmentSilkTouch extends Enchantment {
         return item.isShears() || super.canEnchant(item);
     }
 
-    @PowerNukkitOnly
-    @Override
-    public boolean isItemAcceptable(Item item) {
-        if (item.isShears()) {
-            return true;
-        }
-        return super.isItemAcceptable(item);
-    }
 }

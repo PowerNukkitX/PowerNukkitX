@@ -1,42 +1,26 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
+import static cn.nukkit.block.property.CommonBlockProperties.UPPER_BLOCK_BIT;
+
 //todo complete
-@PowerNukkitXOnly
-@Since("1.20.10-r2")
 public class BlockPitcherCrop extends BlockCrops {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final BooleanBlockProperty UPPER_BLOCK = new BooleanBlockProperty("upper_block_bit", false);
+    public static final BlockProperties PROPERTIES = new BlockProperties(PITCHER_CROP, CommonBlockProperties.GROWTH, UPPER_BLOCK_BIT);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(GROWTH, UPPER_BLOCK);
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
     @Override
+    @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     public BlockPitcherCrop() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockPitcherCrop(int meta) {
-        super(meta);
-    }
-
-    public int getId() {
-        return PITCHER_CROP;
+    public BlockPitcherCrop(BlockState blockstate) {
+        super(blockstate);
     }
 
     public String getName() {

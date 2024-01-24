@@ -1,14 +1,12 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.inventory.ChestBoatInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -16,18 +14,21 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.types.EntityLink;
+import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class EntityChestBoat extends EntityBoat implements InventoryHolder {
 
-    public static final int NETWORK_ID = 218;
+    @Override
+    public @NotNull String getIdentifier() {
+        return CHEST_BOAT;
+    }
 
     protected ChestBoatInventory inventory;
 
-    public EntityChestBoat(FullChunk chunk, CompoundTag nbt) {
+    public EntityChestBoat(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -36,10 +37,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
         return "Chest Boat";
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public ChestBoatInventory getInventory() {
@@ -117,11 +115,11 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
     public void saveNBT() {
         super.saveNBT();
 
-        this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+        this.namedTag.putList("Items",new ListTag<CompoundTag>());
         if (this.inventory != null) {
             for (int slot = 0; slot < 27; ++slot) {
                 Item item = this.inventory.getItem(slot);
-                if (item != null && item.getId() != Item.AIR) {
+                if (item != null && !item.isNull()) {
                     this.namedTag.getList("Items", CompoundTag.class)
                             .add(NBTIO.putItemHelper(item, slot));
                 }
@@ -129,7 +127,6 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
         }
     }
 
-    @Since("1.6.0.0-PNX")
     @Override
     protected void dropItem() {
         switch (this.getVariant()) {

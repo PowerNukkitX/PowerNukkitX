@@ -310,7 +310,6 @@ public interface Node extends Comparable<Node> {
         return tokenSource == null ? 0 : tokenSource.getLineFromOffset(getBeginOffset());
     }
 
-
     ;
 
 
@@ -322,7 +321,6 @@ public interface Node extends Comparable<Node> {
         return tokenSource == null ? 0 : tokenSource.getLineFromOffset(getEndOffset() - 1);
     }
 
-
     ;
 
 
@@ -333,7 +331,6 @@ public interface Node extends Comparable<Node> {
         SNBTLexer tokenSource = getTokenSource();
         return tokenSource == null ? 0 : tokenSource.getCodePointColumnFromOffset(getBeginOffset());
     }
-
 
     ;
 
@@ -705,7 +702,6 @@ public interface Node extends Comparable<Node> {
         }
                 ;
     }
-
 
     static abstract public class Visitor {
         static private Map<Class<? extends Visitor>, Map<Class<? extends Node>, Method>> mapLookup;

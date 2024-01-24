@@ -1,35 +1,26 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.entity.item.EntityFallingBlock;
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
-public class BlockSuspiciousSand extends BlockFallableMeta {
-    public static final IntBlockProperty BRUSHED_PROGRESS = new IntBlockProperty("brushed_progress", false, 3);
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.HANGING, BRUSHED_PROGRESS);
+import static cn.nukkit.block.property.CommonBlockProperties.*;
+
+public class BlockSuspiciousSand extends BlockFallable {
+    public static final BlockProperties PROPERTIES = new BlockProperties(SUSPICIOUS_SAND, HANGING, BRUSHED_PROGRESS);
 
     public BlockSuspiciousSand() {
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockSuspiciousSand(int meta) {
-        super(meta);
+    public BlockSuspiciousSand(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
-    public BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
-    }
-
-    public int getId() {
-        return SUSPICIOUS_SAND;
     }
 
     public String getName() {
@@ -46,7 +37,6 @@ public class BlockSuspiciousSand extends BlockFallableMeta {
         return 1.25;
     }
 
-    @PowerNukkitOnly
     @Override
     protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {
         customNbt.putBoolean("BreakOnGround", true);
@@ -55,6 +45,6 @@ public class BlockSuspiciousSand extends BlockFallableMeta {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{Item.AIR_ITEM};
+        return new Item[]{Item.AIR};
     }
 }

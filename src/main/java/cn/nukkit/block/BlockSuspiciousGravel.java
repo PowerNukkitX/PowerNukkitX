@@ -1,36 +1,26 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.entity.item.EntityFallingBlock;
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 //todo complete
-@PowerNukkitXOnly
-@Since("1.20.10-r2")
-public class BlockSuspiciousGravel extends BlockFallableMeta {
-    public static final IntBlockProperty BRUSHED_PROGRESS = new IntBlockProperty("brushed_progress", false, 3);
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.HANGING, BRUSHED_PROGRESS);
+public class BlockSuspiciousGravel extends BlockFallable {
+
+    public static final BlockProperties PROPERTIES = new BlockProperties(SUSPICIOUS_GRAVEL, CommonBlockProperties.HANGING, CommonBlockProperties.BRUSHED_PROGRESS);
 
     @Override
-    public BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     public BlockSuspiciousGravel() {
+        this(PROPERTIES.getDefaultState());
     }
-
-    public BlockSuspiciousGravel(int meta) {
-        super(meta);
-    }
-
-    public int getId() {
-        return SUSPICIOUS_GRAVEL;
+    public BlockSuspiciousGravel(BlockState blockstate) {
+        super(blockstate);
     }
 
     public String getName() {
@@ -47,7 +37,6 @@ public class BlockSuspiciousGravel extends BlockFallableMeta {
         return 1.25;
     }
 
-    @PowerNukkitOnly
     @Override
     protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {
         customNbt.putBoolean("BreakOnGround", true);
@@ -56,6 +45,6 @@ public class BlockSuspiciousGravel extends BlockFallableMeta {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{Item.AIR_ITEM};
+        return new Item[]{Item.AIR};
     }
 }

@@ -13,7 +13,6 @@ public class TextProcessor extends DataPacketProcessor<TextPacket> {
             return;
         }
 
-
         if (pk.type == TextPacket.TYPE_CHAT) {
             String chatMessage = pk.message;
             int breakLine = chatMessage.indexOf('\n');
@@ -27,6 +26,6 @@ public class TextProcessor extends DataPacketProcessor<TextPacket> {
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.TEXT_PACKET);
+        return ProtocolInfo.TEXT_PACKET;
     }
 }

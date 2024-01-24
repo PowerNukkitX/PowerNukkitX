@@ -1,14 +1,9 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBrewingStand;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBrewingStand;
@@ -22,29 +17,22 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-public class BlockBrewingStand extends BlockTransparentMeta implements BlockEntityHolder<BlockEntityBrewingStand> {
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BooleanBlockProperty HAS_POTION_A = new BooleanBlockProperty("brewing_stand_slot_a_bit", false);
+public class BlockBrewingStand extends BlockTransparent implements BlockEntityHolder<BlockEntityBrewingStand> {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BooleanBlockProperty HAS_POTION_B = new BooleanBlockProperty("brewing_stand_slot_b_bit", false);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BREWING_STAND, CommonBlockProperties.BREWING_STAND_SLOT_A_BIT, CommonBlockProperties.BREWING_STAND_SLOT_B_BIT, CommonBlockProperties.BREWING_STAND_SLOT_C_BIT);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BooleanBlockProperty HAS_POTION_C = new BooleanBlockProperty("brewing_stand_slot_c_bit", false);
-
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(HAS_POTION_A, HAS_POTION_B, HAS_POTION_C);
-
-    public BlockBrewingStand() {
-        this(0);
+    @Override
+    @NotNull
+    public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public BlockBrewingStand(int meta) {
-        super(meta);
+    public BlockBrewingStand() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBrewingStand(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -67,7 +55,6 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
         return 2.5;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -79,30 +66,16 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
     }
 
     @Override
-    public int getId() {
-        return BREWING_STAND_BLOCK;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    @Override
     public int getLightLevel() {
         return 1;
     }
 
-    @PowerNukkitDifference(info = "Remove placement restrictions, they don't exists in vanilla", since = "1.3.1.2-PN")
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         getLevel().setBlock(block, this, true, true);
 
         CompoundTag nbt = new CompoundTag()
-                .putList(new ListTag<>("Items"))
+                .putList("Items", new ListTag<>())
                 .putString("id", BlockEntity.BREWING_STAND)
                 .putInt("x", (int) this.x)
                 .putInt("y", (int) this.y)
@@ -132,7 +105,7 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
                 brewing = (BlockEntityBrewingStand) t;
             } else {
                 CompoundTag nbt = new CompoundTag()
-                        .putList(new ListTag<>("Items"))
+                        .putList("Items", new ListTag<>())
                         .putString("id", BlockEntity.BREWING_STAND)
                         .putInt("x", (int) this.x)
                         .putInt("y", (int) this.y)
@@ -161,7 +134,6 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
     }
 
     @Override
-    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -217,18 +189,14 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
         return false;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
-    @NotNull
     @Override
+    @NotNull
     public Class<? extends BlockEntityBrewingStand> getBlockEntityClass() {
         return BlockEntityBrewingStand.class;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
-    @NotNull
     @Override
+    @NotNull
     public String getBlockEntityType() {
         return BlockEntity.BREWING_STAND;
     }

@@ -1,7 +1,5 @@
 package cn.nukkit.metadata;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.plugin.Plugin;
 import com.dfsek.terra.lib.commons.lang3.Validate;
 
@@ -19,8 +17,8 @@ import java.util.concurrent.Callable;
  * level. Once invalidated, the LazyMetadataValue will recompute its value
  * when asked.
  */
-@PowerNukkitXOnly
-@Since("1.19.63-r2")
+
+
 public class LazyMetadataValue extends MetadataValueAdapter {
     private Callable<Object> lazyValue;
     private CacheStrategy cacheStrategy;

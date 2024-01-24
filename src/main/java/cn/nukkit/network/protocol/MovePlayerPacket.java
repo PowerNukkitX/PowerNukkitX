@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3f;
 import lombok.ToString;
 
@@ -10,7 +9,7 @@ import lombok.ToString;
 @ToString
 public class MovePlayerPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.MOVE_PLAYER_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.MOVE_PLAYER_PACKET;
 
     public static final int MODE_NORMAL = 0;
     public static final int MODE_RESET = 1;//MODE_RESPAWN
@@ -29,7 +28,7 @@ public class MovePlayerPacket extends DataPacket {
     public long ridingEid;
     public int int1 = 0;//teleportationCause
     public int int2 = 0;//entityType
-    @Since("1.4.0.0-PN")
+
     public long frame;//tick
 
     @Override
@@ -71,7 +70,7 @@ public class MovePlayerPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 }

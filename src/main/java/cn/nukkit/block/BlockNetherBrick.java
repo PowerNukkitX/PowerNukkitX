@@ -1,26 +1,55 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
  * @since 2015/12/7
  */
-@Deprecated
-@DeprecationDetails(since = "1.5.1.0-PN", by = "PowerNukkit", 
-        reason = "Duplicated of BlockBricksNether and the other one is used instead of this one.",
-        replaceWith = "BlockBricksNether"
-)
-@PowerNukkitDifference(since = "1.5.1.0-PN", extendsOnlyInPowerNukkit = BlockBricksNether.class, insteadOf = BlockSolid.class)
-@SuppressWarnings({"DeprecatedIsStillUsed", "java:S1133"})
-public class BlockNetherBrick extends BlockBricksNether {
-    @Deprecated
-    @DeprecationDetails(since = "1.5.1.0-PN", by = "PowerNukkit",
-            reason = "Duplicated of BlockBricksNether and the other one is used instead of this one.",
-            replaceWith = "BlockBricksNether"
-    )
+public class BlockNetherBrick extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties(NETHER_BRICK);
+
     public BlockNetherBrick() {
-        // Does nothing
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockNetherBrick(BlockState blockState) {
+        super(blockState);
+    }
+
+    @Override
+    public String getName() {
+        return "Nether Brick";
+    }
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_PICKAXE;
+    }
+
+    @Override
+    public int getToolTier() {
+        return ItemTool.TIER_WOODEN;
+    }
+
+    @Override
+    public double getHardness() {
+        return 2;
+    }
+
+    @Override
+    public double getResistance() {
+        return 6;
+    }
+
+    @Override
+    public boolean canHarvestWithHand() {
+        return false;
     }
 }

@@ -5,6 +5,7 @@ import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
+import lombok.Getter;
 
 /**
  * @author GoodLucky777, Superice666
@@ -17,9 +18,8 @@ public class EntityShootCrossbowEvent extends EntityEvent implements Cancellable
         return handlers;
     }
 
+    private final EntityProjectile[] projectiles;
     private final Item crossbow;
-
-    private EntityProjectile[] projectiles;
 
     public EntityShootCrossbowEvent(EntityLiving shooter, Item crossbow, EntityProjectile... projectiles) {
         this.entity = shooter;
@@ -50,7 +50,7 @@ public class EntityShootCrossbowEvent extends EntityEvent implements Cancellable
 
     public void setProjectile(EntityProjectile projectile, int array) {
         if (projectile != this.projectiles[array]) {
-            if (this.projectiles[array].getViewers().size() == 0) {
+            if (this.projectiles[array].getViewers().isEmpty()) {
                 this.projectiles[array].kill();
                 this.projectiles[array].close();
             }
@@ -61,7 +61,7 @@ public class EntityShootCrossbowEvent extends EntityEvent implements Cancellable
     public void setProjectiles(EntityProjectile[] projectiles) {
         for (int i = 0; i < this.projectiles.length; i++) {
             if (projectiles[i] != this.projectiles[i]) {
-                if (this.projectiles[i].getViewers().size() == 0) {
+                if (this.projectiles[i].getViewers().isEmpty()) {
                     this.projectiles[i].kill();
                     this.projectiles[i].close();
                 }
@@ -71,8 +71,8 @@ public class EntityShootCrossbowEvent extends EntityEvent implements Cancellable
     }
 
     public void killProjectiles() {
-        for (int i = 0; i < this.projectiles.length; i++) {
-            this.projectiles[i].kill();
+        for (EntityProjectile projectile : this.projectiles) {
+            projectile.kill();
         }
     }
 }

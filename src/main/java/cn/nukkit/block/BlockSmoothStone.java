@@ -1,20 +1,25 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitOnly
 public class BlockSmoothStone extends BlockSolid {
 
-    @PowerNukkitOnly
-    public BlockSmoothStone() {
-    }
-    
+    public static final BlockProperties PROPERTIES = new BlockProperties(SMOOTH_STONE);
+
     @Override
-    public int getId() {
-        return SMOOTH_STONE;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
-    
+
+    public BlockSmoothStone() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockSmoothStone(BlockState blockState) {
+        super(blockState);
+    }
+
     @Override
     public String getName() {
         return "Smooth Stone";
@@ -36,7 +41,6 @@ public class BlockSmoothStone extends BlockSolid {
     }
 
     @Override
-    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

@@ -6,14 +6,10 @@ package cn.nukkit.item;
 public class ItemBread extends ItemEdible {
 
     public ItemBread() {
-        this(0, 1);
+        this(1);
     }
 
-    public ItemBread(Integer meta) {
-        this(meta, 1);
-    }
-
-    public ItemBread(Integer meta, int count) {
-        super(BREAD, meta, count, "Bread");
+    public ItemBread(int count) {
+        super(BREAD, 0, count);
     }
 }

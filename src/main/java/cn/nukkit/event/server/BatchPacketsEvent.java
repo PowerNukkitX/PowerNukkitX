@@ -4,9 +4,9 @@ import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.network.protocol.DataPacket;
+import lombok.Getter;
 
 public class BatchPacketsEvent extends ServerEvent implements Cancellable {
-
     private static final HandlerList handlers = new HandlerList();
 
     public static HandlerList getHandlers() {
@@ -15,7 +15,6 @@ public class BatchPacketsEvent extends ServerEvent implements Cancellable {
 
     private Player[] players;
     private DataPacket[] packets;
-
     private boolean forceSync;
 
     public BatchPacketsEvent(Player[] players, DataPacket[] packets, boolean forceSync) {

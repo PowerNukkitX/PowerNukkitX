@@ -1,8 +1,7 @@
 package cn.nukkit.inventory.transaction;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.Since;
+
 import cn.nukkit.event.inventory.InventoryClickEvent;
 import cn.nukkit.event.inventory.InventoryTransactionEvent;
 import cn.nukkit.inventory.Inventory;
@@ -60,7 +59,7 @@ public class InventoryTransaction {
         return inventories;
     }
 
-    @Since("1.3.0.0-PN")
+
     public List<InventoryAction> getActionList() {
         return actions;
     }
@@ -70,8 +69,7 @@ public class InventoryTransaction {
     }
 
     public void addAction(InventoryAction action) {
-        if (action instanceof SlotChangeAction) {
-            SlotChangeAction slotChangeAction = (SlotChangeAction) action;
+        if (action instanceof SlotChangeAction slotChangeAction) {
 
             ListIterator<InventoryAction> iterator = this.actions.listIterator();
 
@@ -115,7 +113,7 @@ public class InventoryTransaction {
 
     protected boolean matchItems(List<Item> needItems, List<Item> haveItems) {
         for (InventoryAction action : this.actions) {
-            if (action.getTargetItem().getId() != Item.AIR) {
+            if (!action.getTargetItem().isNull()) {
                 needItems.add(action.getTargetItem());
             }
 
@@ -123,7 +121,7 @@ public class InventoryTransaction {
                 return false;
             }
 
-            if (action.getSourceItem().getId() != Item.AIR) {
+            if (!action.getSourceItem().isNull()) {
                 haveItems.add(action.getSourceItem());
             }
         }
@@ -163,7 +161,7 @@ public class InventoryTransaction {
     public boolean canExecute() {
         List<Item> haveItems = new ArrayList<>();
         List<Item> needItems = new ArrayList<>();
-        return matchItems(needItems, haveItems) && this.actions.size() > 0 && haveItems.size() == 0 && needItems.size() == 0;
+        return matchItems(needItems, haveItems) && !this.actions.isEmpty() && haveItems.isEmpty() && needItems.isEmpty();
     }
 
     protected boolean callExecuteEvent() {
@@ -175,10 +173,9 @@ public class InventoryTransaction {
         Player who = null;
 
         for (InventoryAction action : this.actions) {
-            if (!(action instanceof SlotChangeAction)) {
+            if (!(action instanceof SlotChangeAction slotChange)) {
                 continue;
             }
-            SlotChangeAction slotChange = (SlotChangeAction) action;
 
             if (slotChange.getInventory().getHolder() instanceof Player) {
                 who = (Player) slotChange.getInventory().getHolder();
@@ -207,7 +204,6 @@ public class InventoryTransaction {
         return !ev.isCancelled();
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Always returns false if the execution is not possible")
     public boolean execute() {
         if (this.hasExecuted() || !this.canExecute()) {
             this.sendInventories();

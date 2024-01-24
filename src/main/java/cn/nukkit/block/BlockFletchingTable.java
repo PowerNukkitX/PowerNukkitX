@@ -1,18 +1,24 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitOnly
+
 public class BlockFletchingTable extends BlockSolid {
 
-    @PowerNukkitOnly
-    public BlockFletchingTable() {
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(FLETCHING_TABLE);
 
     @Override
-    public int getId() {
-        return FLETCHING_TABLE;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockFletchingTable() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockFletchingTable(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

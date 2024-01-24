@@ -1,20 +1,21 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.entity.EntitySwimmable;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 public class EntityAxolotl extends EntityAnimal implements EntitySwimmable {
-    public static final int NETWORK_ID = 130;
+    @Override
+    @NotNull public String getIdentifier() {
+        return AXOLOTL;
+    }
 
-    public EntityAxolotl(FullChunk chunk, CompoundTag nbt) {
+    public EntityAxolotl(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getHeight() {
@@ -31,7 +32,6 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable {
         this.setMaxHealth(14);
         super.initEntity();
     }
-
 
     @Override
     public String getOriginalName() {

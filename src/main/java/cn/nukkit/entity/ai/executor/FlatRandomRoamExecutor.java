@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.executor;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.math.Vector3;
@@ -9,8 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor {
 
     protected float speed;
@@ -62,9 +59,9 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
         if (currentTargetCalTick >= frequency || (calNextTargetImmediately && needUpdateTarget(entity))) {
             Vector3 target = next(entity);
             if (avoidWater) {
-                int blockId;
+                String blockId;
                 int time = 0;
-                while (time <= maxRetryTime && ((blockId = entity.level.getTickCachedBlock(target.add(0, -1, 0)).getId()) == Block.FLOWING_WATER || blockId == Block.STILL_WATER)) {
+                while (time <= maxRetryTime && ((blockId = entity.level.getTickCachedBlock(target.add(0, -1, 0)).getId()) == Block.FLOWING_WATER || blockId == Block.WATER)) {
                     target = next(entity);
                     time++;
                 }

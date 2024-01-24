@@ -1,54 +1,32 @@
 package cn.nukkit.nbt.tag;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 
 import java.io.IOException;
 
 public class ShortTag extends NumberTag<Integer> {
-    public int data;
+    public short data;
+    public ShortTag() {
+    }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     public ShortTag(int data) {
-        super("");
-        this.data = data;
-    }
-
-    public ShortTag(String name) {
-        super(name);
-    }
-
-    public ShortTag(String name, int data) {
-        super(name);
-        this.data = data;
+        this.data = (short) data;
     }
 
     @Override
     public Integer getData() {
-        return (int) (short) data;
+        return (int)  data;
     }
 
     @Override
     public void setData(Integer data) {
-        this.data = data == null ? 0 : data;
-    }
-
-    @Override
-    void write(NBTOutputStream dos) throws IOException {
-        dos.writeShort(data);
-    }
-
-    @Override
-    void load(NBTInputStream dis) throws IOException {
-        data = dis.readShort();
+        this.data = (short) (data == null ? 0 : data);
     }
 
     @Override
     public Integer parseValue() {
-        return this.data;
+        return (int) this.data;
     }
 
     @Override
@@ -58,7 +36,7 @@ public class ShortTag extends NumberTag<Integer> {
 
     @Override
     public String toString() {
-        return "ShortTag " + this.getName() + "(data: " + data + ")";
+        return "ShortTag " + "(data: " + data + ")";
     }
 
     @Override
@@ -73,7 +51,7 @@ public class ShortTag extends NumberTag<Integer> {
 
     @Override
     public Tag copy() {
-        return new ShortTag(getName(), data);
+        return new ShortTag(data);
     }
 
     @Override

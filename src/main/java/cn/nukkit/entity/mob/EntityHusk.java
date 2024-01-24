@@ -1,8 +1,6 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -17,10 +15,11 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.IntEntityData;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -29,16 +28,16 @@ import java.util.Set;
  */
 public class EntityHusk extends EntityZombie {
 
-    public static final int NETWORK_ID = 47;
+    @Override
+    @NotNull public String getIdentifier() {
+        return HUSK;
+    }
 
-    public EntityHusk(FullChunk chunk, CompoundTag nbt) {
+    public EntityHusk(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(
@@ -88,20 +87,16 @@ public class EntityHusk extends EntityZombie {
         return this.isBaby() ? 0.95f : 1.9f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Husk";
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isUndead() {
         return true;
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

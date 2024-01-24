@@ -29,6 +29,6 @@ public class PacketViolationWarningProcessor extends DataPacketProcessor<PacketV
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.PACKET_VIOLATION_WARNING_PACKET);
+        return ProtocolInfo.PACKET_VIOLATION_WARNING_PACKET;
     }
 }

@@ -1,19 +1,28 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
-public class BlockReinForcedDeepSlate extends BlockSolid{
+import cn.nukkit.block.property.CommonBlockProperties;
+import org.jetbrains.annotations.NotNull;
+
+public class BlockReinForcedDeepSlate extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties(REINFORCED_DEEPSLATE);
+
     @Override
-    public String getName() {
-        return "ReinForced DeepSlate";
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockReinForcedDeepSlate() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockReinForcedDeepSlate(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
-    public int getId() {
-        return REINFORCED_DEEPSLATE;
+    public String getName() {
+        return "ReinForced DeepSlate";
     }
 
     @Override

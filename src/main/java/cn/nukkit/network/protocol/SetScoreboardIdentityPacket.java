@@ -12,7 +12,7 @@ public class SetScoreboardIdentityPacket extends DataPacket {
     private Action action;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.SET_SCOREBOARD_IDENTITY_PACKET;
     }
 

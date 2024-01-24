@@ -4,6 +4,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.math.Vector3;
+import lombok.Getter;
 
 /**
  * @author MagicDroidX (Nukkit Project)

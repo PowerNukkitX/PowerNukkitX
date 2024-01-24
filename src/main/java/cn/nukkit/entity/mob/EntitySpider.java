@@ -1,29 +1,28 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityArthropod;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntitySpider extends EntityMob implements EntityWalkable, EntityArthropod {
+    @Override
+    @NotNull public String getIdentifier() {
+        return SPIDER;
+    }
+    
 
-    public static final int NETWORK_ID = 35;
-
-    public EntitySpider(FullChunk chunk, CompoundTag nbt) {
+    public EntitySpider(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {
@@ -41,8 +40,6 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         return 0.9f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Spider";
@@ -50,10 +47,9 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.STRING, Item.SPIDER_EYE)};
+        return new Item[]{Item.get(Item.STRING),Item.get(Item.SPIDER_EYE)};
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

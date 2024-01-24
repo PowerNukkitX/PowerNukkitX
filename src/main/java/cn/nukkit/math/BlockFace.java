@@ -1,8 +1,7 @@
 package cn.nukkit.math;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.utils.random.NukkitRandomSource;
+import cn.nukkit.utils.random.RandomSource;
 import com.google.common.collect.Iterators;
 
 import java.util.*;
@@ -83,7 +82,7 @@ public enum BlockFace {
         this.unitVector = unitVector;
     }
 
-    public static BlockFace[] getHorizontals(){
+    public static BlockFace[] getHorizontals() {
         return HORIZONTALS.clone();
     }
 
@@ -151,24 +150,15 @@ public enum BlockFace {
      *
      * @return index
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public int getDUNESWIndex() {
-        switch (getIndex()) {
-            case 1:
-                return 1;
-            case 2:
-                return 2;
-            case 3:
-                return 4;
-            case 4:
-                return 5;
-            case 5:
-                return 3;
-            case 0:
-            default:
-                return 0;
-        }
+        return switch (getIndex()) {
+            case 1 -> 1;
+            case 2 -> 2;
+            case 3 -> 4;
+            case 4 -> 5;
+            case 5 -> 3;
+            default -> 0;
+        };
     }
 
     /**
@@ -176,24 +166,15 @@ public enum BlockFace {
      *
      * @return index
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public int getDUSWNEIndex() {
-        switch (getIndex()) {
-            case 1:
-                return 1;
-            case 2:
-                return 4;
-            case 3:
-                return 2;
-            case 4:
-                return 3;
-            case 5:
-                return 5;
-            case 0:
-            default:
-                return 0;
-        }
+        return switch (getIndex()) {
+            case 1 -> 1;
+            case 2 -> 4;
+            case 3 -> 2;
+            case 4 -> 3;
+            case 5 -> 5;
+            default -> 0;
+        };
     }
 
     /**
@@ -292,18 +273,13 @@ public enum BlockFace {
      * @return block face
      */
     public BlockFace rotateY() {
-        switch (this) {
-            case NORTH:
-                return EAST;
-            case EAST:
-                return SOUTH;
-            case SOUTH:
-                return WEST;
-            case WEST:
-                return NORTH;
-            default:
-                throw new RuntimeException("Unable to get Y-rotated face of " + this);
-        }
+        return switch (this) {
+            case NORTH -> EAST;
+            case EAST -> SOUTH;
+            case SOUTH -> WEST;
+            case WEST -> NORTH;
+            default -> throw new RuntimeException("Unable to get Y-rotated face of " + this);
+        };
     }
 
     /**
@@ -312,39 +288,25 @@ public enum BlockFace {
      * @return block face
      */
     public BlockFace rotateYCCW() {
-        switch (this) {
-            case NORTH:
-                return WEST;
-            case EAST:
-                return NORTH;
-            case SOUTH:
-                return EAST;
-            case WEST:
-                return SOUTH;
-            default:
-                throw new RuntimeException("Unable to get counter-clockwise Y-rotated face of " + this);
-        }
+        return switch (this) {
+            case NORTH -> WEST;
+            case EAST -> NORTH;
+            case SOUTH -> EAST;
+            case WEST -> SOUTH;
+            default -> throw new RuntimeException("Unable to get counter-clockwise Y-rotated face of " + this);
+        };
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public CompassRoseDirection getCompassRoseDirection() {
-        switch (this) {
-            case NORTH:
-                return CompassRoseDirection.NORTH;
-            case SOUTH:
-                return CompassRoseDirection.SOUTH;
-            case WEST:
-                return CompassRoseDirection.WEST;
-            case EAST:
-                return CompassRoseDirection.EAST;
-            default:
-                return null;
-        }
+        return switch (this) {
+            case NORTH -> CompassRoseDirection.NORTH;
+            case SOUTH -> CompassRoseDirection.SOUTH;
+            case WEST -> CompassRoseDirection.WEST;
+            case EAST -> CompassRoseDirection.EAST;
+            default -> null;
+        };
     }
 
-    @Since("FUTURE")
-    @PowerNukkitOnly
     public Set<BlockFace> getEdges() {
         EnumSet<BlockFace> blockFaces = EnumSet.noneOf(BlockFace.class);
         if (axis.isVertical()) {
@@ -443,14 +405,13 @@ public enum BlockFace {
 
         private BlockFace[] faces;
 
-        @PowerNukkitOnly
-        @Since("1.4.0.0-PN")
+
         public BlockFace random() {
             return faces[ThreadLocalRandom.current().nextInt(faces.length)];
         }
 
-        public BlockFace random(NukkitRandom rand) {
-            return faces[rand.nextBoundedInt(faces.length)];
+        public BlockFace random(RandomSource rand) {
+            return faces[rand.nextInt(faces.length)];
         }
 
         @Override

@@ -1,12 +1,9 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import lombok.ToString;
 
-@Since("1.19.30-r1")
-@PowerNukkitXOnly
+
 @ToString
 public class NetworkSettingsPacket extends DataPacket {
 
@@ -17,7 +14,7 @@ public class NetworkSettingsPacket extends DataPacket {
     public float clientThrottleScalar;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.NETWORK_SETTINGS_PACKET;
     }
 
@@ -33,6 +30,10 @@ public class NetworkSettingsPacket extends DataPacket {
 
     @Override
     public void decode() {
-        throw new UnsupportedOperationException();
+        this.compressionThreshold = getLShort();
+        this.compressionAlgorithm = PacketCompressionAlgorithm.values()[getLShort()];
+        this.clientThrottleEnabled = getBoolean();
+        this.clientThrottleThreshold = getByte();
+        this.clientThrottleScalar = getLFloat();
     }
 }

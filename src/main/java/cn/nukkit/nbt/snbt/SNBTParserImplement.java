@@ -1040,7 +1040,6 @@ public class SNBTParserImplement implements SNBTConstants {
 
     }
 
-
     private final void pushOntoCallStack(String methodName, String fileName, int line, int column) {
         parsingStack.add(new NonTerminalCall(fileName, methodName, line, column));
     }
@@ -1114,7 +1113,6 @@ public class SNBTParserImplement implements SNBTConstants {
     private Token handleUnexpectedTokenType(TokenType expectedType, Token nextToken) {
         throw new ParseException(this, nextToken, EnumSet.of(expectedType), parsingStack);
     }
-
 
     private class ParseState {
         Token lastConsumed;

@@ -1,21 +1,32 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockAir extends BlockTransparent {
 
-    public BlockAir() {}
+    public static final BlockProperties PROPERTIES = new BlockProperties(AIR);
+    public static final BlockState STATE = PROPERTIES.getDefaultState();
 
     @Override
-    public int getId() {
-        return AIR;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockAir() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockAir(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -29,7 +40,7 @@ public class BlockAir extends BlockTransparent {
     }
 
     @Override
-    public boolean isBreakable(Item item) {
+    public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return false;
     }
 
@@ -53,8 +64,6 @@ public class BlockAir extends BlockTransparent {
         return false;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public boolean isSolid(BlockFace side) {
         return false;

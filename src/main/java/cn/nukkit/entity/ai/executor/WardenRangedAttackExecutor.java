@@ -1,8 +1,6 @@
 package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityIntelligent;
@@ -19,8 +17,7 @@ import cn.nukkit.network.protocol.LevelEventPacket;
 import java.util.EnumMap;
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r4")
+
 public class WardenRangedAttackExecutor implements IBehaviorExecutor {
 
     protected int chargingTime;

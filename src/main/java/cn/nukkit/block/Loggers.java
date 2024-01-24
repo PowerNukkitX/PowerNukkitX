@@ -18,8 +18,6 @@
 
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,8 +25,6 @@ import org.apache.logging.log4j.Logger;
  * @author joserobjr
  * @since 2021-01-15
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
 final class Loggers {
     private Loggers(){ throw new UnsupportedOperationException(); }
 

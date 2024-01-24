@@ -1,9 +1,8 @@
 package cn.nukkit.spark;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.plugin.Plugin;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -13,9 +12,10 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.nio.file.Files;
 import java.security.MessageDigest;
+import java.util.Arrays;
 
-@PowerNukkitXOnly
-@Since("1.20.10-r1")
+
+@Slf4j
 public class SparkInstaller {
 
     public static boolean initSpark(@Nonnull Server server) {
@@ -39,7 +39,7 @@ public class SparkInstaller {
                 }
             } catch (Exception e) {
                 download = false;
-                server.getLogger().alert("Failed to check spark update: " + e.getMessage());
+                log.warn("Failed to check spark update: " + e.getMessage());
             }
         } else {
             download = true;
@@ -54,10 +54,9 @@ public class SparkInstaller {
                 File targetPath = new File(server.getPluginPath() + "/spark.jar");
                 Files.copy(in, targetPath.toPath());
                 server.getPluginManager().loadPlugin(targetPath);
-                server.getLogger().info("Spark has been installed.");
+                log.info("Spark has been installed.");
             } catch (IOException e) {
-                server.getLogger().alert("Failed to download spark: " + e.getMessage());
-                e.printStackTrace();
+                log.warn("Failed to download spark: {}", Arrays.toString(e.getStackTrace()));
             }
         }
 

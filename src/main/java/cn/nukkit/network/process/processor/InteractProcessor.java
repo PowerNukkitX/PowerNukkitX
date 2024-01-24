@@ -7,7 +7,7 @@ import cn.nukkit.entity.EntityRideable;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.item.EntityChestBoat;
 import cn.nukkit.entity.item.EntityItem;
-import cn.nukkit.entity.item.EntityXPOrb;
+import cn.nukkit.entity.item.EntityXpOrb;
 import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.event.player.PlayerKickEvent;
@@ -32,14 +32,13 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
             //player.resetCraftingGridType();
         }
 
-
         Entity targetEntity = player.level.getEntity(pk.target);
 
         if (targetEntity == null || !player.isAlive() || !targetEntity.isAlive()) {
             return;
         }
 
-        if (targetEntity instanceof EntityItem || targetEntity instanceof EntityArrow || targetEntity instanceof EntityXPOrb) {
+        if (targetEntity instanceof EntityItem || targetEntity instanceof EntityArrow || targetEntity instanceof EntityXpOrb) {
             // 自定义实体在客户端中可以互动, 所以不踢出玩家
             if (targetEntity instanceof CustomEntity) {
                 return;
@@ -85,6 +84,6 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.INTERACT_PACKET);
+        return ProtocolInfo.INTERACT_PACKET;
     }
 }

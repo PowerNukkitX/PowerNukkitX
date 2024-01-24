@@ -1,9 +1,9 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
@@ -11,7 +11,19 @@ import cn.nukkit.item.ItemTool;
  */
 public class BlockIronBars extends BlockThin {
 
+    public static final BlockProperties PROPERTIES = new BlockProperties(IRON_BARS);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockIronBars() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockIronBars(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -20,16 +32,10 @@ public class BlockIronBars extends BlockThin {
     }
 
     @Override
-    public int getId() {
-        return IRON_BARS;
-    }
-
-    @Override
     public double getHardness() {
         return 5;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -51,7 +57,6 @@ public class BlockIronBars extends BlockThin {
     }
 
     @Override
-    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

@@ -2,8 +2,6 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDirt;
 import cn.nukkit.block.BlockTurtleEgg;
@@ -38,7 +36,7 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
@@ -48,6 +46,7 @@ import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -62,22 +61,22 @@ import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
  * @author PikyCZ
  */
 public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, EntityRideable, EntityOwnable, InventoryHolder, EntityAgeable {
-
-    public static final int NETWORK_ID = 23;
+    @Override
+    @NotNull public String getIdentifier() {
+        return HORSE;
+    }
+    
     private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6};
     private static final int[] MARK_VARIANTS = {0, 1, 2, 3, 4};
     private Map<String, Attribute> attributeMap;
     private HorseInventory horseInventory;
     private final AtomicBoolean jumping = new AtomicBoolean(false);
 
-    public EntityHorse(FullChunk chunk, CompoundTag nbt) {
+    public EntityHorse(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {
@@ -194,8 +193,6 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         return new Item[]{Item.get(Item.LEATHER), getHorseArmor(), getSaddle()};
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Horse";
@@ -357,9 +354,8 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         broadcastMovement();
     }
 
-    @Nullable
     @Override
-    public String getOwnerName() {
+    public @Nullable String getOwnerName() {
         String ownerName = EntityOwnable.super.getOwnerName();
         if (ownerName == null) {
             this.setDataProperty(new ByteEntityData(Entity.DATA_CONTAINER_TYPE, 0));
@@ -401,8 +397,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         return horseInventory;
     }
 
-    @Nullable
-    public Entity getRider() {
+    public @Nullable Entity getRider() {
         String name = getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME);
         if (name != null) {
             return Server.getInstance().getPlayerExact(name);

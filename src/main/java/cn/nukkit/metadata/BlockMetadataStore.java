@@ -5,6 +5,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.plugin.Plugin;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -18,18 +19,18 @@ public class BlockMetadataStore extends MetadataStore {
 
     @Override
     protected String disambiguate(Metadatable block, String metadataKey) {
-        if (!(block instanceof Block)) {
+        if (!(block instanceof Block b)) {
             throw new IllegalArgumentException("Argument must be a Block instance");
         }
-        return ((Block) block).x + ":" + ((Block) block).y + ":" + ((Block) block).z + ":" + metadataKey;
+        return b.x + ":" + b.y + ":" + b.z + ":" + metadataKey;
     }
 
     @Override
-    public List<MetadataValue> getMetadata(Object block, String metadataKey) {
-        if (!(block instanceof Block)) {
+    public List<MetadataValue> getMetadata(Metadatable block, String metadataKey) {
+        if (!(block instanceof Block b)) {
             throw new IllegalArgumentException("Object must be a Block");
         }
-        if (((Block) block).getLevel() == this.owningLevel) {
+        if (b.getLevel() == this.owningLevel) {
             return super.getMetadata(block, metadataKey);
         } else {
             throw new IllegalStateException("Block does not belong to world " + this.owningLevel.getName());
@@ -37,11 +38,23 @@ public class BlockMetadataStore extends MetadataStore {
     }
 
     @Override
-    public boolean hasMetadata(Object block, String metadataKey) {
-        if (!(block instanceof Block)) {
+    public MetadataValue getMetadata(Metadatable block, String metadataKey, Plugin plugin) {
+        if (!(block instanceof Block b)) {
             throw new IllegalArgumentException("Object must be a Block");
         }
-        if (((Block) block).getLevel() == this.owningLevel) {
+        if (b.getLevel() == this.owningLevel) {
+            return super.getMetadata(block, metadataKey, plugin);
+        } else {
+            throw new IllegalStateException("Block does not belong to world " + this.owningLevel.getName());
+        }
+    }
+
+    @Override
+    public boolean hasMetadata(Metadatable block, String metadataKey) {
+        if (!(block instanceof Block b)) {
+            throw new IllegalArgumentException("Object must be a Block");
+        }
+        if (b.getLevel() == this.owningLevel) {
             return super.hasMetadata(block, metadataKey);
         } else {
             throw new IllegalStateException("Block does not belong to world " + this.owningLevel.getName());
@@ -49,11 +62,23 @@ public class BlockMetadataStore extends MetadataStore {
     }
 
     @Override
-    public void removeMetadata(Object block, String metadataKey, Plugin owningPlugin) {
-        if (!(block instanceof Block)) {
+    public boolean hasMetadata(Metadatable block, String metadataKey, Plugin plugin) {
+        if (!(block instanceof Block b)) {
             throw new IllegalArgumentException("Object must be a Block");
         }
-        if (((Block) block).getLevel() == this.owningLevel) {
+        if (b.getLevel() == this.owningLevel) {
+            return super.hasMetadata(block, metadataKey, plugin);
+        } else {
+            throw new IllegalStateException("Block does not belong to world " + this.owningLevel.getName());
+        }
+    }
+
+    @Override
+    public void removeMetadata(Metadatable block, String metadataKey, Plugin owningPlugin) {
+        if (!(block instanceof Block b)) {
+            throw new IllegalArgumentException("Object must be a Block");
+        }
+        if (b.getLevel() == this.owningLevel) {
             super.removeMetadata(block, metadataKey, owningPlugin);
         } else {
             throw new IllegalStateException("Block does not belong to world " + this.owningLevel.getName());
@@ -61,11 +86,11 @@ public class BlockMetadataStore extends MetadataStore {
     }
 
     @Override
-    public void setMetadata(Object block, String metadataKey, MetadataValue newMetadataValue) {
-        if (!(block instanceof Block)) {
+    public void setMetadata(Metadatable block, String metadataKey, MetadataValue newMetadataValue) {
+        if (!(block instanceof Block b)) {
             throw new IllegalArgumentException("Object must be a Block");
         }
-        if (((Block) block).getLevel() == this.owningLevel) {
+        if (b.getLevel() == this.owningLevel) {
             super.setMetadata(block, metadataKey, newMetadataValue);
         } else {
             throw new IllegalStateException("Block does not belong to world " + this.owningLevel.getName());

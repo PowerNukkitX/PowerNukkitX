@@ -1,23 +1,22 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityWalkable;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 public class EntityPanda extends EntityAnimal implements EntityWalkable {
+    @Override
+    @NotNull public String getIdentifier() {
+        return PANDA;
+    }
+    
 
-    public static final int NETWORK_ID = 113;
-
-    public EntityPanda(FullChunk chunk, CompoundTag nbt) {
+    public EntityPanda(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {
@@ -35,9 +34,6 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable {
         super.initEntity();
     }
 
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Panda";

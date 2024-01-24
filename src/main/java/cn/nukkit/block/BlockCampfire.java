@@ -2,23 +2,19 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCampfire;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.item.EntityPotion;
+import cn.nukkit.entity.item.EntitySplashPotion;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
-import cn.nukkit.entity.projectile.EntitySmallFireBall;
+import cn.nukkit.entity.projectile.EntitySmallFireball;
 import cn.nukkit.event.entity.EntityCombustByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.inventory.CampfireInventory;
-import cn.nukkit.inventory.CampfireRecipe;
+import cn.nukkit.recipe.CampfireRecipe;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.*;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -38,56 +34,35 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Objects;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.EXTINGUISHED;
 
-@PowerNukkitOnly
+
 @Log4j2
-public class BlockCampfire extends BlockTransparentMeta implements Faceable, BlockEntityHolder<BlockEntityCampfire> {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final BooleanBlockProperty EXTINGUISHED = new BooleanBlockProperty("extinguished", false);
+public class BlockCampfire extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityCampfire> {
+    public static final BlockProperties PROPERTIES = new BlockProperties(CAMPFIRE, EXTINGUISHED, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(EXTINGUISHED, CommonBlockProperties.CARDINAL_DIRECTION);
-
-    @PowerNukkitOnly
     public BlockCampfire() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    @PowerNukkitOnly
-    public BlockCampfire(int meta) {
-        super(meta);
+    public BlockCampfire(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
-    public int getId() {
-        return CAMPFIRE_BLOCK;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.CAMPFIRE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
     @Override
-    public Class<? extends BlockEntityCampfire> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityCampfire> getBlockEntityClass() {
         return BlockEntityCampfire.class;
     }
 
@@ -118,7 +93,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{MinecraftItemID.CHARCOAL.get(2)};
+        return new Item[]{Item.get(ItemID.CHARCOAL, 0, 2)};
     }
 
     @Override
@@ -128,7 +103,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (down().getId() == CAMPFIRE_BLOCK) {
+        if (down().getProperties() == PROPERTIES) {
             return false;
         }
 
@@ -136,8 +111,8 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
         final Block layer1 = level.getBlock(this, 1);
 
         setBlockFace(player != null ? player.getDirection().getOpposite() : null);
-        boolean defaultLayerCheck = (block instanceof BlockWater && ((BlockWater) block).isSourceOrFlowingDown()) || block instanceof BlockIceFrosted;
-        boolean layer1Check = (layer1 instanceof BlockWater && ((BlockWater) layer1).isSourceOrFlowingDown()) || layer1 instanceof BlockIceFrosted;
+        boolean defaultLayerCheck = (block instanceof BlockFlowingWater w && w.isSourceOrFlowingDown()) || block instanceof BlockFrostedIce;
+        boolean layer1Check = (layer1 instanceof BlockFlowingWater w && w.isSourceOrFlowingDown()) || layer1 instanceof BlockFrostedIce;
         if (defaultLayerCheck || layer1Check) {
             setExtinguished(true);
             this.level.addSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
@@ -198,8 +173,6 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     protected EntityDamageEvent getDamageEvent(Entity entity) {
         return new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.FIRE, 1);
     }
@@ -214,7 +187,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!isExtinguished()) {
                 Block layer1 = getLevelBlockAtLayer(1);
-                if (layer1 instanceof BlockWater || layer1 instanceof BlockIceFrosted) {
+                if (layer1 instanceof BlockFlowingWater || layer1 instanceof BlockFrostedIce) {
                     setExtinguished(true);
                     this.level.setBlock(this, this, true, true);
                     this.level.addSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
@@ -227,7 +200,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
-        if (item.getId() == BlockID.AIR || item.getCount() <= 0) {
+        if (item.isNull()) {
             return false;
         }
 
@@ -241,7 +214,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
                 this.level.addSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
                 itemUsed = true;
             }
-        } else if (item.getId() == ItemID.FLINT_AND_STEEL || item.getEnchantment(Enchantment.ID_FIRE_ASPECT) != null) {
+        } else if (Objects.equals(item.getId(), ItemID.FLINT_AND_STEEL) || item.getEnchantment(Enchantment.ID_FIRE_ASPECT) != null) {
             item.useOn(this);
             setExtinguished(false);
             this.level.setBlock(this, this, true, true);
@@ -265,16 +238,14 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
         return itemUsed;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
-        if ((projectile instanceof EntitySmallFireBall || (projectile.isOnFire() && projectile instanceof EntityArrow)) && isExtinguished()) {
+        if ((projectile instanceof EntitySmallFireball || (projectile.isOnFire() && projectile instanceof EntityArrow)) && isExtinguished()) {
             setExtinguished(false);
             level.setBlock(this, this, true);
             return true;
-        } else if (projectile instanceof EntityPotion && !isExtinguished()
-                && ((EntityPotion) projectile).potionId == 0) {
+        } else if (projectile instanceof EntitySplashPotion && !isExtinguished()
+                && ((EntitySplashPotion) projectile).potionId == 0) {
             setExtinguished(true);
             level.setBlock(this, this, true);
             return true;
@@ -282,7 +253,6 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
         return false;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -298,26 +268,22 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
         return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
     }
 
-    @PowerNukkitOnly
     public boolean isExtinguished() {
-        return getBooleanValue(EXTINGUISHED);
+        return getPropertyValue(EXTINGUISHED);
     }
 
-    @PowerNukkitOnly
     public void setExtinguished(boolean extinguished) {
-        setBooleanValue(EXTINGUISHED, extinguished);
+        setPropertyValue(EXTINGUISHED, extinguished);
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION);
+        return getPropertyValue(CommonBlockProperties.MINECRAFT_BLOCK_FACE);
     }
 
     @Override
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, face);
+        setPropertyValue(CommonBlockProperties.MINECRAFT_BLOCK_FACE, face);
     }
 
     @Override
@@ -347,13 +313,11 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
     }
 
     @Override
-    @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    @PowerNukkitOnly
     public boolean canBePulled() {
         return false;
     }

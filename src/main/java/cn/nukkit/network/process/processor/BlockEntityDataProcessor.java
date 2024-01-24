@@ -48,6 +48,6 @@ public class BlockEntityDataProcessor extends DataPacketProcessor<BlockEntityDat
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.BLOCK_ENTITY_DATA_PACKET);
+        return ProtocolInfo.BLOCK_ENTITY_DATA_PACKET;
     }
 }

@@ -1,8 +1,6 @@
 package cn.nukkit.scoreboard.scoreboard;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.event.scoreboard.ScoreboardLineChangeEvent;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
@@ -16,8 +14,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@PowerNukkitXOnly
-@Since("1.19.30-r1")
+
 @Getter
 public class Scoreboard implements IScoreboard{
     protected String objectiveName;

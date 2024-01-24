@@ -1,13 +1,11 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityLodestone;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemCompassLodestone;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemLodestoneCompass;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
@@ -20,34 +18,26 @@ import java.io.IOException;
 /**
  * @author joserobjr
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 @Log4j2
 public class BlockLodestone extends BlockSolid implements BlockEntityHolder<BlockEntityLodestone> {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    public static final BlockProperties PROPERTIES = new BlockProperties(LODESTONE);
     public BlockLodestone() {
-        // Does nothing
-    }
-    
-    @Override
-    public int getId() {
-        return LODESTONE;
+        super(PROPERTIES.getDefaultState());
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
+    public BlockLodestone(BlockState blockState) {
+        super(blockState);
+    }
+
     @Override
-    public Class<? extends BlockEntityLodestone> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityLodestone> getBlockEntityClass() {
         return BlockEntityLodestone.class;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.LODESTONE;
     }
 
@@ -67,8 +57,7 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
             return false;
         }
 
-
-        ItemCompassLodestone compass = (ItemCompassLodestone) Item.get(ItemID.LODESTONE_COMPASS);
+        ItemLodestoneCompass compass = (ItemLodestoneCompass) Item.get(ItemID.LODESTONE_COMPASS);
         if (item.hasCompoundTag()) {
             compass.setCompoundTag(item.getCompoundTag().clone());
         }
@@ -115,6 +104,11 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
     }
 
     @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
     public double getHardness() {
         return 2;
     }
@@ -129,8 +123,6 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
@@ -142,7 +134,6 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
     }
 
     @Override
-    @PowerNukkitOnly
     public  boolean sticksToPiston() {
         return false;
     }

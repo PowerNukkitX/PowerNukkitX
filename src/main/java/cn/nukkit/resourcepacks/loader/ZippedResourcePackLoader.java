@@ -1,8 +1,6 @@
 package cn.nukkit.resourcepacks.loader;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.resourcepacks.ResourcePack;
 import cn.nukkit.resourcepacks.ZippedResourcePack;
 import com.google.common.io.Files;
@@ -13,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
-@PowerNukkitXOnly
-@Since("1.19.62-r1")
+
+
 public class ZippedResourcePackLoader implements ResourcePackLoader {
 
     //资源包文件存放地址

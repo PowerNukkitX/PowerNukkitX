@@ -1,32 +1,38 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+import static cn.nukkit.block.property.CommonBlockProperties.*;
+
 public class BlockMangroveLeaves extends BlockLeaves {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(PERSISTENT, UPDATE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_LEAVES, PERSISTENT_BIT, UPDATE_BIT);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockMangroveLeaves() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockMangroveLeaves(BlockState blockstate) {
+        super(blockstate);
+    }
 
     @Override
     public String getName() {
         return "Mangrove Leaves";
-    }
-
-    @Override
-    public int getId() {
-        return MANGROVE_LEAVES;
     }
 
     @Override
@@ -43,18 +49,10 @@ public class BlockMangroveLeaves extends BlockLeaves {
         int fortune = fortuneEnchantment != null ? fortuneEnchantment.getLevel() : 0;
         int stickOdds;
         switch (fortune) {
-            case 0 -> {
-                stickOdds = 50;
-            }
-            case 1 -> {
-                stickOdds = 45;
-            }
-            case 2 -> {
-                stickOdds = 40;
-            }
-            default -> {
-                stickOdds = 30;
-            }
+            case 0 -> stickOdds = 50;
+            case 1 -> stickOdds = 45;
+            case 2 -> stickOdds = 40;
+            default -> stickOdds = 30;
         }
         ThreadLocalRandom random = ThreadLocalRandom.current();
         if (random.nextInt(stickOdds) == 0) {
@@ -69,16 +67,8 @@ public class BlockMangroveLeaves extends BlockLeaves {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         //todo: 实现红树树叶催化
         return true;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 }

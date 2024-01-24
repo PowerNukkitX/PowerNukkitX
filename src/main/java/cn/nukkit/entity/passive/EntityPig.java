@@ -1,7 +1,5 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -19,8 +17,9 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -28,10 +27,13 @@ import java.util.Set;
  * @author BeYkeRYkt (Nukkit Project)
  */
 public class EntityPig extends EntityAnimal implements EntityWalkable {
+    @Override
+    @NotNull public String getIdentifier() {
+        return PIG;
+    }
+    
 
-    public static final int NETWORK_ID = 12;
-
-    public EntityPig(FullChunk chunk, CompoundTag nbt) {
+    public EntityPig(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -96,8 +98,6 @@ public class EntityPig extends EntityAnimal implements EntityWalkable {
         super.initEntity();
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Pig";
@@ -105,17 +105,14 @@ public class EntityPig extends EntityAnimal implements EntityWalkable {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_PORKCHOP : Item.RAW_PORKCHOP))};
+        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_PORKCHOP : Item.PORKCHOP))};
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public boolean isBreedingItem(Item item) {
-        int id = item.getId();
+        String id = item.getId();
 
         return id == Item.CARROT || id == Item.POTATO || id == Item.BEETROOT;
     }

@@ -1,7 +1,5 @@
 package cn.nukkit.camera.instruction.impl;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.camera.data.Time;
 import cn.nukkit.camera.instruction.CameraInstruction;
 import lombok.Builder;
@@ -15,8 +13,8 @@ import java.awt.*;
  * @date 2023/6/11
  * PowerNukkitX Project
  */
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
+
 @Builder
 @Getter
 public class FadeInstruction implements CameraInstruction {

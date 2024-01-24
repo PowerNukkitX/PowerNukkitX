@@ -2,8 +2,6 @@ package cn.nukkit.entity;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.entity.ai.behaviorgroup.EmptyBehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -16,7 +14,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.form.window.FormWindowSimple;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Getter;
@@ -26,11 +24,11 @@ import java.util.Objects;
 /**
  * {@code EntityIntelligent}抽象了一个具有行为组{@link IBehaviorGroup}（也就是具有AI）的实体
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public abstract class EntityIntelligent extends EntityPhysical implements LogicalUtils, EntityControlUtils {
 
-    @Since("1.19.60-r1")
+
     protected IBehaviorGroup behaviorGroup;
 
     /**
@@ -39,7 +37,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     @Getter
     protected boolean isActive = true;
 
-    public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
+    public EntityIntelligent(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         var storage = getMemoryStorage();
         if (storage != null) {
@@ -76,7 +74,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
      *
      * @return 新创建的行为组
      */
-    @Since("1.19.60-r1")
+
     protected IBehaviorGroup requireBehaviorGroup() {
         return new EmptyBehaviorGroup(this);
     }
@@ -122,7 +120,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
         if (!EntityAI.checkDebugOption(EntityAI.DebugOption.MEMORY)) {
             return super.onInteract(player, item, clickedPos);
         } else {
-            if (player.isOp() && item.getId() == ItemID.STICK) {
+            if (player.isOp() && Objects.equals(item.getId(), ItemID.STICK)) {
                 var strBuilder = new StringBuilder();
 
                 //Build memory information

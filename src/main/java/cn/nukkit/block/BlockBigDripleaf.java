@@ -2,10 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.*;
+import cn.nukkit.block.property.CommonPropertyMap;
+import cn.nukkit.block.property.enums.BigDripleafTilt;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.block.BigDripleafTiltChangeEvent;
@@ -24,26 +22,18 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.block.BlockBigDripleaf.Tilt.*;
+import java.util.Objects;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+import static cn.nukkit.block.property.CommonBlockProperties.*;
 public class BlockBigDripleaf extends BlockFlowable implements Faceable {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BIG_DRIPLEAF, BIG_DRIPLEAF_HEAD, BIG_DRIPLEAF_TILT, MINECRAFT_CARDINAL_DIRECTION);
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    public static final BlockProperty<Tilt> TILT = new ArrayBlockProperty<>("big_dripleaf_tilt", false, new Tilt[]{Tilt.NONE, PARTIAL_TILT, Tilt.FULL_TILT, Tilt.UNSTABLE});
+    public BlockBigDripleaf() {
+        this(PROPERTIES.getDefaultState());
+    }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    public static final BooleanBlockProperty HEAD = new BooleanBlockProperty("big_dripleaf_head", false);
-
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION, TILT, HEAD);
-
-    protected BlockBigDripleaf() {
-        super(0);
+    public BlockBigDripleaf(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -52,51 +42,40 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public int getId() {
-        return BlockID.BIG_DRIPLEAF;
-    }
-
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION);
+        return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(MINECRAFT_CARDINAL_DIRECTION));
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, face);
+        setPropertyValue(MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
     }
 
     public boolean isHead() {
-        return this.getBooleanValue(HEAD);
+        return this.getPropertyValue(BIG_DRIPLEAF_HEAD);
     }
 
     public void setHead(boolean isHead) {
-        this.setBooleanValue(HEAD, isHead);
+        this.setPropertyValue(BIG_DRIPLEAF_HEAD, isHead);
     }
 
-    public Tilt getTilt() {
-        return this.getPropertyValue(TILT);
+    public BigDripleafTilt getTilt() {
+        return this.getPropertyValue(BIG_DRIPLEAF_TILT);
     }
 
-    public boolean setTilt(Tilt tilt) {
+    public boolean setTilt(BigDripleafTilt tilt) {
         BigDripleafTiltChangeEvent event = new BigDripleafTiltChangeEvent(this, this.getTilt(), tilt);
         Server.getInstance().getPluginManager().callEvent(event);
         if (event.isCancelled()) return false;
-        this.setPropertyValue(TILT, tilt);
+        this.setPropertyValue(BIG_DRIPLEAF_TILT, tilt);
         return true;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 2;
@@ -135,11 +114,11 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         Block below = block.down();
-        int id = below.getId();
+        String id = below.getId();
         if (!isValidSupportBlock(id))
             return false;
 
-        if (id == BIG_DRIPLEAF) {
+        if (id.equals(BIG_DRIPLEAF)) {
             var b = new BlockBigDripleaf();
             var bf = ((BlockBigDripleaf) below).getBlockFace();
             b.setBlockFace(bf);
@@ -152,7 +131,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             setHead(true);
         }
 
-        if (block instanceof BlockWater)
+        if (block instanceof BlockFlowingWater)
             level.setBlock(this, 1, block, true, false);
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
@@ -164,10 +143,10 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             Block up;
             while ((up = head.up()).getId() == BIG_DRIPLEAF)
                 head = up;
-            if (head.getFloorY() + 1 >= level.getMaxHeight())
+            if (head.getFloorY() + 1 > level.getMaxHeight())
                 return false;
             Block above = head.up();
-            if (!(above.getId() == AIR) && !(above instanceof BlockWater))
+            if (!above.isAir() && !(above instanceof BlockFlowingWater))
                 return false;
             if (player != null && !player.isCreative())
                 item.count--;
@@ -175,7 +154,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             var aboveDownBlock = new BlockBigDripleaf();
             aboveDownBlock.setBlockFace(this.getBlockFace());
             level.setBlock(above.getSideVec(BlockFace.DOWN), aboveDownBlock, true, false);
-            if (above instanceof BlockWater)
+            if (above instanceof BlockFlowingWater)
                 level.setBlock(above, 1, above, true, false);
             var aboveBock = new BlockBigDripleaf();
             aboveBock.setBlockFace(this.getBlockFace());
@@ -201,7 +180,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             }
 
             if (!isHead()) {
-                if (up().getId() == BIG_DRIPLEAF) {
+                if (up().getId().equals(BIG_DRIPLEAF)) {
                     return 0;
                 }
 
@@ -210,22 +189,22 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             }
 
             var tilt = getTilt();
-            if (tilt == Tilt.NONE) {
+            if (tilt == BigDripleafTilt.NONE) {
                 return 0;
             }
 
             if (level.isBlockPowered(this)) {
-                setTilt(Tilt.NONE);
+                setTilt(BigDripleafTilt.NONE);
                 level.setBlock(this, this, true, false);
                 return Level.BLOCK_UPDATE_SCHEDULED;
             }
 
             switch (tilt) {
-                case UNSTABLE -> setTiltAndScheduleTick(PARTIAL_TILT);
-                case PARTIAL_TILT -> setTiltAndScheduleTick(FULL_TILT);
+                case UNSTABLE -> setTiltAndScheduleTick(BigDripleafTilt.PARTIAL_TILT);
+                case PARTIAL_TILT -> setTiltAndScheduleTick(BigDripleafTilt.FULL_TILT);
                 case FULL_TILT -> {
                     level.addSound(this, Sound.TILT_UP_BIG_DRIPLEAF);
-                    setTilt(NONE);
+                    setTilt(BigDripleafTilt.NONE);
                     level.setBlock(this, this, true, false);
                 }
             }
@@ -236,13 +215,13 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             if (!isHead())
                 return 0;
             var tilt = getTilt();
-            if (tilt == NONE)
+            if (tilt == BigDripleafTilt.NONE)
                 return 0;
             if (!level.isBlockPowered(this))
                 return 0;
-            if (tilt != UNSTABLE)
+            if (tilt != BigDripleafTilt.UNSTABLE)
                 level.addSound(this, Sound.TILT_UP_BIG_DRIPLEAF);
-            setTilt(NONE);
+            setTilt(BigDripleafTilt.NONE);
             level.setBlock(this, this, true, false);
 
             level.cancelSheduledUpdate(this, this);
@@ -259,26 +238,24 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (!isHead() || getTilt() != NONE || entity instanceof EntityProjectile) return;
-        setTiltAndScheduleTick(UNSTABLE);
+        if (!isHead() || getTilt() != BigDripleafTilt.NONE || entity instanceof EntityProjectile) return;
+        setTiltAndScheduleTick(BigDripleafTilt.UNSTABLE);
     }
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{new BlockSmallDripleaf().toItem()};
+        return new Item[]{new BlockSmallDripleafBlock().toItem()};
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
-        setTiltAndScheduleTick(FULL_TILT);
+        setTiltAndScheduleTick(BigDripleafTilt.FULL_TILT);
         return true;
     }
 
     @Override
     public boolean canPassThrough() {
-        return !isHead() || getTilt() == FULL_TILT;
+        return !isHead() || getTilt() == BigDripleafTilt.FULL_TILT;
     }
 
     @Override
@@ -304,7 +281,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
                     this.y + 0.6875,
                     this.z,
                     this.x + 1,
-                    this.y + (getTilt() == PARTIAL_TILT ? 0.8125 : 0.9375),
+                    this.y + (getTilt() == BigDripleafTilt.PARTIAL_TILT ? 0.8125 : 0.9375),
                     this.z + 1
             );
         }
@@ -319,8 +296,6 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         return bb;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
@@ -330,11 +305,19 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         return isValidSupportBlock(down().getId());
     }
 
-    private boolean isValidSupportBlock(int id) {
-        return id == BIG_DRIPLEAF || id == GRASS || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == CLAY_BLOCK;
+    private boolean isValidSupportBlock(String id) {
+        return Objects.equals(id, BIG_DRIPLEAF) ||
+                Objects.equals(id, GRASS) ||
+                Objects.equals(id, DIRT) ||
+                Objects.equals(id, MYCELIUM) ||
+                Objects.equals(id, PODZOL) ||
+                Objects.equals(id, FARMLAND) ||
+                Objects.equals(id, DIRT_WITH_ROOTS) ||
+                Objects.equals(id, MOSS_BLOCK) ||
+                Objects.equals(id, CLAY);
     }
 
-    private boolean setTiltAndScheduleTick(Tilt tilt) {
+    private boolean setTiltAndScheduleTick(BigDripleafTilt tilt) {
         if (!setTilt(tilt))
             return false;
         level.setBlock(this, this, true, false);
@@ -351,12 +334,5 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
         level.addSound(this, Sound.TILT_DOWN_BIG_DRIPLEAF);
         return true;
-    }
-
-    public enum Tilt {
-        NONE,
-        UNSTABLE,
-        PARTIAL_TILT,
-        FULL_TILT
     }
 }

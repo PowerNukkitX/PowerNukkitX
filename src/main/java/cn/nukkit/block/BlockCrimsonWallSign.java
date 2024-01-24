@@ -1,53 +1,40 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemCrimsonSign;
+import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
+
+
 public class BlockCrimsonWallSign extends BlockWallSign {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_WALL_SIGN, FACING_DIRECTION);
+
     public BlockCrimsonWallSign() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public BlockCrimsonWallSign(int meta) {
-        super(meta);
+    public BlockCrimsonWallSign(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
-    public int getId() {
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
+    public String getWallSignId() {
         return CRIMSON_WALL_SIGN;
     }
 
-    @PowerNukkitOnly
     @Override
-    protected int getPostId() {
+    public String getStandingSignId() {
         return CRIMSON_STANDING_SIGN;
     }
 
     @Override
-    public String getName() {
-        return "Crimson Wall Sign";
-    }
-
-    @Override
     public Item toItem() {
-        return Item.get(ItemID.CRIMSON_SIGN);
-    }
-    
-    @Override
-    public int getBurnChance() {
-        return 0;
-    }
-    
-    @Override
-    public int getBurnAbility() {
-        return 0;
+        return new ItemCrimsonSign();
     }
 }

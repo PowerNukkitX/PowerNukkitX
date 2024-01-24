@@ -2,8 +2,6 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
@@ -22,7 +20,7 @@ import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
@@ -32,17 +30,16 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.SetEntityDataPacket;
 import cn.nukkit.potion.Effect;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 public class EntityArmorStand extends Entity implements EntityInventoryHolder, EntityInteractable, EntityNameable {
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final int NETWORK_ID = 61;
-
+    @Override
+    @NotNull public String getIdentifier() {
+        return ARMOR_STAND;
+    }
     private static final String TAG_MAINHAND = "Mainhand";
     private static final String TAG_POSE_INDEX = "PoseIndex";
     private static final String TAG_OFFHAND = "Offhand";
@@ -51,9 +48,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     private EntityEquipmentInventory equipmentInventory;
     private EntityArmorInventory armorInventory;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public EntityArmorStand(FullChunk chunk, CompoundTag nbt) {
+
+    public EntityArmorStand(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         setMaxHealth(6);
         setHealth(6);
@@ -75,10 +71,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getHeight() {
@@ -127,13 +120,11 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isPersistent() {
         return true;
     }
 
-    @PowerNukkitOnly
     @Override
     public void setPersistent(boolean persistent) {
         // Armor stands are always persistent
@@ -250,7 +241,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             }
             return true;
         } else if (!item.isNull()) {
-            Item itemtoAddToArmorStand = Item.getBlock(BlockID.AIR);
+            Item itemtoAddToArmorStand = Item.AIR;
             if (!handItem.isNull()) {
                 if (handItem.equals(item, true, true)) {
                     // Attempted to replace with the same item type
@@ -271,7 +262,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
                     itemToSetToPlayerInv.count--;
                 } else {
                     itemtoAddToArmorStand = handItem.clone();
-                    itemToSetToPlayerInv = Item.getBlock(BlockID.AIR);
+                    itemToSetToPlayerInv = Item.AIR;
                 }
                 player.getInventory().setItem(player.getInventory().getHeldItemIndex(), itemToSetToPlayerInv);
             }
@@ -297,7 +288,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         return false;
     }
 
-
     private int getPose() {
         return this.dataProperties.getInt(Entity.DATA_ARMOR_STAND_POSE_INDEX);
     }
@@ -318,11 +308,11 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         this.namedTag.put(TAG_OFFHAND, NBTIO.putItemHelper(this.equipmentInventory.getItemInOffhand()));
 
         if (this.armorInventory != null) {
-            ListTag<CompoundTag> armorTag = new ListTag<>(TAG_ARMOR);
+            ListTag<CompoundTag> armorTag = new ListTag<>();
             for (int i = 0; i < 4; i++) {
                 armorTag.add(NBTIO.putItemHelper(this.armorInventory.getItem(i), i));
             }
-            this.namedTag.putList(armorTag);
+            this.namedTag.putList(TAG_ARMOR,armorTag);
         }
 
         this.namedTag.putInt(TAG_POSE_INDEX, this.getPose());
@@ -432,7 +422,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         if (source instanceof EntityDamageByEntityEvent event) {
             if (event.getDamager() instanceof Player player) {
                 if (player.isCreative()) {
-                    this.level.addParticle(new DestroyBlockParticle(this, Block.get(BlockID.PLANKS)));
+                    this.level.addParticle(new DestroyBlockParticle(this, Block.get(BlockID.OAK_PLANKS)));
                     this.close();
                     return true;
                 }
@@ -445,8 +435,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         return true;
     }
 
-    @Since("1.5.1.0-PN")
-    @PowerNukkitOnly
     @Override
     public String getOriginalName() {
         return "Armor Stand";
@@ -474,8 +462,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         return this.armorInventory;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public EntityEquipmentInventory getEquipmentInventory() {
         return this.equipmentInventory;
     }

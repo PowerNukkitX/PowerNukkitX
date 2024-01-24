@@ -1,27 +1,28 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+import org.jetbrains.annotations.NotNull;
+
+import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
+
 public class BlockPolishedBasalt extends BlockBasalt {
+    public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_BASALT, PILLAR_AXIS);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public BlockPolishedBasalt() { this(0); }
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public BlockPolishedBasalt(int meta) { super(meta); }
+    public BlockPolishedBasalt() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockPolishedBasalt(BlockState blockstate) {
+        super(blockstate);
+    }
 
     @Override
     public String getName() {
         return "Polished Basalt";
-    }
-
-    @Override
-    public int getId() {
-        return BlockID.POLISHED_BASALT;
     }
 }

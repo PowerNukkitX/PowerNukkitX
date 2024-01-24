@@ -22,7 +22,7 @@ import java.util.*;
 @ToString
 public class LoginPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.LOGIN_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.LOGIN_PACKET;
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public String username;
@@ -33,7 +33,7 @@ public class LoginPacket extends DataPacket {
     public long issueUnixTime = -1;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

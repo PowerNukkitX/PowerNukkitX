@@ -1,7 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.potion.Potion;
 import cn.nukkit.utils.ServerException;
 
@@ -56,10 +54,7 @@ public class ItemArrow extends Item {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    @Nullable
-    public Potion getTippedArrowPotion() {
+    public @Nullable Potion getTippedArrowPotion() {
         final int damage = getDamage();
         if (damage > 0) {
             try {

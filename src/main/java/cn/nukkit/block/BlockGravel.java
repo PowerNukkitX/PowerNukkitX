@@ -4,20 +4,21 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.utils.random.NukkitRandomSource;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockGravel extends BlockFallable {
+    public static final BlockProperties PROPERTIES = new BlockProperties(GRAVEL);
 
     public BlockGravel() {
-        // Does Nothing
+        super(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return GRAVEL;
+    public BlockGravel(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -41,6 +42,11 @@ public class BlockGravel extends BlockFallable {
     }
 
     @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
     public Item[] getDrops(Item item) {
         Enchantment enchantment = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
         int fortune = 0;
@@ -48,27 +54,27 @@ public class BlockGravel extends BlockFallable {
             fortune = enchantment.getLevel();
         }
         
-        NukkitRandom nukkitRandom = new NukkitRandom();
+        NukkitRandomSource nukkitRandom = new NukkitRandomSource();
         switch (fortune) {
-            case 0:
+            case 0 -> {
                 if (nukkitRandom.nextRange(0, 9) == 0) {
-                    return new Item[]{ Item.get(ItemID.FLINT, 0, 1) };
-                    
+                    return new Item[]{Item.get(ItemID.FLINT, 0, 1)};
+
                 }
-                break;
-            case 1:
+            }
+            case 1 -> {
                 if (nukkitRandom.nextRange(0, 6) == 0) {
-                    return new Item[]{ Item.get(ItemID.FLINT, 0, 1) };
+                    return new Item[]{Item.get(ItemID.FLINT, 0, 1)};
                 }
-                break;
-            case 2:
+            }
+            case 2 -> {
                 if (nukkitRandom.nextRange(0, 3) == 0) {
-                    return new Item[]{ Item.get(ItemID.FLINT, 0, 1) };
+                    return new Item[]{Item.get(ItemID.FLINT, 0, 1)};
                 }
-                break;
-            default:
-            case 3:
-                return new Item[]{ Item.get(ItemID.FLINT, 0, 1) };
+            }
+            default -> {
+                return new Item[]{Item.get(ItemID.FLINT, 0, 1)};
+            }
         }
         return new Item[]{ toItem() };
     }

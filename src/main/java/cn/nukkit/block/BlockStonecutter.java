@@ -1,17 +1,23 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 public class BlockStonecutter extends BlockSolid {
 
-    public BlockStonecutter() {
-
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(STONECUTTER);
 
     @Override
-    public int getId() {
-        return STONECUTTER;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockStonecutter() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockStonecutter(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -35,7 +41,6 @@ public class BlockStonecutter extends BlockSolid {
     }
 
     @Override
-    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -45,7 +50,6 @@ public class BlockStonecutter extends BlockSolid {
         return false;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;

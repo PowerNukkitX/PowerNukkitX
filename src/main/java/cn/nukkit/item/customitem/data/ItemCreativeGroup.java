@@ -1,9 +1,6 @@
 package cn.nukkit.item.customitem.data;
 
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 /**
  * Controls the major group of custom items in the creative inventory.
  * <br>Possible values:
@@ -86,8 +83,8 @@ import cn.nukkit.api.Since;
  * @return The major group of the custom item in the creative inventory.
  * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
  */
-@PowerNukkitXOnly
-@Since("1.19.31-r1")
+
+
 public enum ItemCreativeGroup {
     NONE("none"),
 

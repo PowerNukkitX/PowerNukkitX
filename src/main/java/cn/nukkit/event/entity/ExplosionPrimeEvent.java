@@ -3,6 +3,7 @@ package cn.nukkit.event.entity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 /**
  * @author Box (Nukkit Project)
@@ -36,7 +37,6 @@ public class ExplosionPrimeEvent extends EntityEvent implements Cancellable {
     public boolean isBlockBreaking() {
         return this.blockBreaking;
     }
-
 
     public void setBlockBreaking(boolean affectsBlocks) {
         this.blockBreaking = affectsBlocks;

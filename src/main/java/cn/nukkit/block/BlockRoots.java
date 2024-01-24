@@ -1,30 +1,15 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
 public abstract class BlockRoots extends BlockFlowable {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    protected BlockRoots() {
-        super(0);
-    }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return CommonBlockProperties.EMPTY_PROPERTIES;
+    public BlockRoots(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -41,20 +26,11 @@ public abstract class BlockRoots extends BlockFlowable {
         return isSupportValid() && super.place(item, block, target, face, fx, fy, fz, player);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     protected boolean isSupportValid() {
-        switch (down().getId()) {
-            case WARPED_NYLIUM:
-            case CRIMSON_NYLIUM:
-            case GRASS:
-            case PODZOL:
-            case DIRT:
-            case SOUL_SOIL:
-                return true;
-            default:
-                return false;
-        }
+        return switch (down().getId()) {
+            case WARPED_NYLIUM, CRIMSON_NYLIUM, GRASS, PODZOL, DIRT, SOUL_SOIL -> true;
+            default -> false;
+        };
     }
 
     @Override

@@ -18,20 +18,18 @@
 
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
  * @since 2021-07-06
  */
-@PowerNukkitOnly
-@Since("1.5.2.0-PN")
+
+
 public class NPCDialoguePacket extends DataPacket {
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
-    public static final byte NETWORK_ID = ProtocolInfo.NPC_DIALOGUE_PACKET;
+
+
+    public static final int NETWORK_ID = ProtocolInfo.NPC_DIALOGUE_PACKET;
     
     private static final NPCDialogAction[] ACTIONS = NPCDialogAction.values();
     
@@ -42,14 +40,13 @@ public class NPCDialoguePacket extends DataPacket {
     private String npcName = "";
     private String actionJson = "";
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
     public NPCDialoguePacket() {
         // Indicates when this public constructor were accessible
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 
@@ -74,87 +71,56 @@ public class NPCDialoguePacket extends DataPacket {
         putString(actionJson);
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
     public long getRuntimeEntityId() {
         return runtimeEntityId;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
     public void setRuntimeEntityId(long runtimeEntityId) {
         this.runtimeEntityId = runtimeEntityId;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
-    @NotNull
-    public NPCDialogAction getAction() {
+    @NotNull public NPCDialogAction getAction() {
         return action;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
     public void setAction(@NotNull NPCDialogAction action) {
         this.action = action;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
-    @NotNull
-    public String getDialogue() {
+    @NotNull public String getDialogue() {
         return dialogue;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
     public void setDialogue(@NotNull String dialogue) {
         this.dialogue = dialogue;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
-    @NotNull
-    public String getSceneName() {
+    @NotNull public String getSceneName() {
         return sceneName;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
     public void setSceneName(@NotNull String sceneName) {
         this.sceneName = sceneName;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
-    @NotNull
-    public String getNpcName() {
+    @NotNull public String getNpcName() {
         return npcName;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
     public void setNpcName(@NotNull String npcName) {
         this.npcName = npcName;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
-    @NotNull
-    public String getActionJson() {
+    @NotNull public String getActionJson() {
         return actionJson;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
     public void setActionJson(@NotNull String actionJson) {
         this.actionJson = actionJson;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
     public enum NPCDialogAction {
-        @PowerNukkitOnly @Since("1.5.2.0-PN") OPEN,
-        @PowerNukkitOnly @Since("1.5.2.0-PN") CLOSE
+        OPEN,
+        CLOSE
     }
 }

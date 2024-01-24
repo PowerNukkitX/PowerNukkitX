@@ -18,6 +18,6 @@ public class LevelSoundEventProcessor extends DataPacketProcessor<LevelSoundEven
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.LEVEL_SOUND_EVENT_PACKET);
+        return ProtocolInfo.LEVEL_SOUND_EVENT_PACKET;
     }
 }

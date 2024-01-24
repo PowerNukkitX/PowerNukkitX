@@ -2,12 +2,9 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockChainCommandBlock;
 import cn.nukkit.block.BlockCommandBlock;
-import cn.nukkit.block.BlockCommandBlockChain;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.ConsoleCommandSender;
@@ -21,7 +18,7 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
@@ -38,8 +35,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
 @Getter
 public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICommandBlock, BlockEntityNameable {
     protected boolean conditionalMode;
@@ -62,7 +57,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     protected final Set<Player> viewers = Sets.newHashSet();
     protected int currentTick;
 
-    public BlockEntityCommandBlock(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityCommandBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -74,7 +69,6 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         }
     }
 
-    @Since("1.19.60-r1")
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -126,7 +120,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         if (this.namedTag.contains(TAG_LAST_OUTPUT_PARAMS)) {
             this.lastOutputParams = (ListTag<StringTag>) this.namedTag.getList(TAG_LAST_OUTPUT_PARAMS);
         } else {
-            this.lastOutputParams = new ListTag<>(TAG_LAST_OUTPUT_PARAMS);
+            this.lastOutputParams = new ListTag<>();
         }
 
         if (this.namedTag.contains(TAG_LP_COMMAND_MODE)) {
@@ -187,7 +181,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
             this.namedTag.putString(TAG_LAST_OUTPUT, this.lastOutput);
         }
         if (this.lastOutputParams != null) {
-            this.namedTag.putList(this.lastOutputParams);
+            this.namedTag.putList(TAG_LAST_OUTPUT_PARAMS, this.lastOutputParams);
         }
         this.namedTag.putInt(TAG_LP_COMMAND_MODE, this.lastOutputCommandMode);
         this.namedTag.putBoolean(TAG_LP_CONDIONAL_MODE, this.lastOutputCondionalMode);
@@ -221,7 +215,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
             nbt.putString(TAG_LAST_OUTPUT, this.lastOutput);
         }
         if (this.lastOutputParams != null) {
-            nbt.putList(this.lastOutputParams);
+            nbt.putList(TAG_LAST_OUTPUT_PARAMS, this.lastOutputParams);
         }
         if (this.hasName()) {
             nbt.putString(TAG_CUSTOM_NAME, this.getName());
@@ -231,8 +225,8 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public boolean isBlockEntityValid() {
-        int blockId = this.getLevelBlock().getId();
-        return blockId == BlockID.COMMAND_BLOCK || blockId == BlockID.CHAIN_COMMAND_BLOCK || blockId == BlockID.REPEATING_COMMAND_BLOCK;
+        String blockId = this.getLevelBlock().getId();
+        return blockId.equals(BlockID.COMMAND_BLOCK) || blockId.equals(BlockID.CHAIN_COMMAND_BLOCK) || blockId.equals(BlockID.REPEATING_COMMAND_BLOCK);
     }
 
     @NotNull
@@ -289,7 +283,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         if (this.getLevelBlock().getSide(((Faceable) this.getLevelBlock()).getBlockFace().getOpposite()) instanceof BlockCommandBlock lastCB) {
             if (this.isConditional() && lastCB.getBlockEntity().getSuccessCount() == 0) {//jump over because this CB is conditional and the last CB didn't succeed
                 Block next = this.getLevelBlock().getSide(((Faceable) this.getLevelBlock()).getBlockFace());
-                if (next instanceof BlockCommandBlockChain nextChainBlock) {
+                if (next instanceof BlockChainCommandBlock nextChainBlock) {
                     nextChainBlock.getBlockEntity().trigger(++chain);
                 }
                 return true;
@@ -318,7 +312,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                 }
 
                 Block block = this.getLevelBlock().getSide(((Faceable) this.getLevelBlock()).getBlockFace());
-                if (block instanceof BlockCommandBlockChain chainBlock) {
+                if (block instanceof BlockChainCommandBlock chainBlock) {
                     chainBlock.getBlockEntity().trigger(++chain);
                 }
             }
@@ -554,22 +548,17 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         return false;
     }
 
-    @Since("1.6.0")
-    @PowerNukkitOnly
     @Override
     public boolean isEntity() {
         return false;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
     @Override
     @NotNull
     public Position getPosition() {
         return this;
     }
 
-    @Since("1.19.60-r1")
     @NotNull
     @Override
     public Location getLocation() {
@@ -591,9 +580,9 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         if (this.isTrackingOutput()) {
             this.lastOutput = message.getText();
             if (message instanceof TranslationContainer translationContainer) {
-                ListTag<StringTag> newParams = new ListTag<>(TAG_LAST_OUTPUT_PARAMS);
+                ListTag<StringTag> newParams = new ListTag<>();
                 for (String param : translationContainer.getParameters()) {
-                    newParams.add(new StringTag("", param));
+                    newParams.add(new StringTag(param));
                 }
                 this.lastOutputParams = newParams;
             }

@@ -1,12 +1,10 @@
 package cn.nukkit.block.fake;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockStructureBlock;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.IStructBlock;
-import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
@@ -18,12 +16,11 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.List;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class FakeStructBlock extends SingleFakeBlock {
 
     public FakeStructBlock() {
-        super(Block.STRUCTURE_BLOCK, BlockEntity.STRUCTURE_BLOCK);
+        super(new BlockStructureBlock(), BlockEntity.STRUCTURE_BLOCK);
     }
 
     @Override
@@ -38,7 +35,7 @@ public class FakeStructBlock extends SingleFakeBlock {
 
         positions.forEach(position -> {
             UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-            updateBlockPacket.blockRuntimeId = BlockStateRegistry.getRuntimeId(Block.STRUCTURE_BLOCK);
+            updateBlockPacket.blockRuntimeId = block.getRuntimeId();
             updateBlockPacket.flags = UpdateBlockPacket.FLAG_NETWORK;
             updateBlockPacket.x = position.getFloorX();
             updateBlockPacket.y = position.getFloorY();
@@ -63,7 +60,7 @@ public class FakeStructBlock extends SingleFakeBlock {
     public void remove(Player player) {
         this.lastPositions.forEach(position -> {
             UpdateBlockPacket packet = new UpdateBlockPacket();
-            BlockStateRegistry.getRuntimeId(player.getLevel().getBlock(position).getCurrentState());
+            packet.blockRuntimeId = player.getLevel().getBlock(position).getRuntimeId();
             packet.flags = UpdateBlockPacket.FLAG_NETWORK;
             packet.x = position.getFloorX();
             packet.y = position.getFloorY();

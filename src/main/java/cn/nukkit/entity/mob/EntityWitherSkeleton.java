@@ -1,12 +1,7 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityCanAttack;
-import cn.nukkit.entity.EntitySmite;
-import cn.nukkit.entity.EntityWalkable;
+import cn.nukkit.entity.*;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -23,11 +18,13 @@ import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.entity.passive.EntityTurtle;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +35,12 @@ import java.util.Set;
  */
 public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, EntitySmite, EntityCanAttack {
 
-    public static final int NETWORK_ID = 48;
+    @Override
+    @NotNull public String getIdentifier() {
+        return WITHER_SKELETON;
+    }
 
-    public EntityWitherSkeleton(FullChunk chunk, CompoundTag nbt) {
+    public EntityWitherSkeleton(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -89,18 +89,14 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
         );
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
 
     //凋零骷髅会攻击距离他16格范围内的玩家、雪傀儡、小海龟、铁傀儡、猪灵或猪灵蛮兵
     @Override
     public boolean attackTarget(Entity entity) {
-        return switch (entity.getNetworkId()) {
-            case EntitySnowGolem.NETWORK_ID, EntityIronGolem.NETWORK_ID,
-                    EntityTurtle.NETWORK_ID, EntityPiglin.NETWORK_ID,
-                    EntityPiglinBrute.NETWORK_ID -> true;
+        return switch (entity.getIdentifier()) {
+            case EntityID.SNOW_GOLEM, EntityID.IRON_GOLEM,
+                    EntityID.TURTLE, EntityID.PIGLIN,
+                    EntityID.PIGLIN_BRUTE -> true;
             default -> false;
         };
     }
@@ -128,20 +124,16 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
         return 2.4f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Wither Skeleton";
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isUndead() {
         return true;
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

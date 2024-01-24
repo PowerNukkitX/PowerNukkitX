@@ -2,7 +2,6 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.event.entity.EntityShootBowEvent;
@@ -47,7 +46,6 @@ public class ItemTrident extends ItemTool {
         return true;
     }
 
-    @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
     @Override
     @SuppressWarnings("java:S3516")
     public boolean onRelease(Player player, int ticksUsed) {
@@ -58,17 +56,17 @@ public class ItemTrident extends ItemTool {
         this.useOn(player);
 
         CompoundTag nbt = new CompoundTag()
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", player.x))
-                        .add(new DoubleTag("", player.y + player.getEyeHeight()))
-                        .add(new DoubleTag("", player.z)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", -Math.sin(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag("", -Math.sin(player.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag("", Math.cos(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI))))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", (player.yaw > 180 ? 360 : 0) - (float) player.yaw))
-                        .add(new FloatTag("", (float) -player.pitch)));
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(player.x))
+                        .add(new DoubleTag(player.y + player.getEyeHeight()))
+                        .add(new DoubleTag(player.z)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(-Math.sin(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(-Math.sin(player.pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(Math.cos(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI))))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag((player.yaw > 180 ? 360 : 0) - (float) player.yaw))
+                        .add(new FloatTag((float) -player.pitch)));
 
         EntityThrownTrident trident = new EntityThrownTrident(player.chunk, nbt, player);
         trident.setItem(this);
@@ -99,7 +97,7 @@ public class ItemTrident extends ItemTool {
                 entityShootBowEvent.getProjectile().close();
             } else {
                 entityShootBowEvent.getProjectile().spawnToAll();
-                    player.getLevel().addSound(player, Sound.ITEM_TRIDENT_THROW);
+                player.getLevel().addSound(player, Sound.ITEM_TRIDENT_THROW);
                 if (!player.isCreative()) {
                     this.count--;
                     player.getInventory().setItemInHand(this);

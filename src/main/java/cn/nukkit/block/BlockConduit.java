@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityConduit;
 import cn.nukkit.item.Item;
@@ -12,17 +10,18 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
-@PowerNukkitOnly
+
 public class BlockConduit extends BlockTransparent implements BlockEntityHolder<BlockEntityConduit> {
-    @PowerNukkitOnly
+    public static final BlockProperties PROPERTIES = new BlockProperties(CONDUIT);
+
     public BlockConduit() {
-        // Does nothing
+        super(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return CONDUIT;
+    public BlockConduit(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -30,23 +29,21 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
         return "Conduit";
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
     @Override
-    public Class<? extends BlockEntityConduit> getBlockEntityClass() {
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
+    @NotNull public Class<? extends BlockEntityConduit> getBlockEntityClass() {
         return BlockEntityConduit.class;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.CONDUIT;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 2;
@@ -64,7 +61,7 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (item.getBlock() != null && item.getBlockId() == CONDUIT && target.getId() == CONDUIT) {
+        if (item.isBlock() && Objects.equals(item.getBlockId(), CONDUIT) && target.getId().equals(CONDUIT)) {
             return false;
         }
 

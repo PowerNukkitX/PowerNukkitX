@@ -1,7 +1,5 @@
 package cn.nukkit.nbt.tag;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 
@@ -10,40 +8,21 @@ import java.io.IOException;
 public class ByteTag extends NumberTag<Integer> {
     public int data;
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+    public ByteTag() {
+    }
+
     public ByteTag(int data) {
-        super("");
-        this.data = data;
-    }
-
-    public ByteTag(String name) {
-        super(name);
-    }
-
-    public ByteTag(String name, int data) {
-        super(name);
-        this.data = data;
+        this.data = (byte) data;
     }
 
     @Override
     public Integer getData() {
-        return data;
+        return (int) data;
     }
 
     @Override
     public void setData(Integer data) {
-        this.data = data == null ? 0 : data;
-    }
-
-    @Override
-    void write(NBTOutputStream dos) throws IOException {
-        dos.writeByte(data);
-    }
-
-    @Override
-    void load(NBTInputStream dis) throws IOException {
-        data = dis.readByte();
+        this.data = (byte) (data == null ? 0 : data);
     }
 
     @Override
@@ -53,7 +32,7 @@ public class ByteTag extends NumberTag<Integer> {
 
     @Override
     public Integer parseValue() {
-        return this.data;
+        return (int) this.data;
     }
 
     @Override
@@ -62,7 +41,7 @@ public class ByteTag extends NumberTag<Integer> {
         if (hex.length() < 2) {
             hex = "0" + hex;
         }
-        return "ByteTag " + this.getName() + " (data: 0x" + hex + ")";
+        return "ByteTag " + " (data: 0x" + hex + ")";
     }
 
     @Override
@@ -86,6 +65,6 @@ public class ByteTag extends NumberTag<Integer> {
 
     @Override
     public Tag copy() {
-        return new ByteTag(getName(), data);
+        return new ByteTag(data);
     }
 }

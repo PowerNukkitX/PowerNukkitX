@@ -1,25 +1,26 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.math.BlockFace;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CreeperFace
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
 public class BlockPiston extends BlockPistonBase {
-
-    public BlockPiston() {
-        this(0);
-    }
-
-    public BlockPiston(int meta) {
-        super(meta);
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(PISTON, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
-    public int getId() {
-        return PISTON;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockPiston() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockPiston(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -27,9 +28,8 @@ public class BlockPiston extends BlockPistonBase {
         return "Piston";
     }
 
-    @PowerNukkitOnly
     @Override
-    public int getPistonHeadBlockId() {
-        return PISTON_ARM_COLLISION;
+    protected Block createHead(BlockFace blockFace) {
+        return new BlockPistonArmCollision().setPropertyValue(CommonBlockProperties.FACING_DIRECTION,blockFace.getIndex());
     }
 }

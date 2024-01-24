@@ -1,26 +1,24 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
-public class BlockMangroveRoots extends BlockTransparentMeta {
-    public BlockMangroveRoots() {
-        super(0);
+
+public class BlockMangroveRoots extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_ROOTS);
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return CommonBlockProperties.EMPTY_PROPERTIES;
+    public BlockMangroveRoots() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockMangroveRoots(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -28,12 +26,6 @@ public class BlockMangroveRoots extends BlockTransparentMeta {
         return "Mangrove Roots";
     }
 
-    @Override
-    public int getId() {
-        return MANGROVE_ROOTS;
-    }
-
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;

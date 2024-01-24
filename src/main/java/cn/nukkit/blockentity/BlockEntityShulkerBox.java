@@ -1,15 +1,15 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockUndyedShulkerBox;
 import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.ShulkerBoxInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -23,18 +23,17 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
 
     protected ShulkerBoxInventory inventory;
 
-    public BlockEntityShulkerBox(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityShulkerBox(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Since("1.19.60-r1")
     @Override
     public void loadNBT() {
         super.loadNBT();
         this.inventory = new ShulkerBoxInventory(this);
 
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
-            this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+            this.namedTag.putList("Items", new ListTag<CompoundTag>());
         }
 
         ListTag<CompoundTag> list = (ListTag<CompoundTag>) this.namedTag.getList("Items");
@@ -60,7 +59,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
 
     @Override
     public void saveNBT() {
-        this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+        this.namedTag.putList("Items", new ListTag<CompoundTag>());
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
@@ -68,11 +67,10 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
 
     @Override
     public boolean isBlockEntityValid() {
-        int blockID = this.getBlock().getId();
-        return blockID == Block.SHULKER_BOX || blockID == Block.UNDYED_SHULKER_BOX;
+        Block block = this.getBlock();
+        return block instanceof BlockUndyedShulkerBox;
     }
 
-    @Override
     public int getSize() {
         return 27;
     }
@@ -88,7 +86,6 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
         return -1;
     }
 
-    @Override
     public Item getItem(int index) {
         int i = this.getSlotIndex(index);
         if (i < 0) {
@@ -99,13 +96,12 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
         }
     }
 
-    @Override
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 
         CompoundTag d = NBTIO.putItemHelper(item, index);
 
-        if (item.getId() == Item.AIR || item.getCount() <= 0) {
+        if (item.isNull() || item.getCount() <= 0) {
             if (i >= 0) {
                 this.namedTag.getList("Items").remove(i);
             }

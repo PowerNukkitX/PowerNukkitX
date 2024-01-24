@@ -1,25 +1,31 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
  * @since 2015/12/1
  */
 public class BlockEndStone extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties(END_STONE);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockEndStone() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockEndStone(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "End Stone";
-    }
-
-    @Override
-    public int getId() {
-        return END_STONE;
     }
 
     @Override
@@ -29,7 +35,7 @@ public class BlockEndStone extends BlockSolid {
 
     @Override
     public double getResistance() {
-        return 45;
+        return 9;
     }
 
     @Override
@@ -38,7 +44,6 @@ public class BlockEndStone extends BlockSolid {
     }
 
     @Override
-    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -47,5 +52,4 @@ public class BlockEndStone extends BlockSolid {
     public boolean canHarvestWithHand() {
         return false;
     }
-
 }

@@ -1,12 +1,10 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityLectern;
-import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.LecternDropBookEvent;
 import cn.nukkit.item.Item;
@@ -21,22 +19,22 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.*;
+import java.util.Objects;
 
-@PowerNukkitOnly
-public class BlockLectern extends BlockTransparentMeta implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityLectern> {
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(CARDINAL_DIRECTION, POWERED);
+public class BlockLectern extends BlockTransparent implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityLectern> {
+    public static final BlockProperties PROPERTIES = new BlockProperties(LECTERN, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.POWERED_BIT);
 
-    @PowerNukkitOnly
-    public BlockLectern() {
-        this(0);
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    @PowerNukkitOnly
-    public BlockLectern(int meta) {
-        super(meta);
+    public BlockLectern() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockLectern(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -45,35 +43,15 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
     }
 
     @Override
-    public int getId() {
-        return LECTERN;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public Class<? extends BlockEntityLectern> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityLectern> getBlockEntityClass() {
         return BlockEntityLectern.class;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.LECTERN;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -125,17 +103,12 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(getDamage() & 0b11);
+        return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));
     }
 
     @Override
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
     public void setBlockFace(BlockFace face) {
-        int horizontalIndex = face.getHorizontalIndex();
-        if (horizontalIndex >= 0) {
-            setDamage(getDamage() & (DATA_MASK ^ 0b11) | (horizontalIndex & 0b11));
-        }
+        setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
     }
 
     @Override
@@ -151,8 +124,7 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
         if (!currentBook.isNull()) {
             return true;
         }
-
-        if (item.getId() != ItemID.WRITTEN_BOOK && item.getId() != ItemID.BOOK_AND_QUILL) {
+        if (!Objects.equals(item.getId(), ItemID.WRITTEN_BOOK) && !Objects.equals(item.getId(), ItemID.WRITABLE_BOOK)) {
             return false;
         }
 
@@ -173,21 +145,14 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
         return true;
     }
 
-    @PowerNukkitOnly
     public boolean isActivated() {
-        return (this.getDamage() & 0x04) == 0x04;
+        return getPropertyValue(CommonBlockProperties.POWERED_BIT);
     }
 
-    @PowerNukkitOnly
     public void setActivated(boolean activated) {
-        if (activated) {
-            setDamage(getDamage() | 0x04);
-        } else {
-            setDamage(getDamage() ^ 0x04);
-        }
+        setPropertyValue(CommonBlockProperties.POWERED_BIT, activated);
     }
 
-    @PowerNukkitOnly
     public void executeRedstonePulse() {
         if (isActivated()) {
             level.cancelSheduledUpdate(this, this);
@@ -210,13 +175,11 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
     }
 
     @Override
-    @PowerNukkitDifference(info = "Down side is strongly powered.", since = "1.4.0.0-PN")
     public int getStrongPower(BlockFace face) {
         return face == BlockFace.DOWN ? this.getWeakPower(face) : 0;
     }
 
     @Override
-    @PowerNukkitDifference(info = "Down side is strongly powered.", since = "1.4.0.0-PN")
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (isActivated()) {
@@ -234,7 +197,6 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
         return 0;
     }
 
-    @PowerNukkitOnly
     public void dropBook(Player player) {
         BlockEntityLectern lectern = getBlockEntity();
         if (lectern == null) {
@@ -252,7 +214,7 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
             return;
         }
 
-        lectern.setBook(Item.getBlock(BlockID.AIR));
+        lectern.setBook(Item.AIR);
         lectern.spawnToAll();
         this.level.dropItem(lectern.add(0.5f, 0.6f, 0.5f), dropBookEvent.getBook());
     }

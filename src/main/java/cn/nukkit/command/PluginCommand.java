@@ -1,6 +1,5 @@
 package cn.nukkit.command;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
@@ -24,14 +23,12 @@ public class PluginCommand<T extends Plugin> extends Command implements PluginId
         this.usageMessage = "";
     }
 
-    @Since("1.19.60-r1")
     public PluginCommand(String name, String description, T owner) {
         super(name, description);
         this.owningPlugin = owner;
         this.executor = owner;
     }
 
-    @Since("1.19.60-r1")
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         if (!this.owningPlugin.isEnabled()) {
@@ -52,7 +49,7 @@ public class PluginCommand<T extends Plugin> extends Command implements PluginId
 
         boolean success = this.executor.onCommand(sender, this, commandLabel, args);
 
-        if (!success && !this.usageMessage.equals("")) {
+        if (!success && !this.usageMessage.isEmpty()) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
         }
 

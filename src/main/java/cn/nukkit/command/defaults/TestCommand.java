@@ -1,15 +1,13 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.data.CommandData;
 
 /**
  * 测试命令基类
  */
-@PowerNukkitXOnly
-@Since("1.19.50-r1")
+
+
 public abstract class TestCommand extends Command {
 
     public TestCommand(String name) {

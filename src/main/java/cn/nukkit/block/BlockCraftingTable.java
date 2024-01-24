@@ -13,17 +13,25 @@ import javax.annotation.Nullable;
  * @since 2015/12/5
  */
 public class BlockCraftingTable extends BlockSolid {
+
+    public static final BlockProperties PROPERTIES = new BlockProperties(CRAFTING_TABLE);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockCraftingTable() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockCraftingTable(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "Crafting Table";
-    }
-
-    @Override
-    public int getId() {
-        return CRAFTING_TABLE;
     }
 
     @Override
@@ -50,7 +58,7 @@ public class BlockCraftingTable extends BlockSolid {
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         if (player != null) {
             player.craftingType = Player.CRAFTING_BIG;
-            player.setCraftingGrid(player.getUIInventory().getBigCraftingGrid());
+//            player.setCraftingGrid(player.getUIInventory().getBigCraftingGrid());
             ContainerOpenPacket pk = new ContainerOpenPacket();
             pk.windowId = -1;
             pk.type = 1;
@@ -62,5 +70,4 @@ public class BlockCraftingTable extends BlockSolid {
         }
         return true;
     }
-
 }

@@ -1,7 +1,5 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
 
 public class Hash {
@@ -25,8 +23,6 @@ public class Hash {
         //return (int) ((((triple >> 34) & 0x3FFFFFF) << 38) >> 38);
     }
 
-    @PowerNukkitOnly
-    @Since("1.2.1.0-PN")
     public static long hashBlock(Vector3 blockPos) {
         return hashBlock(blockPos.getFloorX(), blockPos.getFloorY(), blockPos.getFloorZ());
     }

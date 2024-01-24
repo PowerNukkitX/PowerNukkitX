@@ -1,7 +1,5 @@
 package cn.nukkit.scoreboard.scoreboard;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.SetScorePacket;
 import cn.nukkit.scoreboard.scorer.IScorer;
 
@@ -9,8 +7,8 @@ import cn.nukkit.scoreboard.scorer.IScorer;
  * 计分板上的单个行 <br>
  * 由{@link IScorer}和分数组成
  */
-@PowerNukkitXOnly
-@Since("1.19.30-r1")
+
+
 public interface IScoreboardLine {
 
     /**

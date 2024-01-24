@@ -1,11 +1,10 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.command.data.*;
 import cn.nukkit.network.protocol.types.CommandEnumConstraintData;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.SequencedHashSet;
-import com.nukkitx.network.util.Preconditions;
+import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.ToString;
@@ -14,16 +13,16 @@ import java.util.*;
 import java.util.function.ObjIntConsumer;
 
 import static cn.nukkit.utils.Utils.dynamic;
-import static com.nukkitx.network.util.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Made the arg type constants dynamic because they can change in Minecraft updates")
+
 @ToString
 public class AvailableCommandsPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.AVAILABLE_COMMANDS_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.AVAILABLE_COMMANDS_PACKET;
 
     private static final ObjIntConsumer<BinaryStream> WRITE_BYTE = (s, v) -> s.putByte((byte) v);
     private static final ObjIntConsumer<BinaryStream> WRITE_SHORT = BinaryStream::putLShort;
@@ -64,7 +63,7 @@ public class AvailableCommandsPacket extends DataPacket {
     public final List<CommandEnumConstraintData> constraints = new ObjectArrayList<>();
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

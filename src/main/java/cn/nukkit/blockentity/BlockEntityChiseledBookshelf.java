@@ -1,10 +1,9 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.api.DoNotModify;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockChiseledBookshelf;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import com.google.common.base.Preconditions;
@@ -17,7 +16,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
     private Integer lastInteractedSlot;
     private Item[] items;
 
-    public BlockEntityChiseledBookshelf(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityChiseledBookshelf(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -84,11 +83,10 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
         super.setDirty();
     }
 
-    @Since("1.19.60-r1")
     @Override
     public void loadNBT() {
         super.loadNBT();
-        items = new Item[]{Item.AIR_ITEM, Item.AIR_ITEM, Item.AIR_ITEM, Item.AIR_ITEM, Item.AIR_ITEM, Item.AIR_ITEM};
+        items = new Item[]{Item.AIR, Item.AIR, Item.AIR, Item.AIR, Item.AIR, Item.AIR};
         if (namedTag.containsInt(LAST_INTERACTED_SLOT)) {
             this.lastInteractedSlot = namedTag.getInt(LAST_INTERACTED_SLOT);
         }
@@ -103,7 +101,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
                     this.items[i] = null;
                     continue;
                 }
-                Item item = Item.fromString(name);
+                Item item = Item.get(name);
                 item.setDamage(compoundTag.getByte("Damage"));
                 item.setCount(compoundTag.getByte("Count"));
                 if (compoundTag.containsCompound("tag")) {
@@ -130,7 +128,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
             } else {
                 CompoundTag compoundTag = new CompoundTag()
                         .putByte("Count", item.getCount())
-                        .putString("Name", item.getNamespaceId())
+                        .putString("Name", item.getId())
                         .putByte("Damage", item.getDamage())
                         .putBoolean("WasPickedUp", false);
                 if (item.hasCompoundTag()) {

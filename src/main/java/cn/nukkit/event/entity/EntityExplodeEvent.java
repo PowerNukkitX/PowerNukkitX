@@ -1,12 +1,11 @@
 package cn.nukkit.event.entity;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.Position;
+import lombok.Getter;
 
 import java.util.HashSet;
 import java.util.List;
@@ -25,7 +24,7 @@ public class EntityExplodeEvent extends EntityEvent implements Cancellable {
 
     protected final Position position;
     protected List<Block> blocks;
-    @PowerNukkitOnly
+
     protected Set<Block> ignitions;
     protected double yield;
 
@@ -56,15 +55,11 @@ public class EntityExplodeEvent extends EntityEvent implements Cancellable {
     public void setYield(double yield) {
         this.yield = yield;
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public Set<Block> getIgnitions() {
         return ignitions;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setIgnitions(Set<Block> ignitions) {
         this.ignitions = ignitions;
     }

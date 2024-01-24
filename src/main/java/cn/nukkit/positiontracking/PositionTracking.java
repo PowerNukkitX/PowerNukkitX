@@ -1,7 +1,5 @@
 package cn.nukkit.positiontracking;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
@@ -13,66 +11,48 @@ import javax.annotation.Nullable;
 /**
  * @author joserobjr
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
-public class PositionTracking extends NamedPosition {
-    @NotNull
-    private String levelName;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+public class PositionTracking extends NamedPosition {
+
+    private @NotNull String levelName;
+
     public PositionTracking(@NotNull String levelName, double x, double y, double z) {
         super(x, y, z);
         this.levelName = levelName;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public PositionTracking(@NotNull Level level, double x, double y, double z) {
         this(level.getName(), x, y, z);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public PositionTracking(@NotNull Level level, Vector3 v) {
         this(level, v.x, v.y, v.z);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public PositionTracking(@NotNull String levelName, Vector3 v) {
         this(levelName, v.x, v.y, v.z);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public PositionTracking(@NotNull Position pos) {
         this(pos.getLevel(), pos.x, pos.y, pos.z);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public PositionTracking(@NotNull NamedPosition pos) {
         this(pos.getLevelName(), pos.x, pos.y, pos.z);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
     @Override
-    public String getLevelName() {
+    @NotNull public String getLevelName() {
         return levelName;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setLevelName(@NotNull String levelName) {
         this.levelName = levelName;
     }
 
-    @NotNull
     @Override
-    public PositionTracking add(double x) {
+    @NotNull public PositionTracking add(double x) {
         return add(x, 0, 0);
     }
 
@@ -216,9 +196,8 @@ public class PositionTracking extends NamedPosition {
         return getSide(BlockFace.WEST, step);
     }
 
-    @Nullable
     @Override
-    public PositionTracking getIntermediateWithXValue(@NotNull Vector3 v, double x) {
+    public @Nullable PositionTracking getIntermediateWithXValue(@NotNull Vector3 v, double x) {
         Vector3 intermediateWithXValue = super.getIntermediateWithXValue(v, x);
         if (intermediateWithXValue == null) {
             return null;
@@ -226,9 +205,8 @@ public class PositionTracking extends NamedPosition {
         return new PositionTracking(levelName, intermediateWithXValue);
     }
 
-    @Nullable
     @Override
-    public Vector3 getIntermediateWithYValue(@NotNull Vector3 v, double y) {
+    public @Nullable Vector3 getIntermediateWithYValue(@NotNull Vector3 v, double y) {
         Vector3 intermediateWithYValue = super.getIntermediateWithYValue(v, y);
         if (intermediateWithYValue == null) {
             return null;
@@ -236,9 +214,8 @@ public class PositionTracking extends NamedPosition {
         return new PositionTracking(levelName, intermediateWithYValue);
     }
 
-    @Nullable
     @Override
-    public Vector3 getIntermediateWithZValue(@NotNull Vector3 v, double z) {
+    public @Nullable Vector3 getIntermediateWithZValue(@NotNull Vector3 v, double z) {
         Vector3 intermediateWithZValue = super.getIntermediateWithZValue(v, z);
         if (intermediateWithZValue == null) {
             return null;
@@ -246,18 +223,15 @@ public class PositionTracking extends NamedPosition {
         return new PositionTracking(levelName, intermediateWithZValue);
     }
 
-    @Nullable
     @Override
-    public PositionTracking setComponents(double x, double y, double z) {
+    public @Nullable PositionTracking setComponents(double x, double y, double z) {
         super.setComponents(x, y, z);
         return this;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
-    public PositionTracking setComponents(Vector3 pos) {
-        super.setComponents(pos);
+    @NotNull public PositionTracking setComponents(@NotNull Vector3 position) {
+        super.setComponents(position);
         return this;
     }
 

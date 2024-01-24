@@ -7,7 +7,7 @@ import lombok.ToString;
  */
 @ToString
 public class ContainerSetDataPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.CONTAINER_SET_DATA_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.CONTAINER_SET_DATA_PACKET;
 
     public static final int PROPERTY_FURNACE_TICK_COUNT = 0;
     public static final int PROPERTY_FURNACE_LIT_TIME = 1;
@@ -20,7 +20,7 @@ public class ContainerSetDataPacket extends DataPacket {
     public static final int PROPERTY_BREWING_STAND_FUEL_TOTAL = 2;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

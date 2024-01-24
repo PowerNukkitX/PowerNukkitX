@@ -1,15 +1,12 @@
 package cn.nukkit.entity.ai.evaluator;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import lombok.Getter;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r4")
+
 @Getter
 public class RandomTimeRangeEvaluator implements IBehaviorEvaluator {
 

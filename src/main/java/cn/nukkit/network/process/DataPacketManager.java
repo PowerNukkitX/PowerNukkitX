@@ -1,8 +1,6 @@
 package cn.nukkit.network.process;
 
 import cn.nukkit.PlayerHandle;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.network.process.processor.*;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -13,8 +11,6 @@ import org.jetbrains.annotations.NotNull;
  * DataPacketManager is a static class to manage DataPacketProcessors and process DataPackets.
  */
 @SuppressWarnings("rawtypes")
-@Since("1.19.80-r2")
-@PowerNukkitXOnly
 public final class DataPacketManager {
     private static final Int2ObjectOpenHashMap<DataPacketProcessor> CURRENT_PROTOCOL_PROCESSORS = new Int2ObjectOpenHashMap<>(300);
 
@@ -41,12 +37,12 @@ public final class DataPacketManager {
             throw new IllegalArgumentException("Packet protocol " + packet.getProtocolUsed() + " does not match current protocol " + ProtocolInfo.CURRENT_PROTOCOL
                     + ". Multi-version support is not implemented yet.");
         }
-        var processor = CURRENT_PROTOCOL_PROCESSORS.get(packet.packetId());
+        var processor = CURRENT_PROTOCOL_PROCESSORS.get(packet.pid());
         if (processor != null) {
             //noinspection unchecked
             processor.handle(playerHandle, packet);
         } else {
-            throw new UnsupportedOperationException("No processor found for packet " + packet.getClass().getName() + " with id " + packet.packetId() + ".");
+            throw new UnsupportedOperationException("No processor found for packet " + packet.getClass().getName() + " with id " + packet.pid() + ".");
         }
     }
 
@@ -100,7 +96,8 @@ public final class DataPacketManager {
                 new ShowCreditsProcessor(),
                 new TickSyncProcessor(),
                 new RequestPermissionsProcessor(),
-                new RiderJumpProcessor()
+                new RiderJumpProcessor(),
+                new ItemStackRequestPacketProcessor()
         );
     }
 }

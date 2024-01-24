@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.route.finder;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
 import lombok.Getter;
@@ -15,8 +13,8 @@ import java.util.List;
  * 在PowerNukkitX的生物AI架构中，不同实体的路径查找是并行的而不是异步的 <br/>
  * 所以说我们并不需要异步路径查找
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public abstract class SimpleRouteFinder implements IRouteFinder {
 
     //用于存储寻路结果的List
@@ -54,8 +52,7 @@ public abstract class SimpleRouteFinder implements IRouteFinder {
     }
 
     @Override
-    @Nullable
-    public Node getCurrentNode() {
+    public @Nullable Node getCurrentNode() {
         if (this.hasCurrentNode()) {
             return nodes.get(currentIndex);
         }
@@ -74,8 +71,7 @@ public abstract class SimpleRouteFinder implements IRouteFinder {
     }
 
     @Override
-    @Nullable
-    public Node next() {
+    public @Nullable Node next() {
         if (this.hasNext()) {
             return this.nodes.get(++currentIndex);
         }
@@ -97,9 +93,8 @@ public abstract class SimpleRouteFinder implements IRouteFinder {
         this.currentIndex = index;
     }
 
-    @Nullable
     @Override
-    public Node getNode(int index) {
+    public @Nullable Node getNode(int index) {
         if (index + 1 < nodes.size()) {
             return this.nodes.get(index);
         }

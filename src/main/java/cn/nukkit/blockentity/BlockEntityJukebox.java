@@ -1,11 +1,9 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemRecord;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.item.ItemMusicDisc;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.PlaySoundPacket;
@@ -20,18 +18,17 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
 
     private Item recordItem;
 
-    public BlockEntityJukebox(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityJukebox(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Since("1.19.60-r1")
     @Override
     public void loadNBT() {
         super.loadNBT();
         if (namedTag.contains("RecordItem")) {
             this.recordItem = NBTIO.getItemHelper(namedTag.getCompound("RecordItem"));
         } else {
-            this.recordItem = Item.get(0);
+            this.recordItem = Item.AIR;
         }
     }
 
@@ -49,9 +46,9 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
         return recordItem;
     }
 
-    @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
+    
     public void play() {
-        if (this.recordItem instanceof ItemRecord itemRecord) {
+        if (this.recordItem instanceof ItemMusicDisc itemRecord) {
             PlaySoundPacket packet = new PlaySoundPacket();
             packet.name = itemRecord.getSoundId();
             packet.volume = 1;
@@ -65,7 +62,7 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
 
     //TODO: Transfer the stop sound to the new sound method
     public void stop() {
-        if (this.recordItem instanceof ItemRecord itemRecord) {
+        if (this.recordItem instanceof ItemMusicDisc itemRecord) {
             StopSoundPacket packet = new StopSoundPacket();
             packet.name = itemRecord.getSoundId();
             packet.stopAll = false;
@@ -74,10 +71,10 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     }
 
     public void dropItem() {
-        if (this.recordItem.getId() != 0) {
+        if (!this.recordItem.isNull()) {
             stop();
             this.level.dropItem(this.up(), this.recordItem);
-            this.recordItem = Item.get(0);
+            this.recordItem = Item.AIR;
         }
     }
 

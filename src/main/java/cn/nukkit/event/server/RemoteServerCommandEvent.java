@@ -2,6 +2,7 @@ package cn.nukkit.event.server;
 
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 /**
  * Called when an RCON command is executed.

@@ -1,28 +1,28 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.projectile.EntitySmallFireBall;
+import cn.nukkit.entity.projectile.EntitySmallFireball;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
-@Since("1.6.0.0-PNX")
-@PowerNukkitOnly
-public class BlockPowderSnow extends BlockTransparentMeta {
-    @Override
-    public String getName() {
-        return "Powder Snow";
+
+public class BlockPowderSnow extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties(POWDER_SNOW);
+
+    public BlockPowderSnow() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockPowderSnow(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
-    public int getId() {
-        return BlockID.POWDER_SNOW;
+    public String getName() {
+        return "Powder Snow";
     }
 
     @Override
@@ -40,8 +40,6 @@ public class BlockPowderSnow extends BlockTransparentMeta {
         return false;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
@@ -57,12 +55,9 @@ public class BlockPowderSnow extends BlockTransparentMeta {
         return true;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
-        return CommonBlockProperties.EMPTY_PROPERTIES;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override
@@ -70,11 +65,9 @@ public class BlockPowderSnow extends BlockTransparentMeta {
         return Item.EMPTY_ARRAY;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
-        if (projectile instanceof EntitySmallFireBall) {
+        if (projectile instanceof EntitySmallFireball) {
             this.getLevel().useBreakOn(this);
             return true;
         }

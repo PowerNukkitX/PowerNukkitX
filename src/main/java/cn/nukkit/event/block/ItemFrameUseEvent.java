@@ -1,13 +1,12 @@
 package cn.nukkit.event.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -18,18 +17,19 @@ import javax.annotation.Nullable;
  * <p>
  * The event that the item display box is used will be called when an item is placed, rotated, or dropped
  */
-@PowerNukkitXOnly
-@Since("1.19.62-r1")
+
+
 public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
-    protected final Player player;
-    protected final Item item;
-    protected final BlockEntityItemFrame itemFrame;
-    protected final Action action;
 
     public static HandlerList getHandlers() {
         return handlers;
     }
+
+    protected final Player player;
+    protected final Item item;
+    protected final BlockEntityItemFrame itemFrame;
+    protected final Action action;
 
     public ItemFrameUseEvent(@Nullable Player player, @NotNull Block block, @NotNull BlockEntityItemFrame itemFrame, @Nullable Item item, Action action) {
         super(block);
@@ -45,8 +45,7 @@ public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
      *
      * @return the player
      */
-    @Nullable
-    public Player getPlayer() {
+    public @Nullable Player getPlayer() {
         return player;
     }
 
@@ -57,8 +56,7 @@ public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
      *
      * @return the item frame
      */
-    @NotNull
-    public BlockEntityItemFrame getItemFrame() {
+    @NotNull public BlockEntityItemFrame getItemFrame() {
         return itemFrame;
     }
 
@@ -69,8 +67,7 @@ public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
      *
      * @return the item
      */
-    @Nullable
-    public Item getItem() {
+    public @Nullable Item getItem() {
         return item;
     }
 
@@ -81,8 +78,7 @@ public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
      *
      * @return the action
      */
-    @NotNull
-    public Action getAction() {
+    @NotNull public Action getAction() {
         return action;
     }
 

@@ -2,13 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
@@ -22,50 +16,32 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
+import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_FACING_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.POWERED_BIT;
 
 /**
  * @author Leonidius20, joserobjr
  * @since 18.08.18
  */
-@PowerNukkitDifference(info = "Implements RedstoneComponent and uses methods from it.", since = "1.4.0.0-PN")
-public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, Faceable {
-    @Since("1.20.10-r1")
-    @PowerNukkitXOnly
-    public static final BlockProperty<BlockFace> FACING_DIRECTION = new ArrayBlockProperty<>("minecraft:facing_direction", false, new BlockFace[]{
-            // Index based
-            BlockFace.DOWN, BlockFace.UP,
-            BlockFace.NORTH, BlockFace.SOUTH,
-            BlockFace.WEST, BlockFace.EAST,
-    });
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, POWERED);
+public class BlockObserver extends BlockSolid implements RedstoneComponent, Faceable {
+    public static final BlockProperties PROPERTIES = new BlockProperties(OBSERVER, CommonBlockProperties.MINECRAFT_FACING_DIRECTION, POWERED_BIT);
 
-    public BlockObserver() {
-        this(0);
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public BlockObserver(int meta) {
-        super(meta);
+    public BlockObserver() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockObserver(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
     public String getName() {
         return "Observer";
-    }
-
-    @Override
-    public int getId() {
-        return OBSERVER;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -89,25 +65,21 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
         return true;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implemented")
     @Override
     public boolean isPowerSource() {
         return true;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implemented")
     @Override
     public int getStrongPower(BlockFace side) {
         return isPowered() && side == getBlockFace() ? 15 : 0;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implemented")
     @Override
     public int getWeakPower(BlockFace face) {
         return getStrongPower(face);
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implemented")
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED || type == Level.BLOCK_UPDATE_MOVED) {
@@ -140,8 +112,6 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
         return 0;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public void onNeighborChange(@NotNull BlockFace side) {
         Server server = level.getServer();
@@ -170,7 +140,6 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
     }
 
     @Override
-    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -185,27 +154,21 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
         return 17.5;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public boolean isPowered() {
-        return getBooleanValue(POWERED);
+        return getPropertyValue(POWERED_BIT);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setPowered(boolean powered) {
-        setBooleanValue(POWERED, powered);
+        setPropertyValue(POWERED_BIT, powered);
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(FACING_DIRECTION);
+        return getPropertyValue(MINECRAFT_FACING_DIRECTION);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(FACING_DIRECTION, face);
+        setPropertyValue(MINECRAFT_FACING_DIRECTION, face);
     }
 }

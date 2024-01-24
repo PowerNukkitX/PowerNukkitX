@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.inventory.transaction.data.ReleaseItemData;
 import cn.nukkit.inventory.transaction.data.TransactionData;
 import cn.nukkit.inventory.transaction.data.UseItemData;
@@ -45,7 +44,6 @@ public class InventoryTransactionPacket extends DataPacket {
     public TransactionData transactionData;
     public final List<LegacySetItemSlotData> legacySlots = new ObjectArrayList<>();
 
-    @Since("1.3.0.0-PN")
     public int legacyRequestId;
 
     /**
@@ -53,15 +51,12 @@ public class InventoryTransactionPacket extends DataPacket {
      * determine whether we're doing a crafting or enchanting transaction.
      */
     public boolean isCraftingPart = false;
-    @Since("1.3.1.0-PN")
     public boolean isEnchantingPart = false;
-    @Since("1.4.0.0-PN")
     public boolean isRepairItemPart = false;
-    @Since("1.19.21-r1")
     public boolean isTradeItemPart = false;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.INVENTORY_TRANSACTION_PACKET;
     }
 

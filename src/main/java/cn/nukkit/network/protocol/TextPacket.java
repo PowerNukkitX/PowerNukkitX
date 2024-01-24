@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.utils.BinaryStream;
 import io.netty.util.internal.EmptyArrays;
 import lombok.ToString;
@@ -11,10 +10,10 @@ import lombok.ToString;
 @ToString
 public class TextPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.TEXT_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.TEXT_PACKET;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 
@@ -27,8 +26,8 @@ public class TextPacket extends DataPacket {
     public static final byte TYPE_SYSTEM = 6;
     public static final byte TYPE_WHISPER = 7;
     public static final byte TYPE_ANNOUNCEMENT = 8;
-    @Since("1.3.0.0-PN") public static final byte TYPE_OBJECT = 9;
-    @Since("1.3.0.0-PN") public static final byte TYPE_OBJECT_WHISPER = 10;
+    public static final byte TYPE_OBJECT = 9;
+    public static final byte TYPE_OBJECT_WHISPER = 10;
 
     public byte type;
     public String source = "";
@@ -40,7 +39,7 @@ public class TextPacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.type = (byte) getByte();
+        this.type = getByte();
         this.isLocalized = this.getBoolean() || type == TYPE_TRANSLATION;
         switch (type) {
             case TYPE_CHAT:

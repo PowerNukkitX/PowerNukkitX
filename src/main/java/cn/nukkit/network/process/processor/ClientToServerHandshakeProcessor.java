@@ -13,13 +13,13 @@ import org.jetbrains.annotations.NotNull;
 public class ClientToServerHandshakeProcessor extends DataPacketProcessor<ClientToServerHandshakePacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ClientToServerHandshakePacket pk) {
-        if (Server.getInstance().enabledNetworkEncryption && playerHandle.getLoginChainData().isXboxAuthed()) {
+        if (Server.getInstance().enabledNetworkEncryption) {
             playerHandle.processLogin();
         }
     }
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.CLIENT_TO_SERVER_HANDSHAKE_PACKET);
+        return ProtocolInfo.CLIENT_TO_SERVER_HANDSHAKE_PACKET;
     }
 }

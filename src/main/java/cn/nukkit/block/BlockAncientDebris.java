@@ -1,21 +1,23 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 public class BlockAncientDebris extends BlockSolid {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public BlockAncientDebris() {
-        // Does nothing
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(ANCIENT_DEBRIS);
 
     @Override
-    public int getId() {
-        return ANCIENT_DEBRIS;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockAncientDebris() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockAncientDebris(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -23,8 +25,6 @@ public class BlockAncientDebris extends BlockSolid {
         return "Ancient Derbris";
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public int getToolTier() {
         return ItemTool.TIER_DIAMOND;
@@ -45,8 +45,6 @@ public class BlockAncientDebris extends BlockSolid {
         return 30;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public boolean isLavaResistant() {
         return true;

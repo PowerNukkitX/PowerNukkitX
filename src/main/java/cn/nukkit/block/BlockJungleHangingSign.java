@@ -1,16 +1,24 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+import org.jetbrains.annotations.NotNull;
+
+import static cn.nukkit.block.property.CommonBlockProperties.*;
+
 public class BlockJungleHangingSign extends BlockHangingSign {
-    public BlockJungleHangingSign() {
+    public static final BlockProperties PROPERTIES = new BlockProperties(JUNGLE_HANGING_SIGN, ATTACHED_BIT, FACING_DIRECTION, GROUND_SIGN_DIRECTION, HANGING);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public int getId() {
-        return JUNGLE_HANGING_SIGN;
+    public BlockJungleHangingSign() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockJungleHangingSign(BlockState blockstate) {
+        super(blockstate);
     }
 
     public String getName() {

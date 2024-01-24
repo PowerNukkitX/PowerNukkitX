@@ -2,14 +2,13 @@ package cn.nukkit.event.player;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.entity.EntityDeathEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
+import lombok.Getter;
 
 public class PlayerDeathEvent extends EntityDeathEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
@@ -42,16 +41,12 @@ public class PlayerDeathEvent extends EntityDeathEvent implements Cancellable {
         return deathMessage;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r4")
     public TranslationContainer getTranslationDeathMessage() {
         return this.deathMessage instanceof TranslationContainer ?
                 (TranslationContainer) this.deathMessage :
                 new TranslationContainer(this.deathMessage.getText());
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r4")
     public void setDeathMessage(TranslationContainer deathMessage) {
         this.deathMessage = deathMessage;
     }

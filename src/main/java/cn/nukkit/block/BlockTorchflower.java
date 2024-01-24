@@ -1,23 +1,25 @@
 package cn.nukkit.block;
+
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockproperty.value.SmallFlowerType;
+import cn.nukkit.block.property.enums.FlowerType;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.20.10-r2")
-public class BlockTorchflower extends BlockFlower {
-    public BlockTorchflower() {
+
+public class BlockTorchflower extends BlockRedFlower {
+    public static final BlockProperties PROPERTIES = new BlockProperties(TORCHFLOWER);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return CommonBlockProperties.EMPTY_PROPERTIES;
+    public BlockTorchflower() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockTorchflower(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -25,21 +27,17 @@ public class BlockTorchflower extends BlockFlower {
         return false;
     }
 
-    public int getId() {
-        return TORCHFLOWER;
-    }
-
     public String getName() {
         return "Torchflower";
     }
 
     @Override
-    public void setFlowerType(SmallFlowerType flowerType) {
-        setOnSingleFlowerType(SmallFlowerType.TORCHFLOWER, flowerType);
+    public void setFlowerType(FlowerType flowerType) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public SmallFlowerType getFlowerType() {
-        return SmallFlowerType.TORCHFLOWER;
+    public FlowerType getFlowerType() {
+        throw new UnsupportedOperationException();
     }
 }

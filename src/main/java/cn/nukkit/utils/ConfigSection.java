@@ -86,7 +86,6 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
         return new LinkedHashMap<>(this);
     }
 
-
     /**
      * Get new instance of config section
      *

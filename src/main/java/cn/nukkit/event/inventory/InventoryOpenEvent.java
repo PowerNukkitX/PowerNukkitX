@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.Inventory;
+import lombok.Getter;
 
 /**
  * @author Box (Nukkit Project)
@@ -16,14 +17,14 @@ public class InventoryOpenEvent extends InventoryEvent implements Cancellable {
         return handlers;
     }
 
-    private final Player who;
+    private final Player player;
 
-    public InventoryOpenEvent(Inventory inventory, Player who) {
+    public InventoryOpenEvent(Inventory inventory, Player player) {
         super(inventory);
-        this.who = who;
+        this.player = player;
     }
 
     public Player getPlayer() {
-        return this.who;
+        return this.player;
     }
 }

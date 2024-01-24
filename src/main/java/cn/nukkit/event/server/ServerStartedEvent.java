@@ -1,6 +1,7 @@
 package cn.nukkit.event.server;
 
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 /**
  * 服务器启动完毕后会触发，注意reload也会触发

@@ -1,8 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -15,10 +12,11 @@ import static cn.nukkit.math.VectorMath.calculateFace;
  * @since 2015/12/6
  * @apiNote Implements BlockConnectable only in PowerNukkit
  */
-@PowerNukkitDifference(info = "Made it implement BlockConnectable")
+
 public abstract class BlockThin extends BlockTransparent implements BlockConnectable {
 
-    protected BlockThin() {
+    public BlockThin(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -26,8 +24,6 @@ public abstract class BlockThin extends BlockTransparent implements BlockConnect
         return false;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
@@ -65,21 +61,21 @@ public abstract class BlockThin extends BlockTransparent implements BlockConnect
         );
     }
 
-    @PowerNukkitDifference(info = "Fixed connection logic for BE 1.16.0", since = "1.3.0.0-PN")
     @Override
     public boolean canConnect(Block block) {
-        switch (block.getId()) {
-            case GLASS_PANE:
-            case STAINED_GLASS_PANE:
-            case IRON_BARS:
-            case COBBLE_WALL:
-                return true;
-            default:
-                if (block instanceof BlockTrapdoor) {
-                    BlockTrapdoor trapdoor = (BlockTrapdoor) block;
-                    return trapdoor.isOpen() && trapdoor.getBlockFace() == calculateFace(this, trapdoor);
+        return switch (block.getId()) {
+            case GLASS_PANE, BLACK_STAINED_GLASS_PANE, BLUE_STAINED_GLASS_PANE, BROWN_STAINED_GLASS_PANE,
+                    CYAN_STAINED_GLASS_PANE, GRAY_STAINED_GLASS_PANE, GREEN_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE,
+                    LIGHT_BLUE_STAINED_GLASS_PANE, LIGHT_GRAY_STAINED_GLASS_PANE, LIME_STAINED_GLASS_PANE,
+                    MAGENTA_STAINED_GLASS_PANE, ORANGE_STAINED_GLASS_PANE, PINK_STAINED_GLASS_PANE, PURPLE_STAINED_GLASS_PANE,
+                    RED_STAINED_GLASS_PANE, WHITE_STAINED_GLASS_PANE, YELLOW_STAINED_GLASS_PANE, IRON_BARS, COBBLESTONE_WALL, COBBLED_DEEPSLATE_WALL ->
+                    true;
+            default -> {
+                if (block instanceof BlockTrapdoor trapdoor) {
+                    yield trapdoor.isOpen() && trapdoor.getBlockFace() == calculateFace(this, trapdoor);
                 }
-                return block.isSolid();
-        }
+                yield block.isSolid();
+            }
+        };
     }
 }

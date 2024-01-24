@@ -3,9 +3,6 @@ package cn.nukkit.metrics;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.LoginChainData;
 import lombok.extern.log4j.Log4j2;
@@ -25,7 +22,7 @@ import java.util.regex.Pattern;
 import static cn.nukkit.utils.NukkitCollectors.countingInt;
 import static java.util.stream.Collectors.groupingBy;
 
-@Since("1.4.0.0-PN")
+
 @Log4j2
 public class NukkitMetrics {
     private static final AtomicReference<Map<Server, NukkitMetrics>> metricsStarted = new AtomicReference<>(Collections.emptyMap());
@@ -49,7 +46,7 @@ public class NukkitMetrics {
     @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN", replaceWith = "NukkitMetrics.startNow(Server)",
             reason = "The original cloudburst nukkit constructor implementation behaves like a stateful static method " +
                     "and don't comply with Java standards. Use the static method startNow(server) instead.")
-    @Since("1.4.0.0-PN")
+
     public NukkitMetrics(Server server) {
         this(server, true);
     }
@@ -73,8 +70,6 @@ public class NukkitMetrics {
      *
      * @param server The Nukkit server
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public static boolean startNow(Server server) {
         NukkitMetrics nukkitMetrics = getOrCreateMetrics(server);
         return nukkitMetrics.metrics != null;
@@ -253,8 +248,6 @@ public class NukkitMetrics {
         };
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r1")
     public static void closeNow(Server server) {
         NukkitMetrics nukkitMetrics = getOrCreateMetrics(server);
         if (nukkitMetrics.metrics != null) nukkitMetrics.metrics.close();

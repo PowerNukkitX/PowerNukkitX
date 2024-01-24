@@ -1,7 +1,6 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityEnderPearl;
 import cn.nukkit.entity.projectile.EntityProjectile;
@@ -18,7 +17,7 @@ import cn.nukkit.network.protocol.LevelSoundEventPacketV2;
  */
 public abstract class ProjectileItem extends Item {
 
-    public ProjectileItem(int id, Integer meta, int count, String name) {
+    public ProjectileItem(String id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
 
@@ -29,17 +28,17 @@ public abstract class ProjectileItem extends Item {
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         CompoundTag nbt = new CompoundTag()
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", player.x))
-                        .add(new DoubleTag("", player.y + player.getEyeHeight() - 0.30000000149011612))
-                        .add(new DoubleTag("", player.z)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", directionVector.x))
-                        .add(new DoubleTag("", directionVector.y))
-                        .add(new DoubleTag("", directionVector.z)))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", (float) player.yaw))
-                        .add(new FloatTag("", (float) player.pitch)));
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(player.x))
+                        .add(new DoubleTag(player.y + player.getEyeHeight() - 0.30000000149011612))
+                        .add(new DoubleTag(player.z)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(directionVector.x))
+                        .add(new DoubleTag(directionVector.y))
+                        .add(new DoubleTag(directionVector.z)))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag((float) player.yaw))
+                        .add(new FloatTag((float) player.pitch)));
 
         this.correctNBT(nbt);
 
@@ -75,12 +74,10 @@ public abstract class ProjectileItem extends Item {
         return true;
     }
 
-    @PowerNukkitOnly
     protected void addThrowSound(Player player) {
         player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacketV2.SOUND_THROW, -1, "minecraft:player", false, false);
     }
 
-    @PowerNukkitOnly
     protected Entity correctProjectile(Player player, Entity projectile) {
         return projectile;
     }

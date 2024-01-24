@@ -1,13 +1,11 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import lombok.ToString;
 
 @ToString
 public class CompletedUsingItemPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.COMPLETED_USING_ITEM_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.COMPLETED_USING_ITEM_PACKET;
 
     public static final int ACTION_UNKNOWN = -1;
     public static final int ACTION_EQUIP_ARMOR = 0;
@@ -25,8 +23,8 @@ public class CompletedUsingItemPacket extends DataPacket {
     public static final int ACTION_RETRIEVE = 12;
     public static final int ACTION_DYED = 13;
     public static final int ACTION_TRADED = 14;
-    @Since("1.20.10-r1")
-    @PowerNukkitXOnly
+
+
     public static final int ACTION_BRUSHING_COMPLETED = 15;
 
     public int itemId;
@@ -34,7 +32,7 @@ public class CompletedUsingItemPacket extends DataPacket {
 
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

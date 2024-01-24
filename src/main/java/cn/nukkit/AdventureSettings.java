@@ -1,12 +1,7 @@
 package cn.nukkit;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.RequestPermissionsPacket;
 import cn.nukkit.network.protocol.UpdateAbilitiesPacket;
 import cn.nukkit.network.protocol.UpdateAdventureSettingsPacket;
@@ -18,7 +13,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -30,30 +29,16 @@ public class AdventureSettings implements Cloneable {
     public static final int PERMISSION_HOST = 2;
     public static final int PERMISSION_AUTOMATION = 3;
     public static final int PERMISSION_ADMIN = 4;
-
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     public static final String KEY_ABILITIES = "Abilities";
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     public static final String KEY_PLAYER_PERMISSION = "PlayerPermission";
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     public static final String KEY_COMMAND_PERMISSION = "CommandPermission";
-
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     private static final Map<PlayerAbility, Type> ability2TypeMap = new HashMap<>();
-
     private final Map<Type, Boolean> values = new EnumMap<>(Type.class);
     @Getter
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     private PlayerPermission playerPermission;
+
     @Getter
     @Setter
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     private CommandPermission commandPermission;
     private Player player;
 
@@ -62,22 +47,16 @@ public class AdventureSettings implements Cloneable {
         init(null);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     public AdventureSettings(Player player, CompoundTag nbt) {
         this.player = player;
         init(nbt);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     public void setPlayerPermission(PlayerPermission playerPermission) {
         this.playerPermission = playerPermission;
         this.player.setOp(playerPermission == PlayerPermission.OPERATOR);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     public void init(@Nullable CompoundTag nbt) {
         if (nbt == null || !nbt.contains(KEY_ABILITIES)) {
             set(Type.WORLD_IMMUTABLE, player.isAdventure() || player.isSpectator());
@@ -112,8 +91,6 @@ public class AdventureSettings implements Cloneable {
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     public AdventureSettings set(PlayerAbility ability, boolean value) {
         this.values.put(ability2TypeMap.get(ability), value);
         return this;
@@ -124,8 +101,6 @@ public class AdventureSettings implements Cloneable {
         return this;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     public boolean get(PlayerAbility ability) {
         var type = ability2TypeMap.get(ability);
         Boolean value = this.values.get(type);
@@ -139,8 +114,6 @@ public class AdventureSettings implements Cloneable {
         return value == null ? type.getDefaultValue() : value;
     }
 
-    @PowerNukkitDifference(info = "Players in spectator mode will be flagged as member even if they are OP due to a client-side limitation", since = "1.3.1.2-PN")
-    @PowerNukkitXDifference(info = "updateAdventureSettingsPacket now will be sent to all players")
     public void update() {
         //向所有玩家发送以使他们能看到彼此的权限
         //Permission to send to all players so they can see each other
@@ -153,14 +126,12 @@ public class AdventureSettings implements Cloneable {
     }
 
 
-
     /**
      * 当玩家OP身份变动时此方法将被调用
      * 注意此方法并不会向客户端发包刷新权限信息，你需要手动调用update()方法刷新
+     *
      * @param op 是否是OP
      */
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     public void onOpChange(boolean op) {
         if (op) {
             for (PlayerAbility controllableAbility : RequestPermissionsPacket.CONTROLLABLE_ABILITIES)
@@ -176,8 +147,6 @@ public class AdventureSettings implements Cloneable {
         if (!op && playerPermission == PlayerPermission.OPERATOR) playerPermission = PlayerPermission.MEMBER;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     public void sendAbilities(Collection<Player> players) {
         UpdateAbilitiesPacket packet = new UpdateAbilitiesPacket();
         packet.entityId = player.getId();
@@ -213,13 +182,11 @@ public class AdventureSettings implements Cloneable {
     /**
      * 保存权限到nbt
      */
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     public void saveNBT() {
         var nbt = player.namedTag;
-        var abilityTag = new CompoundTag(KEY_ABILITIES);
+        var abilityTag = new CompoundTag();
         values.forEach((type, bool) -> {
-            abilityTag.put(type.name(), new IntTag(type.name(), bool ? 1 : 0));
+            abilityTag.put(type.name(), new IntTag(bool ? 1 : 0));
         });
         nbt.put(KEY_ABILITIES, abilityTag);
         nbt.putString(KEY_PLAYER_PERMISSION, playerPermission.name());
@@ -229,19 +196,15 @@ public class AdventureSettings implements Cloneable {
     /**
      * 从nbt读取权限数据
      */
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     public void readNBT(CompoundTag nbt) {
         var abilityTag = nbt.getCompound(KEY_ABILITIES);
-        for (Tag tag : abilityTag.getAllTags()) {
-            set(Type.valueOf(tag.getName()), ((IntTag) tag).getData() == 1);
+        for (var e : abilityTag.getTags().entrySet()) {
+            set(Type.valueOf(e.getKey()), ((IntTag) e.getValue()).getData() == 1);
         }
         playerPermission = PlayerPermission.valueOf(nbt.getString(KEY_PLAYER_PERMISSION));
         commandPermission = CommandPermission.valueOf(nbt.getString(KEY_COMMAND_PERMISSION));
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     public void updateAdventureSettings() {
         UpdateAdventureSettingsPacket adventurePacket = new UpdateAdventureSettingsPacket();
         adventurePacket.autoJump = get(Type.AUTO_JUMP);

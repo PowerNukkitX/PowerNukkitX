@@ -1,7 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.types.AbilityLayer;
 import cn.nukkit.network.protocol.types.CommandPermission;
 import cn.nukkit.network.protocol.types.PlayerAbility;
@@ -14,8 +12,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Set;
 
-@Since("1.19.30-r1")
-@PowerNukkitXOnly
+
 @ToString
 public class UpdateAbilitiesPacket extends DataPacket {
     public static final PlayerAbility[] VALID_FLAGS = {
@@ -83,7 +80,7 @@ public class UpdateAbilitiesPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.UPDATE_ABILITIES_PACKET;
     }
 }

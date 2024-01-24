@@ -1,13 +1,12 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.blockstate.BlockStateRegistry;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Attribute;
-import cn.nukkit.entity.data.Skin;
-import cn.nukkit.inventory.recipe.*;
-import cn.nukkit.item.*;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.data.*;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.math.BlockFace;
@@ -18,19 +17,30 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.network.LittleEndianByteBufInputStream;
-import cn.nukkit.network.LittleEndianByteBufOutputStream;
 import cn.nukkit.network.protocol.types.EntityLink;
-import io.netty.buffer.AbstractByteBufAllocator;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
+import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequestSlotData;
+import cn.nukkit.network.protocol.types.itemstack.request.TextProcessingEventOrigin;
+import cn.nukkit.network.protocol.types.itemstack.request.action.*;
+import cn.nukkit.recipe.ComplexAliasDescriptor;
+import cn.nukkit.recipe.DeferredDescriptor;
+import cn.nukkit.recipe.ItemDescriptor;
+import cn.nukkit.recipe.ItemDescriptorType;
+import cn.nukkit.recipe.ItemTagDescriptor;
+import cn.nukkit.recipe.MolangDescriptor;
+import cn.nukkit.registry.Registries;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.util.internal.EmptyArrays;
+import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Array;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -44,13 +54,9 @@ import java.util.function.Function;
  */
 @Log4j2
 public class BinaryStream {
-
-    private static final int FALLBACK_ID = 248;
-
     public int offset;
     private byte[] buffer;
     protected int count;
-
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
     public BinaryStream() {
@@ -94,6 +100,7 @@ public class BinaryStream {
     }
 
     public byte[] getBuffer() {
+        if (count == 0) return null;
         return Arrays.copyOf(buffer, count);
     }
 
@@ -140,6 +147,22 @@ public class BinaryStream {
 
     public void putInt(int i) {
         this.put(Binary.writeInt(i));
+    }
+
+    public void putMedium(int i) {
+        putByte((byte) (i >>> 16));
+        putByte((byte) (i >>> 8));
+        putByte((byte) i);
+    }
+
+    public int getMedium() {
+        int value = (getByte() & 0xff) << 16 |
+                (getByte() & 0xff) << 8 |
+                getByte() & 0xff;
+        if ((value & 0x800000) != 0) {
+            value |= 0xff000000;
+        }
+        return value;
     }
 
     public long getLLong() {
@@ -238,8 +261,8 @@ public class BinaryStream {
         this.putByte((byte) (bool ? 1 : 0));
     }
 
-    public int getByte() {
-        return this.buffer[this.offset++] & 0xff;
+    public byte getByte() {
+        return (byte) (this.buffer[this.offset++] & 0xff);
     }
 
     public void putByte(byte b) {
@@ -410,79 +433,58 @@ public class BinaryStream {
         return new SerializedImage(width, height, data);
     }
 
-    @PowerNukkitXDifference(info = "Remove the name from the tag, this function will be removed in the future")
     public Item getSlot() {
-        int networkId = getVarInt();
-        if (networkId == 0) {
-            return Item.get(0, 0, 0);
+        return this.getSlot(false);
+    }
+
+    public Item getSlot(boolean instanceItem) {
+        int runtimeId = getVarInt();
+        if (runtimeId == 0) {
+            return Item.AIR;
         }
 
         int count = getLShort();
         int damage = (int) getUnsignedVarInt();
 
-        Integer id = null;
-        String stringId = null;
-        try {
-            int fullId = RuntimeItems.getRuntimeMapping().getLegacyFullId(networkId);
-            id = RuntimeItems.getId(fullId);
-
-            boolean hasData = RuntimeItems.hasData(fullId);
-            if (hasData) {
-                damage = RuntimeItems.getData(fullId);
+        Integer netId = null;
+        if (!instanceItem) {
+            boolean hasNetId = getBoolean();
+            if (hasNetId) {
+                netId = getVarInt();
             }
-        } catch (IllegalArgumentException unknownMapping) {
-            stringId = RuntimeItems.getRuntimeMapping().getNamespacedIdByNetworkId(networkId);
-            if (stringId == null) {
-                throw unknownMapping;
+        }
+        int blockRuntimeId = getVarInt();
+
+        long blockingTicks = 0;
+        CompoundTag compoundTag = null;
+        String[] canPlace;
+        String[] canBreak;
+        Item item;
+        if (blockRuntimeId == 0) {
+            item = Item.get(Registries.ITEM_RUNTIMEID.getIdentifier(runtimeId), damage, count);
+        } else {
+            item = Item.get(Registries.ITEM_RUNTIMEID.getIdentifier(runtimeId), damage, count);
+            BlockState blockState = Registries.BLOCKSTATE.get(blockRuntimeId);
+            if (blockState != null) {
+                item.setBlockUnsafe(blockState.toBlock());
             }
         }
 
-        //instance item
-        if (getBoolean()) { // hasNetId
-            getVarInt(); // netId
-        }
-
-        int blockRuntimeId = getVarInt();//blockDefinition
-        if (id != null && id <= 255 && id != FALLBACK_ID) {
-            BlockState blockStateByRuntimeId = BlockStateRegistry.getBlockStateByRuntimeId(blockRuntimeId);
-            if (blockStateByRuntimeId != null) {
-                damage = blockStateByRuntimeId.asItemBlock().getDamage();
-            }
+        if (netId != null) {
+            item.setNetId(netId);
         }
 
         byte[] bytes = getByteArray();
-        ByteBuf buf = AbstractByteBufAllocator.DEFAULT.ioBuffer(bytes.length);
+        ByteBuf buf = ByteBufAllocator.DEFAULT.ioBuffer(bytes.length);
         buf.writeBytes(bytes);
-
-        byte[] nbt = new byte[0];
-        String[] canPlace;
-        String[] canBreak;
-
         try (LittleEndianByteBufInputStream stream = new LittleEndianByteBufInputStream(buf)) {
             int nbtSize = stream.readShort();
-
-            CompoundTag compoundTag = null;
             if (nbtSize > 0) {
                 compoundTag = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN);
             } else if (nbtSize == -1) {
                 int tagCount = stream.readUnsignedByte();
                 if (tagCount != 1) throw new IllegalArgumentException("Expected 1 tag but got " + tagCount);
                 compoundTag = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN);
-            }
-
-            if (compoundTag != null && compoundTag.getAllTags().size() > 0) {
-                if (compoundTag.contains("Damage")) {
-                    if (stringId != null || (id != null && id > 255)) {
-                        damage = compoundTag.getInt("Damage");
-                    }
-                    compoundTag.remove("Damage");
-                }
-                if (compoundTag.contains("__DamageConflict__")) {
-                    compoundTag.put("Damage", compoundTag.removeAndGet("__DamageConflict__"));
-                }
-                if (!compoundTag.isEmpty()) {
-                    nbt = NBTIO.write(compoundTag, ByteOrder.LITTLE_ENDIAN);
-                }
             }
 
             canPlace = new String[stream.readInt()];
@@ -495,185 +497,70 @@ public class BinaryStream {
                 canBreak[i] = stream.readUTF();
             }
 
-            if (id != null && id == ItemID.SHIELD) {
-                stream.readLong();
+            if (Objects.equals(item.getId(), ItemID.SHIELD)) {
+                blockingTicks = stream.readLong();//blockingTicks
             }
+            if (compoundTag != null) {
+                item.setCompoundTag(compoundTag);
+            }
+            Block[] canPlaces = new Block[canPlace.length];
+            for (int i = 0; i < canPlace.length; i++) {
+                canPlaces[i] = Block.get(canPlace[i]);
+            }
+            if (canPlaces.length > 0) {
+                item.setCanDestroy(canPlaces);
+            }
+            Block[] canBreaks = new Block[canBreak.length];
+            for (int i = 0; i < canBreak.length; i++) {
+                canBreaks[i] = Block.get(canBreak[i]);
+            }
+            if (canBreaks.length > 0) {
+                item.setCanPlaceOn(canBreaks);
+            }
+            return item;
         } catch (IOException e) {
             throw new IllegalStateException("Unable to read item user data", e);
         } finally {
             buf.release();
         }
-
-        Item item = null;
-        if (id != null) {
-            item = readUnknownItem(Item.get(id, damage, count, nbt));
-        } else if (stringId != null) {
-            final Item tmp = Item.fromString(stringId);
-            tmp.setDamage(damage);
-            tmp.setCount(count);
-            tmp.setCompoundTag(nbt);
-            item = readUnknownItem(tmp);
-        }
-
-        if (canBreak.length > 0 || canPlace.length > 0) {
-            CompoundTag namedTag = item.getNamedTag();
-            if (namedTag == null) {
-                namedTag = new CompoundTag();
-            }
-
-            if (canBreak.length > 0) {
-                ListTag<StringTag> listTag = new ListTag<>("CanDestroy");
-                for (String blockName : canBreak) {
-                    listTag.add(new StringTag("", blockName));
-                }
-                namedTag.put("CanDestroy", listTag);
-            }
-
-            if (canPlace.length > 0) {
-                ListTag<StringTag> listTag = new ListTag<>("CanPlaceOn");
-                for (String blockName : canPlace) {
-                    listTag.add(new StringTag("", blockName));
-                }
-                namedTag.put("CanPlaceOn", listTag);
-            }
-
-            item.setNamedTag(namedTag);
-        }
-
-        return item;
     }
 
     private Item readUnknownItem(Item item) {
-        if (item.getId() != FALLBACK_ID || !item.hasCompoundTag()) {
-            return item;
-        }
-
-        CompoundTag tag = item.getNamedTag();
-        if (!tag.containsCompound("PowerNukkitUnknown")) {
-            return item;
-        }
-
-        CompoundTag pnTag = tag.getCompound("PowerNukkitUnknown");
-        int itemId = pnTag.getInt("OriginalItemId");
-        int meta = pnTag.getInt("OriginalMeta");
-        boolean hasCustomName = pnTag.getBoolean("HasCustomName");
-        boolean hasCompound = pnTag.getBoolean("HasCompound");
-        boolean hasDisplayTag = pnTag.getBoolean("HasDisplayTag");
-        String customName = pnTag.getString("OriginalCustomName");
-
-        item = Item.get(itemId, meta, item.getCount());
-        if (hasCompound) {
-            tag.remove("PowerNukkitUnknown");
-            if (!hasDisplayTag) {
-                tag.remove("display");
-            } else if (tag.containsCompound("display")) {
-                if (!hasCustomName) {
-                    tag.getCompound("display").remove("Name");
-                } else {
-                    tag.getCompound("display").putString("Name", customName);
-                }
-            }
-            item.setNamedTag(tag);
-        }
-
-        return item;
+        return null;//todo reimplement for customitem
     }
 
     private Item createFakeUnknownItem(Item item) {
-        boolean hasCompound = item.hasCompoundTag();
-        Item fallback = Item.getBlock(FALLBACK_ID, 0, item.getCount());
-        CompoundTag tag = item.getNamedTag();
-        if (tag == null) {
-            tag = new CompoundTag();
-        }
-        tag.putCompound("PowerNukkitUnknown", new CompoundTag()
-                .putInt("OriginalItemId", item.getId())
-                .putInt("OriginalMeta", item.getDamage())
-                .putBoolean("HasCustomName", item.hasCustomName())
-                .putBoolean("HasDisplayTag", tag.contains("display"))
-                .putBoolean("HasCompound", hasCompound)
-                .putString("OriginalCustomName", item.getCustomName()));
-
-        fallback.setNamedTag(tag);
-        String suffix = "" + TextFormat.RESET + TextFormat.GRAY + TextFormat.ITALIC +
-                " (" + item.getId() + ":" + item.getDamage() + ")";
-        if (fallback.hasCustomName()) {
-            fallback.setCustomName(fallback.getCustomName() + suffix);
-        } else {
-            fallback.setCustomName(TextFormat.RESET + "" + TextFormat.BOLD + TextFormat.RED + "Unknown" + suffix);
-        }
-        return fallback;
+        return null;//todo reimplement for customitem
     }
 
     public void putSlot(Item item) {
         this.putSlot(item, false);
     }
 
-    @PowerNukkitXDifference(info = "Remove the name from the tag, this function will be removed in the future")
-    @Since("1.4.0.0-PN")
     public void putSlot(Item item, boolean instanceItem) {
-        if (item == null || item.getId() == 0) {
+        if (item == null || item.isNull()) {
             putByte((byte) 0);
             return;
         }
 
-        int networkId;
-        try {
-            networkId = RuntimeItems.getRuntimeMapping().getNetworkId(item);
-        } catch (IllegalArgumentException e) {
-            log.trace(e);
-            item = createFakeUnknownItem(item);
-            networkId = RuntimeItems.getRuntimeMapping().getNetworkId(item);
-        }
-        putVarInt(networkId);//write runtimeId
+        int networkId = item.getRuntimeId();
+        putVarInt(networkId);//write item runtimeId
         putLShort(item.getCount());//write item count
+        putUnsignedVarInt(item.getDamage());//write damage value
 
-        int legacyData = 0;
-        if (item.getId() > 256) { // Not a block
-            //不是item_mappings.json中的物品才会写入damage值，因为item_mappings.json的作用是将旧的物品id:damage转换到最新的无damage值的物品
-            if (item instanceof ItemDurable || !RuntimeItems.getRuntimeMapping().toRuntime(item.getId(), item.getDamage()).hasDamage()) {
-                legacyData = item.getDamage();
-            }
-        } else if (item instanceof StringItem) {
-            legacyData = item.getDamage();
-        }
-
-        putUnsignedVarInt(legacyData);//write damage value
 
         if (!instanceItem) {
-            putBoolean(true); // hasNetId
-            putVarInt(0); // netId
+            putBoolean(item.isUsingNetId()); // isUsingNetId
+            if (item.isUsingNetId()) {
+                putVarInt(item.getNetId()); // netId
+            }
         }
 
-        Block block = item.getBlockUnsafe();//write blockDefinition
-        int blockRuntimeId = block == null ? 0 : block.getRuntimeId();
-        putVarInt(blockRuntimeId);
-
-        int data = 0;
-        if (item instanceof ItemDurable || item.getId() < 256) {
-            data = item.getDamage();
-        }
+        putVarInt(item.isBlock() ? item.getBlockUnsafe().getRuntimeId() : 0);
 
         ByteBuf userDataBuf = ByteBufAllocator.DEFAULT.ioBuffer();
         try (LittleEndianByteBufOutputStream stream = new LittleEndianByteBufOutputStream(userDataBuf)) {
-            if ((item instanceof ItemDurable && data != 0) || block != null &&
-                    !RuntimeItemMapping.getBlockMapping().containsKey(block.getId() + ":" + block.getDataStorage().longValue())
-                    && block.getDataStorage().longValue() > 0) {
-                byte[] nbt = item.getCompoundTag();
-                CompoundTag tag;
-                if (nbt == null || nbt.length == 0) {
-                    tag = new CompoundTag();
-                } else {
-                    tag = NBTIO.read(nbt, ByteOrder.LITTLE_ENDIAN);
-                }
-                if (tag.contains("Damage")) {
-                    tag.put("__DamageConflict__", tag.removeAndGet("Damage"));
-                }
-                tag.putInt("Damage", data);
-                stream.writeShort(-1);
-                stream.writeByte(1); // Hardcoded in current version
-                stream.write(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
-            } else if (item.hasCompoundTag()) {
+            if (item.hasCompoundTag()) {
                 stream.writeShort(-1);
                 stream.writeByte(1); // Hardcoded in current version
                 stream.write(NBTIO.write(item.getNamedTag(), ByteOrder.LITTLE_ENDIAN));
@@ -693,8 +580,8 @@ public class BinaryStream {
                 stream.writeUTF(string);
             }
 
-            if (item.getId() == ItemID.SHIELD) {
-                stream.writeLong(0);//BlockingTicks
+            if (Objects.equals(item.getId(), ItemID.SHIELD)) {
+                stream.writeLong(0);//BlockingTicks // todo add BlockingTicks to Item Class. Find out what Blocking Ticks are
             }
 
             byte[] bytes = new byte[userDataBuf.readableBytes()];
@@ -707,66 +594,19 @@ public class BinaryStream {
         }
     }
 
-    public Item getRecipeIngredient() {
-        int networkId = this.getVarInt();
-        if (networkId == 0) {
-            return Item.get(0, 0, 0);
-        }
-
-        int legacyFullId = RuntimeItems.getRuntimeMapping().getLegacyFullId(networkId);
-        int id = RuntimeItems.getId(legacyFullId);
-        boolean hasData = RuntimeItems.hasData(legacyFullId);
-
-        int damage = this.getVarInt();
-        if (hasData) {
-            damage = RuntimeItems.getData(legacyFullId);
-        } else if (damage == 0x7fff) {
-            damage = -1;
-        }
-
-        int count = this.getVarInt();
-        return Item.get(id, damage, count);
-    }
-
-    @Deprecated
-    @DeprecationDetails(since = "1.19.50-r2", reason = "Support more types of recipe input", replaceWith = "putRecipeIngredient(ItemDescriptor itemDescriptor)")
-    public void putRecipeIngredient(Item ingredient) {
-        if (ingredient == null || ingredient.getId() == 0) {
-            this.putBoolean(false); // isValid? - false
-            this.putVarInt(0); // item == null ? 0 : item.getCount()
-            return;
-        }
-        this.putBoolean(true); // isValid? - true
-
-        int networkId = RuntimeItems.getRuntimeMapping().getNetworkId(ingredient);
-        int damage = ingredient.hasMeta() ? ingredient.getDamage() : 0x7fff;
-        if (RuntimeItems.getRuntimeMapping().toRuntime(ingredient.getId(), ingredient.getDamage()).hasDamage()) {
-            damage = 0;
-        }
-
-        this.putLShort(networkId);
-        this.putLShort(damage);
-        this.putVarInt(ingredient.getCount());
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.50-r2")
     public void putRecipeIngredient(ItemDescriptor itemDescriptor) {
         ItemDescriptorType type = itemDescriptor.getType();
         this.putByte((byte) type.ordinal());
         switch (type) {
             case DEFAULT -> {
                 var ingredient = itemDescriptor.toItem();
-                if (ingredient == null || ingredient.getId() == 0) {
+                if (ingredient == null || ingredient.isNull()) {
                     this.putLShort(0);
                     this.putVarInt(0); // item == null ? 0 : item.getCount()
                     return;
                 }
-                int networkId = RuntimeItems.getRuntimeMapping().getNetworkId(ingredient);
+                int networkId = ingredient.getRuntimeId();
                 int damage = ingredient.hasMeta() ? ingredient.getDamage() : 0x7fff;
-                if (RuntimeItems.getRuntimeMapping().toRuntime(ingredient.getId(), ingredient.getDamage()).hasDamage()) {
-                    damage = 0;
-                }
                 this.putLShort(networkId);
                 this.putLShort(damage);
             }
@@ -774,6 +614,10 @@ public class BinaryStream {
                 MolangDescriptor molangDescriptor = (MolangDescriptor) itemDescriptor;
                 this.putString(molangDescriptor.getTagExpression());
                 this.putByte((byte) molangDescriptor.getMolangVersion());
+            }
+            case COMPLEX_ALIAS -> {
+                ComplexAliasDescriptor complexAliasDescriptor = (ComplexAliasDescriptor) itemDescriptor;
+                this.putString(complexAliasDescriptor.getName());
             }
             case ITEM_TAG -> {
                 ItemTagDescriptor tagDescriptor = (ItemTagDescriptor) itemDescriptor;
@@ -902,20 +746,14 @@ public class BinaryStream {
         this.putLFloat(z);
     }
 
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
     public Vector2f getVector2f() {
         return new Vector2f(this.getLFloat(4), this.getLFloat(4));
     }
 
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
     public void putVector2f(Vector2f v) {
         this.putVector2f(v.x, v.y);
     }
 
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
     public void putVector2f(float x, float y) {
         this.putLFloat(x);
         this.putLFloat(y);
@@ -983,14 +821,12 @@ public class BinaryStream {
         return new EntityLink(
                 getEntityUniqueId(),
                 getEntityUniqueId(),
-                (byte) getByte(),
+                getByte(),
                 getBoolean(),
                 getBoolean()
         );
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
     public <T> void putArray(Collection<T> collection, Consumer<T> writer) {
         if (collection == null) {
             putUnsignedVarInt(0);
@@ -1000,8 +836,6 @@ public class BinaryStream {
         collection.forEach(writer);
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
     public <T> void putArray(T[] collection, Consumer<T> writer) {
         if (collection == null) {
             putUnsignedVarInt(0);
@@ -1013,8 +847,6 @@ public class BinaryStream {
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
     public <T> void putArray(Collection<T> array, BiConsumer<BinaryStream, T> biConsumer) {
         this.putUnsignedVarInt(array.size());
         for (T val : array) {
@@ -1037,8 +869,6 @@ public class BinaryStream {
     }
 
     @SneakyThrows(IOException.class)
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
     public CompoundTag getTag() {
         ByteArrayInputStream is = new ByteArrayInputStream(buffer, offset, buffer.length);
         int initial = is.available();
@@ -1050,11 +880,90 @@ public class BinaryStream {
     }
 
     @SneakyThrows(IOException.class)
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
     public void putTag(CompoundTag tag) {
         put(NBTIO.write(tag));
     }
+
+    public ItemStackRequest readItemStackRequest() {
+        int requestId = getVarInt();
+        ItemStackRequestAction[] actions = getArray(ItemStackRequestAction.class, (s) -> {
+            ItemStackRequestActionType itemStackRequestActionType = ItemStackRequestActionType.fromId(s.getByte());
+            return readRequestActionData(itemStackRequestActionType);
+        });
+        String[] filteredStrings = getArray(String.class, BinaryStream::getString);
+
+        int originVal = getLInt();
+        TextProcessingEventOrigin origin = originVal == -1 ? null : TextProcessingEventOrigin.fromId(originVal);  // new for v552
+        return new ItemStackRequest(requestId, actions, filteredStrings, origin);
+    }
+
+    protected ItemStackRequestAction readRequestActionData(ItemStackRequestActionType type) {
+        return switch (type) {
+            case CRAFT_REPAIR_AND_DISENCHANT -> new CraftGrindstoneAction((int) getUnsignedVarInt(), getVarInt());
+            case CRAFT_LOOM -> new CraftLoomAction(getString());
+            case CRAFT_RECIPE_AUTO -> new AutoCraftRecipeAction(
+                    (int) getUnsignedVarInt(), getByte(), Collections.emptyList()
+            );
+            case CRAFT_RESULTS_DEPRECATED -> new CraftResultsDeprecatedAction(
+                    getArray(Item.class, (s) -> s.getSlot(true)),
+                    getByte()
+            );
+            case MINE_BLOCK -> new MineBlockAction(getVarInt(), getVarInt(), getVarInt());
+            case CRAFT_RECIPE_OPTIONAL -> new CraftRecipeOptionalAction((int) getUnsignedVarInt(), getLInt());
+            case TAKE -> new TakeAction(
+                    getByte(),
+                    readStackRequestSlotInfo(),
+                    readStackRequestSlotInfo()
+            );
+            case PLACE -> new PlaceAction(
+                    getByte(),
+                    readStackRequestSlotInfo(),
+                    readStackRequestSlotInfo()
+            );
+            case SWAP -> new SwapAction(
+                    readStackRequestSlotInfo(),
+                    readStackRequestSlotInfo()
+            );
+            case DROP -> new DropAction(
+                    getByte(),
+                    readStackRequestSlotInfo(),
+                    getBoolean()
+            );
+            case DESTROY -> new DestroyAction(
+                    getByte(),
+                    readStackRequestSlotInfo()
+            );
+            case CONSUME -> new ConsumeAction(
+                    getByte(),
+                    readStackRequestSlotInfo()
+            );
+            case CREATE -> new CreateAction(
+                    getByte()
+            );
+            case LAB_TABLE_COMBINE -> new LabTableCombineAction();
+            case BEACON_PAYMENT -> new BeaconPaymentAction(
+                    getVarInt(),
+                    getVarInt()
+            );
+            case CRAFT_RECIPE -> new CraftRecipeAction(
+                    (int) getUnsignedVarInt()
+            );
+            case CRAFT_CREATIVE -> new CraftCreativeAction(
+                    (int) getUnsignedVarInt()
+            );
+            case CRAFT_NON_IMPLEMENTED_DEPRECATED -> new CraftNonImplementedAction();
+            default -> throw new UnsupportedOperationException("Unhandled stack request action type: " + type);
+        };
+    }
+
+    private ItemStackRequestSlotData readStackRequestSlotInfo() {
+        return new ItemStackRequestSlotData(
+                ContainerSlotType.fromId(getByte()),
+                getByte(),
+                getVarInt()
+        );
+    }
+
 
     private void ensureCapacity(int minCapacity) {
         // overflow-conscious code

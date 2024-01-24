@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.executor;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
@@ -13,8 +11,8 @@ import cn.nukkit.entity.passive.EntityWolf;
  * <p>
  * The wolf performs an attack with a wolf animation, as well as during the attack the wolf will also look at the player carrying food.
  */
-@PowerNukkitXOnly
-@Since("1.19.30-r1")
+
+
 public class WolfAttackExecutor extends MeleeAttackExecutor {
 
     /**

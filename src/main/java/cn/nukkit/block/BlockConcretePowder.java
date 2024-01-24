@@ -1,52 +1,20 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.DyeColor;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CreeperFace
  * @since 2.6.2017
  */
-@PowerNukkitDifference(info = "Extends BlockFallableMeta instead of BlockFallable")
-public class BlockConcretePowder extends BlockFallableMeta {
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.COLOR_BLOCK_PROPERTIES;
 
-    public BlockConcretePowder() {
-        // Does nothing
-    }
-
-    public BlockConcretePowder(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return CONCRETE_POWDER;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    @Override
-    public String getName() {
-        return getDyeColor().getName() + " Concrete Powder";
+public abstract class BlockConcretePowder extends BlockFallable {
+    public BlockConcretePowder(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -63,7 +31,9 @@ public class BlockConcretePowder extends BlockFallableMeta {
     public int getToolType() {
         return ItemTool.TYPE_SHOVEL;
     }
-    
+
+    public abstract BlockConcrete getConcrete();
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -71,8 +41,8 @@ public class BlockConcretePowder extends BlockFallableMeta {
 
             for (int side = 1; side <= 5; side++) {
                 Block block = this.getSide(BlockFace.fromIndex(side));
-                if (block.getId() == Block.FLOWING_WATER || block.getId() == Block.STILL_WATER) {
-                    this.level.setBlock(this, Block.get(Block.CONCRETE, getDamage()), true, true);
+                if (block.getId().equals(Block.FLOWING_WATER) || block.getId().equals(Block.WATER)) {
+                    this.level.setBlock(this, getConcrete(), true, true);
                 }
             }
 
@@ -87,23 +57,18 @@ public class BlockConcretePowder extends BlockFallableMeta {
 
         for (int side = 1; side <= 5; side++) {
             Block block = this.getSide(BlockFace.fromIndex(side));
-            if (block.getId() == Block.FLOWING_WATER || block.getId() == Block.STILL_WATER) {
+            if (block.getId().equals(Block.FLOWING_WATER) || block.getId().equals(Block.WATER)) {
                 concrete = true;
                 break;
             }
         }
 
         if (concrete) {
-            this.level.setBlock(this, Block.get(Block.CONCRETE, this.getDamage()), true, true);
+            this.level.setBlock(this, getConcrete(), true, true);
         } else {
             this.level.setBlock(this, this, true, true);
         }
 
         return true;
-    }
-
-    @PowerNukkitOnly
-    public DyeColor getDyeColor() {
-        return getPropertyValue(CommonBlockProperties.COLOR);
     }
 }

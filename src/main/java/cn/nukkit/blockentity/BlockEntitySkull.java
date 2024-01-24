@@ -1,9 +1,7 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -12,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @since 2016/2/3
  */
 public class BlockEntitySkull extends BlockEntitySpawnable {
-    public BlockEntitySkull(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntitySkull(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
     
@@ -20,7 +18,7 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     
     private int mouthTickCount;
 
-    @Since("1.19.60-r1")
+
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -50,8 +48,6 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setMouthMoving(boolean mouthMoving) {
         if (this.mouthMoving == mouthMoving) {
             return;
@@ -67,8 +63,6 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
         }
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public boolean isObservable() {
         return false;
@@ -79,20 +73,14 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
         chunk.setChanged();
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public boolean isMouthMoving() {
         return mouthMoving;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public int getMouthTickCount() {
         return mouthTickCount;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setMouthTickCount(int mouthTickCount) {
         if (this.mouthTickCount == mouthTickCount) {
             return;
@@ -112,7 +100,7 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
 
     @Override
     public boolean isBlockEntityValid() {
-        return getBlock().getId() == Block.SKULL_BLOCK;
+        return getBlock().getId().equals(Block.SKULL);
     }
 
     @Override

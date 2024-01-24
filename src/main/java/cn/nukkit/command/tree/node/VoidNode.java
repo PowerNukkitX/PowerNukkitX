@@ -1,14 +1,12 @@
 package cn.nukkit.command.tree.node;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.tree.ParamList;
 
 /**
  * 一个用来占位的空参数节点
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public class VoidNode implements IParamNode<Void> {
     @Override
     public void fill(String arg) {

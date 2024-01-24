@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.route.data;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,8 +10,8 @@ import java.util.Objects;
 /**
  * 寻路节点
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 @Getter
 @Setter
 public final class Node implements Comparable<Node> {

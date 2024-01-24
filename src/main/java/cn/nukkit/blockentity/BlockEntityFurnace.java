@@ -1,10 +1,6 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.event.inventory.FurnaceBurnEvent;
@@ -14,11 +10,12 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemBucket;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.ContainerSetDataPacket;
+import cn.nukkit.recipe.SmeltingRecipe;
 
 import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
@@ -34,17 +31,14 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
     protected int burnDuration;
     protected int cookTime;
     protected int maxTime;
-    @Since("1.19.50-r3")
-    @PowerNukkitXOnly
     protected float storedXP;
 
     private int crackledTime;
 
-    public BlockEntityFurnace(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityFurnace(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @PowerNukkitOnly
     protected InventoryType getInventoryType() {
         return InventoryType.FURNACE;
     }
@@ -57,14 +51,13 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         }
     }
 
-    @Since("1.19.60-r1")
     @Override
     public void loadNBT() {
         super.loadNBT();
         this.inventory = new FurnaceInventory(this, getInventoryType());
 
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
-            this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+            this.namedTag.putList("Items", new ListTag<CompoundTag>());
         }
 
         for (int i = 0; i < this.getSize(); i++) {
@@ -108,12 +101,10 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         }
     }
 
-    @PowerNukkitOnly
     protected String getFurnaceName() {
         return "Furnace";
     }
 
-    @PowerNukkitOnly
     protected String getClientName() {
         return FURNACE;
     }
@@ -148,7 +139,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         }
     }
 
-    @PowerNukkitXDifference(info = "Drop xp when break.", since = "1.19.50-r3")
     @Override
     public void onBreak() {
         for (Item content : inventory.getContents().values()) {
@@ -164,7 +154,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
 
     @Override
     public void saveNBT() {
-        this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+        this.namedTag.putList("Items", new ListTag<CompoundTag>());
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
@@ -178,11 +168,10 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
 
     @Override
     public boolean isBlockEntityValid() {
-        int blockID = getBlock().getId();
+        String blockID = getBlock().getId();
         return blockID == getIdleBlockId() || blockID == getBurningBlockId();
     }
 
-    @Override
     public int getSize() {
         return 3;
     }
@@ -198,7 +187,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         return -1;
     }
 
-    @Override
     public Item getItem(int index) {
         int i = this.getSlotIndex(index);
         if (i < 0) {
@@ -209,13 +197,12 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         }
     }
 
-    @Override
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 
         CompoundTag d = NBTIO.putItemHelper(item, index);
 
-        if (item.getId() == Item.AIR || item.getCount() <= 0) {
+        if (item.isNull()) {
             if (i >= 0) {
                 this.namedTag.getList("Items").getAll().remove(i);
             }
@@ -231,24 +218,21 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         return inventory;
     }
 
-    @PowerNukkitOnly
-    protected int getIdleBlockId() {
+    protected String getIdleBlockId() {
         return Block.FURNACE;
     }
 
-    @PowerNukkitOnly
-    protected int getBurningBlockId() {
+    protected String getBurningBlockId() {
         return Block.LIT_FURNACE;
     }
 
-    @PowerNukkitOnly
     protected void setBurning(boolean burning) {
         if (burning) {
             if (this.getBlock().getId() == getIdleBlockId()) {
-                this.getLevel().setBlock(this, Block.get(getBurningBlockId(), this.getBlock().getDamage()), true);
+                this.getLevel().setBlock(this, Block.getWithState(getBurningBlockId(), this.getBlock().getBlockState()), true);
             }
         } else if (this.getBlock().getId() == getBurningBlockId()) {
-            this.getLevel().setBlock(this, Block.get(getIdleBlockId(), this.getBlock().getDamage()), true);
+            this.getLevel().setBlock(this, Block.getWithState(getIdleBlockId(), this.getBlock().getBlockState()), true);
         }
     }
 
@@ -267,7 +251,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         if (burnTime > 0 && ev.isBurning()) {
             fuel.setCount(fuel.getCount() - 1);
             if (fuel.getCount() == 0) {
-                if (fuel.getId() == Item.BUCKET && ((ItemBucket)fuel).isLava()) {
+                if (fuel.getId() == Item.BUCKET && ((ItemBucket) fuel).isLava()) {
                     fuel.setDamage(0);
                     fuel.setCount(1);
                 } else {
@@ -278,12 +262,10 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         }
     }
 
-    @PowerNukkitOnly
     protected SmeltingRecipe matchRecipe(Item raw) {
         return this.server.getCraftingManager().matchFurnaceRecipe(raw);
     }
 
-    @PowerNukkitOnly
     protected int getSpeedMultiplier() {
         return 1;
     }
@@ -302,7 +284,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
 
         boolean canSmelt = false;
         if (smelt != null) {
-            canSmelt = (raw.getCount() > 0 && ((smelt.getResult().equals(product, true) && product.getCount() < product.getMaxStackSize()) || product.getId() == Item.AIR));
+            canSmelt = (raw.getCount() > 0 && ((smelt.getResult().equals(product, true) && product.getCount() < product.getMaxStackSize()) || product.getId() == BlockID.AIR));
             //检查输入
             if (!smelt.getInput().equals(raw, true, false)) {
                 canSmelt = false;
@@ -367,13 +349,13 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
                 pk.windowId = windowId;
                 pk.property = ContainerSetDataPacket.PROPERTY_FURNACE_TICK_COUNT;
                 pk.value = cookTime;
-                player.batchDataPacket(pk);
+                player.dataPacket(pk);
 
                 pk = new ContainerSetDataPacket();
                 pk.windowId = windowId;
                 pk.property = ContainerSetDataPacket.PROPERTY_FURNACE_LIT_TIME;
                 pk.value = burnDuration;
-                player.batchDataPacket(pk);
+                player.dataPacket(pk);
             }
         }
 
@@ -430,20 +412,14 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         this.maxTime = maxTime;
     }
 
-    @Since("1.19.50-r3")
-    @PowerNukkitXOnly
     public float getStoredXP() {
         return storedXP;
     }
 
-    @Since("1.19.50-r3")
-    @PowerNukkitXOnly
     public void setStoredXP(float storedXP) {
         this.storedXP = storedXP;
     }
 
-    @Since("1.19.50-r3")
-    @PowerNukkitXOnly
     public short calculateXpDrop() {
         return (short) (Math.floor(this.storedXP) + (ThreadLocalRandom.current().nextFloat() < (this.storedXP % 1) ? 1 : 0));
     }

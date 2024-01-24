@@ -1,30 +1,22 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.BarrelInventory;
 import cn.nukkit.inventory.ContainerInventory;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-@PowerNukkitOnly
+
 public class BlockEntityBarrel extends BlockEntitySpawnableContainer implements BlockEntityNameable {
 
-    @PowerNukkitOnly
-    public BlockEntityBarrel(FullChunk chunk, CompoundTag nbt) {
+
+    public BlockEntityBarrel(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Since("1.19.60-r1")
     @Override
     protected ContainerInventory requireContainerInventory() {
         return new BarrelInventory(this);
-    }
-
-    @Override
-    public int getSize() {
-        return 27;
     }
 
     @Override

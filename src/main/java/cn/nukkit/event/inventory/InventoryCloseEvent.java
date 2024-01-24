@@ -3,6 +3,7 @@ package cn.nukkit.event.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.Inventory;
+import lombok.Getter;
 
 /**
  * @author Box (Nukkit Project)

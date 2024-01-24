@@ -1,17 +1,14 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityChiseledBookshelf;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
+import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBook;
-import cn.nukkit.item.ItemBookEnchanted;
 import cn.nukkit.item.ItemBookWritable;
+import cn.nukkit.item.ItemEnchantedBook;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
@@ -23,27 +20,24 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+import static cn.nukkit.block.property.CommonBlockProperties.BOOKS_STORED;
+
+
 public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntityHolder<BlockEntityChiseledBookshelf>, Faceable {
-    public static final IntBlockProperty BOOKS_STORED = new IntBlockProperty("books_stored", false, 63);
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.DIRECTION, BOOKS_STORED);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CHISELED_BOOKSHELF, BOOKS_STORED, CommonBlockProperties.DIRECTION);
 
-    public BlockChiseledBookshelf(int meta) {
-        super(meta);
-    }
-
-    public BlockChiseledBookshelf() {
-        this(0);
-    }
-
+    @Override
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    public int getId() {
-        return CHISELED_BOOKSHELF;
+    public BlockChiseledBookshelf() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockChiseledBookshelf(BlockState blockstate) {
+        super(blockstate);
     }
 
     public String getName() {
@@ -79,65 +73,67 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 
-    @NotNull
     @Override
+    @NotNull
     public Class<? extends BlockEntityChiseledBookshelf> getBlockEntityClass() {
         return BlockEntityChiseledBookshelf.class;
     }
 
-    @NotNull
     @Override
+    @NotNull
     public String getBlockEntityType() {
         return BlockEntity.CHISELED_BOOKSHELF;
     }
 
-    @Since("1.20.0-r2")
     @Override
-    public void onPlayerRightClick(@NotNull Player player, Item item, BlockFace face, Vector3 clickPoint) {
-        BlockFace blockFace = getBlockFace();
-        if (player.getHorizontalFacing().getOpposite() == blockFace) {
-            /*
-             * south z==1  The lower left corner is the origin
-             * east  x==1  The lower right corner is the origin
-             * west  x==0  The lower left corner is the origin
-             * north z==0  The lower right corner is the origin
-             */
-            Vector2 clickPos = switch (blockFace) {
-                case NORTH -> new Vector2(1 - clickPoint.getX(), clickPoint.getY());
-                case SOUTH -> new Vector2(clickPoint.getX(), clickPoint.getY());
-                case WEST -> new Vector2(clickPoint.getZ(),  clickPoint.getY());
-                case EAST -> new Vector2(1 -clickPoint.getZ(), clickPoint.getY());
-                default -> throw new IllegalArgumentException(blockFace.toString());
-            };
-            int index = getRegion(clickPos);
-            BlockEntityChiseledBookshelf blockEntity = this.getBlockEntity();
-            if (blockEntity != null) {
-                if (blockEntity.hasBook(index)) {
-                    Item book = blockEntity.removeBook(index);
-                    player.getInventory().addItem(book);
-                }else if (item instanceof ItemBook || item instanceof ItemBookEnchanted || item instanceof ItemBookWritable) {
-                    Item itemClone = item.clone();
-                    if (!player.isCreative()) {
-                        itemClone.setCount(itemClone.getCount() - 1);
-                        player.getInventory().setItemInHand(itemClone);
+    public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player, PlayerInteractEvent.@NotNull Action action) {
+        if(action== PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK){
+            BlockFace blockFace = getBlockFace();
+            assert player != null;
+            if (player.getHorizontalFacing().getOpposite() == blockFace) {
+                /*
+                 * south z==1  The lower left corner is the origin
+                 * east  x==1  The lower right corner is the origin
+                 * west  x==0  The lower left corner is the origin
+                 * north z==0  The lower right corner is the origin
+                 */
+                Vector2 clickPos = switch (blockFace) {
+                    case NORTH -> new Vector2(1 - fx, fy);
+                    case SOUTH -> new Vector2(fx, fy);
+                    case WEST -> new Vector2(fz, fy);
+                    case EAST -> new Vector2(1 - fz, fy);
+                    default -> throw new IllegalArgumentException(blockFace.toString());
+                };
+                int index = getRegion(clickPos);
+                BlockEntityChiseledBookshelf blockEntity = this.getBlockEntity();
+                if (blockEntity != null) {
+                    if (blockEntity.hasBook(index)) {
+                        Item book = blockEntity.removeBook(index);
+                        player.getInventory().addItem(book);
+                    } else if (item instanceof ItemBook || item instanceof ItemEnchantedBook || item instanceof ItemBookWritable) {
+                        Item itemClone = item.clone();
+                        if (!player.isCreative()) {
+                            itemClone.setCount(itemClone.getCount() - 1);
+                            player.getInventory().setItemInHand(itemClone);
+                        }
+                        itemClone.setCount(1);
+                        blockEntity.setBook(itemClone, index);
                     }
-                    itemClone.setCount(1);
-                    blockEntity.setBook(itemClone, index);
+                    this.setPropertyValue(BOOKS_STORED, blockEntity.getBooksStoredBit());
+                    this.getLevel().setBlock(this, this, true);
                 }
-                this.setPropertyValue(BOOKS_STORED, blockEntity.getBooksStoredBit());
-                this.getLevel().setBlock(this, this, true);
             }
         }
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(CommonBlockProperties.DIRECTION);
+        return BlockFace.fromHorizontalIndex(getPropertyValue(CommonBlockProperties.DIRECTION));
     }
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(CommonBlockProperties.DIRECTION, face);
+        setPropertyValue(CommonBlockProperties.DIRECTION, face.getHorizontalIndex());
     }
 
     private int getRegion(Vector2 clickPos) {

@@ -5,6 +5,7 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.BookEditPacket;
+import lombok.Getter;
 
 public class PlayerEditBookEvent extends PlayerEvent implements Cancellable {
 

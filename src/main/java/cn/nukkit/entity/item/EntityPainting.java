@@ -1,8 +1,6 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHanging;
@@ -10,7 +8,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.ItemPainting;
 import cn.nukkit.level.GameRule;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Axis;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -18,6 +16,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddPaintingPacket;
 import cn.nukkit.network.protocol.DataPacket;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +26,10 @@ import java.util.Map;
  */
 public class EntityPainting extends EntityHanging {
 
-    public static final int NETWORK_ID = 83;
+    @Override
+    @NotNull public String getIdentifier() {
+        return PAINTING;
+    }
 
     public final static Motive[] motives = Motive.values();
     private Motive motive;
@@ -36,7 +38,7 @@ public class EntityPainting extends EntityHanging {
     private float length;
     private float height;
 
-    public EntityPainting(FullChunk chunk, CompoundTag nbt) {
+    public EntityPainting(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -59,10 +61,7 @@ public class EntityPainting extends EntityHanging {
         return height;
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {
@@ -135,7 +134,6 @@ public class EntityPainting extends EntityHanging {
         this.namedTag.putString("Motive", this.motive.title);
     }
 
-    @PowerNukkitOnly
     @Override
     public void onPushByPiston(BlockEntityPistonArm piston) {
         if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
@@ -153,13 +151,10 @@ public class EntityPainting extends EntityHanging {
         return Motive.BY_NAME.get(namedTag.getString("Motive"));
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Painting";
     }
-
 
     public enum Motive {
         KEBAB("Kebab", 1, 1),

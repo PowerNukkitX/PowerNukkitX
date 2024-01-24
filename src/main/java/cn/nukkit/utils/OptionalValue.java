@@ -1,15 +1,11 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-@PowerNukkitXOnly
+
 public final class OptionalValue<T> {
     private static final OptionalValue<?> EMPTY = new OptionalValue<>(null);
 
@@ -50,14 +46,10 @@ public final class OptionalValue<T> {
         return value != null ? value : other;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public T orElseGet(Supplier<T> other) {
         return value != null ? value : other.get();
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public <X extends Throwable> T orElseThrow(Supplier<X> exceptionSupplier) throws X {
         if (value != null) {
             return value;

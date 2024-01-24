@@ -1,17 +1,22 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
  * @since 2015/12/2
  */
 public class BlockObsidian extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties(OBSIDIAN);
 
     public BlockObsidian() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockObsidian(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -20,8 +25,8 @@ public class BlockObsidian extends BlockSolid {
     }
 
     @Override
-    public int getId() {
-        return OBSIDIAN;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override
@@ -30,7 +35,6 @@ public class BlockObsidian extends BlockSolid {
     }
 
     @Override
-    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_DIAMOND;
     }
@@ -54,19 +58,17 @@ public class BlockObsidian extends BlockSolid {
                 this.west(), this.east(),
         };
         for (Block aNearby : nearby) {
-            if (aNearby != null && aNearby.getId() == NETHER_PORTAL) {
+            if (aNearby != null && aNearby.getId().equals(PORTAL)) {
                 aNearby.onBreak(item);
             }
         }
         return super.onBreak(item);
     }
 
-    @Since("1.2.1.0-PN")
-    @PowerNukkitOnly
     @Override
     public void afterRemoval(Block newBlock, boolean update) {
         if (update) {
-            onBreak(Item.get(BlockID.AIR));
+            onBreak(Item.AIR);
         }
     }
 
@@ -76,7 +78,6 @@ public class BlockObsidian extends BlockSolid {
     }
 
     @Override
-    @PowerNukkitOnly
     public  boolean canBePulled() {
         return false;
     }

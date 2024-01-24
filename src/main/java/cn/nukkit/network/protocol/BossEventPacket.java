@@ -9,7 +9,7 @@ import lombok.ToString;
 @ToString
 public class BossEventPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.BOSS_EVENT_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.BOSS_EVENT_PACKET;
 
     /* S2C: Shows the bossbar to the player. */
     public static final int TYPE_SHOW = 0;
@@ -42,7 +42,7 @@ public class BossEventPacket extends DataPacket {
     public int overlay;
     
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

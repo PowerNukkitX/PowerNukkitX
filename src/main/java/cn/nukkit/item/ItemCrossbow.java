@@ -2,7 +2,6 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.item.EntityCrossbowFirework;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
@@ -15,33 +14,29 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.*;
 import cn.nukkit.utils.Utils;
 
-@Since("1.6.0.0-PNX")
-public class ItemCrossbow extends ItemTool {
+import java.util.Objects;
 
+
+public class ItemCrossbow extends ItemTool {
     private int loadTick;
 
-    @Since("1.4.0.0-PN")
     public ItemCrossbow() {
         this(0, 1);
     }
 
-    @Since("1.4.0.0-PN")
     public ItemCrossbow(Integer meta) {
         this(meta, 1);
     }
 
-    @Since("1.4.0.0-PN")
     public ItemCrossbow(Integer meta, int count) {
         super(CROSSBOW, meta, count, "Crossbow");
     }
 
     @Override
-    @Since("1.6.0.0-PN")
     public int getMaxDurability() {
         return ItemTool.DURABILITY_CROSSBOW;
     }
 
-    @Since("1.6.0.0-PNX")
     public boolean onUse(Player player, int ticksUsed) {
         int needTickUsed = 20;
         Enchantment enchantment = this.getEnchantment(Enchantment.ID_CROSSBOW_QUICK_CHARGE);
@@ -62,7 +57,7 @@ public class ItemCrossbow extends ItemTool {
 
                 if (!this.canLoad(itemArrow)) {
                     if (player.isCreative()) {
-                        this.loadArrow(player, Item.get(262));
+                        this.loadArrow(player, Item.get(ARROW));
                     }
 
                     return true;
@@ -96,29 +91,29 @@ public class ItemCrossbow extends ItemTool {
         return true;
     }
 
-    @Since("1.6.0.0-PNX")
     protected boolean canLoad(Item item) {
         return switch (item.getId()) {
-            case Item.ARROW, Item.FIREWORKS -> true;
+            case Item.ARROW, Item.FIREWORK_ROCKET -> true;
             default -> false;
         };
     }
 
-    @Since("1.6.0.0-PNX")
     public boolean onClickAir(Player player, Vector3 directionVector) {
         return !this.launchArrow(player);
     }
 
-    @Since("1.6.0.0-PNX")
     public boolean onRelease(Player player, int ticksUsed) {
         return true;
     }
 
-    @Since("1.6.0.0-PNX")
     public void loadArrow(Player player, Item arrow) {
         if (arrow != null) {
             CompoundTag tag = this.getNamedTag() == null ? new CompoundTag() : this.getNamedTag();
-            tag.putBoolean("Charged", true).putCompound("chargedItem", (new CompoundTag("chargedItem")).putByte("Count", arrow.getCount()).putShort("Damage", arrow.getDamage()).putString("Name", "minecraft:" + arrow.getDisplayName()));
+            tag.putBoolean("Charged", true)
+                    .putCompound("chargedItem", new CompoundTag()
+                            .putByte("Count", arrow.getCount())
+                            .putShort("Damage", arrow.getDamage())
+                            .putString("Name", "minecraft:" + arrow.getDisplayName()));
             this.setCompoundTag(tag);
             this.loadTick = Server.getInstance().getTick();
             player.getInventory().setItemInHand(this);
@@ -126,32 +121,40 @@ public class ItemCrossbow extends ItemTool {
         }
     }
 
-    @Since("1.6.0.0-PNX")
     public void useArrow(Player player) {
         this.setCompoundTag(this.getNamedTag().putBoolean("Charged", false).remove("chargedItem"));
         player.getInventory().setItemInHand(this);
     }
 
-    @Since("1.6.0.0-PNX")
     public boolean isLoaded() {
         Tag itemInfo = this.getNamedTagEntry("chargedItem");
         if (itemInfo == null) {
             return false;
         } else {
-            CompoundTag tag = (CompoundTag)itemInfo;
+            CompoundTag tag = (CompoundTag) itemInfo;
             return tag.getByte("Count") > 0 && tag.getString("Name") != null;
         }
     }
 
-    @Since("1.6.0.0-PNX")
     public boolean launchArrow(Player player) {
         if (this.isLoaded() && Server.getInstance().getTick() - this.loadTick > 20) {
             double mX;
             double mY;
             double mZ;
-            CompoundTag nbt = (new CompoundTag()).putList((new ListTag<>("Pos")).add(new DoubleTag("", player.x)).add(new DoubleTag("", player.y + (double)player.getEyeHeight())).add(new DoubleTag("", player.z))).putList((new ListTag("Motion")).add(new DoubleTag("", mX = -Math.sin(player.yaw / 180.0D * 3.141592653589793D) * Math.cos(player.pitch / 180.0D * 3.141592653589793D))).add(new DoubleTag("", mY = -Math.sin(player.pitch / 180.0D * 3.141592653589793D))).add(new DoubleTag("", mZ = Math.cos(player.yaw / 180.0D * 3.141592653589793D) * Math.cos(player.pitch / 180.0D * 3.141592653589793D)))).putList((new ListTag("Rotation")).add(new FloatTag("", (float)(player.yaw > 180.0D ? 360 : 0) - (float)player.yaw)).add(new FloatTag("", (float)(-player.pitch))));
-            Item item = Item.fromString(this.getNamedTag().getCompound("chargedItem").getString("Name"));
-            if (item.getId() == Item.FIREWORKS) {
+            CompoundTag nbt = (new CompoundTag())
+                    .putList("Pos", new ListTag<>()
+                            .add(new DoubleTag(player.x))
+                            .add(new DoubleTag(player.y + (double) player.getEyeHeight()))
+                            .add(new DoubleTag(player.z)))
+                    .putList("Motion", new ListTag<>()
+                            .add(new DoubleTag(mX = -Math.sin(player.yaw / 180.0D * 3.141592653589793D) * Math.cos(player.pitch / 180.0D * 3.141592653589793D)))
+                            .add(new DoubleTag(mY = -Math.sin(player.pitch / 180.0D * 3.141592653589793D)))
+                            .add(new DoubleTag(mZ = Math.cos(player.yaw / 180.0D * 3.141592653589793D) * Math.cos(player.pitch / 180.0D * 3.141592653589793D))))
+                    .putList("Rotation", new ListTag<>()
+                            .add(new FloatTag((float) (player.yaw > 180.0D ? 360 : 0) - (float) player.yaw))
+                            .add(new FloatTag((float) (-player.pitch))));
+            Item item = Item.get(this.getNamedTag().getCompound("chargedItem").getString("Name"));
+            if (Objects.equals(item.getId(), Item.FIREWORK_ROCKET)) {
                 EntityCrossbowFirework entity = new EntityCrossbowFirework(player.chunk, nbt);
                 entity.setMotion(new Vector3(mX, mY, mZ));
                 entity.spawnToAll();

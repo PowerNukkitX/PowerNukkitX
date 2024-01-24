@@ -1,7 +1,5 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
@@ -13,8 +11,7 @@ import cn.nukkit.network.protocol.AnimateEntityPacket;
 import java.util.List;
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.19.50-r3")
+
 public class PlayAnimationCommand extends VanillaCommand {
     public PlayAnimationCommand(String name) {
         super(name, "commands.playanimation.description");
@@ -31,7 +28,6 @@ public class PlayAnimationCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-    @Since("1.19.60-r1")
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();

@@ -5,6 +5,7 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
+import lombok.Getter;
 
 /**
  * @author boybook (Nukkit Project)

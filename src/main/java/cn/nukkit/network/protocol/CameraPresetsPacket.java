@@ -1,7 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.camera.data.CameraPreset;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
@@ -9,15 +7,14 @@ import lombok.Setter;
 
 import java.util.List;
 
-@Since("1.19.70-r1")
-@PowerNukkitXOnly
+
 @Getter
 @Setter
 public class CameraPresetsPacket extends DataPacket {
     private final List<CameraPreset> presets = new ObjectArrayList<>();
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.CAMERA_PRESETS_PACKET;
     }
 

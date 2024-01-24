@@ -1,21 +1,18 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * @author Kevims KCodeYT
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public class BlockEntitySculkCatalyst extends BlockEntity {
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    public BlockEntitySculkCatalyst(FullChunk chunk, CompoundTag nbt) {
+
+    public BlockEntitySculkCatalyst(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

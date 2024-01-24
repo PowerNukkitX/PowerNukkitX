@@ -1,18 +1,25 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Angelic47 (Nukkit Project)
  */
 public class BlockGlass extends BlockTransparent {
-
-    public BlockGlass() {
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(GLASS);
 
     @Override
-    public int getId() {
-        return GLASS;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockGlass() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockGlass(BlockState blockState) {
+        super(blockState);
     }
 
     @Override

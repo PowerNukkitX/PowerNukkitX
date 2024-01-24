@@ -8,7 +8,7 @@ import lombok.ToString;
 @ToString
 public class InteractPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.INTERACT_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.INTERACT_PACKET;
 
     public static final int ACTION_VEHICLE_EXIT = 3;
     public static final int ACTION_MOUSEOVER = 4;
@@ -32,7 +32,7 @@ public class InteractPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

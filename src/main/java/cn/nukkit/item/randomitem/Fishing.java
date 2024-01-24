@@ -1,6 +1,5 @@
 package cn.nukkit.item.randomitem;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -15,22 +14,16 @@ import static cn.nukkit.item.randomitem.RandomItem.*;
  * @since 2016/1/15
  */
 public final class Fishing {
-
     public static final Selector ROOT_FISHING = putSelector(new Selector(ROOT));
-
     public static final Selector FISHES = putSelector(new Selector(ROOT_FISHING), 0.85F);
     public static final Selector TREASURES = putSelector(new Selector(ROOT_FISHING), 0.05F);
     public static final Selector JUNKS = putSelector(new Selector(ROOT_FISHING), 0.1F);
-    public static final Selector FISH = putSelector(new ConstantItemSelector(ItemID.RAW_FISH, FISHES), 0.6F);
-    public static final Selector SALMON = putSelector(new ConstantItemSelector(ItemID.RAW_SALMON, FISHES), 0.25F);
-    public static final Selector CLOWNFISH = putSelector(new ConstantItemSelector(ItemID.CLOWNFISH, FISHES), 0.02F);
+    public static final Selector FISH = putSelector(new ConstantItemSelector(ItemID.COD, FISHES), 0.6F);
+    public static final Selector SALMON = putSelector(new ConstantItemSelector(ItemID.SALMON, FISHES), 0.25F);
+    public static final Selector TROPICAL_FISH = putSelector(new ConstantItemSelector(ItemID.TROPICAL_FISH, FISHES), 0.02F);
     public static final Selector PUFFERFISH = putSelector(new ConstantItemSelector(ItemID.PUFFERFISH, FISHES), 0.13F);
     public static final Selector TREASURE_BOW = putSelector(new ConstantItemSelector(ItemID.BOW, TREASURES), 0.1667F);
     public static final Selector TREASURE_ENCHANTED_BOOK = putSelector(new EnchantmentItemSelector(ItemID.ENCHANTED_BOOK, TREASURES),  0.1667F);
-    @Since("FUTURE") public static final Selector TREASURE_FISHING_ROD = putSelector(new ConstantItemSelector(ItemID.FISHING_ROD, TREASURES), 0.1667F);
-    @Since("FUTURE") public static final Selector TREASURE_NAME_TAG = putSelector(new ConstantItemSelector(ItemID.NAME_TAG, TREASURES), 0.1667F);
-    @Since("FUTURE") public static final Selector TREASURE_SADDLE = putSelector(new ConstantItemSelector(ItemID.SADDLE, TREASURES), 0.1667F);
-    @Since("FUTURE") public static final Selector TREASURE_NAUTILUS_SHELL = putSelector(new ConstantItemSelector(ItemID.NAUTILUS_SHELL, TREASURES), 0.1667F);
     public static final Selector JUNK_BOWL = putSelector(new ConstantItemSelector(ItemID.BOWL, JUNKS), 0.12F);
     public static final Selector JUNK_FISHING_ROD = putSelector(new ConstantItemSelector(ItemID.FISHING_ROD, JUNKS), 0.024F);
     public static final Selector JUNK_LEATHER = putSelector(new ConstantItemSelector(ItemID.LEATHER, JUNKS), 0.12F);
@@ -40,7 +33,7 @@ public final class Fishing {
     public static final Selector JUNK_STRING_ITEM = putSelector(new ConstantItemSelector(ItemID.STRING, JUNKS), 0.06F);
     public static final Selector JUNK_WATTER_BOTTLE = putSelector(new ConstantItemSelector(ItemID.POTION, Potion.NO_EFFECTS, JUNKS), 0.12F);
     public static final Selector JUNK_BONE = putSelector(new ConstantItemSelector(ItemID.BONE, JUNKS), 0.12F);
-    public static final Selector JUNK_TRIPWIRE_HOOK = putSelector(new ConstantItemSelector(Item.getBlock(BlockID.TRIPWIRE_HOOK), JUNKS), 0.12F);
+    public static final Selector JUNK_TRIPWIRE_HOOK = putSelector(new ConstantItemSelector(Item.get(BlockID.TRIPWIRE_HOOK), JUNKS), 0.12F);
 
     public static Item getFishingResult(Item rod) {
         int fortuneLevel = 0;

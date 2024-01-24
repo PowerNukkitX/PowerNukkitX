@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.controller;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -9,8 +7,8 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * 控制实体在水中扑腾的控制器
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public class FluctuateController implements IController {
     private boolean lastTickInWater = false;
 

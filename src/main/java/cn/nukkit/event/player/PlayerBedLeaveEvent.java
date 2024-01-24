@@ -3,6 +3,7 @@ package cn.nukkit.event.player;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 public class PlayerBedLeaveEvent extends PlayerEvent {
     private static final HandlerList handlers = new HandlerList();

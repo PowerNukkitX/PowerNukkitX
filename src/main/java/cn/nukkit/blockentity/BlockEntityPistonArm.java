@@ -2,18 +2,14 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockPistonHead;
+import cn.nukkit.block.BlockPistonArmCollision;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityMoveByPistonEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -31,31 +27,28 @@ import java.util.List;
 /**
  * @author CreeperFace
  */
-@PowerNukkitXDifference(info = "活塞速度现在匹配原版")
-@Since("1.19.60-r1")
+
 public class BlockEntityPistonArm extends BlockEntitySpawnable {
-    @PowerNukkitOnly
+
     public static final float MOVE_STEP = Utils.dynamic(0.25f);
 
     public BlockFace facing;
     public boolean extending;
     public boolean sticky;
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     public byte state;
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     public byte newState = 1;
-    @PowerNukkitOnly
+
     public List<BlockVector3> attachedBlocks;
     public boolean powered;
     public float progress;
     public float lastProgress = 1;
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public boolean finished = true;
 
-    public BlockEntityPistonArm(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityPistonArm(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -71,7 +64,8 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 this.y + (pushDirection.getYOffset() * progress),
                 this.z + (pushDirection.getZOffset() * progress)
                 //带动站在移动方块上的实体
-        ).addCoord(0, pushDirection.getAxis().isHorizontal() ? 0.25 : 0, 0);;
+        ).addCoord(0, pushDirection.getAxis().isHorizontal() ? 0.25 : 0, 0);
+        ;
         for (var entity : this.level.getCollidingEntities(bb))
             moveEntity(entity, pushDirection);
     }
@@ -168,7 +162,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             if (!extending) {
                 //未伸出的活塞可以被推动
                 this.movable = true;
-                if (this.level.getBlock(pos) instanceof BlockPistonHead) {
+                if (this.level.getBlock(pos) instanceof BlockPistonArmCollision) {
                     this.level.setBlock(pos, 1, Block.get(Block.AIR), true, false);
                     //方块更新
                     this.level.setBlock(pos, Block.get(Block.AIR), true);
@@ -186,7 +180,6 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         return super.onUpdate() || hasUpdate;
     }
 
-    @Since("1.19.60-r1")
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -220,7 +213,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                     ));
                 }
             }
-        } else namedTag.putList(new ListTag<>("AttachedBlocks"));
+        } else namedTag.putList("AttachedBlocks", new ListTag<>());
     }
 
     public void saveNBT() {
@@ -230,7 +223,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         this.namedTag.putFloat("Progress", this.progress);
         this.namedTag.putFloat("LastProgress", this.lastProgress);
         this.namedTag.putBoolean("powered", this.powered);
-        this.namedTag.putList(getAttachedBlocks());
+        this.namedTag.putList("AttachedBlocks", getAttachedBlocks());
         this.namedTag.putInt("facing", this.facing.getIndex());
         this.namedTag.putBoolean("Sticky", this.sticky);
         this.namedTag.putBoolean("Extending", this.extending);
@@ -239,7 +232,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     @Override
     public boolean isBlockEntityValid() {
         var blockId = getBlock().getId();
-        return blockId == BlockID.PISTON || blockId == BlockID.STICKY_PISTON;
+        return blockId.equals(BlockID.PISTON) || blockId.equals(BlockID.STICKY_PISTON);
     }
 
     public CompoundTag getSpawnCompound() {
@@ -247,19 +240,19 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 .putFloat("Progress", this.progress)
                 .putFloat("LastProgress", this.lastProgress)
                 .putBoolean("isMovable", this.movable)
-                .putList(getAttachedBlocks())
-                .putList(new ListTag<>("BreakBlocks"))
+                .putList("AttachedBlocks", getAttachedBlocks())
+                .putList("BreakBlocks", new ListTag<>())
                 .putBoolean("Sticky", this.sticky)
                 .putByte("State", this.state)
                 .putByte("NewState", this.newState);
     }
 
     protected ListTag<IntTag> getAttachedBlocks() {
-        var attachedBlocks = new ListTag<IntTag>("AttachedBlocks");
+        var attachedBlocks = new ListTag<IntTag>();
         for (var block : this.attachedBlocks) {
-            attachedBlocks.add(new IntTag("", block.x));
-            attachedBlocks.add(new IntTag("", block.y));
-            attachedBlocks.add(new IntTag("", block.z));
+            attachedBlocks.add(new IntTag( block.x));
+            attachedBlocks.add(new IntTag( block.y));
+            attachedBlocks.add(new IntTag( block.z));
         }
         return attachedBlocks;
     }

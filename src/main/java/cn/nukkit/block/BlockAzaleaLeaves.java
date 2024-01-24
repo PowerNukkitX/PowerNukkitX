@@ -1,28 +1,21 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.value.WoodType;
+import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
+import static cn.nukkit.block.property.CommonBlockProperties.*;
+
 public class BlockAzaleaLeaves extends BlockLeaves {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(BlockLeaves.PERSISTENT, BlockLeaves.UPDATE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(AZALEA_LEAVES, PERSISTENT_BIT, UPDATE_BIT);
 
     public BlockAzaleaLeaves() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockAzaleaLeaves(int meta) {
-        super(meta);
-    }
-
-
-    @Override
-    public int getId() {
-        return AZALEA_LEAVES;
+    public BlockAzaleaLeaves(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -35,18 +28,13 @@ public class BlockAzaleaLeaves extends BlockLeaves {
         return false;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public boolean canHarvest(Item item) {
         return item.isShears();
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
+    @NotNull public  BlockProperties getProperties() {
         return PROPERTIES;
     }
 

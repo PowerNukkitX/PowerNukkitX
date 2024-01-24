@@ -1,8 +1,8 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+
+
 import cn.nukkit.blockentity.BlockEntityStructBlock;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
@@ -16,8 +16,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public class StructBlockInventory implements Inventory {
     protected final BlockEntityStructBlock holder;
 
@@ -53,7 +53,7 @@ public class StructBlockInventory implements Inventory {
     @NotNull
     @Override
     public Item getItem(int index) {
-        return Item.get(Item.AIR);
+        return Item.AIR;
     }
 
     @Override

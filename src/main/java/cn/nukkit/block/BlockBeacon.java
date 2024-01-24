@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBeacon;
 import cn.nukkit.inventory.BeaconInventory;
@@ -17,31 +14,30 @@ import javax.annotation.Nullable;
 /**
  * @author Angelic47 (Nukkit Project)
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
+
 public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<BlockEntityBeacon> {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BEACON);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockBeacon() {
-        // Does nothing
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBeacon(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
-    public int getId() {
-        return BEACON;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public Class<? extends BlockEntityBeacon> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityBeacon> getBlockEntityClass() {
         return BlockEntityBeacon.class;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.BEACON;
     }
 
@@ -50,17 +46,11 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
         return 3;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
     @Override
     public double calculateBreakTime(@NotNull Item item) {
         return calculateBreakTime(item, null);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
     @Override
     public double calculateBreakTime(@NotNull Item item, @org.jetbrains.annotations.Nullable Player player) {
         return 4.5;
@@ -91,7 +81,6 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
         return true;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -119,7 +108,6 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
     }
 
     @Override
-    @PowerNukkitOnly
     public  boolean canBePulled() {
         return false;
     }

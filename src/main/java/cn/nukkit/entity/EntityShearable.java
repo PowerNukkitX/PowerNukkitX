@@ -1,7 +1,5 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 
 /**
@@ -11,8 +9,6 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
  * <br>
  * Entities that can be sheared. Stores value with {@link CoreMemoryTypes#IS_SHEARED}
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
 public interface EntityShearable extends EntityComponent {
     /**
      * @return 此次操作是否有效。若有效，将会减少物品耐久 true if shearing succeeded.

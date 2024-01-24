@@ -1,13 +1,9 @@
 package cn.nukkit.level;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.positiontracking.NamedPosition;
@@ -20,7 +16,7 @@ import java.util.Set;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Overrides NamedPosition instead of Vector3")
+
 public class Position extends NamedPosition {
     public Level level;
 
@@ -87,8 +83,8 @@ public class Position extends NamedPosition {
     }
 
     // Get as a Position for better performance. Do not override it!
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
+
     public Position getSidePos(BlockFace face) {
         return Position.fromObject(super.getSide(face, 1), getValidLevel());
     }
@@ -106,40 +102,26 @@ public class Position extends NamedPosition {
         return this;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public Position setComponents(Vector3 pos) {
         super.setComponents(pos);
         return this;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @Nullable
-    public BlockEntity getLevelBlockEntity() {
+    public @Nullable BlockEntity getLevelBlockEntity() {
         return getValidLevel().getBlockEntity(this);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @Nullable
-    public final <T extends BlockEntity> T getTypedBlockEntity(@NotNull Class<T> type) {
+    public @Nullable final <T extends BlockEntity> T getTypedBlockEntity(@NotNull Class<T> type) {
         BlockEntity blockEntity = getValidLevel().getBlockEntity(this);
         return type.isInstance(blockEntity) ? type.cast(blockEntity) : null;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
-    public BlockState getLevelBlockState() {
+    @NotNull public BlockState getLevelBlockState() {
         return getLevelBlockState(0);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
-    public BlockState getLevelBlockState(int layer) {
+    @NotNull public BlockState getLevelBlockState(int layer) {
         return getValidLevel().getBlockStateAt(getFloorX(), getFloorY(), getFloorZ(), layer);
     }
 
@@ -147,65 +129,44 @@ public class Position extends NamedPosition {
         return getLevelBlock(true);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public Block getLevelBlock(boolean load) {
         return getValidLevel().getBlock(this, load);
     }
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     public Block getLevelBlock(int layer) {
         return getValidLevel().getBlock(this, layer);
     }
 
-
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public Block getLevelBlock(int layer, boolean load) {
         return getValidLevel().getBlock(this, layer, load);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public Block getTickCachedLevelBlock() {
         return getValidLevel().getTickCachedBlock(this);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public Set<Block> getLevelBlockAround() {
         return getValidLevel().getBlockAround(this);
     }
 
-    @PowerNukkitOnly
     public Block getLevelBlockAtLayer(int layer) {
         return getValidLevel().getBlock(this, layer);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public Block getTickCachedLevelBlockAtLayer(int layer) {
         return getValidLevel().getTickCachedBlock(this, layer);
     }
 
-    @NotNull
-    public Location getLocation() {
+    @NotNull public Location getLocation() {
         return new Location(this.x, this.y, this.z, 0, 0, getValidLevel());
     }
 
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
     @Override
-    public String getLevelName() {
+    @NotNull public String getLevelName() {
         return getValidLevel().getName();
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    public final Level getValidLevel() {
+    @NotNull public final Level getValidLevel() {
         Level level = this.level;
         if (level == null) {
             throw new LevelException("Undefined Level reference");
@@ -293,8 +254,7 @@ public class Position extends NamedPosition {
         return (Position) super.clone();
     }
 
-    @Nullable
-    public FullChunk getChunk() {
+    public @Nullable IChunk getChunk() {
         return isValid() ? level.getChunk(getChunkX(), getChunkZ()) : null;
     }
 }

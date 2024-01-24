@@ -1,6 +1,5 @@
 package cn.nukkit.entity.data.profession;
 
-import cn.nukkit.api.PowerNukkitXInternal;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 
@@ -23,21 +22,20 @@ public abstract class Profession {
     }
 
     private final int index;
-    private final int blockid;
+    private final String blockId;
     private final String name;
 
-    public Profession(int index, int blockid, String name) {
+    public Profession(int index, String blockId, String name) {
         this.index = index;
-        this.blockid = blockid;
+        this.blockId = blockId;
         this.name = name;
     }
 
     public ListTag<Tag> buildTrades(int seed) {
-        ListTag<Tag> recipes = new ListTag<>("Recipes");
-        return recipes;
+        return new ListTag<>();
     }
 
-    @PowerNukkitXInternal
+    
     public static void init() {
         registerProfession(new ProfessionFarmer());
         registerProfession(new ProfessionFisherman());
@@ -54,8 +52,8 @@ public abstract class Profession {
         registerProfession(new ProfessionMason());
     }
 
-    public int getBlockID() {
-        return this.blockid;
+    public String getBlockID() {
+        return this.blockId;
     }
 
     public int getIndex() {

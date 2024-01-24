@@ -19,8 +19,8 @@
 package cn.nukkit.inventory.transaction.action;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+
+
 import cn.nukkit.item.Item;
 import lombok.ToString;
 
@@ -28,24 +28,24 @@ import lombok.ToString;
  * @author joserobjr
  * @since 2020-09-13
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 @ToString(callSuper = true)
 public class CraftingTakeResultExperienceAction extends CraftingTakeResultAction {
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     protected int experience;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public CraftingTakeResultExperienceAction(Item sourceItem, Item targetItem, int experience) {
         super(sourceItem, targetItem);
         this.experience = experience;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public int getExperience() {
         return experience;
     }

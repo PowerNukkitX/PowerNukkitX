@@ -1,7 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3f;
 import lombok.ToString;
 
@@ -9,7 +7,7 @@ import static cn.nukkit.utils.Utils.dynamic;
 
 @ToString
 public class LevelSoundEventPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.LEVEL_SOUND_EVENT_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.LEVEL_SOUND_EVENT_PACKET;
 
     public static final int SOUND_ITEM_USE_ON = 0;
     public static final int SOUND_HIT = 1;
@@ -233,13 +231,13 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_HURT_BABY = 219;
     public static final int SOUND_DEATH_BABY = 220;
     public static final int SOUND_STEP_BABY = 221;
-    @PowerNukkitOnly
+
     public static final int SOUND_BABY_SPAWN = 222;
     public static final int SOUND_BORN = 223;
     public static final int SOUND_BLOCK_TURTLE_EGG_BREAK = 224;
     public static final int SOUND_BLOCK_TURTLE_EGG_CRACK = 225;
     public static final int SOUND_BLOCK_TURTLE_EGG_HATCH = 226;
-    @PowerNukkitOnly
+
     public static final int SOUND_TURTLE_LAY_EGG = 227;
     public static final int SOUND_BLOCK_TURTLE_EGG_ATTACK = 228;
     public static final int SOUND_BEACON_ACTIVATE = 229;
@@ -268,242 +266,241 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_AMBIENT_AGGRESSIVE = 252;
     public static final int SOUND_AMBIENT_WORRIED = 253;
     public static final int SOUND_CANT_BREED = 254;
-    @PowerNukkitOnly
+
     public static final int SOUND_SHIELD_BLOCK = 255;
-    @PowerNukkitOnly
+
     public static final int SOUND_LECTERN_BOOK_PLACE = 256;
-    @PowerNukkitOnly
+
     public static final int SOUND_GRINDSTONE_USE = 257;
-    @PowerNukkitOnly
+
     public static final int SOUND_BELL = 258;
-    @PowerNukkitOnly
+
     public static final int SOUND_CAMPFIRE_CRACKLE = 259;
-    @PowerNukkitOnly
+
     public static final int SOUND_ROAR = 260;
-    @PowerNukkitOnly
+
     public static final int SOUND_STUN = 261;
-    @PowerNukkitOnly
+
     public static final int SOUND_SWEET_BERRY_BUSH_HURT = 262;
-    @PowerNukkitOnly
+
     public static final int SOUND_SWEET_BERRY_BUSH_PICK = 263;
-    @PowerNukkitOnly
+
     public static final int SOUND_CARTOGRAPHY_TABLE_USE = 264;
-    @PowerNukkitOnly
+
     public static final int SOUND_STONECUTTER_USE = 265;
-    @PowerNukkitOnly
+
     public static final int SOUND_COMPOSTER_EMPTY = 266;
-    @PowerNukkitOnly
+
     public static final int SOUND_COMPOSTER_FILL = 267;
-    @PowerNukkitOnly
+
     public static final int SOUND_COMPOSTER_FILL_LAYER = 268;
-    @PowerNukkitOnly
+
     public static final int SOUND_COMPOSTER_READY = 269;
-    @PowerNukkitOnly
+
     public static final int SOUND_BARREL_OPEN = 270;
-    @PowerNukkitOnly
+
     public static final int SOUND_BARREL_CLOSE = 271;
-    @PowerNukkitOnly
+
     public static final int SOUND_RAID_HORN = 272;
-    @PowerNukkitOnly
+
     public static final int SOUND_LOOM_USE = 273;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_IN_RAID = 274;
-    @PowerNukkitOnly
+
     public static final int SOUND_UI_CARTOGRAPHY_TABLE_USE = 275;
-    @PowerNukkitOnly
+
     public static final int SOUND_UI_STONECUTTER_USE = 276;
-    @PowerNukkitOnly
+
     public static final int SOUND_UI_LOOM_USE = 277;
-    @PowerNukkitOnly
+
     public static final int SOUND_SMOKER_USE = 278;
-    @PowerNukkitOnly
+
     public static final int SOUND_BLAST_FURNACE_USE = 279;
-    @PowerNukkitOnly
+
     public static final int SOUND_SMITHING_TABLE_USE = 280;
-    @PowerNukkitOnly
+
     public static final int SOUND_SCREECH = 281;
-    @PowerNukkitOnly
+
     public static final int SOUND_SLEEP = 282;
-    @PowerNukkitOnly
+
     public static final int SOUND_FURNACE_USE = 283;
-    @PowerNukkitOnly
+
     public static final int SOUND_MOOSHROOM_CONVERT = 284;
-    @PowerNukkitOnly
+
     public static final int SOUND_MILK_SUSPICIOUSLY = 285;
-    @PowerNukkitOnly
+
     public static final int SOUND_CELEBRATE = 286;
-    @PowerNukkitOnly
+
     public static final int SOUND_JUMP_PREVENT = 287;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_POLLINATE = 288;
-    @PowerNukkitOnly
+
     public static final int SOUND_BEEHIVE_DRIP = 289;
-    @PowerNukkitOnly
+
     public static final int SOUND_BEEHIVE_ENTER = 290;
-    @PowerNukkitOnly
+
     public static final int SOUND_BEEHIVE_EXIT = 291;
-    @PowerNukkitOnly
+
     public static final int SOUND_BEEHIVE_WORK = 292;
-    @PowerNukkitOnly
+
     public static final int SOUND_BEEHIVE_SHEAR = 293;
-    @PowerNukkitOnly
+
     public static final int SOUND_HONEYBOTTLE_DRINK = 294;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_CAVE = 295;
-    @PowerNukkitOnly
+
     public static final int SOUND_RETREAT = 296;
-    @PowerNukkitOnly
+
     public static final int SOUND_CONVERT_TO_ZOMBIFIED = 297;
-    @PowerNukkitOnly
+
     public static final int SOUND_ADMIRE = 298;
-    @PowerNukkitOnly
+
     public static final int SOUND_STEP_LAVA = 299;
-    @PowerNukkitOnly
+
     public static final int SOUND_TEMPT = 300;
-    @PowerNukkitOnly
+
     public static final int SOUND_PANIC = 301;
-    @PowerNukkitOnly
+
     public static final int SOUND_ANGRY = 302;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_WARPED_FOREST = 303;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_SOULSAND_VALLEY = 304;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_NETHER_WASTES = 305;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_BASALT_DELTAS = 306;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_CRIMSON_FOREST = 307;
-    @PowerNukkitOnly
+
     public static final int SOUND_RESPAWN_ANCHOR_CHARGE = 308;
-    @PowerNukkitOnly
+
     public static final int SOUND_RESPAWN_ANCHOR_DEPLETE = 309;
-    @PowerNukkitOnly
+
     public static final int SOUND_RESPAWN_ANCHOR_SET_SPAWN = 310;
-    @PowerNukkitOnly
+
     public static final int SOUND_RESPAWN_ANCHOR_AMBIENT = 311;
-    @PowerNukkitOnly
+
     public static final int SOUND_SOUL_ESCAPE_QUIET = 312;
-    @PowerNukkitOnly
+
     public static final int SOUND_SOUL_ESCAPE_LOUD = 313;
-    @Since("1.4.0.0-PN")
+
     public static final int SOUND_RECORD_PIGSTEP = 314;
-    @PowerNukkitOnly
+
     public static final int SOUND_LINK_COMPASS_TO_LODESTONE = 315;
-    @PowerNukkitOnly
+
     public static final int SOUND_USE_SMITHING_TABLE = 316;
-    @PowerNukkitOnly
+
     public static final int SOUND_EQUIP_NETHERITE = 317;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_LOOP_WARPED_FOREST = 318;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_LOOP_SOULSAND_VALLEY = 319;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_LOOP_NETHER_WASTES = 320;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_LOOP_BASALT_DELTAS = 321;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_LOOP_CRIMSON_FOREST = 322;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_ADDITION_WARPED_FOREST = 323;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_ADDITION_SOULSAND_VALLEY = 324;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_ADDITION_NETHER_WASTES = 325;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_ADDITION_BASALT_DELTAS = 326;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_ADDITION_CRIMSON_FOREST = 327;
-    @PowerNukkitOnly
+
     public static final int SOUND_SCULK_SENSOR_POWER_ON = 328;
-    @PowerNukkitOnly
+
     public static final int SOUND_SCULK_SENSOR_POWER_OFF = 329;
-    @PowerNukkitOnly
+
     public static final int SOUND_BUCKET_FILL_POWDER_SNOW = 330;
-    @PowerNukkitOnly
+
     public static final int SOUND_BUCKET_EMPTY_POWDER_SNOW = 331;
-    @PowerNukkitOnly
+
     public static final int SOUND_POINTED_DRIPSTONE_CAULDRON_DRIP_LAVA = 332;
-    @PowerNukkitOnly
+
     public static final int SOUND_POINTED_DRIPSTONE_CAULDRON_DRIP_WATER = 333;
-    @PowerNukkitOnly
+
     public static final int SOUND_POINTED_DRIPSTONE_DRIP_LAVA = 334;
-    @PowerNukkitOnly
+
     public static final int SOUND_POINTED_DRIPSTONE_DRIP_WATER = 335;
-    @PowerNukkitOnly
+
     public static final int SOUND_CAVE_VINES_PICK_BERRIES = 336;
-    @PowerNukkitOnly
+
     public static final int SOUND_BIG_DRIPLEAF_TILT_DOWN = 337;
-    @PowerNukkitOnly
+
     public static final int SOUND_BIG_DRIPLEAF_TILT_UP = 338;
-    @PowerNukkitOnly
+
     public static final int SOUND_COPPER_WAX_ON = 339;
-    @PowerNukkitOnly
+
     public static final int SOUND_COPPER_WAX_OFF = 340;
-    @PowerNukkitOnly
+
     public static final int SOUND_SCRAPE = 341;
-    @PowerNukkitOnly
+
     public static final int SOUND_PLAYER_HURT_DROWN = 342;
-    @PowerNukkitOnly
+
     public static final int SOUND_PLAYER_HURT_ON_FIRE = 343;
-    @PowerNukkitOnly
+
     public static final int SOUND_PLAYER_HURT_FREEZE = 344;
-    @PowerNukkitOnly
+
     public static final int SOUND_USE_SPYGLASS = 345;
-    @PowerNukkitOnly
+
     public static final int SOUND_STOP_USING_SPYGLASS = 346;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMETHYST_BLOCK_CHIME = 347;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_SCREAMER = 348;
-    @PowerNukkitOnly
+
     public static final int SOUND_HURT_SCREAMER = 349;
-    @PowerNukkitOnly
+
     public static final int SOUND_DEATH_SCREAMER = 350;
-    @PowerNukkitOnly
+
     public static final int SOUND_MILK_SCREAMER = 351;
-    @PowerNukkitOnly
+
     public static final int SOUND_JUMP_TO_BLOCK = 352;
-    @PowerNukkitOnly
+
     public static final int SOUND_PRE_RAM = 353;
-    @PowerNukkitOnly
+
     public static final int SOUND_PRE_RAM_SCREAMER = 354;
-    @PowerNukkitOnly
+
     public static final int SOUND_RAM_IMPACT = 355;
-    @PowerNukkitOnly
+
     public static final int SOUND_RAM_IMPACT_SCREAMER = 356;
-    @PowerNukkitOnly
+
     public static final int SOUND_SQUID_INK_SQUIRT = 357;
-    @PowerNukkitOnly
+
     public static final int SOUND_GLOW_SQUID_INK_SQUIRT = 358;
-    @PowerNukkitOnly
+
     public static final int SOUND_CONVERT_TO_STRAY = 359;
-    @PowerNukkitOnly
+
     public static final int SOUND_CAKE_ADD_CANDLE = 360;
-    @PowerNukkitOnly
+
     public static final int SOUND_EXTINGUISH_CANDLE = 361;
-    @PowerNukkitOnly
+
     public static final int SOUND_AMBIENT_CANDLE = 362;
 
 
-    @PowerNukkitOnly
     public static final int SOUND_BLOCK_CLICK = 363;
-    @PowerNukkitOnly
+
     public static final int SOUND_BLOCK_CLICK_FAIL = 364;
-    @PowerNukkitOnly
+
     public static final int SOUND_SCULK_CATALYST_BLOOM = 365;
 
-    @PowerNukkitOnly
+
     public static final int SOUND_SCULK_SHRIEKER_SHRIEK = 366;
-    @PowerNukkitOnly
+
     public static final int SOUND_WARDEN_NEARBY_CLOSE = 367;
-    @PowerNukkitOnly
+
     public static final int SOUND_WARDEN_NEARBY_CLOSER = 368;
-    @PowerNukkitOnly
+
     public static final int SOUND_WARDEN_NEARBY_CLOSEST = 369;
-    @PowerNukkitOnly
+
     public static final int SOUND_WARDEN_SLIGHTLY_ANGRY = 370;
-    @PowerNukkitOnly
+
     public static final int SOUND_RECORD_OTHERSIDE = 371;
     public static final int SOUND_TONGUE = 372;
     public static final int SOUND_CRACK_IRON_GOLEM = 373;
@@ -651,7 +648,7 @@ public class LevelSoundEventPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 }

@@ -203,6 +203,6 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.PLAYER_AUTH_INPUT_PACKET);
+        return ProtocolInfo.PLAYER_AUTH_INPUT_PACKET;
     }
 }

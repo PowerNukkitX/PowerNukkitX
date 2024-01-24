@@ -1,35 +1,41 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemSpruceSign;
+import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitOnly
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
+
+
 public class BlockSpruceWallSign extends BlockWallSign {
-    @PowerNukkitOnly
+    public static final BlockProperties PROPERTIES = new BlockProperties(SPRUCE_WALL_SIGN, FACING_DIRECTION);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockSpruceWallSign() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    @PowerNukkitOnly
-    public BlockSpruceWallSign(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return SPRUCE_WALL_SIGN;
-    }
-
-    @PowerNukkitOnly
-    @Override
-    protected int getPostId() {
-        return SPRUCE_STANDING_SIGN;
+    public BlockSpruceWallSign(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "Spruce Wall Sign";
+    }
+
+    @Override
+    public String getWallSignId() {
+        return SPRUCE_WALL_SIGN;
+    }
+
+    @Override
+    public String getStandingSignId() {
+        return SPRUCE_STANDING_SIGN;
     }
 
     @Override

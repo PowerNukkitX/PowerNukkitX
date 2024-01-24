@@ -1,28 +1,27 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.EntityWalkable;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntityZombiePigman extends EntityMob implements EntityWalkable, EntitySmite {
+    @Override
+    @NotNull public String getIdentifier() {
+        return ZOMBIE_PIGMAN;
+    }
+    
 
-    public static final int NETWORK_ID = 36;
-
-    public EntityZombiePigman(FullChunk chunk, CompoundTag nbt) {
+    public EntityZombiePigman(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {
@@ -40,20 +39,16 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
         return 1.9f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Zombified Piglin";
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isUndead() {
         return true;
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return this.getDataPropertyBoolean(DATA_FLAG_ANGRY);

@@ -10,7 +10,7 @@ public class ModalFormResponsePacket extends DataPacket {
     public int cancelReason;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.MODAL_FORM_RESPONSE_PACKET;
     }
 

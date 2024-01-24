@@ -1,9 +1,6 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -17,7 +14,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
@@ -33,7 +30,7 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
     protected PlayerEnderChestInventory enderChestInventory;
     protected PlayerOffhandInventory offhandInventory;
 
-    public EntityHumanType(FullChunk chunk, CompoundTag nbt) {
+    public EntityHumanType(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -153,16 +150,6 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
         return false;
     }
 
-    @PowerNukkitOnly
-    @Deprecated
-    @Override
-    public boolean applyNameTag(Item item) {
-        return false;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @PowerNukkitXDifference(since = "1.19.21-r4", info = "add EntityDamageEvent param to help cal the armor damage")
     protected Item damageArmor(Item armor, Entity damager, EntityDamageEvent event) {
         if (armor.hasEnchantments()) {
             if (damager != null) {
@@ -206,5 +193,15 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
         }
 
         return armor;
+    }
+
+    @Override
+    public int getNetworkId() {
+        return NETWORK_ID;
+    }
+
+    @Override
+    public @NotNull String getIdentifier() {
+        return PLAYER;
     }
 }

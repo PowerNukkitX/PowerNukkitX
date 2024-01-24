@@ -1,29 +1,35 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemJungleSign;
+import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitOnly
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
+
+
 public class BlockJungleWallSign extends BlockWallSign {
-    @PowerNukkitOnly
+    public static final BlockProperties PROPERTIES = new BlockProperties(JUNGLE_WALL_SIGN, FACING_DIRECTION);
+
     public BlockJungleWallSign() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    @PowerNukkitOnly
-    public BlockJungleWallSign(int meta) {
-        super(meta);
+    public BlockJungleWallSign(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
-    public int getId() {
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
+    public String getWallSignId() {
         return JUNGLE_WALL_SIGN;
     }
 
-    @PowerNukkitOnly
     @Override
-    protected int getPostId() {
+    public String getStandingSignId() {
         return JUNGLE_STANDING_SIGN;
     }
 

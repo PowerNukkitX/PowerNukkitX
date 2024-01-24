@@ -1,11 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
@@ -20,36 +16,25 @@ import javax.annotation.Nullable;
  *
  * @author PikyCZ
  */
-public class BlockEndRod extends BlockTransparentMeta implements Faceable {
+public class BlockEndRod extends BlockTransparent implements Faceable {
+    public static final BlockProperties PROPERTIES = new BlockProperties(END_ROD, CommonBlockProperties.FACING_DIRECTION);
 
-    @Since("1.5.0.0-PN")
-    @PowerNukkitOnly
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.FACING_DIRECTION_BLOCK_PROPERTIES;
-
-    public BlockEndRod() {
-        this(0);
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public BlockEndRod(int meta) {
-        super(meta);
+    public BlockEndRod() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockEndRod(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "End Rod";
-    }
-
-    @Override
-    public int getId() {
-        return END_ROD;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -92,7 +77,6 @@ public class BlockEndRod extends BlockTransparentMeta implements Faceable {
         return this.z + 0.6;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 2;
@@ -106,7 +90,7 @@ public class BlockEndRod extends BlockTransparentMeta implements Faceable {
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         int[] faces = {0, 1, 3, 2, 5, 4};
-        this.setDamage(faces[player != null ? face.getIndex() : 0]);
+        setPropertyValue(CommonBlockProperties.FACING_DIRECTION, faces[player != null ? face.getIndex() : 0]);
         this.getLevel().setBlock(block, this, true, true);
 
         return true;
@@ -117,10 +101,8 @@ public class BlockEndRod extends BlockTransparentMeta implements Faceable {
         return new ItemBlock(this, 0);
     }
 
-    @PowerNukkitDifference(info = "Fixed the direction", since = "1.3.0.0-PN")
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromIndex(this.getDamage() & 0x07);
+        return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION) & 0x07);
     }
-
 }

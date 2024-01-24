@@ -1,15 +1,12 @@
 package cn.nukkit.level.tickingarea.manager;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.tickingarea.TickingArea;
 import cn.nukkit.level.tickingarea.storage.TickingAreaStorage;
 
 import java.util.Set;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public abstract class TickingAreaManager {
 
     protected TickingAreaStorage storage;

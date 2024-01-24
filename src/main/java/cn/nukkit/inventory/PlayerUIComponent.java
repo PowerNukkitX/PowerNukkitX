@@ -1,8 +1,8 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+
+
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,9 +12,9 @@ import java.util.Set;
 
 public class PlayerUIComponent extends BaseInventory {
 
-    @Since("1.4.0.0-PN") public static final int CREATED_ITEM_OUTPUT_UI_SLOT = 50;
+     public static final int CREATED_ITEM_OUTPUT_UI_SLOT = 50;
 
-    @PowerNukkitOnly protected final PlayerUIInventory playerUI;
+     protected final PlayerUIInventory playerUI;
     private final int offset;
     private final int size;
 

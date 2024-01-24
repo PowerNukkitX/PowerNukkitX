@@ -1,7 +1,5 @@
 package cn.nukkit.scoreboard.scoreboard;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
 import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
@@ -17,8 +15,8 @@ import java.util.Set;
  * 计分板对象
  * 可被发送到任何实现了{@link IScoreboardViewer}接口的对象上
  */
-@PowerNukkitXOnly
-@Since("1.19.30-r1")
+
+
 public interface IScoreboard {
     /**
      * @return 此计分板的标识名称

@@ -1,7 +1,5 @@
 package cn.nukkit.nbt.tag;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 
@@ -10,19 +8,10 @@ import java.io.IOException;
 public class IntTag extends NumberTag<Integer> {
     public int data;
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+    public IntTag() {
+    }
+
     public IntTag(int data) {
-        super("");
-        this.data = data;
-    }
-
-    public IntTag(String name) {
-        super(name);
-    }
-
-    public IntTag(String name, int data) {
-        super(name);
         this.data = data;
     }
 
@@ -37,16 +26,6 @@ public class IntTag extends NumberTag<Integer> {
     }
 
     @Override
-    void write(NBTOutputStream dos) throws IOException {
-        dos.writeInt(data);
-    }
-
-    @Override
-    void load(NBTInputStream dis) throws IOException {
-        data = dis.readInt();
-    }
-
-    @Override
     public Integer parseValue() {
         return this.data;
     }
@@ -58,7 +37,7 @@ public class IntTag extends NumberTag<Integer> {
 
     @Override
     public String toString() {
-        return "IntTag " + this.getName() + "(data: " + data + ")";
+        return "IntTag " +"(data: " + data + ")";
     }
 
     @Override
@@ -73,7 +52,7 @@ public class IntTag extends NumberTag<Integer> {
 
     @Override
     public Tag copy() {
-        return new IntTag(getName(), data);
+        return new IntTag(data);
     }
 
     @Override

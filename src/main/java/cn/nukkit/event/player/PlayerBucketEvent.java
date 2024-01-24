@@ -1,7 +1,6 @@
 package cn.nukkit.event.player;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.item.Item;
@@ -19,7 +18,7 @@ abstract class PlayerBucketEvent extends PlayerEvent implements Cancellable {
 
     private Item item;
 
-    @PowerNukkitOnly
+
     public PlayerBucketEvent(Player who, Block blockClicked, BlockFace blockFace, Block liquid, Item bucket, Item itemInHand) {
         this.player = who;
         this.blockClicked = blockClicked;

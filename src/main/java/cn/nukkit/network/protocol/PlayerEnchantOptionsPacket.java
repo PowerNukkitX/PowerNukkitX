@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.Since;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.ToString;
 import lombok.Value;
@@ -8,15 +7,14 @@ import lombok.Value;
 import java.util.ArrayList;
 import java.util.List;
 
-@Since("1.3.0.0-PN")
+
 @ToString
 public class PlayerEnchantOptionsPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.PLAYER_ENCHANT_OPTIONS_PACKET;
-
-    @Since("1.3.0.0-PN") public final List<EnchantOptionData> options = new ArrayList<>();
+    public static final int NETWORK_ID = ProtocolInfo.PLAYER_ENCHANT_OPTIONS_PACKET;
+    public final List<EnchantOptionData> options = new ArrayList<>();
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 
@@ -82,10 +80,9 @@ public class PlayerEnchantOptionsPacket extends DataPacket {
 
     }
 
-    @Since("1.3.0.0-PN")
     @Value
     public class EnchantOptionData {
-        @Since("1.3.1.0-PN") private final int minLevel;
+        private final int minLevel;
         private final int primarySlot;
         private final List<EnchantData> enchants0;
         private final List<EnchantData> enchants1;
@@ -94,7 +91,6 @@ public class PlayerEnchantOptionsPacket extends DataPacket {
         private final int enchantNetId;
     }
 
-    @Since("1.3.0.0-PN")
     @Value
     public class EnchantData {
         private final int type;

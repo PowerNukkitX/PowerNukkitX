@@ -1,25 +1,32 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class BlockSporeBlossom extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties(SPORE_BLOSSOM);
+
     @Override
-    public String getName() {
-        return "Spore Blossom";
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockSporeBlossom() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockSporeBlossom(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
-    public int getId() {
-        return SPORE_BLOSSOM;
+    public String getName() {
+        return "Spore Blossom";
     }
 
     @Override

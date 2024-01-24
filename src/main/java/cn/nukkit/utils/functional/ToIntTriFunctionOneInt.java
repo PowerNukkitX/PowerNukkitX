@@ -1,8 +1,5 @@
 package cn.nukkit.utils.functional;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.IntUnaryOperator;
@@ -19,8 +16,8 @@ import java.util.function.IntUnaryOperator;
  * @see Function
  * @since 1.4.0.0-PN
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 @FunctionalInterface
 public interface ToIntTriFunctionOneInt<F, S> {
 
@@ -32,8 +29,6 @@ public interface ToIntTriFunctionOneInt<F, S> {
      * @param t the third function argument
      * @return the function result
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     int apply(F f, S s, int t);
 
     /**
@@ -47,8 +42,6 @@ public interface ToIntTriFunctionOneInt<F, S> {
      * applies the {@code after} function
      * @throws NullPointerException if after is null
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     default ToIntTriFunctionOneInt<F, S> andThen(IntUnaryOperator after) {
         Objects.requireNonNull(after);
         return (F f, S s, int t) -> after.applyAsInt(apply(f, s, t));

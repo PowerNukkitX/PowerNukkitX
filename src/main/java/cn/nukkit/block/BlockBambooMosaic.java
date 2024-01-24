@@ -1,16 +1,22 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+import org.jetbrains.annotations.NotNull;
+
 public class BlockBambooMosaic extends BlockSolid {
-    public BlockBambooMosaic() {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_MOSAIC);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public int getId() {
-        return BAMBOO_MOSAIC;
+    public BlockBambooMosaic() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBambooMosaic(BlockState blockstate) {
+        super(blockstate);
     }
 
     public String getName() {

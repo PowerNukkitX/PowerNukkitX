@@ -2,10 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
@@ -15,59 +11,34 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.block.property.CommonBlockProperties.GROWTH;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockCrops extends BlockFlowable {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final IntBlockProperty GROWTH = new IntBlockProperty("growth", false, 7);
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(GROWTH);
-
-    @PowerNukkitOnly
     public static final int MINIMUM_LIGHT_LEVEL = 9;
 
-    protected BlockCrops(int meta) {
-        super(meta);
+    protected BlockCrops(BlockState blockState) {
+        super(blockState);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public int getMinimumLightLevel() {
         return MINIMUM_LIGHT_LEVEL;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public int getMaxGrowth() {
-        return GROWTH.getMaxValue();
+        return GROWTH.getMax();
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public int getGrowth() {
-        return getIntValue(GROWTH);
+        return getPropertyValue(GROWTH);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setGrowth(int growth) {
-        setIntValue(GROWTH, growth);
+        setPropertyValue(GROWTH, growth);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public boolean isFullyGrown() {
         return getGrowth() >= getMaxGrowth();
     }
@@ -77,10 +48,9 @@ public abstract class BlockCrops extends BlockFlowable {
         return true;
     }
 
-
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (block.down().getId() == FARMLAND) {
+        if (block.down().getId().equals(FARMLAND)) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
         }
@@ -121,7 +91,7 @@ public abstract class BlockCrops extends BlockFlowable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (this.down().getId() != FARMLAND) {
+            if (!this.down().getId().equals(FARMLAND)) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }

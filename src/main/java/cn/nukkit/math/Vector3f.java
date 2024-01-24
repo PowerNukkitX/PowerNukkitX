@@ -1,7 +1,5 @@
 package cn.nukkit.math;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import lombok.SneakyThrows;
 
 public class Vector3f implements Cloneable {
@@ -46,19 +44,16 @@ public class Vector3f implements Cloneable {
         return this.z;
     }
 
-    @Since("FUTURE")
     public Vector3f setX(float x) {
         this.x = x;
         return this;
     }
 
-    @Since("FUTURE")
     public Vector3f setY(float y) {
         this.y = y;
         return this;
     }
 
-    @Since("FUTURE")
     public Vector3f setZ(float z) {
         this.z = z;
         return this;
@@ -180,22 +175,15 @@ public class Vector3f implements Cloneable {
     }
 
     public static int getOppositeSide(int side) {
-        switch (side) {
-            case Vector3f.SIDE_DOWN:
-                return Vector3f.SIDE_UP;
-            case Vector3f.SIDE_UP:
-                return Vector3f.SIDE_DOWN;
-            case Vector3f.SIDE_NORTH:
-                return Vector3f.SIDE_SOUTH;
-            case Vector3f.SIDE_SOUTH:
-                return Vector3f.SIDE_NORTH;
-            case Vector3f.SIDE_WEST:
-                return Vector3f.SIDE_EAST;
-            case Vector3f.SIDE_EAST:
-                return Vector3f.SIDE_WEST;
-            default:
-                return -1;
-        }
+        return switch (side) {
+            case Vector3f.SIDE_DOWN -> Vector3f.SIDE_UP;
+            case Vector3f.SIDE_UP -> Vector3f.SIDE_DOWN;
+            case Vector3f.SIDE_NORTH -> Vector3f.SIDE_SOUTH;
+            case Vector3f.SIDE_SOUTH -> Vector3f.SIDE_NORTH;
+            case Vector3f.SIDE_WEST -> Vector3f.SIDE_EAST;
+            case Vector3f.SIDE_EAST -> Vector3f.SIDE_WEST;
+            default -> -1;
+        };
     }
 
     public double distance(Vector3f pos) {
@@ -356,18 +344,13 @@ public class Vector3f implements Cloneable {
         this.z = z;
         return this;
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public float getAxis(BlockFace.Axis axis) {
-        switch (axis) {
-            case X:
-                return x;
-            case Y:
-                return y;
-            default:
-                return z;
-        }
+        return switch (axis) {
+            case X -> x;
+            case Y -> y;
+            default -> z;
+        };
     }
 
     @Override
@@ -377,11 +360,9 @@ public class Vector3f implements Cloneable {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Vector3f)) {
+        if (!(obj instanceof Vector3f other)) {
             return false;
         }
-
-        Vector3f other = (Vector3f) obj;
 
         return this.x == other.x && this.y == other.y && this.z == other.z;
     }

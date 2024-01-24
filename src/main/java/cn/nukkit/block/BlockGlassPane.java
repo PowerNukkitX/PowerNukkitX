@@ -1,7 +1,7 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
@@ -9,7 +9,19 @@ import cn.nukkit.item.Item;
  */
 public class BlockGlassPane extends BlockThin {
 
+    public static final BlockProperties PROPERTIES = new BlockProperties(GLASS_PANE);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockGlassPane() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockGlassPane(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -18,16 +30,10 @@ public class BlockGlassPane extends BlockThin {
     }
 
     @Override
-    public int getId() {
-        return GLASS_PANE;
-    }
-
-    @Override
     public double getResistance() {
         return 1.5;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;

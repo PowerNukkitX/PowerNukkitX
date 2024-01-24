@@ -4,6 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 /**
  * @author CreeperFace
@@ -16,7 +17,7 @@ public class EntityInteractEvent extends EntityEvent implements Cancellable {
         return handlers;
     }
 
-    private Block block;
+    private final Block block;
 
     public EntityInteractEvent(Entity entity, Block block) {
         this.entity = entity;

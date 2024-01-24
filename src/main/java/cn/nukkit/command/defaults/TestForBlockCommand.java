@@ -1,23 +1,20 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class TestForBlockCommand extends VanillaCommand {
 
     public TestForBlockCommand(String name) {
@@ -32,21 +29,18 @@ public class TestForBlockCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-    @Since("1.19.60-r1")
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         Position position = list.getResult(0);
         Block tileName = list.getResult(1);
-        int tileId = tileName.getId();
+        String tileId = tileName.getId();
         int dataValue = 0;
         if (list.hasResult(2)) {
             dataValue = list.getResult(2);
         }
-        try {
-            GlobalBlockPalette.getOrCreateRuntimeId(tileId, dataValue);
-        } catch (NoSuchElementException e) {
-            log.addError("commands.give.block.notFound", String.valueOf(tileId)).output();
+        if (!Block.get(tileId).getProperties().containBlockState((short) dataValue)) {
+            log.addError("commands.give.block.notFound", tileId).output();
             return 0;
         }
 
@@ -58,8 +52,8 @@ public class TestForBlockCommand extends VanillaCommand {
         }
 
         Block block = level.getBlock(position, false);
-        int id = block.getId();
-        int meta = block.getDamage();
+        String id = block.getId();
+        int meta = block.getBlockState().specialValue();
 
         if (id == tileId && meta == dataValue) {
             log.addSuccess("commands.testforblock.success", String.valueOf(position.getFloorX()), String.valueOf(position.getFloorY()), String.valueOf(position.getFloorZ())).output();

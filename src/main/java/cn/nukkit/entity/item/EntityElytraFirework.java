@@ -2,20 +2,20 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class EntityElytraFirework extends EntityFirework {
+public class EntityElytraFirework extends EntityFireworksRocket {
     private static final Random RANDOM = new Random();
     private final int lifetime;
     private Player followingPlayer;
     private int fireworkAge = 0;
 
-    public EntityElytraFirework(FullChunk chunk, CompoundTag nbt, @Nullable Player player) {
+    public EntityElytraFirework(IChunk chunk, CompoundTag nbt, @Nullable Player player) {
         super(chunk, nbt);
         this.followingPlayer = player;
         this.lifetime = 20 + RANDOM.nextInt(13);

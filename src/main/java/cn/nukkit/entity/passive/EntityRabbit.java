@@ -1,20 +1,22 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
 public class EntityRabbit extends EntityAnimal implements EntityWalkable {
+    @Override
+    @NotNull public String getIdentifier() {
+        return RABBIT;
+    }
+    
 
-    public static final int NETWORK_ID = 18;
-
-    public EntityRabbit(FullChunk chunk, CompoundTag nbt) {
+    public EntityRabbit(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -34,8 +36,6 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
         return 0.67f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Rabbit";
@@ -43,13 +43,10 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_RABBIT : Item.RAW_RABBIT)), Item.get(Item.RABBIT_HIDE), Item.get(Item.RABBIT_FOOT)};
+        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_RABBIT : Item.RABBIT)), Item.get(Item.RABBIT_HIDE), Item.get(Item.RABBIT_FOOT)};
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {

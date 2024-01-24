@@ -1,7 +1,5 @@
 package cn.nukkit.dispenser;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
@@ -16,24 +14,29 @@ import java.util.Map;
  */
 public final class DispenseBehaviorRegister {
 
-    private static final Map<Integer, DispenseBehavior> behaviors = new HashMap<>();
-    private static DispenseBehavior defaultBehavior = new DefaultDispenseBehavior();
+    private static final Map<String, DispenseBehavior> behaviors = new HashMap<>();
+    private static final DispenseBehavior defaultBehavior = new DefaultDispenseBehavior();
 
-    public static void registerBehavior(int itemId, DispenseBehavior behavior) {
-        behaviors.put(itemId, behavior);
+    public static void registerBehavior(String itemIdentifier, DispenseBehavior behavior) {
+        behaviors.put(itemIdentifier, behavior);
     }
 
-    public static DispenseBehavior getBehavior(int id) {
-        return behaviors.getOrDefault(id, defaultBehavior);
+    public static DispenseBehavior getBehavior(String identifier) {
+        return behaviors.getOrDefault(identifier, defaultBehavior);
     }
 
-    public static void removeDispenseBehavior(int id) {
-        behaviors.remove(id);
+    public static void removeDispenseBehavior(String identifier) {
+        behaviors.remove(identifier);
     }
 
-    @PowerNukkitOnly
     public static void init() {
         registerBehavior(ItemID.SHEARS, new ShearsDispenseBehavior());
+        registerBehavior(ItemID.BUCKET, new BucketDispenseBehavior());
+        registerBehavior(ItemID.DYE, new DyeDispenseBehavior());
+        registerBehavior(ItemID.FIREWORK_ROCKET, new FireworksDispenseBehavior());
+        registerBehavior(ItemID.FLINT_AND_STEEL, new FlintAndSteelDispenseBehavior());
+
+        registerBehavior(ItemID.BOAT, new BoatDispenseBehavior());
         registerBehavior(ItemID.CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.BIRCH_CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.ACACIA_CHEST_BOAT, new ChestBoatDispenseBehavior());
@@ -42,13 +45,25 @@ public final class DispenseBehaviorRegister {
         registerBehavior(ItemID.SPRUCE_CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.OAK_CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.MANGROVE_CHEST_BOAT, new ChestBoatDispenseBehavior());
-        registerBehavior(ItemID.BOAT, new BoatDispenseBehavior());
-        registerBehavior(ItemID.BUCKET, new BucketDispenseBehavior());
-        registerBehavior(ItemID.DYE, new DyeDispenseBehavior());
-        registerBehavior(ItemID.FIREWORKS, new FireworksDispenseBehavior());
-        registerBehavior(ItemID.FLINT_AND_STEEL, new FlintAndSteelDispenseBehavior());
-        registerBehavior(BlockID.SHULKER_BOX, new ShulkerBoxDispenseBehavior());
+
         registerBehavior(BlockID.UNDYED_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
+        registerBehavior(BlockID.WHITE_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
+        registerBehavior(BlockID.ORANGE_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
+        registerBehavior(BlockID.MAGENTA_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
+        registerBehavior(BlockID.LIGHT_BLUE_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
+        registerBehavior(BlockID.YELLOW_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
+        registerBehavior(BlockID.LIME_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
+        registerBehavior(BlockID.PINK_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
+        registerBehavior(BlockID.GRAY_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
+        registerBehavior(BlockID.LIGHT_GRAY_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
+        registerBehavior(BlockID.CYAN_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
+        registerBehavior(BlockID.PURPLE_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
+        registerBehavior(BlockID.BLUE_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
+        registerBehavior(BlockID.BROWN_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
+        registerBehavior(BlockID.GREEN_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
+        registerBehavior(BlockID.RED_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
+        registerBehavior(BlockID.BLACK_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
+
         registerBehavior(ItemID.SPAWN_EGG, new SpawnEggDispenseBehavior());
         registerBehavior(BlockID.TNT, new TNTDispenseBehavior());
         registerBehavior(ItemID.ARROW, new ProjectileDispenseBehavior("Arrow") {
@@ -76,7 +91,6 @@ public final class DispenseBehaviorRegister {
                         .normalize();
             }
 
-            @Since("1.19.60-r1")
             @Override
             protected Sound getShootingSound() {
                 return Sound.MOB_BLAZE_SHOOT;
@@ -116,7 +130,6 @@ public final class DispenseBehaviorRegister {
                 return super.getMotion() * 1.25;
             }
 
-            @Since("1.19.60-r1")
             @Override
             protected Sound getShootingSound() {
                 return Sound.ITEM_TRIDENT_THROW;

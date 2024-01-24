@@ -1,7 +1,6 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.Since;
 import com.google.common.base.Preconditions;
 
 import java.io.*;
@@ -11,12 +10,11 @@ import java.util.UUID;
 public class DefaultPlayerDataSerializer implements PlayerDataSerializer {
     private String dataPath;
 
-    @Since("1.4.0.0-PN")
+
     public DefaultPlayerDataSerializer(Server server) {
         this(server.getDataPath());
     }
 
-    @Since("1.4.0.0-PN")
     public DefaultPlayerDataSerializer(String dataPath) {
         this.dataPath = dataPath;
     }

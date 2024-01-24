@@ -2,6 +2,7 @@ package cn.nukkit.inventory.transaction.action;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.registry.Registries;
 import lombok.ToString;
 
 /**
@@ -32,8 +33,7 @@ public class CreativeInventoryAction extends InventoryAction {
      */
     @Override
     public boolean isValid(Player source) {
-        return source.isCreative() &&
-                (this.actionType == TYPE_DELETE_ITEM || Item.getCreativeItemIndex(this.sourceItem) != -1);
+        return source.isCreative() && (this.actionType == TYPE_DELETE_ITEM || Registries.CREATIVE.getCreativeItemIndex(this.sourceItem) != -1);
     }
 
     /**

@@ -1,15 +1,12 @@
 package cn.nukkit.entity.ai.evaluator;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
-@PowerNukkitXOnly
-@Since("1.19.30-r1")
+
 public class ConditionalProbabilityEvaluator extends ProbabilityEvaluator {
 
     int probability2;

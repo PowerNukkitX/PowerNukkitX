@@ -1,31 +1,27 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.entity.EntityWalkable;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author PetteriM1
  */
 public class EntityTurtle extends EntityAnimal implements EntitySwimmable, EntityWalkable {
+    @Override
+    @NotNull public String getIdentifier() {
+        return TURTLE;
+    }
+    
 
-    public static final int NETWORK_ID = 74;
-
-    public EntityTurtle(FullChunk chunk, CompoundTag nbt) {
+    public EntityTurtle(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Turtle";
@@ -53,12 +49,10 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
         super.initEntity();
     }
 
-    @PowerNukkitOnly
     public void setBreedingAge(int ticks) {
 
     }
 
-    @PowerNukkitOnly
     public void setHomePos(Vector3 pos) {
 
     }

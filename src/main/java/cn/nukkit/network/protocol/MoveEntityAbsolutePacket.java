@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3f;
 import lombok.ToString;
 
@@ -9,7 +8,7 @@ import lombok.ToString;
  */
 @ToString
 public class MoveEntityAbsolutePacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET;
     public static final byte FLAG_GROUND = 0x01;
     public static final byte FLAG_TELEPORT = 0x02;
     public static final byte FLAG_FORCE_MOVE_LOCAL_ENTITY = 0x04;
@@ -23,10 +22,10 @@ public class MoveEntityAbsolutePacket extends DataPacket {
     public double pitch;
     public boolean onGround;
     public boolean teleport;
-    @Since("FUTURE") public boolean forceMoveLocalEntity;
+    public boolean forceMoveLocalEntity;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

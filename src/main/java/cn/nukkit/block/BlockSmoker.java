@@ -1,27 +1,28 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
 
-@PowerNukkitOnly
-public class BlockSmoker extends BlockSmokerBurning {
-    @PowerNukkitOnly
-    public BlockSmoker() {
-        this(0);
+import cn.nukkit.block.property.CommonBlockProperties;
+import org.jetbrains.annotations.NotNull;
+
+public class BlockSmoker extends BlockLitSmoker {
+    public static final BlockProperties PROPERTIES = new BlockProperties(SMOKER, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    @PowerNukkitOnly
-    public BlockSmoker(int meta) {
-        super(meta);
+    public BlockSmoker() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockSmoker(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
     public String getName() {
         return "Smoker";
-    }
-
-    @Override
-    public int getId() {
-        return SMOKER;
     }
 
     @Override

@@ -18,12 +18,11 @@
 
 package cn.nukkit.event.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.Position;
+import lombok.Getter;
 
 import java.util.Set;
 
@@ -31,40 +30,23 @@ import java.util.Set;
  * @author joserobjr
  * @since 2020-10-06
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class BlockExplodeEvent extends BlockEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public static HandlerList getHandlers() {
         return handlers;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     protected final Position position;
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    protected Set<Block> blocks;
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    protected Set<Block> ignitions;
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    protected double yield;
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     protected final double fireChance;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    protected double yield;
+    protected Set<Block> blocks;
+    protected Set<Block> ignitions;
+
     public BlockExplodeEvent(Block block, Position position, Set<Block> blocks, Set<Block> ignitions, double yield, double fireChance) {
         super(block);
         this.position = position;
@@ -74,50 +56,34 @@ public class BlockExplodeEvent extends BlockEvent implements Cancellable {
         this.fireChance = fireChance;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public Position getPosition() {
         return this.position;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public Set<Block> getAffectedBlocks() {
         return this.blocks;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setAffectedBlocks(Set<Block> blocks) {
         this.blocks = blocks;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public double getYield() {
         return this.yield;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setYield(double yield) {
         this.yield = yield;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public Set<Block> getIgnitions() {
         return ignitions;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setIgnitions(Set<Block> ignitions) {
         this.ignitions = ignitions;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public double getFireChance() {
         return fireChance;
     }

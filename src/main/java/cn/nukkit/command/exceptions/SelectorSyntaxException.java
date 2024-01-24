@@ -1,10 +1,6 @@
 package cn.nukkit.command.exceptions;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
 public class SelectorSyntaxException extends Exception {
 
     public SelectorSyntaxException() {}

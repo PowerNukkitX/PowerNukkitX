@@ -1,9 +1,7 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.blockstate.exception.InvalidBlockStateException;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -16,8 +14,6 @@ import cn.nukkit.level.Position;
 
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
 public class SetBlockCommand extends VanillaCommand {
 
     public SetBlockCommand(String name) {
@@ -33,7 +29,6 @@ public class SetBlockCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-    @Since("1.19.60-r1")
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
@@ -42,10 +37,10 @@ public class SetBlockCommand extends VanillaCommand {
         try {
             if (list.hasResult(2)) {
                 int data = list.getResult(2);
-                block.setDamage(data);
+                block = block.getProperties().getBlockState((short) data).toBlock();
             }
-        } catch (IndexOutOfBoundsException | InvalidBlockStateException ignored) {
-            log.addError("commands.setblock.notFound", block.getPersistenceName()).output();
+        } catch (IndexOutOfBoundsException e) {
+            log.addError("commands.setblock.notFound", block.getId()).output();
             return 0;
         }
         String oldBlockHandling = "replace";
@@ -59,7 +54,7 @@ public class SetBlockCommand extends VanillaCommand {
 
         Level level = sender.getPosition().getLevel();
         Block current = level.getBlock(position);
-        if (current.getId() == block.getId() && current.getDamage() == block.getDamage()) {
+        if (current.getId() == block.getId() && current.getBlockState() == block.getBlockState()) {
             log.addError("commands.setblock.noChange").output();
             return 0;
         }
@@ -67,7 +62,7 @@ public class SetBlockCommand extends VanillaCommand {
             switch (oldBlockHandling) {
                 case "destroy" -> {
                     if (sender.isPlayer()) {
-                        level.useBreakOn(position, null, Item.get(Item.AIR), sender.asPlayer(), true, true);
+                        level.useBreakOn(position, null, Item.AIR, sender.asPlayer(), true, true);
                     } else {
                         level.useBreakOn(position);
                     }

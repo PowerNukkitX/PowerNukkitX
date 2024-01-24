@@ -1,7 +1,5 @@
 package cn.nukkit.command.tree.node;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.entity.Entity;
@@ -16,8 +14,6 @@ import java.util.StringJoiner;
  * 所有命令参数类型为{@link cn.nukkit.command.data.CommandParamType#MESSAGE MESSAGE}
  * 如果没有手动指定{@link IParamNode},则会默认使用这个解析
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
 public class MessageStringNode extends ParamNode<String> {
 
     private final List<String> TMP = new ArrayList<>();
@@ -47,7 +43,7 @@ public class MessageStringNode extends ParamNode<String> {
                     try {
                         for (Entity entity : EntitySelectorAPI.getAPI().matchEntities(this.parent.parent.getSender(), m)) {
                             var name = entity.getName();
-                            if (name.isBlank()) name = entity.getSaveId();
+                            if (name.isBlank()) name = entity.getOriginalName();
                             join.add(name);
                         }
                     } catch (SelectorSyntaxException e) {

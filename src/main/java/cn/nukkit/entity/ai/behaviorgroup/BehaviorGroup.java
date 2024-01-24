@@ -1,8 +1,6 @@
 package cn.nukkit.entity.ai.behaviorgroup;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.BehaviorState;
 import cn.nukkit.entity.ai.behavior.IBehavior;
@@ -14,7 +12,6 @@ import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.entity.ai.route.finder.SimpleRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.format.generic.BaseChunk;
 import cn.nukkit.math.Vector3;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,8 +24,8 @@ import java.util.stream.Collectors;
 /**
  * 标准行为组实现
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 @Getter
 @Setter
 public class BehaviorGroup implements IBehaviorGroup {
@@ -290,7 +287,6 @@ public class BehaviorGroup implements IBehaviorGroup {
      *
      * @return 是否需要更新路径
      */
-    @Since("1.19.60-r1")
     protected boolean shouldUpdateRoute(EntityIntelligent entity) {
         //此优化只针对处于非active区块的实体
         if (entity.isActive()) return true;
@@ -316,7 +312,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 缓存section的blockChanges到blockChangeCache
      */
-    @Since("1.19.60-r1")
+
     protected void cacheSectionBlockChange(Level level, Set<ChunkSectionVector> vecs) {
         this.blockChangeCache = vecs.stream().mapToLong(vector3 -> getSectionBlockChange(level, vector3)).sum();
     }
@@ -324,11 +320,9 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 返回sectionVector对应的section的blockChanges
      */
-    @Since("1.19.60-r1")
     protected long getSectionBlockChange(Level level, ChunkSectionVector vector) {
         var chunk = level.getChunk(vector.chunkX, vector.chunkZ);
-        //TODO: 此处强转未经检查，可能在未来导致兼容性问题
-        return ((BaseChunk) chunk).getSectionBlockChanges(vector.sectionY);
+        return chunk.getSectionBlockChanges(vector.sectionY);
     }
 
     /**
@@ -336,7 +330,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      *
      * @return (chunkX | chunkSectionY | chunkZ)
      */
-    @Since("1.19.60-r1")
+
     protected Set<ChunkSectionVector> calPassByChunkSections(Collection<Vector3> nodes, Level level) {
         return nodes.stream().map(vector3 -> new ChunkSectionVector(vector3.getChunkX(), ((int) vector3.y - level.getMinHeight()) >> 4, vector3.getChunkZ())).collect(Collectors.toSet());
     }

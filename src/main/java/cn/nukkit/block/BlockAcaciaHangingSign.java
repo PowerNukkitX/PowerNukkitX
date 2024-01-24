@@ -1,16 +1,22 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+import static cn.nukkit.block.property.CommonBlockProperties.*;
+
 public class BlockAcaciaHangingSign extends BlockHangingSign {
+    public static final BlockProperties PROPERTIES = new BlockProperties(ACACIA_HANGING_SIGN, ATTACHED_BIT, FACING_DIRECTION, GROUND_SIGN_DIRECTION, HANGING);
     public BlockAcaciaHangingSign() {
+        super(PROPERTIES.getDefaultState());
     }
 
-    public int getId() {
-        return ACACIA_HANGING_SIGN;
+    public BlockAcaciaHangingSign(BlockState blockstate) {
+        super(blockstate);
+    }
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     public String getName() {

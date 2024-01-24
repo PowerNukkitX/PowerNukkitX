@@ -4,13 +4,13 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
 
-    public BlockEntityGlowItemFrame(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityGlowItemFrame(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -38,14 +38,14 @@ public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
         if (!item.isNull()) {
             CompoundTag itemTag = NBTIO.putItemHelper(item);
             int networkDamage = item.getDamage();
-            String namespacedId = item.getNamespaceId();
+            String namespacedId = item.getId();
             if (namespacedId != null) {
                 itemTag.remove("id");
                 itemTag.putShort("Damage", networkDamage);
                 itemTag.putString("Name", namespacedId);
             }
-            if (item instanceof ItemBlock itemBlock) {
-                itemTag.putCompound("Block", NBTIO.putBlockHelper(itemBlock.getBlock()));
+            if (item.isBlock()) {
+                itemTag.putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag());
             }
             tag.putCompound("Item", itemTag)
                     .putByte("ItemRotation", this.getItemRotation());

@@ -1,18 +1,14 @@
 package cn.nukkit.level;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockTNT;
+import cn.nukkit.block.BlockTnt;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityShulkerBox;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
 import cn.nukkit.entity.item.EntityItem;
-import cn.nukkit.entity.item.EntityXPOrb;
+import cn.nukkit.entity.item.EntityXpOrb;
 import cn.nukkit.event.block.BlockExplodeEvent;
 import cn.nukkit.event.block.BlockUpdateEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
@@ -56,8 +52,6 @@ public class Explosion {
         this(center, size, (Object) what);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public Explosion(Position center, double size, Block what) {
         this(center, size, (Object) what);
     }
@@ -69,8 +63,6 @@ public class Explosion {
      * @param size the power of explosion
      * @param what the source object, used for tracking damage
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     protected Explosion(Position center, double size, Object what) {
         this.level = center.getLevel();
         this.source = center;
@@ -78,26 +70,18 @@ public class Explosion {
         this.what = what;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public double getFireChance() {
         return fireChance;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setFireChance(double fireChance) {
         this.fireChance = fireChance;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public boolean isIncendiary() {
         return fireChance > 0;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setIncendiary(boolean incendiary) {
         if (!incendiary) {
             fireChance = 0;
@@ -126,10 +110,12 @@ public class Explosion {
     public boolean explodeA() {
         if (what instanceof EntityExplosive) {
             Entity entity = (Entity) what;
-            int block = level.getBlockIdAt(entity.getFloorX(), entity.getFloorY(), entity.getFloorZ());
-            if (block == BlockID.FLOWING_WATER || block == BlockID.STILL_WATER
-                    || (block = level.getBlockIdAt(entity.getFloorX(), entity.getFloorY(), entity.getFloorZ(), 1)) == BlockID.FLOWING_WATER
-                    || block == BlockID.STILL_WATER
+            Block blockLayer0 = level.getBlock(entity.floor());
+            Block blockLayer1 = level.getBlock(entity.floor(), 1);
+            if (BlockID.FLOWING_WATER.equals(blockLayer0.getId())
+                    || BlockID.WATER.equals(blockLayer0.getId())
+                    || BlockID.FLOWING_WATER.equals(blockLayer1.getId())
+                    || BlockID.WATER.equals(blockLayer1.getId())
             ) {
                 this.doesDamage = false;
                 return true;
@@ -178,7 +164,7 @@ public class Explosion {
                             }
                             Block block = this.level.getBlock(vBlock);
 
-                            if (block.getId() != 0) {
+                            if (!block.isAir()) {
                                 Block layer1 = block.getLevelBlockAtLayer(1);
                                 double resistance = Math.max(block.getResistance(), layer1.getResistance());
                                 blastForce -= (resistance / 5 + 0.3d) * this.STEP_LEN;
@@ -187,7 +173,7 @@ public class Explosion {
                                         if (incendiary && random.nextDouble() <= fireChance) {
                                             this.fireIgnitions.add(block);
                                         }
-                                        if (layer1.getId() != BlockID.AIR) {
+                                        if (!layer1.isAir()) {
                                             this.affectedBlocks.add(layer1);
                                         }
                                     }
@@ -211,8 +197,6 @@ public class Explosion {
      *
      * @return {@code false} if explosion was canceled, otherwise {@code true}
      */
-    @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
-    @PowerNukkitXDifference(info = "Reduce explosion damage if entities behind blocks", since = "1.20.10-r1")
     public boolean explodeB() {
 
         LongArraySet updateBlocks = new LongArraySet();
@@ -279,7 +263,7 @@ public class Explosion {
                     entity.attack(new EntityDamageEvent(entity, DamageCause.BLOCK_EXPLOSION, damage));
                 }
 
-                if (!(entity instanceof EntityItem || entity instanceof EntityXPOrb)) {
+                if (!(entity instanceof EntityItem || entity instanceof EntityXpOrb)) {
                     var multipliedMotion = motion.multiply(impact);
                     entity.motionX += multipliedMotion.x;
                     entity.motionY += multipliedMotion.y;
@@ -294,17 +278,17 @@ public class Explosion {
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
         for (Block block : this.affectedBlocks) {
-            if (block.getId() == BlockID.TNT) {
-                ((BlockTNT) block).prime(random.nextInt(10, 31), this.what instanceof Entity ? (Entity) this.what : null);
-            } else if ((container = block.getLevel().getBlockEntity(block)) instanceof InventoryHolder) {
+            if (block instanceof BlockTnt tnt) {
+                tnt.prime(random.nextInt(10, 31), this.what instanceof Entity ? (Entity) this.what : null);
+            } else if ((container = block.getLevel().getBlockEntity(block)) instanceof InventoryHolder inventoryHolder) {
                 if (container instanceof BlockEntityShulkerBox) {
                     this.level.dropItem(block.add(0.5, 0.5, 0.5), block.toItem());
-                    ((InventoryHolder) container).getInventory().clearAll();
+                    inventoryHolder.getInventory().clearAll();
                 } else {
-                    for (Item drop : ((InventoryHolder) container).getInventory().getContents().values()) {
+                    for (Item drop : inventoryHolder.getInventory().getContents().values()) {
                         this.level.dropItem(block.add(0.5, 0.5, 0.5), drop);
                     }
-                    ((InventoryHolder) container).getInventory().clearAll();
+                    inventoryHolder.getInventory().clearAll();
                 }
             } else if (random.nextDouble() * 100 < yield) {
                 for (Item drop : block.getDrops(air)) {
@@ -316,7 +300,8 @@ public class Explosion {
                 smokePositions.add(block);
             }
 
-            this.level.setBlockAtLayer((int) block.x, (int) block.y, (int) block.z, block.layer, BlockID.AIR);
+            this.level.setBlock(new Vector3((int) block.x, (int) block.y, (int) block.z),
+                    block.layer, Block.get(BlockID.AIR));
 
             if (block.layer != 0) {
                 continue;
@@ -334,7 +319,7 @@ public class Explosion {
                         ev.getBlock().onUpdate(Level.BLOCK_UPDATE_NORMAL);
                     }
                     Block layer1 = this.level.getBlock(sideBlock, 1);
-                    if (layer1.getId() != BlockID.AIR) {
+                    if (!layer1.isAir()) {
                         ev = new BlockUpdateEvent(layer1);
                         this.level.getServer().getPluginManager().callEvent(ev);
                         if (!ev.isCancelled()) {
@@ -349,7 +334,7 @@ public class Explosion {
 
         for (Vector3 remainingPos : fireIgnitions) {
             Block toIgnite = level.getBlock(remainingPos);
-            if (toIgnite.getId() == BlockID.AIR && toIgnite.down().isSolid(BlockFace.UP)) {
+            if (toIgnite.isAir() && toIgnite.down().isSolid(BlockFace.UP)) {
                 level.setBlock(toIgnite, Block.get(BlockID.FIRE));
             }
         }

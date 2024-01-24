@@ -1,10 +1,7 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.inventory.*;
-import cn.nukkit.inventory.recipe.DefaultDescriptor;
-import cn.nukkit.inventory.recipe.ItemDescriptor;
+import cn.nukkit.recipe.*;
 import cn.nukkit.item.Item;
 import lombok.ToString;
 
@@ -18,9 +15,7 @@ import java.util.stream.Stream;
  */
 @ToString
 public class CraftingDataPacket extends DataPacket {
-
-    public static final byte NETWORK_ID = ProtocolInfo.CRAFTING_DATA_PACKET;
-
+    public static final int NETWORK_ID = ProtocolInfo.CRAFTING_DATA_PACKET;
     public static final String CRAFTING_TAG_CRAFTING_TABLE = "crafting_table";
     public static final String CRAFTING_TAG_CARTOGRAPHY_TABLE = "cartography_table";
     public static final String CRAFTING_TAG_STONECUTTER = "stonecutter";
@@ -39,7 +34,6 @@ public class CraftingDataPacket extends DataPacket {
         Collections.addAll(entries, recipe);
     }
 
-    @PowerNukkitOnly
     public void addStonecutterRecipe(StonecutterRecipe... recipes) {
         Collections.addAll(entries, recipes);
     }
@@ -48,7 +42,6 @@ public class CraftingDataPacket extends DataPacket {
         Collections.addAll(entries, recipe);
     }
 
-    @PowerNukkitOnly
     public void addCartographyRecipe(CartographyRecipe... recipe) {
         Stream.of(recipe).filter(r -> r.getRecipeId() != null).forEachOrdered(r -> entries.add(r));
     }
@@ -57,22 +50,18 @@ public class CraftingDataPacket extends DataPacket {
         Collections.addAll(entries, recipe);
     }
 
-    @PowerNukkitOnly
     public void addSmokerRecipe(SmokerRecipe... recipe) {
         Collections.addAll(entries, recipe);
     }
 
-    @PowerNukkitOnly
     public void addBlastFurnaceRecipe(BlastFurnaceRecipe... recipe) {
         Collections.addAll(entries, recipe);
     }
 
-    @PowerNukkitOnly
     public void addCampfireRecipeRecipe(CampfireRecipe... recipe) {
         Collections.addAll(entries, recipe);
     }
 
-    @Since("1.4.0.0-PN")
     public void addMultiRecipe(MultiRecipe... recipe) {
         Collections.addAll(entries, recipe);
     }
@@ -83,12 +72,6 @@ public class CraftingDataPacket extends DataPacket {
 
     public void addContainerRecipe(ContainerRecipe... recipe) {
         Collections.addAll(containerEntries, recipe);
-    }
-
-    @Override
-    public DataPacket clean() {
-        entries = new ArrayList<>();
-        return super.clean();
     }
 
     @Override
@@ -140,9 +123,9 @@ public class CraftingDataPacket extends DataPacket {
                     SmithingRecipe smithing = (SmithingRecipe) recipe;
                     this.putString(smithing.getRecipeId());
                     //todo 1.19.80还没有模板，下个版本再加入
-                    this.putRecipeIngredient(new DefaultDescriptor(Item.AIR_ITEM));
-                    this.putRecipeIngredient(new DefaultDescriptor(smithing.getEquipment()));
-                    this.putRecipeIngredient(new DefaultDescriptor(smithing.getIngredient()));
+                    this.putRecipeIngredient(new DefaultDescriptor(Item.AIR));
+                    this.putRecipeIngredient(smithing.getEquipment());
+                    this.putRecipeIngredient(smithing.getIngredient());
                     this.putSlot(smithing.getResult(), true);
                     this.putString(CRAFTING_TAG_SMITHING_TABLE);
                     this.putUnsignedVarInt(recipeNetworkId++);
@@ -172,7 +155,7 @@ public class CraftingDataPacket extends DataPacket {
                 case FURNACE, FURNACE_DATA, SMOKER, SMOKER_DATA, BLAST_FURNACE, BLAST_FURNACE_DATA, CAMPFIRE, CAMPFIRE_DATA -> {
                     SmeltingRecipe smelting = (SmeltingRecipe) recipe;
                     Item input = smelting.getInput();
-                    this.putVarInt(input.getId());
+                    this.putVarInt(input.getRuntimeId());
                     if (recipe.getType().name().endsWith("_DATA")) {
                         this.putVarInt(input.getDamage());
                     }
@@ -196,19 +179,19 @@ public class CraftingDataPacket extends DataPacket {
 
         this.putUnsignedVarInt(this.brewingEntries.size());
         for (BrewingRecipe recipe : brewingEntries) {
-            this.putVarInt(recipe.getInput().getNetworkId());
+            this.putVarInt(recipe.getInput().getRuntimeId());
             this.putVarInt(recipe.getInput().getDamage());
-            this.putVarInt(recipe.getIngredient().getNetworkId());
+            this.putVarInt(recipe.getIngredient().getRuntimeId());
             this.putVarInt(recipe.getIngredient().getDamage());
-            this.putVarInt(recipe.getResult().getNetworkId());
+            this.putVarInt(recipe.getResult().getRuntimeId());
             this.putVarInt(recipe.getResult().getDamage());
         }
 
         this.putUnsignedVarInt(this.containerEntries.size());
         for (ContainerRecipe recipe : containerEntries) {
-            this.putVarInt(recipe.getInput().getNetworkId());
-            this.putVarInt(recipe.getIngredient().getNetworkId());
-            this.putVarInt(recipe.getResult().getNetworkId());
+            this.putVarInt(recipe.getInput().getRuntimeId());
+            this.putVarInt(recipe.getIngredient().getRuntimeId());
+            this.putVarInt(recipe.getResult().getRuntimeId());
         }
 
         this.putUnsignedVarInt(0); // Material reducers size
@@ -217,7 +200,7 @@ public class CraftingDataPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

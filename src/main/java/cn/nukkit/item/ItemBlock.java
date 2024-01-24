@@ -1,11 +1,8 @@
 package cn.nukkit.item;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockUnknown;
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.blockstate.exception.InvalidBlockStateException;
+import cn.nukkit.block.BlockState;
+import cn.nukkit.registry.Registries;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,47 +15,21 @@ public class ItemBlock extends Item {
         this(block, 0, 1);
     }
 
-    public ItemBlock(Block block, Integer meta) {
-        this(block, meta, 1);
+    public ItemBlock(Block block, Integer aux) {
+        this(block, aux, 1);
     }
 
-    public ItemBlock(Block block, Integer meta, int count) {
-        super(block.getItemId(), meta, count, block.getName());
+    public ItemBlock(Block block, Integer aux, int count) {
+        super(block.getItemId(), aux, count, block.getName());
         this.block = block;
     }
 
     @Override
     public void setDamage(Integer meta) {
-        int blockMeta;
-        if (meta != null) {
-            this.meta = meta;
-            blockMeta = meta;
-        } else {
-            this.hasMeta = false;
-            blockMeta = 0;
-        }
-        int blockId = block.getId();
-        try {
-            if (block instanceof BlockUnknown) {
-                block = BlockState.of(blockId, blockMeta).getBlock();
-                log.info("An invalid ItemBlock for {} was set to a valid meta {} and it is now safe again", block.getPersistenceName(), meta);
-            } else {
-                block.setDataStorageFromItemBlockMeta(blockMeta);
-                name = block.getName();
-            }
-        } catch (InvalidBlockStateException e) {
-            log.warn("An ItemBlock for {} was set to have meta {}"+
-                    " but this value is not valid. The item stack is now unsafe.", block.getPersistenceName(), meta, e);
-            block = new BlockUnknown(blockId, blockMeta);
-            name = block.getName();
-            return;
-        }
-
-        int expected = block.asItemBlock().getDamage();
-        if (expected != blockMeta) {
-            log.warn("An invalid ItemBlock for {} was set to an valid meta {} for item blocks, " +
-                    "it was expected to have meta {} the stack is now unsafe.\nProperties: {}",
-                    block.getPersistenceName(), meta, expected, block.getProperties());
+        int i = Registries.BLOCKSTATE_ITEMMETA.get(block.getId(), meta);
+        if (i != 0) {
+            BlockState blockState = Registries.BLOCKSTATE.get(i);
+            this.block = Registries.BLOCK.get(blockState);
         }
     }
 
@@ -69,26 +40,13 @@ public class ItemBlock extends Item {
         return block;
     }
 
-    @NotNull
     @Override
-    public Block getBlock() {
+    @NotNull public Block getBlock() {
         return this.block.clone();
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isLavaResistant() {
         return block.isLavaResistant();
     }
-
-    @Since("1.6.0.0-PNX")
-    @Override
-    public String getNamespaceId() {
-        if (this.id != Item.AIR)
-            return super.getNamespaceId();
-        else
-            return "minecraft:air";
-    }
-
-
 }

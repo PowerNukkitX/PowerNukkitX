@@ -1,13 +1,11 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
-import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.registry.Registries;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
@@ -25,7 +23,7 @@ import java.util.UUID;
 @ToString
 public class StartGamePacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.START_GAME_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.START_GAME_PACKET;
 
     public static final int GAME_PUBLISH_SETTING_NO_MULTI_PLAY = 0;
     public static final int GAME_PUBLISH_SETTING_INVITE_ONLY = 1;
@@ -34,7 +32,7 @@ public class StartGamePacket extends DataPacket {
     public static final int GAME_PUBLISH_SETTING_PUBLIC = 4;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 
@@ -88,7 +86,7 @@ public class StartGamePacket extends DataPacket {
     //HACK: For now we can specify this version, since the new chunk changes are not relevant for our Anvil format.
     //However, it could be that Microsoft will prevent this in a new update.
 
-    public CompoundTag playerPropertyData = new CompoundTag("");
+    public CompoundTag playerPropertyData = new CompoundTag();
 
     public String levelId = ""; //base64 string, usually the same as world folder name in vanilla
     public String worldName;
@@ -96,10 +94,10 @@ public class StartGamePacket extends DataPacket {
     public boolean isTrial = false;
     @Deprecated
     public boolean isMovementServerAuthoritative;
-    @PowerNukkitXOnly
-    @Since("1.19.40-r3")
+
+
     public Integer serverAuthoritativeMovement;
-    @Since("1.3.0.0-PN")
+
     public boolean isInventoryServerAuthoritative;
 
     public long currentTick;
@@ -253,7 +251,7 @@ public class StartGamePacket extends DataPacket {
             log.error("Error while encoding NBT data of BlockPropertyData", e);
         }
 
-        this.put(RuntimeItems.getRuntimeMapping().getItemDataPalette());
+        this.put(Registries.ITEM_RUNTIMEID.getItemPalette());
         this.putString(this.multiplayerCorrelationId);
         this.putBoolean(this.isInventoryServerAuthoritative);
         this.putString(vanillaVersion); // Server Engine

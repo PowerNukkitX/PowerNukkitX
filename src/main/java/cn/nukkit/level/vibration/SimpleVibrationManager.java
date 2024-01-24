@@ -1,9 +1,6 @@
 package cn.nukkit.level.vibration;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.level.VibrationArriveEvent;
 import cn.nukkit.event.level.VibrationOccurEvent;
@@ -14,12 +11,13 @@ import cn.nukkit.math.VectorMath;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelEventGenericPacket;
 import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.plugin.InternalPlugin;
+import cn.nukkit.tags.BlockTags;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r3")
+
 public class SimpleVibrationManager implements VibrationManager {
 
     protected Set<VibrationListener> listeners = new CopyOnWriteArraySet<>();
@@ -39,7 +37,7 @@ public class SimpleVibrationManager implements VibrationManager {
         for (var listener : listeners) {
             if (!listener.getListenerVector().equals(event.source()) && listener.getListenerVector().distanceSquared(event.source()) <= Math.pow(listener.getListenRange(), 2) && canVibrationArrive(level, event.source(), listener.getListenerVector()) && listener.onVibrationOccur(event)) {
                 this.createVibration(listener, event);
-                Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
+                Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
                     VibrationArriveEvent vibrationArrivePluginEvent = new VibrationArriveEvent(event, listener);
                     this.level.getServer().getPluginManager().callEvent(vibrationArrivePluginEvent);
                     if (vibrationArrivePluginEvent.isCancelled()) {
@@ -92,8 +90,8 @@ public class SimpleVibrationManager implements VibrationManager {
     }
 
     protected boolean canVibrationArrive(Level level, Vector3 from, Vector3 to) {
-        return !VectorMath.getPassByVector3(from, to)
+        return VectorMath.getPassByVector3(from, to)
                 .stream()
-                .anyMatch(vec -> level.getTickCachedBlock(vec).getId() == BlockID.WOOL);
+                .noneMatch(vec -> level.getTickCachedBlock(vec).is(BlockTags.PNX_WOOL));
     }
 }

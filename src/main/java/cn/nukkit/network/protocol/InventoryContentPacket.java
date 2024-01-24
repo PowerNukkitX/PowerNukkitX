@@ -8,11 +8,9 @@ import lombok.ToString;
  */
 @ToString
 public class InventoryContentPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.INVENTORY_CONTENT_PACKET;
-
     @Override
-    public byte pid() {
-        return NETWORK_ID;
+    public int pid() {
+        return ProtocolInfo.INVENTORY_CONTENT_PACKET;
     }
 
     public static final int SPECIAL_INVENTORY = 0;
@@ -24,12 +22,6 @@ public class InventoryContentPacket extends DataPacket {
 
     public int inventoryId;
     public Item[] slots = Item.EMPTY_ARRAY;
-
-    @Override
-    public DataPacket clean() {
-        this.slots = Item.EMPTY_ARRAY;
-        return super.clean();
-    }
 
     @Override
     public void decode() {
@@ -44,12 +36,5 @@ public class InventoryContentPacket extends DataPacket {
         for (Item slot : this.slots) {
             this.putSlot(slot);
         }
-    }
-
-    @Override
-    public InventoryContentPacket clone() {
-        InventoryContentPacket pk = (InventoryContentPacket) super.clone();
-        pk.slots = this.slots.clone();
-        return pk;
     }
 }

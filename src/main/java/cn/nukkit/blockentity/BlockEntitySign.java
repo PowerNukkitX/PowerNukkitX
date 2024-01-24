@@ -1,12 +1,10 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockSignPost;
+import cn.nukkit.block.BlockStandingSign;
 import cn.nukkit.event.block.SignChangeEvent;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
@@ -33,11 +31,10 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     private String[] frontText;
     private String[] backText;
 
-    public BlockEntitySign(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntitySign(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Since("1.19.60-r1")
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -47,13 +44,13 @@ public class BlockEntitySign extends BlockEntitySpawnable {
             getLines(true);
         } else {
             this.frontText[0] = "";
-            this.namedTag.putCompound(new CompoundTag(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, String.join("\n", new String[]{""})));
+            this.namedTag.putCompound(TAG_FRONT_TEXT, new CompoundTag().putString(TAG_TEXT_BLOB, String.join("\n", new String[]{""})));
         }
         if (namedTag.containsCompound(TAG_BACK_TEXT)) {
             getLines(false);
         } else {
             this.backText[0] = "";
-            this.namedTag.putCompound(new CompoundTag(TAG_BACK_TEXT).putString(TAG_TEXT_BLOB, String.join("\n", new String[]{""})));
+            this.namedTag.putCompound(TAG_BACK_TEXT, new CompoundTag().putString(TAG_TEXT_BLOB, String.join("\n", new String[]{""})));
         }
 
         // Check old text to sanitize
@@ -96,8 +93,6 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     /**
      * @return If the sign is waxed, once a sign is waxed it cannot be modified
      */
-    @Since("1.20.0-r2")
-    @PowerNukkitXOnly
     public boolean isWaxed() {
         return this.namedTag.getByte(TAG_WAXED) == 1;
     }
@@ -105,8 +100,6 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     /**
      * @param waxed If the sign is waxed, once a sign is waxed it cannot be modified
      */
-    @Since("1.20.0-r2")
-    @PowerNukkitXOnly
     public void setWaxed(boolean waxed) {
         this.namedTag.putByte(TAG_WAXED, waxed ? (byte) 1 : (byte) 0);
     }
@@ -114,7 +107,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     @Override
     public boolean isBlockEntityValid() {
         Block block = getBlock();
-        return block instanceof BlockSignPost;
+        return block instanceof BlockStandingSign;
     }
 
     public boolean setText(String... lines) {
@@ -152,7 +145,6 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         }
         return true;
     }
-
 
     public String[] getText() {
         return getText(true);
@@ -278,13 +270,13 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     public CompoundTag getSpawnCompound() {
         return new CompoundTag()
                 .putString("id", BlockEntity.SIGN)
-                .putCompound(new CompoundTag(TAG_FRONT_TEXT)
+                .putCompound(TAG_FRONT_TEXT,new CompoundTag()
                         .putString(TAG_TEXT_BLOB, this.namedTag.getCompound(TAG_FRONT_TEXT).getString(TAG_TEXT_BLOB))
                         .putInt(TAG_TEXT_COLOR, this.getColor(true).getARGB())
                         .putBoolean(TAG_GLOWING_TEXT, this.isGlowing())
                         .putBoolean(TAG_PERSIST_FORMATTING, true)
                 )
-                .putCompound(new CompoundTag(TAG_BACK_TEXT)
+                .putCompound(TAG_BACK_TEXT,new CompoundTag()
                         .putString(TAG_TEXT_BLOB, this.namedTag.getCompound(TAG_BACK_TEXT).getString(TAG_TEXT_BLOB))
                         .putInt(TAG_TEXT_COLOR, this.getColor(false).getARGB())
                         .putBoolean(TAG_GLOWING_TEXT, this.isGlowing(false))
@@ -366,6 +358,5 @@ public class BlockEntitySign extends BlockEntitySpawnable {
             }
         }
     }
-
 
 }

@@ -1,27 +1,26 @@
 package cn.nukkit.entity.mob;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntitySlime extends EntityMob implements EntityWalkable {
 
-    public static final int NETWORK_ID = 37;
+    @Override
+    @NotNull public String getIdentifier() {
+        return SLIME;
+    }
 
-    public EntitySlime(FullChunk chunk, CompoundTag nbt) {
+    public EntitySlime(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {
@@ -39,8 +38,6 @@ public class EntitySlime extends EntityMob implements EntityWalkable {
         return 2.04f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Slime";
@@ -48,6 +45,6 @@ public class EntitySlime extends EntityMob implements EntityWalkable {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.SLIMEBALL)};
+        return new Item[]{Item.get(Item.SLIME_BALL)};
     }
 }

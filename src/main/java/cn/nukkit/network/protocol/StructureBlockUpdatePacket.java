@@ -1,6 +1,6 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.blockproperty.value.StructureBlockType;
+import cn.nukkit.block.property.enums.StructureBlockType;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.protocol.types.*;
 import lombok.ToString;
@@ -13,7 +13,7 @@ public class StructureBlockUpdatePacket extends DataPacket {
     public boolean waterlogged;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.STRUCTURE_BLOCK_UPDATE_PACKET;
     }
 

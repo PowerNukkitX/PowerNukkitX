@@ -1,7 +1,5 @@
 package cn.nukkit.level.particle;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.LevelEventPacket;
@@ -10,11 +8,11 @@ import cn.nukkit.network.protocol.LevelEventPacket;
  * @author joserobjr
  * @since 2021-06-15
  */
-@PowerNukkitOnly
-@Since("FUTURE")
+
+
 public class ElectricSparkParticle extends GenericParticle {
-    @PowerNukkitOnly
-    @Since("FUTURE")
+
+
     public ElectricSparkParticle(Vector3 pos) {
         super(pos, Particle.TYPE_WAX);
     }

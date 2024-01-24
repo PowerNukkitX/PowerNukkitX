@@ -1,8 +1,7 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -21,11 +20,12 @@ import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.ParticleEffect;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -33,14 +33,16 @@ import java.util.Set;
  * @author BeYkeRYkt (Nukkit Project)
  */
 public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
+    @Override
+    @NotNull public String getIdentifier() {
+        return MOOSHROOM;
+    }
+    
 
-    public static final int NETWORK_ID = 16;
-
-    public EntityMooshroom(FullChunk chunk, CompoundTag nbt) {
+    public EntityMooshroom(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @PowerNukkitOnly
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(
@@ -86,8 +88,6 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
         return 1.3f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Mooshroom";
@@ -95,13 +95,10 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.LEATHER), Item.get(Item.RAW_BEEF)};
+        return new Item[]{Item.get(Item.LEATHER), Item.get(Item.BEEF)};
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {
@@ -118,7 +115,7 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
         if (item.getId() == Item.SHEARS && item.useOn(this)) {
             this.close();
             //TODO 不同颜色的牛掉落不同的蘑菇
-            this.level.dropItem(this, Item.get(40, 0, 5));
+            this.level.dropItem(this, Item.get(BlockID.RED_MUSHROOM, 0, 5));
             this.level.addParticleEffect(this.add(0, this.getHeight(), 0), ParticleEffect.LARGE_EXPLOSION_LEVEL);
             EntityCow cow = new EntityCow(this.getChunk(), this.namedTag);
             cow.setPosition(this);

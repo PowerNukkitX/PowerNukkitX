@@ -11,13 +11,13 @@ public class RequestChunkRadiusProcessor extends DataPacketProcessor<RequestChun
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull RequestChunkRadiusPacket pk) {
         ChunkRadiusUpdatedPacket chunkRadiusUpdatePacket = new ChunkRadiusUpdatedPacket();
-        playerHandle.setChunkRadius(Math.max(3, Math.min(pk.radius, playerHandle.player.getViewDistance())));
+        playerHandle.setChunkRadius(Math.max(4, Math.min(pk.radius, playerHandle.player.getViewDistance())));
         chunkRadiusUpdatePacket.radius = playerHandle.getChunkRadius();
         playerHandle.player.dataPacket(chunkRadiusUpdatePacket);
     }
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.REQUEST_CHUNK_RADIUS_PACKET);
+        return ProtocolInfo.REQUEST_CHUNK_RADIUS_PACKET;
     }
 }

@@ -1,8 +1,6 @@
 package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
@@ -17,8 +15,7 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 import java.util.EnumMap;
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r4")
+
 public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
 
     protected int attackTick;

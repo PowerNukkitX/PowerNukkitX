@@ -1,8 +1,8 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.api.Since;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
 
@@ -14,11 +14,10 @@ public class BlockEntityBed extends BlockEntitySpawnable {
 
     public int color;
 
-    public BlockEntityBed(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityBed(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Since("1.19.60-r1")
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -31,7 +30,7 @@ public class BlockEntityBed extends BlockEntitySpawnable {
 
     @Override
     public boolean isBlockEntityValid() {
-        return this.level.getBlockIdAt(this.getFloorX(), this.getFloorY(), this.getFloorZ()) == Item.BED_BLOCK;
+        return this.level.getBlockIdAt(this.getFloorX(), this.getFloorY(), this.getFloorZ()) == BlockID.BED;
     }
 
     @Override

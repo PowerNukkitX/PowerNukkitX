@@ -40,6 +40,6 @@ public class MoveEntityAbsoluteProcessor extends DataPacketProcessor<MoveEntityA
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET);
+        return ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET;
     }
 }

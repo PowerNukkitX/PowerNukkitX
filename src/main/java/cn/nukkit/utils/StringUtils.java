@@ -1,15 +1,12 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public final class StringUtils {
     private StringUtils() {
 
@@ -27,8 +24,7 @@ public final class StringUtils {
         return str.substring(i + 1);
     }
 
-    @NotNull
-    public static String capitalize(@NotNull String str) {
+    @NotNull public static String capitalize(@NotNull String str) {
         if (str.length() == 0) {
             return "";
         }
@@ -41,7 +37,7 @@ public final class StringUtils {
     /**
      * @see #fastSplit(String, String, int)
      */
-    @Since("1.19.60-r1")
+
     public static List<String> fastSplit(String delimiter, String str) {
         return fastSplit(delimiter, str, Integer.MAX_VALUE);
     }
@@ -56,7 +52,7 @@ public final class StringUtils {
      * @param limit     the limit
      * @return the list
      */
-    @Since("1.19.60-r1")
+
     public static List<String> fastSplit(String delimiter, String str, int limit) {
         var tmp = str;
         var results = new ArrayList<String>();

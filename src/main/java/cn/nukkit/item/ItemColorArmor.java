@@ -10,19 +10,19 @@ import cn.nukkit.utils.DyeColor;
  */
 abstract public class ItemColorArmor extends ItemArmor {
 
-    public ItemColorArmor(int id) {
+    public ItemColorArmor(String id) {
         super(id);
     }
 
-    public ItemColorArmor(int id, Integer meta) {
+    public ItemColorArmor(String id, Integer meta) {
         super(id, meta);
     }
 
-    public ItemColorArmor(int id, Integer meta, int count) {
+    public ItemColorArmor(String id, Integer meta, int count) {
         super(id, meta, count);
     }
 
-    public ItemColorArmor(int id, Integer meta, int count, String name) {
+    public ItemColorArmor(String id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
 

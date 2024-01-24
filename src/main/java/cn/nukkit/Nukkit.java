@@ -1,6 +1,5 @@
 package cn.nukkit;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.nbt.stream.PGZIPOutputStream;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.plugin.js.JSIInitiator;
@@ -50,7 +49,7 @@ public class Nukkit {
 
     public final static Properties GIT_INFO = getGitInfo();
     public final static String VERSION = getVersion();
-    @PowerNukkitOnly
+
     public final static String GIT_COMMIT = getGitCommit();
     public final static String API_VERSION = dynamic("1.0.14");
     public final static String CODENAME = dynamic("PowerNukkitX");

@@ -1,9 +1,6 @@
 package cn.nukkit.math;
 
 import cn.nukkit.api.DoNotModify;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.level.Location;
 
 import static java.lang.StrictMath.*;
@@ -13,9 +10,8 @@ import static java.lang.StrictMath.*;
  * <p>
  * A vector calculation tool that integrates the conversion functions of yaw and pitch and coordinate space at the same time
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
-@PowerNukkitXDifference(info = "update Angle algorithm", since = "1.19.60-r1")
+
+
 public final class BVector3 {
     /**
      * 向量的单位向量

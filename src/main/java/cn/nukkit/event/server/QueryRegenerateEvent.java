@@ -2,14 +2,15 @@ package cn.nukkit.event.server;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginDescription;
 import cn.nukkit.utils.Binary;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -21,8 +22,6 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class QueryRegenerateEvent extends ServerEvent {
-    //alot todo
-
     private static final HandlerList handlers = new HandlerList();
 
     public static HandlerList getHandlers() {
@@ -110,14 +109,10 @@ public class QueryRegenerateEvent extends ServerEvent {
         this.players = players;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.50-r1")
     public String getVersion() {
         return this.version;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.50-r1")
     public void setVersion(String version) {
         this.version = version;
     }
@@ -154,83 +149,73 @@ public class QueryRegenerateEvent extends ServerEvent {
         this.extraData = extraData;
     }
 
-    public byte[] getLongQuery(byte[] buffer) {
-        if (buffer == null) buffer = new byte[Character.MAX_VALUE];
-        FastByteArrayOutputStream query = new FastByteArrayOutputStream(buffer);
-        try {
-            StringBuilder plist = new StringBuilder(this.server_engine);
-            if (this.plugins.length > 0 && this.listPlugins) {
-                plist.append(":");
-                for (Plugin p : this.plugins) {
-                    PluginDescription d = p.getDescription();
-                    plist.append(" ").append(d.getName().replace(";", "").replace(":", "").replace(" ", "_")).append(" ").append(d.getVersion().replace(";", "").replace(":", "").replace(" ", "_")).append(";");
-                }
-                plist = new StringBuilder(plist.substring(0, plist.length() - 2));
+    public ByteBuf getLongQuery() {
+        ByteBuf buf = ByteBufAllocator.DEFAULT.ioBuffer();
+        StringBuilder plist = new StringBuilder(this.server_engine);
+        if (this.plugins.length > 0 && this.listPlugins) {
+            plist.append(":");
+            for (Plugin p : this.plugins) {
+                PluginDescription d = p.getDescription();
+                plist.append(" ").append(d.getName().replace(";", "").replace(":", "").replace(" ", "_")).append(" ").append(d.getVersion().replace(";", "").replace(":", "").replace(" ", "_")).append(";");
             }
-
-            query.write("splitnum".getBytes());
-            query.write((byte) 0x00);
-            query.write((byte) 128);
-            query.write((byte) 0x00);
-
-            LinkedHashMap<String, String> KVdata = new LinkedHashMap<>();
-            KVdata.put("hostname", this.serverName);
-            KVdata.put("gametype", this.gameType);
-            KVdata.put("game_id", GAME_ID);
-            KVdata.put("version", this.version);
-            KVdata.put("server_engine", this.server_engine);
-            KVdata.put("plugins", plist.toString());
-            KVdata.put("map", this.map);
-            KVdata.put("numplayers", String.valueOf(this.numPlayers));
-            KVdata.put("maxplayers", String.valueOf(this.maxPlayers));
-            KVdata.put("whitelist", this.whitelist);
-            KVdata.put("hostip", this.ip);
-            KVdata.put("hostport", String.valueOf(this.port));
-
-            for (Map.Entry<String, String> entry : KVdata.entrySet()) {
-                query.write(entry.getKey().getBytes(StandardCharsets.UTF_8));
-                query.write((byte) 0x00);
-                query.write(entry.getValue().getBytes(StandardCharsets.UTF_8));
-                query.write((byte) 0x00);
-            }
-
-            query.write(new byte[]{0x00, 0x01});
-            query.write("player_".getBytes());
-            query.write(new byte[]{0x00, 0x00});
-
-            for (Player player : this.players) {
-                query.write(player.getName().getBytes(StandardCharsets.UTF_8));
-                query.write((byte) 0x00);
-            }
-
-            query.write((byte) 0x00);
-        } catch (IOException e) {
-            e.printStackTrace();
+            plist = new StringBuilder(plist.substring(0, plist.length() - 2));
         }
-        return query.toByteArray();
+
+        buf.writeBytes("splitnum".getBytes());
+        buf.writeByte((byte) 0x00);
+        buf.writeByte((byte) 128);
+        buf.writeByte((byte) 0x00);
+
+        LinkedHashMap<String, String> KVdata = new LinkedHashMap<>();
+        KVdata.put("hostname", this.serverName);
+        KVdata.put("gametype", this.gameType);
+        KVdata.put("game_id", GAME_ID);
+        KVdata.put("version", this.version);
+        KVdata.put("server_engine", this.server_engine);
+        KVdata.put("plugins", plist.toString());
+        KVdata.put("map", this.map);
+        KVdata.put("numplayers", String.valueOf(this.numPlayers));
+        KVdata.put("maxplayers", String.valueOf(this.maxPlayers));
+        KVdata.put("whitelist", this.whitelist);
+        KVdata.put("hostip", this.ip);
+        KVdata.put("hostport", String.valueOf(this.port));
+
+        for (Map.Entry<String, String> entry : KVdata.entrySet()) {
+            buf.writeBytes(entry.getKey().getBytes(StandardCharsets.UTF_8));
+            buf.writeByte((byte) 0x00);
+            buf.writeBytes(entry.getValue().getBytes(StandardCharsets.UTF_8));
+            buf.writeByte((byte) 0x00);
+        }
+
+        buf.writeBytes(new byte[]{0x00, 0x01});
+        buf.writeBytes("player_".getBytes());
+        buf.writeBytes(new byte[]{0x00, 0x00});
+
+        for (Player player : this.players) {
+            buf.writeBytes(player.getName().getBytes(StandardCharsets.UTF_8));
+            buf.writeByte((byte) 0x00);
+        }
+
+        buf.writeByte((byte) 0x00);
+        return buf;
     }
 
-    public byte[] getShortQuery(byte[] buffer) {
-        if (buffer == null) buffer = new byte[Character.MAX_VALUE];
-        FastByteArrayOutputStream query = new FastByteArrayOutputStream(buffer);
-        try {
-            query.write(this.serverName.getBytes(StandardCharsets.UTF_8));
-            query.write((byte) 0x00);
-            query.write(this.gameType.getBytes(StandardCharsets.UTF_8));
-            query.write((byte) 0x00);
-            query.write(this.map.getBytes(StandardCharsets.UTF_8));
-            query.write((byte) 0x00);
-            query.write(String.valueOf(this.numPlayers).getBytes(StandardCharsets.UTF_8));
-            query.write((byte) 0x00);
-            query.write(String.valueOf(this.maxPlayers).getBytes(StandardCharsets.UTF_8));
-            query.write((byte) 0x00);
-            query.write(Binary.writeLShort(this.port));
-            query.write(this.ip.getBytes(StandardCharsets.UTF_8));
-            query.write((byte) 0x00);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return query.toByteArray();
+    public ByteBuf getShortQuery() {
+        ByteBuf buf = ByteBufAllocator.DEFAULT.ioBuffer();
+        buf.writeBytes(this.serverName.getBytes(StandardCharsets.UTF_8));
+        buf.writeByte((byte) 0x00);
+        buf.writeBytes(this.gameType.getBytes(StandardCharsets.UTF_8));
+        buf.writeByte((byte) 0x00);
+        buf.writeBytes(this.map.getBytes(StandardCharsets.UTF_8));
+        buf.writeByte((byte) 0x00);
+        buf.writeBytes(String.valueOf(this.numPlayers).getBytes(StandardCharsets.UTF_8));
+        buf.writeByte((byte) 0x00);
+        buf.writeBytes(String.valueOf(this.maxPlayers).getBytes(StandardCharsets.UTF_8));
+        buf.writeByte((byte) 0x00);
+        buf.writeBytes(Binary.writeLShort(this.port));
+        buf.writeBytes(this.ip.getBytes(StandardCharsets.UTF_8));
+        buf.writeByte((byte) 0x00);
+        return buf;
     }
 
 }

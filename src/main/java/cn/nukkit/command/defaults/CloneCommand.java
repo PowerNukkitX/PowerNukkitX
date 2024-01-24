@@ -1,8 +1,7 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
@@ -19,8 +18,7 @@ import java.util.Map;
 
 import static cn.nukkit.utils.Utils.getLevelBlocks;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class CloneCommand extends VanillaCommand {
 
     public CloneCommand(String name) {
@@ -45,7 +43,6 @@ public class CloneCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-    @Since("1.19.60-r1")
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
@@ -54,7 +51,7 @@ public class CloneCommand extends VanillaCommand {
         Position destination = list.getResult(2);
         MaskMode maskMode = MaskMode.REPLACE;
         CloneMode cloneMode = CloneMode.NORMAL;
-        int tileId = 0;
+        String tileId = BlockID.AIR;
         int tileData = 0;
         switch (result.getKey()) {
             case "default" -> {
@@ -154,7 +151,7 @@ public class CloneCommand extends VanillaCommand {
                     Block block = blocks[i];
                     Block destinationBlock = destinationBlocks[i];
 
-                    if (block.getId() == tileId && block.getDamage() == tileData) {
+                    if (block.getId() == tileId && block.getBlockState().specialValue() == tileData) {
                         block.cloneTo(destinationBlock);
                         ++count;
 

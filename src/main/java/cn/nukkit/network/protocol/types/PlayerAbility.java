@@ -1,13 +1,9 @@
 package cn.nukkit.network.protocol.types;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 import java.util.Arrays;
 import java.util.List;
 
-@Since("1.19.30-r1")
-@PowerNukkitXOnly
+
 public enum PlayerAbility {
     BUILD(0B0000_0001),
     MINE(0B0000_0010),

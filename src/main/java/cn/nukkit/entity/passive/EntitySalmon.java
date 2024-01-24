@@ -1,30 +1,28 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PetteriM1
  */
 public class EntitySalmon extends EntityFish {
+    @Override
+    @NotNull public String getIdentifier() {
+        return SALMON;
+    }
+    
 
-    public static final int NETWORK_ID = 109;
-
-    public EntitySalmon(FullChunk chunk, CompoundTag nbt) {
+    public EntitySalmon(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Salmon";
@@ -62,15 +60,15 @@ public class EntitySalmon extends EntityFish {
         if (this.isLarge()) {
             //只有25%获得骨头 来自wiki https://zh.minecraft.wiki/w/%E9%B2%91%E9%B1%BC
             if (rand == 1) {
-                return new Item[]{Item.get(Item.BONE, 0, Utils.rand(1, 2)), Item.get(((this.isOnFire()) ? Item.COOKED_SALMON : Item.RAW_SALMON))};
+                return new Item[]{Item.get(Item.BONE, 0, Utils.rand(1, 2)), Item.get(((this.isOnFire()) ? Item.COOKED_SALMON : Item.SALMON))};
             }
         } else if (!this.isLarge()) {
             //只有25%获得骨头 来自wiki https://zh.minecraft.wiki/w/%E9%B2%91%E9%B1%BC
             if (rand == 1) {
-                return new Item[]{Item.get(Item.BONE), Item.get(((this.isOnFire()) ? Item.COOKED_SALMON : Item.RAW_SALMON))};
+                return new Item[]{Item.get(Item.BONE), Item.get(((this.isOnFire()) ? Item.COOKED_SALMON : Item.SALMON))};
             }
         }
-        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_SALMON : Item.RAW_SALMON))};
+        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_SALMON : Item.SALMON))};
     }
 
     //巨型体系

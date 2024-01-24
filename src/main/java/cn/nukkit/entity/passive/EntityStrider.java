@@ -1,28 +1,25 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityWalkable;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Erik Miller | EinBexiii
  */
-@Since("1.3.1.0-PN")
 public class EntityStrider extends EntityAnimal implements EntityWalkable {
 
-    public final static int NETWORK_ID = 125;
+    @Override
+    @NotNull public String getIdentifier() {
+        return STRIDER;
+    }
 
-    public EntityStrider(FullChunk chunk, CompoundTag nbt) {
+    public EntityStrider(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {
@@ -40,15 +37,11 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
         return 1.7f;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r2")
     @Override
     public int getFrostbiteInjury() {
         return 5;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Strider";

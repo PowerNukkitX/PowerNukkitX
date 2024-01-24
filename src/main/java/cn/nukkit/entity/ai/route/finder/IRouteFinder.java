@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.route.finder;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.math.Vector3;
 
@@ -13,8 +11,8 @@ import java.util.List;
  * <p>
  * This interface abstracts a pathfinder
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public interface IRouteFinder {
     /**
      * @return boolean 是否正在寻路

@@ -3,8 +3,6 @@ package cn.nukkit.command.utils;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
@@ -36,8 +34,6 @@ import java.util.stream.Collectors;
  */
 @Deprecated
 @DeprecationDetails(since = "1.19.60-r1", reason = "Using the new ParamTree instead", replaceWith = "ParamTree")
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
 @Getter
 public class CommandParser {
 

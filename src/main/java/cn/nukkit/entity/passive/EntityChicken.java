@@ -1,8 +1,6 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -21,8 +19,9 @@ import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -30,10 +29,13 @@ import java.util.Set;
  * @author BeYkeRYkt (Nukkit Project)
  */
 public class EntityChicken extends EntityAnimal implements EntityWalkable {
+    @Override
+    @NotNull public String getIdentifier() {
+        return CHICKEN;
+    }
+    
 
-    public static final int NETWORK_ID = 10;
-
-    public EntityChicken(FullChunk chunk, CompoundTag nbt) {
+    public EntityChicken(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -114,8 +116,6 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable {
         return 0.8f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Chicken";
@@ -123,13 +123,10 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_CHICKEN : Item.RAW_CHICKEN)), Item.get(Item.FEATHER)};
+        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_CHICKEN : Item.CHICKEN)), Item.get(Item.FEATHER)};
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {
@@ -139,7 +136,7 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable {
 
     @Override
     public boolean isBreedingItem(Item item) {
-        int id = item.getId();
+        String id = item.getId();
 
         return id == Item.WHEAT_SEEDS || id == Item.MELON_SEEDS || id == Item.PUMPKIN_SEEDS || id == Item.BEETROOT_SEEDS;
     }

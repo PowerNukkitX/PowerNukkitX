@@ -1,23 +1,23 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
+import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitOnly
 public class BlockBeeNest extends BlockBeehive {
-    @PowerNukkitOnly
-    public BlockBeeNest() {
-        this(0);
-    }
-
-    @PowerNukkitOnly
-    protected BlockBeeNest(int meta) {
-        super(meta);
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(BEE_NEST, CommonBlockProperties.DIRECTION, CommonBlockProperties.HONEY_LEVEL);
 
     @Override
-    public int getId() {
-        return BEE_NEST;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockBeeNest() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBeeNest(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class BlockBeeNest extends BlockBeehive {
     public double getResistance() {
         return 1.5;
     }
-    
+
     @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;

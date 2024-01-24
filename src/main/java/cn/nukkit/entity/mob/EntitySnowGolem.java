@@ -1,28 +1,21 @@
 package cn.nukkit.entity.mob;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityWalkable;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
-@Since("1.4.0.0-PN")
+
 public class EntitySnowGolem extends EntityMob implements EntityWalkable {
-    @Since("1.4.0.0-PN")
-    public static final int NETWORK_ID = 21;
+    @Override
+    @NotNull public String getIdentifier() {
+        return SNOW_GOLEM;
+    }
 
-    @Since("1.4.0.0-PN")
-    public EntitySnowGolem(FullChunk chunk, CompoundTag nbt) {
+    public EntitySnowGolem(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Snow Golem";

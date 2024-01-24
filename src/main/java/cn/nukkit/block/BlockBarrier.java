@@ -1,22 +1,26 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Pub4Game
  * @since 03.01.2016
  */
-@PowerNukkitOnly
-public class BlockBarrier extends BlockSolid {
 
-    @PowerNukkitOnly
+public class BlockBarrier extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BARRIER);
+
     public BlockBarrier() {
+        this(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return BARRIER;
+    public BlockBarrier(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -24,7 +28,11 @@ public class BlockBarrier extends BlockSolid {
         return "Barrier";
     }
 
-    @PowerNukkitOnly
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -46,7 +54,7 @@ public class BlockBarrier extends BlockSolid {
     }
 
     @Override
-    public boolean isBreakable(Item item) {
+    public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return false;
     }
 

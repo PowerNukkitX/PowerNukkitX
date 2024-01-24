@@ -7,8 +7,14 @@ import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockSnow extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties(SNOW);
 
     public BlockSnow() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockSnow(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -17,8 +23,8 @@ public class BlockSnow extends BlockSolid {
     }
 
     @Override
-    public int getId() {
-        return SNOW_BLOCK;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override
@@ -46,7 +52,6 @@ public class BlockSnow extends BlockSolid {
             return Item.EMPTY_ARRAY;
         }
     }
-
 
     @Override
     public boolean canHarvestWithHand() {

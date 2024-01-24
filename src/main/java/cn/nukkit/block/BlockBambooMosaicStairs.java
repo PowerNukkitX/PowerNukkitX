@@ -1,21 +1,19 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+import cn.nukkit.block.property.CommonBlockProperties;
+import org.jetbrains.annotations.NotNull;
+
 public class BlockBambooMosaicStairs extends BlockStairs {
-    public BlockBambooMosaicStairs() {
-        this(0);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_MOSAIC_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public BlockBambooMosaicStairs(int meta) {
-        super(meta);
-    }
-
-    public int getId() {
-        return BAMBOO_MOSAIC_STAIRS;
+    public BlockBambooMosaicStairs(BlockState blockState) {
+        super(blockState);
     }
 
     public String getName() {

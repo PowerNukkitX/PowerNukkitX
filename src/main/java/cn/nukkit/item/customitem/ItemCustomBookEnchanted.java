@@ -1,39 +1,21 @@
 package cn.nukkit.item.customitem;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.item.ItemBookEnchanted;
-import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemEnchantedBook;
 import cn.nukkit.item.customitem.data.ItemCreativeCategory;
 import cn.nukkit.item.enchantment.Enchantment;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
-public abstract class ItemCustomBookEnchanted extends ItemBookEnchanted implements CustomItem {
-    private final String id;
+public abstract class ItemCustomBookEnchanted extends ItemEnchantedBook implements CustomItem {
 
-    public ItemCustomBookEnchanted(String id, String name) {
-        super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, name);
-        this.id = id;
-    }
-
-    @Override
-    public String getTextureName() {
-        return "book_enchanted";
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @Override
-    public String getNamespaceId() {
-        return id;
+    public ItemCustomBookEnchanted(String id) {
+        super(id);
     }
 
     @Override
     public CustomItemDefinition getDefinition() {
-        return CustomItemDefinition.customBuilder(this, ItemCreativeCategory.ITEMS)
+        return CustomItemDefinition.customBuilder(this)
+                .texture("book_enchanted")
                 .allowOffHand(false)
+                .creativeCategory(ItemCreativeCategory.ITEMS)
                 .creativeGroup("itemGroup.name.enchantedBook")
                 .foil(true)
                 .customBuild(nbt -> nbt.getCompound("components")
@@ -50,11 +32,6 @@ public abstract class ItemCustomBookEnchanted extends ItemBookEnchanted implemen
     }
 
     public Enchantment getEnchantment() {
-        return Enchantment.getEnchantment(this.getNamespaceId());
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 1;
+        return Enchantment.getEnchantment(this.getId());
     }
 }

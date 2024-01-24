@@ -31,5 +31,4 @@ public class ItemElytra extends ItemArmor {
     public boolean isChestplate() {
         return true;
     }
-
 }

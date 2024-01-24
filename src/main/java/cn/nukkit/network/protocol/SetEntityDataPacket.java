@@ -1,7 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.network.protocol.types.PropertySyncData;
 import cn.nukkit.utils.Binary;
@@ -12,19 +10,19 @@ import lombok.ToString;
  */
 @ToString
 public class SetEntityDataPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.SET_ENTITY_DATA_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.SET_ENTITY_DATA_PACKET;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 
     public long eid;
     public EntityMetadata metadata;
-    @PowerNukkitXOnly
-    @Since("1.19.40-r1")
+
+
     public PropertySyncData syncedProperties = new PropertySyncData(new int[]{}, new float[]{});
-    @Since("1.4.0.0-PN")
+
     public long frame;
 
     @Override

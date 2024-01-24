@@ -4,7 +4,7 @@ import lombok.ToString;
 
 @ToString
 public class TransferPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.TRANSFER_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.TRANSFER_PACKET;
 
     public String address; // Server address
     public int port = 19132; // Server port
@@ -23,7 +23,7 @@ public class TransferPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.TRANSFER_PACKET;
     }
 }

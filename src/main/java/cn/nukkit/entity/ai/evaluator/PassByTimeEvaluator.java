@@ -1,8 +1,6 @@
 package cn.nukkit.entity.ai.evaluator;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.MemoryType;
 
@@ -11,8 +9,8 @@ import cn.nukkit.entity.ai.memory.MemoryType;
  * <p>
  * An evaluator used to determine whether a time type of memory is within a specified range
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public class PassByTimeEvaluator implements IBehaviorEvaluator {
 
     protected MemoryType<Integer> timedMemory;

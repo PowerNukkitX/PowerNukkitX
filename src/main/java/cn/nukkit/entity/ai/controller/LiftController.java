@@ -1,15 +1,13 @@
 package cn.nukkit.entity.ai.controller;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 
 /**
  * 为飞行生物提供升力的运动控制器
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public class LiftController implements IController {
     @Override
     public boolean control(EntityIntelligent entity) {

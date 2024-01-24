@@ -1,27 +1,25 @@
 package cn.nukkit.entity.mob;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityWalkable;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntityMagmaCube extends EntityMob implements EntityWalkable {
 
-    public static final int NETWORK_ID = 42;
+    @Override
+    @NotNull public String getIdentifier() {
+        return MAGMA_CUBE;
+    }
 
-    public EntityMagmaCube(FullChunk chunk, CompoundTag nbt) {
+    public EntityMagmaCube(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {
@@ -39,15 +37,11 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable {
         return 2.04f;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r2")
     @Override
     public int getFrostbiteInjury() {
         return 5;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Magma Cube";

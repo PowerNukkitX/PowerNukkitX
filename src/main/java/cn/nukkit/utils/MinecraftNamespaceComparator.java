@@ -1,21 +1,16 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 
 import java.nio.charset.StandardCharsets;
 
+import static cn.nukkit.utils.HashUtils.fnv164;
+
 public class MinecraftNamespaceComparator {
-    private static final long FNV1_64_INIT = 0xcbf29ce484222325L;
-    private static final long FNV1_PRIME_64 = 1099511628211L;
 
-
-    public static int compareBlocks(Block blockA, Block blockB) {
-        return compare(blockA.getPersistenceName(), blockB.getPersistenceName());
-    }
 
     public static int compareItems(Item itemA, Item itemB) {
-        return compare(itemA.getNamespaceId(), itemB.getNamespaceId());
+        return compare(itemA.getId(), itemB.getId());
     }
 
     public static int compare(String idA, String idB) {
@@ -44,25 +39,4 @@ public class MinecraftNamespaceComparator {
         return Long.compareUnsigned(hash1, hash2);
     }
 
-    public static long fnv164(byte[] data) {
-        long hash = FNV1_64_INIT;
-        for (byte datum : data) {
-            hash *= FNV1_PRIME_64;
-            hash ^= (datum & 0xff);
-        }
-
-        return hash;
-    }
-
-    private static final int FNV1_32_INIT = 0x811c9dc5;
-    private static final int FNV1_PRIME_32 = 0x01000193;
-
-    public static int fnv1a_32(byte[] data) {
-        int hash = FNV1_32_INIT;
-        for (byte datum : data) {
-            hash ^= (datum & 0xff);
-            hash *= FNV1_PRIME_32;
-        }
-        return hash;
-    }
 }

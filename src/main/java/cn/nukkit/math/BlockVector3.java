@@ -1,8 +1,5 @@
 package cn.nukkit.math;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import lombok.SneakyThrows;
 
 public class BlockVector3 implements Cloneable {
@@ -26,8 +23,6 @@ public class BlockVector3 implements Cloneable {
         return this;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public BlockVector3 setComponentsAdding(Vector3 pos, BlockFace face) {
         this.x = pos.getFloorX() + face.getXOffset();
         this.y = pos.getFloorY() + face.getYOffset();
@@ -47,19 +42,16 @@ public class BlockVector3 implements Cloneable {
         return this.z;
     }
 
-    @Since("FUTURE")
     public BlockVector3 setX(int x) {
         this.x = x;
         return this;
     }
 
-    @Since("FUTURE")
     public BlockVector3 setY(int y) {
         this.y = y;
         return this;
     }
 
-    @Since("FUTURE")
     public BlockVector3 setZ(int z) {
         this.z = z;
         return this;
@@ -217,47 +209,32 @@ public class BlockVector3 implements Cloneable {
         return Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2) + Math.pow(this.z - z, 2);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public int getChunkX() {
         return x >> 4;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public int getChunkZ() {
         return z >> 4;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public int getChunkSectionY() {
         return y >> 4;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public int getChunkSectionY(boolean is384World) {
         return (y >> 4) + (is384World ? 4 : 0);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public ChunkVector2 getChunkVector() {
         return new ChunkVector2(getChunkX(), getChunkZ());
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public int getAxis(BlockFace.Axis axis) {
-        switch (axis) {
-            case X:
-                return x;
-            case Y:
-                return y;
-            default:
-                return z;
-        }
+        return switch (axis) {
+            case X -> x;
+            case Y -> y;
+            default -> z;
+        };
     }
 
     @Override
@@ -265,8 +242,7 @@ public class BlockVector3 implements Cloneable {
         if (o == null) return false;
         if (o == this) return true;
 
-        if (!(o instanceof BlockVector3)) return false;
-        BlockVector3 that = (BlockVector3) o;
+        if (!(o instanceof BlockVector3 that)) return false;
 
         return this.x == that.x &&
                 this.y == that.y &&

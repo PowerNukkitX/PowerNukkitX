@@ -1,28 +1,24 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.entity.EntitySmite;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
-/**
- * @author PikyCZ
- */
 public class EntityWither extends EntityMob implements EntityFlyable, EntitySmite {
 
-    public static final int NETWORK_ID = 52;
+    @Override
+    @NotNull public String getIdentifier() {
+        return WITHER;
+    }
 
-    public EntityWither(FullChunk chunk, CompoundTag nbt) {
+    public EntityWither(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {
@@ -40,27 +36,21 @@ public class EntityWither extends EntityMob implements EntityFlyable, EntitySmit
         super.initEntity();
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Wither";
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isUndead() {
         return true;
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     @Override
     public boolean isBoss() {
         return true;

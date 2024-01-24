@@ -1,15 +1,12 @@
 package cn.nukkit.command.tree;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.tree.node.IParamNode;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.network.protocol.types.CommandOutputMessage;
 
 import java.util.ArrayList;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class ParamList extends ArrayList<IParamNode<?>> {
     private int error = Integer.MIN_VALUE;
     private int index = 0;

@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityEndGateway;
 import cn.nukkit.entity.Entity;
@@ -10,6 +8,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -18,9 +17,19 @@ import javax.annotation.Nullable;
  * @author PikyCZ
  */
 public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<BlockEntityEndGateway> {
+    public static final BlockProperties PROPERTIES = new BlockProperties(END_GATEWAY);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockEndGateway() {
-        // Nothing
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockEndGateway(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -29,23 +38,12 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
     }
 
     @Override
-    public int getId() {
-        return END_GATEWAY;
-    }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
-    public Class<? extends BlockEntityEndGateway> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityEndGateway> getBlockEntityClass() {
         return BlockEntityEndGateway.class;
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
+
     @Override
-    public String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.END_GATEWAY;
     }
 
@@ -68,7 +66,7 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
     }
 
     @Override
-    public boolean isBreakable(Item item) {
+    public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return false;
     }
 

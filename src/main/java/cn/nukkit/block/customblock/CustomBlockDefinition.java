@@ -1,10 +1,11 @@
 package cn.nukkit.block.customblock;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.customblock.data.*;
-import cn.nukkit.blockproperty.*;
+import cn.nukkit.block.property.type.BlockPropertyType;
+import cn.nukkit.block.property.type.BooleanPropertyType;
+import cn.nukkit.block.property.type.EnumPropertyType;
+import cn.nukkit.block.property.type.IntPropertyType;
 import cn.nukkit.item.customitem.data.ItemCreativeGroup;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
@@ -16,15 +17,16 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * CustomBlockDefinition用于获得发送给客户端的方块行为包数据。{@link CustomBlockDefinition.Builder}中提供的方法都是控制发送给客户端数据，如果需要控制服务端部分行为，请覆写{@link cn.nukkit.block.Block Block}中的方法。
+ * CustomBlockDefinition用于获得发送给客户端的方块行为包数据。{@link CustomBlockDefinition.Builder}中提供的方法都是控制发送给客户端数据，如果需要控制服务端部分行为，请覆写{@link Block Block}中的方法。
  * <p>
- * CustomBlockDefinition is used to get the data of the block behavior_pack sent to the client. The methods provided in {@link CustomBlockDefinition.Builder} control the data sent to the client, if you need to control some of the server-side behavior, please override the methods in {@link cn.nukkit.block.Block Block}.
+ * CustomBlockDefinition is used to get the data of the block behavior_pack sent to the client. The methods provided in {@link CustomBlockDefinition.Builder} control the data sent to the client, if you need to control some of the server-side behavior, please override the methods in {@link Block Block}.
  */
-@PowerNukkitXOnly
-@Since("1.19.31-r1")
+
+
 public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
 
 
@@ -60,7 +62,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                 .putCompound("components", new CompoundTag());
 
         protected Builder(CustomBlock customBlock, Materials materials, BlockCreativeCategory blockCreativeCategory) {
-            this.identifier = customBlock.getNamespaceId();
+            this.identifier = customBlock.getId();
             this.customBlock = customBlock;
 
             var components = this.nbt.getCompound("components");
@@ -92,8 +94,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             //设置方块的properties
             var propertiesNBT = getPropertiesNBT();
             if (propertiesNBT != null) {
-                propertiesNBT.setName("properties");
-                nbt.putList(propertiesNBT);
+                nbt.putList("properties", propertiesNBT);
             }
         }
 
@@ -145,7 +146,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * supports rotation, scaling, and translation. The component can be added to the whole block and/or to individual block permutations. Transformed geometries still have the same restrictions that non-transformed geometries have such as a maximum size of 30/16 units.
          */
         public Builder transformation(@NotNull Transformation transformation) {
-            this.nbt.getCompound("components").putCompound(transformation.toCompoundTag());
+            this.nbt.getCompound("components").putCompound("minecraft:transformation", transformation.toCompoundTag());
             return this;
         }
 
@@ -185,13 +186,13 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * Control the geometric model of the custom block, if not set the default is the unit cube.<br>
          * Geometry identifier from geo file in 'RP/models/blocks' folder
          */
-        @Since("1.19.80-r1")
+
         public Builder geometry(@NotNull Geometry geometry) {
             var components = this.nbt.getCompound("components");
             //默认单位立方体方块，如果定义几何模型需要移除
             if (components.contains("minecraft:unit_cube")) components.remove("minecraft:unit_cube");
             //设置方块对应的几何模型
-            components.putCompound(geometry.toCompoundTag());
+            components.putCompound("minecraft:geometry", geometry.toCompoundTag());
             return this;
         }
 
@@ -200,14 +201,14 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * Control custom block permutation features such as conditional rendering, partial rendering, etc.
          */
-        @Since("1.19.80-r2")
+
         public Builder permutation(Permutation permutation) {
             if (!this.nbt.contains("permutations")) {
-                this.nbt.putList(new ListTag<CompoundTag>("permutations"));
+                this.nbt.putList("permutations", new ListTag<CompoundTag>());
             }
             ListTag<CompoundTag> permutations = this.nbt.getList("permutations", CompoundTag.class);
             permutations.add(permutation.toCompoundTag());
-            this.nbt.putList(permutations);
+            this.nbt.putList("permutations", permutations);
             return this;
         }
 
@@ -217,11 +218,11 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * Control custom block permutation features such as conditional rendering, partial rendering, etc.
          */
         public Builder permutations(Permutation... permutations) {
-            var per = new ListTag<CompoundTag>("permutations");
+            var per = new ListTag<CompoundTag>();
             for (var permutation : permutations) {
                 per.add(permutation.toCompoundTag());
             }
-            this.nbt.putList(per);
+            this.nbt.putList("permutations", per);
             return this;
         }
 
@@ -237,14 +238,14 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             this.nbt.getCompound("components")
                     .putCompound("minecraft:collision_box", new CompoundTag()
                             .putBoolean("enabled", true)
-                            .putList(new ListTag<FloatTag>("origin")
-                                    .add(new FloatTag("", origin.x))
-                                    .add(new FloatTag("", origin.y))
-                                    .add(new FloatTag("", origin.z)))
-                            .putList(new ListTag<FloatTag>("size")
-                                    .add(new FloatTag("", size.x))
-                                    .add(new FloatTag("", size.y))
-                                    .add(new FloatTag("", size.z))));
+                            .putList("origin", new ListTag<FloatTag>()
+                                    .add(new FloatTag(origin.x))
+                                    .add(new FloatTag(origin.y))
+                                    .add(new FloatTag(origin.z)))
+                            .putList("size", new ListTag<FloatTag>()
+                                    .add(new FloatTag(size.x))
+                                    .add(new FloatTag(size.y))
+                                    .add(new FloatTag(size.z))));
             return this;
         }
 
@@ -260,14 +261,14 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             this.nbt.getCompound("components")
                     .putCompound("minecraft:selection_box", new CompoundTag()
                             .putBoolean("enabled", true)
-                            .putList(new ListTag<FloatTag>("origin")
-                                    .add(new FloatTag("", origin.x))
-                                    .add(new FloatTag("", origin.y))
-                                    .add(new FloatTag("", origin.z)))
-                            .putList(new ListTag<FloatTag>("size")
-                                    .add(new FloatTag("", size.x))
-                                    .add(new FloatTag("", size.y))
-                                    .add(new FloatTag("", size.z))));
+                            .putList("origin", new ListTag<FloatTag>()
+                                    .add(new FloatTag(origin.x))
+                                    .add(new FloatTag(origin.y))
+                                    .add(new FloatTag(origin.z)))
+                            .putList("size", new ListTag<FloatTag>()
+                                    .add(new FloatTag(size.x))
+                                    .add(new FloatTag(size.y))
+                                    .add(new FloatTag(size.z))));
             return this;
         }
 
@@ -276,7 +277,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             Preconditions.checkArgument(tag.length > 0);
             ListTag<StringTag> stringTagListTag = new ListTag<>();
             for (String s : tag) {
-                stringTagListTag.add(new StringTag("", s));
+                stringTagListTag.add(new StringTag(s));
             }
             this.nbt.putList("blockTags", stringTagListTag);
             return this;
@@ -287,7 +288,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * the client friction, which is used to control the speed at which the player walks on the custom block.The larger the value, the faster the movement.
          */
-        @Since("1.20.0-r2")
+
         public Builder clientFriction(float friction) {
             this.nbt.getCompound("components")
                     .putCompound("minecraft:friction", new CompoundTag()
@@ -306,54 +307,29 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         private ListTag<CompoundTag> getPropertiesNBT() {
             if (this.customBlock instanceof Block block) {
                 var properties = block.getProperties();
-                if (properties == CommonBlockProperties.EMPTY_PROPERTIES || properties.getAllProperties().size() == 0) {
+                Set<BlockPropertyType<?>> propertyTypeSet = properties.getPropertyTypeSet();
+                if (propertyTypeSet.isEmpty()) {
                     return null;
                 }
-                var nbtList = new ListTag<CompoundTag>("properties");
-                var tmpList = new ArrayList<>(properties.getAllProperties());
-                if (this.customBlock.reverseSending()) {
-                    Collections.reverse(tmpList);
-                }
-                for (var each : tmpList) {
-                    if (each.getProperty() instanceof BooleanBlockProperty booleanBlockProperty) {
+                var nbtList = new ListTag<CompoundTag>();
+                for (var each : propertyTypeSet) {
+                    if (each instanceof BooleanPropertyType booleanBlockProperty) {
                         nbtList.add(new CompoundTag().putString("name", booleanBlockProperty.getName())
-                                .putList(new ListTag<>("enum")
-                                        .add(new IntTag("", 0))
-                                        .add(new IntTag("", 1))));
-                    } else if (each.getProperty() instanceof IntBlockProperty intBlockProperty) {
-                        var enumList = new ListTag<IntTag>("enum");
-                        for (int i = intBlockProperty.getMinValue(); i <= intBlockProperty.getMaxValue(); i++) {
-                            enumList.add(new IntTag("", i));
+                                .putList("enum", new ListTag<>()
+                                        .add(new IntTag(0))
+                                        .add(new IntTag(1))));
+                    } else if (each instanceof IntPropertyType intBlockProperty) {
+                        var enumList = new ListTag<IntTag>();
+                        for (int i = intBlockProperty.getMin(); i <= intBlockProperty.getMax(); i++) {
+                            enumList.add(new IntTag(i));
                         }
-                        nbtList.add(new CompoundTag().putString("name", intBlockProperty.getName()).putList(enumList));
-                    } else if (each.getProperty() instanceof UnsignedIntBlockProperty unsignedIntBlockProperty) {
-                        var enumList = new ListTag<IntTag>("enum");
-                        for (long i = unsignedIntBlockProperty.getMinValue(); i <= unsignedIntBlockProperty.getMaxValue(); i++) {
-                            enumList.add(new IntTag("", (int) i));
+                        nbtList.add(new CompoundTag().putString("name", intBlockProperty.getName()).putList("enum", enumList));
+                    } else if (each instanceof EnumPropertyType<?> arrayBlockProperty) {
+                        var enumList = new ListTag<StringTag>();
+                        for (var e : arrayBlockProperty.getValidValues()) {
+                            enumList.add(new StringTag(e.name().toLowerCase(Locale.ENGLISH)));
                         }
-                        nbtList.add(new CompoundTag().putString("name", unsignedIntBlockProperty.getName()).putList(enumList));
-                    } else if (each.getProperty() instanceof ArrayBlockProperty<?> arrayBlockProperty) {
-                        if (arrayBlockProperty.isOrdinal()) {
-                            if (arrayBlockProperty.getBitSize() > 1) {
-                                var enumList = new ListTag<IntTag>("enum");
-                                var universe = arrayBlockProperty.getUniverse();
-                                for (int i = 0, universeLength = universe.length; i < universeLength; i++) {
-                                    enumList.add(new IntTag("", i));
-                                }
-                                nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName()).putList(enumList));
-                            } else {
-                                nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName())
-                                        .putList(new ListTag<>("enum")
-                                                .add(new IntTag("", 0))
-                                                .add(new IntTag("", 1))));
-                            }
-                        } else {
-                            var enumList = new ListTag<StringTag>("enum");
-                            for (var e : arrayBlockProperty.getUniverse()) {
-                                enumList.add(new StringTag("", e.toString()));
-                            }
-                            nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName()).putList(enumList));
-                        }
+                        nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName()).putList("enum", enumList));
                     }
                 }
                 return nbtList;

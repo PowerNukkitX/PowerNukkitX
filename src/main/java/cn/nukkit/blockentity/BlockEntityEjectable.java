@@ -1,47 +1,35 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.inventory.EjectableInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
 public abstract class BlockEntityEjectable extends BlockEntitySpawnable implements BlockEntityContainer, BlockEntityNameable, InventoryHolder {
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     protected EjectableInventory inventory;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public BlockEntityEjectable(FullChunk chunk, CompoundTag nbt) {
+
+    public BlockEntityEjectable(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     protected abstract EjectableInventory createInventory();
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     protected abstract String getBlockEntityName();
 
-    @Since("1.19.60-r1")
     @Override
     public void loadNBT() {
         super.loadNBT();
         this.inventory = createInventory();
 
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
-            this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+            this.namedTag.putList("Items", new ListTag<CompoundTag>());
         }
 
         for (int i = 0; i < this.getSize(); i++) {
@@ -49,13 +37,10 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         }
     }
 
-    @Override
     public int getSize() {
         return 9;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     protected int getSlotIndex(int index) {
         ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
         for (int i = 0; i < list.size(); i++) {
@@ -67,7 +52,6 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         return -1;
     }
 
-    @Override
     public Item getItem(int index) {
         int i = this.getSlotIndex(index);
         if (i < 0) {
@@ -78,13 +62,12 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         }
     }
 
-    @Override
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 
         CompoundTag d = NBTIO.putItemHelper(item, index);
 
-        if (item.getId() == Item.AIR || item.getCount() <= 0) {
+        if (item.isNull() || item.getCount() <= 0) {
             if (i >= 0) {
                 this.namedTag.getList("Items").getAll().remove(i);
             }
@@ -117,7 +100,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
 
     @Override
     public void saveNBT() {
-        this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+        this.namedTag.putList("Items", new ListTag<CompoundTag>());
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
@@ -129,7 +112,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
     public String getName() {
         return this.hasName() ? this.namedTag.getString("CustomName") : getBlockEntityName();
     }
-    
+
     @Override
     public boolean hasName() {
         return this.namedTag.contains("CustomName");

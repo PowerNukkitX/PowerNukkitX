@@ -1,6 +1,5 @@
 package cn.nukkit.level.particle;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.LevelEventPacket;
@@ -9,9 +8,9 @@ import cn.nukkit.network.protocol.LevelEventPacket;
  * @author joserobjr
  * @since 2021-06-14
  */
-@PowerNukkitOnly
+
 public class WaxOnParticle extends GenericParticle {
-    @PowerNukkitOnly
+
     public WaxOnParticle(Vector3 pos) {
         super(pos, Particle.TYPE_WAX);
     }

@@ -1,7 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Utils;
@@ -21,7 +19,7 @@ import java.util.List;
 @ToString
 public class ClientboundMapItemDataPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.CLIENTBOUND_MAP_ITEM_DATA_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.CLIENTBOUND_MAP_ITEM_DATA_PACKET;
     public static final long[] EMPTY_LONGS = new long[0];
 
     public long[] eids = EMPTY_LONGS;
@@ -49,7 +47,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
     public static final int ENTITIES_UPDATE = 0x08;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 
@@ -140,8 +138,8 @@ public class ClientboundMapItemDataPacket extends DataPacket {
     }
 
     public static class MapDecorator {
-        @PowerNukkitOnly
-        @Since("1.4.0.0-PN")
+
+
         public static final MapDecorator[] EMPTY_ARRAY = new MapDecorator[0];
         
         public byte rotation;

@@ -1,7 +1,5 @@
 package cn.nukkit.lang;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.types.CommandOutputMessage;
 
 import java.util.ArrayList;
@@ -10,8 +8,8 @@ import java.util.List;
 /**
  * {@link cn.nukkit.network.protocol.CommandOutputPacket CommandOutputPacket} 负载消息的容器，支持同时发送多条消息
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public class CommandOutputContainer implements Cloneable {
     public static final String[] EMPTY_STRING = new String[]{};
     private final List<CommandOutputMessage> messages;

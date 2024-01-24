@@ -1,11 +1,6 @@
 package cn.nukkit.level.vibration;
 
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
-@PowerNukkitXOnly
-@Since("1.19.21-r3")
 public enum VibrationType {
     STEP(1),
     FLAP(2),

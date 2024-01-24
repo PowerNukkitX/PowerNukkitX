@@ -1,8 +1,6 @@
 package cn.nukkit.entity.ai.sensor;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityAnimal;
@@ -15,8 +13,8 @@ import cn.nukkit.item.Item;
  * <p>
  * Search for wolves carrying food to the nearest player, compared to {@link NearestFeedingPlayerSensor}, which is specially awarded to Bone.
  */
-@PowerNukkitXOnly
-@Since("1.19.30-r1")
+
+
 public class WolfNearestFeedingPlayerSensor extends NearestFeedingPlayerSensor {
 
     public WolfNearestFeedingPlayerSensor(double range, double minRange) {

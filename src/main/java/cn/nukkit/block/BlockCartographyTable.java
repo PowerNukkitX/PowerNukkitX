@@ -1,23 +1,27 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-@PowerNukkitOnly
-public class BlockCartographyTable extends BlockSolid {
 
-    @PowerNukkitOnly
-    public BlockCartographyTable() {
-    }
+public class BlockCartographyTable extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties(CARTOGRAPHY_TABLE);
 
     @Override
-    public int getId() {
-        return CARTOGRAPHY_TABLE;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockCartographyTable() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockCartographyTable(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -56,6 +60,7 @@ public class BlockCartographyTable extends BlockSolid {
     }
 
     @Override
+    //todo feature
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         //if (player != null) {
         //    player.craftingType = Player.CRAFTING_CARTOGRAPHY;

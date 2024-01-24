@@ -1,7 +1,5 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -12,7 +10,7 @@ import cn.nukkit.entity.ai.controller.SpaceMoveController;
 import cn.nukkit.entity.ai.executor.SpaceRandomRoamExecutor;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.SwimmingPosEvaluator;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.Set;
@@ -20,11 +18,11 @@ import java.util.Set;
 /**
  * 所有鱼的基类
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public abstract class EntityFish extends EntityAnimal implements EntitySwimmable {
 
-    public EntityFish(FullChunk chunk, CompoundTag nbt) {
+    public EntityFish(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

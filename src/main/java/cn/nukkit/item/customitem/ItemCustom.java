@@ -1,10 +1,6 @@
 package cn.nukkit.item.customitem;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.StringItem;
-import cn.nukkit.item.StringItemBase;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -16,23 +12,9 @@ import javax.annotation.Nullable;
  *
  * @author lt_name
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
-public abstract class ItemCustom extends StringItemBase implements CustomItem {
-    private final String textureName;
-
-    public ItemCustom(@NotNull String id, @Nullable String name) {
-        super(id, StringItem.notEmpty(name));
-        this.textureName = name;
-    }
-
-    public ItemCustom(@NotNull String id, @Nullable String name, @NotNull String textureName) {
-        super(id, StringItem.notEmpty(name));
-        this.textureName = textureName;
-    }
-
-    public String getTextureName() {
-        return textureName;
+public abstract class ItemCustom extends Item implements CustomItem {
+    public ItemCustom(@NotNull String id) {
+        super(id);
     }
 
     /**

@@ -1,33 +1,32 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntityBeehive;
 import cn.nukkit.entity.EntityFlyable;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
  */
-@Since("1.1.1.0-PN")
+
 public class EntityBee extends EntityAnimal implements EntityFlyable {
 
-    @Since("1.1.1.0-PN")
-    public static final int NETWORK_ID = 122;
+    @Override
+    @NotNull public String getIdentifier() {
+        return BEE;
+    }
+    
 
     private final int beehiveTimer = 600;
 
-    @Since("1.1.1.0-PN")
-    public EntityBee(FullChunk chunk, CompoundTag nbt) {
+
+    public EntityBee(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {
@@ -45,32 +44,22 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
         return 0.5f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.1.1.0-PN")
     public boolean getHasNectar() {
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.1.1.0-PN")
     public void setHasNectar(boolean hasNectar) {
 
     }
 
-    @PowerNukkitOnly
-    @Since("1.1.1.0-PN")
     public boolean isAngry() {
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.1.1.0-PN")
     public void setAngry(boolean angry) {
 
     }
 
-    @PowerNukkitOnly
-    @Since("1.1.1.0-PN")
     public void setAngry(Player player) {
 
     }
@@ -114,20 +103,14 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
         super.initEntity();
     }
 
-    @PowerNukkitOnly
-    @Since("1.1.1.0-PN")
     public void nectarDelivered(BlockEntityBeehive blockEntityBeehive) {
 
     }
 
-    @PowerNukkitOnly
-    @Since("1.1.1.0-PN")
     public void leftBeehive(BlockEntityBeehive blockEntityBeehive) {
 
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Bee";

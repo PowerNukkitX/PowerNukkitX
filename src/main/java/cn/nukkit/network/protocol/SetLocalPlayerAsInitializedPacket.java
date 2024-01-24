@@ -4,12 +4,12 @@ import lombok.ToString;
 
 @ToString
 public class SetLocalPlayerAsInitializedPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET;
 
     public long eid;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

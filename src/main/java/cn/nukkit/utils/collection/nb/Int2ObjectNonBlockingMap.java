@@ -1,8 +1,6 @@
 package cn.nukkit.utils.collection.nb;
 
 import cn.nukkit.api.NonComputationAtomic;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -79,8 +77,8 @@ import java.util.function.Function;
  * @author Cliff Click, SuperIceCN
  * @since 1.5
  */
-@Since("1.20.10-r1")
-@PowerNukkitXOnly
+
+
 @NonComputationAtomic
 public class Int2ObjectNonBlockingMap<TypeV>
         extends AbstractMap<Integer, TypeV>
@@ -182,7 +180,6 @@ public class Int2ObjectNonBlockingMap<TypeV>
         _reprobes = new ConcurrentAutoIntTable();
         return r;
     }
-
 
     // --- reprobe_limit -----------------------------------------------------
     // Heuristic to decide if we have reprobed toooo many times.  Running over
@@ -431,7 +428,7 @@ public class Int2ObjectNonBlockingMap<TypeV>
      * Auto-boxing version of {@link #get(int)}.
      */
     public TypeV get(Object key) {
-        return (key instanceof Integer) ? get(key) : null;
+        return (key instanceof Integer k) ? get(k.intValue()) : null;
     }
 
     /**
@@ -507,7 +504,6 @@ public class Int2ObjectNonBlockingMap<TypeV>
         h += h << 7; // smear low bits up high, for hashcodes that only differ by 1
         return h;
     }
-
 
     // --- CHM -----------------------------------------------------------------
     // The control structure for the Long2ObjectNonBlockingMap
@@ -909,7 +905,6 @@ public class Int2ObjectNonBlockingMap<TypeV>
             return newchm;
         }
 
-
         // The next part of the table to copy.  It monotonically transits from zero
         // to _keys.length.  Visitors to the table can claim 'work chunks' by
         // CAS'ing this field up, then copying the indicated indices from the old
@@ -981,7 +976,6 @@ public class Int2ObjectNonBlockingMap<TypeV>
             // then got stalled before promoting.
             copy_check_and_promote(0); // See if we can promote
         }
-
 
         // --- copy_slot_and_check -----------------------------------------------
         // Copy slot 'idx' from the old table to the new table.  If this thread

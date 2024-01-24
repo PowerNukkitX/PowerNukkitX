@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.route.finder.impl;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
@@ -14,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
  * 务必注意，三维标准A*寻路的代价十分高昂(比原版的洪水填充低得多)，切忌将最大寻路深度设置得太大！
  * TODO: 用BA*、JPS或者势能场寻路代替
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
     //直接移动成本
     protected final static int DIRECT_MOVE_COST = 10;

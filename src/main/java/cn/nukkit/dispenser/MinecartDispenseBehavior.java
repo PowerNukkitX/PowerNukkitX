@@ -1,7 +1,5 @@
 package cn.nukkit.dispenser;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.block.BlockRail;
@@ -9,8 +7,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class MinecartDispenseBehavior extends DefaultDispenseBehavior {
 
     private final String entityType;

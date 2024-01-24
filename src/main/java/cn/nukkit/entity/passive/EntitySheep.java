@@ -1,10 +1,7 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.entity.EntityColor;
 import cn.nukkit.entity.EntityShearable;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -23,16 +20,18 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -40,11 +39,16 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityShearable, EntityColor {
+public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityShearable {
+    @Override
+    @NotNull public String getIdentifier() {
+        return SHEEP;
+    }
+    
+    public boolean sheared = false;
+    public int color = 0;
 
-    public static final int NETWORK_ID = 13;
-
-    public EntitySheep(FullChunk chunk, CompoundTag nbt) {
+    public EntitySheep(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -80,7 +84,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
                                 ),
                                 any(
                                         new BlockCheckEvaluator(Block.GRASS, new Vector3(0, -1, 0)),
-                                        new BlockCheckEvaluator(Block.TALL_GRASS, Vector3.ZERO))),
+                                        new BlockCheckEvaluator(Block.TALLGRASS, Vector3.ZERO))),
                                 3, 1, 100
                         ),
                         new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
@@ -109,17 +113,12 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
         return 1.3f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Sheep";
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public void initEntity() {
@@ -127,15 +126,26 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
         super.initEntity();
 
         if (!this.namedTag.contains("Color")) {
-            this.setColor(this.getRandomColor());
+            this.setColor(randomColor());
+        } else {
+            this.setColor(this.namedTag.getByte("Color"));
         }
-        //Color loaded by memory if it exists
-        //Sheared loaded by memory if it exists
+
+        if (!this.namedTag.contains("Sheared")) {
+            this.namedTag.putByte("Sheared", 0);
+        } else {
+            this.sheared = this.namedTag.getBoolean("Sheared");
+        }
+
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHEARED, this.sheared);
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
+
+        this.namedTag.putByte("Color", this.color);
+        this.namedTag.putBoolean("Sheared", this.sheared);
     }
 
     @Override
@@ -145,7 +155,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
         }
 
         if (item instanceof ItemDye) {
-            this.setColor(((ItemDye) item).getDyeColor());
+            this.setColor(((ItemDye) item).getDyeColor().getWoolData());
             return true;
         }
 
@@ -153,10 +163,14 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     }
 
     public boolean shear() {
-        if(!EntityShearable.super.shear()) { return false; }
+        if (sheared || this.isBaby()) {
+            return false;
+        }
 
-        this.level.dropItem(this, Item.get(Item.WOOL, getColor().getWoolData(),
-                ThreadLocalRandom.current().nextInt(2) + 1));
+        this.sheared = true;
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHEARED, true);
+
+        this.level.dropItem(this, Item.get(Item.WOOL, getColor(), ThreadLocalRandom.current().nextInt(2) + 1));
 
         level.addSound(this, Sound.MOB_SHEEP_SHEAR);
         level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SHEAR));
@@ -164,39 +178,40 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     }
 
     public void growWool() {
-        this.setIsSheared(false);
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHEARED, false);
+        this.sheared = false;
     }
 
     @Override
     public Item[] getDrops() {
         if (this.lastDamageCause instanceof EntityDamageByEntityEvent) {
-            return new Item[]{
-                    Item.get(((this.isOnFire()) ? Item.COOKED_MUTTON : Item.RAW_MUTTON)), //TODO: looting
-                    Item.get(Item.WOOL, getColor().getWoolData(), 1)
-            };
+            return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_MUTTON : Item.MUTTON)), Item.get(Item.WOOL, getColor(), 1)};
         }
         return Item.EMPTY_ARRAY;
     }
 
-    public DyeColor getRandomColor() {
+    public int getColor() {
+        return namedTag.getByte("Color");
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+        this.setDataProperty(new ByteEntityData(DATA_COLOUR, color));
+        this.namedTag.putByte("Color", this.color);
+    }
+
+    private int randomColor() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        //TODO: Improve random item selection and make use of it here
-        //White: 81836
-        //Black: 5000
-        //Light Gray: 5000
-        //Gray: 5000
-        //Brown: 3000 currently missing
-        //Pink: 164
         double rand = random.nextDouble(1, 100);
 
         if (rand <= 0.164) {
-            return DyeColor.PINK;
+            return DyeColor.PINK.getWoolData();
         }
 
         if (rand <= 15) {
-            return random.nextBoolean() ? DyeColor.BLACK : random.nextBoolean() ? DyeColor.GRAY : DyeColor.LIGHT_GRAY;
+            return random.nextBoolean() ? DyeColor.BLACK.getWoolData() : random.nextBoolean() ? DyeColor.GRAY.getWoolData() : DyeColor.LIGHT_GRAY.getWoolData();
         }
 
-        return DyeColor.WHITE;
+        return DyeColor.WHITE.getWoolData();
     }
 }

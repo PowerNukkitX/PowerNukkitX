@@ -1,8 +1,5 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -26,11 +23,11 @@ public enum InventoryType {
     //HORSE typeId:12
     //JUKEBOX typeId:17
     UI(1, "UI", -1),
-    @PowerNukkitOnly CURSOR(1, "Cursor", -1),
+    CURSOR(1, "Cursor", -1),
     SHULKER_BOX(27, "Shulker Box", 0),
     HORSE(2, "Horse", 12),
     BEACON(1, "Beacon", 13),
-    @PowerNukkitXOnly STRUCTURE_EDITOR(0, "StructureBlock", 14),
+    STRUCTURE_EDITOR(0, "StructureBlock", 14),
     // 18 ARMOR
     //COMPOUND_CREATOR typeId:20
     //ELEMENT_CONSTRUCTOR typeId:21
@@ -40,23 +37,23 @@ public enum InventoryType {
     // 25 LECTERN
     // 31 HUD
     // 32 JIGSAW_EDITOR
-    @PowerNukkitOnly GRINDSTONE(3, "Grindstone", 26),
-    @PowerNukkitOnly BLAST_FURNACE(3, "Blast Furnace", 27),
-    @PowerNukkitOnly SMOKER(3, "Smoker", 28),
-    @PowerNukkitOnly STONECUTTER(2, "Stonecutter", 29), // Should be 29 but it's totally driven by the client, so setting to -1 = UI
-    @PowerNukkitOnly CARTOGRAPHY(3, "Cartography Table", 30),
-    @PowerNukkitOnly HUD(9, "Cartography Table", 31),
-    //@PowerNukkitOnly JIGSAW_EDITOR(3, "Cartography Table", 32),
-    @PowerNukkitOnly CHEST_BOAT(27, "Chest Boat", 0),// 34
-    @PowerNukkitOnly BARREL(27, "Barrel", 0),
-    @PowerNukkitOnly CAMPFIRE(4, "Campfire", -9), // -9 = NONE
-    @PowerNukkitOnly @Since("1.4.0.0-PN") ENTITY_EQUIPMENT(36, "Entity Equipment", -1), //36 CONTAINER
-    @PowerNukkitOnly @Since("1.4.0.0-PN") ENTITY_ARMOR(4, "Entity Armor", -1), //4 ARMOR
+    GRINDSTONE(3, "Grindstone", 26),
+    BLAST_FURNACE(3, "Blast Furnace", 27),
+    SMOKER(3, "Smoker", 28),
+    STONECUTTER(2, "Stonecutter", 29), // Should be 29 but it's totally driven by the client, so setting to -1 = UI
+    CARTOGRAPHY(3, "Cartography Table", 30),
+    HUD(9, "Cartography Table", 31),
+    // JIGSAW_EDITOR(3, "Cartography Table", 32),
+    CHEST_BOAT(27, "Chest Boat", 0),// 34
+    BARREL(27, "Barrel", 0),
+    CAMPFIRE(4, "Campfire", -9), // -9 = NONE
+    ENTITY_EQUIPMENT(36, "Entity Equipment", -1), //36 CONTAINER
+    ENTITY_ARMOR(4, "Entity Armor", -1), //4 ARMOR
     MINECART_CHEST(27, "Minecart with Chest", 0), // Should be 10
     MINECART_HOPPER(5, "Minecart with Hopper", 8), // Should be 11
     OFFHAND(1, "Offhand", -1),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") TRADING(3, "Villager Trade", 15),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") SMITHING_TABLE(2, "Smithing Table", 33);
+    TRADING(3, "Villager Trade", 15),
+    SMITHING_TABLE(2, "Smithing Table", 33);
 
     private final int size;
     private final String title;

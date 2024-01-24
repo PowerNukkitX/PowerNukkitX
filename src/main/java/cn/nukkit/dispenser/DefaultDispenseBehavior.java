@@ -1,8 +1,8 @@
 package cn.nukkit.dispenser;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.BlockDispenser;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.EntityArmorInventory;
 import cn.nukkit.inventory.EntityInventoryHolder;
@@ -22,10 +22,10 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class DefaultDispenseBehavior implements DispenseBehavior {
 
-    @PowerNukkitOnly
+
     public boolean success = true;
 
-    @PowerNukkitOnly
+
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Vector3 dispensePos = block.getDispensePosition();
@@ -58,34 +58,34 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
         for (Entity e : block.level.getNearbyEntities(bb)) {
             if (e instanceof EntityInventoryHolder inventoryHolder && inventoryHolder.canEquipByDispenser()) {
                 EntityArmorInventory armorInventory = inventoryHolder.getArmorInventory();
-                if (clone.isHelmet() && armorInventory.getHelmet().getId() == Item.AIR) {
+                if (clone.isHelmet() && armorInventory.getHelmet().getId() == BlockID.AIR) {
                     armorInventory.setHelmet(clone);
                     return null;
-                } else if (clone.isChestplate() && armorInventory.getChestplate().getId() == Item.AIR) {
+                } else if (clone.isChestplate() && armorInventory.getChestplate().getId() == BlockID.AIR) {
                     armorInventory.setChestplate(clone);
                     return null;
-                } else if (clone.isLeggings() && armorInventory.getLeggings().getId() == Item.AIR) {
+                } else if (clone.isLeggings() && armorInventory.getLeggings().getId() == BlockID.AIR) {
                     armorInventory.setLeggings(clone);
                     return null;
-                } else if (clone.isBoots() && armorInventory.getBoots().getId() == Item.AIR) {
+                } else if (clone.isBoots() && armorInventory.getBoots().getId() == BlockID.AIR) {
                     armorInventory.setBoots(clone);
                     return null;
-                } else if (inventoryHolder.getEquipmentInventory().getItemInHand().getId() == Item.AIR) {
+                } else if (inventoryHolder.getEquipmentInventory().getItemInHand().getId() == BlockID.AIR) {
                     inventoryHolder.getEquipmentInventory().setItemInHand(clone, true);
                     return null;
                 }
             } else if (e instanceof Player p) {
                 PlayerInventory armorInventory = p.getInventory();
-                if (clone.isHelmet() && armorInventory.getHelmet().getId() == Item.AIR) {
+                if (clone.isHelmet() && armorInventory.getHelmet().getId() == BlockID.AIR) {
                     armorInventory.setHelmet(clone);
                     return null;
-                } else if (clone.isChestplate() && armorInventory.getChestplate().getId() == Item.AIR) {
+                } else if (clone.isChestplate() && armorInventory.getChestplate().getId() == BlockID.AIR) {
                     armorInventory.setChestplate(clone);
                     return null;
-                } else if (clone.isLeggings() && armorInventory.getLeggings().getId() == Item.AIR) {
+                } else if (clone.isLeggings() && armorInventory.getLeggings().getId() == BlockID.AIR) {
                     armorInventory.setLeggings(clone);
                     return null;
-                } else if (clone.isBoots() && armorInventory.getBoots().getId() == Item.AIR) {
+                } else if (clone.isBoots() && armorInventory.getBoots().getId() == BlockID.AIR) {
                     armorInventory.setBoots(clone);
                     return null;
                 }

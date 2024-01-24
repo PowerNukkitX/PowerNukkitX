@@ -14,7 +14,7 @@ public class AgentActionEventPacket extends DataPacket {
     public String responseJson;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.AGENT_ACTION_EVENT_PACKET;
     }
 

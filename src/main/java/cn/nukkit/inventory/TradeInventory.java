@@ -1,30 +1,30 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+
+
 import cn.nukkit.entity.passive.EntityVillager;
+import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.UpdateTradePacket;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r1")
+
 public class TradeInventory extends BaseInventory {
     //hack实现
     public static final int TRADE_INPUT1_UI_SLOT = 4;
     public static final int TRADE_INPUT2_UI_SLOT = 5;
 
-    protected EntityVillager holder;
+    protected EntityVillagerV2 holder;
     public String displayName;
 
-    public TradeInventory(EntityVillager holder) {
+    public TradeInventory(EntityVillagerV2 holder) {
         super(holder, InventoryType.TRADING);
         this.holder = holder;
     }
 
     @Override
-    public EntityVillager getHolder() {
+    public EntityVillagerV2 getHolder() {
         return this.holder;
     }
 
@@ -49,13 +49,13 @@ public class TradeInventory extends BaseInventory {
         pk1.traderUniqueEntityId = villager.getId();
         pk1.playerUniqueEntityId = who.getId();
         pk1.displayName = villager.getDisplayName();
-        var tierExpRequirements = new ListTag<CompoundTag>("TierExpRequirements");
+        var tierExpRequirements = new ListTag<CompoundTag>();
         for (int i = 0, len = villager.tierExpRequirement.length; i < len; ++i) {
             tierExpRequirements.add(i, new CompoundTag().putInt(String.valueOf(i), villager.tierExpRequirement[i]));
         }
         pk1.offers = new CompoundTag()
-                .putList(villager.getRecipes())
-                .putList(tierExpRequirements);
+                .putList("Recipes",villager.getRecipes())
+                .putList("TierExpRequirements", tierExpRequirements);
         pk1.newTradingUi = true;
         pk1.usingEconomyTrade = true;
         who.dataPacket(pk1);

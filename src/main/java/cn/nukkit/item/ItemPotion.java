@@ -1,9 +1,6 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
@@ -15,7 +12,6 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 
 public class ItemPotion extends Item {
-
     public static final int NO_EFFECTS = 0;
     public static final int MUNDANE = 1;
     public static final int MUNDANE_II = 2;
@@ -155,14 +151,10 @@ public class ItemPotion extends Item {
         return true;
     }
 
-    @PowerNukkitOnly
-    @Nullable
-    public Potion getPotion() {
+    public @Nullable Potion getPotion() {
         return getPotion(getDamage());
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.0-r2")
     public static ItemPotion fromPotion(Potion potion) {
         return new ItemPotion(potion.getId());
     }

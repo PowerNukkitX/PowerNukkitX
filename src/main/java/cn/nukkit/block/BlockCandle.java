@@ -1,11 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
-import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
@@ -15,33 +10,31 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
+import java.util.Objects;
+
+import static cn.nukkit.block.property.CommonBlockProperties.CANDLES;
+import static cn.nukkit.block.property.CommonBlockProperties.LIT;
+
 /**
  * @author Gabriel8579
  * @since 2021-07-14
  */
 
-@PowerNukkitOnly
-@Since("FUTURE")
+
 public class BlockCandle extends BlockFlowable {
+    public static final BlockProperties PROPERTIES = new BlockProperties(CANDLE, CANDLES, LIT);
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    private static final BooleanBlockProperty LIT = new BooleanBlockProperty("lit", false);
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    private static final IntBlockProperty CANDLES = new IntBlockProperty("candles", false, 3, 0, 2);
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    private static final BlockProperties PROPERTIES = new BlockProperties(LIT, CANDLES);
-
-    public BlockCandle() {
-        super(0);
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public BlockCandle(int meta) {
-        super(meta);
+    public BlockCandle() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockCandle(BlockState blockstate) {
+        super(blockstate);
     }
 
     protected Block toCakeForm() {
@@ -50,14 +43,14 @@ public class BlockCandle extends BlockFlowable {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (target.getId() == BlockID.CAKE_BLOCK && target.getDamage() == 0) {//必须是完整的蛋糕才能插蜡烛
+        if (target.getId().equals(BlockID.CAKE) && target.isDefaultState()) {//必须是完整的蛋糕才能插蜡烛
             target.getLevel().setBlock(target, toCakeForm(), true, true);
             return true;
         }
-        if (target.up().getId() == getId()) {
+        if (target.up().getId().equals(getId())) {
             target = target.up();
         }
-        if (target.getId() == getId()) {
+        if (target.getId().equals(getId())) {
             if (target.getPropertyValue(CANDLES) < 3) {
                 target.setPropertyValue(CANDLES, target.getPropertyValue(CANDLES) + 1);
                 getLevel().setBlock(target, target, true, true);
@@ -76,17 +69,16 @@ public class BlockCandle extends BlockFlowable {
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-
-        if (item.getId() != ItemID.FLINT_AND_STEEL && !item.isNull()) {
+        if (!Objects.equals(item.getId(), ItemID.FLINT_AND_STEEL) && !item.isNull()) {
             return false;
         }
 
-        if (getPropertyValue(LIT) && item.getId() != ItemID.FLINT_AND_STEEL) {
+        if (getPropertyValue(LIT) && !Objects.equals(item.getId(), ItemID.FLINT_AND_STEEL)) {
             setPropertyValue(LIT, false);
             getLevel().addSound(this, Sound.RANDOM_FIZZ);
             getLevel().setBlock(this, this, true, true);
             return true;
-        } else if (!getPropertyValue(LIT) && item.getId() == ItemID.FLINT_AND_STEEL) {
+        } else if (!getPropertyValue(LIT) && Objects.equals(item.getId(), ItemID.FLINT_AND_STEEL)) {
             setPropertyValue(LIT, true);
             getLevel().addSound(this, Sound.FIRE_IGNITE);
             getLevel().setBlock(this, this, true, true);
@@ -114,11 +106,6 @@ public class BlockCandle extends BlockFlowable {
     }
 
     @Override
-    public int getId() {
-        return BlockID.CANDLE;
-    }
-
-    @Override
     public int getLightLevel() {
         return getPropertyValue(LIT) ? getPropertyValue(CANDLES) * 3 : 0;
     }
@@ -132,13 +119,4 @@ public class BlockCandle extends BlockFlowable {
     public double getResistance() {
         return 0.1;
     }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
 }

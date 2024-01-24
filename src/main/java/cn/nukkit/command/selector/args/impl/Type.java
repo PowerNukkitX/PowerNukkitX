@@ -1,8 +1,6 @@
 package cn.nukkit.command.selector.args.impl;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.selector.ParseUtils;
 import cn.nukkit.command.selector.SelectorType;
@@ -11,6 +9,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.level.Location;
 import cn.nukkit.network.protocol.AddEntityPacket;
+import cn.nukkit.registry.Registries;
 import com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,11 +18,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class Type extends CachedSimpleSelectorArgument {
 
-    public static final Map<Integer, String> ENTITY_ID2TYPE = AddEntityPacket.LEGACY_IDS;
+    public static final Map<Integer, String> ENTITY_ID2TYPE = Registries.ENTITY.getEntityId2NetworkIdMap();
     public static final Map<String, Integer> ENTITY_TYPE2ID;
 
     static {
@@ -46,9 +44,8 @@ public class Type extends CachedSimpleSelectorArgument {
         return entity -> have.stream().allMatch(type -> isType(entity, type)) && dontHave.stream().noneMatch(type ->isType(entity, type));
     }
 
-    @Nullable
     @Override
-    public String getDefaultValue(Map<String, List<String>> values, SelectorType selectorType, CommandSender sender) {
+    public @Nullable String getDefaultValue(Map<String, List<String>> values, SelectorType selectorType, CommandSender sender) {
         return selectorType == SelectorType.RANDOM_PLAYER ? "minecraft:player" : null;
     }
 

@@ -3,16 +3,16 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityHopper;
-import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.event.inventory.InventoryMoveItemEvent;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
-import cn.nukkit.inventory.RecipeInventoryHolder;
+import cn.nukkit.recipe.RecipeInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemHopper;
 import cn.nukkit.item.ItemTool;
@@ -29,53 +29,36 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
-import static cn.nukkit.blockproperty.CommonBlockProperties.TOGGLE;
+import static cn.nukkit.block.property.CommonBlockProperties.TOGGLE_BIT;
 
 /**
  * @author CreeperFace
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
-@PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
-public class BlockHopper extends BlockTransparentMeta implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityHopper> {
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, TOGGLE);
-
-    public BlockHopper() {
-        this(0);
-    }
-
-    public BlockHopper(int meta) {
-        super(meta);
-    }
+public class BlockHopper extends BlockTransparent implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityHopper> {
+    public static final BlockProperties PROPERTIES = new BlockProperties(HOPPER, CommonBlockProperties.FACING_DIRECTION, TOGGLE_BIT);
 
     @Override
-    public int getId() {
-        return HOPPER_BLOCK;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @NotNull
-    @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
+    public BlockHopper() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockHopper(BlockState blockstate) {
+        super(blockstate);
+    }
+
     @Override
+    @NotNull
     public Class<? extends BlockEntityHopper> getBlockEntityClass() {
         return BlockEntityHopper.class;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
     @Override
+    @NotNull
     public String getBlockEntityType() {
         return BlockEntity.HOPPER;
     }
@@ -95,13 +78,11 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
         return 24;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;
     }
 
-    @PowerNukkitDifference(info = "Using new method for checking if powered", since = "1.4.0.0-PN")
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         BlockFace facing = face.getOpposite();
@@ -120,7 +101,7 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
             }
         }
 
-        CompoundTag nbt = new CompoundTag().putList(new ListTag<>("Items"));
+        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>());
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 
@@ -163,11 +144,11 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
     }
 
     public boolean isEnabled() {
-        return !getBooleanValue(TOGGLE);
+        return !getPropertyValue(TOGGLE_BIT);
     }
 
     public void setEnabled(boolean enabled) {
-        setBooleanValue(TOGGLE, !enabled);
+        setPropertyValue(TOGGLE_BIT, !enabled);
     }
 
     @Override
@@ -203,7 +184,6 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
     }
 
     @Override
-    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -218,27 +198,21 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
         return false;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(FACING_DIRECTION, face);
+        setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(FACING_DIRECTION);
+        return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public boolean isSolid(BlockFace side) {
         return side == BlockFace.UP;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     public interface IHopper {
         Position getPosition();
 

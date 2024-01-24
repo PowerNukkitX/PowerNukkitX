@@ -1,9 +1,9 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+
+
+
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,10 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static cn.nukkit.inventory.BaseInventory.AIR_ITEM;
-
-@Since("1.19.50-r3")
-@PowerNukkitXOnly
 public class InventorySlice implements Inventory {
     @NotNull
     private final Inventory rawInv;
@@ -74,7 +70,7 @@ public class InventorySlice implements Inventory {
     public Item getItem(int index) {
         // check whether the index is in the range
         if (index < 0 || index >= getSize()) {
-            return AIR_ITEM;
+            return Item.AIR;
         }
         return rawInv.getItem(index + startSlot);
     }
@@ -105,7 +101,7 @@ public class InventorySlice implements Inventory {
                 if ((diff = Math.min(slot.getMaxStackSize(), rawInv.getMaxStackSize()) - slot.getCount()) > 0) {
                     item.setCount(item.getCount() - diff);
                 }
-            } else if (slot.getId() == Item.AIR) {
+            } else if (slot.isNull()) {
                 item.setCount(item.getCount() - Math.min(slot.getMaxStackSize(), rawInv.getMaxStackSize()));
             }
 
@@ -221,7 +217,7 @@ public class InventorySlice implements Inventory {
     @Override
     public int firstEmpty(Item item) {
         for (int i = startSlot; i < endSlot; ++i) {
-            if (rawInv.getItem(i).getId() == Item.AIR) {
+            if (rawInv.getItem(i).isNull()) {
                 return i;
             }
         }
@@ -265,7 +261,7 @@ public class InventorySlice implements Inventory {
     public boolean isFull() {
         for (int i = startSlot; i < endSlot; ++i) {
             var item = rawInv.getItem(i);
-            if (item == null || item.getId() == Item.AIR || item.getCount() < item.getMaxStackSize() || item.getCount() < this.getMaxStackSize()) {
+            if (item == null || item.isNull() || item.getCount() < item.getMaxStackSize() || item.getCount() < this.getMaxStackSize()) {
                 return false;
             }
         }
@@ -280,7 +276,7 @@ public class InventorySlice implements Inventory {
         }
 
         for (Item item : this.getContents().values()) {
-            if (item != null && item.getId() != 0 && item.getCount() > 0) {
+            if (item != null && !item.isNull()) {
                 return false;
             }
         }
@@ -332,13 +328,13 @@ public class InventorySlice implements Inventory {
         rawInv.onSlotChange(index + startSlot, before, send);
     }
 
-    @PowerNukkitOnly
+    
     @Override
     public void addListener(InventoryListener listener) {
         rawInv.addListener(((inventory, oldItem, slot) -> listener.onInventoryChanged(this, oldItem, slot - startSlot)));
     }
 
-    @PowerNukkitOnly
+    
     @Override
     public void removeListener(InventoryListener listener) {
         rawInv.removeListener(((inventory, oldItem, slot) -> listener.onInventoryChanged(this, oldItem, slot - startSlot)));

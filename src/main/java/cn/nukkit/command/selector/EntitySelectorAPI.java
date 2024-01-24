@@ -1,8 +1,6 @@
 package cn.nukkit.command.selector;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.NPCCommandSender;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
@@ -30,8 +28,8 @@ import static cn.nukkit.command.selector.SelectorType.*;
  * 目标选择器API<p/>
  * 通过{@code getAPI()}方法获取API对象
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public class EntitySelectorAPI {
     @Getter
     private static final EntitySelectorAPI API = new EntitySelectorAPI();

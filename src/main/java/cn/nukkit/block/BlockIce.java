@@ -1,30 +1,34 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockIce extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties(ICE);
 
     public BlockIce() {
+        super(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return ICE;
+    public BlockIce(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "Ice";
+    }
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override
@@ -47,12 +51,11 @@ public class BlockIce extends BlockTransparent {
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will not create water when it is above air")
     @Override
     public boolean onBreak(Item item) {
         if (level.getDimension() == Level.DIMENSION_NETHER 
                 || item.getEnchantmentLevel(Enchantment.ID_SILK_TOUCH) > 0 
-                || down().getId() == BlockID.AIR) {
+                || down().isAir()) {
             return super.onBreak(item);
         }
         
@@ -89,8 +92,6 @@ public class BlockIce extends BlockTransparent {
         return -1;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public int getLightFilter() {
         return 2;

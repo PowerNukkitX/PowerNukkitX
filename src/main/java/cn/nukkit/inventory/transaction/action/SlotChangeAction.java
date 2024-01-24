@@ -1,7 +1,6 @@
 package cn.nukkit.inventory.transaction.action;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.transaction.InventoryTransaction;
 import cn.nukkit.item.Item;
@@ -60,7 +59,6 @@ public class SlotChangeAction extends InventoryAction {
      * @return successfully executed
      */
     @Override
-    @PowerNukkitXDifference(info = "Use setItemByPlayer", since = "1.19.50-r3")
     public boolean execute(Player source) {
         return this.inventory.setItemByPlayer(source, this.inventorySlot, this.targetItem, false);
     }

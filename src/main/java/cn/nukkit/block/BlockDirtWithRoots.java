@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
@@ -15,16 +13,20 @@ import org.jetbrains.annotations.NotNull;
  * @author CoolLoong
  * @since 02.12.2022
  */
-@PowerNukkitOnly
-@Since("FUTURE")
 public class BlockDirtWithRoots extends BlockSolid {
-
-    public BlockDirtWithRoots() {
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(DIRT_WITH_ROOTS);
 
     @Override
-    public int getId() {
-        return DIRT_WITH_ROOTS;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockDirtWithRoots() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockDirtWithRoots(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -48,26 +50,26 @@ public class BlockDirtWithRoots extends BlockSolid {
         if (!this.up().canBeReplaced()) {
             return false;
         }
-        if (item.isFertilizer() && this.level.getBlock(vector).getId() == BlockID.AIR) {
+        if (item.isFertilizer() && this.level.getBlock(vector).isAir()) {
             if (player != null && (player.gamemode & 0x01) == 0) {
                 item.count--;
             }
             this.level.addParticle(new BoneMealParticle(this));
-            this.level.setBlock(vector, Block.get(BlockID.HANGING_ROOTS));
+            this.level.setBlock(vector, Block.get(HANGING_ROOTS));
             return true;
         }
         if (item.isHoe()) {
             vector.setY(this.y+1);
             item.useOn(this);
-            this.getLevel().setBlock(this, Block.get(BlockID.DIRT), true);
-            this.getLevel().dropItem(vector, new ItemBlock(Block.get(BlockID.HANGING_ROOTS)));
+            this.getLevel().setBlock(this, Block.get(DIRT), true);
+            this.getLevel().dropItem(vector, new ItemBlock(Block.get(HANGING_ROOTS)));
             if (player != null) {
                 player.getLevel().addSound(player, Sound.USE_GRASS);
             }
             return true;
         } else if (item.isShovel()) {
             item.useOn(this);
-            this.getLevel().setBlock(this, Block.get(BlockID.GRASS_PATH));
+            this.getLevel().setBlock(this, Block.get(GRASS_PATH));
             if (player != null) {
                 player.getLevel().addSound(player, Sound.USE_GRASS);
             }
@@ -89,7 +91,6 @@ public class BlockDirtWithRoots extends BlockSolid {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{new ItemBlock(Block.get(BlockID.DIRT_WITH_ROOTS))};
+        return new Item[]{new ItemBlock(Block.get(DIRT_WITH_ROOTS))};
     }
-
 }

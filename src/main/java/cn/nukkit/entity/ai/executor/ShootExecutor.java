@@ -159,24 +159,24 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
         boolean flame = flameEnchant != null && flameEnchant.getLevel() > 0;
 
         CompoundTag nbt = new CompoundTag()
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", entity.x))
-                        .add(new DoubleTag("", entity.y + entity.getCurrentHeight() / 2 + 0.2f))
-                        .add(new DoubleTag("", entity.z)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", -Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag("", -Math.sin(entity.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag("", Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI))))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", (entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw))
-                        .add(new FloatTag("", (float) -entity.pitch)))
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(entity.x))
+                        .add(new DoubleTag(entity.y + entity.getCurrentHeight() / 2 + 0.2f))
+                        .add(new DoubleTag(entity.z)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(-Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(-Math.sin(entity.pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI))))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag((entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw))
+                        .add(new FloatTag((float) -entity.pitch)))
                 .putShort("Fire", flame ? 45 * 60 : 0)
                 .putDouble("damage", damage);
 
         double p = (double) pullBowTick / 20;
         double f = Math.min((p * p + p * 2) / 3, 1) * 3;
 
-        EntityArrow arrow = (EntityArrow) Entity.createEntity("Arrow", entity.chunk, nbt, entity, f == 2);
+        EntityArrow arrow = (EntityArrow) Entity.createEntity(Entity.ARROW, entity.chunk, nbt, entity, f == 2);
 
         if (arrow == null) {
             return;

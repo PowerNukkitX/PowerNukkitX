@@ -3,13 +3,12 @@ package cn.nukkit.event.player;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.utils.ClientChainData;
 import cn.nukkit.utils.LoginChainData;
 import io.netty.util.internal.EmptyArrays;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,15 +40,6 @@ public class PlayerAsyncPreLoginEvent extends PlayerEvent {
 
     private final List<Consumer<Server>> scheduledActions = new ArrayList<>();
 
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "LoginChainData and Skin were added by refactoring this constructor",
-            replaceWith = "PlayerAsyncPreLoginEvent(String name, UUID uuid, LoginChainData chainData, Skin skin, String address, int port)")
-    @PowerNukkitOnly("The signature was changed in Cloudburst Nukkit and we re-added this constructor for backward-compatibility")
-    public PlayerAsyncPreLoginEvent(String name, UUID uuid, String address, int port) {
-        // TODO PowerNukkit: I think this might cause an exception...
-        this(name, uuid, ClientChainData.of(EmptyArrays.EMPTY_BYTES), null, address, port);
-    }
-    
-    @Since("1.4.0.0-PN")
     public PlayerAsyncPreLoginEvent(String name, UUID uuid, LoginChainData chainData, Skin skin, String address, int port) {
         this.name = name;
         this.uuid = uuid;
@@ -72,12 +62,10 @@ public class PlayerAsyncPreLoginEvent extends PlayerEvent {
         return this.uuid;
     }
 
-    @Since("1.4.0.0-PN")
     public LoginChainData getChainData() {
         return this.chainData;
     }
 
-    @Since("1.4.0.0-PN")
     public String getXuid() {
         return this.chainData.getXUID();
     }

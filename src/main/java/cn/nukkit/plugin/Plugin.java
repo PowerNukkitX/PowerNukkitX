@@ -1,9 +1,6 @@
 package cn.nukkit.plugin;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandExecutor;
 import cn.nukkit.utils.Config;
 
@@ -25,8 +22,8 @@ import java.io.InputStream;
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
 public interface Plugin extends CommandExecutor {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     Plugin[] EMPTY_ARRAY = new Plugin[0];
     
     /**
@@ -290,7 +287,5 @@ public interface Plugin extends CommandExecutor {
      *
      * @return 这个插件的文件 {@code File}对象。<br>The {@code File} object of this plugin itself.
      */
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     File getFile();
 }

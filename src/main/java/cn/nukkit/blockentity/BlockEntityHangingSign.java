@@ -1,14 +1,11 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
 public class BlockEntityHangingSign extends BlockEntitySign {
-    public BlockEntityHangingSign(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityHangingSign(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -20,7 +17,6 @@ public class BlockEntityHangingSign extends BlockEntitySign {
     public boolean hasName() {
         return namedTag.contains("CustomName");
     }
-
 
     @Override
     public CompoundTag getSpawnCompound() {

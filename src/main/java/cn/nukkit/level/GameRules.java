@@ -1,7 +1,6 @@
 package cn.nukkit.level;
 
-import cn.nukkit.api.Since;
-import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.*;
 import cn.nukkit.utils.BinaryStream;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -20,7 +19,6 @@ public class GameRules {
 
     private GameRules() {
     }
-
 
     public static GameRules getDefault() {
         GameRules gameRules = new GameRules();
@@ -59,6 +57,9 @@ public class GameRules {
         gameRules.gameRules.put(SHOW_TAGS, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(EXPERIMENTAL_GAMEPLAY, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(PLAYERS_SLEEPING_PERCENTAGE, new Value<>(Type.INTEGER, 100));
+        gameRules.gameRules.put(DO_LIMITED_CRAFTING, new Value<>(Type.BOOLEAN, false));
+        gameRules.gameRules.put(RESPAWN_BLOCKS_EXPLODE, new Value<>(Type.BOOLEAN, true));
+        gameRules.gameRules.put(SHOW_BORDER_EFFECT, new Value<>(Type.BOOLEAN, true));
 
         return gameRules;
     }
@@ -104,7 +105,7 @@ public class GameRules {
         Preconditions.checkNotNull(value, "value");
 
         switch (getGameRuleType(gameRule)) {
-            case BOOLEAN:
+            case BOOLEAN -> {
                 if (value.equalsIgnoreCase("true")) {
                     setGameRule(gameRule, true);
                 } else if (value.equalsIgnoreCase("false")) {
@@ -112,12 +113,9 @@ public class GameRules {
                 } else {
                     throw new IllegalArgumentException("Was not a boolean");
                 }
-                break;
-            case INTEGER:
-                setGameRule(gameRule, Integer.parseInt(value));
-                break;
-            case FLOAT:
-                setGameRule(gameRule, Float.parseFloat(value));
+            }
+            case INTEGER -> setGameRule(gameRule, Integer.parseInt(value));
+            case FLOAT -> setGameRule(gameRule, Float.parseFloat(value));
         }
     }
 
@@ -221,18 +219,31 @@ public class GameRules {
             this.value = value;
         }
 
-        @Since("1.5.0.0-PN")
         public boolean isCanBeChanged() {
             return this.canBeChanged;
         }
 
-        @Since("1.5.0.0-PN")
         public void setCanBeChanged(boolean canBeChanged) {
             this.canBeChanged = canBeChanged;
         }
 
         public Type getType() {
             return this.type;
+        }
+
+        public Tag getTag() {
+            switch (this.type) {
+                case BOOLEAN -> {
+                    return new ByteTag(getValueAsBoolean() ? 1 : 0);
+                }
+                case INTEGER -> {
+                    return new IntTag(getValueAsInteger());
+                }
+                case FLOAT -> {
+                    return new FloatTag(getValueAsFloat());
+                }
+            }
+            throw new IllegalArgumentException("unknown type");
         }
 
         private boolean getValueAsBoolean() {
@@ -256,7 +267,6 @@ public class GameRules {
             return (Float) value;
         }
 
-        @Since("1.5.0.0-PN")
         public void write(BinaryStream stream) {
             stream.putBoolean(this.canBeChanged);
             stream.putUnsignedVarInt(type.ordinal());

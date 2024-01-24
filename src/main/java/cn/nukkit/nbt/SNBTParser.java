@@ -44,7 +44,7 @@ public class SNBTParser {
                     }
                 }
             }
-            tag = new ByteArrayTag("", Bytes.toArray(tmp));
+            tag = new ByteArrayTag( Bytes.toArray(tmp));
         } else if (node instanceof IntArrayNBT) {
             var tmp = new ArrayList<Integer>();
             for (Iterator<Node> it = node.iterator(); it.hasNext(); ) {
@@ -55,7 +55,7 @@ public class SNBTParser {
                     }
                 }
             }
-            tag = new IntArrayTag("", Ints.toArray(tmp));
+            tag = new IntArrayTag(Ints.toArray(tmp));
         } else if (node instanceof ListNBT) {//only Value
             tag = parseListTag(node);
         } else if (node instanceof CompoundNBT) {//only KeyValuePair
@@ -109,28 +109,28 @@ public class SNBTParser {
             var s = token.getNormalizedText();
             switch (token.getType()) {
                 case FLOAT -> {
-                    return new FloatTag("", Float.parseFloat(s.substring(0, s.length() - 1)));
+                    return new FloatTag(Float.parseFloat(s.substring(0, s.length() - 1)));
                 }
                 case DOUBLE -> {
-                    return new DoubleTag("", Double.parseDouble(s.substring(0, s.length() - 1)));
+                    return new DoubleTag( Double.parseDouble(s.substring(0, s.length() - 1)));
                 }
                 case BOOLEAN -> {
-                    return new ByteTag("", Boolean.parseBoolean(token.getNormalizedText()) ? 1 : 0);
+                    return new ByteTag( Boolean.parseBoolean(token.getNormalizedText()) ? 1 : 0);
                 }
                 case BYTE -> {
-                    return new ByteTag("", Byte.parseByte(s.substring(0, s.length() - 1)));
+                    return new ByteTag(Byte.parseByte(s.substring(0, s.length() - 1)));
                 }
                 case SHORT -> {
-                    return new ShortTag("", Short.parseShort(s.substring(0, s.length() - 1)));
+                    return new ShortTag( Short.parseShort(s.substring(0, s.length() - 1)));
                 }
                 case INTEGER -> {
-                    return new IntTag("", Integer.parseInt(token.getNormalizedText()));
+                    return new IntTag(Integer.parseInt(token.getNormalizedText()));
                 }
                 case LONG -> {
-                    return new LongTag("", Long.parseLong(s.substring(0, s.length() - 1)));
+                    return new LongTag( Long.parseLong(s.substring(0, s.length() - 1)));
                 }
                 case STRING -> {
-                    return new StringTag("", s.substring(1, s.length() - 1));
+                    return new StringTag(s.substring(1, s.length() - 1));
                 }
                 default -> {
                     return new EndTag();

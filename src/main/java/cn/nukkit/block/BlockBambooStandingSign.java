@@ -1,22 +1,30 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBambooSign;
+import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
-public class BlockBambooStandingSign extends BlockSignPost {
+
+public class BlockBambooStandingSign extends BlockStandingSign {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_STANDING_SIGN, CommonBlockProperties.GROUND_SIGN_DIRECTION);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockBambooStandingSign() {
+        this(PROPERTIES.getDefaultState());
     }
 
-    public int getId() {
-        return BAMBOO_STANDING_SIGN;
+    public BlockBambooStandingSign(BlockState blockstate) {
+        super(blockstate);
     }
 
-    public String getName() {
-        return "Bamboo Standing Sign";
+    @Override
+    public String getWallSignId() {
+        return BlockBambooWallSign.PROPERTIES.getIdentifier();
     }
 
     @Override

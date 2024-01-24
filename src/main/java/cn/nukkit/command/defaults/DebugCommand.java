@@ -1,8 +1,6 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -10,7 +8,7 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.ai.EntityAI;
-import cn.nukkit.item.ItemMap;
+import cn.nukkit.item.ItemFilledMap;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.scheduler.AsyncTask;
 
@@ -18,8 +16,6 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.19.50-r1")
 public class DebugCommand extends TestCommand implements CoreCommand {
     public DebugCommand(String name) {
         super(name, "commands.debug.description");
@@ -38,7 +34,6 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         this.enableParamTree();
     }
 
-    @Since("1.19.60-r1")
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
@@ -60,13 +55,13 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     return 0;
                 }
                 var player = sender.asPlayer();
-                if (player.getInventory().getItemInHand() instanceof ItemMap itemMap) {
+                if (player.getInventory().getItemInHand() instanceof ItemFilledMap itemFilledMap) {
                     Server.getInstance().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new AsyncTask() {
                         @Override
                         public void onRun() {
-                            itemMap.renderMap(player.getLevel(), player.getFloorX() - 64, player.getFloorZ() - 64, zoom);
-                            player.getInventory().setItemInHand(itemMap);
-                            itemMap.sendImage(player);
+                            itemFilledMap.renderMap(player.getLevel(), player.getFloorX() - 64, player.getFloorZ() - 64, zoom);
+                            player.getInventory().setItemInHand(itemFilledMap);
+                            itemFilledMap.sendImage(player);
                             player.sendMessage("Successfully rendered the map in your hand");
                         }
                     });

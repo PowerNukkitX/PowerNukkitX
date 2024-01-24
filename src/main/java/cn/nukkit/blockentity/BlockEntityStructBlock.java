@@ -1,12 +1,10 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.blockproperty.value.StructureBlockType;
+import cn.nukkit.block.property.enums.StructureBlockType;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.StructBlockInventory;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.StructureBlockUpdatePacket;
@@ -15,8 +13,6 @@ import cn.nukkit.network.protocol.types.StructureMirror;
 import cn.nukkit.network.protocol.types.StructureRedstoneSaveMode;
 import cn.nukkit.network.protocol.types.StructureRotation;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
 public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStructBlock {
     private StructureAnimationMode animationMode;
     private float animationSeconds;
@@ -37,11 +33,10 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     private BlockVector3 offset;
 
 
-    public BlockEntityStructBlock(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityStructBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Since("1.19.60-r1")
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -186,7 +181,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
 
     @Override
     public boolean isBlockEntityValid() {
-        int blockId = this.getLevelBlock().getId();
+        String blockId = this.getLevelBlock().getId();
         return blockId == BlockID.STRUCTURE_BLOCK;
     }
 

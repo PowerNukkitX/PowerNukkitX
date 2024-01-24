@@ -245,6 +245,10 @@ data/*
 !/.idea/codeStyles/codeStyleConfig.xml
 !/.idea/codeStyles/Project.xml
 
+### Add the inspectionProfiles to the repo
+!/.idea/inspectionProfiles
+!/.idea/inspectionProfiles/Project_Default.xml
+
 # a file that can be used for your helm chart values
 /helm-values.local.yaml
 

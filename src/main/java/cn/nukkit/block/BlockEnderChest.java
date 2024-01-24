@@ -1,15 +1,13 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityEnderChest;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -23,21 +21,23 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
-public class BlockEnderChest extends BlockTransparentMeta implements Faceable, BlockEntityHolder<BlockEntityEnderChest> {
+public class BlockEnderChest extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityEnderChest> {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(ENDER_CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     private final Set<Player> viewers = new HashSet<>();
 
-    public BlockEnderChest() {
-        this(0);
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public BlockEnderChest(int meta) {
-        super(meta);
+    public BlockEnderChest() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockEnderChest(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -46,31 +46,12 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
     }
 
     @Override
-    public int getId() {
-        return ENDER_CHEST;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
-    public String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.ENDER_CHEST;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
     @Override
-    public Class<? extends BlockEntityEnderChest> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityEnderChest> getBlockEntityClass() {
         return BlockEntityEnderChest.class;
     }
 
@@ -79,7 +60,6 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
         return 7;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -132,8 +112,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        int[] faces = {2, 3, 0, 1};
-        this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
+        setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getHorizontalIndex()) : BlockFace.SOUTH);
 
         CompoundTag nbt = new CompoundTag();
 
@@ -175,7 +154,6 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
     }
 
     @Override
-    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -184,7 +162,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= getToolTier()) {
             return new Item[]{
-                    Item.get(Item.OBSIDIAN, 0, 8)
+                    Item.get(Block.get(OBSIDIAN).getItemId(), 0, 8)
             };
         } else {
             return Item.EMPTY_ARRAY;
@@ -201,7 +179,6 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
     }
 
     @Override
-    @PowerNukkitOnly
     public  boolean canBePulled() {
         return false;
     }
@@ -223,13 +200,16 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+        return CommonPropertyMap.CARDINAL_BLOCKFACE.get(this.getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));
     }
 
-    @PowerNukkitOnly
-    @Nullable
     @Override
-    public BlockEntityEnderChest getBlockEntity() {
+    public void setBlockFace(BlockFace face) {
+        this.setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
+    }
+
+    @Override
+    public @Nullable BlockEntityEnderChest getBlockEntity() {
         return getTypedBlockEntity(BlockEntityEnderChest.class);
     }
 }

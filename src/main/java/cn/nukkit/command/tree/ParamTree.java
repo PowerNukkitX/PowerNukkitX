@@ -1,7 +1,5 @@
 package cn.nukkit.command.tree;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.PluginCommand;
@@ -19,8 +17,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class ParamTree {
     private final Map<String, ParamList> root;
     private final Command command;
@@ -138,8 +135,7 @@ public class ParamTree {
      * @param sender 命令发送者
      * @param args   命令的参数
      */
-    @Nullable
-    public Map.Entry<String, ParamList> matchAndParse(CommandSender sender, String commandLabel, String[] args) {
+    public @Nullable Map.Entry<String, ParamList> matchAndParse(CommandSender sender, String commandLabel, String[] args) {
         this.args = args;
         this.sender = sender;
         Map.Entry<String, ParamList> result = null;

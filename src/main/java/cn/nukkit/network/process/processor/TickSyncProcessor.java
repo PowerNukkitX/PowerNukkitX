@@ -17,6 +17,6 @@ public class TickSyncProcessor extends DataPacketProcessor<TickSyncPacket> {
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.TICK_SYNC_PACKET);
+        return ProtocolInfo.TICK_SYNC_PACKET;
     }
 }

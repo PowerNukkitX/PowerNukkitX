@@ -3,7 +3,7 @@ package cn.nukkit.entity.item;
 import cn.nukkit.Player;
 import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockWater;
+import cn.nukkit.block.BlockFlowingWater;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityLiving;
@@ -18,7 +18,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
@@ -29,6 +29,7 @@ import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
 import cn.nukkit.network.protocol.types.EntityLink;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,7 +44,10 @@ import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
  */
 public class EntityBoat extends EntityVehicle {
 
-    public static final int NETWORK_ID = 90;
+    @Override
+    @NotNull public String getIdentifier() {
+        return BOAT;
+    }
 
     public static final Vector3f RIDER_PLAYER_OFFSET = new Vector3f(0, 1.02001f, 0);
     public static final Vector3f RIDER_OFFSET = new Vector3f(0, -0.2f, 0);
@@ -61,12 +65,12 @@ public class EntityBoat extends EntityVehicle {
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
             reason = "Unreliable direct field access", replaceWith = "getVariant(), setVariant(int)")
-    @Since("1.4.0.0-PN")
+
     public int woodID;
     protected boolean sinking = true;
     private int ticksInWater;
 
-    public EntityBoat(FullChunk chunk, CompoundTag nbt) {
+    public EntityBoat(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
 
         this.setMaxHealth(40);
@@ -126,10 +130,7 @@ public class EntityBoat extends EntityVehicle {
         return 0.375F;
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public String getInteractButtonText(Player player) {
@@ -414,7 +415,7 @@ public class EntityBoat extends EntityVehicle {
             public void accept(int x, int y, int z) {
                 Block block = EntityBoat.this.level.getBlock(EntityBoat.this.temporalVector.setComponents(x, y, z));
 
-                if (block instanceof BlockWater || ((block = block.getLevelBlockAtLayer(1)) instanceof BlockWater)) {
+                if (block instanceof BlockFlowingWater || ((block = block.getLevelBlockAtLayer(1)) instanceof BlockFlowingWater)) {
                     double level = block.getMaxY();
 
                     diffY = Math.min(maxY - level, diffY);
@@ -547,7 +548,7 @@ public class EntityBoat extends EntityVehicle {
         return false;
     }
 
-    @PowerNukkitDifference(info = "Fixes a dupe issue when attacking too quickly", since = "1.3.1.2-PN")
+    
     @Override
     public void kill() {
         if (!isAlive()) {
@@ -567,8 +568,6 @@ public class EntityBoat extends EntityVehicle {
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     protected void dropItem() {
         this.level.dropItem(this, Item.get(ItemID.BOAT, this.woodID));
     }
@@ -580,22 +579,15 @@ public class EntityBoat extends EntityVehicle {
         this.namedTag.putByte("woodID", this.woodID); // Compatibility with Cloudburst Nukkit
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public int getVariant() {
         return this.woodID;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setVariant(int variant) {
         this.woodID = variant;
         this.dataProperties.putInt(DATA_VARIANT, variant);
     }
 
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Boat";

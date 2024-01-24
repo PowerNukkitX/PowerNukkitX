@@ -1,7 +1,5 @@
 package cn.nukkit.command.tree.node;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.tree.ParamList;
@@ -11,8 +9,8 @@ import cn.nukkit.network.protocol.types.CommandOutputMessage;
 /**
  * 代表一个抽象的命令节点，类型T对应节点解析结果类型<br>
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public interface IParamNode<T> {
 
     /**

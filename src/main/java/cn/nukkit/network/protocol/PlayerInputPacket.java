@@ -8,7 +8,7 @@ import lombok.ToString;
 @ToString
 public class PlayerInputPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.PLAYER_INPUT_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.PLAYER_INPUT_PACKET;
 
     public float motionX;
     public float motionY;
@@ -30,7 +30,7 @@ public class PlayerInputPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

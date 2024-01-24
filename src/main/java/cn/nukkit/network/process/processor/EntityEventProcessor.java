@@ -22,7 +22,6 @@ public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket>
             //player.resetCraftingGridType();
         }
 
-
         if (pk.event == EntityEventPacket.EATING_ITEM) {
             if (pk.data == 0 || pk.eid != player.getId()) {
                 return;
@@ -40,13 +39,14 @@ public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket>
 
             Inventory inventory = player.getWindowById(Player.ANVIL_WINDOW_ID);
             if (inventory instanceof AnvilInventory anvilInventory) {
-                anvilInventory.setCost(-pk.data);
+                //TODO
+                //anvilInventory.setCost(-pk.data);
             }
         }
     }
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.ENTITY_EVENT_PACKET);
+        return ProtocolInfo.ENTITY_EVENT_PACKET;
     }
 }

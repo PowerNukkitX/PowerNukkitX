@@ -1,14 +1,17 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitOnly
 public class BlockHoneycombBlock extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties(HONEYCOMB_BLOCK);
 
-    @PowerNukkitOnly
     public BlockHoneycombBlock() {
+        super(PROPERTIES.getDefaultState());
+    }
 
+    public BlockHoneycombBlock(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -18,7 +21,7 @@ public class BlockHoneycombBlock extends BlockSolid {
 
     @Override
     public double getResistance() {
-        return 3;
+        return 0.6;
     }
 
     @Override
@@ -32,13 +35,13 @@ public class BlockHoneycombBlock extends BlockSolid {
     }
 
     @Override
-    public int getId() {
-        return HONEYCOMB_BLOCK;
+    public String getName() {
+        return "Honeycomb Block";
     }
 
     @Override
-    public String getName() {
-        return "Honeycomb Block";
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
 }

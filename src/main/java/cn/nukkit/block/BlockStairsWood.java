@@ -7,23 +7,9 @@ import cn.nukkit.item.ItemTool;
  * @author xtypr
  * @since 2015/11/25
  */
-public class BlockStairsWood extends BlockStairs {
-    public BlockStairsWood() {
-        this(0);
-    }
-
-    public BlockStairsWood(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return OAK_STAIRS;
-    }
-
-    @Override
-    public String getName() {
-        return "Wood Stairs";
+public abstract class BlockStairsWood extends BlockStairs {
+    protected BlockStairsWood(BlockState blockState) {
+        super(blockState);
     }
 
     @Override

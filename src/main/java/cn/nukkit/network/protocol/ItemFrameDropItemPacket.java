@@ -10,7 +10,7 @@ import lombok.ToString;
 @ToString
 public class ItemFrameDropItemPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.ITEM_FRAME_DROP_ITEM_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.ITEM_FRAME_DROP_ITEM_PACKET;
 
     public int x;
     public int y;
@@ -30,7 +30,7 @@ public class ItemFrameDropItemPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 }

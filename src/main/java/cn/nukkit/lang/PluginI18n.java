@@ -2,8 +2,6 @@
 package cn.nukkit.lang;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.plugin.PluginBase;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -17,8 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 @Log4j2
 public class PluginI18n {
     /**
@@ -35,7 +32,6 @@ public class PluginI18n {
         this.fallback = LangCode.en_US;
     }
 
-
     /**
      * 翻译一个文本key，key从语言文件中查询
      * <p>
@@ -48,7 +44,6 @@ public class PluginI18n {
     public String tr(LangCode lang, String key) {
         return tr(lang, key, EmptyArrays.EMPTY_STRINGS);
     }
-
 
     /**
      * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充其中参数
@@ -67,7 +62,6 @@ public class PluginI18n {
         }
         return baseText;
     }
-
 
     /**
      * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充其中参数
@@ -106,7 +100,6 @@ public class PluginI18n {
         return baseText;
     }
 
-
     /**
      * 获取指定id对应的多语言文本，若不存在则返回null
      * <p>
@@ -126,7 +119,6 @@ public class PluginI18n {
             return Server.getInstance().getLanguage().internalGet(id);
         }
     }
-
 
     /**
      * 获取指定id对应的多语言文本，若不存在则返回id本身

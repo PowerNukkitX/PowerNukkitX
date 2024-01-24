@@ -6,9 +6,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityShulkerBox;
 import cn.nukkit.inventory.ContainerInventory;
@@ -21,43 +18,38 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.tags.BlockTags;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Reece Mackie
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
+
 public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEntityHolder<BlockEntityShulkerBox> {
+    public static final BlockProperties PROPERTIES = new BlockProperties(UNDYED_SHULKER_BOX, Set.of(BlockTags.PNX_SHULKERBOX));
 
-    public BlockUndyedShulkerBox() {
-        super();
+    public BlockUndyedShulkerBox(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
-    public int getId() {
-        return UNDYED_SHULKER_BOX;
-    }
-
-    @Override
-    public String getName() {
-        return "Shulker Box";
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @NotNull
+    public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     @Override
+    @NotNull
     public Class<? extends BlockEntityShulkerBox> getBlockEntityClass() {
         return BlockEntityShulkerBox.class;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
     @Override
+    @NotNull
     public String getBlockEntityType() {
         return BlockEntity.SHULKER_BOX;
     }
@@ -82,15 +74,18 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;
     }
 
+    public Item getShulkerBox() {
+        return new ItemBlock(this);
+    }
+
     @Override
     public Item toItem() {
-        ItemBlock item = new ItemBlock(this, this.getDamage(), 1);
+        Item item = getShulkerBox();
 
         if (this.getLevel() == null) return item;
 
@@ -105,7 +100,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         if (!inv.isEmpty()) {
             CompoundTag nbt = item.getNamedTag();
             if (nbt == null) {
-                nbt = new CompoundTag("");
+                nbt = new CompoundTag();
             }
 
             ListTag<CompoundTag> items = new ListTag<>();
@@ -141,7 +136,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
 
         // This code gets executed when the player has broken the shulker box and placed it back (©Kevims 2020)
         if (t != null && t.contains("Items")) {
-            nbt.putList(t.getList("Items"));
+            nbt.putList("Items", t.getList("Items"));
         }
 
         // This code gets executed when the player has copied the shulker box in creative mode (©Kevims 2020)
@@ -193,13 +188,11 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
     }
 
     @Override
-    @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    @PowerNukkitOnly
     public boolean sticksToPiston() {
         return false;
     }
@@ -209,15 +202,11 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         return false;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public int getItemMaxStackSize() {
         return 1;

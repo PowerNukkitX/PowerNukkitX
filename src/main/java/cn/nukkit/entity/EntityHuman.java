@@ -1,15 +1,13 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.EntityFreezeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShield;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddPlayerPacket;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
@@ -26,7 +24,7 @@ public class EntityHuman extends EntityHumanType {
     protected byte[] rawUUID;
     protected Skin skin;
 
-    public EntityHuman(FullChunk chunk, CompoundTag nbt) {
+    public EntityHuman(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -45,8 +43,6 @@ public class EntityHuman extends EntityHumanType {
         return 1.8f;
     }
 
-    @Since("1.5.1.0-PN")
-    @PowerNukkitOnly
     @Override
     public float getSwimmingHeight() {
         return getWidth();
@@ -65,11 +61,6 @@ public class EntityHuman extends EntityHumanType {
     @Override
     protected float getBaseOffset() {
         return 1.62f;
-    }
-
-    @Override
-    public int getNetworkId() {
-        return -1;
     }
 
     public Skin getSkin() {
@@ -104,16 +95,13 @@ public class EntityHuman extends EntityHumanType {
         super.initEntity();
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Human";
     }
 
-    @NotNull
     @Override
-    public String getName() {
+    @NotNull public String getName() {
         return this.getNameTag();
     }
 
@@ -232,7 +220,6 @@ public class EntityHuman extends EntityHumanType {
         }
     }
 
-    @PowerNukkitOnly
     @Override
     protected void onBlock(Entity entity, EntityDamageEvent event, boolean animate) {
         super.onBlock(entity, event, animate);
@@ -245,5 +232,10 @@ public class EntityHuman extends EntityHumanType {
             shieldOffhand = damageArmor(shieldOffhand, entity, event);
             getOffhandInventory().setItem(0, shieldOffhand);
         }
+    }
+
+    @Override
+    public int getNetworkId() {
+        return NETWORK_ID;
     }
 }

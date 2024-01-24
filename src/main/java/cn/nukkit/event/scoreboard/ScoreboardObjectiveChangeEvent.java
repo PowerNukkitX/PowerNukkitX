@@ -1,12 +1,10 @@
 package cn.nukkit.event.scoreboard;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;
+import lombok.Getter;
 
-@PowerNukkitXOnly
-@Since("1.19.30-r2")
+
 public class ScoreboardObjectiveChangeEvent extends ScoreboardEvent{
 
     private static final HandlerList handlers = new HandlerList();

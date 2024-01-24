@@ -2,8 +2,6 @@ package cn.nukkit.entity.ai.memory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.ai.memory.codec.BooleanMemoryCodec;
 import cn.nukkit.entity.ai.memory.codec.NumberMemoryCodec;
@@ -22,8 +20,8 @@ import java.util.Map;
  * <p>
  * Enumeration of memory types used by the core
  */
-@PowerNukkitXOnly
-@Since("1.19.50-r1")
+
+
 public interface CoreMemoryTypes {
     // region 运动控制器相关
     /**

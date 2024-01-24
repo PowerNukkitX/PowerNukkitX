@@ -16,7 +16,7 @@ public abstract class EntityProperty {
 
     private static final Map<String, List<EntityProperty>> entityPropertyMap = new HashMap<>();
     private static List<SyncEntityPropertyPacket> packetCache = new ArrayList<>();
-    private static CompoundTag playerPropertyCache = new CompoundTag("");
+    private static CompoundTag playerPropertyCache = new CompoundTag();
 
     private final String identifier;
 
@@ -49,7 +49,7 @@ public abstract class EntityProperty {
     public static void buildPlayerProperty() {
         List<EntityProperty> properties = entityPropertyMap.get(PLAYER_KEY);
         if (properties == null) {
-            playerPropertyCache = new CompoundTag("");
+            playerPropertyCache = new CompoundTag();
             return;
         }
         ListTag<CompoundTag> listProperty = buildPropertyList(properties);

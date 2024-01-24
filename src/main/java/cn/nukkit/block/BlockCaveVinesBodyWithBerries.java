@@ -1,36 +1,31 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+import static cn.nukkit.block.property.CommonBlockProperties.GROWING_PLANT_AGE;
+
+
 public class BlockCaveVinesBodyWithBerries extends BlockCaveVines {
-    public static final IntBlockProperty AGE_PROPERTY = new IntBlockProperty("growing_plant_age", false, 25, 0);
-    public static final BlockProperties PROPERTIES = new BlockProperties(AGE_PROPERTY);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CAVE_VINES_BODY_WITH_BERRIES, GROWING_PLANT_AGE);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockCaveVinesBodyWithBerries() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockCaveVinesBodyWithBerries(BlockState blockstate) {
+        super(blockstate);
+    }
 
     @Override
     public String getName() {
         return "Cave Vines Body With Berries";
-    }
-
-    @Override
-    public int getId() {
-        return CAVE_VINES_BODY_WITH_BERRIES;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

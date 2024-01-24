@@ -5,7 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityPainting;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
@@ -50,7 +50,7 @@ public class ItemPainting extends Item {
             return false;
         }
 
-        FullChunk chunk = level.getChunk((int) block.getX() >> 4, (int) block.getZ() >> 4);
+        IChunk chunk = level.getChunk((int) block.getX() >> 4, (int) block.getZ() >> 4);
 
         if (chunk == null || target.isTransparent() || face.getHorizontalIndex() == -1 || block.isSolid()) {
             return false;
@@ -103,19 +103,19 @@ public class ItemPainting extends Item {
         CompoundTag nbt = new CompoundTag()
                 .putByte("Direction", direction)
                 .putString("Motive", motive.title)
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("0", position.x))
-                        .add(new DoubleTag("1", position.y))
-                        .add(new DoubleTag("2", position.z)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("0", 0))
-                        .add(new DoubleTag("1", 0))
-                        .add(new DoubleTag("2", 0)))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("0", direction * 90))
-                        .add(new FloatTag("1", 0)));
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(position.x))
+                        .add(new DoubleTag(position.y))
+                        .add(new DoubleTag(position.z)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0)))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag(direction * 90))
+                        .add(new FloatTag(0)));
 
-        EntityPainting entity = (EntityPainting) Entity.createEntity("Painting", chunk, nbt);
+        EntityPainting entity = (EntityPainting) Entity.createEntity(Entity.PAINTING, chunk, nbt);
 
         if (entity == null) {
             return false;

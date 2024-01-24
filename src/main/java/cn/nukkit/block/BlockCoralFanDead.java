@@ -1,36 +1,38 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.level.Level;
+import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitOnly
+import static cn.nukkit.block.property.CommonBlockProperties.CORAL_COLOR;
+import static cn.nukkit.block.property.CommonBlockProperties.CORAL_FAN_DIRECTION;
+
+
 public class BlockCoralFanDead extends BlockCoralFan {
-    @PowerNukkitOnly
-    public BlockCoralFanDead() {
-        this(0);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_FAN_DEAD, CORAL_COLOR, CORAL_FAN_DIRECTION);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    @PowerNukkitOnly
-    public BlockCoralFanDead(int meta) {
-        super(meta);
+    public BlockCoralFanDead() {
+        this(PROPERTIES.getDefaultState());
     }
-    
-    @Override
-    public int getId() {
-        return CORAL_FAN_DEAD;
+
+    public BlockCoralFanDead(BlockState blockstate) {
+        super(blockstate);
     }
-    
+
     @Override
     public String getName() {
         return "Dead " + super.getName();
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isDead() {
         return true;
     }
-    
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {

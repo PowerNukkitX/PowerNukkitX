@@ -1,8 +1,6 @@
 package cn.nukkit.network.protocol.types;
 
-import cn.nukkit.api.Since;
 
-@Since("1.3.0.0-PN")
 public enum GameType {
     SURVIVAL,
     CREATIVE,

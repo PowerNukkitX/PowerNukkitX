@@ -1,28 +1,27 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.utils.random.NukkitRandomSource;
 import org.jetbrains.annotations.NotNull;
 
-@Since("1.6.0.0-PNX")
-@PowerNukkitOnly
+
 public class BlockBuddingAmethyst extends BlockSolid {
-    private static final NukkitRandom RANDOM = new NukkitRandom();
+    public static final BlockProperties PROPERTIES = new BlockProperties(BUDDING_AMETHYST);
+    private static final NukkitRandomSource RANDOM = new NukkitRandomSource();
+
+    public BlockBuddingAmethyst() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBuddingAmethyst(BlockState blockState) {
+        super(blockState);
+    }
 
     @Override
     public String getName() {
         return "Budding Amethyst";
-    }
-
-    @Override
-    public int getId() {
-        return BUDDING_AMETHYST;
     }
 
     @Override
@@ -35,21 +34,16 @@ public class BlockBuddingAmethyst extends BlockSolid {
         return 1.5;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
-        return CommonBlockProperties.EMPTY_PROPERTIES;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean breaksWhenMoved() {
         return true;
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean sticksToPiston() {
         return false;

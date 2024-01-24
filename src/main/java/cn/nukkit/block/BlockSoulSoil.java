@@ -1,21 +1,25 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+import static cn.nukkit.block.property.CommonBlockProperties.TORCH_FACING_DIRECTION;
+
+
 public class BlockSoulSoil extends BlockSolid {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public BlockSoulSoil() {
-        // Does nothing
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(SOUL_SOIL);
 
     @Override
-    public int getId() {
-        return SOUL_SOIL;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockSoulSoil() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockSoulSoil(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -43,7 +47,6 @@ public class BlockSoulSoil extends BlockSolid {
         return true;
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isSoulSpeedCompatible() {
         return true;

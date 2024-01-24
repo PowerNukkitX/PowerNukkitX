@@ -1,10 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
@@ -13,21 +9,10 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-@Since("1.4.0.0-PN")
-@PowerNukkitOnly
-public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    protected BlockFungus() {
-        super(0);
-    }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return CommonBlockProperties.EMPTY_PROPERTIES;
+public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
+    protected BlockFungus(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -75,26 +60,13 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
         return true;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     protected abstract boolean canGrowOn(Block support);
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     protected boolean isValidSupport(@NotNull Block support) {
-        switch (support.getId()) {
-            case GRASS:
-            case DIRT:
-            case PODZOL:
-            case FARMLAND:
-            case CRIMSON_NYLIUM:
-            case WARPED_NYLIUM:
-            case SOUL_SOIL:
-            case MYCELIUM:
-                return true;
-            default:
-                return false;
-        }
+        return switch (support.getId()) {
+            case GRASS, DIRT, PODZOL, FARMLAND, CRIMSON_NYLIUM, WARPED_NYLIUM, SOUL_SOIL, MYCELIUM -> true;
+            default -> false;
+        };
     }
 
     @Override
@@ -102,7 +74,5 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
         return true;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     public abstract boolean grow(@Nullable Player cause);
 }

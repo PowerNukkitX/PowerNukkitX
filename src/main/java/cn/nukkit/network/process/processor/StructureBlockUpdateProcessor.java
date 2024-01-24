@@ -2,7 +2,6 @@ package cn.nukkit.network.process.processor;
 
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockStructure;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityStructBlock;
 import cn.nukkit.math.Vector3;
@@ -10,6 +9,8 @@ import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.StructureBlockUpdatePacket;
 import org.jetbrains.annotations.NotNull;
+
+import static cn.nukkit.block.property.CommonBlockProperties.STRUCTURE_BLOCK_TYPE;
 
 public class StructureBlockUpdateProcessor extends DataPacketProcessor<StructureBlockUpdatePacket> {
     @Override
@@ -20,7 +21,7 @@ public class StructureBlockUpdateProcessor extends DataPacketProcessor<Structure
                     pk.blockPosition.z));
             if (blockEntity instanceof BlockEntityStructBlock structBlock) {
                 Block sBlock = structBlock.getLevelBlock();
-                sBlock.setPropertyValue(BlockStructure.STRUCTURE_BLOCK_TYPE, pk.editorData.getType());
+                sBlock.setPropertyValue(STRUCTURE_BLOCK_TYPE, pk.editorData.getType());
                 structBlock.updateSetting(pk);
                 playerHandle.player.level.setBlock(structBlock, sBlock, true);
                 structBlock.spawnTo(playerHandle.player);
@@ -30,6 +31,6 @@ public class StructureBlockUpdateProcessor extends DataPacketProcessor<Structure
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.STRUCTURE_BLOCK_UPDATE_PACKET);
+        return ProtocolInfo.STRUCTURE_BLOCK_UPDATE_PACKET;
     }
 }

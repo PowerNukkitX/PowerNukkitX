@@ -2,11 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -18,28 +13,28 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
-public class BlockCaveVines extends BlockTransparentMeta {
-    public static final IntBlockProperty AGE_PROPERTY = new IntBlockProperty("growing_plant_age", false, 25, 0);
-    public static final BlockProperties PROPERTIES = new BlockProperties(AGE_PROPERTY);
+import static cn.nukkit.block.property.CommonBlockProperties.GROWING_PLANT_AGE;
+
+
+public class BlockCaveVines extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties(CAVE_VINES, GROWING_PLANT_AGE);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockCaveVines() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockCaveVines(BlockState blockstate) {
+        super(blockstate);
+    }
 
     @Override
     public String getName() {
         return "Cave Vines";
-    }
-
-    @Override
-    public int getId() {
-        return CAVE_VINES;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -105,7 +100,7 @@ public class BlockCaveVines extends BlockTransparentMeta {
                 }
             }
             //random grow feature,according to wiki in https://minecraft.wiki/w/Glow_Berries#Growth
-            if (down().getId() == AIR && random.nextInt(10) == 0) {
+            if (down().isAir() && random.nextInt(10) == 0) {
                 BlockCaveVines block;
                 if (this.up() instanceof BlockCaveVines && !(this.down() instanceof BlockCaveVines)) {
                     block = new BlockCaveVinesHeadWithBerries();
@@ -118,7 +113,7 @@ public class BlockCaveVines extends BlockTransparentMeta {
                 } else {
                     return type;
                 }
-            } else if (down().getId() == AIR) {
+            } else if (down().isAir()) {
                 BlockCaveVines block = new BlockCaveVines();
                 block.setGrowth(0);
                 BlockGrowEvent ev = new BlockGrowEvent(this, block);
@@ -174,14 +169,14 @@ public class BlockCaveVines extends BlockTransparentMeta {
     }
 
     private int getMaxGrowth() {
-        return AGE_PROPERTY.getMaxValue();
+        return GROWING_PLANT_AGE.getMax();
     }
 
     private int getGrowth() {
-        return getIntValue(AGE_PROPERTY);
+        return getPropertyValue(GROWING_PLANT_AGE);
     }
 
     private void setGrowth(int growth) {
-        setIntValue(AGE_PROPERTY, growth);
+        setPropertyValue(GROWING_PLANT_AGE, growth);
     }
 }

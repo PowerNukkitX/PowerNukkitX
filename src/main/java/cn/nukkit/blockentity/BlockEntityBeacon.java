@@ -1,14 +1,12 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.BeaconInventory;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.potion.Effect;
 
@@ -19,7 +17,7 @@ import java.util.Map;
  */
 public class BlockEntityBeacon extends BlockEntitySpawnable {
 
-    public BlockEntityBeacon(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityBeacon(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -29,7 +27,6 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
         scheduleUpdate();
     }
 
-    @Since("1.19.60-r1")
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -52,7 +49,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
 
     @Override
     public boolean isBlockEntityValid() {
-        int blockID = getBlock().getId();
+        String blockID = getBlock().getId();
         return blockID == Block.BEACON;
     }
 
@@ -71,7 +68,6 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
 
     private long currentTick = 0;
 
-    @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
     @Override
     public boolean onUpdate() {
         //Only apply effects every 4 secs
@@ -156,8 +152,8 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
 
         //Check every block from our y coord to the top of the world
         for (int y = tileY + 1; y <= 255; y++) {
-            int testBlockId = level.getBlockIdAt(tileX, y, tileZ);
-            if (!Block.isTransparent(testBlockId)) {
+            Block test = level.getBlock(tileX, y, tileZ);
+            if (!test.isTransparent()) {
                 //There is no sky access
                 return false;
             }
@@ -178,7 +174,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
             for (int queryX = tileX - powerLevel; queryX <= tileX + powerLevel; queryX++) {
                 for (int queryZ = tileZ - powerLevel; queryZ <= tileZ + powerLevel; queryZ++) {
 
-                    int testBlockId = level.getBlockIdAt(queryX, queryY, queryZ);
+                    String testBlockId = level.getBlockIdAt(queryX, queryY, queryZ);
                     if (
                             testBlockId != Block.IRON_BLOCK &&
                                     testBlockId != Block.GOLD_BLOCK &&
@@ -235,7 +231,6 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
         }
     }
 
-    @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
     @Override
     public boolean updateCompoundTag(CompoundTag nbt, Player player) {
         if (!nbt.getString("id").equals(BlockEntity.BEACON)) {

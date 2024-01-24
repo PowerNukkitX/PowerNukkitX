@@ -7,7 +7,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.event.player.PlayerMapInfoRequestEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemMap;
+import cn.nukkit.item.ItemFilledMap;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.MapInfoRequestPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -47,7 +47,7 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
         if (mapItem == null) {
             for (BlockEntity be : player.level.getBlockEntities().values()) {
                 if (be instanceof BlockEntityItemFrame itemFrame && checkMapItemValid(itemFrame.getItem(), pk)) {
-                    ((ItemMap) itemFrame.getItem()).sendImage(player);
+                    ((ItemFilledMap) itemFrame.getItem()).sendImage(player);
                     break;
                 }
             }
@@ -58,7 +58,7 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
             player.getServer().getPluginManager().callEvent(event = new PlayerMapInfoRequestEvent(player, mapItem));
 
             if (!event.isCancelled()) {
-                ItemMap map = (ItemMap) mapItem;
+                ItemFilledMap map = (ItemFilledMap) mapItem;
                 if (map.trySendImage(player)) {
                     return;
                 }
@@ -86,10 +86,10 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.MAP_INFO_REQUEST_PACKET);
+        return ProtocolInfo.MAP_INFO_REQUEST_PACKET;
     }
 
     protected boolean checkMapItemValid(Item item, MapInfoRequestPacket pk) {
-        return item instanceof ItemMap itemMap && itemMap.getMapId() == pk.mapId;
+        return item instanceof ItemFilledMap itemMap && itemMap.getMapId() == pk.mapId;
     }
 }

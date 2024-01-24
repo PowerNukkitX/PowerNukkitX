@@ -17,22 +17,22 @@ public class ProfessionLibrarian extends Profession {
 
     @Override
     public ListTag<Tag> buildTrades(int seed) {
-        ListTag<Tag> recipes = new ListTag<>("Recipes");
+        ListTag<Tag> recipes = new ListTag<>();
         Random random = new Random(seed);
 
-        Item book1 = Item.get(Item.ENCHANT_BOOK);
+        Item book1 = Item.get(Item.ENCHANTED_BOOK);
         Enchantment e_book1 = Enchantment.getEnchantments()[random.nextInt(Enchantment.getEnchantments().length)];
         e_book1.setLevel(random.nextInt(e_book1.getMaxLevel())+ 1);
         book1.addEnchantment(e_book1);
-        Item book2 = Item.get(Item.ENCHANT_BOOK);
+        Item book2 = Item.get(Item.ENCHANTED_BOOK);
         Enchantment e_book2 = Enchantment.getEnchantments()[random.nextInt(Enchantment.getEnchantments().length)];
         e_book2.setLevel(random.nextInt(e_book2.getMaxLevel())+ 1);
         book2.addEnchantment(e_book2);
-        Item book3 = Item.get(Item.ENCHANT_BOOK);
+        Item book3 = Item.get(Item.ENCHANTED_BOOK);
         Enchantment e_book3 = Enchantment.getEnchantments()[random.nextInt(Enchantment.getEnchantments().length)];
         e_book3.setLevel(random.nextInt(e_book3.getMaxLevel())+ 1);
         book3.addEnchantment(e_book3);
-        Item book4 = Item.get(Item.ENCHANT_BOOK);
+        Item book4 = Item.get(Item.ENCHANTED_BOOK);
         Enchantment e_book4 = Enchantment.getEnchantments()[random.nextInt(Enchantment.getEnchantments().length)];
         e_book4.setLevel(random.nextInt(e_book4.getMaxLevel())+ 1);
         book4.addEnchantment(e_book4);
@@ -43,7 +43,7 @@ public class ProfessionLibrarian extends Profession {
                         .setTier(1)
                         .setTraderExp(2)
                         .build())
-                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,9), Item.get(Item.BOOKSHELF))
+                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,9), Item.get(BlockID.BOOKSHELF))
                         .setMaxUses(16)
                         .setRewardExp((byte) 1)
                         .setTier(1)
@@ -61,7 +61,7 @@ public class ProfessionLibrarian extends Profession {
                         .setTier(2)
                         .setTraderExp(10)
                         .build())
-                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD), Item.get(Item.LANTERN))
+                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD), Item.get(BlockID.LANTERN))
                         .setMaxUses(16)
                         .setRewardExp((byte) 1)
                         .setTier(2)
@@ -79,7 +79,7 @@ public class ProfessionLibrarian extends Profession {
                         .setTier(3)
                         .setTraderExp(20)
                         .build())
-                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD), Item.get(Item.GLASS, 0,4))
+                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD), Item.get(BlockID.GLASS, 0,4))
                         .setMaxUses(16)
                         .setRewardExp((byte) 1)
                         .setTier(3)
@@ -91,7 +91,7 @@ public class ProfessionLibrarian extends Profession {
                         .setTier(3)
                         .setTraderExp(2)
                         .build())
-                .add(RecipeBuildUtils.of(Item.get(Item.BOOK_AND_QUILL, 0,2), Item.get(Item.EMERALD))
+                .add(RecipeBuildUtils.of(Item.get(Item.WRITABLE_BOOK, 0,2), Item.get(Item.EMERALD))
                         .setMaxUses(16)
                         .setRewardExp((byte) 1)
                         .setTier(4)

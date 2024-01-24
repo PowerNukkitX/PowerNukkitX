@@ -1,15 +1,12 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 /**
  * 代表可以攻击其他实体的实体.
  * <p>
  * Represents an entity that can attack other entities.
  */
-@PowerNukkitXOnly
-@Since("1.19.30-r1")
+
+
 public interface EntityCanAttack {
 
     float[] EMPTY_FLOAT_ARRAY = new float[]{0.0f, 0.0f, 0.0f};
@@ -37,7 +34,5 @@ public interface EntityCanAttack {
         return difficulty != 0 ? getDiffHandDamage()[difficulty - 1] : 0;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     boolean attackTarget(Entity entity);
 }

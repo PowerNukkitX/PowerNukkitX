@@ -1,27 +1,26 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntityPolarBear extends EntityAnimal implements EntityWalkable {
 
-    public static final int NETWORK_ID = 28;
+    @Override
+    @NotNull public String getIdentifier() {
+        return POLAR_BEAR;
+    }
 
-    public EntityPolarBear(FullChunk chunk, CompoundTag nbt) {
+    public EntityPolarBear(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {
@@ -47,12 +46,9 @@ public class EntityPolarBear extends EntityAnimal implements EntityWalkable {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.RAW_FISH), Item.get(Item.RAW_SALMON)};
+        return new Item[]{Item.get(Item.COD), Item.get(Item.SALMON)};
     }
 
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Polar Bear";

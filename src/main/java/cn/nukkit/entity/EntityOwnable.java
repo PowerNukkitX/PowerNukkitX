@@ -1,7 +1,6 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 
 import javax.annotation.Nullable;
@@ -33,12 +32,10 @@ public interface EntityOwnable extends EntityComponent {
         return owner;
     }
 
-    @PowerNukkitXOnly
     default boolean hasOwner() {
         return hasOwner(true);
     }
 
-    @PowerNukkitXOnly
     default boolean hasOwner(boolean checkOnline) {
         if (checkOnline) {
             return getOwner() != null;

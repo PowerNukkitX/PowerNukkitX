@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.executor;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
@@ -17,8 +15,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * <p>
  * The entity moves to the master's side.(Only valid for entities that implement the interface {@link cn.nukkit.entity.EntityOwnable EntityOwnable})
  */
-@PowerNukkitXOnly
-@Since("1.19.30-r1")
+
+
 public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecutor {
     protected float speed;
     protected int maxFollowRangeSquared;

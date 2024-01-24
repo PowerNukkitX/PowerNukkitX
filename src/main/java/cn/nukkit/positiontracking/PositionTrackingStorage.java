@@ -1,7 +1,5 @@
 package cn.nukkit.positiontracking;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.math.NukkitMath;
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
@@ -33,12 +31,12 @@ import java.util.concurrent.TimeUnit;
  *
  * @author joserobjr
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 @ParametersAreNonnullByDefault
 public class PositionTrackingStorage implements Closeable {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
+
     public static final int DEFAULT_MAX_STORAGE = 500;
     private static final byte[] HEADER = new byte[]{12, 32, 32, 'P', 'N', 'P', 'T', 'D', 'B', '1'};
     private final int startIndex;
@@ -59,8 +57,6 @@ public class PositionTrackingStorage implements Closeable {
      * @throws IOException              If an error has occurred while reading, parsing or creating the file
      * @throws IllegalArgumentException If opening an existing file and the internal startIndex don't match the given startIndex
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public PositionTrackingStorage(int startIndex, File persistenceFile) throws IOException {
         this(startIndex, persistenceFile, 0);
     }
@@ -77,8 +73,6 @@ public class PositionTrackingStorage implements Closeable {
      * @throws IOException              If an error has occurred while reading, parsing or creating the file
      * @throws IllegalArgumentException If opening an existing file and the internal startIndex don't match the given startIndex
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public PositionTrackingStorage(int startIndex, File persistenceFile, int maxStorage) throws IOException {
         Preconditions.checkArgument(startIndex > 0, "Start index must be positive. Got {}", startIndex);
         this.startIndex = startIndex;
@@ -179,10 +173,7 @@ public class PositionTrackingStorage implements Closeable {
      * @throws IOException              If an error has occurred while accessing the file
      * @throws IllegalArgumentException If the trackingHandler is not valid for this storage
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @Nullable
-    public PositionTracking getPosition(int trackingHandler) throws IOException {
+    public @Nullable PositionTracking getPosition(int trackingHandler) throws IOException {
         validateHandler(trackingHandler);
         try {
             return cache.get(trackingHandler, () -> loadPosition(trackingHandler, true))
@@ -205,10 +196,7 @@ public class PositionTrackingStorage implements Closeable {
      * @throws IOException              If an error has occurred while accessing the file
      * @throws IllegalArgumentException If the trackingHandler is not valid for this storage
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @Nullable
-    public PositionTracking getPosition(int trackingHandler, boolean onlyEnabled) throws IOException {
+    public @Nullable PositionTracking getPosition(int trackingHandler, boolean onlyEnabled) throws IOException {
         if (onlyEnabled) {
             return getPosition(trackingHandler);
         }
@@ -224,8 +212,6 @@ public class PositionTrackingStorage implements Closeable {
      * @return The trackingHandler assigned to the position or an empty OptionalInt if none was found and this storage is full
      * @throws IOException If an error occurred while reading or writing the file
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public OptionalInt addOrReusePosition(NamedPosition position) throws IOException {
         OptionalInt handler = findTrackingHandler(position);
         if (handler.isPresent()) {
@@ -241,8 +227,6 @@ public class PositionTrackingStorage implements Closeable {
      * @return The trackingHandler assigned to the position or an empty OptionalInt if none was found and this storage is full
      * @throws IOException If an error occurred while reading or writing the file
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public synchronized OptionalInt addNewPosition(NamedPosition position) throws IOException {
         return addNewPosition(position, true);
     }
@@ -255,8 +239,6 @@ public class PositionTrackingStorage implements Closeable {
      * @return The trackingHandler assigned to the position or an empty OptionalInt if none was found and this storage is full
      * @throws IOException If an error occurred while reading or writing the file
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public synchronized OptionalInt addNewPosition(NamedPosition position, boolean enabled) throws IOException {
         OptionalInt handler = addNewPos(position, enabled);
         if (!handler.isPresent()) {
@@ -268,10 +250,7 @@ public class PositionTrackingStorage implements Closeable {
         return handler;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
-    public OptionalInt findTrackingHandler(NamedPosition position) throws IOException {
+    @NotNull public OptionalInt findTrackingHandler(NamedPosition position) throws IOException {
         OptionalInt cached = cache.asMap().entrySet().stream()
                 .filter(e -> e.getValue().filter(position::matchesNamedPosition).isPresent())
                 .mapToInt(Map.Entry::getKey)
@@ -296,23 +275,17 @@ public class PositionTrackingStorage implements Closeable {
         return new IOException(e);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public synchronized void invalidateHandler(int trackingHandler) throws IOException {
         validateHandler(trackingHandler);
         invalidatePos(trackingHandler);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public synchronized boolean isEnabled(int trackingHandler) throws IOException {
         validateHandler(trackingHandler);
         persistence.seek(getAxisPos(trackingHandler));
         return persistence.readBoolean();
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public synchronized boolean setEnabled(int trackingHandler, boolean enabled) throws IOException {
         validateHandler(trackingHandler);
         long pos = getAxisPos(trackingHandler);
@@ -329,14 +302,10 @@ public class PositionTrackingStorage implements Closeable {
         return true;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public synchronized boolean hasPosition(int trackingHandler) throws IOException {
         return hasPosition(trackingHandler, true);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public synchronized boolean hasPosition(int trackingHandler, boolean onlyEnabled) throws IOException {
         validateHandler(trackingHandler);
         persistence.seek(getAxisPos(trackingHandler));
@@ -477,24 +446,15 @@ public class PositionTrackingStorage implements Closeable {
         return pos;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
-    public synchronized IntList findTrackingHandlers(NamedPosition pos) throws IOException {
+    @NotNull public synchronized IntList findTrackingHandlers(NamedPosition pos) throws IOException {
         return findTrackingHandlers(pos, true);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
-    public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled) throws IOException {
+    @NotNull public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled) throws IOException {
         return findTrackingHandlers(pos, onlyEnabled, Integer.MAX_VALUE);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
-    public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled, int limit) throws IOException {
+    @NotNull public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled, int limit) throws IOException {
         persistence.seek(HEADER.length + 4 + 4 + 4);
         int handler = startIndex - 1;
         final double lookingX = pos.x;
@@ -571,14 +531,10 @@ public class PositionTrackingStorage implements Closeable {
         return Optional.of(new PositionTracking(name, x, y, z));
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public int getStartingHandler() {
         return startIndex;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public int getMaxHandler() {
         return startIndex + maxStorage - 1;
     }

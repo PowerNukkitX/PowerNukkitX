@@ -1,9 +1,6 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -11,7 +8,7 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.ItemDespawnEvent;
 import cn.nukkit.event.entity.ItemSpawnEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddItemEntityPacket;
@@ -23,21 +20,21 @@ import org.jetbrains.annotations.NotNull;
  * @author MagicDroidX
  */
 public class EntityItem extends Entity {
-
-    public static final int NETWORK_ID = 64;
+    @Override
+    @NotNull public String getIdentifier() {
+        return ITEM;
+    }
+    
     protected String owner;
     protected String thrower;
     protected Item item;
     protected int pickupDelay;
 
-    public EntityItem(FullChunk chunk, CompoundTag nbt) {
+    public EntityItem(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {
@@ -112,7 +109,7 @@ public class EntityItem extends Entity {
         this.server.getPluginManager().callEvent(new ItemSpawnEvent(this));
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Netherite stuff is immune to fire and lava damage")
+    
     @Override
     public boolean attack(EntityDamageEvent source) {
         if (item != null && item.isLavaResistant() && (
@@ -199,18 +196,18 @@ public class EntityItem extends Entity {
                 }
             }*/
 
-            int bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0);
-            if (bid == BlockID.FLOWING_WATER || bid == BlockID.STILL_WATER
+            String bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0);
+            if (bid == BlockID.FLOWING_WATER || bid == BlockID.WATER
                     || (bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1)) == BlockID.FLOWING_WATER
-                    || bid == BlockID.STILL_WATER
+                    || bid == BlockID.WATER
             ) {
                 //item is fully in water or in still water
                 this.motionY -= this.getGravity() * -0.015;
             } else if (lavaResistant && (
                     this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0) == BlockID.FLOWING_LAVA
-                            || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0) == BlockID.STILL_LAVA
+                            || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0) == BlockID.LAVA
                             || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1) == BlockID.FLOWING_LAVA
-                            || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1) == BlockID.STILL_LAVA
+                            || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1) == BlockID.LAVA
             )) {
                 //item is fully in lava or in still lava
                 this.motionY -= this.getGravity() * -0.015;
@@ -283,16 +280,13 @@ public class EntityItem extends Entity {
         }
     }
 
-    @Since("1.5.1.0-PN")
-    @PowerNukkitOnly
     @Override
     public String getOriginalName() {
         return "Item";
     }
 
-    @NotNull
     @Override
-    public String getName() {
+    @NotNull public String getName() {
         if (this.hasCustomName()) {
             return getNameTag();
         }

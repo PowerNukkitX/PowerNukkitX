@@ -1,8 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.utils.BinaryStream;
 import lombok.EqualsAndHashCode;
@@ -16,43 +13,15 @@ import java.util.UUID;
 @ToString
 @EqualsAndHashCode(callSuper = false)
 public class CraftingEventPacket extends DataPacket {
+    public static final int NETWORK_ID = ProtocolInfo.CRAFTING_EVENT_PACKET;
 
-    public static final byte NETWORK_ID = ProtocolInfo.CRAFTING_EVENT_PACKET;
 
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "The name don't match the packet content")
-    public static final int TYPE_SHAPELESS = 0;
-
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "The name don't match the packet content")
-    public static final int TYPE_SHAPED = 1;
-
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "The name don't match the packet content")
-    public static final int TYPE_FURNACE = 2;
-
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "The name don't match the packet content")
-    public static final int TYPE_FURNACE_DATA = 3;
-
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "The name don't match the packet content")
-    public static final int TYPE_MULTI = 4;
-
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "The name don't match the packet content")
-    public static final int TYPE_SHULKER_BOX = 5;
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public static final int TYPE_INVENTORY = 0;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final int TYPE_CRAFTING = 1;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static final int TYPE_WORKBENCH = 2;
 
     public int windowId;
@@ -83,7 +52,7 @@ public class CraftingEventPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

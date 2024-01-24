@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.behavior;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.evaluator.IBehaviorEvaluator;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
@@ -11,8 +9,8 @@ import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
  * <p>
  * This interface abstracts a behavior object as part of the behavior group {@link IBehaviorGroup}.
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public interface IBehavior extends IBehaviorExecutor, IBehaviorEvaluator {
 
     /**

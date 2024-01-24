@@ -1,9 +1,7 @@
 package cn.nukkit.block.fake;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockstate.BlockStateRegistry;
+import cn.nukkit.block.Block;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -14,16 +12,15 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.List;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class SingleFakeBlock implements FakeBlock {
 
-    protected final int blockId;
+    protected final Block block;
     protected final String tileId;
     protected List<Vector3> lastPositions;
 
-    public SingleFakeBlock(int blockId, String tileId) {
-        this.blockId = blockId;
+    public SingleFakeBlock(Block block, String tileId) {
+        this.block = block;
         this.tileId = tileId;
     }
 
@@ -40,8 +37,7 @@ public class SingleFakeBlock implements FakeBlock {
 
         positions.forEach(position -> {
             UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-
-            updateBlockPacket.blockRuntimeId = BlockStateRegistry.getRuntimeId(this.blockId);
+            updateBlockPacket.blockRuntimeId = block.getRuntimeId();
             updateBlockPacket.flags = UpdateBlockPacket.FLAG_NETWORK;
             updateBlockPacket.x = position.getFloorX();
             updateBlockPacket.y = position.getFloorY();
@@ -66,7 +62,7 @@ public class SingleFakeBlock implements FakeBlock {
     public void remove(Player player) {
         this.lastPositions.forEach(position -> {
             UpdateBlockPacket packet = new UpdateBlockPacket();
-            packet.blockRuntimeId = BlockStateRegistry.getRuntimeId(player.getLevel().getBlock(position).getCurrentState());
+            packet.blockRuntimeId = player.getLevel().getBlock(position).getRuntimeId();
             packet.flags = UpdateBlockPacket.FLAG_NETWORK;
             packet.x = position.getFloorX();
             packet.y = position.getFloorY();

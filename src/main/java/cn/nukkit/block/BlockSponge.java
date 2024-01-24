@@ -1,15 +1,9 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.value.SpongeType;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.property.enums.SpongeType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.CloudParticle;
 import cn.nukkit.math.BlockFace;
@@ -20,45 +14,26 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * @author Angelic47 (Nukkit Project)
- */
-public class BlockSponge extends BlockSolidMeta {
+import static cn.nukkit.block.property.CommonBlockProperties.SPONGE_TYPE;
+import static cn.nukkit.block.property.enums.SpongeType.DRY;
+import static cn.nukkit.block.property.enums.SpongeType.WET;
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final ArrayBlockProperty<SpongeType> SPONGE_TYPE = new ArrayBlockProperty<>("sponge_type", true, SpongeType.class);
+public class BlockSponge extends BlockSolid {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(SPONGE_TYPE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(SPONGE,
+            SPONGE_TYPE);
 
-    public static final int DRY = 0;
-    public static final int WET = 1;
-    private static final String[] NAMES = new String[]{
-            "Sponge",
-            "Wet sponge"
-    };
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockSponge() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockSponge(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return SPONGE;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
+    public BlockSponge(BlockState state) {
+        super(state);
     }
 
     @Override
@@ -76,15 +51,27 @@ public class BlockSponge extends BlockSolidMeta {
         return ItemTool.TYPE_HOE;
     }
 
+    public SpongeType getSpongeType() {
+        return this.getPropertyValue(SPONGE_TYPE);
+    }
+
+    public void setSpongeType(SpongeType type) {
+        this.setPropertyValue(SPONGE_TYPE, type);
+    }
+
     @Override
     public String getName() {
-        return NAMES[this.getDamage() & 0b1];
+        return switch (getSpongeType()) {
+            case DRY -> "Sponge";
+            case WET -> "Wet Sponge";
+        };
     }
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (this.getDamage() == WET && level.getDimension() == Level.DIMENSION_NETHER) {
-            level.setBlock(block, Block.get(BlockID.SPONGE, DRY), true, true);
+        if (this.getSpongeType() == WET && level.getDimension() == Level.DIMENSION_NETHER) {
+            this.setSpongeType(DRY);
+            level.setBlock(block, this, true, true);
             this.getLevel().addLevelEvent(block.add(0.5, 0.875, 0.5), LevelEventPacket.EVENT_SOUND_EXPLODE);
 
             ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -93,8 +80,13 @@ public class BlockSponge extends BlockSolidMeta {
             }
 
             return true;
-        } else if (this.getDamage() == DRY && (block instanceof BlockWater || block.getLevelBlockAround().stream().anyMatch(b -> b instanceof BlockWater)) && performWaterAbsorb(block)) {
-            level.setBlock(block, Block.get(BlockID.SPONGE, WET), true, true);
+        }
+        if (this.getSpongeType() == DRY && (
+                block instanceof BlockFlowingWater ||
+                        block.getLevelBlockAround().stream().anyMatch(b -> b instanceof BlockFlowingWater)
+        ) && performWaterAbsorb(block)) {
+            this.setSpongeType(WET);
+            level.setBlock(block, this, true, true);
 
             for (int i = 0; i < 4; i++) {
                 LevelEventPacket packet = new LevelEventPacket();
@@ -102,7 +94,7 @@ public class BlockSponge extends BlockSolidMeta {
                 packet.x = (float) block.getX() + 0.5f;
                 packet.y = (float) block.getY() + 1f;
                 packet.z = (float) block.getZ() + 0.5f;
-                packet.data = GlobalBlockPalette.getOrCreateRuntimeId(BlockID.FLOWING_WATER, 0);
+                packet.data = Block.get(BlockID.FLOWING_WATER).blockstate.blockStateHash();
                 level.addChunkPacket(getChunkX(), getChunkZ(), packet);
             }
 
@@ -121,40 +113,34 @@ public class BlockSponge extends BlockSolidMeta {
         int waterRemoved = 0;
         while (waterRemoved < 64 && (entry = entries.poll()) != null) {
             for (BlockFace face : BlockFace.values()) {
-                Block faceBlock = entry.block.getSideAtLayer(0, face);
-                Block faceBlock1 = faceBlock.getLevelBlockAtLayer(1);
-                
-                if (faceBlock instanceof BlockWater) {
-                    this.getLevel().setBlockStateAt(faceBlock.getFloorX(), faceBlock.getFloorY(), faceBlock.getFloorZ(), BlockState.AIR);
-                    this.getLevel().updateAround(faceBlock);
+                Block layer0 = entry.block.getSideAtLayer(0, face);
+                Block layer1 = layer0.getLevelBlockAtLayer(1);
+
+                if (layer0 instanceof BlockFlowingWater) {
+                    this.getLevel().setBlockStateAt(layer0.getFloorX(), layer0.getFloorY(), layer0.getFloorZ(), BlockAir.PROPERTIES.getDefaultState());
+                    this.getLevel().updateAround(layer0);
                     waterRemoved++;
                     if (entry.distance < 6) {
-                        entries.add(new Entry(faceBlock, entry.distance + 1));
+                        entries.add(new Entry(layer0, entry.distance + 1));
                     }
-                } else if (faceBlock1 instanceof BlockWater) {
-                    if (faceBlock.getId() == BlockID.BLOCK_KELP || faceBlock.getId() == BlockID.SEAGRASS || faceBlock.getId() == BlockID.SEA_PICKLE || faceBlock instanceof BlockCoralFan) {
-                        faceBlock.getLevel().useBreakOn(faceBlock);
+                } else if (layer1 instanceof BlockFlowingWater) {
+                    if (BlockID.KELP.equals(layer0.getId()) ||
+                            BlockID.SEAGRASS.equals(layer0.getId()) ||
+                            BlockID.SEA_PICKLE.equals(layer0.getId()) || layer0 instanceof BlockCoralFan) {
+                        layer0.getLevel().useBreakOn(layer0);
                     }
-                    this.getLevel().setBlockStateAt(faceBlock1.getFloorX(), faceBlock1.getFloorY(), faceBlock1.getFloorZ(), 1, BlockState.AIR);
-                    this.getLevel().updateAround(faceBlock1);
+                    this.getLevel().setBlockStateAt(layer1.getFloorX(), layer1.getFloorY(), layer1.getFloorZ(), 1, BlockAir.PROPERTIES.getDefaultState());
+                    this.getLevel().updateAround(layer1);
                     waterRemoved++;
                     if (entry.distance < 6) {
-                        entries.add(new Entry(faceBlock1, entry.distance + 1));
+                        entries.add(new Entry(layer1, entry.distance + 1));
                     }
                 }
             }
         }
-        
+
         return waterRemoved > 0;
     }
 
-    private static class Entry {
-        private final Block block;
-        private final int distance;
-
-        public Entry(Block block, int distance) {
-            this.block = block;
-            this.distance = distance;
-        }
-    }
+    private record Entry(Block block, int distance) {}
 }

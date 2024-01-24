@@ -1,9 +1,6 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.EntityWalkable;
@@ -19,9 +16,10 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -31,10 +29,13 @@ import java.util.concurrent.ThreadLocalRandom;
  * @since 4/23/2017
  */
 public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmite {
+    @Override
+    @NotNull public String getIdentifier() {
+        return ZOMBIE;
+    }
+    
 
-    public static final int NETWORK_ID = 32;
-
-    public EntityZombie(FullChunk chunk, CompoundTag nbt) {
+    public EntityZombie(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -74,10 +75,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
         );
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {
@@ -96,26 +94,21 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
         return 1.9f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Zombie";
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isUndead() {
         return true;
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }
 
-    @PowerNukkitXOnly
     @Override
     public boolean onUpdate(int currentTick) {
         //husk not burn
@@ -126,7 +119,6 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
         return super.onUpdate(currentTick);
     }
 
-    @Since("1.19.60-r1")
     @Override
     public double getFloatingForceFactor() {
         return 0.7;

@@ -1,60 +1,41 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import static cn.nukkit.block.property.CommonBlockProperties.INFINIBURN_BIT;
 
 /**
  * @author Angelic47 (Nukkit Project)
  * @apiNote Extends BlockSolidMeta instead of BlockSolid only in PowerNukkit
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Extends BlockSolidMeta instead of BlockSolid only in PowerNukkit")
-public class BlockBedrock extends BlockSolidMeta {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final BooleanBlockProperty INFINIBURN = new BooleanBlockProperty("infiniburn_bit", true);
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(INFINIBURN);
 
-    public BlockBedrock() {
-        this(0);
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public BlockBedrock(int meta) {
-        super(meta);
-    }
+public class BlockBedrock extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BEDROCK, INFINIBURN_BIT);
 
     @Override
-    public int getId() {
-        return BEDROCK;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public boolean getBurnIndefinitely() {
-        return getBooleanValue(INFINIBURN);
+
+    public BlockBedrock() {
+        this(PROPERTIES.getDefaultState());
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    public BlockBedrock(BlockState blockstate) {
+        super(blockstate);
+    }
+
+    public boolean getBurnIndefinitely() {
+        return getPropertyValue(INFINIBURN_BIT);
+    }
+
     public void setBurnIndefinitely(boolean infiniburn) {
-        setBooleanValue(INFINIBURN, infiniburn);
+        setPropertyValue(INFINIBURN_BIT, infiniburn);
     }
 
     @Override
@@ -73,7 +54,7 @@ public class BlockBedrock extends BlockSolidMeta {
     }
 
     @Override
-    public boolean isBreakable(Item item) {
+    public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return false;
     }
 
@@ -83,8 +64,7 @@ public class BlockBedrock extends BlockSolidMeta {
     }
 
     @Override
-    @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 

@@ -1,24 +1,22 @@
 package cn.nukkit.dispenser;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.item.EntityFirework;
+import cn.nukkit.entity.item.EntityFireworksRocket;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-@PowerNukkitOnly
+
 public class FireworksDispenseBehavior extends DefaultDispenseBehavior {
 
-    @PowerNukkitOnly
+
     public FireworksDispenseBehavior() {
         super();
     }
 
-    @PowerNukkitOnly
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         BlockFace opposite = face.getOpposite();
@@ -26,7 +24,7 @@ public class FireworksDispenseBehavior extends DefaultDispenseBehavior {
 
         CompoundTag nbt = Entity.getDefaultNBT(pos);
         nbt.putCompound("FireworkItem", NBTIO.putItemHelper(item));
-        EntityFirework firework = new EntityFirework(block.level.getChunk(pos.getChunkX(), pos.getChunkZ()), nbt);
+        EntityFireworksRocket firework = new EntityFireworksRocket(block.level.getChunk(pos.getChunkX(), pos.getChunkZ()), nbt);
         firework.spawnToAll();
 
         return null;

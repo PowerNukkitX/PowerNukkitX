@@ -1,14 +1,11 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.CommonPropertyMap;
+import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityChest;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -23,58 +20,42 @@ import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author Angelic47 (Nukkit Project)
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
-public class BlockChest extends BlockTransparentMeta implements Faceable, BlockEntityHolder<BlockEntityChest> {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION);
+public class BlockChest extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityChest> {
+    public static final BlockProperties PROPERTIES = new BlockProperties(CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockChest() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockChest(int meta) {
-        super(meta);
+    public BlockChest(BlockState blockstate) {
+        super(blockstate);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
     @Override
-    public Class<? extends BlockEntityChest> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityChest> getBlockEntityClass() {
         return BlockEntityChest.class;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.CHEST;
     }
 
     @Override
     public boolean canBeActivated() {
         return true;
-    }
-
-    @Override
-    public int getId() {
-        return CHEST;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -87,7 +68,6 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
         return 2.5;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -133,13 +113,11 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
         return this.z + 0.9375;
     }
 
-
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        int[] faces = {2, 3, 0, 1};
-        this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
+        setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH);
 
-        CompoundTag nbt = new CompoundTag().putList(new ListTag<>("Items"));
+        CompoundTag nbt = new CompoundTag().putList("Items",new ListTag<>());
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
@@ -164,10 +142,9 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
 
     /**
      * 尝试与旁边箱子连接
+     *
      * @return 是否连接成功
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     protected boolean tryPair() {
         BlockEntityChest blockEntity = getBlockEntity();
         if (blockEntity == null)
@@ -184,19 +161,17 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
 
     /**
      * 寻找附近的可配对箱子
+     *
      * @return 找到的可配对箱子。若没找到，则为null
      */
-    @Nullable
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
-    protected BlockEntityChest findPair() {
-        BlockFace[] universe = CommonBlockProperties.CARDINAL_DIRECTION.getUniverse();
-        BlockFace thisFace = this.getPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION);
-        for(var face : universe){
-            Block side = this.getSide(face);
-            if(side instanceof BlockChest chest){
-                BlockFace pairFace = side.getPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION);
-                if(thisFace == pairFace){
+    protected @Nullable BlockEntityChest findPair() {
+        List<MinecraftCardinalDirection> universe = CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.getValidValues();
+        BlockFace thisFace = getBlockFace();
+        for (var face : universe) {
+            Block side = this.getSide(CommonPropertyMap.CARDINAL_BLOCKFACE.get(face));
+            if (side instanceof BlockChest chest) {
+                BlockFace pairFace = chest.getBlockFace();
+                if (thisFace == pairFace) {
                     return chest.getBlockEntity();
                 }
             }
@@ -204,7 +179,6 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
         return null;
     }
 
-    @Since("1.19.60-r1")
     @Override
     public boolean cloneTo(Position pos) {
         if (!super.cloneTo(pos)) return false;
@@ -239,7 +213,7 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
         }
 
         BlockEntityChest chest = getOrCreateBlockEntity();
-        if (chest.namedTag.contains("Lock") && chest.namedTag.get("Lock") instanceof StringTag 
+        if (chest.namedTag.contains("Lock") && chest.namedTag.get("Lock") instanceof StringTag
                 && !chest.namedTag.getString("Lock").equals(item.getCustomName())) {
             return false;
         }
@@ -271,7 +245,12 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x7);
+        return CommonPropertyMap.CARDINAL_BLOCKFACE.get(this.getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));
+    }
+
+    @Override
+    public void setBlockFace(BlockFace face) {
+        this.setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
     }
 
     @Override
@@ -279,7 +258,6 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
         return canMove();
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean canBePulled() {
         return canMove();

@@ -1,9 +1,11 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.item.ItemSeedsWheat;
+import cn.nukkit.item.ItemWheatSeeds;
 import cn.nukkit.item.enchantment.Enchantment;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -13,12 +15,19 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockWheat extends BlockCrops {
 
-    public BlockWheat() {
-        this(0);
+    public static final BlockProperties PROPERTIES = new BlockProperties(WHEAT, CommonBlockProperties.GROWTH);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public BlockWheat(int meta) {
-        super(meta);
+    public BlockWheat() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockWheat(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -27,22 +36,17 @@ public class BlockWheat extends BlockCrops {
     }
 
     @Override
-    public int getId() {
-        return WHEAT_BLOCK;
-    }
-
-    @Override
     public Item toItem() {
-        return Item.get(ItemID.SEEDS);
+        return Item.get(ItemID.WHEAT_SEEDS);
     }
 
     @Override
     public Item[] getDrops(Item item) {
         // https://minecraft.wiki/w/Fortune#Seeds
         if (!isFullyGrown()) {
-            return new Item[]{ new ItemSeedsWheat() };
+            return new Item[]{ new ItemWheatSeeds() };
         }
-        
+
         ThreadLocalRandom random = ThreadLocalRandom.current();
         int count = 0;
         int attempts = 3 + Math.min(0, item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING));
@@ -53,11 +57,11 @@ public class BlockWheat extends BlockCrops {
                 count++;
             }
         }
-        
+
         if (count > 0) {
-            return new Item[]{ Item.get(ItemID.WHEAT), Item.get(ItemID.WHEAT_SEEDS, 0, count) };
+            return new Item[]{Item.get(ItemID.WHEAT), Item.get(ItemID.WHEAT_SEEDS, 0, count)};
         } else {
-            return new Item[]{ Item.get(ItemID.WHEAT) };
+            return new Item[]{Item.get(ItemID.WHEAT)};
         }
     }
 }

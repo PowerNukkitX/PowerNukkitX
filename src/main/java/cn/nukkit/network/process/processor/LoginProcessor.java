@@ -2,15 +2,13 @@ package cn.nukkit.network.process.processor;
 
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.event.player.PlayerAsyncPreLoginEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.event.player.PlayerPreLoginEvent;
-import cn.nukkit.network.encryption.PrepareEncryptionTask;
+import cn.nukkit.network.connection.util.PrepareEncryptionTask;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.LoginPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
@@ -33,8 +31,6 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
     /**
      * Regular expression for validating player name. Allows only: Number nicknames, letter nicknames, number and letters nicknames, nicknames with underscores, nicknames with space in the middle
      */
-    @PowerNukkitXOnly
-    @Since("1.19.70-r3")
     private static final Pattern playerNamePattern = Pattern.compile("^(?! )([a-zA-Z0-9_ ]{2,15}[a-zA-Z0-9_])(?<! )$");
 
     @Override
@@ -142,22 +138,21 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
         });
 
         server.getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, playerHandle.getPreLoginEventTask());
-        if (server.enabledNetworkEncryption && playerHandle.getLoginChainData().isXboxAuthed()) {
+        if (server.enabledNetworkEncryption) {
             server.getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new PrepareEncryptionTask(playerHandle.player) {
                 @Override
                 public void onCompletion(Server server) {
                     if (!playerHandle.player.isConnected()) {
                         return;
                     }
-                    if (this.getHandshakeJwt() == null || this.getEncryptionKey() == null || this.getEncryptionCipher() == null || this.getDecryptionCipher() == null) {
+                    if (this.getHandshakeJwt() == null || this.getEncryptionKey() == null) {
                         playerHandle.player.close("", "Network Encryption error");
                         return;
                     }
                     ServerToClientHandshakePacket pk = new ServerToClientHandshakePacket();
                     pk.setJwt(this.getHandshakeJwt());
-                    playerHandle.player.forceDataPacket(pk, () -> {
-                        playerHandle.getNetworkSession().setEncryption(this.getEncryptionKey(), this.getEncryptionCipher(), this.getDecryptionCipher());
-                    });
+                    playerHandle.player.forceDataPacket(pk);
+                    playerHandle.getNetworkSession().enableEncryption(this.getEncryptionKey());
                 }
             });
         } else {
@@ -167,6 +162,6 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.LOGIN_PACKET);
+        return ProtocolInfo.LOGIN_PACKET;
     }
 }

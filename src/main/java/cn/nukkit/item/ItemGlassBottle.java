@@ -4,6 +4,7 @@ package cn.nukkit.item;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBeehive;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.vibration.VibrationEvent;
@@ -32,7 +33,7 @@ public class ItemGlassBottle extends Item {
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         Item filled = null;
-        if (target.getId() == FLOWING_WATER || target.getId() == STILL_WATER) {
+        if (target.getId().equals(BlockID.FLOWING_WATER) || target.getId().equals(BlockID.WATER)) {
             filled = new ItemPotion();
         } else if (target instanceof BlockBeehive && ((BlockBeehive) target).isFull()) {
             filled = Item.get(HONEY_BOTTLE);

@@ -1,20 +1,22 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntityMule extends EntityAnimal implements EntityWalkable {
+    @Override
+    @NotNull public String getIdentifier() {
+        return MULE;
+    }
+    
 
-    public static final int NETWORK_ID = 25;
-
-    public EntityMule(FullChunk chunk, CompoundTag nbt) {
+    public EntityMule(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -23,10 +25,7 @@ public class EntityMule extends EntityAnimal implements EntityWalkable {
         return new Item[]{Item.get(Item.LEATHER)};
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {
@@ -50,9 +49,6 @@ public class EntityMule extends EntityAnimal implements EntityWalkable {
         super.initEntity();
     }
 
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Mule";

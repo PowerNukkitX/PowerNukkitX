@@ -1,16 +1,11 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityComparator;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemRedstoneComparator;
+import cn.nukkit.item.ItemComparator;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -20,54 +15,27 @@ import cn.nukkit.utils.RedstoneComponent;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
+import static cn.nukkit.block.property.CommonBlockProperties.*;
+
 /**
  * @author CreeperFace
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
-@PowerNukkitDifference(info = "Implements RedstoneComponent and uses methods from it.", since = "1.4.0.0-PN")
+
+
 @Log4j2
 public abstract class BlockRedstoneComparator extends BlockRedstoneDiode implements RedstoneComponent, BlockEntityHolder<BlockEntityComparator> {
-
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BooleanBlockProperty OUTPUT_LIT = new BooleanBlockProperty("output_lit_bit", false);
-
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BooleanBlockProperty OUTPUT_SUBTRACT = new BooleanBlockProperty("output_subtract_bit", false);
-
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION, OUTPUT_SUBTRACT, OUTPUT_LIT);
-
-    public BlockRedstoneComparator() {
-        this(0);
+    public BlockRedstoneComparator(BlockState blockstate) {
+        super(blockstate);
     }
 
-    public BlockRedstoneComparator(int meta) {
-        super(meta);
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @NotNull
-    @Override
     public Class<? extends BlockEntityComparator> getBlockEntityClass() {
         return BlockEntityComparator.class;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
     @Override
+    @NotNull
     public String getBlockEntityType() {
         return BlockEntity.COMPARATOR;
     }
@@ -79,27 +47,31 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
 
     @Override
     public BlockFace getFacing() {
-        return BlockFace.fromHorizontalIndex(this.getDamage());
+        return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(MINECRAFT_CARDINAL_DIRECTION));
     }
 
     public Mode getMode() {
-        return (getDamage() & 4) > 0 ? Mode.SUBTRACT : Mode.COMPARE;
+        return getPropertyValue(OUTPUT_SUBTRACT_BIT) ? Mode.SUBTRACT : Mode.COMPARE;
+    }
+
+    public void setMode(Mode mode) {
+        setPropertyValue(OUTPUT_SUBTRACT_BIT, mode == Mode.SUBTRACT);
     }
 
     @Override
     protected BlockRedstoneComparator getUnpowered() {
-        return (BlockRedstoneComparator) Block.get(BlockID.UNPOWERED_COMPARATOR, this.getDamage());
+        return (BlockRedstoneComparator) Block.get(BlockID.UNPOWERED_COMPARATOR).setPropertyValues(blockstate.getBlockPropertyValues());
     }
 
     @Override
     protected BlockRedstoneComparator getPowered() {
-        return (BlockRedstoneComparator) Block.get(BlockID.POWERED_COMPARATOR, this.getDamage());
+        return (BlockRedstoneComparator) Block.get(BlockID.POWERED_COMPARATOR).setPropertyValues(blockstate.getBlockPropertyValues());
     }
 
     @Override
     protected int getRedstoneSignal() {
         BlockEntityComparator comparator = getBlockEntity();
-        return comparator == null? 0 : comparator.getOutputSignal();
+        return comparator == null ? 0 : comparator.getOutputSignal();
     }
 
     @Override
@@ -151,13 +123,12 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
         return getMode() == Mode.SUBTRACT ? Math.max(this.calculateInputStrength() - this.getPowerOnSides(), 0) : this.calculateInputStrength();
     }
 
-    @PowerNukkitDifference(info = "Trigger observer.", since = "1.4.0.0-PN")
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         if (getMode() == Mode.SUBTRACT) {
-            this.setDamage(this.getDamage() - 4);
+            setMode(Mode.COMPARE);
         } else {
-            this.setDamage(this.getDamage() + 4);
+            setMode(Mode.SUBTRACT);
         }
 
         this.level.addLevelEvent(this.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_BUTTON_CLICK, this.getMode() == Mode.SUBTRACT ? 500 : 550);
@@ -179,7 +150,6 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
         return super.onUpdate(type);
     }
 
-    @PowerNukkitDifference(info = "Trigger observer.", since = "1.4.0.0-PN")
     private void onChange() {
         if (!this.level.getServer().isRedstoneEnabled()) {
             return;
@@ -223,26 +193,26 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
         }
 
         try {
-            createBlockEntity(new CompoundTag().putList(new ListTag<>("Items")));
+            createBlockEntity(new CompoundTag().putList("Items", new ListTag<>()));
         } catch (Exception e) {
             log.warn("Failed to create the block entity {} at {}", getBlockEntityType(), getLocation(), e);
             level.setBlock(layer0, 0, layer0, true);
             level.setBlock(layer1, 1, layer1, true);
             return false;
         }
-        
+
         onUpdate(Level.BLOCK_UPDATE_REDSTONE);
         return true;
     }
 
     @Override
     public boolean isPowered() {
-        return this.isPowered || (this.getDamage() & 8) > 0;
+        return this.isPowered || getPropertyValue(OUTPUT_LIT_BIT);
     }
 
     @Override
     public Item toItem() {
-        return new ItemRedstoneComparator();
+        return new ItemComparator();
     }
 
     public enum Mode {

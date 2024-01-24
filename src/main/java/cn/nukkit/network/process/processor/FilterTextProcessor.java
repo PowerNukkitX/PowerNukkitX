@@ -22,14 +22,15 @@ public class FilterTextProcessor extends DataPacketProcessor<FilterTextPacket> {
         FilterTextPacket textResponsePacket = new FilterTextPacket();
 
         if (player.craftingType == Player.CRAFTING_ANVIL) {
-            AnvilInventory anvilInventory = (AnvilInventory) player.getWindowById(Player.ANVIL_WINDOW_ID);
+            //todo fix anvil
+            /*AnvilInventory anvilInventory = (AnvilInventory) player.getWindowById(Player.ANVIL_WINDOW_ID);
             if (anvilInventory != null) {
                 PlayerTypingAnvilInventoryEvent playerTypingAnvilInventoryEvent = new PlayerTypingAnvilInventoryEvent(
                         player, anvilInventory, anvilInventory.getNewItemName(), pk.getText()
                 );
                 player.getServer().getPluginManager().callEvent(playerTypingAnvilInventoryEvent);
                 anvilInventory.setNewItemName(playerTypingAnvilInventoryEvent.getTypedName());
-            }
+            }*/
         }
 
         textResponsePacket.text = pk.text;
@@ -39,6 +40,6 @@ public class FilterTextProcessor extends DataPacketProcessor<FilterTextPacket> {
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.FILTER_TEXT_PACKET);
+        return ProtocolInfo.FILTER_TEXT_PACKET;
     }
 }

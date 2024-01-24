@@ -1,25 +1,26 @@
 package cn.nukkit.entity.mob;
 
-import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.EntityWalkable;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
+/**
+ * @author PikyCZ
+ */
 public class EntityZombieVillager extends EntityMob implements EntityWalkable, EntitySmite {
 
-    public static final int NETWORK_ID = 116;
+    @Override
+    @NotNull public String getIdentifier() {
+        return ZOMBIE_VILLAGER;
+    }
 
-    public EntityZombieVillager(FullChunk chunk, CompoundTag nbt) {
+    public EntityZombieVillager(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {
@@ -37,22 +38,13 @@ public class EntityZombieVillager extends EntityMob implements EntityWalkable, E
         return 1.9f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
-        return "Zombie VillagerV2";
+        return "Zombie Villager";
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isUndead() {
-        return true;
-    }
-
-    @PowerNukkitOnly
-    @Override
-    public boolean isPreventingSleep(Player player) {
         return true;
     }
 

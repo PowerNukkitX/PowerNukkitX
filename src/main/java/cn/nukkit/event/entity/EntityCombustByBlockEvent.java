@@ -2,11 +2,17 @@ package cn.nukkit.event.entity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.HandlerList;
 
 /**
  * @author Box (Nukkit Project)
  */
 public class EntityCombustByBlockEvent extends EntityCombustEvent {
+    private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     protected final Block combuster;
 

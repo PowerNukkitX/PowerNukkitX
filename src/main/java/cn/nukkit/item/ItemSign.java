@@ -1,32 +1,19 @@
 package cn.nukkit.item;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockSignPost;
 
 /**
- * @author MagicDroidX (Nukkit Project)
+ * 注意做好sign和standing_sign方块的映射关系，物品通过this.block指定，方块通过toItem指定
  */
-public class ItemSign extends Item {
-
-    public ItemSign() {
-        this(0, 1);
-    }
-
-    public ItemSign(Integer meta) {
-        this(meta, 1);
-    }
-
-    @PowerNukkitOnly
-    protected ItemSign(int id, Integer meta, int count, String name, BlockSignPost block) {
-        super(id, meta, count, name);
-        this.block = block;
-    }
-
-    public ItemSign(Integer meta, int count) {
-        super(SIGN, 0, count, "Oak Sign");
-        this.block = Block.get(BlockID.SIGN_POST);
+public abstract class ItemSign extends Item {
+    protected ItemSign(String id) {
+        super(id);
+        if (id.equals(DARK_OAK_SIGN)) {
+            this.block = Block.get(BlockID.DARKOAK_STANDING_SIGN);
+        } else {
+            this.block = Block.get(id.replace("_sign", "_standing_sign"));
+        }
     }
 
     @Override

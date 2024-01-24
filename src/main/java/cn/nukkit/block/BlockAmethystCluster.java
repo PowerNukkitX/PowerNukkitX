@@ -1,15 +1,30 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.utils.random.NukkitRandomSource;
+import org.jetbrains.annotations.NotNull;
 
 public class BlockAmethystCluster extends BlockAmethystBud {
-    private static final NukkitRandom RANDOM = new NukkitRandom();
+    public static final BlockProperties PROPERTIES = new BlockProperties(AMETHYST_CLUSTER, CommonBlockProperties.MINECRAFT_BLOCK_FACE);
+
+    public BlockAmethystCluster() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockAmethystCluster(BlockState blockState) {
+        super(blockState);
+    }
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    private static final NukkitRandomSource RANDOM = new NukkitRandomSource();
 
     @Override
     protected String getNamePrefix() {
@@ -17,17 +32,10 @@ public class BlockAmethystCluster extends BlockAmethystBud {
     }
 
     @Override
-    public int getId() {
-        return AMETHYST_CLUSTER;
-    }
-
-    @Override
     public int getLightLevel() {
         return 5;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;

@@ -1,8 +1,6 @@
 package cn.nukkit.command.data;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.camera.data.CameraPreset;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
@@ -19,35 +17,35 @@ import java.util.function.Supplier;
  * @author CreeperFace
  */
 public class CommandEnum {
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
+
     public static final CommandEnum ENUM_ENCHANTMENT;
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
+
     public static final CommandEnum ENUM_EFFECT;
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
+
     public static final CommandEnum FUNCTION_FILE = new CommandEnum("filepath", () -> Server.getInstance().getFunctionManager().getFunctions().keySet());
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
+
     public static final CommandEnum SCOREBOARD_OBJECTIVES = new CommandEnum("ScoreboardObjectives", () -> Server.getInstance().getScoreboardManager().getScoreboards().keySet());
-    @PowerNukkitXOnly
-    @Since("1.20.0-r2")
+
+
     public static final CommandEnum CAMERA_PRESETS = new CommandEnum("preset", () -> CameraPreset.getPresets().keySet());
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
+
     public static final CommandEnum CHAINED_COMMAND_ENUM = new CommandEnum("ExecuteChainedOption_0", "run", "as", "at", "positioned", "if", "unless", "in", "align", "anchored", "rotated", "facing");
-    @Since("1.4.0.0-PN")
+
     public static final CommandEnum ENUM_BOOLEAN = new CommandEnum("Boolean", ImmutableList.of("true", "false"));
-    @Since("1.4.0.0-PN")
+
     public static final CommandEnum ENUM_GAMEMODE = new CommandEnum("GameMode",
             ImmutableList.of("survival", "creative", "s", "c", "adventure", "a", "spectator", "view", "v", "spc"));
-    @Since("1.4.0.0-PN")
+
     public static final CommandEnum ENUM_BLOCK;
-    @Since("1.4.0.0-PN")
+
     public static final CommandEnum ENUM_ITEM;
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
+
     public static final CommandEnum ENUM_ENTITY;
 
     static {
@@ -88,15 +86,13 @@ public class CommandEnum {
     private final String name;
     private final List<String> values;
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     private final boolean isSoft;//softEnum
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
+
     private final Supplier<Collection<String>> strListSupplier;
 
-    @Since("1.4.0.0-PN")
+
     public CommandEnum(String name, String... values) {
         this(name, Arrays.asList(values));
     }
@@ -112,8 +108,6 @@ public class CommandEnum {
      * @param values 该枚举的可选值，不能为空，但是可以为空列表
      * @param isSoft 当为False  时，客户端显示枚举参数会带上枚举名称{@link CommandEnum#getName()},当为true时 则判定为String
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public CommandEnum(String name, List<String> values, boolean isSoft) {
         this.name = name;
         this.values = values;
@@ -127,8 +121,6 @@ public class CommandEnum {
      * @param name            the name
      * @param strListSupplier the str list supplier
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     public CommandEnum(String name, Supplier<Collection<String>> strListSupplier) {
         this.name = name;
         this.values = null;
@@ -154,8 +146,6 @@ public class CommandEnum {
         return name.hashCode();
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     public void updateSoftEnum(UpdateSoftEnumPacket.Type mode, String... value) {
         if (!this.isSoft) return;
         UpdateSoftEnumPacket pk = new UpdateSoftEnumPacket();
@@ -165,8 +155,6 @@ public class CommandEnum {
         Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), pk);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     public void updateSoftEnum() {
         if (!this.isSoft && this.strListSupplier == null) return;
         UpdateSoftEnumPacket pk = new UpdateSoftEnumPacket();

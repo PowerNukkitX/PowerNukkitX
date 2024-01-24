@@ -1,16 +1,14 @@
 package cn.nukkit.level.vibration;
 
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.math.Vector3;
 
 /**
  * 振动监听器
  */
-@PowerNukkitXOnly
-@Since("1.19.21-r3")
+
+
 public interface VibrationListener {
 
     /**

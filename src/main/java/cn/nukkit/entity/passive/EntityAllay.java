@@ -16,15 +16,19 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
 public class EntityAllay extends EntityAnimal implements EntityFlyable {
-    public static final int NETWORK_ID = 134;
+    @Override
+    @NotNull public String getIdentifier() {
+        return ALLAY;
+    }
 
-    public EntityAllay(FullChunk chunk, CompoundTag nbt) {
+    public EntityAllay(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -44,11 +48,6 @@ public class EntityAllay extends EntityAnimal implements EntityFlyable {
                 new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this),
                 this
         );
-    }
-
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
     }
 
     @Override

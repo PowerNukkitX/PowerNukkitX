@@ -213,6 +213,6 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.PLAYER_ACTION_PACKET);
+        return ProtocolInfo.PLAYER_ACTION_PACKET;
     }
 }

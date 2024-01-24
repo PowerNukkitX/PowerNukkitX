@@ -1,63 +1,45 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.value.StructureVoidType;
+import cn.nukkit.Player;
+import cn.nukkit.block.property.enums.StructureVoidType;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
+import static cn.nukkit.block.property.CommonBlockProperties.*;
+
 /**
  * @author good777LUCKY
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
 public class BlockStructureVoid extends BlockSolid {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final ArrayBlockProperty<StructureVoidType> STRUCTURE_VOID_TYPE = new ArrayBlockProperty<>("structure_void_type", false, StructureVoidType.class);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(STRUCTURE_VOID_TYPE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(STRUCTURE_VOID, STRUCTURE_VOID_TYPE);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public BlockStructureVoid() {
-        // Does Nothing
-    }
-    
     @Override
-    public int getId() {
-        return STRUCTURE_VOID;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
-    
+
+    public BlockStructureVoid() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockStructureVoid(BlockState blockstate) {
+        super(blockstate);
+    }
+
     @Override
     public String getName() {
         return "Structure Void";
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    public StructureVoidType getType() {
+    @NotNull public StructureVoidType getType() {
         return getPropertyValue(STRUCTURE_VOID_TYPE);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     public void setType(@Nullable StructureVoidType type) {
         setPropertyValue(STRUCTURE_VOID_TYPE, type);
     }
@@ -77,15 +59,13 @@ public class BlockStructureVoid extends BlockSolid {
         return true;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
     @Override
-    public boolean isBreakable(Item item) {
+    public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return false;
     }
     
@@ -100,9 +80,7 @@ public class BlockStructureVoid extends BlockSolid {
     }
     
     @Override
-    @PowerNukkitOnly
     public  boolean canBePulled() {
         return false;
     }
-
 }

@@ -10,7 +10,7 @@ public class SetScorePacket extends DataPacket {
     public List<ScoreInfo> infos = new ArrayList<>();
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.SET_SCORE_PACKET;
     }
 

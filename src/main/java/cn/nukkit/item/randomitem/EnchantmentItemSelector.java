@@ -1,7 +1,5 @@
 package cn.nukkit.item.randomitem;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.utils.Utils;
@@ -14,18 +12,18 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author LT_Name
  */
-@PowerNukkitXOnly
-@Since("1.19.40-r3")
+
+
 public class EnchantmentItemSelector extends ConstantItemSelector {
-    public EnchantmentItemSelector(int id, Selector parent) {
+    public EnchantmentItemSelector(String id, Selector parent) {
         this(id, 0, parent);
     }
 
-    public EnchantmentItemSelector(int id, Integer meta, Selector parent) {
+    public EnchantmentItemSelector(String id, Integer meta, Selector parent) {
         this(id, meta, 1,  parent);
     }
 
-    public EnchantmentItemSelector(int id, Integer meta, int count, Selector parent) {
+    public EnchantmentItemSelector(String id, Integer meta, int count, Selector parent) {
         this(Item.get(id, meta, count), parent);
     }
 

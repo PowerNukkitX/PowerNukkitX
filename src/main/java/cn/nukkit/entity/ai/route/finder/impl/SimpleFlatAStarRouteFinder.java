@@ -2,8 +2,6 @@ package cn.nukkit.entity.ai.route.finder.impl;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.EntityAI;
@@ -24,8 +22,8 @@ import java.util.*;
 /**
  * 标准A*寻路实现
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 @Getter
 @Setter
 public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
@@ -377,7 +375,6 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     protected boolean existInCloseList(Vector3 vector2) {
         return closeHashSet.contains(vector2);
     }
-
 
     /**
      * 计算当前点到终点的代价H

@@ -1,29 +1,27 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntitySwimmable;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PetteriM1
  */
 public class EntityPufferfish extends EntityAnimal implements EntitySwimmable {
 
-    public static final int NETWORK_ID = 108;
+    @Override
+    @NotNull public String getIdentifier() {
+        return PUFFERFISH;
+    }
 
-    public EntityPufferfish(FullChunk chunk, CompoundTag nbt) {
+    public EntityPufferfish(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Pufferfish";

@@ -2,7 +2,6 @@ package cn.nukkit.entity.data.profession;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
@@ -18,7 +17,7 @@ public class ProfessionArmor extends Profession {
 
     @Override
     public ListTag<Tag> buildTrades(int seed) {
-        ListTag<Tag> recipes = new ListTag<>("Recipes");
+        ListTag<Tag> recipes = new ListTag<>();
         Random random = new Random(seed);
 
         int[] enchantments = new int[] {Enchantment.ID_DURABILITY, Enchantment.ID_THORNS, Enchantment.ID_PROTECTION_ALL, Enchantment.ID_PROTECTION_EXPLOSION, Enchantment.ID_PROTECTION_PROJECTILE, Enchantment.ID_PROTECTION_FIRE, Enchantment.ID_VANISHING_CURSE};
@@ -78,25 +77,25 @@ public class ProfessionArmor extends Profession {
                         .setTier(2)
                         .setTraderExp(10)
                         .build())
-                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,36), Item.get(Item.BELL, 0 ,1))
+                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,36), Item.get(BlockID.BELL, 0 ,1))
                         .setMaxUses(12)
                         .setRewardExp((byte) 1)
                         .setTier(2)
                         .setTraderExp(5)
                         .build())
-                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,3), Item.get(Item.CHAIN_LEGGINGS, 0 ,1))
+                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,3), Item.get(Item.CHAINMAIL_LEGGINGS, 0 ,1))
                         .setMaxUses(99)
                         .setRewardExp((byte) 1)
                         .setTier(2)
                         .setTraderExp(0)
                         .build())
-                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,1), Item.get(Item.CHAIN_BOOTS, 0 ,1))
+                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,1), Item.get(Item.CHAINMAIL_BOOTS, 0 ,1))
                         .setMaxUses(99)
                         .setRewardExp((byte) 1)
                         .setTier(2)
                         .setTraderExp(0)
                         .build())
-                .add(RecipeBuildUtils.of(MinecraftItemID.LAVA_BUCKET.get(1), Item.get(Item.EMERALD, 0 ,1))
+                .add(RecipeBuildUtils.of(Item.get(Item.LAVA_BUCKET), Item.get(Item.EMERALD, 0 ,1))
                         .setMaxUses(12)
                         .setRewardExp((byte) 1)
                         .setTier(3)
@@ -108,13 +107,13 @@ public class ProfessionArmor extends Profession {
                         .setTier(3)
                         .setTraderExp(0)
                         .build())
-                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,4), Item.get(Item.CHAIN_CHESTPLATE, 0 ,1))
+                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,4), Item.get(Item.CHAINMAIL_CHESTPLATE, 0 ,1))
                         .setMaxUses(12)
                         .setRewardExp((byte) 1)
                         .setTier(3)
                         .setTraderExp(10)
                         .build())
-                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,1), Item.get(Item.CHAIN_HELMET, 0 ,1))
+                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,1), Item.get(Item.CHAINMAIL_HELMET, 0 ,1))
                         .setMaxUses(99)
                         .setRewardExp((byte) 1)
                         .setTier(3)

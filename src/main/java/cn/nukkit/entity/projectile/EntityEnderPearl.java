@@ -1,35 +1,34 @@
 package cn.nukkit.entity.projectile;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelEventPacket;
+import org.jetbrains.annotations.NotNull;
 
 public class EntityEnderPearl extends EntityProjectile {
 
-    public static final int NETWORK_ID = 87;
+    @Override
+    @NotNull public String getIdentifier() {
+        return ENDER_PEARL;
+    }
 
-    public EntityEnderPearl(FullChunk chunk, CompoundTag nbt) {
+    public EntityEnderPearl(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityEnderPearl(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntityEnderPearl(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {
@@ -66,7 +65,7 @@ public class EntityEnderPearl extends EntityProjectile {
         if (this.isCollided && this.shootingEntity instanceof Player) {
             boolean portal = false;
             for (Block collided : this.getCollisionBlocks()) {
-                if (collided.getId() == Block.NETHER_PORTAL) {
+                if (collided.getId() == Block.PORTAL) {
                     portal = true;
                 }
             }
@@ -105,8 +104,6 @@ public class EntityEnderPearl extends EntityProjectile {
         this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_PORTAL);
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Ender Pearl";

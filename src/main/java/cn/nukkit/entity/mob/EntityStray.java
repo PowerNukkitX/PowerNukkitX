@@ -1,29 +1,28 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntityStray extends EntityMob implements EntityWalkable, EntitySmite {
 
-    public static final int NETWORK_ID = 46;
+    @Override
+    @NotNull public String getIdentifier() {
+        return STRAY;
+    }
 
-    public EntityStray(FullChunk chunk, CompoundTag nbt) {
+    public EntityStray(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {
@@ -41,8 +40,6 @@ public class EntityStray extends EntityMob implements EntityWalkable, EntitySmit
         return 1.9f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Stray";
@@ -50,16 +47,14 @@ public class EntityStray extends EntityMob implements EntityWalkable, EntitySmit
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.BONE, Item.ARROW)};
+        return new Item[]{Item.get(Item.BONE),Item.get(Item.ARROW)};
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isUndead() {
         return true;
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

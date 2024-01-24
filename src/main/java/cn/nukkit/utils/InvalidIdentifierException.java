@@ -3,8 +3,7 @@
  */
 package cn.nukkit.utils;
 
-public class InvalidIdentifierException
-extends RuntimeException {
+public class InvalidIdentifierException extends RuntimeException {
     public InvalidIdentifierException(String message) {
         super(message);
     }

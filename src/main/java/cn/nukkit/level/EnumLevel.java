@@ -1,11 +1,9 @@
 package cn.nukkit.level;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.Since;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.registry.Registries;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -17,7 +15,7 @@ public enum EnumLevel {
     Level level;
 
     public static void initLevels() {
-        OVERWORLD.level = Server.getInstance().getDefaultLevel();
+        /*OVERWORLD.level = Server.getInstance().getDefaultLevel();
 
         // attempt to load the nether world if it is allowed in server properties
         if (Server.getInstance().isNetherAllowed() && !Server.getInstance().loadLevel("nether")) {
@@ -27,7 +25,7 @@ public enum EnumLevel {
 
             // Generate seed for nether and get nether generator
             long seed = System.currentTimeMillis();
-            Class<? extends Generator> generator = Generator.getGenerator("nether");
+            Class<? extends Generator> generator = Registries.GENERATOR.get("nether");
 
             // Generate the nether world
             Server.getInstance().generateLevel("nether", seed, generator);
@@ -48,9 +46,9 @@ public enum EnumLevel {
 
         // The End
         if (Server.getInstance().isTheEndAllowed() && !Server.getInstance().loadLevel("the_end")) {
-            Server.getInstance().getLogger().info("No level called \"the_end\" found, creating default the end level.");
+           log.info("No level called \"the_end\" found, creating default the end level.");
             long seed = System.currentTimeMillis();
-            Class<? extends Generator> generator = Generator.getGenerator("the_end");
+            Class<? extends Generator> generator = Registries.GENERATOR.get("the_end");
             Server.getInstance().generateLevel("the_end", seed, generator);
             if (!Server.getInstance().isLevelLoaded("the_end")) {
                 Server.getInstance().loadLevel("the_end");
@@ -60,8 +58,8 @@ public enum EnumLevel {
         THE_END.level = Server.getInstance().getLevelByName("the_end");
 
         if (THE_END.level == null) {
-            Server.getInstance().getLogger().alert("No level called \"the_end\" found or the end is disabled in server properties! The End functionality will be disabled.");
-        }
+            log.warn("No level called \"the_end\" found or the end is disabled in server properties! The End functionality will be disabled.");
+        }*/
     }
 
     public static Level getOtherNetherPair(Level current) {
@@ -92,9 +90,6 @@ public enum EnumLevel {
         return Math.round((float) value / factor) * factor;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @PowerNukkitXDifference(since = "1.18.30", info = "Supporting World Dimension Judgment")
     public static Level getOtherTheEndPair(Level current) {
         if (current == OVERWORLD.level || current.getDimension() == Level.DIMENSION_OVERWORLD) {
             return THE_END.level;
@@ -105,9 +100,6 @@ public enum EnumLevel {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @PowerNukkitXDifference(since = "1.18.30", info = "Supporting World Dimension Judgment")
     public static Position moveToTheEnd(Position current) {
         if (THE_END.level == null) {
             return null;

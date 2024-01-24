@@ -1,7 +1,5 @@
 package cn.nukkit.nbt.stream;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -28,7 +26,6 @@ public class PGZIPOutputStream extends FilterOutputStream {
     public static ExecutorService getSharedThreadPool() {
         return EXECUTOR;
     }
-
 
     // private static final Logger LOG = LoggerFactory.getLogger(PGZIPOutputStream.class);
     private final static int GZIP_MAGIC = 0x8b1f;
@@ -214,9 +211,7 @@ public class PGZIPOutputStream extends FilterOutputStream {
         emitUntil(0);
         super.flush();
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public void finish() throws IOException {
         if (bytesWritten >= 0) {
             flush();

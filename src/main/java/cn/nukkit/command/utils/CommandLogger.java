@@ -3,8 +3,6 @@ package cn.nukkit.command.utils;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.ICommandBlock;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
@@ -26,8 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public record CommandLogger(Command command,
                             CommandSender sender,
                             String commandLabel,
@@ -139,7 +136,6 @@ public record CommandLogger(Command command,
         this.outputContainer.getMessages().add(new CommandOutputMessage(Server.getInstance().getLanguage().tr(key, params), CommandOutputContainer.EMPTY_STRING));
         return this;
     }
-
 
     /**
      * 添加一条默认的命令格式错误信息,会提示命令发送者在指定索引处发生错误

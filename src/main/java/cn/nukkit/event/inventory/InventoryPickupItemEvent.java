@@ -4,6 +4,7 @@ import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.Inventory;
+import lombok.Getter;
 
 /**
  * @author MagicDroidX (Nukkit Project)

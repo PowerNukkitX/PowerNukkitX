@@ -1,7 +1,5 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.ExecutorCommandSender;
 import cn.nukkit.command.data.CommandParamType;
@@ -16,8 +14,7 @@ import cn.nukkit.level.Position;
 import java.util.List;
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 public class ExecuteCommandOld extends VanillaCommand {
 
     public ExecuteCommandOld(String name) {
@@ -41,7 +38,6 @@ public class ExecuteCommandOld extends VanillaCommand {
         this.enableParamTree();
     }
 
-    @Since("1.19.60-r1")
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         int num = 0;
@@ -64,13 +60,13 @@ public class ExecuteCommandOld extends VanillaCommand {
                 }
             }
             case "detect" -> {
-                int blockid = list.getResult(4);
+                String blockId = list.getResult(4);
                 int meta = list.getResult(5);
                 String command = list.getResult(6);
                 for (Entity entity : entities) {
                     Position pos = ((PositionNode) list.get(1)).get(entity);
                     Position detect = ((PositionNode) list.get(3)).get(pos);
-                    if (detect.getLevelBlock().getId() == blockid && detect.getLevelBlock().getDamage() == meta) {
+                    if (detect.getLevelBlock().getId() == blockId && detect.getLevelBlock().getBlockState().specialValue() == meta) {
                         ExecutorCommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(pos));
                         int n = executeSender.getServer().executeCommand(executeSender, command);
                         if (n == 0) {

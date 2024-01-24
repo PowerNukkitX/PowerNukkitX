@@ -1,8 +1,6 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.types.PropertySyncData;
@@ -16,10 +14,10 @@ import java.util.UUID;
  */
 @ToString
 public class AddPlayerPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.ADD_PLAYER_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.ADD_PLAYER_PACKET;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 
@@ -39,8 +37,8 @@ public class AddPlayerPacket extends DataPacket {
     public Item item;
     public int gameType = Server.getInstance().getGamemode();
     public EntityMetadata metadata = new EntityMetadata();
-    @PowerNukkitXOnly
-    @Since("1.19.40-r1")
+
+
     public PropertySyncData syncedProperties = new PropertySyncData(new int[]{}, new float[]{});
     //public EntityLink links = new EntityLink[0];
     public String deviceId = "";

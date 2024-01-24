@@ -1,29 +1,26 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+import cn.nukkit.block.property.CommonBlockProperties;
+import org.jetbrains.annotations.NotNull;
+
 public class BlockBambooFenceGate extends BlockFenceGate {
-    public BlockBambooFenceGate() {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_FENCE_GATE, CommonBlockProperties.DIRECTION,CommonBlockProperties.IN_WALL_BIT,CommonBlockProperties.OPEN_BIT);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public int getId() {
-        return BAMBOO_FENCE_GATE;
+    public BlockBambooFenceGate() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBambooFenceGate(BlockState blockstate) {
+        super(blockstate);
     }
 
     public String getName() {
         return "Bamboo Fence Gate";
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 5;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 20;
     }
 }

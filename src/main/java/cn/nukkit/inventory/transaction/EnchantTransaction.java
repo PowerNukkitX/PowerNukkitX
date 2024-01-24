@@ -1,8 +1,6 @@
 package cn.nukkit.inventory.transaction;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.Since;
 import cn.nukkit.event.inventory.EnchantItemEvent;
 import cn.nukkit.inventory.EnchantInventory;
 import cn.nukkit.inventory.Inventory;
@@ -15,13 +13,13 @@ import cn.nukkit.network.protocol.types.NetworkInventoryAction;
 
 import java.util.List;
 
-@Since("1.3.1.0-PN")
+
 public class EnchantTransaction extends InventoryTransaction {
     private Item inputItem;
     private Item outputItem;
     private int cost = -1;
 
-    @Since("1.3.1.0-PN")
+    
     public EnchantTransaction(Player source, List<InventoryAction> actions) {
         super(source, actions);
         for (InventoryAction action : actions) {
@@ -53,7 +51,6 @@ public class EnchantTransaction extends InventoryTransaction {
     }
 
     @Override
-    @PowerNukkitXDifference(info = "Use setItemByPlayer", since = "1.19.50-r3")
     public boolean execute() {
         // This will validate the enchant conditions
         if (this.hasExecuted || !this.canExecute()) {
@@ -104,7 +101,7 @@ public class EnchantTransaction extends InventoryTransaction {
                     this.outputItem = action.getSourceItem(); // Output sent as oldItem
                     break;
                 case NetworkInventoryAction.SOURCE_TYPE_ENCHANT_MATERIAL:
-                    if (action.getTargetItem().equals(Item.get(Item.AIR), false, false)) {
+                    if (action.getTargetItem().isNull()) {
                         this.cost = action.getSourceItem().count;
                     } else {
                         this.cost = action.getSourceItem().count - action.getTargetItem().count;
@@ -115,7 +112,7 @@ public class EnchantTransaction extends InventoryTransaction {
         }
     }
 
-    @Since("1.3.1.0-PN")
+    
     public boolean checkForEnchantPart(List<InventoryAction> actions) {
         for (InventoryAction action : actions) {
             if (action instanceof EnchantingAction) return true;
@@ -123,32 +120,32 @@ public class EnchantTransaction extends InventoryTransaction {
         return false;
     }
 
-    @Since("1.3.1.0-PN")
+    
     public Item getInputItem() {
         return inputItem;
     }
 
-    @Since("1.3.1.0-PN")
+    
     public void setInputItem(Item inputItem) {
         this.inputItem = inputItem;
     }
 
-    @Since("1.3.1.0-PN")
+    
     public Item getOutputItem() {
         return outputItem;
     }
 
-    @Since("1.3.1.0-PN")
+    
     public void setOutputItem(Item outputItem) {
         this.outputItem = outputItem;
     }
 
-    @Since("1.3.1.0-PN")
+    
     public int getCost() {
         return cost;
     }
 
-    @Since("1.3.1.0-PN")
+    
     public void setCost(int cost) {
         this.cost = cost;
     }

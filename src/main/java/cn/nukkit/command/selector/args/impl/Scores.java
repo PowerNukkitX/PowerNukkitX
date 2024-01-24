@@ -2,8 +2,6 @@ package cn.nukkit.command.selector.args.impl;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.ParseUtils;
@@ -19,8 +17,7 @@ import cn.nukkit.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class Scores extends CachedSimpleSelectorArgument {
 
     protected static final String SCORE_SEPARATOR = ",";

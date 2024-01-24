@@ -15,5 +15,4 @@ public class PGZIPState {
         this.str = PGZIPOutputStream.newDeflaterOutputStream(buf, def);
     }
 
-
 }

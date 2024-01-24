@@ -1,50 +1,33 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
+import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
-public class BlockBasalt extends BlockSolidMeta {
+public class BlockBasalt extends BlockSolid {
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(PILLAR_AXIS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BASALT,PILLAR_AXIS);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public BlockBasalt() { this(0); }
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public BlockBasalt(int meta) {
-        super(meta);
+    public BlockBasalt() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBasalt(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
     public String getName() {
         return "Basalt";
-    }
-
-    @Override
-    public int getId() {
-        return BlockID.BASALT;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
@@ -63,19 +46,14 @@ public class BlockBasalt extends BlockSolidMeta {
     }
 
     @Override
-    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public BlockFace.Axis getPillarAxis() {
         return getPropertyValue(PILLAR_AXIS);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setPillarAxis(BlockFace.Axis axis) {
         setPropertyValue(PILLAR_AXIS, axis);
     }

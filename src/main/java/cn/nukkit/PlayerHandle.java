@@ -7,37 +7,37 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.inventory.Inventory;
-import cn.nukkit.inventory.PlayerUIInventory;
-import cn.nukkit.inventory.transaction.*;
+import cn.nukkit.inventory.transaction.CraftingTransaction;
+import cn.nukkit.inventory.transaction.EnchantTransaction;
+import cn.nukkit.inventory.transaction.GrindstoneTransaction;
+import cn.nukkit.inventory.transaction.RepairItemTransaction;
+import cn.nukkit.inventory.transaction.SmithingTransaction;
+import cn.nukkit.inventory.transaction.TradingTransaction;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.SourceInterface;
+import cn.nukkit.network.connection.BedrockServerSession;
 import cn.nukkit.network.protocol.PlayerFogPacket;
 import cn.nukkit.network.protocol.types.PlayerBlockActionData;
-import cn.nukkit.network.session.NetworkPlayerSession;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.DummyBossBar;
 import cn.nukkit.utils.LoginChainData;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.collect.BiMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 /**
  * A PlayerHandle is used to access a player's protected data.
  */
 @SuppressWarnings("ClassCanBeRecord")
-@Since("1.19.80-r2")
-@PowerNukkitXOnly
 public final class PlayerHandle {
     public final @NotNull Player player;
 
@@ -45,10 +45,9 @@ public final class PlayerHandle {
         this.player = player;
     }
 
-    public NetworkPlayerSession getNetworkSession() {
+    public BedrockServerSession getNetworkSession() {
         return player.networkSession;
     }
-
 
     public void sendPlayStatus(int status) {
         player.sendPlayStatus(status);
@@ -62,20 +61,13 @@ public final class PlayerHandle {
         player.forceSendEmptyChunks();
     }
 
-    @Since("1.4.0.0-PN")
     public void removeWindow(Inventory inventory, boolean isResponse) {
         player.removeWindow(inventory, isResponse);
     }
 
-    public void addDefaultWindows() {
-        player.addDefaultWindows();
-    }
-
-    @PowerNukkitOnly
     public void onBlock(Entity entity, EntityDamageEvent e, boolean animate) {
         player.onBlock(entity, e, animate);
     }
-
 
     public long getBreakingBlockTime() {
         return player.breakingBlockTime;
@@ -101,16 +93,8 @@ public final class PlayerHandle {
         return player.windows;
     }
 
-    public BiMap<Integer, Inventory> getWindowIndex() {
+    public Map<Integer, Inventory> getWindowIndex() {
         return player.windowIndex;
-    }
-
-    public Set<Integer> getPermanentWindows() {
-        return player.permanentWindows;
-    }
-
-    public Long2ObjectLinkedOpenHashMap<Boolean> getLoadQueue() {
-        return player.loadQueue;
     }
 
     public Map<UUID, Player> getHiddenPlayers() {
@@ -142,19 +126,31 @@ public final class PlayerHandle {
     }
 
     public int getMessageCounter() {
-        return player.messageCounter;
+        return player.messageLimitCounter;
     }
 
     public void setMessageCounter(int messageCounter) {
-        player.messageCounter = messageCounter;
+        player.messageLimitCounter = messageCounter;
     }
 
-    public PlayerUIInventory getPlayerUIInventory() {
-        return player.playerUIInventory;
+    public long getRandomClientId() {
+        return player.randomClientId;
     }
 
-    public void setPlayerUIInventory(PlayerUIInventory playerUIInventory) {
-        player.playerUIInventory = playerUIInventory;
+    public void setRandomClientId(long randomClientId) {
+        player.randomClientId = randomClientId;
+    }
+
+    public void setConnected(boolean connected) {
+        player.connected = connected;
+    }
+
+    public void setSocketAddress(InetSocketAddress socketAddress) {
+        player.socketAddress = socketAddress;
+    }
+
+    public boolean isRemoveFormat() {
+        return player.removeFormat;
     }
 
     public CraftingTransaction getCraftingTransaction() {
@@ -205,42 +201,6 @@ public final class PlayerHandle {
         player.tradingTransaction = tradingTransaction;
     }
 
-    public long getRandomClientId() {
-        return player.randomClientId;
-    }
-
-    public void setRandomClientId(long randomClientId) {
-        player.randomClientId = randomClientId;
-    }
-
-    public Vector3 getForceMovement() {
-        return player.forceMovement;
-    }
-
-    public void setForceMovement(Vector3 forceMovement) {
-        player.forceMovement = forceMovement;
-    }
-
-    public Vector3 getTeleportPosition() {
-        return player.teleportPosition;
-    }
-
-    public void setTeleportPosition(Vector3 teleportPosition) {
-        player.teleportPosition = teleportPosition;
-    }
-
-    public void setConnected(boolean connected) {
-        player.connected = connected;
-    }
-
-    public void setSocketAddress(InetSocketAddress socketAddress) {
-        player.socketAddress = socketAddress;
-    }
-
-    public boolean isRemoveFormat() {
-        return player.removeFormat;
-    }
-
     public String getUsername() {
         return player.username;
     }
@@ -281,12 +241,8 @@ public final class PlayerHandle {
         player.sleeping = sleeping;
     }
 
-    public Long getClientID() {
-        return player.clientID;
-    }
-
-    public void setClientID(Long clientID) {
-        player.clientID = clientID;
+    public Integer getSubClientId() {
+        return player.subClientId;
     }
 
     public int getChunkLoadCount() {
@@ -485,14 +441,10 @@ public final class PlayerHandle {
         player.completeLoginSequence();
     }
 
-    @Since("1.19.50-r3")
-    @PowerNukkitXOnly
     public void onPlayerLocallyInitialized() {
         player.onPlayerLocallyInitialized();
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     public boolean isValidRespawnBlock(Block block) {
         return player.isValidRespawnBlock(block);
     }
@@ -509,20 +461,12 @@ public final class PlayerHandle {
         player.processLogin();
     }
 
-    public void sendNextChunk() {
-        player.sendNextChunk();
-    }
-
     public void initEntity() {
         player.initEntity();
     }
 
     public void doFirstSpawn() {
         player.doFirstSpawn();
-    }
-
-    public boolean orderChunks() {
-        return player.orderChunks();
     }
 
     public void checkGroundState(double movX, double movY, double movZ, double dx, double dy, double dz) {
@@ -575,22 +519,18 @@ public final class PlayerHandle {
         player.lastBlockAction = actionData;
     }
 
-    @PowerNukkitXDifference(since = "1.19.60-r1", info = "Auto-break custom blocks if client doesn't send the break data-pack.")
     public void onBlockBreakContinue(Vector3 pos, BlockFace face) {
         player.onBlockBreakContinue(pos, face);
     }
 
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
     public void onBlockBreakStart(Vector3 pos, BlockFace face) {
         player.onBlockBreakStart(pos, face);
     }
 
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
     public void onBlockBreakAbort(Vector3 pos, BlockFace face) {
         player.onBlockBreakAbort(pos, face);
     }
 
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
     public void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
         player.onBlockBreakComplete(blockPos, face);
     }

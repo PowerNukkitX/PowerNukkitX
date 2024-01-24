@@ -1,9 +1,7 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockFlowerPot;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -11,30 +9,14 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @since 2016/2/4
  */
 public class BlockEntityFlowerPot extends BlockEntitySpawnable {
-    public BlockEntityFlowerPot(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityFlowerPot(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-    }
-
-    @Since("1.19.60-r1")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        //转换旧形式
-        if (namedTag.contains("item")) {
-            var data = 0;
-            if (namedTag.contains("data")) data = namedTag.getInt("data");
-            else if (namedTag.contains("mData")) data = namedTag.getInt("mData");
-            var block = Block.get(namedTag.getInt("item"), data);
-            if (block instanceof BlockFlowerPot.FlowerPotBlock potBlock && potBlock.isPotBlockState()) {
-                namedTag.putCompound("PlantBlock", potBlock.getPlantBlockTag());
-            }
-        }
     }
 
     @Override
     public boolean isBlockEntityValid() {
-        int blockID = getBlock().getId();
-        return blockID == Block.FLOWER_POT_BLOCK;
+        String blockId = getBlock().getId();
+        return blockId == Block.FLOWER_POT;
     }
 
     @Override
@@ -49,5 +31,4 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
             tag.putCompound("PlantBlock", namedTag.getCompound("PlantBlock"));
         return tag;
     }
-
 }

@@ -1,13 +1,9 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityDaylightDetector;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
@@ -21,29 +17,21 @@ import org.jetbrains.annotations.NotNull;
  * @author CreeperFace
  * @since 2015/11/22
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
-@PowerNukkitDifference(info = "Implements RedstoneComponent and uses methods from it.", since = "1.4.0.0-PN")
-public class BlockDaylightDetector extends BlockTransparentMeta implements RedstoneComponent, BlockEntityHolder<BlockEntityDaylightDetector> {
+public class BlockDaylightDetector extends BlockTransparent implements RedstoneComponent, BlockEntityHolder<BlockEntityDaylightDetector> {
 
-    @Since("1.5.0.0-PN")
-    @PowerNukkitOnly
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.REDSTONE_SIGNAL_BLOCK_PROPERTY;
+    public static final BlockProperties PROPERTIES = new BlockProperties(DAYLIGHT_DETECTOR, CommonBlockProperties.REDSTONE_SIGNAL);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockDaylightDetector() {
-        // Does nothing
+        this(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return DAYLIGHT_DETECTOR;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
+    public BlockDaylightDetector(BlockState state) {
+        super(state);
     }
 
     @Override
@@ -51,19 +39,13 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
         return "Daylight Detector";
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
     @Override
-    public String getBlockEntityType() {
+    @NotNull public String getBlockEntityType() {
         return BlockEntity.DAYLIGHT_DETECTOR;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
     @Override
-    public Class<? extends BlockEntityDaylightDetector> getBlockEntityClass() {
+    @NotNull public Class<? extends BlockEntityDaylightDetector> getBlockEntityClass() {
         return BlockEntityDaylightDetector.class;
     }
 
@@ -72,7 +54,6 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
         return 0.2;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -145,7 +126,7 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
 
     @Override
     public int getWeakPower(BlockFace face) {
-        return getLevel().getBlockDataAt(getFloorX(), getFloorY(), getFloorZ());
+        return getLevel().getBlockStateAt(getFloorX(), getFloorY(), getFloorZ()).getPropertyValue(CommonBlockProperties.REDSTONE_SIGNAL);
     }
 
     @Override
@@ -153,12 +134,10 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
         return true;
     }
 
-    @PowerNukkitOnly
     public boolean isInverted() {
         return false;
     }
 
-    @PowerNukkitOnly
     public void updatePower() {
         int i;
         if (getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
@@ -178,8 +157,11 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
             i = MathHelper.clamp(i, 0, 15);
         } else i = 0;
 
-        if (i != getLevel().getBlockDataAt(getFloorX(), getFloorY(), getFloorZ())) {
-            getLevel().setBlockDataAt(getFloorX(), getFloorY(), getFloorZ(), i);
+        if (i != getLevel().getBlockStateAt(getFloorX(), getFloorY(), getFloorZ()).getPropertyValue(CommonBlockProperties.REDSTONE_SIGNAL)) {
+            BlockState blockState;
+            this.setPropertyValue(CommonBlockProperties.REDSTONE_SIGNAL, i);
+            blockState = this.getBlockState();
+            getLevel().setBlockStateAt(getFloorX(), getFloorY(), getFloorZ(), blockState);
             updateAroundRedstone();
         }
     }

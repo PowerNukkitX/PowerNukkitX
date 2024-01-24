@@ -1,46 +1,30 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
 /**
  * @author PetteriM1
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
-public class BlockWallBanner extends BlockBanner {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.FACING_DIRECTION_BLOCK_PROPERTIES;
+public class BlockWallBanner extends BlockStandingBanner {
+    public static final BlockProperties PROPERTIES = new BlockProperties(WALL_BANNER, FACING_DIRECTION);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockWallBanner() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockWallBanner(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return WALL_BANNER;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
+    public BlockWallBanner(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -51,7 +35,7 @@ public class BlockWallBanner extends BlockBanner {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (this.getSide(getBlockFace().getOpposite()).getId() == AIR) {
+            if (this.getSide(getBlockFace().getOpposite()).isAir()) {
                 this.getLevel().useBreakOn(this);
             }
             return Level.BLOCK_UPDATE_NORMAL;
@@ -59,25 +43,21 @@ public class BlockWallBanner extends BlockBanner {
         return 0;
     }
 
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(FACING_DIRECTION, face);
+        setPropertyValue(FACING_DIRECTION, face.getIndex());
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(FACING_DIRECTION);
+        return BlockFace.fromIndex(getPropertyValue(FACING_DIRECTION));
     }
 
-    @PowerNukkitOnly
     @Override
     public void setDirection(CompassRoseDirection direction) {
         setBlockFace(direction.getClosestBlockFace());
     }
 
-    @PowerNukkitOnly
     @Override
     public CompassRoseDirection getDirection() {
         return getBlockFace().getCompassRoseDirection();

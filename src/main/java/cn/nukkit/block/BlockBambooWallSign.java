@@ -1,18 +1,26 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBambooSign;
+import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
+
+
 public class BlockBambooWallSign extends BlockWallSign {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_WALL_SIGN, FACING_DIRECTION);
+
     public BlockBambooWallSign() {
+        this(PROPERTIES.getDefaultState());
     }
 
-    public int getId() {
-        return BAMBOO_WALL_SIGN;
+    public BlockBambooWallSign(BlockState blockState) {
+        super(blockState);
+    }
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     public String getName() {
@@ -20,8 +28,13 @@ public class BlockBambooWallSign extends BlockWallSign {
     }
 
     @Override
-    protected int getPostId() {
+    public String getStandingSignId() {
         return BAMBOO_STANDING_SIGN;
+    }
+
+    @Override
+    public String getWallSignId() {
+        return BlockAcaciaWallSign.PROPERTIES.getIdentifier();
     }
 
     @Override

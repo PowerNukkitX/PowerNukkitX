@@ -2,7 +2,6 @@ package cn.nukkit.entity.data.profession;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
@@ -18,7 +17,7 @@ public class ProfessionWeapon extends Profession {
 
     @Override
     public ListTag<Tag> buildTrades(int seed) {
-        ListTag<Tag> recipes = new ListTag<>("Recipes");
+        ListTag<Tag> recipes = new ListTag<>();
         Random random = new Random(seed);
 
         int[] enchantments = new int[] {Enchantment.ID_DURABILITY, Enchantment.ID_DAMAGE_ALL, Enchantment.ID_VANISHING_CURSE, Enchantment.ID_DAMAGE_SMITE, Enchantment.ID_DAMAGE_ARTHROPODS, Enchantment.ID_LOOTING, Enchantment.ID_FIRE_ASPECT};
@@ -62,7 +61,7 @@ public class ProfessionWeapon extends Profession {
                         .setTier(2)
                         .setTraderExp(10)
                         .build())
-                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD, 0 , 36), Item.get(Item.BELL))
+                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD, 0 , 36), Item.get(BlockID.BELL))
                         .setMaxUses(12)
                         .setRewardExp((byte) 1)
                         .setTier(2)

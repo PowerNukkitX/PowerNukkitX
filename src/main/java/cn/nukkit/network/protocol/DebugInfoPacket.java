@@ -1,18 +1,16 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.Since;
 import lombok.ToString;
 
-@Since("1.3.0.0-PN")
+
 @ToString
 public class DebugInfoPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.DEBUG_INFO_PACKET;
-
-    @Since("1.3.0.0-PN") public long entityId;
-    @Since("1.3.0.0-PN") public String data;
+    public static final int NETWORK_ID = ProtocolInfo.DEBUG_INFO_PACKET;
+    public long entityId;
+    public String data;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 

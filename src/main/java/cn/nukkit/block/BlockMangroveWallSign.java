@@ -1,32 +1,35 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemMangroveSign;
+import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
+
+
 public class BlockMangroveWallSign extends BlockWallSign {
-    @PowerNukkitOnly
+    public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_WALL_SIGN, FACING_DIRECTION);
+
     public BlockMangroveWallSign() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    @PowerNukkitOnly
-    public BlockMangroveWallSign(int meta) {
-        super(meta);
+    public BlockMangroveWallSign(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
-    public int getId() {
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
+    public String getWallSignId() {
         return MANGROVE_WALL_SIGN;
     }
 
-    @PowerNukkitOnly
     @Override
-    protected int getPostId() {
+    public String getStandingSignId() {
         return MANGROVE_STANDING_SIGN;
     }
 

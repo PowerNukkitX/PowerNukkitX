@@ -1,9 +1,8 @@
 package cn.nukkit.entity;
 
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.UpdateAttributesPacket;
 import cn.nukkit.utils.ServerException;
 
 import java.util.Collection;
@@ -25,8 +24,6 @@ public class Attribute implements Cloneable {
      * <p>
      * Convenient execution of {@link Collection#toArray()}
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public static final Attribute[] EMPTY_ARRAY = new Attribute[0];
 
     /**
@@ -53,6 +50,8 @@ public class Attribute implements Cloneable {
     public static final int EXPERIENCE = 10;
     public static final int LUCK = 11;
     public static final int HORSE_JUMP_STRENGTH = 12;
+    public static final int UNDER_WATER_MOVEMENT_SPEED = 13;
+    public static final int LAVA_MOVEMENT_SPEED = 14;
 
     protected static Map<Integer, Attribute> attributes = new HashMap<>();
     private final int id;
@@ -80,6 +79,8 @@ public class Attribute implements Cloneable {
         addAttribute(KNOCKBACK_RESISTANCE, "minecraft:knockback_resistance", 0.00f, 1.00f, 0.00f);
         addAttribute(MAX_HEALTH, "minecraft:health", 0.00f, 20.00f, 20.00f);
         addAttribute(MOVEMENT_SPEED, "minecraft:movement", 0.00f, 340282346638528859811704183484516925440.00f, 0.10f);
+        addAttribute(UNDER_WATER_MOVEMENT_SPEED, "minecraft:underwater_movement", 0.00f, 340282346638528859811704183484516925440.00f, 0.02f);
+        addAttribute(LAVA_MOVEMENT_SPEED, "minecraft:lava_movement", 0.00f, 340282346638528859811704183484516925440.00f, 0.02f);
         addAttribute(FOLLOW_RANGE, "minecraft:follow_range", 0.00f, 2048.00f, 16.00f, false);
         addAttribute(MAX_HUNGER, "minecraft:player.hunger", 0.00f, 20.00f, 20.00f);
         addAttribute(ATTACK_DAMAGE, "minecraft:attack_damage", 0.00f, 340282346638528859811704183484516925440.00f, 1.00f, false);

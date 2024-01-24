@@ -1,8 +1,6 @@
 package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
@@ -18,8 +16,8 @@ import org.jetbrains.annotations.NotNull;
  * <p>
  * Represents the behavior of a horse when the player tames it
  */
-@PowerNukkitXOnly
-@Since("1.19.80-r3")
+
+
 public class TameHorseExecutor extends FlatRandomRoamExecutor {
     protected final int tameProbability;
     private int tick1;//control the stopTameFailAnimation
@@ -70,9 +68,9 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
         if (currentTargetCalTick >= frequency || (calNextTargetImmediately && needUpdateTarget(entity))) {
             Vector3 target = next(entity);
             if (avoidWater) {
-                int blockId;
+                String blockId;
                 int time = 0;
-                while (time <= maxRetryTime && ((blockId = entity.level.getTickCachedBlock(target.add(0, -1, 0)).getId()) == Block.FLOWING_WATER || blockId == Block.STILL_WATER)) {
+                while (time <= maxRetryTime && ((blockId = entity.level.getTickCachedBlock(target.add(0, -1, 0)).getId()) == Block.FLOWING_WATER || blockId == Block.WATER)) {
                     target = next(entity);
                     time++;
                 }

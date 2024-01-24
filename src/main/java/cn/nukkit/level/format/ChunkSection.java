@@ -1,252 +1,136 @@
 package cn.nukkit.level.format;
 
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.level.Level;
+import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockState;
+import cn.nukkit.level.biome.BiomeID;
+import cn.nukkit.level.format.palette.Palette;
+import cn.nukkit.level.util.NibbleArray;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.utils.BinaryStream;
-import org.jetbrains.annotations.NotNull;
+import cn.nukkit.registry.Registries;
+import io.netty.buffer.ByteBuf;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiPredicate;
 
+import static cn.nukkit.level.format.IChunk.index;
+
 /**
- * @author MagicDroidX (Nukkit Project)
+ * Allay Project 2023/5/30
+ *
+ * @author Cool_Loong
  */
-@ParametersAreNonnullByDefault
-public interface ChunkSection {
-    int getY();
+@NotThreadSafe
+public record ChunkSection(byte y,
+                           Palette<BlockState>[] blockLayer,
+                           Palette<Integer> biomes,
+                           NibbleArray blockLights,
+                           NibbleArray skyLights,
+                           AtomicLong blockChanges) {
+    public static final int SIZE = 16 * 16 * 16;
+    public static final int LAYER_COUNT = 2;
+    public static final int VERSION = 9;
 
-    int getBlockId(int x, int y, int z);
+    public ChunkSection(byte sectionY) {
+        this(sectionY,
+                new Palette[]{new Palette<>(BlockAir.PROPERTIES.getDefaultState()), new Palette<>(BlockAir.PROPERTIES.getDefaultState())},
+                new Palette<>(BiomeID.PLAINS),
+                new NibbleArray(SIZE),
+                new NibbleArray(SIZE),
+                new AtomicLong(0));
+    }
 
-    @PowerNukkitOnly
-    int getBlockId(int x, int y, int z, int layer);
+    public ChunkSection(byte sectionY, Palette<BlockState>[] blockLayer) {
+        this(sectionY, blockLayer,
+                new Palette<>(1),
+                new NibbleArray(SIZE),
+                new NibbleArray(SIZE),
+                new AtomicLong(0));
+    }
 
-    void setBlockId(int x, int y, int z, int id);
-
-    @Deprecated
-    @DeprecationDetails(reason = "The data is limited to 32 bits", replaceWith = "getBlockState", since = "1.4.0.0-PN")
-    int getBlockData(int x, int y, int z);
-
-    @PowerNukkitOnly
-    int getBlockData(int x, int y, int z, int layer);
-
-    @Deprecated
-    @DeprecationDetails(reason = "The data is limited to 32 bits", replaceWith = "getBlockState", since = "1.4.0.0-PN")
-    void setBlockData(int x, int y, int z, int data);
-
-    @Deprecated
-    @DeprecationDetails(reason = "The data is limited to 32 bits", replaceWith = "getBlockState", since = "1.4.0.0-PN")
-    @PowerNukkitOnly
-    void setBlockData(int x, int y, int z, int layer, int data);
-
-    @Deprecated
-    @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN")
-    int getFullBlock(int x, int y, int z);
-
-    @PowerNukkitOnly
-    @Deprecated
-    @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN")
-    int getFullBlock(int x, int y, int z, int layer);
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
-    default BlockState getBlockState(int x, int y, int z) {
+    public BlockState getBlockState(int x, int y, int z) {
         return getBlockState(x, y, z, 0);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
-    default BlockState getBlockState(int x, int y, int z, int layer) {
-        return BlockState.of(getBlockId(x, y, z, layer), getBlockData(x, y, z, layer));
+    public BlockState getBlockState(int x, int y, int z, int layer) {
+        return blockLayer[layer].get(index(x, y, z));
     }
 
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "If the stored state is invalid, returns a BlockUnknown",
-            replaceWith = "getAndSetBlockState")
-    @PowerNukkitOnly
-    @NotNull
-    Block getAndSetBlock(int x, int y, int z, int layer, Block block);
-
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "If the stored state is invalid, returns a BlockUnknown",
-            replaceWith = "getAndSetBlockState")
-    @NotNull
-    Block getAndSetBlock(int x, int y, int z, Block block);
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    BlockState getAndSetBlockState(int x, int y, int z, int layer, BlockState state);
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    default BlockState getAndSetBlockState(int x, int y, int z, BlockState state) {
-        return getAndSetBlockState(x, y, z, 0, state);
+    public void setBlockState(int x, int y, int z, BlockState blockState, int layer) {
+        blockChanges.addAndGet(1);
+        blockLayer[layer].set(index(x, y, z), blockState);
     }
 
-    @PowerNukkitOnly
-    void setBlockId(int x, int y, int z, int layer, int id);
-
-    @Deprecated
-    @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN", replaceWith = "setBlockState(int x, int y, int z, BlockState state)")
-    boolean setFullBlockId(int x, int y, int z, int fullId);
-
-    @Deprecated
-    @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN", replaceWith = "setBlockStateAtLayer(int x, int y, int z, int layer, BlockState state)")
-    @PowerNukkitOnly
-    boolean setFullBlockId(int x, int y, int z, int layer, int fullId);
-
-    @PowerNukkitOnly
-    boolean setBlockAtLayer(int x, int y, int z, int layer, int blockId);
-
-    boolean setBlock(int x, int y, int z, int blockId);
-
-    @Deprecated
-    @DeprecationDetails(reason = "The data is limited to 32 bits", replaceWith = "getBlockState", since = "1.4.0.0-PN")
-    boolean setBlock(int x, int y, int z, int blockId, int meta);
-
-    @Deprecated
-    @DeprecationDetails(reason = "The data is limited to 32 bits", replaceWith = "getBlockState", since = "1.4.0.0-PN")
-    @PowerNukkitOnly
-    boolean setBlockAtLayer(int x, int y, int z, int layer, int blockId, int meta);
-
-    int getBlockSkyLight(int x, int y, int z);
-
-    void setBlockSkyLight(int x, int y, int z, int level);
-
-    int getBlockLight(int x, int y, int z);
-
-    void setBlockLight(int x, int y, int z, int level);
-
-    byte[] getSkyLightArray();
-
-    byte[] getLightArray();
-
-    boolean isEmpty();
-
-    @Since("1.4.0.0-PN")
-    void writeTo(BinaryStream stream);
-
-    /**
-     * 以混淆方式将子区块写入二进制流，通常用于反矿透
-     *
-     * @param stream 二进制流
-     * @param level  子区块所在世界，包含混淆所用数据
-     */
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
-    default void writeObfuscatedTo(BinaryStream stream, Level level) {
-        writeTo(stream);
+    public BlockState getAndSetBlockState(int x, int y, int z, BlockState blockstate, int layer) {
+        blockChanges.addAndGet(1);
+        BlockState result = blockLayer[layer].get(index(x, y, z));
+        blockLayer[layer].set(index(x, y, z), blockstate);
+        return result;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
-    default void setNeedReObfuscate() {
-
+    public void setBiomeId(int x, int y, int z, int biomeId) {
+        biomes.set(index(x, y, z), biomeId);
     }
 
-    /**
-     * @return 此section的方块变更数
-     */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
-    long getBlockChanges();
-
-    /**
-     * 增加方块变更数
-     */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
-    void addBlockChange();
-
-    @PowerNukkitOnly
-    int getMaximumLayer();
-
-    @PowerNukkitOnly
-    @NotNull
-    CompoundTag toNBT();
-
-    @NotNull
-    ChunkSection copy();
-
-    @PowerNukkitOnly("Needed for level backward compatibility")
-    @Since("1.3.0.0-PN")
-    default int getContentVersion() {
-        return 0;
+    public int getBiomeId(int x, int y, int z) {
+        return biomes.get(index(x, y, z));
     }
 
-    @PowerNukkitOnly("Needed for level backward compatibility")
-    @Since("1.3.1.0-PN")
-    default void setContentVersion(int contentVersion) {
-        // Does nothing
+    public byte getBlockLight(int x, int y, int z) {
+        return blockLights.get(index(x, y, z));
     }
 
-    @PowerNukkitOnly()
-    @Since("1.4.0.0-PN")
-    default boolean hasBlocks() {
-        return !isEmpty();
+    public byte getBlockSkyLight(int x, int y, int z) {
+        return skyLights.get(index(x, y, z));
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    boolean setBlockStateAtLayer(int x, int y, int z, int layer, BlockState state);
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    default boolean setBlockState(int x, int y, int z, BlockState state) {
-        return setBlockStateAtLayer(x, y, z, 0, state);
+    public void setBlockLight(int x, int y, int z, byte light) {
+        blockLights.set(index(x, y, z), light);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    int getBlockChangeStateAbove(int x, int y, int z);
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    default void delayPaletteUpdates() {
-        // Does nothing
+    public void setBlockSkyLight(int x, int y, int z, byte light) {
+        skyLights.set(index(x, y, z), light);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    default List<Block> scanBlocks(LevelProvider provider, int offsetX, int offsetZ, BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition) {
-        int offsetY = getY() << 4;
-        List<Block> results = new ArrayList<>();
-
-        BlockVector3 current = new BlockVector3();
-
+    public List<Block> scanBlocks(LevelProvider provider, int offsetX, int offsetZ, BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition) {
+        final List<Block> results = new ArrayList<>();
+        final BlockVector3 current = new BlockVector3();
+        int offsetY = y << 4;
         int minX = Math.max(0, min.x - offsetX);
         int minY = Math.max(0, min.y - offsetY);
         int minZ = Math.max(0, min.z - offsetZ);
-
         for (int x = Math.min(max.x - offsetX, 15); x >= minX; x--) {
             current.x = offsetX + x;
             for (int z = Math.min(max.z - offsetZ, 15); z >= minZ; z--) {
                 current.z = offsetZ + z;
                 for (int y = Math.min(max.y - offsetY, 15); y >= minY; y--) {
                     current.y = offsetY + y;
-                    BlockState state = getBlockState(x, y, z);
+                    BlockState state = blockLayer[0].get(index(x, y, z));
                     if (condition.test(current, state)) {
-                        results.add(state.getBlockRepairing(provider.getLevel(), current, 0));
+                        current.y -= provider.getDimensionData().getMinHeight();
+                        results.add(Registries.BLOCK.get(state, current.x, current.y, current.z, provider.getLevel()));
+                        current.y += provider.getDimensionData().getMinHeight();
                     }
                 }
             }
         }
-
         return results;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    default void compressStorageLayers() {
+    public boolean isEmpty() {
+        return blockLayer[0].isEmpty() && blockLayer[0].get(0) == BlockAir.PROPERTIES.getDefaultState();
+    }
+
+    public void writeToBuf(ByteBuf byteBuf) {
+        byteBuf.writeByte(VERSION);
+        //block layer count
+        byteBuf.writeByte(LAYER_COUNT);
+        byteBuf.writeByte(y);
+
+        blockLayer[0].writeToNetwork(byteBuf, BlockState::blockStateHash);
+        blockLayer[1].writeToNetwork(byteBuf, BlockState::blockStateHash);
     }
 }

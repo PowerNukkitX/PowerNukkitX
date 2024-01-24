@@ -237,7 +237,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
 
             for (Level level : server.getLevels().values()) {
                 sender.sendMessage(
-                        TextFormat.GOLD + "World \"" + level.getFolderName() + "\"" + (!Objects.equals(level.getFolderName(), level.getName()) ? " (" + level.getName() + ")" : "") + ": " +
+                        TextFormat.GOLD + "World \"" + level.getFolderPath() + "\"" + (!Objects.equals(level.getFolderPath(), level.getName()) ? " (" + level.getName() + ")" : "") + ": " +
                                 TextFormat.RED + level.getChunks().size() + TextFormat.GREEN + " chunks, " +
                                 TextFormat.RED + level.getEntities().length + TextFormat.GREEN + " entities, " +
                                 TextFormat.RED + level.getBlockEntities().size() + TextFormat.GREEN + " blockEntities." +
@@ -277,7 +277,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                 // 各个世界的情况
                 for (Level level : server.getLevels().values()) {
                     sender.sendMessage(
-                            TextFormat.GOLD + "World \"" + level.getFolderName() + "\"" + (!Objects.equals(level.getFolderName(), level.getName()) ? " (" + level.getName() + ")" : "") + ": " +
+                            TextFormat.GOLD + "World \"" + level.getFolderPath() + "\"" + (!Objects.equals(level.getFolderPath(), level.getName()) ? " (" + level.getName() + ")" : "") + ": " +
                                     TextFormat.RED + level.getChunks().size() + TextFormat.GREEN + " chunks, " +
                                     TextFormat.RED + level.getEntities().length + TextFormat.GREEN + " entities, " +
                                     TextFormat.RED + level.getBlockEntities().size() + TextFormat.GREEN + " blockEntities." +
@@ -388,7 +388,6 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                 sender.sendMessage("");
             }
         }
-
 
         return true;
     }

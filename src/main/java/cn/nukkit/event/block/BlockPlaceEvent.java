@@ -5,6 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
+import lombok.Getter;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -17,12 +18,10 @@ public class BlockPlaceEvent extends BlockEvent implements Cancellable {
         return handlers;
     }
 
-    protected final Player player;
-
-    protected final Item item;
-
     protected final Block blockReplace;
     protected final Block blockAgainst;
+    protected final Item item;
+    protected final Player player;
 
     public BlockPlaceEvent(Player player, Block blockPlace, Block blockReplace, Block blockAgainst, Item item) {
         super(blockPlace);

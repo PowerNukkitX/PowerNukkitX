@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.controller;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.math.Vector3;
@@ -9,8 +7,8 @@ import cn.nukkit.math.Vector3;
 /**
  * 处理飞行/游泳实体运动
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public class SpaceMoveController implements IController {
     @Override
     public boolean control(EntityIntelligent entity) {

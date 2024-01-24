@@ -1,16 +1,23 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
-/**
- * @author Pub4Game
- * @since 27.12.2015
- */
 public class BlockMobSpawner extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties(MOB_SPAWNER);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
     public BlockMobSpawner() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockMobSpawner(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -19,17 +26,11 @@ public class BlockMobSpawner extends BlockSolid {
     }
 
     @Override
-    public int getId() {
-        return MOB_SPAWNER;
-    }
-
-    @Override
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
-    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -54,14 +55,12 @@ public class BlockMobSpawner extends BlockSolid {
         return false;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;
     }
 
     @Override
-    @PowerNukkitOnly
     public  boolean canBePulled() {
         return false;
     }

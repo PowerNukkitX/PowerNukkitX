@@ -1,38 +1,32 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 
 import java.util.HashSet;
 
-@PowerNukkitOnly
 public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer {
-    @PowerNukkitOnly
     protected ContainerInventory inventory;
 
-    @PowerNukkitOnly
-    public BlockEntitySpawnableContainer(FullChunk chunk, CompoundTag nbt) {
+
+    public BlockEntitySpawnableContainer(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Since("1.19.60-r1")
     @Override
     public void loadNBT() {
         super.loadNBT();
         this.inventory = requireContainerInventory();
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
-            this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+            this.namedTag.putList("Items", new ListTag<CompoundTag>());
         }
 
         ListTag<CompoundTag> list = (ListTag<CompoundTag>) this.namedTag.getList("Items");
@@ -63,13 +57,12 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+        this.namedTag.putList("Items", new ListTag<CompoundTag>());
         for (int index = 0; index < this.getInventory().getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
     }
 
-    @PowerNukkitOnly
     protected int getSlotIndex(int index) {
         ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
         for (int i = 0; i < list.size(); i++) {
@@ -81,7 +74,6 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
         return -1;
     }
 
-    @Override
     public Item getItem(int index) {
         int i = this.getSlotIndex(index);
         if (i < 0) {
@@ -92,14 +84,13 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
         }
     }
 
-    @Override
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 
         CompoundTag d = NBTIO.putItemHelper(item, index);
 
         // If item is air or count less than 0, remove the item from the "Items" list
-        if (item.getId() == Item.AIR || item.getCount() <= 0) {
+        if (item.isNull() || item.getCount() <= 0) {
             if (i >= 0) {
                 this.namedTag.getList("Items").remove(i);
             }
@@ -114,9 +105,8 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
 
     /**
      * 继承于此类的容器方块实体必须实现此方法
+     *
      * @return ContainerInventory
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     protected abstract ContainerInventory requireContainerInventory();
 }

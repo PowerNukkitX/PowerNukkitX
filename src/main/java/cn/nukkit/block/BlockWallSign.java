@@ -1,58 +1,40 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
 /**
  * @author Pub4Game
  * @since 26.12.2015
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
-public class BlockWallSign extends BlockSignPost {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.FACING_DIRECTION_BLOCK_PROPERTIES;
-
-    public BlockWallSign() {
-        this(0);
-    }
-
-    public BlockWallSign(int meta) {
-        super(meta);
-    }
+public class BlockWallSign extends BlockStandingSign {
+    public static final BlockProperties PROPERTIES = new BlockProperties(WALL_SIGN, FACING_DIRECTION);
 
     @Override
-    public int getId() {
-        return WALL_SIGN;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @PowerNukkitOnly
+    public BlockWallSign() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockWallSign(BlockState blockState) {
+        super(blockState);
+    }
+
     @Override
-    public int getWallId() {
+    public String getWallSignId() {
         return getId();
     }
 
-    @PowerNukkitOnly
     @Override
-    protected int getPostId() {
-        return SIGN_POST;
+    public String getStandingSignId() {
+        return STANDING_SIGN;
     }
 
     @Override
@@ -63,7 +45,7 @@ public class BlockWallSign extends BlockSignPost {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (this.getSide(getBlockFace().getOpposite()).getId() == AIR) {
+            if (this.getSide(getBlockFace().getOpposite()).isAir()) {
                 this.getLevel().useBreakOn(this);
             }
             return Level.BLOCK_UPDATE_NORMAL;
@@ -71,25 +53,21 @@ public class BlockWallSign extends BlockSignPost {
         return 0;
     }
 
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(FACING_DIRECTION, face);
+        setPropertyValue(FACING_DIRECTION, face.getIndex());
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(FACING_DIRECTION);
+        return BlockFace.fromIndex(getPropertyValue(FACING_DIRECTION));
     }
 
-    @PowerNukkitOnly
     @Override
     public void setSignDirection(CompassRoseDirection direction) {
         setBlockFace(direction.getClosestBlockFace());
     }
 
-    @PowerNukkitOnly
     @Override
     public CompassRoseDirection getSignDirection() {
         return getBlockFace().getCompassRoseDirection();

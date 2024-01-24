@@ -1,35 +1,35 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBirchSign;
 
-@PowerNukkitOnly
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
+
+
 public class BlockBirchWallSign extends BlockWallSign {
-    @PowerNukkitOnly
+    public static final BlockProperties PROPERTIES = new BlockProperties(BIRCH_WALL_SIGN, FACING_DIRECTION);
+
     public BlockBirchWallSign() {
-        this(0);
+        super(PROPERTIES.getDefaultState());
     }
 
-    @PowerNukkitOnly
-    public BlockBirchWallSign(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return BIRCH_WALL_SIGN;
-    }
-
-    @PowerNukkitOnly
-    @Override
-    protected int getPostId() {
-        return BIRCH_STANDING_SIGN;
+    public BlockBirchWallSign(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "Birch Wall Sign";
+    }
+
+    @Override
+    public String getWallSignId() {
+        return BIRCH_WALL_SIGN;
+    }
+
+    @Override
+    public String getStandingSignId() {
+        return BIRCH_WALL_SIGN;
     }
 
     @Override

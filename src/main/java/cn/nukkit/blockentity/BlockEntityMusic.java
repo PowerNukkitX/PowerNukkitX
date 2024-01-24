@@ -1,17 +1,15 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 public class BlockEntityMusic extends BlockEntity {
 
-    public BlockEntityMusic(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityMusic(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Since("1.19.60-r1")
     @Override
     public void loadNBT() {
         super.loadNBT();

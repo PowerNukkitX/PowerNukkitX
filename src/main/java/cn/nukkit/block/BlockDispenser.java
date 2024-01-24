@@ -1,14 +1,10 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityDispenser;
 import cn.nukkit.blockentity.BlockEntityEjectable;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.dispenser.DispenseBehavior;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.dispenser.DropperDispenseBehavior;
@@ -36,30 +32,29 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
 /**
  * @author CreeperFace
  * @since 15.4.2017
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
-@PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
-public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityEjectable> {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BooleanBlockProperty TRIGGERED = new BooleanBlockProperty("triggered_bit", false);
+public class BlockDispenser extends BlockSolid implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityEjectable> {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, TRIGGERED);
+    public static final BlockProperties PROPERTIES = new BlockProperties(DISPENSER, FACING_DIRECTION, CommonBlockProperties.TRIGGERED_BIT);
 
-    public BlockDispenser() {
-        this(0);
+    @Override
+    @NotNull
+    public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public BlockDispenser(int meta) {
-        super(meta);
+    public BlockDispenser() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockDispenser(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -73,22 +68,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
     }
 
     @Override
-    public int getId() {
-        return DISPENSER;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
     public String getBlockEntityType() {
         return BlockEntity.DISPENSER;
     }
@@ -103,10 +83,8 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
         return 3.5;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
     @Override
+    @NotNull
     public Class<? extends BlockEntityEjectable> getBlockEntityClass() {
         return BlockEntityDispenser.class;
     }
@@ -128,7 +106,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
     }
 
     public boolean isTriggered() {
-        return (this.getDamage() & 8) > 0;
+        return (getPropertyValue(FACING_DIRECTION) & 8) > 0;
     }
 
     public void setTriggered(boolean value) {
@@ -139,7 +117,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
             i |= 8;
         }
 
-        this.setDamage(i);
+        setPropertyValue(FACING_DIRECTION, i);
     }
 
     @Override
@@ -163,7 +141,6 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
         return true;
     }
 
-    @PowerNukkitDifference(info = "BlockData is implemented.", since = "1.4.0.0-PN")
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (player != null) {
@@ -171,18 +148,18 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
                 double y = player.y + player.getEyeHeight();
 
                 if (y - this.y > 2) {
-                    this.setDamage(BlockFace.UP.getIndex());
+                    setBlockFace(BlockFace.UP);
                 } else if (this.y - y > 0) {
-                    this.setDamage(BlockFace.DOWN.getIndex());
+                    setBlockFace(BlockFace.DOWN);
                 } else {
-                    this.setDamage(player.getHorizontalFacing().getOpposite().getIndex());
+                    setBlockFace(player.getHorizontalFacing().getOpposite());
                 }
             } else {
-                this.setDamage(player.getHorizontalFacing().getOpposite().getIndex());
+                setBlockFace(player.getHorizontalFacing().getOpposite());
             }
         }
 
-        CompoundTag nbt = new CompoundTag().putList(new ListTag<>("Items"));
+        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>());
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
@@ -194,11 +171,10 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
                 nbt.put(tag.getKey(), tag.getValue());
             }
         }
-        
+
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 
-    @PowerNukkitDifference(info = "Disables the triggered state, when the block is no longer powered + use #isGettingPower() method.", since = "1.4.0.0-PN")
     @Override
     public int onUpdate(int type) {
         if (!this.level.getServer().isRedstoneEnabled()) {
@@ -227,7 +203,6 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
         return 0;
     }
 
-    @PowerNukkitOnly
     public void dispense() {
         InventoryHolder blockEntity = getBlockEntity();
 
@@ -282,7 +257,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
         inv.setItem(slot, target);
 
         if (result != null) {
-            if (result.getId() != origin.getId() || result.getDamage() != origin.getDamage()) {
+            if (result.getId().equals(origin.getId()) || result.getDamage() != origin.getDamage()) {
                 Item[] fit = inv.addItem(result);
 
                 if (fit.length > 0) {
@@ -296,7 +271,6 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
         }
     }
 
-    @PowerNukkitOnly
     protected DispenseBehavior getDispenseBehavior(Item item) {
         return DispenseBehaviorRegister.getBehavior(item.getId());
     }
@@ -312,7 +286,6 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
     }
 
     @Override
-    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -328,6 +301,11 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromIndex(this.getDamage() & 0x07);
+        return BlockFace.fromIndex(getPropertyValue(FACING_DIRECTION));
+    }
+
+    @Override
+    public void setBlockFace(BlockFace face) {
+        setPropertyValue(FACING_DIRECTION, face.getIndex());
     }
 }

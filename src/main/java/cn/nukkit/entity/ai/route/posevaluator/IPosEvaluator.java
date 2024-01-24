@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.route.posevaluator;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.math.Vector3;
@@ -14,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
  * {@link IPosEvaluator} are used by {@link cn.nukkit.entity.ai.route.finder.IRouteFinder IRouteFinder} to evaluate coordinates<br>
  * By writing specific coordinate {@link IPosEvaluator}, {@link cn.nukkit.entity.ai.route.finder.IRouteFinder IRouteFinder}'s pathfinding strategy can be customized
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public interface IPosEvaluator {
     /**
      * 返回目标坐标是否可以作为路径点，通常用于返回非整数坐标点（飞行和游泳）的实体 <br>

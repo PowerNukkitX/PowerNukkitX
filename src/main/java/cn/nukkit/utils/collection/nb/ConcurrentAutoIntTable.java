@@ -1,8 +1,5 @@
 package cn.nukkit.utils.collection.nb;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
@@ -20,8 +17,8 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
  * @author Cliff Click, SuperIceCN
  * @since 1.5
  */
-@Since("1.20.10-r1")
-@PowerNukkitXOnly
+
+
 public class ConcurrentAutoIntTable implements Serializable {
 
     // --- public interface ---
@@ -197,7 +194,6 @@ public class ConcurrentAutoIntTable implements Serializable {
             while (master._cat == this && !master.CAS_cat(this, newcat)) {/*empty*/}
             return old;
         }
-
 
         // Return the current sum of all things in the table.  Writers can be
         // updating the table furiously, so the sum is only locally accurate.

@@ -5,8 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.RuntimeItems;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
@@ -15,7 +14,7 @@ import cn.nukkit.network.protocol.EntityEventPacket;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class EntityAnimal extends EntityIntelligent {
-    public EntityAnimal(FullChunk chunk, CompoundTag nbt) {
+    public EntityAnimal(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -46,7 +45,7 @@ public abstract class EntityAnimal extends EntityIntelligent {
         EntityEventPacket pk = new EntityEventPacket();
         pk.event = EntityEventPacket.EATING_ITEM;
         pk.eid = this.getId();
-        pk.data = RuntimeItems.getFullId(item.getNetworkId(), item.getDamage());
+        pk.data =  item.getFullId();
         Server.broadcastPacket(this.getViewers().values(), pk);
     }
 

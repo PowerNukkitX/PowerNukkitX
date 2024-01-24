@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.behaviorgroup;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.IBehavior;
 import cn.nukkit.entity.ai.controller.IController;
@@ -16,8 +14,8 @@ import java.util.Set;
 /**
  * 用于未实现AI的实体，作为占位符使用
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public class EmptyBehaviorGroup implements IBehaviorGroup {
 
     protected EntityIntelligent entity;

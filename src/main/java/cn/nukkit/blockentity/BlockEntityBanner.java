@@ -1,8 +1,7 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.BannerPattern;
@@ -12,11 +11,10 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
 
     public int color;
 
-    public BlockEntityBanner(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityBanner(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Since("1.19.60-r1")
     @Override
     public void loadNBT() {
         super.loadNBT();
@@ -61,10 +59,10 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
 
     public void addPattern(BannerPattern pattern) {
         ListTag<CompoundTag> patterns = this.namedTag.getList("Patterns", CompoundTag.class);
-        patterns.add(new CompoundTag("").
+        patterns.add(new CompoundTag().
                 putInt("Color", pattern.color().getDyeData() & 0x0f).
                 putString("Pattern", pattern.type().getName()));
-        this.namedTag.putList(patterns);
+        this.namedTag.putList("Patterns", patterns);
     }
 
     public BannerPattern getPattern(int index) {
@@ -73,7 +71,7 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
 
     public void removePattern(int index) {
         ListTag<CompoundTag> patterns = this.namedTag.getList("Patterns", CompoundTag.class);
-        if(patterns.size() > index && index >= 0) {
+        if (patterns.size() > index && index >= 0) {
             patterns.remove(index);
         }
     }
@@ -86,7 +84,7 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
     public CompoundTag getSpawnCompound() {
         return getDefaultCompound(this, BANNER)
                 .putInt("Base", getBaseColor())
-                .putList(this.namedTag.getList("Patterns"))
+                .putList("Patterns", this.namedTag.getList("Patterns"))
                 .putInt("Type", getType())
                 .putByte("color", this.color);
     }
@@ -94,6 +92,5 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
     public DyeColor getDyeColor() {
         return DyeColor.getByWoolData(color);
     }
-
 
 }

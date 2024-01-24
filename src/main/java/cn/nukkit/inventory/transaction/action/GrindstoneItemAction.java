@@ -19,23 +19,23 @@
 package cn.nukkit.inventory.transaction.action;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+
+
 import cn.nukkit.item.Item;
 
 /**
  * @author joserobjr
  * @since 2021-03-21
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class GrindstoneItemAction extends InventoryAction {
 
     private final int type;
     private final int experience;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public GrindstoneItemAction(Item sourceItem, Item targetItem, int type, int experience) {
         super(sourceItem, targetItem);
         this.type = type;
@@ -66,14 +66,14 @@ public class GrindstoneItemAction extends InventoryAction {
         // Does nothing
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public int getExperience() {
         return experience;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public int getType() {
         return type;
     }

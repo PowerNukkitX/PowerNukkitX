@@ -1,6 +1,5 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.api.Since;
 import com.google.gson.JsonObject;
 
 import java.util.UUID;
@@ -48,6 +47,6 @@ public interface LoginChainData {
 
     String getWaterdogIP();
 
-    @Since("1.2.1.0-PN")
+
     JsonObject getRawData();
 }

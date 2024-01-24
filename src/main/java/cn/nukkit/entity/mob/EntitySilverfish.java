@@ -1,31 +1,29 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityArthropod;
 import cn.nukkit.entity.EntityWalkable;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntitySilverfish extends EntityMob implements EntityWalkable, EntityArthropod {
 
-    public static final int NETWORK_ID = 39;
+    @Override
+    @NotNull public String getIdentifier() {
+        return SILVERFISH;
+    }
 
-    public EntitySilverfish(FullChunk chunk, CompoundTag nbt) {
+    public EntitySilverfish(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+
     @Override
     public String getOriginalName() {
         return "Silverfish";
@@ -47,7 +45,6 @@ public class EntitySilverfish extends EntityMob implements EntityWalkable, Entit
         super.initEntity();
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

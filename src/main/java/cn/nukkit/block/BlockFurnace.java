@@ -1,29 +1,32 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.block.property.CommonBlockProperties;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Angelic47 (Nukkit Project)
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
-public class BlockFurnace extends BlockFurnaceBurning {
 
-    public BlockFurnace() {
-        this(0);
+public class BlockFurnace extends BlockLitFurnace {
+
+    public static final BlockProperties PROPERTIES = new BlockProperties(FURNACE, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public BlockFurnace(int meta) {
-        super(meta);
+    public BlockFurnace() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockFurnace(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
     public String getName() {
         return "Furnace";
-    }
-
-    @Override
-    public int getId() {
-        return FURNACE;
     }
 
     @Override

@@ -1,7 +1,5 @@
 package cn.nukkit.nbt.tag;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 import cn.nukkit.utils.Binary;
@@ -11,38 +9,11 @@ import java.util.Arrays;
 
 public class ByteArrayTag extends Tag {
     public byte[] data;
+    public ByteArrayTag() {
+    }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     public ByteArrayTag(byte[] data) {
-        super("");
         this.data = data;
-    }
-
-    public ByteArrayTag(String name) {
-        super(name);
-    }
-
-    public ByteArrayTag(String name, byte[] data) {
-        super(name);
-        this.data = data;
-    }
-
-    @Override
-    void write(NBTOutputStream dos) throws IOException {
-        if (data == null) {
-            dos.writeInt(0);
-            return;
-        }
-        dos.writeInt(data.length);
-        dos.write(data);
-    }
-
-    @Override
-    void load(NBTInputStream dis) throws IOException {
-        int length = dis.readInt();
-        data = new byte[length];
-        dis.readFully(data);
     }
 
     public byte[] getData() {
@@ -56,7 +27,7 @@ public class ByteArrayTag extends Tag {
 
     @Override
     public String toString() {
-        return "ByteArrayTag " + this.getName() + " (data: 0x" + Binary.bytesToHexString(data, true) + " [" + data.length + " bytes])";
+        return "ByteArrayTag " + " (data: 0x" + Binary.bytesToHexString(data, true) + " [" + data.length + " bytes])";
     }
 
     @Override
@@ -99,7 +70,7 @@ public class ByteArrayTag extends Tag {
     public Tag copy() {
         byte[] cp = new byte[data.length];
         System.arraycopy(data, 0, cp, 0, data.length);
-        return new ByteArrayTag(getName(), cp);
+        return new ByteArrayTag(cp);
     }
 
     @Override

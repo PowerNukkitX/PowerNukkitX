@@ -16,6 +16,7 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.ContainerIds;
+import cn.nukkit.registry.Registries;
 
 import java.util.Collection;
 
@@ -254,7 +255,7 @@ public class PlayerInventory extends BaseInventory {
     private boolean setItem(int index, Item item, boolean send, boolean ignoreArmorEvents) {
         if (index < 0 || index >= this.size) {
             return false;
-        } else if (item.getId() == 0 || item.getCount() <= 0) {
+        } else if (item.isNull() || item.getCount() <= 0) {
             return this.clear(index);
         }
 
@@ -313,7 +314,7 @@ public class PlayerInventory extends BaseInventory {
                 item = ev.getNewItem();
             }
 
-            if (item.getId() != Item.AIR) {
+            if (!item.isNull()) {
                 this.slots.put(index, item.clone());
             } else {
                 this.slots.remove(index);
@@ -379,7 +380,7 @@ public class PlayerInventory extends BaseInventory {
                 items[i] = new ItemBlock(Block.get(BlockID.AIR), null, 0);
             }
 
-            if (items[i].getId() == Item.AIR) {
+            if (items[i].isNull()) {
                 this.clear(this.getSize() + i);
             } else {
                 this.setItem(this.getSize() + i, items[i]);
@@ -452,7 +453,7 @@ public class PlayerInventory extends BaseInventory {
                 continue;
             }
             pk.inventoryId = id;
-            player.dataPacket(pk.clone());
+            player.dataPacket(pk);
 
         }
     }
@@ -484,7 +485,7 @@ public class PlayerInventory extends BaseInventory {
                     continue;
                 }
                 pk.inventoryId = id;
-                player.dataPacket(pk.clone());
+                player.dataPacket(pk);
             }
         }
     }
@@ -497,7 +498,7 @@ public class PlayerInventory extends BaseInventory {
 
         CreativeContentPacket pk = new CreativeContentPacket();
 
-        pk.entries = Item.getCreativeItems().toArray(Item.EMPTY_ARRAY);
+        pk.entries = Registries.CREATIVE.getCreativeItems();
 
         p.dataPacket(pk);
     }
@@ -510,7 +511,7 @@ public class PlayerInventory extends BaseInventory {
         int space = (this.getSize() - slots) * maxStackSize;
 
         for (Item slot : this.getContents().values()) {
-            if (slot == null || slot.getId() == 0) {
+            if (slot == null || slot.isNull()) {
                 space += maxStackSize;
                 continue;
             }

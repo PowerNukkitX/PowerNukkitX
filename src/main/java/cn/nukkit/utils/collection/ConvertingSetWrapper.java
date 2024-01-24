@@ -18,8 +18,6 @@
 
 package cn.nukkit.utils.collection;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.AbstractSet;
@@ -31,15 +29,14 @@ import java.util.function.Function;
  * @author joserobjr
  * @since 2020-10-05
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class ConvertingSetWrapper<V1, V2> extends AbstractSet<V1> {
     private final Function<V1, V2> converter;
     private final Function<V2, V1> reverseConverter;
     private final Set<V2> proxied;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public ConvertingSetWrapper(Set<V2> proxied, Function<V1, V2> converter, Function<V2, V1> reverseConverter) {
         this.proxied = proxied;
         this.converter = converter;
@@ -47,8 +44,7 @@ public class ConvertingSetWrapper<V1, V2> extends AbstractSet<V1> {
     }
 
     @Override
-    @NotNull
-    public Iterator<V1> iterator() {
+    @NotNull public Iterator<V1> iterator() {
         return new ConvertingIterator();
     }
 

@@ -6,7 +6,7 @@ import lombok.ToString;
 public class ServerToClientHandshakePacket extends DataPacket {
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.SERVER_TO_CLIENT_HANDSHAKE_PACKET;
     }
 

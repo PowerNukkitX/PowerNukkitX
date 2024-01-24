@@ -1,19 +1,27 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
-public class BlockMudBrickStairs extends BlockStairs{
+import cn.nukkit.block.property.CommonBlockProperties;
+import org.jetbrains.annotations.NotNull;
 
-    @Override
-    public String getName() {
-        return "Mud Brick Stair";
+public class BlockMudBrickStairs extends BlockStairs {
+    public static final BlockProperties PROPERTIES = new BlockProperties(MUD_BRICK_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+
+    public BlockMudBrickStairs() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockMudBrickStairs(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
-    public int getId() {
-        return MUD_BRICK_STAIRS;
+    public String getName() {
+        return "Mud Bricks Stair";
+    }
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 }

@@ -14,6 +14,6 @@ public class ItemWheat extends Item {
     }
 
     public ItemWheat(Integer meta, int count) {
-        super(WHEAT, meta, count, "Wheat");
+        super(ItemID.WHEAT, meta, count, "Wheat");
     }
 }

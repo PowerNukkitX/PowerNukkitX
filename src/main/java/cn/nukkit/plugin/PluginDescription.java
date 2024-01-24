@@ -1,7 +1,5 @@
 package cn.nukkit.plugin;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.utils.PluginException;
 import org.yaml.snakeyaml.DumperOptions;
@@ -131,8 +129,7 @@ public class PluginDescription {
 
     private List<Permission> permissions = new ArrayList<>();
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
+
     private List<String> features = new ArrayList<>();
 
     public PluginDescription(Map<String, Object> yamlMap) {
@@ -431,8 +428,6 @@ public class PluginDescription {
      * @see PluginDescription
      * @since PowerNukkitX 1.6.0.0-PNX | Nukkit API 1.0.14
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public List<String> getFeatures() {
         return features;
     }

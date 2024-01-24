@@ -4,6 +4,7 @@ import cn.nukkit.entity.mob.EntityCreeper;
 import cn.nukkit.entity.weather.EntityLightningStrike;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 /**
  * @author MagicDroidX (Nukkit Project)

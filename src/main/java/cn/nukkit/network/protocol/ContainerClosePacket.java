@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.Since;
 import lombok.ToString;
 
 /**
@@ -8,15 +7,15 @@ import lombok.ToString;
  */
 @ToString
 public class ContainerClosePacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.CONTAINER_CLOSE_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.CONTAINER_CLOSE_PACKET;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 
     public int windowId;
-    @Since("1.4.0.0-PN") public boolean wasServerInitiated = true;
+    public boolean wasServerInitiated = true;
 
     @Override
     public void decode() {

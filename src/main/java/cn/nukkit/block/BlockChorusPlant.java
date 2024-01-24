@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
@@ -13,14 +12,19 @@ import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockChorusPlant extends BlockTransparent {
-
-    public BlockChorusPlant() {
-        // Nothing
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(CHORUS_PLANT);
 
     @Override
-    public int getId() {
-        return CHORUS_PLANT;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockChorusPlant() {
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockChorusPlant(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -51,16 +55,16 @@ public class BlockChorusPlant extends BlockTransparent {
         Block down = down();
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
             Block side = getSide(face);
-            if (side.getId() == CHORUS_PLANT) {
+            if (side.getId().equals(CHORUS_PLANT)) {
                 if (!horizontal) {
-                    if (up().getId() != AIR && down.getId() != AIR) {
+                    if (!up().getId().equals(AIR) && !down.getId().equals(AIR)) {
                         return false;
                     }
                     horizontal = true;
                 }
 
                 Block sideSupport = side.down();
-                if (sideSupport.getId() == CHORUS_PLANT || sideSupport.getId() == END_STONE) {
+                if (sideSupport.getId().equals(CHORUS_PLANT) || sideSupport.getId().equals(END_STONE)) {
                     horizontalSupported = true;
                 }
             }
@@ -70,7 +74,7 @@ public class BlockChorusPlant extends BlockTransparent {
             return true;
         }
         
-        return down.getId() == CHORUS_PLANT || down.getId() == END_STONE;
+        return down.getId().equals(CHORUS_PLANT) || down.getId().equals(END_STONE);
     }
 
     @Override
@@ -102,13 +106,11 @@ public class BlockChorusPlant extends BlockTransparent {
     }
 
     @Override
-    @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    @PowerNukkitOnly
     public  boolean sticksToPiston() {
         return false;
     }

@@ -1,12 +1,9 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.inventory.StonecutterInventory;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.CommonPropertyMap;
+import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
@@ -16,35 +13,24 @@ import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
-@PowerNukkitOnly
-public class BlockStonecutterBlock extends BlockTransparentMeta implements Faceable {
+public class BlockStonecutterBlock extends BlockTransparent implements Faceable{
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION);
-
-    @PowerNukkitOnly
-    public BlockStonecutterBlock() {
-        this(0);
-    }
-
-    @PowerNukkitOnly
-    public BlockStonecutterBlock(int meta) {
-        super(meta);
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(STONECUTTER_BLOCK, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
-    public int getId() {
-        return STONECUTTER_BLOCK;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @NotNull
-    @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
+    }
+
+    public BlockStonecutterBlock() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockStonecutterBlock(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -53,24 +39,23 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
     }
 
     @Override
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
     public void setBlockFace(BlockFace face) {
         int horizontalIndex = face.getHorizontalIndex();
         if (horizontalIndex > -1) {
-            setDamage(horizontalIndex);
+            this.setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION,
+                    CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(BlockFace.fromHorizontalIndex(horizontalIndex)));
         }
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x7);
+        return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));
     }
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        int[] faces = {2, 3, 0, 1};
-        this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
+        setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getHorizontalIndex()) : BlockFace.SOUTH);
+
         this.getLevel().setBlock(block, this, true, true);
         return true;
     }
@@ -104,7 +89,6 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
         return false;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -115,7 +99,6 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
@@ -123,7 +106,7 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[] {  toItem() };
+        return new Item[]{toItem()};
     }
 
     @Override
@@ -131,9 +114,8 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
         return new ItemBlock(new BlockStonecutterBlock());
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed the returned value")
     @Override
     public double getMaxY() {
-        return y + 9/16.0;
+        return y + 9 / 16.0;
     }
 }

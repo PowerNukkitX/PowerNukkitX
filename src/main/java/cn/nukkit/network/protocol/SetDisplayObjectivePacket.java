@@ -15,7 +15,7 @@ public class SetDisplayObjectivePacket extends DataPacket {
     public SortOrder sortOrder;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.SET_DISPLAY_OBJECTIVE_PACKET;
     }
 

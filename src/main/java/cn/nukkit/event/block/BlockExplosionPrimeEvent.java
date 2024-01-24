@@ -19,12 +19,10 @@
 package cn.nukkit.event.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 import javax.annotation.Nullable;
 
@@ -32,14 +30,12 @@ import javax.annotation.Nullable;
  * @author joserobjr
  * @since 2020-010-06
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public static HandlerList getHandlers() {
         return handlers;
     }
@@ -50,26 +46,18 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
     private final Player player;
 
     @Deprecated
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public BlockExplosionPrimeEvent(Block block, double force) {
         this(block, force, 0);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public BlockExplosionPrimeEvent(Block block, double force, double fireChance) {
         this(block, null, force, fireChance);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     public BlockExplosionPrimeEvent(Block block, @Nullable Player player, double force) {
         this(block, player, force, 0);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     public BlockExplosionPrimeEvent(Block block, @Nullable Player player, double force, double fireChance) {
         super(block);
         this.force = force;
@@ -78,38 +66,26 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
         this.player = player;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public double getForce() {
         return force;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setForce(double force) {
         this.force = force;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public boolean isBlockBreaking() {
         return blockBreaking;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setBlockBreaking(boolean blockBreaking) {
         this.blockBreaking = blockBreaking;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public boolean isIncendiary() {
         return fireChance > 0;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setIncendiary(boolean incendiary) {
         if (!incendiary) {
             fireChance = 0;
@@ -118,22 +94,15 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public double getFireChance() {
         return fireChance;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setFireChance(double fireChance) {
         this.fireChance = fireChance;
     }
 
-    @Nullable
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
-    public Player getPlayer() {
+    public @Nullable Player getPlayer() {
         return player;
     }
 }

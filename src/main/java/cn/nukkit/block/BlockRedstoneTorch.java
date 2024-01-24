@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
@@ -9,28 +8,31 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
+import static cn.nukkit.block.property.CommonBlockProperties.TORCH_FACING_DIRECTION;
+
 /**
  * @author Angelic47 (Nukkit Project)
  */
-@PowerNukkitDifference(info = "Implements RedstoneComponent and uses methods from it.", since = "1.4.0.0-PN")
-public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent {
 
-    public BlockRedstoneTorch() {
-        this(0);
+public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent {
+    public static final BlockProperties PROPERTIES = new BlockProperties(REDSTONE_TORCH, TORCH_FACING_DIRECTION);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public BlockRedstoneTorch(int meta) {
-        super(meta);
+    public BlockRedstoneTorch() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockRedstoneTorch(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
     public String getName() {
         return "Redstone Torch";
-    }
-
-    @Override
-    public int getId() {
-        return REDSTONE_TORCH;
     }
 
     @Override
@@ -105,7 +107,7 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
 
     private boolean checkState() {
         if (isPoweredFromSide()) {
-            this.level.setBlock(getLocation(), Block.get(BlockID.UNLIT_REDSTONE_TORCH, getDamage()), false, true);
+            this.level.setBlock(getLocation(), Block.get(BlockID.UNLIT_REDSTONE_TORCH).setPropertyValues(getPropertyValues()), false, true);
 
             updateAllAroundRedstone(getBlockFace().getOpposite());
             return true;
@@ -114,8 +116,6 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
         return false;
     }
 
-    @PowerNukkitDifference(info = "Check if the side block is piston and if piston is getting power.",
-            since = "1.4.0.0-PN")
     protected boolean isPoweredFromSide() {
         BlockFace face = getBlockFace().getOpposite();
         if (this.getSide(face) instanceof BlockPistonBase && this.getSide(face).isGettingPower()) {

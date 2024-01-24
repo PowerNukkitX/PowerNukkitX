@@ -20,6 +20,6 @@ public class ShowCreditsProcessor extends DataPacketProcessor<ShowCreditsPacket>
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.SHOW_CREDITS_PACKET);
+        return ProtocolInfo.SHOW_CREDITS_PACKET;
     }
 }

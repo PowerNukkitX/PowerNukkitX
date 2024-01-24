@@ -2,8 +2,8 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+
+
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.EntityIntelligentHuman;
@@ -23,8 +23,8 @@ import java.util.Collection;
  * 这个Inventory是一个hack实现，用来实现{@link EntityIntelligentHuman}的背包实现，它无法被open 和 close，因为虚拟人类不会自己打开物品栏<p>
  * 它的{@link FakeHumanInventory#viewers}永远为空,因为不允许打开它
  */
-@PowerNukkitXOnly
-@Since("1.19.50-r3")
+
+
 public class FakeHumanInventory extends BaseInventory {
     protected int itemInHandIndex = 0;
     private int[] hotbar;
@@ -250,7 +250,7 @@ public class FakeHumanInventory extends BaseInventory {
     private boolean setItem(int index, Item item, boolean send, boolean ignoreArmorEvents) {
         if (index < 0 || index >= this.size) {
             return false;
-        } else if (item.getId() == 0 || item.getCount() <= 0) {
+        } else if (item.isNull() || item.getCount() <= 0) {
             return this.clear(index);
         }
         //Armor change
@@ -308,7 +308,7 @@ public class FakeHumanInventory extends BaseInventory {
                 item = ev.getNewItem();
             }
 
-            if (item.getId() != Item.AIR) {
+            if (!item.isNull()) {
                 this.slots.put(index, item.clone());
             } else {
                 this.slots.remove(index);
@@ -384,7 +384,7 @@ public class FakeHumanInventory extends BaseInventory {
                 items[i] = new ItemBlock(Block.get(BlockID.AIR), null, 0);
             }
 
-            if (items[i].getId() == Item.AIR) {
+            if (items[i].isNull()) {
                 this.clear(this.getSize() + i);
             } else {
                 this.setItem(this.getSize() + i, items[i]);
@@ -444,7 +444,7 @@ public class FakeHumanInventory extends BaseInventory {
         int space = (this.getSize() - slots) * maxStackSize;
 
         for (Item slot : this.getContents().values()) {
-            if (slot == null || slot.getId() == 0) {
+            if (slot == null || slot.isNull()) {
                 space += maxStackSize;
                 continue;
             }

@@ -1,15 +1,18 @@
 package cn.nukkit.event.server;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class ConsoleCommandOutputEvent extends ServerEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
+
     protected final CommandSender sender;
     protected String message;
 
@@ -30,7 +33,4 @@ public class ConsoleCommandOutputEvent extends ServerEvent implements Cancellabl
         this.message = message;
     }
 
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 }

@@ -2,9 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.event.block.BlockHarvestEvent;
@@ -23,32 +21,20 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitOnly
 public class BlockSweetBerryBush extends BlockFlowable {
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(BlockCrops.GROWTH);
 
-    @PowerNukkitOnly
+    public static final BlockProperties PROPERTIES = new BlockProperties(SWEET_BERRY_BUSH, CommonBlockProperties.GROWTH);
+
     public BlockSweetBerryBush() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    @PowerNukkitOnly
-    public BlockSweetBerryBush(int meta) {
-        super(meta);
+    public BlockSweetBerryBush(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
-    public int getId() {
-        return SWEET_BERRY_BUSH;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -74,19 +60,18 @@ public class BlockSweetBerryBush extends BlockFlowable {
 
     @Override
     public double getHardness() {
-        return getDamage() == 0? 0 : 0.25;
+        return getGrowth() == 0 ? 0 : 0.25;
     }
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-
-        int age = MathHelper.clamp(getDamage(), 0, 3);
+        int age = MathHelper.clamp(getGrowth(), 0, 3);
 
         if (age < 3 && item.isFertilizer()) {
             BlockSweetBerryBush block = (BlockSweetBerryBush) this.clone();
-            block.setDamage(block.getDamage() + 1);
-            if (block.getDamage() > 3) {
-                block.setDamage(3);
+            block.setGrowth(block.getGrowth() + 1);
+            if (block.getGrowth() > 3) {
+                block.setGrowth(3);
             }
             BlockGrowEvent ev = new BlockGrowEvent(this, block);
             Server.getInstance().getPluginManager().callEvent(ev);
@@ -115,7 +100,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
         }
 
         BlockHarvestEvent event = new BlockHarvestEvent(this,
-                new BlockSweetBerryBush(1),
+                new BlockSweetBerryBush().setGrowth(1),
                 new Item[]{ new ItemSweetBerries(0, amount) }
         );
 
@@ -144,9 +129,9 @@ public class BlockSweetBerryBush extends BlockFlowable {
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
-            if (getDamage() < 3 && ThreadLocalRandom.current().nextInt(5) == 0
+            if (getGrowth() < 3 && ThreadLocalRandom.current().nextInt(5) == 0
                     && getLevel().getFullLight(add(0, 1, 0)) >= BlockCrops.MINIMUM_LIGHT_LEVEL) {
-                BlockGrowEvent event = new BlockGrowEvent(this, Block.get(getId(), getDamage() + 1));
+                BlockGrowEvent event = new BlockGrowEvent(this, Block.get(getId()).setPropertyValue(CommonBlockProperties.GROWTH, getGrowth() + 1));
                 if (!event.isCancelled()) {
                     getLevel().setBlock(this, event.getNewState(), true, true);
                 }
@@ -158,7 +143,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (target.getId() == SWEET_BERRY_BUSH || block.getId() != AIR) {
+        if (target.getId().equals(SWEET_BERRY_BUSH) || !block.isAir()) {
             return false;
         }
         if (isSupportValid(down())) {
@@ -167,30 +152,22 @@ public class BlockSweetBerryBush extends BlockFlowable {
         }
         return false;
     }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public static boolean isSupportValid(Block block) {
-        switch (block.getId()) {
-            case GRASS:
-            case DIRT:
-            case PODZOL:
-            case DIRT_WITH_ROOTS:
-            case MOSS_BLOCK:
-                return true;
-            default:
-                return false;
-        }
+        return switch (block.getId()) {
+            case GRASS, DIRT, PODZOL, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
+            default -> false;
+        };
     }
 
     @Override
     public boolean hasEntityCollision() {
-        return getDamage() > 0;
+        return getGrowth() > 0;
     }
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (getDamage() > 0) {
+        if (getGrowth() > 0) {
             if (entity.positionChanged && !entity.isSneaking() && ThreadLocalRandom.current().nextInt(20) == 0) {
                 if (entity.attack(new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.CONTACT, 1))) {
                     getLevel().addSound(entity, Sound.BLOCK_SWEET_BERRY_BUSH_HURT);
@@ -201,12 +178,12 @@ public class BlockSweetBerryBush extends BlockFlowable {
 
     @Override
     public AxisAlignedBB getCollisionBoundingBox() {
-        return getDamage() > 0? this : null;
+        return getGrowth() > 0 ? this : null;
     }
 
     @Override
     public Item[] getDrops(Item item) {
-        int age = MathHelper.clamp(getDamage(), 0, 3);
+        int age = MathHelper.clamp(getGrowth(), 0, 3);
         
         int amount = 1;
         if (age > 1) {
@@ -217,6 +194,14 @@ public class BlockSweetBerryBush extends BlockFlowable {
         }
 
         return new Item[]{ new ItemSweetBerries(0, amount) };
+    }
+
+    public int getGrowth() {
+        return getPropertyValue(CommonBlockProperties.GROWTH);
+    }
+
+    public Block setGrowth(int growth) {
+        return setPropertyValue(CommonBlockProperties.GROWTH, growth);
     }
 
     @Override

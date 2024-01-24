@@ -1,20 +1,22 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
 public class EntityOcelot extends EntityAnimal implements EntityWalkable {
+    @Override
+    @NotNull public String getIdentifier() {
+        return OCELOT;
+    }
+    
 
-    public static final int NETWORK_ID = 22;
-
-    public EntityOcelot(FullChunk chunk, CompoundTag nbt) {
+    public EntityOcelot(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -34,17 +36,12 @@ public class EntityOcelot extends EntityAnimal implements EntityWalkable {
         return 0.7f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Ocelot";
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public void initEntity() {
@@ -54,6 +51,6 @@ public class EntityOcelot extends EntityAnimal implements EntityWalkable {
 
     @Override
     public boolean isBreedingItem(Item item) {
-        return item.getId() == Item.RAW_FISH;
+        return item.getId() == Item.COD;
     }
 }

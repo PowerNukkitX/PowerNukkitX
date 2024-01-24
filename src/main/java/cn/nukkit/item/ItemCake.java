@@ -18,6 +18,6 @@ public class ItemCake extends Item {
 
     public ItemCake(Integer meta, int count) {
         super(CAKE, 0, count, "Cake");
-        this.block = Block.get(BlockID.CAKE_BLOCK);
+        this.block = Block.get(BlockID.CAKE);
     }
 }

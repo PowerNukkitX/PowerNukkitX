@@ -2,9 +2,9 @@ package cn.nukkit.network.protocol.types;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+
+
+
 import cn.nukkit.inventory.*;
 import cn.nukkit.inventory.transaction.action.*;
 import cn.nukkit.item.Item;
@@ -20,8 +20,8 @@ import java.util.Optional;
 @ToString
 @Log4j2
 public class NetworkInventoryAction {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public static final NetworkInventoryAction[] EMPTY_ARRAY = new NetworkInventoryAction[0];
     public static final int SOURCE_CONTAINER = 0;
     public static final int SOURCE_WORLD = 2; //drop/pickup item entity
@@ -72,24 +72,24 @@ public class NetworkInventoryAction {
     @ToString.Exclude
     public long unknown;
     @Deprecated
-    @Since("1.3.0.0-PN")
+    
     @ToString.Exclude
     public int stackNetworkId = 0;
-    @PowerNukkitXOnly
-    @Since("1.19.80-r2")
+    
+    
     private InventorySource inventorySource;
     public int inventorySlot;
     public Item oldItem;
     public Item newItem;
 
-    @PowerNukkitXOnly
-    @Since("1.19.80-r2")
+    
+    
     public InventorySource getInventorySource() {
         return inventorySource;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.80-r2")
+    
+    
     public void setInventorySource(InventorySource inventorySource) {
         this.inventorySource = inventorySource;
     }

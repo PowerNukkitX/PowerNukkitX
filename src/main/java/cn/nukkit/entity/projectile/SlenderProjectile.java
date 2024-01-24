@@ -2,15 +2,12 @@ package cn.nukkit.entity.projectile;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockSignPost;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.ProjectileHitEvent;
 import cn.nukkit.level.MovingObjectPosition;
-import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.level.generator.populator.impl.structure.utils.block.state.Direction;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BVector3;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -27,11 +24,11 @@ public abstract class SlenderProjectile extends EntityProjectile {
     private static final int SPLIT_NUMBER = 10;
     private MovingObjectPosition lastHitBlock;
 
-    public SlenderProjectile(FullChunk chunk, CompoundTag nbt) {
+    public SlenderProjectile(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    public SlenderProjectile(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public SlenderProjectile(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
@@ -166,15 +163,15 @@ public abstract class SlenderProjectile extends EntityProjectile {
             BVector3 bVector3 = BVector3.fromPos(new Vector3(dx, dy, dz));
             BlockFace blockFace = BlockFace.fromHorizontalAngle(bVector3.getYaw());
             Block block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ()).getSide(blockFace);
-            if (block.getId() == 0) {
+            if (block.isAir()) {
                 blockFace = BlockFace.DOWN;
                 block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ()).down();
             }
-            if (block.getId() == 0) {
+            if (block.isAir()) {
                 blockFace = BlockFace.UP;
                 block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ()).up();
             }
-            if (block.getId() == 0 && collisionBlock != null) {
+            if (block.isAir() && collisionBlock != null) {
                 block = collisionBlock;
             }
             this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, lastHitBlock = MovingObjectPosition.fromBlock(block.getFloorX(), block.getFloorY(), block.getFloorZ(), blockFace, this)));
@@ -197,7 +194,7 @@ public abstract class SlenderProjectile extends EntityProjectile {
         this.lastUpdate = currentTick;
 
         if (this.isCollided && this.hadCollision) {
-            if (lastHitBlock != null && lastHitBlock.typeOfHit == 0 && level.getBlock(lastHitBlock.blockX, lastHitBlock.blockY, lastHitBlock.blockZ).getId() == 0) {
+            if (lastHitBlock != null && lastHitBlock.typeOfHit == 0 && level.getBlock(lastHitBlock.blockX, lastHitBlock.blockY, lastHitBlock.blockZ).isAir()) {
                 this.motionY -= this.getGravity();
                 updateRotation();
                 this.move(this.motionX, this.motionY, this.motionZ);

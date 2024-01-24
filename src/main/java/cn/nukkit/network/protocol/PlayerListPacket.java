@@ -1,8 +1,6 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.data.Skin;
 import lombok.ToString;
 
@@ -14,7 +12,7 @@ import java.util.UUID;
 @ToString
 public class PlayerListPacket extends DataPacket {
 
-    public static final byte NETWORK_ID = ProtocolInfo.PLAYER_LIST_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.PLAYER_LIST_PACKET;
 
     public static final byte TYPE_ADD = 0;
     public static final byte TYPE_REMOVE = 1;
@@ -58,7 +56,7 @@ public class PlayerListPacket extends DataPacket {
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 
@@ -75,8 +73,8 @@ public class PlayerListPacket extends DataPacket {
         public Skin skin;
         public boolean isTeacher;
         public boolean isHost;
-        @PowerNukkitXOnly
-        @Since("1.19.50-r3")
+
+
         public boolean trustedSkin;
 
         public Entry(UUID uuid) {

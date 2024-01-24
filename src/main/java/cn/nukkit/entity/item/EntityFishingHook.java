@@ -2,11 +2,9 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.projectile.SlenderProjectile;
 import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
@@ -19,7 +17,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.randomitem.Fishing;
 import cn.nukkit.level.MovingObjectPosition;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.BubbleParticle;
 import cn.nukkit.level.particle.WaterParticle;
 import cn.nukkit.math.Vector3;
@@ -29,8 +27,11 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
+import cn.nukkit.registry.Registries;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 
@@ -38,8 +39,10 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author PetteriM1
  */
 public class EntityFishingHook extends SlenderProjectile {
-
-    public static final int NETWORK_ID = 77;
+    @Override
+    @NotNull public String getIdentifier() {
+        return FISHING_HOOK;
+    }
 
     public int waitChance = 120;
     public int waitTimer = 240;
@@ -54,21 +57,16 @@ public class EntityFishingHook extends SlenderProjectile {
 
     public Item rod = null;
 
-    public EntityFishingHook(FullChunk chunk, CompoundTag nbt) {
+    public EntityFishingHook(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityFishingHook(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntityFishingHook(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
         // https://github.com/PowerNukkit/PowerNukkit/issues/267
         if (this.age > 0) {
             this.close();
         }
-    }
-
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
     }
 
     @Override
@@ -163,8 +161,6 @@ public class EntityFishingHook extends SlenderProjectile {
         return hasUpdate;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     protected void updateMotion() {
         //正确的浮力
@@ -182,9 +178,9 @@ public class EntityFishingHook extends SlenderProjectile {
     }
 
     public int getWaterHeight() {
-        for (int y = this.getFloorY(); y < level.getMaxHeight(); y++) {
-            int id = this.level.getBlockIdAt(this.getFloorX(), y, this.getFloorZ());
-            if (id == Block.AIR) {
+        for (int y = this.getFloorY(); y <= level.getMaxHeight(); y++) {
+            String id = this.level.getBlockIdAt(this.getFloorX(), y, this.getFloorZ());
+            if (Objects.equals(id, Block.AIR)) {
                 return y;
             }
         }
@@ -242,7 +238,6 @@ public class EntityFishingHook extends SlenderProjectile {
         return dist < 0.15;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "May create custom EntityItem")
     public void reelLine() {
         if (this.shootingEntity instanceof Player player && this.caught) {
             Item item = Fishing.getFishingResult(this.rod);
@@ -255,7 +250,7 @@ public class EntityFishingHook extends SlenderProjectile {
             this.getServer().getPluginManager().callEvent(event);
 
             if (!event.isCancelled()) {
-                EntityItem itemEntity = (EntityItem) Entity.createEntity(EntityItem.NETWORK_ID,
+                EntityItem itemEntity = (EntityItem) Entity.createEntity(Entity.ITEM,
                         this.level.getChunk((int) this.x >> 4, (int) this.z >> 4, true),
                         Entity.getDefaultNBT(
                                         pos,
@@ -286,7 +281,7 @@ public class EntityFishingHook extends SlenderProjectile {
         AddEntityPacket pk = new AddEntityPacket();
         pk.entityRuntimeId = this.getId();
         pk.entityUniqueId = this.getId();
-        pk.type = NETWORK_ID;
+        pk.type = getNetworkId();
         pk.x = (float) this.x;
         pk.y = (float) this.y;
         pk.z = (float) this.z;
@@ -321,7 +316,6 @@ public class EntityFishingHook extends SlenderProjectile {
         }
     }
 
-    @Since("FUTURE")
     public void checkLure() {
         if (rod != null) {
             Enchantment ench = rod.getEnchantment(Enchantment.ID_LURE);
@@ -331,14 +325,11 @@ public class EntityFishingHook extends SlenderProjectile {
         }
     }
 
-    @Since("FUTURE")
     public void setTarget(long eid) {
         this.setDataProperty(new LongEntityData(DATA_TARGET_EID, eid));
         this.canCollide = eid == 0;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Fishing Hook";

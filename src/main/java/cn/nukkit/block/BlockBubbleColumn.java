@@ -1,10 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityPhysical;
 import cn.nukkit.event.block.BlockFadeEvent;
@@ -16,43 +13,26 @@ import cn.nukkit.level.particle.BubbleParticle;
 import cn.nukkit.level.particle.SplashParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitOnly
-public class BlockBubbleColumn extends BlockTransparentMeta {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BooleanBlockProperty DRAG_DOWN = new BooleanBlockProperty("drag_down", false);
-
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(DRAG_DOWN);
-
-    @PowerNukkitOnly
-    public BlockBubbleColumn() {
-        this(0);
-    }
-
-    @PowerNukkitOnly
-    public BlockBubbleColumn(int meta) {
-        super(meta);
-    }
-
+public class BlockBubbleColumn extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BUBBLE_COLUMN, CommonBlockProperties.DRAG_DOWN);
     @Override
-    public int getId() {
-        return BUBBLE_COLUMN;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
+    }
+
+    public BlockBubbleColumn() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBubbleColumn(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -60,7 +40,6 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
         return "Bubble Column";
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 2;
@@ -92,7 +71,7 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
     }
     
     @Override
-    public boolean isBreakable(Item item) {
+    public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return false;
     }
 
@@ -111,8 +90,6 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
         return false;
     }
 
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
@@ -131,8 +108,8 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
     @Override
     public void onEntityCollide(Entity entity) {
         if (entity.canBeMovedByCurrents()) {
-            if (up().getId() == AIR) {
-                if (getDamage() == 1) {
+            if (up().isAir()) {
+                if (isDragDown()) {
                     entity.motionY = Math.max(-0.9, entity.motionY - 0.03);
                 } else {
                     if (entity instanceof EntityPhysical entityPhysical && entity.motionY < -entityPhysical.getGravity() * 8) {
@@ -148,7 +125,7 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
                 }
                 
             } else {
-                if (getDamage() == 1) {
+                if (isDragDown()) {
                     entity.motionY = Math.max(-0.3, entity.motionY - 0.3);
                 } else {
                     entity.motionY = Math.min(0.7, entity.motionY + 0.06);
@@ -161,8 +138,8 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (down().getId() == MAGMA) {
-            setDamage(1);
+        if (down().getId().equals(MAGMA)) {
+            setDragDown(true);
         }
         this.getLevel().setBlock(this, 1, new BlockWater(), true, false);
         this.getLevel().setBlock(this, this, true, true);
@@ -193,29 +170,29 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block water = getLevelBlockAtLayer(1);
-            if (!(water instanceof BlockWater) || water.getDamage() != 0 && water.getDamage() != 8) {
+            if (!(water instanceof BlockFlowingWater w) || w.getLiquidDepth() != 0 && w.getLiquidDepth() != 8) {
                 fadeOut(water);
                 return type;
             }
 
-            if (water.getDamage() == 8) {
-                water.setDamage(0);
+            if (water.blockstate.specialValue() == 8) {
+                w.setLiquidDepth(0);
                 this.getLevel().setBlock(this, 1, water, true, false);
             }
 
             Block down = down();
-            if (down.getId() == BUBBLE_COLUMN) {
-                if (down.getDamage() != this.getDamage()) {
+            if (down instanceof BlockBubbleColumn bubbleColumn) {
+                if (bubbleColumn.isDragDown() != this.isDragDown()) {
                     this.getLevel().setBlock(this, down, true, true);
                 }
-            } else if (down.getId() == MAGMA) {
-                if (this.getDamage() != 1) {
-                    setDamage(1);
+            } else if (down.getId().equals(MAGMA)) {
+                if (!this.isDragDown()) {
+                    setDragDown(true);
                     this.getLevel().setBlock(this, this, true, true);
                 }
-            } else if (down.getId() == SOUL_SAND) {
-                if (this.getDamage() != 0) {
-                    setDamage(0);
+            } else if (down.getId().equals(SOUL_SAND)) {
+                if (this.isDragDown()) {//!= false == true
+                    setDragDown(false);
                     this.getLevel().setBlock(this, this, true, true);
                 }
             } else {
@@ -224,11 +201,11 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
             }
 
             Block up = up();
-            if (up instanceof BlockWater && (up.getDamage() == 0 || up.getDamage() == 8)) {
+            if (up instanceof BlockFlowingWater && (up.blockstate.specialValue() == 0 || up.blockstate.specialValue() == 8)) {
                 BlockFromToEvent event = new BlockFromToEvent(this, up);
                 if (!event.isCancelled()) {
                     this.getLevel().setBlock(up, 1, new BlockWater(), true, false);
-                    this.getLevel().setBlock(up, 0, new BlockBubbleColumn(this.getDamage()), true, true);
+                    this.getLevel().setBlock(up, 0, new BlockBubbleColumn(this.blockstate), true, true);
                 }
             }
 
@@ -238,6 +215,14 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
         return 0;
     }
 
+    public boolean isDragDown(){
+        return getPropertyValue(CommonBlockProperties.DRAG_DOWN);
+    }
+
+    public void setDragDown(boolean dragDown){
+        setPropertyValue(CommonBlockProperties.DRAG_DOWN,dragDown);
+    }
+
     private void fadeOut(Block water) {
         BlockFadeEvent event = new BlockFadeEvent(this, water.clone());
         if (!event.isCancelled()) {
@@ -245,5 +230,4 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
             this.getLevel().setBlock(this, 0, event.getNewState(), true, true);
         }
     }
-
 }

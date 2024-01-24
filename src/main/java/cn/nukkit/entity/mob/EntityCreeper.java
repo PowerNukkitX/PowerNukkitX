@@ -1,8 +1,6 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityWalkable;
@@ -26,9 +24,10 @@ import cn.nukkit.event.entity.CreeperPowerEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -37,15 +36,18 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Box.
  */
 public class EntityCreeper extends EntityMob implements EntityWalkable, EntityInteractable {
-
-    public static final int NETWORK_ID = 33;
+    @Override
+    @NotNull public String getIdentifier() {
+        return CREEPER;
+    }
+    
 
     public static final int DATA_SWELL_DIRECTION = 16;
     public static final int DATA_SWELL = 17;
     public static final int DATA_SWELL_OLD = 18;
     public static final int DATA_POWERED = 19;
 
-    public EntityCreeper(FullChunk chunk, CompoundTag nbt) {
+    public EntityCreeper(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -91,10 +93,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         );
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {
@@ -106,7 +105,6 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         return 1.8f;
     }
 
-    @Since("1.19.60-r1")
     @Override
     public float getFloatingHeight() {
         return 0.6f;
@@ -151,8 +149,6 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Creeper";
@@ -166,7 +162,6 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         return Item.EMPTY_ARRAY;
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;
@@ -183,7 +178,6 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         }
         return super.onInteract(player, item, clickedPos);
     }
-
 
     @Override
     public String getInteractButtonText(Player player) {

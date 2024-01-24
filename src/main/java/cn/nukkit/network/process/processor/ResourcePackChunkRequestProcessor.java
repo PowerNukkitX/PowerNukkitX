@@ -8,7 +8,7 @@ import cn.nukkit.network.protocol.ResourcePackChunkDataPacket;
 import cn.nukkit.network.protocol.ResourcePackChunkRequestPacket;
 import cn.nukkit.resourcepacks.ResourcePack;
 import org.jetbrains.annotations.NotNull;
-import org.powernukkit.version.Version;
+import cn.nukkit.utils.version.Version;
 
 public class ResourcePackChunkRequestProcessor extends DataPacketProcessor<ResourcePackChunkRequestPacket> {
     @Override
@@ -32,6 +32,6 @@ public class ResourcePackChunkRequestProcessor extends DataPacketProcessor<Resou
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.RESOURCE_PACK_CHUNK_REQUEST_PACKET);
+        return ProtocolInfo.RESOURCE_PACK_CHUNK_REQUEST_PACKET;
     }
 }

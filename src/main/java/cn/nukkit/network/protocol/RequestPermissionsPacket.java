@@ -2,16 +2,13 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.network.protocol.types.PlayerPermission;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@PowerNukkitXOnly
-@Since("1.19.50-r3")
+
 public class RequestPermissionsPacket extends DataPacket{
     //权限列表中可控制的能力
     public static final PlayerAbility[] CONTROLLABLE_ABILITIES = new PlayerAbility[]{
@@ -31,7 +28,7 @@ public class RequestPermissionsPacket extends DataPacket{
     public int customPermissions;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.REQUEST_PERMISSIONS_PACKET;
     }
 

@@ -18,9 +18,6 @@
 
 package cn.nukkit.utils.collection;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Objects;
@@ -31,8 +28,8 @@ import java.util.function.Function;
  * @author joserobjr
  * @since 2020-10-05
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
     private final Function<V1, V2> converter;
     private final Function<V2, V1> reverseConverter;
@@ -40,8 +37,7 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
     private final ConvertingSetWrapper<Entry<K, V1>, Entry<K, V2>> entrySet;
     private final boolean convertReturnedNulls;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+
     public ConvertingMapWrapper(Map<K, V2> proxied, Function<V1, V2> converter, Function<V2, V1> reverseConverter, boolean convertReturnedNulls) {
         this.proxied = proxied;
         this.converter = converter;
@@ -54,12 +50,9 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
         );
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public ConvertingMapWrapper(Map<K, V2> proxied, Function<V1, V2> converter, Function<V2, V1> reverseConverter) {
         this(proxied, converter, reverseConverter, false);
     }
-
 
     @Override
     public Set<Entry<K, V1>> entrySet() {

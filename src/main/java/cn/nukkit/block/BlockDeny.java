@@ -1,29 +1,21 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
-@ParametersAreNonnullByDefault
 public class BlockDeny extends BlockSolid {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    public static final BlockProperties PROPERTIES = new BlockProperties(DENY);
+
     public BlockDeny() {
-        // Does nothing
+        super(PROPERTIES.getDefaultState());
     }
 
-    @Override
-    public int getId() {
-        return DENY;
+    public BlockDeny(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -42,8 +34,8 @@ public class BlockDeny extends BlockSolid {
     }
 
     @Override
-    public boolean isBreakable(Item item) {
-        return false;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override
@@ -52,7 +44,6 @@ public class BlockDeny extends BlockSolid {
     }
 
     @Override
-    @PowerNukkitOnly
     public  boolean canBePulled() {
         return false;
     }
@@ -70,14 +61,12 @@ public class BlockDeny extends BlockSolid {
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
-    public boolean isBreakable(Vector3 vector, int layer, BlockFace face, Item item, @Nullable Player player, boolean setBlockDestroy) {
+    public boolean isBreakable(@NotNull Vector3 vector, int layer, BlockFace face, Item item, @Nullable Player player) {
         if (player != null && (!player.isCreative() || !player.isOp())) {
             return false;
         }
-        return super.isBreakable(vector, layer, face, item, player, setBlockDestroy);
+        return super.isBreakable(vector, layer, face, item, player);
     }
 
     @Override

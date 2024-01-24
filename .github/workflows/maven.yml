@@ -29,7 +29,7 @@ jobs:
     needs: check-files
     #    event为push且发生改变或push或commit第一条信息+b +u
     #    event is push and there is a change or push or commit the first message +b +u
-    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository) && (contains(needs.check-files.outputs.changed-files, 'src/') || (github.event_name == 'push' && (contains(github.event.commits[0].message, '+b') || contains(github.event.commits[0].message, '+u'))))
+    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository) && (contains(needs.check-files.outputs.changed-files, 'src/') || contains(needs.check-files.outputs.changed-files, 'scripts/') || (github.event_name == 'push' && (contains(github.event.commits[0].message, '+b') || contains(github.event.commits[0].message, '+u'))))
 
     steps:
       - uses: actions/checkout@v1
@@ -55,17 +55,20 @@ jobs:
           cd target
           ls
           cd ../
-          mv target/powernukkitx-${{ steps.getVersion.outputs.version }}-shaded.jar target/powernukkitx-full.jar
+          mv target/powernukkitx-${{ steps.getVersion.outputs.version }}-shaded.jar target/powernukkitx-shaded.jar
           mv target/powernukkitx-${{ steps.getVersion.outputs.version }}.jar target/powernukkitx.jar
+          mv scripts/start.bat target/start.bat
+          mv scripts/start.sh target/start.sh
           tar -vczf target/libs.tar.gz target/libs
+          zip -r target/powernukkitx-run-full.zip target/libs target/powernukkitx.jar target/start.bat target/start.sh
       - name: Calculate hashes
         run: |
           cd target
           mkdir -p hash/sha256 hash/md5
-          sha256sum powernukkitx-full.jar > hash/sha256/powernukkitx-full.jar.sha256
+          sha256sum powernukkitx-shaded.jar > hash/sha256/powernukkitx-shaded.jar.sha256
           sha256sum powernukkitx.jar > hash/sha256/powernukkitx.jar.sha256
           sha256sum libs.tar.gz > hash/sha256/libs.tar.gz.sha256
-          md5sum powernukkitx-full.jar > hash/md5/powernukkitx-full.jar.md5
+          md5sum powernukkitx-shaded.jar > hash/md5/powernukkitx-shaded.jar.md5
           md5sum powernukkitx.jar > hash/md5/powernukkitx.jar.md5
           md5sum libs.tar.gz > hash/md5/libs.tar.gz.md5
       - name: Archive PNX Core
@@ -74,12 +77,18 @@ jobs:
         with:
           name: PowerNukkitX-Core
           path: target/powernukkitx.jar
-      - name: Archive PNX Full
+      - name: Archive PNX SHADED
         uses: actions/upload-artifact@v3
         if: success()
         with:
-          name: PowerNukkitX-Full
-          path: target/powernukkitx-full.jar
+          name: PowerNukkitX-Shaded
+          path: target/powernukkitx-shaded.jar
+      - name: Archive PNX RUN Full
+        uses: actions/upload-artifact@v3
+        if: success()
+        with:
+          name: PowerNukkitX-RUN-Full
+          path: target/powernukkitx-run-full.zip
       - name: Archive Libraries
         uses: actions/upload-artifact@v3
         if: success()

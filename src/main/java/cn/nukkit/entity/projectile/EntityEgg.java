@@ -1,12 +1,11 @@
 package cn.nukkit.entity.projectile;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.ItemEgg;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -15,20 +14,20 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityEgg extends EntityProjectile {
 
-    public static final int NETWORK_ID = 82;
+    @Override
+    @NotNull public String getIdentifier() {
+        return EGG;
+    }
 
-    public EntityEgg(FullChunk chunk, CompoundTag nbt) {
+    public EntityEgg(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityEgg(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntityEgg(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {
@@ -71,7 +70,6 @@ public class EntityEgg extends EntityProjectile {
         return hasUpdate;
     }
 
-    @PowerNukkitOnly
     @Override
     protected void addHitEffect() {
         int particles = ThreadLocalRandom.current().nextInt(10) + 5;
@@ -81,8 +79,6 @@ public class EntityEgg extends EntityProjectile {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Egg";

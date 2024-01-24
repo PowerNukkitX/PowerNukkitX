@@ -59,6 +59,14 @@ public class DimensionData {
         return this.maxHeight;
     }
 
+    public int getMinSectionY() {
+        return this.minHeight >> 4;
+    }
+
+    public int getMaxSectionY() {
+        return this.maxHeight >> 4;
+    }
+
     public int getHeight() {
         return this.height;
     }

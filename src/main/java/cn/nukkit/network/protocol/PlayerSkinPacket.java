@@ -15,7 +15,7 @@ public class PlayerSkinPacket extends DataPacket {
     public String oldSkinName;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.PLAYER_SKIN_PACKET;
     }
 

@@ -1,8 +1,5 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.math.MathHelper;
 
 import java.util.Arrays;
@@ -24,7 +21,7 @@ public enum DyeColor {
     MAGENTA(13, 2, 13, "Magenta", BlockColor.MAGENTA_BLOCK_COLOR, new BlockColor(0xC74EBD), new BlockColor(0xc7, 0x4e, 0xbd)),
     ORANGE(14, 1, 14, "Orange", BlockColor.ORANGE_BLOCK_COLOR, new BlockColor(0xFF9801), new BlockColor(0xf9, 0x80, 0x1d)),
     WHITE(15, 0, 19, "White", BlockColor.WHITE_BLOCK_COLOR, new BlockColor(0xF0F0F0), new BlockColor(0xf0, 0xf0, 0xf0)),
-    @PowerNukkitOnly @Since("1.6.0.0-PNX")
+
     BONE_MEAL(15, 0, 15, "White", "Bone Meal", BlockColor.WHITE_BLOCK_COLOR, new BlockColor(0xF0F0F0), new BlockColor(0xf0, 0xf0, 0xf0));
 
 
@@ -88,14 +85,10 @@ public enum DyeColor {
      * The {@code minecraft:dye} meta that actually represents the item dye for that color.
      * Uses black_dye instead of ink_sac, white_dye instead of bone_meal, and so on.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public int getItemDyeMeta() {
         return itemDyeMeta;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public BlockColor getLeatherColor() {
         return leatherColor;
     }
@@ -126,7 +119,7 @@ public enum DyeColor {
         }
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "When overflowed, instead of wrapping, the meta will be clamped, accepts the new dye metas")
+    
     public static DyeColor getByDyeData(int dyeColorMeta) {
         return BY_DYE_ITEM_DATA[MathHelper.clamp(dyeColorMeta, 0, BY_DYE_ITEM_DATA.length - 1)];
     }

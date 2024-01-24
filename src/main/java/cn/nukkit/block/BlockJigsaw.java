@@ -1,81 +1,68 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+public class BlockJigsaw extends BlockSolid implements Faceable {
+    public static final BlockProperties PROPERTIES = new BlockProperties(JIGSAW, CommonBlockProperties.FACING_DIRECTION, CommonBlockProperties.ROTATION);
 
-@PowerNukkitOnly
-public class BlockJigsaw extends BlockSolidMeta implements Faceable {
-    private static final IntBlockProperty ROTATION = new IntBlockProperty("rotation", false, 3);
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, ROTATION);
-
-    @PowerNukkitOnly
     public BlockJigsaw() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    @PowerNukkitOnly
-    public BlockJigsaw(int meta) {
-        super(meta);
+    public BlockJigsaw(BlockState blockstate) {
+        super(blockstate);
     }
-    
+
     @Override
     public String getName() {
         return "Jigsaw";
-    }
-    
-    @Override
-    public int getId() {
-        return JIGSAW;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override
     public boolean canHarvestWithHand() {
         return false;
     }
-    
+
     @Override
     public double getResistance() {
         return 18000000;
     }
-    
+
     @Override
     public double getHardness() {
         return -1;
     }
-    
+
     @Override
-    public boolean isBreakable(Item item) {
+    public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return false;
     }
-    
+
     @Override
     public boolean canBePushed() {
         return false;
     }
-    
+
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromIndex(getDamage());
+        return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
+    }
+
+    @Override
+    public void setBlockFace(BlockFace face) {
+        setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
     }
 
     @Override
@@ -84,17 +71,17 @@ public class BlockJigsaw extends BlockSolidMeta implements Faceable {
             double y = player.y + player.getEyeHeight();
 
             if (y - this.y > 2) {
-                this.setDamage(BlockFace.UP.getIndex());
+                this.setBlockFace(BlockFace.UP);
             } else if (this.y - y > 0) {
-                this.setDamage(BlockFace.DOWN.getIndex());
+                this.setBlockFace(BlockFace.DOWN);
             } else {
-                this.setDamage(player.getHorizontalFacing().getOpposite().getIndex());
+                this.setBlockFace(player.getHorizontalFacing().getOpposite());
             }
         } else {
-            this.setDamage(player.getHorizontalFacing().getOpposite().getIndex());
+            this.setBlockFace(player.getHorizontalFacing().getOpposite());
         }
         this.level.setBlock(block, this, true, false);
-        
+
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
 }

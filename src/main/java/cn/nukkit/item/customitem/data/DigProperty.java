@@ -1,13 +1,10 @@
 package cn.nukkit.item.customitem.data;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import javax.annotation.Nullable;
 
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
 public class DigProperty {
     private CompoundTag states;
     private Integer speed;
@@ -25,8 +22,7 @@ public class DigProperty {
         this.speed = speed;
     }
 
-    @Nullable
-    public Integer getSpeed() {
+    public @Nullable Integer getSpeed() {
         return speed;
     }
 

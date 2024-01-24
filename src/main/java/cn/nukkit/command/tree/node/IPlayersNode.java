@@ -2,8 +2,6 @@ package cn.nukkit.command.tree.node;
 
 import cn.nukkit.IPlayer;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.entity.Entity;
@@ -18,8 +16,8 @@ import java.util.stream.Collectors;
  * <p>
  * 不会默认使用，需要手动指定
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public class IPlayersNode extends ParamNode<List<IPlayer>> {
     @Override
     public void fill(String arg) {

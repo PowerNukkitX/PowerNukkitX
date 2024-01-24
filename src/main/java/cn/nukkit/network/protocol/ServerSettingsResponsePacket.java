@@ -9,7 +9,7 @@ public class ServerSettingsResponsePacket extends DataPacket {
     public String data;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.SERVER_SETTINGS_RESPONSE_PACKET;
     }
 

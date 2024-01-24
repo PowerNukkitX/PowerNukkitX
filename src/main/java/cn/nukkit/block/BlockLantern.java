@@ -1,12 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
@@ -14,39 +8,23 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitOnly
+import static cn.nukkit.block.property.CommonBlockProperties.HANGING;
+
+
 public class BlockLantern extends BlockFlowable {
-    @Deprecated(since = "1.20.0-r2",forRemoval = true)
-    @DeprecationDetails(since = "1.20.0-r2", reason = "replace to CommonBlockProperties")
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final BooleanBlockProperty HANGING = new BooleanBlockProperty("hanging", false);
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.HANGING);
-
-    @PowerNukkitOnly
-    public BlockLantern() {
-        this(0);
-    }
-
-    @PowerNukkitOnly
-    public BlockLantern(int meta) {
-        super(meta);
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(LANTERN, HANGING);
 
     @Override
-    public int getId() {
-        return LANTERN;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
+    }
+
+    public BlockLantern() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockLantern(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -57,11 +35,10 @@ public class BlockLantern extends BlockFlowable {
     private boolean isBlockAboveValid() {
         Block support = up();
         switch (support.getId()) {
-            case CHAIN_BLOCK:
-            case IRON_BARS:
-            case HOPPER_BLOCK:
+            case CHAIN, IRON_BARS, HOPPER -> {
                 return true;
-            default:
+            }
+            default -> {
                 if (support instanceof BlockWallBase || support instanceof BlockFence) {
                     return true;
                 }
@@ -72,12 +49,13 @@ public class BlockLantern extends BlockFlowable {
                     return true;
                 }
                 return BlockLever.isSupportValid(support, BlockFace.DOWN);
+            }
         }
     }
 
     private boolean isBlockUnderValid() {
         Block support = down();
-        if (support.getId() == HOPPER_BLOCK) {
+        if (support.getId().equals(HOPPER)) {
             return true;
         }
         if (support instanceof BlockWallBase || support instanceof BlockFence) {
@@ -184,25 +162,18 @@ public class BlockLantern extends BlockFlowable {
     }
 
     @Override
-    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
 
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public boolean isHanging() {
-        return getBooleanValue(CommonBlockProperties.HANGING);
+        return getPropertyValue(HANGING);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setHanging(boolean hanging) {
-        setBooleanValue(CommonBlockProperties.HANGING, hanging);
+        setPropertyValue(HANGING, hanging);
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;

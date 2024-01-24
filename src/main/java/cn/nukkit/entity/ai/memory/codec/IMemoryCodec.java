@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.memory.codec;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -12,8 +10,8 @@ import java.util.function.Function;
 /**
  * 记忆编解码器
  */
-@PowerNukkitXOnly
-@Since("1.19.63-r1")
+
+
 public interface IMemoryCodec<Data> {
     /**
      * 获取记忆解码器，用于从CompoundTag读取持久化数据写入到实体记忆中

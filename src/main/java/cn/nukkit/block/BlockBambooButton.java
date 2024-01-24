@@ -1,18 +1,22 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.item.ItemTool;
+import cn.nukkit.block.property.CommonBlockProperties;
+import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
-public class BlockBambooButton extends BlockButtonWooden {
-    public BlockBambooButton() {
-    }
+public class BlockBambooButton extends BlockWoodenButton {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_BUTTON, CommonBlockProperties.BUTTON_PRESSED_BIT, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
-    public int getId() {
-        return BAMBOO_BUTTON;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockBambooButton() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBambooButton(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -20,8 +24,4 @@ public class BlockBambooButton extends BlockButtonWooden {
         return "Bamboo Button";
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
 }

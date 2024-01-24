@@ -1,14 +1,12 @@
 package cn.nukkit.inventory.transaction;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAnvil;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.blockproperty.value.AnvilDamage;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.BlockState;
+import cn.nukkit.block.property.enums.Damage;
 import cn.nukkit.event.block.AnvilDamageEvent;
-import cn.nukkit.event.block.AnvilDamageEvent.DamageCause;
 import cn.nukkit.event.inventory.RepairItemEvent;
 import cn.nukkit.inventory.AnvilInventory;
 import cn.nukkit.inventory.FakeBlockMenu;
@@ -23,11 +21,14 @@ import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-@Since("1.4.0.0-PN")
+import static cn.nukkit.block.property.CommonBlockProperties.DAMAGE;
+
+@Slf4j
 public class RepairItemTransaction extends InventoryTransaction {
 
     private Item inputItem;
@@ -36,7 +37,6 @@ public class RepairItemTransaction extends InventoryTransaction {
 
     private int cost;
 
-    @Since("1.4.0.0-PN")
     public RepairItemTransaction(Player source, List<InventoryAction> actions) {
         super(source, actions);
         for (InventoryAction action : actions) {
@@ -72,7 +72,7 @@ public class RepairItemTransaction extends InventoryTransaction {
         AnvilInventory inventory = (AnvilInventory) getSource().getWindowById(Player.ANVIL_WINDOW_ID);
 
         if (inventory.getCost() != this.cost && !this.source.isCreative()) {
-            this.source.getServer().getLogger().debug("Got unexpected cost " + inventory.getCost() + " from " + this.source.getName() + "(expected " + this.cost + ")");
+            log.debug("Got unexpected cost " + inventory.getCost() + " from " + this.source.getName() + "(expected " + this.cost + ")");
         }
 
         RepairItemEvent event = new RepairItemEvent(inventory, this.inputItem, this.outputItem, this.materialItem, this.cost, this.source);
@@ -93,23 +93,24 @@ public class RepairItemTransaction extends InventoryTransaction {
 
         FakeBlockMenu holder = inventory.getHolder();
         Block block = this.source.level.getBlock(holder.getFloorX(), holder.getFloorY(), holder.getFloorZ());
-        if (block.getId() == Block.ANVIL) {
-            int oldDamage = block.getDamage() >= 8 ? 2 : block.getDamage() >= 4 ? 1 : 0;
-            int newDamage = !this.source.isCreative() && ThreadLocalRandom.current().nextInt(100) < 12 ? oldDamage + 1 : oldDamage;
-
-            AnvilDamageEvent ev = new AnvilDamageEvent(block, oldDamage, newDamage, DamageCause.USE, this.source);
+        if (block instanceof BlockAnvil anvil) {
+            Damage oldDamage = anvil.getAnvilDamage();
+            Damage newDamage = !this.source.isCreative() && ThreadLocalRandom.current().nextInt(100) < 12 ? oldDamage.next() : oldDamage;
+            BlockAnvil newblockAnvil = new BlockAnvil(anvil.getBlockState());
+            newblockAnvil.setAnvilDamage(newDamage);
+            AnvilDamageEvent ev = new AnvilDamageEvent(block, newblockAnvil, AnvilDamageEvent.DamageCause.USE, this.source, null);
             ev.setCancelled(oldDamage == newDamage);
             this.source.getServer().getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
-                BlockState newState = ev.getNewBlockState();
-                if (newState.getBlockId() == BlockID.AIR
-                        || newState.getBlockId() == BlockID.ANVIL && newState.getPropertyValue(BlockAnvil.DAMAGE).equals(AnvilDamage.BROKEN)) {
+                Block b = ev.getNewBlock();
+                if (b.isAir()
+                        || b.getId() == BlockID.ANVIL
+                        && b.getPropertyValue(DAMAGE).equals(Damage.BROKEN)) {
                     this.source.level.setBlock(block, Block.get(Block.AIR), true);
                     this.source.level.addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_BREAK);
                 } else {
-                    if (!newState.equals(ev.getOldBlockState())) {
-                        Block newBlock = newState.getBlockRepairing(block);
-                        this.source.level.setBlock(block, newBlock, true);
+                    if (!b.equals(ev.getOldBlock())) {
+                        this.source.level.setBlock(block, b, true);
                     }
                     this.source.level.addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_USE);
                 }
@@ -300,7 +301,7 @@ public class RepairItemTransaction extends InventoryTransaction {
     }
 
     private boolean isMapRecipe() {
-        return this.hasMaterial() && (this.inputItem.getId() == Item.MAP || this.inputItem.getId() == Item.EMPTY_MAP)
+        return this.hasMaterial() && (this.inputItem.getId() == Item.FILLED_MAP || this.inputItem.getId() == Item.EMPTY_MAP)
                 && (this.materialItem.getId() == Item.EMPTY_MAP || this.materialItem.getId() == Item.PAPER || this.materialItem.getId() == Item.COMPASS);
     }
 
@@ -308,111 +309,56 @@ public class RepairItemTransaction extends InventoryTransaction {
         if (this.inputItem.getId() == Item.EMPTY_MAP) {
             return this.inputItem.getDamage() != 2 && this.materialItem.getId() == Item.COMPASS // locator
                     && this.outputItem.getId() == Item.EMPTY_MAP && this.outputItem.getDamage() == 2 && this.outputItem.getCount() == 1;
-        } else if (this.inputItem.getId() == Item.MAP && this.outputItem.getDamage() == this.inputItem.getDamage()) {
+        } else if (this.inputItem.getId() == Item.FILLED_MAP && this.outputItem.getDamage() == this.inputItem.getDamage()) {
             if (this.materialItem.getId() == Item.COMPASS) { // locator
-                return this.inputItem.getDamage() != 2 && this.outputItem.getId() == Item.MAP && this.outputItem.getCount() == 1;
+                return this.inputItem.getDamage() != 2 && this.outputItem.getId() == Item.FILLED_MAP && this.outputItem.getCount() == 1;
             } else if (this.materialItem.getId() == Item.EMPTY_MAP) { // clone
-                return this.outputItem.getId() == Item.MAP && this.outputItem.getCount() == 2;
+                return this.outputItem.getId() == Item.FILLED_MAP && this.outputItem.getCount() == 2;
             } else if (this.materialItem.getId() == Item.PAPER && this.materialItem.getCount() >= 8) { // zoom out
-                return this.inputItem.getDamage() < 3 && this.outputItem.getId() == Item.MAP && this.outputItem.getCount() == 1;
+                return this.inputItem.getDamage() < 3 && this.outputItem.getId() == Item.FILLED_MAP && this.outputItem.getCount() == 1;
             }
         }
         return false;
     }
 
     private boolean matchRepairItem() {
-        switch (this.inputItem.getId()) {
-            case Item.LEATHER_CAP:
-            case Item.LEATHER_TUNIC:
-            case Item.LEATHER_PANTS:
-            case Item.LEATHER_BOOTS:
-                return this.materialItem.getId() == Item.LEATHER;
-            case Item.WOODEN_SWORD:
-            case Item.WOODEN_PICKAXE:
-            case Item.WOODEN_SHOVEL:
-            case Item.WOODEN_AXE:
-            case Item.WOODEN_HOE:
-            case Item.SHIELD:
-                return this.materialItem.getId() == Item.PLANKS;
-            case Item.STONE_SWORD:
-            case Item.STONE_PICKAXE:
-            case Item.STONE_SHOVEL:
-            case Item.STONE_AXE:
-            case Item.STONE_HOE:
-                return this.materialItem.getId() == Item.COBBLESTONE;
-            case Item.IRON_SWORD:
-            case Item.IRON_PICKAXE:
-            case Item.IRON_SHOVEL:
-            case Item.IRON_AXE:
-            case Item.IRON_HOE:
-            case Item.IRON_HELMET:
-            case Item.IRON_CHESTPLATE:
-            case Item.IRON_LEGGINGS:
-            case Item.IRON_BOOTS:
-            case Item.CHAIN_HELMET:
-            case Item.CHAIN_CHESTPLATE:
-            case Item.CHAIN_LEGGINGS:
-            case Item.CHAIN_BOOTS:
-                return this.materialItem.getId() == Item.IRON_INGOT;
-            case Item.GOLD_SWORD:
-            case Item.GOLD_PICKAXE:
-            case Item.GOLD_SHOVEL:
-            case Item.GOLD_AXE:
-            case Item.GOLD_HOE:
-            case Item.GOLD_HELMET:
-            case Item.GOLD_CHESTPLATE:
-            case Item.GOLD_LEGGINGS:
-            case Item.GOLD_BOOTS:
-                return this.materialItem.getId() == Item.GOLD_INGOT;
-            case Item.DIAMOND_SWORD:
-            case Item.DIAMOND_PICKAXE:
-            case Item.DIAMOND_SHOVEL:
-            case Item.DIAMOND_AXE:
-            case Item.DIAMOND_HOE:
-            case Item.DIAMOND_HELMET:
-            case Item.DIAMOND_CHESTPLATE:
-            case Item.DIAMOND_LEGGINGS:
-            case Item.DIAMOND_BOOTS:
-                return this.materialItem.getId() == Item.DIAMOND;
-            case Item.NETHERITE_SWORD:
-            case Item.NETHERITE_PICKAXE:
-            case Item.NETHERITE_SHOVEL:
-            case Item.NETHERITE_AXE:
-            case Item.NETHERITE_HOE:
-            case Item.NETHERITE_HELMET:
-            case Item.NETHERITE_CHESTPLATE:
-            case Item.NETHERITE_LEGGINGS:
-            case Item.NETHERITE_BOOTS:
-                return this.materialItem.getId() == Item.NETHERITE_INGOT;
-            case Item.TURTLE_SHELL:
-                return this.materialItem.getId() == Item.SCUTE;
-            case Item.ELYTRA:
-                return this.materialItem.getId() == Item.PHANTOM_MEMBRANE;
-        }
-        return false;
+        return switch (this.inputItem.getId()) {
+            case Item.LEATHER_HELMET, Item.LEATHER_CHESTPLATE, Item.LEATHER_LEGGINGS, Item.LEATHER_BOOTS ->
+                    this.materialItem.getId() == Item.LEATHER;
+            case Item.WOODEN_SWORD, Item.WOODEN_PICKAXE, Item.WOODEN_SHOVEL, Item.WOODEN_AXE, Item.WOODEN_HOE, Item.SHIELD ->
+                    this.materialItem.getId() == Item.PLANKS;
+            case Item.STONE_SWORD, Item.STONE_PICKAXE, Item.STONE_SHOVEL, Item.STONE_AXE, Item.STONE_HOE ->
+                    this.materialItem.getId() == BlockID.COBBLESTONE;
+            case Item.IRON_SWORD, Item.IRON_PICKAXE, Item.IRON_SHOVEL, Item.IRON_AXE, Item.IRON_HOE, Item.IRON_HELMET, Item.IRON_CHESTPLATE, Item.IRON_LEGGINGS, Item.IRON_BOOTS, Item.CHAINMAIL_HELMET, Item.CHAINMAIL_CHESTPLATE, Item.CHAINMAIL_LEGGINGS, Item.CHAINMAIL_BOOTS ->
+                    this.materialItem.getId() == Item.IRON_INGOT;
+            case Item.GOLDEN_SWORD, Item.GOLDEN_PICKAXE, Item.GOLDEN_SHOVEL, Item.GOLDEN_AXE, Item.GOLDEN_HOE, Item.GOLDEN_HELMET, Item.GOLDEN_CHESTPLATE, Item.GOLDEN_LEGGINGS, Item.GOLDEN_BOOTS ->
+                    this.materialItem.getId() == Item.GOLD_INGOT;
+            case Item.DIAMOND_SWORD, Item.DIAMOND_PICKAXE, Item.DIAMOND_SHOVEL, Item.DIAMOND_AXE, Item.DIAMOND_HOE, Item.DIAMOND_HELMET, Item.DIAMOND_CHESTPLATE, Item.DIAMOND_LEGGINGS, Item.DIAMOND_BOOTS ->
+                    this.materialItem.getId() == Item.DIAMOND;
+            case Item.NETHERITE_SWORD, Item.NETHERITE_PICKAXE, Item.NETHERITE_SHOVEL, Item.NETHERITE_AXE, Item.NETHERITE_HOE, Item.NETHERITE_HELMET, Item.NETHERITE_CHESTPLATE, Item.NETHERITE_LEGGINGS, Item.NETHERITE_BOOTS ->
+                    this.materialItem.getId() == Item.NETHERITE_INGOT;
+            case Item.TURTLE_HELMET -> this.materialItem.getId() == Item.SCUTE;
+            case Item.ELYTRA -> this.materialItem.getId() == Item.PHANTOM_MEMBRANE;
+            default -> false;
+        };
     }
 
-    @Since("1.4.0.0-PN")
     public Item getInputItem() {
         return this.inputItem;
     }
 
-    @Since("1.4.0.0-PN")
     public Item getMaterialItem() {
         return this.materialItem;
     }
 
-    @Since("1.4.0.0-PN")
     public Item getOutputItem() {
         return this.outputItem;
     }
 
-    @Since("1.4.0.0-PN")
     public int getCost() {
         return this.cost;
     }
 
-    @Since("1.4.0.0-PN")
     public static boolean checkForRepairItemPart(List<InventoryAction> actions) {
         for (InventoryAction action : actions) {
             if (action instanceof RepairItemAction) {

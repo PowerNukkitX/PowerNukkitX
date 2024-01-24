@@ -1,10 +1,9 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.inventory.GrindstoneInventory;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.Attachment;
+import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
@@ -15,46 +14,24 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.block.BlockBell.ATTACHMENT_TYPE;
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+import java.util.function.Supplier;
 
-@PowerNukkitOnly
-public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, ATTACHMENT_TYPE);
-
-    @PowerNukkitOnly
-    public static final int TYPE_ATTACHMENT_STANDING = 0;
-    @PowerNukkitOnly
-    public static final int TYPE_ATTACHMENT_HANGING = 1;
-    @PowerNukkitOnly
-    public static final int TYPE_ATTACHMENT_SIDE = 2;
-    @PowerNukkitOnly
-    public static final int TYPE_ATTACHMENT_MULTIPLE = 3;
-
-    @PowerNukkitOnly
-    public BlockGrindstone() {
-        this(0);
-    }
-
-    @PowerNukkitOnly
-    public BlockGrindstone(int meta) {
-        super(meta);
-    }
+public class BlockGrindstone extends BlockTransparent implements Faceable {
+    public static final BlockProperties PROPERTIES = new BlockProperties(GRINDSTONE, CommonBlockProperties.ATTACHMENT, CommonBlockProperties.DIRECTION);
 
     @Override
-    public int getId() {
-        return GRINDSTONE;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @NotNull
-    @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
+    }
+
+    public BlockGrindstone() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockGrindstone(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override
@@ -68,7 +45,6 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -83,7 +59,6 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
         return new ItemBlock(new BlockGrindstone());
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -101,44 +76,41 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(getDamage() & 0b11);
+        return BlockFace.fromHorizontalIndex(getPropertyValue(CommonBlockProperties.DIRECTION));
     }
 
     @Override
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
     public void setBlockFace(BlockFace face) {
         if (face.getHorizontalIndex() == -1) {
             return;
         }
-        setDamage(getDamage() & (DATA_MASK ^ 0b11) | face.getHorizontalIndex());
+        setPropertyValue(CommonBlockProperties.DIRECTION, face.getHorizontalIndex());
     }
 
-    @PowerNukkitOnly
-    public int getAttachmentType() {
-        return (getDamage() & 0b1100) >> 2 & 0b11;
+    public Attachment getAttachmentType() {
+        return getPropertyValue(CommonBlockProperties.ATTACHMENT);
     }
 
-    @PowerNukkitOnly
-    public void setAttachmentType(int attachmentType) {
-        attachmentType = attachmentType & 0b11;
-        setDamage(getDamage() & (DATA_MASK ^ 0b1100) | (attachmentType << 2));
+    public void setAttachmentType(Attachment attachmentType) {
+        setPropertyValue(CommonBlockProperties.ATTACHMENT, attachmentType);
     }
 
-    private boolean isConnectedTo(BlockFace connectedFace, int attachmentType, BlockFace blockFace) {
+    private boolean isConnectedTo(BlockFace connectedFace, Attachment attachmentType, BlockFace blockFace) {
         BlockFace.Axis faceAxis = connectedFace.getAxis();
         switch (attachmentType) {
-            case TYPE_ATTACHMENT_STANDING:
+            case STANDING -> {
                 if (faceAxis == BlockFace.Axis.Y) {
                     return connectedFace == BlockFace.DOWN;
                 } else {
                     return false;
                 }
-            case TYPE_ATTACHMENT_HANGING:
+            }
+            case HANGING -> {
                 return connectedFace == BlockFace.UP;
-            case TYPE_ATTACHMENT_SIDE:
-            case TYPE_ATTACHMENT_MULTIPLE:
+            }
+            case SIDE, MULTIPLE -> {
                 return connectedFace == blockFace.getOpposite();
+            }
         }
         return false;
     }
@@ -156,21 +128,22 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (block.getId() != AIR && block.canBeReplaced()) {
+        if (!block.isAir() && block.canBeReplaced()) {
             face = BlockFace.UP;
         }
         switch (face) {
-            case UP:
-                setAttachmentType(TYPE_ATTACHMENT_STANDING);
+            case UP -> {
+                setAttachmentType(Attachment.STANDING);
                 setBlockFace(player.getDirection().getOpposite());
-                break;
-            case DOWN:
-                setAttachmentType(TYPE_ATTACHMENT_HANGING);
+            }
+            case DOWN -> {
+                setAttachmentType(Attachment.HANGING);
                 setBlockFace(player.getDirection().getOpposite());
-                break;
-            default:
+            }
+            default -> {
                 setBlockFace(face);
-                setAttachmentType(TYPE_ATTACHMENT_SIDE);
+                setAttachmentType(Attachment.SIDE);
+            }
         }
         if (!checkSupport()) {
             return false;
@@ -182,35 +155,35 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean checkSupport() {
         switch (getAttachmentType()) {
-            case TYPE_ATTACHMENT_STANDING:
+            case STANDING -> {
                 if (checkSupport(down())) {
                     return true;
                 }
-                break;
-            case TYPE_ATTACHMENT_HANGING:
+            }
+            case HANGING -> {
                 if (checkSupport(up())) {
                     return true;
                 }
-                break;
-            case TYPE_ATTACHMENT_SIDE:
+            }
+            case SIDE -> {
                 BlockFace blockFace = getBlockFace();
                 if (checkSupport(getSide(blockFace.getOpposite()))) {
                     return true;
                 }
-                break;
+            }
         }
 
         return false;
     }
 
     private boolean checkSupport(Block support) {
-        int id = support.getId();
-        return id != AIR && id != BUBBLE_COLUMN && !(support instanceof BlockLiquid);
+        String id = support.getId();
+        return !id.equals(AIR) && !id.equals(BUBBLE_COLUMN) && !(support instanceof BlockLiquid);
     }
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-        int attachmentType = getAttachmentType();
+        Attachment attachmentType = getAttachmentType();
         BlockFace blockFace = getBlockFace();
         boolean south = this.isConnectedTo(BlockFace.SOUTH, attachmentType, blockFace);
         boolean north = this.isConnectedTo(BlockFace.NORTH, attachmentType, blockFace);
@@ -219,7 +192,7 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
         boolean up = this.isConnectedTo(BlockFace.UP, attachmentType, blockFace);
         boolean down = this.isConnectedTo(BlockFace.DOWN, attachmentType, blockFace);
 
-        double pixels = (2.0/16);
+        double pixels = (2.0 / 16);
 
         double n = north ? 0 : pixels;
         double s = south ? 1 : 1 - pixels;

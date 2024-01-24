@@ -20,11 +20,9 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
+import cn.nukkit.recipe.SmithingRecipe;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -33,32 +31,30 @@ import javax.annotation.Nullable;
  * @author joserobjr
  * @since 2020-09-28
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class SmithingInventory extends FakeBlockUIComponent {
     private static final int EQUIPMENT = 0;
     private static final int INGREDIENT = 1;
     
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public static final int SMITHING_EQUIPMENT_UI_SLOT = 51;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public static final int SMITHING_INGREDIENT_UI_SLOT = 52;
 
-    @Since("1.19.63-r2")
-    @PowerNukkitXOnly
-    private Item currentResult = AIR_ITEM;
+    private Item currentResult = Item.AIR;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public SmithingInventory(PlayerUIInventory playerUI, Position position) {
         super(playerUI, InventoryType.SMITHING_TABLE, 51, position);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     @Nullable
     public SmithingRecipe matchRecipe() {
         return Server.getInstance().getCraftingManager().matchSmithingRecipe(getEquipment(), getIngredient());
@@ -72,13 +68,13 @@ public class SmithingInventory extends FakeBlockUIComponent {
         super.onSlotChange(index, before, send);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public void updateResult() {
         Item result;
         SmithingRecipe recipe = matchRecipe();
         if (recipe == null) {
-            result =  AIR_ITEM;
+            result =  Item.AIR;
         } else {
             result = recipe.getFinalResult(getEquipment());
         }
@@ -91,37 +87,37 @@ public class SmithingInventory extends FakeBlockUIComponent {
         this.currentResult = result;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     @NotNull
     public Item getResult() {
         SmithingRecipe recipe = matchRecipe();
         if (recipe == null) {
-            return AIR_ITEM;
+            return Item.AIR;
         }
         return recipe.getFinalResult(getEquipment());
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public Item getEquipment() {
         return getItem(EQUIPMENT);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public void setEquipment(Item equipment) {
         setItem(EQUIPMENT, equipment);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public Item getIngredient() {
         return getItem(INGREDIENT);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public void setIngredient(Item ingredient) {
         setItem(INGREDIENT, ingredient);
     }
@@ -144,8 +140,6 @@ public class SmithingInventory extends FakeBlockUIComponent {
         playerUI.clear(50);
     }
 
-    @Since("1.19.63-r2")
-    @PowerNukkitXOnly
     public @NotNull Item getCurrentResult() {
         return currentResult;
     }

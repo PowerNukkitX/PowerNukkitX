@@ -9,7 +9,7 @@ public class NetworkStackLatencyPacket extends DataPacket {
     public boolean unknownBool;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.NETWORK_STACK_LATENCY_PACKET;
     }
 

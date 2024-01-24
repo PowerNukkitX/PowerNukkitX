@@ -1,19 +1,20 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 public class EntityCamel extends EntityAnimal {
-    public static final int NETWORK_ID = 138;
+    @Override
+    @NotNull public String getIdentifier() {
+        return CAMEL;
+    }
 
-    public EntityCamel(FullChunk chunk, CompoundTag nbt) {
+    public EntityCamel(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     protected void initEntity() {

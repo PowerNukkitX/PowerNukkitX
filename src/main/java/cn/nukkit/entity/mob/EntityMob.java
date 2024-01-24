@@ -1,8 +1,6 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityCanAttack;
@@ -17,7 +15,7 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -48,7 +46,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     @Getter
     private EntityArmorInventory armorInventory;
 
-    public EntityMob(FullChunk chunk, CompoundTag nbt) {
+    public EntityMob(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -107,11 +105,11 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
         this.namedTag.put(TAG_OFFHAND, NBTIO.putItemHelper(this.equipmentInventory.getItemInOffhand()));
 
         if (this.armorInventory != null) {
-            ListTag<CompoundTag> armorTag = new ListTag<>(TAG_ARMOR);
+            ListTag<CompoundTag> armorTag = new ListTag<>();
             for (int i = 0; i < 4; i++) {
                 armorTag.add(NBTIO.putItemHelper(this.armorInventory.getItem(i), i));
             }
-            this.namedTag.putList(armorTag);
+            this.namedTag.putList(TAG_ARMOR,armorTag);
         }
     }
 
@@ -199,8 +197,6 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
         return epf;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     protected Item damageArmor(Item armor, Entity damager) {
         if (armor.hasEnchantments()) {
             if (damager != null) {

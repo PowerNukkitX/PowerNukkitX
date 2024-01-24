@@ -20,6 +20,6 @@ public class PlayerInputProcessor extends DataPacketProcessor<PlayerInputPacket>
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.PLAYER_INPUT_PACKET);
+        return ProtocolInfo.PLAYER_INPUT_PACKET;
     }
 }

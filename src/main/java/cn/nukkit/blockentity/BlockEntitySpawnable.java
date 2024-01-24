@@ -1,8 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.BlockEntityDataPacket;
@@ -15,7 +14,7 @@ import java.nio.ByteOrder;
  */
 public abstract class BlockEntitySpawnable extends BlockEntity {
 
-    public BlockEntitySpawnable(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntitySpawnable(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -37,12 +36,10 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
         player.dataPacket(getSpawnPacket());
     }
 
-    @PowerNukkitOnly
     public BlockEntityDataPacket getSpawnPacket() {
         return getSpawnPacket(null);
     }
 
-    @PowerNukkitOnly
     public BlockEntityDataPacket getSpawnPacket(CompoundTag nbt) {
         if (nbt == null) {
             nbt = this.getSpawnCompound();

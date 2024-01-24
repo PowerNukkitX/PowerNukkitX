@@ -1,47 +1,14 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.item.ItemTool;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class BlockPlanks extends BlockSolidMeta {
-    public static final int OAK = 0;
-    public static final int SPRUCE = 1;
-    public static final int BIRCH = 2;
-    public static final int JUNGLE = 3;
-    public static final int ACACIA = 4;
-    public static final int DARK_OAK = 5;
+public abstract class BlockPlanks extends BlockSolid {
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(WoodType.PROPERTY);
-
-
-    public BlockPlanks() {
-        this(0);
-    }
-
-    public BlockPlanks(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return PLANKS;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
+    protected BlockPlanks(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -65,25 +32,7 @@ public class BlockPlanks extends BlockSolidMeta {
     }
 
     @Override
-    public String getName() {
-        return getWoodType().getEnglishName()+" Wood Planks";
-    }
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public WoodType getWoodType() {
-        return getPropertyValue(WoodType.PROPERTY);
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public void setWoodType(WoodType type) {
-        setPropertyValue(WoodType.PROPERTY, type);
-    }
-
-    @Override
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
-
 }

@@ -8,6 +8,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -21,17 +22,10 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
         return handlers;
     }
 
-    @Nullable
-    protected final Block blockTouched;
-
+    protected @Nullable final Block blockTouched;
+    protected @Nullable final BlockFace blockFace;
+    protected @Nullable final Item item;
     protected final Vector3 touchVector;
-
-    @Nullable
-    protected final BlockFace blockFace;
-
-    @Nullable
-    protected final Item item;
-
     protected final Action action;
 
     public PlayerInteractEvent(Player player, Item item, Vector3 block, BlockFace face) {
@@ -44,7 +38,7 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
             this.touchVector = new Vector3(0, 0, 0);
         } else {
             this.touchVector = block;
-            this.blockTouched = Block.get(Block.AIR, 0, new Position(0, 0, 0, player.level));
+            this.blockTouched = Block.get(Block.AIR, new Position(0, 0, 0, player.level));
         }
 
         this.player = player;
@@ -57,13 +51,11 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
         return action;
     }
 
-    @Nullable
-    public Item getItem() {
+    public @Nullable Item getItem() {
         return item;
     }
 
-    @Nullable
-    public Block getBlock() {
+    public @Nullable Block getBlock() {
         return blockTouched;
     }
 
@@ -71,8 +63,7 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
         return touchVector;
     }
 
-    @Nullable
-    public BlockFace getFace() {
+    public @Nullable BlockFace getFace() {
         return blockFace;
     }
 

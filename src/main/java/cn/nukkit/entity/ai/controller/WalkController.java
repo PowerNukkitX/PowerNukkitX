@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.controller;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCarpet;
 import cn.nukkit.block.BlockID;
@@ -16,8 +14,8 @@ import java.util.Arrays;
  * 处理陆地行走实体运动
  * todo: 有待解耦
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public class WalkController implements IController {
 
     protected static final int JUMP_COOL_DOWN = 10;
@@ -27,7 +25,7 @@ public class WalkController implements IController {
     private boolean canJump(Block block) {
         if (block.isSolid()) return true;
         else if (block instanceof BlockCarpet) return true;
-        else return block.getId() == BlockID.FLOWER_POT_BLOCK || block.getId() == BlockID.CAKE_BLOCK;
+        else return block.getId() == BlockID.FLOWER_POT || block.getId() == BlockID.CAKE;
     }
 
     @Override

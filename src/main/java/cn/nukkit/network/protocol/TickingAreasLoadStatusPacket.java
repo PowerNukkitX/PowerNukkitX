@@ -4,7 +4,7 @@ public class TickingAreasLoadStatusPacket extends DataPacket {
     boolean waitingForPreload;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.TICKING_AREAS_LOAD_STATUS_PACKET;
     }
 

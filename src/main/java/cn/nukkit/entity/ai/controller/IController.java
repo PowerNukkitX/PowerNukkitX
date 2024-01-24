@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.controller;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 
 /**
@@ -11,8 +9,8 @@ import cn.nukkit.entity.EntityIntelligent;
  * The controller is used to control the behavior of the entity, such as the specific implementation of moving, jumping, attacking, etc.<br>
  * For different entities, different controllers can be provided to achieve special implementations of the above behaviors.
  */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
+
 public interface IController {
     /**
      * 实施行为

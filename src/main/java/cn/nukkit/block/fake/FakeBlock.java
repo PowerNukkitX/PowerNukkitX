@@ -1,8 +1,6 @@
 package cn.nukkit.block.fake;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
 
 import java.util.Collections;
@@ -13,8 +11,8 @@ import java.util.List;
  * <p>
  * Fake block API, which tricks the client into believing that a block and its BlockEntity exist at a specified location by sending packets
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 public interface FakeBlock {
 
     /**
@@ -50,6 +48,6 @@ public interface FakeBlock {
     }
 
     default Vector3 getOffset(Player player) {
-        return player.getPosition().floor().setY(player.getLevel().getMinHeight());
+        return player.getPosition().floor().setY(player.getLevel().getMinHeight() + 1);
     }
 }

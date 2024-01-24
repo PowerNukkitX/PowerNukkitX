@@ -6,6 +6,7 @@ import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
+import lombok.Getter;
 
 /**
  * @author Box (Nukkit Project)
@@ -35,11 +36,9 @@ public class EntityShootBowEvent extends EntityEvent implements Cancellable {
         return (EntityLiving) this.entity;
     }
 
-
     public Item getBow() {
         return this.bow;
     }
-
 
     public EntityProjectile getProjectile() {
         return this.projectile;
@@ -47,7 +46,7 @@ public class EntityShootBowEvent extends EntityEvent implements Cancellable {
 
     public void setProjectile(Entity projectile) {
         if (projectile != this.projectile) {
-            if (this.projectile.getViewers().size() == 0) {
+            if (this.projectile.getViewers().isEmpty()) {
                 this.projectile.kill();
                 this.projectile.close();
             }

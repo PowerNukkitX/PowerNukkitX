@@ -1,502 +1,971 @@
 package cn.nukkit.item;
 
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
-import static cn.nukkit.utils.Utils.dynamic;
-
 public interface ItemID {
-    @PowerNukkitOnly
-    int STRING_IDENTIFIED_ITEM = dynamic(255);
-    int IRON_SHOVEL = 256;
-    int IRON_PICKAXE = 257;
-    int IRON_AXE = 258;
-    int FLINT_STEEL = 259;
-    int FLINT_AND_STEEL = 259;
-    int APPLE = 260;
-    int BOW = 261;
-    int ARROW = 262;
-    int COAL = 263;
-    int DIAMOND = 264;
-    int IRON_INGOT = 265;
-    int GOLD_INGOT = 266;
-    int IRON_SWORD = 267;
-    int WOODEN_SWORD = 268;
-    int WOODEN_SHOVEL = 269;
-    int WOODEN_PICKAXE = 270;
-    int WOODEN_AXE = 271;
-    int STONE_SWORD = 272;
-    int STONE_SHOVEL = 273;
-    int STONE_PICKAXE = 274;
-    int STONE_AXE = 275;
-    int DIAMOND_SWORD = 276;
-    int DIAMOND_SHOVEL = 277;
-    int DIAMOND_PICKAXE = 278;
-    int DIAMOND_AXE = 279;
-    int STICK = 280;
-    int STICKS = 280;
-    int BOWL = 281;
-    int MUSHROOM_STEW = 282;
-    int GOLD_SWORD = 283;
-    int GOLDEN_SWORD = 283;
-    int GOLD_SHOVEL = 284;
-    int GOLDEN_SHOVEL = 284;
-    int GOLD_PICKAXE = 285;
-    int GOLDEN_PICKAXE = 285;
-    int GOLD_AXE = 286;
-    int GOLDEN_AXE = 286;
-    int STRING = 287;
-    int FEATHER = 288;
-    int GUNPOWDER = 289;
-    int WOODEN_HOE = 290;
-    int STONE_HOE = 291;
-    int IRON_HOE = 292;
-    int DIAMOND_HOE = 293;
-    int GOLD_HOE = 294;
-    int GOLDEN_HOE = 294;
-    int SEEDS = 295;
-    int WHEAT_SEEDS = 295;
-    int WHEAT = 296;
-    int BREAD = 297;
-    int LEATHER_CAP = 298;
-    int LEATHER_TUNIC = 299;
-    int LEATHER_PANTS = 300;
-    int LEATHER_BOOTS = 301;
-    int CHAIN_HELMET = 302;
-    int CHAIN_CHESTPLATE = 303;
-    int CHAIN_LEGGINGS = 304;
-    int CHAIN_BOOTS = 305;
-    int IRON_HELMET = 306;
-    int IRON_CHESTPLATE = 307;
-    int IRON_LEGGINGS = 308;
-    int IRON_BOOTS = 309;
-    int DIAMOND_HELMET = 310;
-    int DIAMOND_CHESTPLATE = 311;
-    int DIAMOND_LEGGINGS = 312;
-    int DIAMOND_BOOTS = 313;
-    int GOLD_HELMET = 314;
-    int GOLD_CHESTPLATE = 315;
-    int GOLD_LEGGINGS = 316;
-    int GOLD_BOOTS = 317;
-    int FLINT = 318;
-    int RAW_PORKCHOP = 319;
-    int COOKED_PORKCHOP = 320;
-    int PAINTING = 321;
-    int GOLDEN_APPLE = 322;
-    int SIGN = 323;
-    int WOODEN_DOOR = 324;
-    int BUCKET = 325;
+    String ACACIA_BOAT = "minecraft:acacia_boat";
 
-    int MINECART = 328;
-    int SADDLE = 329;
-    int IRON_DOOR = 330;
-    int REDSTONE = 331;
-    int REDSTONE_DUST = REDSTONE;
-    int SNOWBALL = 332;
-    int BOAT = 333;
-    int LEATHER = 334;
-    int KELP = 335;
-    int BRICK = 336;
-    int CLAY = 337;
-    int SUGARCANE = 338;
-    int SUGAR_CANE = 338;
-    int SUGAR_CANES = 338;
-    int PAPER = 339;
-    int BOOK = 340;
-    int SLIMEBALL = 341;
-    int CHEST_MINECART = 342;
-    @Deprecated
-    @DeprecationDetails(since = "1.19.40-r2", reason = "Using new name instead", replaceWith = "CHEST_MINECART")
-    int MINECART_WITH_CHEST = CHEST_MINECART;
+    String ACACIA_CHEST_BOAT = "minecraft:acacia_chest_boat";
 
-    int EGG = 344;
-    int COMPASS = 345;
-    int FISHING_ROD = 346;
-    int CLOCK = 347;
-    int GLOWSTONE_DUST = 348;
-    int RAW_FISH = 349;
-    int COOKED_FISH = 350;
-    int DYE = 351;
-    int BONE = 352;
-    int SUGAR = 353;
-    int CAKE = 354;
-    int BED = 355;
-    int REPEATER = 356;
-    int COOKIE = 357;
-    int MAP = 358;
-    int SHEARS = 359;
-    int MELON = 360;
-    int MELON_SLICE = 360;
-    int PUMPKIN_SEEDS = 361;
-    int MELON_SEEDS = 362;
-    int RAW_BEEF = 363;
-    int STEAK = 364;
-    int COOKED_BEEF = 364;
-    int RAW_CHICKEN = 365;
-    int COOKED_CHICKEN = 366;
-    int ROTTEN_FLESH = 367;
-    int ENDER_PEARL = 368;
-    int BLAZE_ROD = 369;
-    int GHAST_TEAR = 370;
-    int GOLD_NUGGET = 371;
-    int GOLDEN_NUGGET = 371;
-    int NETHER_WART = 372;
-    int POTION = 373;
-    int GLASS_BOTTLE = 374;
-    int BOTTLE = 374;
-    int SPIDER_EYE = 375;
-    int FERMENTED_SPIDER_EYE = 376;
-    int BLAZE_POWDER = 377;
-    int MAGMA_CREAM = 378;
-    int BREWING_STAND = 379;
-    int BREWING = 379;
-    int CAULDRON = 380;
-    int ENDER_EYE = 381;
-    int GLISTERING_MELON = 382;
-    int SPAWN_EGG = 383;
-    int EXPERIENCE_BOTTLE = 384;
-    int FIRE_CHARGE = 385;
-    int BOOK_AND_QUILL = 386;
-    int WRITTEN_BOOK = 387;
-    int EMERALD = 388;
-    int ITEM_FRAME = 389;
-    int FLOWER_POT = 390;
-    int CARROT = 391;
-    int CARROTS = 391;
-    int POTATO = 392;
-    int POTATOES = 392;
-    int BAKED_POTATO = 393;
-    int BAKED_POTATOES = 393;
-    int POISONOUS_POTATO = 394;
-    int EMPTY_MAP = 395;
-    int GOLDEN_CARROT = 396;
-    int SKULL = 397;
-    int CARROT_ON_A_STICK = 398;
-    int NETHER_STAR = 399;
-    int PUMPKIN_PIE = 400;
-    int FIREWORKS = 401;
-    int FIREWORKSCHARGE = 402;
-    int ENCHANTED_BOOK = 403;
-    int ENCHANT_BOOK = 403;
-    int COMPARATOR = 404;
-    int NETHER_BRICK = 405;
-    int QUARTZ = 406;
-    int NETHER_QUARTZ = 406;
-    int TNT_MINECART = 407;
-    @Deprecated
-    @DeprecationDetails(since = "1.19.40-r2", reason = "Using new name instead", replaceWith = "TNT_MINECART")
-    int MINECART_WITH_TNT = TNT_MINECART;
-    int HOPPER_MINECART = 408;
-    @Deprecated
-    @DeprecationDetails(since = "1.19.40-r2", reason = "Using new name instead", replaceWith = "HOPPER_MINECART")
-    int MINECART_WITH_HOPPER = HOPPER_MINECART;
-    int PRISMARINE_SHARD = 409;
-    int HOPPER = 410;
-    int RAW_RABBIT = 411;
-    int COOKED_RABBIT = 412;
-    int RABBIT_STEW = 413;
-    int RABBIT_FOOT = 414;
-    int RABBIT_HIDE = 415;
-    int LEATHER_HORSE_ARMOR = 416;
-    int IRON_HORSE_ARMOR = 417;
-    int GOLD_HORSE_ARMOR = 418;
-    int DIAMOND_HORSE_ARMOR = 419;
-    int LEAD = 420;
-    int NAME_TAG = 421;
-    int PRISMARINE_CRYSTALS = 422;
-    int RAW_MUTTON = 423;
-    int COOKED_MUTTON = 424;
-    int ARMOR_STAND = 425;
-    int END_CRYSTAL = 426;
-    int SPRUCE_DOOR = 427;
-    int BIRCH_DOOR = 428;
-    int JUNGLE_DOOR = 429;
-    int ACACIA_DOOR = 430;
-    int DARK_OAK_DOOR = 431;
-    int CHORUS_FRUIT = 432;
-    int POPPED_CHORUS_FRUIT = 433;
-    @Since("1.2.1.0-PN")
-    int BANNER_PATTERN = 434;
+    String ACACIA_DOOR = "minecraft:acacia_door";
 
-    int DRAGON_BREATH = 437;
-    int SPLASH_POTION = 438;
+    String ACACIA_HANGING_SIGN = "minecraft:acacia_hanging_sign";
 
-    int LINGERING_POTION = 441;
+    String ACACIA_SIGN = "minecraft:acacia_sign";
 
-    int COMMAND_BLOCK_MINECART = 443;
-    int ELYTRA = 444;
-    int SHULKER_SHELL = 445;
-    int BANNER = 446;
-    int TOTEM = 450;
+    String AGENT_SPAWN_EGG = "minecraft:agent_spawn_egg";
 
-    int IRON_NUGGET = 452;
+    String ALLAY_SPAWN_EGG = "minecraft:allay_spawn_egg";
 
-    int TRIDENT = 455;
+    String AMETHYST_SHARD = "minecraft:amethyst_shard";
 
-    int BEETROOT = 457;
-    int BEETROOT_SEEDS = 458;
-    int BEETROOT_SEED = 458;
-    int BEETROOT_SOUP = 459;
-    int RAW_SALMON = 460;
-    int CLOWNFISH = 461;
-    int PUFFERFISH = 462;
-    int COOKED_SALMON = 463;
-    int DRIED_KELP = 464;
-    int NAUTILUS_SHELL = 465;
-    int GOLDEN_APPLE_ENCHANTED = 466;
-    int HEART_OF_THE_SEA = 467;
-    int SCUTE = 468;
-    int TURTLE_SHELL = 469;
-    int PHANTOM_MEMBRANE = 470;
-    int CROSSBOW = 471;
-    @PowerNukkitOnly int SPRUCE_SIGN = 472;
-    @PowerNukkitOnly int BIRCH_SIGN = 473;
-    @PowerNukkitOnly int JUNGLE_SIGN = 474;
-    @PowerNukkitOnly int ACACIA_SIGN = 475;
-    @PowerNukkitOnly int DARKOAK_SIGN = 476;
-    @PowerNukkitOnly int DARK_OAK_SIGN = 476;
-    int SWEET_BERRIES = 477;
+    String ANGLER_POTTERY_SHERD = "minecraft:angler_pottery_sherd";
 
-    int RECORD_13 = 500;
-    int RECORD_CAT = 501;
-    int RECORD_BLOCKS = 502;
-    int RECORD_CHIRP = 503;
-    int RECORD_FAR = 504;
-    int RECORD_MALL = 505;
-    int RECORD_MELLOHI = 506;
-    int RECORD_STAL = 507;
-    int RECORD_STRAD = 508;
-    int RECORD_WARD = 509;
-    int RECORD_11 = 510;
-    int RECORD_WAIT = 511;
+    String APPLE = "minecraft:apple";
 
-    int SHIELD = 513;
+    String ARCHER_POTTERY_SHERD = "minecraft:archer_pottery_sherd";
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
-    int GLOW_ITEM_FRAME = 623;
+    String ARMOR_STAND = "minecraft:armor_stand";
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
-    int ITEM_MANGROVE_DOOR = 633;
+    String ARMS_UP_POTTERY_SHERD = "minecraft:arms_up_pottery_sherd";
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
-    int RECORD_OTHERSIDE = 626;
+    String ARROW = "minecraft:arrow";
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
-    int MANGROVE_SIGN = 634;
-    @Since("1.19.40-r2")
-    @PowerNukkitXOnly
-    int RECORD_5 = 636;
-    @Since("1.19.50-r1")
-    @PowerNukkitXOnly
-    int DISC_FRAGMENT_5 = 637;
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
-    int OAK_CHEST_BOAT = 638;
+    String AXOLOTL_BUCKET = "minecraft:axolotl_bucket";
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    int BIRCH_CHEST_BOAT = 639;
+    String AXOLOTL_SPAWN_EGG = "minecraft:axolotl_spawn_egg";
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    int JUNGLE_CHEST_BOAT = 640;
+    String BAKED_POTATO = "minecraft:baked_potato";
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
-    int SPRUCE_CHEST_BOAT = 641;
+    String BALLOON = "minecraft:balloon";
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    int ACACIA_CHEST_BOAT = 642;
+    String BAMBOO_CHEST_RAFT = "minecraft:bamboo_chest_raft";
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    int DARK_OAK_CHEST_BOAT = 643;
+    String BAMBOO_DOOR = "minecraft:bamboo_door";
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    int MANGROVE_CHEST_BOAT = 644;
+    String BAMBOO_HANGING_SIGN = "minecraft:bamboo_hanging_sign";
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    int CHEST_BOAT = 645;
-    @PowerNukkitXOnly
-    @Since("1.19.50-r1")
-    int ECHO_SHARD = 647;
+    String BAMBOO_RAFT = "minecraft:bamboo_raft";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int BAMBOO_CHEST_RAFT = 648;
+    String BAMBOO_SIGN = "minecraft:bamboo_sign";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int CHERRY_CHEST_BOAT = 649;
+    String BANNER = "minecraft:banner";
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
-    int GLOW_BERRIES = 654;
+    String BANNER_PATTERN = "minecraft:banner_pattern";
 
-    @PowerNukkitOnly
-    int CAMPFIRE = 720;
+    String BAT_SPAWN_EGG = "minecraft:bat_spawn_egg";
 
-    int SUSPICIOUS_STEW = 734;
-    int HONEYCOMB = 736;
-    int HONEY_BOTTLE = 737;
+    String BED = "minecraft:bed";
 
-    @Since("1.4.0.0-PN")
-    int LODESTONECOMPASS = 741;
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    int LODESTONE_COMPASS = LODESTONECOMPASS;
-    @Since("1.4.0.0-PN")
-    int NETHERITE_INGOT = 742;
-    @Since("1.4.0.0-PN")
-    int NETHERITE_SWORD = 743;
-    @Since("1.4.0.0-PN")
-    int NETHERITE_SHOVEL = 744;
-    @Since("1.4.0.0-PN")
-    int NETHERITE_PICKAXE = 745;
-    @Since("1.4.0.0-PN")
-    int NETHERITE_AXE = 746;
-    @Since("1.4.0.0-PN")
-    int NETHERITE_HOE = 747;
-    @Since("1.4.0.0-PN")
-    int NETHERITE_HELMET = 748;
-    @Since("1.4.0.0-PN")
-    int NETHERITE_CHESTPLATE = 749;
-    @Since("1.4.0.0-PN")
-    int NETHERITE_LEGGINGS = 750;
-    @Since("1.4.0.0-PN")
-    int NETHERITE_BOOTS = 751;
-    @Since("1.4.0.0-PN")
-    int NETHERITE_SCRAP = 752;
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    int CRIMSON_SIGN = 753;
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    int WARPED_SIGN = 754;
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    int CRIMSON_DOOR = 755;
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    int WARPED_DOOR = 756;
-    @Since("1.4.0.0-PN")
-    int WARPED_FUNGUS_ON_A_STICK = 757;
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    int CHAIN = 758;
-    @Since("1.4.0.0-PN")
-    int RECORD_PIGSTEP = 759;
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    int NETHER_SPROUTS = 760;
+    String BEE_SPAWN_EGG = "minecraft:bee_spawn_egg";
 
-    @Since("1.6.0.0-PNX")
-    int AMETHYST_SHARD = 771;
-    @Since("FUTURE")
-    int SPYGLASS = 772;
+    String BEEF = "minecraft:beef";
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    int SOUL_CAMPFIRE = 801;
+    String BEETROOT = "minecraft:beetroot";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int TORCHFLOWER_SEEDS = 802;
+    String BEETROOT_SEEDS = "minecraft:beetroot_seeds";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int BRUSH = 803;
+    String BEETROOT_SOUP = "minecraft:beetroot_soup";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int ANGLER_POTTERY_SHERD = 804;
+    String BIRCH_BOAT = "minecraft:birch_boat";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int ARCHER_POTTERY_SHERD= 805;
+    String BIRCH_CHEST_BOAT = "minecraft:birch_chest_boat";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int ARMS_UP_POTTERY_SHERD = 806;
+    String BIRCH_DOOR = "minecraft:birch_door";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int BLADE_POTTERY_SHERD = 807;
+    String BIRCH_HANGING_SIGN = "minecraft:birch_hanging_sign";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int BREWER_POTTERY_SHERD = 808;
+    String BIRCH_SIGN = "minecraft:birch_sign";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int BURN_POTTERY_SHERD = 809;
+    String BLACK_DYE = "minecraft:black_dye";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int DANGER_POTTERY_SHERD = 810;
+    String BLADE_POTTERY_SHERD = "minecraft:blade_pottery_sherd";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int EXPLORER_POTTERY_SHERD = 811;
+    String BLAZE_POWDER = "minecraft:blaze_powder";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int FRIEND_POTTERY_SHERD = 812;
+    String BLAZE_ROD = "minecraft:blaze_rod";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int HEART_POTTERY_SHERD = 813;
+    String BLAZE_SPAWN_EGG = "minecraft:blaze_spawn_egg";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int HEARTBREAK_POTTERY_SHERD = 814;
+    String BLEACH = "minecraft:bleach";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int HOWL_POTTERY_SHERD = 815;
+    String BLUE_DYE = "minecraft:blue_dye";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int MINER_POTTERY_SHERD = 816;
+    String BOAT = "minecraft:boat";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int MOURNER_POTTERY_SHERD = 817;
+    String BONE = "minecraft:bone";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int PLENTY_POTTERY_SHERD = 818;
+    String BONE_MEAL = "minecraft:bone_meal";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int PRIZE_POTTERY_SHERD = 819;
+    String BOOK = "minecraft:book";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int SHEAF_POTTERY_SHERD = 820;
+    String BORDURE_INDENTED_BANNER_PATTERN = "minecraft:bordure_indented_banner_pattern";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int SHELTER_POTTERY_SHERD = 821;
+    String BOW = "minecraft:bow";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int SKULL_POTTERY_SHERD = 822;
+    String BOWL = "minecraft:bowl";
 
-    @Since("1.20.50-r1")
-    @PowerNukkitXOnly
-    int SNORT_POTTERY_SHERD = 823;
+    String BREAD = "minecraft:bread";
 
+    String BREWER_POTTERY_SHERD = "minecraft:brewer_pottery_sherd";
 
+    String BREWING_STAND = "minecraft:brewing_stand";
 
-    //@PowerNukkitOnly int DEBUG_STICK = <Possible:> 802+;
+    String BRICK = "minecraft:brick";
+
+    String BROWN_DYE = "minecraft:brown_dye";
+
+    String BRUSH = "minecraft:brush";
+
+    String BUCKET = "minecraft:bucket";
+
+    String BURN_POTTERY_SHERD = "minecraft:burn_pottery_sherd";
+
+    String CAKE = "minecraft:cake";
+
+    String CAMEL_SPAWN_EGG = "minecraft:camel_spawn_egg";
+
+    String CAMPFIRE = "minecraft:campfire";
+
+    String CARPET = "minecraft:carpet";
+
+    String CARROT = "minecraft:carrot";
+
+    String CARROT_ON_A_STICK = "minecraft:carrot_on_a_stick";
+
+    String CAT_SPAWN_EGG = "minecraft:cat_spawn_egg";
+
+    String CAULDRON = "minecraft:cauldron";
+
+    String CAVE_SPIDER_SPAWN_EGG = "minecraft:cave_spider_spawn_egg";
+
+    String CHAIN = "minecraft:chain";
+
+    String CHAINMAIL_BOOTS = "minecraft:chainmail_boots";
+
+    String CHAINMAIL_CHESTPLATE = "minecraft:chainmail_chestplate";
+
+    String CHAINMAIL_HELMET = "minecraft:chainmail_helmet";
+
+    String CHAINMAIL_LEGGINGS = "minecraft:chainmail_leggings";
+
+    String CHARCOAL = "minecraft:charcoal";
+
+    String CHERRY_BOAT = "minecraft:cherry_boat";
+
+    String CHERRY_CHEST_BOAT = "minecraft:cherry_chest_boat";
+
+    String CHERRY_DOOR = "minecraft:cherry_door";
+
+    String CHERRY_HANGING_SIGN = "minecraft:cherry_hanging_sign";
+
+    String CHERRY_SIGN = "minecraft:cherry_sign";
+
+    String CHEST_BOAT = "minecraft:chest_boat";
+
+    String CHEST_MINECART = "minecraft:chest_minecart";
+
+    String CHICKEN = "minecraft:chicken";
+
+    String CHICKEN_SPAWN_EGG = "minecraft:chicken_spawn_egg";
+
+    String CHORUS_FRUIT = "minecraft:chorus_fruit";
+
+    String CLAY_BALL = "minecraft:clay_ball";
+
+    String CLOCK = "minecraft:clock";
+
+    String COAL = "minecraft:coal";
+
+    String COAST_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:coast_armor_trim_smithing_template";
+
+    String COCOA_BEANS = "minecraft:cocoa_beans";
+
+    String COD = "minecraft:cod";
+
+    String COD_BUCKET = "minecraft:cod_bucket";
+
+    String COD_SPAWN_EGG = "minecraft:cod_spawn_egg";
+
+    String COMMAND_BLOCK_MINECART = "minecraft:command_block_minecart";
+
+    String COMPARATOR = "minecraft:comparator";
+
+    String COMPASS = "minecraft:compass";
+
+    String COMPOUND = "minecraft:compound";
+
+    String CONCRETE = "minecraft:concrete";
+
+    String CONCRETE_POWDER = "minecraft:concrete_powder";
+
+    String COOKED_BEEF = "minecraft:cooked_beef";
+
+    String COOKED_CHICKEN = "minecraft:cooked_chicken";
+
+    String COOKED_COD = "minecraft:cooked_cod";
+
+    String COOKED_MUTTON = "minecraft:cooked_mutton";
+
+    String COOKED_PORKCHOP = "minecraft:cooked_porkchop";
+
+    String COOKED_RABBIT = "minecraft:cooked_rabbit";
+
+    String COOKED_SALMON = "minecraft:cooked_salmon";
+
+    String COOKIE = "minecraft:cookie";
+
+    String COPPER_DOOR = "minecraft:copper_door";
+
+    String COPPER_INGOT = "minecraft:copper_ingot";
+
+    String CORAL = "minecraft:coral";
+
+    String COW_SPAWN_EGG = "minecraft:cow_spawn_egg";
+
+    String CREEPER_BANNER_PATTERN = "minecraft:creeper_banner_pattern";
+
+    String CREEPER_SPAWN_EGG = "minecraft:creeper_spawn_egg";
+
+    String CRIMSON_DOOR = "minecraft:crimson_door";
+
+    String CRIMSON_HANGING_SIGN = "minecraft:crimson_hanging_sign";
+
+    String CRIMSON_SIGN = "minecraft:crimson_sign";
+
+    String CROSSBOW = "minecraft:crossbow";
+
+    String CYAN_DYE = "minecraft:cyan_dye";
+
+    String DANGER_POTTERY_SHERD = "minecraft:danger_pottery_sherd";
+
+    String DARK_OAK_BOAT = "minecraft:dark_oak_boat";
+
+    String DARK_OAK_CHEST_BOAT = "minecraft:dark_oak_chest_boat";
+
+    String DARK_OAK_DOOR = "minecraft:dark_oak_door";
+
+    String DARK_OAK_HANGING_SIGN = "minecraft:dark_oak_hanging_sign";
+
+    String DARK_OAK_SIGN = "minecraft:dark_oak_sign";
+
+    String DIAMOND = "minecraft:diamond";
+
+    String DIAMOND_AXE = "minecraft:diamond_axe";
+
+    String DIAMOND_BOOTS = "minecraft:diamond_boots";
+
+    String DIAMOND_CHESTPLATE = "minecraft:diamond_chestplate";
+
+    String DIAMOND_HELMET = "minecraft:diamond_helmet";
+
+    String DIAMOND_HOE = "minecraft:diamond_hoe";
+
+    String DIAMOND_HORSE_ARMOR = "minecraft:diamond_horse_armor";
+
+    String DIAMOND_LEGGINGS = "minecraft:diamond_leggings";
+
+    String DIAMOND_PICKAXE = "minecraft:diamond_pickaxe";
+
+    String DIAMOND_SHOVEL = "minecraft:diamond_shovel";
+
+    String DIAMOND_SWORD = "minecraft:diamond_sword";
+
+    String DISC_FRAGMENT_5 = "minecraft:disc_fragment_5";
+
+    String DOLPHIN_SPAWN_EGG = "minecraft:dolphin_spawn_egg";
+
+    String DONKEY_SPAWN_EGG = "minecraft:donkey_spawn_egg";
+
+    String DRAGON_BREATH = "minecraft:dragon_breath";
+
+    String DRIED_KELP = "minecraft:dried_kelp";
+
+    String DROWNED_SPAWN_EGG = "minecraft:drowned_spawn_egg";
+
+    String DUNE_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:dune_armor_trim_smithing_template";
+
+    String DYE = "minecraft:dye";
+
+    String ECHO_SHARD = "minecraft:echo_shard";
+
+    String EGG = "minecraft:egg";
+
+    String ELDER_GUARDIAN_SPAWN_EGG = "minecraft:elder_guardian_spawn_egg";
+
+    String ELYTRA = "minecraft:elytra";
+
+    String EMERALD = "minecraft:emerald";
+
+    String EMPTY_MAP = "minecraft:empty_map";
+
+    String ENCHANTED_BOOK = "minecraft:enchanted_book";
+
+    String ENCHANTED_GOLDEN_APPLE = "minecraft:enchanted_golden_apple";
+
+    String END_CRYSTAL = "minecraft:end_crystal";
+
+    String ENDER_DRAGON_SPAWN_EGG = "minecraft:ender_dragon_spawn_egg";
+
+    String ENDER_EYE = "minecraft:ender_eye";
+
+    String ENDER_PEARL = "minecraft:ender_pearl";
+
+    String ENDERMAN_SPAWN_EGG = "minecraft:enderman_spawn_egg";
+
+    String ENDERMITE_SPAWN_EGG = "minecraft:endermite_spawn_egg";
+
+    String EVOKER_SPAWN_EGG = "minecraft:evoker_spawn_egg";
+
+    String EXPERIENCE_BOTTLE = "minecraft:experience_bottle";
+
+    String EXPLORER_POTTERY_SHERD = "minecraft:explorer_pottery_sherd";
+
+    String EXPOSED_COPPER_DOOR = "minecraft:exposed_copper_door";
+
+    String EYE_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:eye_armor_trim_smithing_template";
+
+    String FEATHER = "minecraft:feather";
+
+    String FENCE = "minecraft:fence";
+
+    String FERMENTED_SPIDER_EYE = "minecraft:fermented_spider_eye";
+
+    String FIELD_MASONED_BANNER_PATTERN = "minecraft:field_masoned_banner_pattern";
+
+    String FILLED_MAP = "minecraft:filled_map";
+
+    String FIRE_CHARGE = "minecraft:fire_charge";
+
+    String FIREWORK_ROCKET = "minecraft:firework_rocket";
+
+    String FIREWORK_STAR = "minecraft:firework_star";
+
+    String FISHING_ROD = "minecraft:fishing_rod";
+
+    String FLINT = "minecraft:flint";
+
+    String FLINT_AND_STEEL = "minecraft:flint_and_steel";
+
+    String FLOWER_BANNER_PATTERN = "minecraft:flower_banner_pattern";
+
+    String FLOWER_POT = "minecraft:flower_pot";
+
+    String FOX_SPAWN_EGG = "minecraft:fox_spawn_egg";
+
+    String FRAME = "minecraft:frame";
+
+    String FRIEND_POTTERY_SHERD = "minecraft:friend_pottery_sherd";
+
+    String FROG_SPAWN_EGG = "minecraft:frog_spawn_egg";
+
+    String GHAST_SPAWN_EGG = "minecraft:ghast_spawn_egg";
+
+    String GHAST_TEAR = "minecraft:ghast_tear";
+
+    String GLASS_BOTTLE = "minecraft:glass_bottle";
+
+    String GLISTERING_MELON_SLICE = "minecraft:glistering_melon_slice";
+
+    String GLOBE_BANNER_PATTERN = "minecraft:globe_banner_pattern";
+
+    String GLOW_BERRIES = "minecraft:glow_berries";
+
+    String GLOW_FRAME = "minecraft:glow_frame";
+
+    String GLOW_INK_SAC = "minecraft:glow_ink_sac";
+
+    String GLOW_SQUID_SPAWN_EGG = "minecraft:glow_squid_spawn_egg";
+
+    String GLOW_STICK = "minecraft:glow_stick";
+
+    String GLOWSTONE_DUST = "minecraft:glowstone_dust";
+
+    String GOAT_HORN = "minecraft:goat_horn";
+
+    String GOAT_SPAWN_EGG = "minecraft:goat_spawn_egg";
+
+    String GOLD_INGOT = "minecraft:gold_ingot";
+
+    String GOLD_NUGGET = "minecraft:gold_nugget";
+
+    String GOLDEN_APPLE = "minecraft:golden_apple";
+
+    String GOLDEN_AXE = "minecraft:golden_axe";
+
+    String GOLDEN_BOOTS = "minecraft:golden_boots";
+
+    String GOLDEN_CARROT = "minecraft:golden_carrot";
+
+    String GOLDEN_CHESTPLATE = "minecraft:golden_chestplate";
+
+    String GOLDEN_HELMET = "minecraft:golden_helmet";
+
+    String GOLDEN_HOE = "minecraft:golden_hoe";
+
+    String GOLDEN_HORSE_ARMOR = "minecraft:golden_horse_armor";
+
+    String GOLDEN_LEGGINGS = "minecraft:golden_leggings";
+
+    String GOLDEN_PICKAXE = "minecraft:golden_pickaxe";
+
+    String GOLDEN_SHOVEL = "minecraft:golden_shovel";
+
+    String GOLDEN_SWORD = "minecraft:golden_sword";
+
+    String GRAY_DYE = "minecraft:gray_dye";
+
+    String GREEN_DYE = "minecraft:green_dye";
+
+    String GUARDIAN_SPAWN_EGG = "minecraft:guardian_spawn_egg";
+
+    String GUNPOWDER = "minecraft:gunpowder";
+
+    String HEART_OF_THE_SEA = "minecraft:heart_of_the_sea";
+
+    String HEART_POTTERY_SHERD = "minecraft:heart_pottery_sherd";
+
+    String HEARTBREAK_POTTERY_SHERD = "minecraft:heartbreak_pottery_sherd";
+
+    String HOGLIN_SPAWN_EGG = "minecraft:hoglin_spawn_egg";
+
+    String HONEY_BOTTLE = "minecraft:honey_bottle";
+
+    String HONEYCOMB = "minecraft:honeycomb";
+
+    String HOPPER = "minecraft:hopper";
+
+    String HOPPER_MINECART = "minecraft:hopper_minecart";
+
+    String HORSE_SPAWN_EGG = "minecraft:horse_spawn_egg";
+
+    String HOST_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:host_armor_trim_smithing_template";
+
+    String HOWL_POTTERY_SHERD = "minecraft:howl_pottery_sherd";
+
+    String HUSK_SPAWN_EGG = "minecraft:husk_spawn_egg";
+
+    String ICE_BOMB = "minecraft:ice_bomb";
+
+    String INK_SAC = "minecraft:ink_sac";
+
+    String IRON_AXE = "minecraft:iron_axe";
+
+    String IRON_BOOTS = "minecraft:iron_boots";
+
+    String IRON_CHESTPLATE = "minecraft:iron_chestplate";
+
+    String IRON_DOOR = "minecraft:iron_door";
+
+    String IRON_GOLEM_SPAWN_EGG = "minecraft:iron_golem_spawn_egg";
+
+    String IRON_HELMET = "minecraft:iron_helmet";
+
+    String IRON_HOE = "minecraft:iron_hoe";
+
+    String IRON_HORSE_ARMOR = "minecraft:iron_horse_armor";
+
+    String IRON_INGOT = "minecraft:iron_ingot";
+
+    String IRON_LEGGINGS = "minecraft:iron_leggings";
+
+    String IRON_NUGGET = "minecraft:iron_nugget";
+
+    String IRON_PICKAXE = "minecraft:iron_pickaxe";
+
+    String IRON_SHOVEL = "minecraft:iron_shovel";
+
+    String IRON_SWORD = "minecraft:iron_sword";
+
+    String JUNGLE_BOAT = "minecraft:jungle_boat";
+
+    String JUNGLE_CHEST_BOAT = "minecraft:jungle_chest_boat";
+
+    String JUNGLE_DOOR = "minecraft:jungle_door";
+
+    String JUNGLE_HANGING_SIGN = "minecraft:jungle_hanging_sign";
+
+    String JUNGLE_SIGN = "minecraft:jungle_sign";
+
+    String KELP = "minecraft:kelp";
+
+    String LAPIS_LAZULI = "minecraft:lapis_lazuli";
+
+    String LAVA_BUCKET = "minecraft:lava_bucket";
+
+    String LEAD = "minecraft:lead";
+
+    String LEATHER = "minecraft:leather";
+
+    String LEATHER_BOOTS = "minecraft:leather_boots";
+
+    String LEATHER_CHESTPLATE = "minecraft:leather_chestplate";
+
+    String LEATHER_HELMET = "minecraft:leather_helmet";
+
+    String LEATHER_HORSE_ARMOR = "minecraft:leather_horse_armor";
+
+    String LEATHER_LEGGINGS = "minecraft:leather_leggings";
+
+    String LIGHT_BLUE_DYE = "minecraft:light_blue_dye";
+
+    String LIGHT_GRAY_DYE = "minecraft:light_gray_dye";
+
+    String LIME_DYE = "minecraft:lime_dye";
+
+    String LINGERING_POTION = "minecraft:lingering_potion";
+
+    String LLAMA_SPAWN_EGG = "minecraft:llama_spawn_egg";
+
+    String LODESTONE_COMPASS = "minecraft:lodestone_compass";
+
+    String LOG = "minecraft:log";
+
+    String LOG2 = "minecraft:log2";
+
+    String MAGENTA_DYE = "minecraft:magenta_dye";
+
+    String MAGMA_CREAM = "minecraft:magma_cream";
+
+    String MAGMA_CUBE_SPAWN_EGG = "minecraft:magma_cube_spawn_egg";
+
+    String MANGROVE_BOAT = "minecraft:mangrove_boat";
+
+    String MANGROVE_CHEST_BOAT = "minecraft:mangrove_chest_boat";
+
+    String MANGROVE_DOOR = "minecraft:mangrove_door";
+
+    String MANGROVE_HANGING_SIGN = "minecraft:mangrove_hanging_sign";
+
+    String MANGROVE_SIGN = "minecraft:mangrove_sign";
+
+    String MEDICINE = "minecraft:medicine";
+
+    String MELON_SEEDS = "minecraft:melon_seeds";
+
+    String MELON_SLICE = "minecraft:melon_slice";
+
+    String MILK_BUCKET = "minecraft:milk_bucket";
+
+    String MINECART = "minecraft:minecart";
+
+    String MINER_POTTERY_SHERD = "minecraft:miner_pottery_sherd";
+
+    String MOJANG_BANNER_PATTERN = "minecraft:mojang_banner_pattern";
+
+    String MOOSHROOM_SPAWN_EGG = "minecraft:mooshroom_spawn_egg";
+
+    String MOURNER_POTTERY_SHERD = "minecraft:mourner_pottery_sherd";
+
+    String MULE_SPAWN_EGG = "minecraft:mule_spawn_egg";
+
+    String MUSHROOM_STEW = "minecraft:mushroom_stew";
+
+    String MUSIC_DISC_11 = "minecraft:music_disc_11";
+
+    String MUSIC_DISC_13 = "minecraft:music_disc_13";
+
+    String MUSIC_DISC_5 = "minecraft:music_disc_5";
+
+    String MUSIC_DISC_BLOCKS = "minecraft:music_disc_blocks";
+
+    String MUSIC_DISC_CAT = "minecraft:music_disc_cat";
+
+    String MUSIC_DISC_CHIRP = "minecraft:music_disc_chirp";
+
+    String MUSIC_DISC_FAR = "minecraft:music_disc_far";
+
+    String MUSIC_DISC_MALL = "minecraft:music_disc_mall";
+
+    String MUSIC_DISC_MELLOHI = "minecraft:music_disc_mellohi";
+
+    String MUSIC_DISC_OTHERSIDE = "minecraft:music_disc_otherside";
+
+    String MUSIC_DISC_PIGSTEP = "minecraft:music_disc_pigstep";
+
+    String MUSIC_DISC_RELIC = "minecraft:music_disc_relic";
+
+    String MUSIC_DISC_STAL = "minecraft:music_disc_stal";
+
+    String MUSIC_DISC_STRAD = "minecraft:music_disc_strad";
+
+    String MUSIC_DISC_WAIT = "minecraft:music_disc_wait";
+
+    String MUSIC_DISC_WARD = "minecraft:music_disc_ward";
+
+    String MUTTON = "minecraft:mutton";
+
+    String NAME_TAG = "minecraft:name_tag";
+
+    String NAUTILUS_SHELL = "minecraft:nautilus_shell";
+
+    String NETHER_SPROUTS = "minecraft:nether_sprouts";
+
+    String NETHER_STAR = "minecraft:nether_star";
+
+    String NETHER_WART = "minecraft:nether_wart";
+
+    String NETHERBRICK = "minecraft:netherbrick";
+
+    String NETHERITE_AXE = "minecraft:netherite_axe";
+
+    String NETHERITE_BOOTS = "minecraft:netherite_boots";
+
+    String NETHERITE_CHESTPLATE = "minecraft:netherite_chestplate";
+
+    String NETHERITE_HELMET = "minecraft:netherite_helmet";
+
+    String NETHERITE_HOE = "minecraft:netherite_hoe";
+
+    String NETHERITE_INGOT = "minecraft:netherite_ingot";
+
+    String NETHERITE_LEGGINGS = "minecraft:netherite_leggings";
+
+    String NETHERITE_PICKAXE = "minecraft:netherite_pickaxe";
+
+    String NETHERITE_SCRAP = "minecraft:netherite_scrap";
+
+    String NETHERITE_SHOVEL = "minecraft:netherite_shovel";
+
+    String NETHERITE_SWORD = "minecraft:netherite_sword";
+
+    String NETHERITE_UPGRADE_SMITHING_TEMPLATE = "minecraft:netherite_upgrade_smithing_template";
+
+    String NPC_SPAWN_EGG = "minecraft:npc_spawn_egg";
+
+    String OAK_BOAT = "minecraft:oak_boat";
+
+    String OAK_CHEST_BOAT = "minecraft:oak_chest_boat";
+
+    String OAK_HANGING_SIGN = "minecraft:oak_hanging_sign";
+
+    String OAK_SIGN = "minecraft:oak_sign";
+
+    String OCELOT_SPAWN_EGG = "minecraft:ocelot_spawn_egg";
+
+    String ORANGE_DYE = "minecraft:orange_dye";
+
+    String OXIDIZED_COPPER_DOOR = "minecraft:oxidized_copper_door";
+
+    String PAINTING = "minecraft:painting";
+
+    String PANDA_SPAWN_EGG = "minecraft:panda_spawn_egg";
+
+    String PAPER = "minecraft:paper";
+
+    String PARROT_SPAWN_EGG = "minecraft:parrot_spawn_egg";
+
+    String PHANTOM_MEMBRANE = "minecraft:phantom_membrane";
+
+    String PHANTOM_SPAWN_EGG = "minecraft:phantom_spawn_egg";
+
+    String PIG_SPAWN_EGG = "minecraft:pig_spawn_egg";
+
+    String PIGLIN_BANNER_PATTERN = "minecraft:piglin_banner_pattern";
+
+    String PIGLIN_BRUTE_SPAWN_EGG = "minecraft:piglin_brute_spawn_egg";
+
+    String PIGLIN_SPAWN_EGG = "minecraft:piglin_spawn_egg";
+
+    String PILLAGER_SPAWN_EGG = "minecraft:pillager_spawn_egg";
+
+    String PINK_DYE = "minecraft:pink_dye";
+
+    String PITCHER_POD = "minecraft:pitcher_pod";
+
+    String PLANKS = "minecraft:planks";
+
+    String PLENTY_POTTERY_SHERD = "minecraft:plenty_pottery_sherd";
+
+    String POISONOUS_POTATO = "minecraft:poisonous_potato";
+
+    String POLAR_BEAR_SPAWN_EGG = "minecraft:polar_bear_spawn_egg";
+
+    String POPPED_CHORUS_FRUIT = "minecraft:popped_chorus_fruit";
+
+    String PORKCHOP = "minecraft:porkchop";
+
+    String POTATO = "minecraft:potato";
+
+    String POTION = "minecraft:potion";
+
+    String POWDER_SNOW_BUCKET = "minecraft:powder_snow_bucket";
+
+    String PRISMARINE_CRYSTALS = "minecraft:prismarine_crystals";
+
+    String PRISMARINE_SHARD = "minecraft:prismarine_shard";
+
+    String PRIZE_POTTERY_SHERD = "minecraft:prize_pottery_sherd";
+
+    String PUFFERFISH = "minecraft:pufferfish";
+
+    String PUFFERFISH_BUCKET = "minecraft:pufferfish_bucket";
+
+    String PUFFERFISH_SPAWN_EGG = "minecraft:pufferfish_spawn_egg";
+
+    String PUMPKIN_PIE = "minecraft:pumpkin_pie";
+
+    String PUMPKIN_SEEDS = "minecraft:pumpkin_seeds";
+
+    String PURPLE_DYE = "minecraft:purple_dye";
+
+    String QUARTZ = "minecraft:quartz";
+
+    String RABBIT = "minecraft:rabbit";
+
+    String RABBIT_FOOT = "minecraft:rabbit_foot";
+
+    String RABBIT_HIDE = "minecraft:rabbit_hide";
+
+    String RABBIT_SPAWN_EGG = "minecraft:rabbit_spawn_egg";
+
+    String RABBIT_STEW = "minecraft:rabbit_stew";
+
+    String RAISER_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:raiser_armor_trim_smithing_template";
+
+    String RAPID_FERTILIZER = "minecraft:rapid_fertilizer";
+
+    String RAVAGER_SPAWN_EGG = "minecraft:ravager_spawn_egg";
+
+    String RAW_COPPER = "minecraft:raw_copper";
+
+    String RAW_GOLD = "minecraft:raw_gold";
+
+    String RAW_IRON = "minecraft:raw_iron";
+
+    String RECOVERY_COMPASS = "minecraft:recovery_compass";
+
+    String RED_DYE = "minecraft:red_dye";
+
+    String REDSTONE = "minecraft:redstone";
+
+    String REPEATER = "minecraft:repeater";
+
+    String RIB_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:rib_armor_trim_smithing_template";
+
+    String ROTTEN_FLESH = "minecraft:rotten_flesh";
+
+    String SADDLE = "minecraft:saddle";
+
+    String SALMON = "minecraft:salmon";
+
+    String SALMON_BUCKET = "minecraft:salmon_bucket";
+
+    String SALMON_SPAWN_EGG = "minecraft:salmon_spawn_egg";
+
+    String SCUTE = "minecraft:scute";
+
+    String SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:sentry_armor_trim_smithing_template";
+
+    String SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:shaper_armor_trim_smithing_template";
+
+    String SHEAF_POTTERY_SHERD = "minecraft:sheaf_pottery_sherd";
+
+    String SHEARS = "minecraft:shears";
+
+    String SHEEP_SPAWN_EGG = "minecraft:sheep_spawn_egg";
+
+    String SHELTER_POTTERY_SHERD = "minecraft:shelter_pottery_sherd";
+
+    String SHIELD = "minecraft:shield";
+
+    String SHULKER_BOX = "minecraft:shulker_box";
+
+    String SHULKER_SHELL = "minecraft:shulker_shell";
+
+    String SHULKER_SPAWN_EGG = "minecraft:shulker_spawn_egg";
+
+    String SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:silence_armor_trim_smithing_template";
+
+    String SILVERFISH_SPAWN_EGG = "minecraft:silverfish_spawn_egg";
+
+    String SKELETON_HORSE_SPAWN_EGG = "minecraft:skeleton_horse_spawn_egg";
+
+    String SKELETON_SPAWN_EGG = "minecraft:skeleton_spawn_egg";
+
+    String SKULL = "minecraft:skull";
+
+    String SKULL_BANNER_PATTERN = "minecraft:skull_banner_pattern";
+
+    String SKULL_POTTERY_SHERD = "minecraft:skull_pottery_sherd";
+
+    String SLIME_BALL = "minecraft:slime_ball";
+
+    String SLIME_SPAWN_EGG = "minecraft:slime_spawn_egg";
+
+    String SNIFFER_SPAWN_EGG = "minecraft:sniffer_spawn_egg";
+
+    String SNORT_POTTERY_SHERD = "minecraft:snort_pottery_sherd";
+
+    String SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:snout_armor_trim_smithing_template";
+
+    String SNOW_GOLEM_SPAWN_EGG = "minecraft:snow_golem_spawn_egg";
+
+    String SNOWBALL = "minecraft:snowball";
+
+    String SOUL_CAMPFIRE = "minecraft:soul_campfire";
+
+    String SPARKLER = "minecraft:sparkler";
+
+    String SPAWN_EGG = "minecraft:spawn_egg";
+
+    String SPIDER_EYE = "minecraft:spider_eye";
+
+    String SPIDER_SPAWN_EGG = "minecraft:spider_spawn_egg";
+
+    String SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:spire_armor_trim_smithing_template";
+
+    String SPLASH_POTION = "minecraft:splash_potion";
+
+    String SPRUCE_BOAT = "minecraft:spruce_boat";
+
+    String SPRUCE_CHEST_BOAT = "minecraft:spruce_chest_boat";
+
+    String SPRUCE_DOOR = "minecraft:spruce_door";
+
+    String SPRUCE_HANGING_SIGN = "minecraft:spruce_hanging_sign";
+
+    String SPRUCE_SIGN = "minecraft:spruce_sign";
+
+    String SPYGLASS = "minecraft:spyglass";
+
+    String SQUID_SPAWN_EGG = "minecraft:squid_spawn_egg";
+
+    String STAINED_GLASS = "minecraft:stained_glass";
+
+    String STAINED_GLASS_PANE = "minecraft:stained_glass_pane";
+
+    String STAINED_HARDENED_CLAY = "minecraft:stained_hardened_clay";
+
+    String STICK = "minecraft:stick";
+
+    String STONE_AXE = "minecraft:stone_axe";
+
+    String STONE_HOE = "minecraft:stone_hoe";
+
+    String STONE_PICKAXE = "minecraft:stone_pickaxe";
+
+    String STONE_SHOVEL = "minecraft:stone_shovel";
+
+    String STONE_SWORD = "minecraft:stone_sword";
+
+    String STRAY_SPAWN_EGG = "minecraft:stray_spawn_egg";
+
+    String STRIDER_SPAWN_EGG = "minecraft:strider_spawn_egg";
+
+    String STRING = "minecraft:string";
+
+    String SUGAR = "minecraft:sugar";
+
+    String SUGAR_CANE = "minecraft:sugar_cane";
+
+    String SUSPICIOUS_STEW = "minecraft:suspicious_stew";
+
+    String SWEET_BERRIES = "minecraft:sweet_berries";
+
+    String TADPOLE_BUCKET = "minecraft:tadpole_bucket";
+
+    String TADPOLE_SPAWN_EGG = "minecraft:tadpole_spawn_egg";
+
+    String TIDE_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:tide_armor_trim_smithing_template";
+
+    String TNT_MINECART = "minecraft:tnt_minecart";
+
+    String TORCHFLOWER_SEEDS = "minecraft:torchflower_seeds";
+
+    String TOTEM_OF_UNDYING = "minecraft:totem_of_undying";
+
+    String TRADER_LLAMA_SPAWN_EGG = "minecraft:trader_llama_spawn_egg";
+
+    String TRIDENT = "minecraft:trident";
+
+    String TROPICAL_FISH = "minecraft:tropical_fish";
+
+    String TROPICAL_FISH_BUCKET = "minecraft:tropical_fish_bucket";
+
+    String TROPICAL_FISH_SPAWN_EGG = "minecraft:tropical_fish_spawn_egg";
+
+    String TURTLE_HELMET = "minecraft:turtle_helmet";
+
+    String TURTLE_SPAWN_EGG = "minecraft:turtle_spawn_egg";
+
+    String VEX_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:vex_armor_trim_smithing_template";
+
+    String VEX_SPAWN_EGG = "minecraft:vex_spawn_egg";
+
+    String VILLAGER_SPAWN_EGG = "minecraft:villager_spawn_egg";
+
+    String VINDICATOR_SPAWN_EGG = "minecraft:vindicator_spawn_egg";
+
+    String WANDERING_TRADER_SPAWN_EGG = "minecraft:wandering_trader_spawn_egg";
+
+    String WARD_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:ward_armor_trim_smithing_template";
+
+    String WARDEN_SPAWN_EGG = "minecraft:warden_spawn_egg";
+
+    String WARPED_DOOR = "minecraft:warped_door";
+
+    String WARPED_FUNGUS_ON_A_STICK = "minecraft:warped_fungus_on_a_stick";
+
+    String WARPED_HANGING_SIGN = "minecraft:warped_hanging_sign";
+
+    String WARPED_SIGN = "minecraft:warped_sign";
+
+    String WATER_BUCKET = "minecraft:water_bucket";
+
+    String WAXED_COPPER_DOOR = "minecraft:waxed_copper_door";
+
+    String WAXED_EXPOSED_COPPER_DOOR = "minecraft:waxed_exposed_copper_door";
+
+    String WAXED_OXIDIZED_COPPER_DOOR = "minecraft:waxed_oxidized_copper_door";
+
+    String WAXED_WEATHERED_COPPER_DOOR = "minecraft:waxed_weathered_copper_door";
+
+    String WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:wayfinder_armor_trim_smithing_template";
+
+    String WEATHERED_COPPER_DOOR = "minecraft:weathered_copper_door";
+
+    String WHEAT = "minecraft:wheat";
+
+    String WHEAT_SEEDS = "minecraft:wheat_seeds";
+
+    String WHITE_DYE = "minecraft:white_dye";
+
+    String WILD_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:wild_armor_trim_smithing_template";
+
+    String WITCH_SPAWN_EGG = "minecraft:witch_spawn_egg";
+
+    String WITHER_SKELETON_SPAWN_EGG = "minecraft:wither_skeleton_spawn_egg";
+
+    String WITHER_SPAWN_EGG = "minecraft:wither_spawn_egg";
+
+    String WOLF_SPAWN_EGG = "minecraft:wolf_spawn_egg";
+
+    String WOODEN_AXE = "minecraft:wooden_axe";
+
+    String WOODEN_DOOR = "minecraft:wooden_door";
+
+    String WOODEN_HOE = "minecraft:wooden_hoe";
+
+    String WOODEN_PICKAXE = "minecraft:wooden_pickaxe";
+
+    String WOODEN_SHOVEL = "minecraft:wooden_shovel";
+
+    String WOODEN_SWORD = "minecraft:wooden_sword";
+
+    String WOOL = "minecraft:wool";
+
+    String WRITABLE_BOOK = "minecraft:writable_book";
+
+    String WRITTEN_BOOK = "minecraft:written_book";
+
+    String YELLOW_DYE = "minecraft:yellow_dye";
+
+    String ZOGLIN_SPAWN_EGG = "minecraft:zoglin_spawn_egg";
+
+    String ZOMBIE_HORSE_SPAWN_EGG = "minecraft:zombie_horse_spawn_egg";
+
+    String ZOMBIE_PIGMAN_SPAWN_EGG = "minecraft:zombie_pigman_spawn_egg";
+
+    String ZOMBIE_SPAWN_EGG = "minecraft:zombie_spawn_egg";
+
+    String ZOMBIE_VILLAGER_SPAWN_EGG = "minecraft:zombie_villager_spawn_egg";
 }

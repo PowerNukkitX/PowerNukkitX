@@ -1,22 +1,24 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
 public class BlockBlackstone extends BlockSolid {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BLACKSTONE);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public BlockBlackstone() {
-        // Does nothing
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBlackstone(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
-    public int getId() {
-        return BLACKSTONE;
+    @NotNull
+    public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override
@@ -29,8 +31,6 @@ public class BlockBlackstone extends BlockSolid {
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;

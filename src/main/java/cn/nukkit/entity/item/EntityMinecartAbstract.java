@@ -4,10 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.api.API;
 import cn.nukkit.api.API.Definition;
 import cn.nukkit.api.API.Usage;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.*;
+import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntityHopper;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
@@ -23,7 +21,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemMinecart;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.*;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MinecartType;
@@ -66,7 +64,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     private double maxSpeed = 0.4D;
     private boolean hasUpdated = false;
 
-    public EntityMinecartAbstract(FullChunk chunk, CompoundTag nbt) {
+    public EntityMinecartAbstract(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
 
         setMaxHealth(40);
@@ -109,7 +107,6 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         prepareDataProperty();
     }
 
-    @PowerNukkitDifference(since = "1.3.1.2-PN", info = "Will despawn instantly after being 'killed'")
     @Override
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
@@ -158,13 +155,13 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             if (Rail.isRailBlock(block)) {
                 processMovement(dx, dy, dz, (BlockRail) block);
                 // Activate the minecart/TNT
-                if (block instanceof BlockRailActivator activator && activator.isActive()) {
-                    activate(dx, dy, dz, (block.getDamage() & 0x8) != 0);
+                if (block instanceof BlockActivatorRail activator && activator.isActive()) {
+                    activate(dx, dy, dz, activator.isActive());
                     if (this.isRideable() && this.getRiding() != null) {
                         this.dismountEntity(this.getRiding());
                     }
                 }
-                if (block instanceof BlockRailDetector detector && !detector.isActive()) {
+                if (block instanceof BlockDetectorRail detector && !detector.isActive()) {
                     detector.updateState(true);
                 }
             } else {
@@ -225,7 +222,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 var pickupArea = new SimpleAxisAlignedBB(this.x, this.y - 1, this.z, this.x + 1, this.y, this.z + 1);
                 checkPickupHopper(pickupArea, holder);
                 //漏斗矿车会自行拉取物品!
-                if (!(this instanceof EntityMinecartHopper)) {
+                if (!(this instanceof EntityHopperMinecart)) {
                     var pushArea = new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 2, this.z + 1);
                     checkPushHopper(pushArea, holder);
                 }
@@ -265,7 +262,6 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         level.dropItem(this, new ItemMinecart());
     }
 
-    @PowerNukkitDifference(info = "Fixes a dupe issue when attacking too quickly", since = "1.3.1.2-PN")
     @Override
     public void kill() {
         if (!isAlive()) {
@@ -278,7 +274,6 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         }
     }
 
-    @PowerNukkitDifference(info = "Will not make a smoke particle and will do a proper dismount on the entities", since = "1.3.1.2-PN")
     @Override
     public void close() {
         super.close();
@@ -405,8 +400,6 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      * @param pushArea 漏斗输出范围
      * @return 是否有漏斗被通知
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     private boolean checkPushHopper(AxisAlignedBB pushArea, InventoryHolder holder) {
         int minX = NukkitMath.floorDouble(pushArea.getMinX());
         int minY = NukkitMath.floorDouble(pushArea.getMinY());
@@ -436,8 +429,6 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      * @param pickupArea 漏斗拉取范围
      * @return 是否有漏斗被通知
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     private boolean checkPickupHopper(AxisAlignedBB pickupArea, InventoryHolder holder) {
         int minX = NukkitMath.floorDouble(pickupArea.getMinX());
         int minY = NukkitMath.floorDouble(pickupArea.getMinY());
@@ -496,7 +487,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         boolean isPowered = false;
         boolean isSlowed = false;
 
-        if (block instanceof BlockRailPowered) {
+        if (block instanceof BlockGoldenRail) {
             isPowered = block.isActive();
             isSlowed = !block.isActive();
         }
@@ -753,9 +744,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 setDataProperty(new IntEntityData(DATA_DISPLAY_OFFSET, offSet));
             }
         } else {
-            int display = blockInside == null ? 0
-                    : blockInside.getId()
-                    | blockInside.getDamage() << 16;
+            int display = blockInside == null ? 0 : blockInside.getRuntimeId();
             if (display == 0) {
                 setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 0));
                 return;
@@ -773,8 +762,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         int offSet;
         namedTag.putBoolean("CustomDisplayTile", hasDisplay);
         if (hasDisplay) {
-            display = blockInside.getId()
-                    | blockInside.getDamage() << 16;
+            display = blockInside.getRuntimeId();
             offSet = getDataPropertyInt(DATA_DISPLAY_OFFSET);
             namedTag.putInt("DisplayTile", display);
             namedTag.putInt("DisplayOffset", offSet);
@@ -811,8 +799,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         if (block != null) {
             if (block.isNormalBlock()) {
                 blockInside = block;
-                int display = blockInside.getId()
-                        | blockInside.getDamage() << 16;
+                //              Runtimeid
+                int display = blockInside.getRuntimeId();
                 setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 1));
                 setDataProperty(new IntEntityData(DATA_DISPLAY_ITEM, display));
                 setDisplayBlockOffset(6);

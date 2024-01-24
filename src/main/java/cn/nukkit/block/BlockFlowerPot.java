@@ -1,13 +1,9 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityFlowerPot;
-import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemFlowerPot;
 import cn.nukkit.level.Level;
@@ -20,34 +16,26 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.block.BlockLeaves.UPDATE;
-
 /**
  * @author Nukkit Project Team
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
 public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<BlockEntityFlowerPot> {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static BlockProperties PROPERTIES = new BlockProperties(UPDATE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(FLOWER_POT, CommonBlockProperties.UPDATE_BIT);
 
     public BlockFlowerPot() {
-        this(0);
+        super(PROPERTIES.getDefaultState());
     }
 
-    public BlockFlowerPot(int meta) {
-        super(meta);
+    public BlockFlowerPot(BlockState blockstate) {
+        super(blockstate);
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
     @Override
+    @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -59,22 +47,13 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     }
 
     @Override
-    public int getId() {
-        return FLOWER_POT_BLOCK;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @NotNull
-    @Override
     public Class<? extends BlockEntityFlowerPot> getBlockEntityClass() {
         return BlockEntityFlowerPot.class;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
     @Override
+    @NotNull
     public String getBlockEntityType() {
         return BlockEntity.FLOWER_POT;
     }
@@ -89,7 +68,6 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         return 0;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -101,7 +79,6 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         return 0;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!BlockLever.isSupportValid(down(), BlockFace.UP)) {
@@ -110,32 +87,28 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
         CompoundTag nbt = new CompoundTag();
         if (item.hasCustomBlockData()) {
-            for (Tag aTag : item.getCustomBlockData().getAllTags()) {
-                nbt.put(aTag.getName(), aTag);
+            for (var e : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(e.getKey(), e.getValue());
             }
         }
 
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     @NotNull
     public Item getFlower() {
         BlockEntityFlowerPot blockEntity = getBlockEntity();
         if (blockEntity == null || !blockEntity.namedTag.containsCompound("PlantBlock")) {
-            return Item.get(0, 0, 0);
+            return Item.AIR;
         }
         var plantBlockTag = blockEntity.namedTag.getCompound("PlantBlock");
-        var id = plantBlockTag.getInt("itemId");
+        var id = plantBlockTag.getString("itemId");
         var meta = plantBlockTag.getInt("itemMeta");
         return Item.get(id, meta);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public boolean setFlower(@Nullable Item item) {
-        if (item == null || item.getId() == AIR) {
+        if (item != null && item.isNull()) {
             removeFlower();
             return true;
         }
@@ -144,7 +117,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
             BlockEntityFlowerPot blockEntity = getOrCreateBlockEntity();
             blockEntity.namedTag.putCompound("PlantBlock", potBlock.getPlantBlockTag());
 
-            setBooleanValue(UPDATE, true);
+            setPropertyValue(CommonBlockProperties.UPDATE_BIT, true);
             getLevel().setBlock(this, this, true);
             blockEntity.spawnToAll();
             return true;
@@ -153,22 +126,15 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void removeFlower() {
         BlockEntityFlowerPot blockEntity = getOrCreateBlockEntity();
         blockEntity.namedTag.remove("PlantBlock");
 
-        setBooleanValue(UPDATE, false);
+        setPropertyValue(CommonBlockProperties.UPDATE_BIT, false);
         getLevel().setBlock(this, this, true);
         blockEntity.spawnToAll();
     }
 
-    /**
-     * @return 花盆是否有花
-     */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     public boolean hasFlower() {
         var blockEntity = getBlockEntity();
         if (blockEntity == null) return false;
@@ -182,7 +148,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
-        if (getBooleanValue(UPDATE)) {
+        if (getPropertyValue(CommonBlockProperties.UPDATE_BIT)) {
             if (player == null) {
                 return false;
             }
@@ -220,12 +186,12 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     @Override
     public Item[] getDrops(Item item) {
         boolean dropInside = false;
-        int insideID = 0;
+        String insideID = "minecraft:air";
         int insideMeta = 0;
         BlockEntityFlowerPot blockEntity = getBlockEntity();
         if (blockEntity != null) {
             dropInside = true;
-            insideID = blockEntity.namedTag.getCompound("PlantBlock").getInt("itemId");
+            insideID = blockEntity.namedTag.getCompound("PlantBlock").getString("itemId");
             insideMeta = blockEntity.namedTag.getCompound("PlantBlock").getInt("itemMeta");
         }
         if (dropInside) {
@@ -305,13 +271,11 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
          */
         default CompoundTag getPlantBlockTag() {
             var block = (Block) this;
-            var tag = NBTIO.putBlockHelper(block);
-            tag.setName("PlantBlock");
+            var tag = block.getBlockState().getBlockStateTag();
             var item = block.toItem();
-            //only exist in PNX
-            tag.putInt("itemId", item.getId());
-            tag.putInt("itemMeta", item.getDamage());
-            return tag;
+            return new CompoundTag().putCompound("PlantBlock", tag)
+                    .putString("itemId", item.getId())
+                    .putInt("itemMeta", item.getDamage()); //only exist in PNX
         }
 
         /**

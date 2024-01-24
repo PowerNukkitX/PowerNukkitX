@@ -1,7 +1,5 @@
 package cn.nukkit.metadata;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.plugin.Plugin;
 
 /**
@@ -13,8 +11,8 @@ import cn.nukkit.plugin.Plugin;
  * overrides all the implementation methods. it is possible that in the future
  * that the inheritance hierarchy may change.
  */
-@PowerNukkitXOnly
-@Since("1.19.63-r2")
+
+
 public class FixedMetadataValue extends LazyMetadataValue {
 
     /**

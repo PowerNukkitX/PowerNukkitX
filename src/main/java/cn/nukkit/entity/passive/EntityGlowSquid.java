@@ -1,21 +1,22 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.entity.EntitySwimmable;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 public class EntityGlowSquid extends EntityAnimal implements EntitySwimmable {
 
-    public static final int NETWORK_ID = 129;
+    @Override
+    @NotNull public String getIdentifier() {
+        return GLOW_SQUID;
+    }
 
-    public EntityGlowSquid(FullChunk chunk, CompoundTag nbt) {
+    public EntityGlowSquid(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getHeight() {

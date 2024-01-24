@@ -8,7 +8,7 @@ public class SimpleEventPacket extends DataPacket {
     public short unknown;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.SIMPLE_EVENT_PACKET;
     }
 

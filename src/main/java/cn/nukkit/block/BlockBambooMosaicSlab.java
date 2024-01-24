@@ -1,22 +1,20 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+
 public class BlockBambooMosaicSlab extends BlockSlab {
-    public BlockBambooMosaicSlab() {
-        this(0);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_MOSAIC_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
-    public BlockBambooMosaicSlab(int meta) {
-        super(meta, BAMBOO_MOSAIC_DOUBLE_SLAB);
-    }
-
-    public int getId() {
-        return BAMBOO_MOSAIC_SLAB;
+    public BlockBambooMosaicSlab(BlockState blockState) {
+        super(blockState, BAMBOO_MOSAIC_DOUBLE_SLAB);
     }
 
     @Override
@@ -26,7 +24,7 @@ public class BlockBambooMosaicSlab extends BlockSlab {
 
     @Override
     public boolean isSameType(BlockSlab slab) {
-        return slab.getId() == getId();
+        return slab.getId().equals(getId());
     }
 
     @Override

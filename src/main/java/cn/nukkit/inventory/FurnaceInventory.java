@@ -1,8 +1,8 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+
+
 import cn.nukkit.blockentity.BlockEntityFurnace;
 import cn.nukkit.item.Item;
 
@@ -15,7 +15,7 @@ public class FurnaceInventory extends ContainerInventory {
         super(furnace, InventoryType.FURNACE);
     }
 
-    @PowerNukkitOnly
+    
     public FurnaceInventory(BlockEntityFurnace furnace, InventoryType inventoryType) {
         super(furnace, inventoryType);
     }
@@ -49,10 +49,10 @@ public class FurnaceInventory extends ContainerInventory {
         return this.setItem(0, item);
     }
 
-    @Since("1.19.50-r3")
+    
     @Override
     public boolean setItemByPlayer(Player player, int index, Item item, boolean send) {
-        if (index == 2 && (item.getId() == 0 || item.getCount() == 0)) {
+        if (index == 2 && (item.isNull() || item.getCount() == 0)) {
             var holder = getHolder();
             var xp = holder.calculateXpDrop();
             if (xp > 0) {

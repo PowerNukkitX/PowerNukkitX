@@ -1,14 +1,12 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.ChestInventory;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.DoubleChestInventory;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -21,11 +19,10 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
 
     protected DoubleChestInventory doubleInventory = null;
 
-    public BlockEntityChest(FullChunk chunk, CompoundTag nbt) {
+    public BlockEntityChest(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Since("1.19.60-r1")
     @Override
     protected ContainerInventory requireContainerInventory() {
         return new ChestInventory(this);
@@ -49,11 +46,10 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
 
     @Override
     public boolean isBlockEntityValid() {
-        int blockID = this.getBlock().getId();
+        String blockID = this.getBlock().getId();
         return blockID == Block.CHEST || blockID == Block.TRAPPED_CHEST;
     }
 
-    @Override
     public int getSize() {
         return 27;
     }
@@ -189,8 +185,6 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
         return c;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     @Override
     public CompoundTag getCleanedNBT() {
         return super.getCleanedNBT().remove("pairx").remove("pairz");

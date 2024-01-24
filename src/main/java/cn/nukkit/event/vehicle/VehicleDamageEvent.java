@@ -1,9 +1,9 @@
 package cn.nukkit.event.vehicle;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.entity.item.EntityVehicle;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 /**
  * Is called when an entity takes damage
@@ -11,6 +11,10 @@ import cn.nukkit.event.HandlerList;
 public class VehicleDamageEvent extends VehicleEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private double damage;
 
@@ -20,16 +24,10 @@ public class VehicleDamageEvent extends VehicleEvent implements Cancellable {
      * @param vehicle the damaged vehicle
      * @param damage  the caused damage on the vehicle
      */
-
-    @PowerNukkitOnly
     public VehicleDamageEvent(final EntityVehicle vehicle, final double damage) {
         super(vehicle);
 
         this.damage = damage;
-    }
-
-    public static HandlerList getHandlers() {
-        return handlers;
     }
 
     /**

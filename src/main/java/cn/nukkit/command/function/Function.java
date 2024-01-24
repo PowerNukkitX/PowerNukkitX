@@ -1,8 +1,6 @@
 package cn.nukkit.command.function;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import lombok.Getter;
 
@@ -11,8 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+
 @Getter
 public class Function {
 

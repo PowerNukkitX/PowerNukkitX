@@ -1,12 +1,13 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.entity.mob.EntityCreeper;
 import cn.nukkit.network.protocol.*;
+import cn.nukkit.registry.Registries;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
@@ -54,7 +55,6 @@ public class DummyBossBar {
             return this;
         }
 
-        @Since("FUTURE")
         public Builder color(BossBarColor color) {
             this.color = color;
             return this;
@@ -97,7 +97,6 @@ public class DummyBossBar {
         }
     }
 
-    @Since("FUTURE")
     public void setColor(@Nullable BossBarColor color) {
         final BossBarColor currentColor = this.color;
         if (currentColor == null || !currentColor.equals(color)) {
@@ -106,15 +105,14 @@ public class DummyBossBar {
         }
     }
 
-    @Since("FUTURE")
-    @Nullable
-    public BossBarColor getColor() {
+    public @Nullable BossBarColor getColor() {
         return this.color;
     }
 
     private void createBossEntity() {
         AddEntityPacket pkAdd = new AddEntityPacket();
-        pkAdd.type = EntityCreeper.NETWORK_ID;
+
+        pkAdd.type = Registries.ENTITY.getEntityNetworkId(EntityID.CREEPER);
         pkAdd.entityUniqueId = bossBarId;
         pkAdd.entityRuntimeId = bossBarId;
         pkAdd.x = (float) player.x;

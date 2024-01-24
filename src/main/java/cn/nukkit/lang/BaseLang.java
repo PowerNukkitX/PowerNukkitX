@@ -1,8 +1,6 @@
 package cn.nukkit.lang;
 
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import io.netty.util.internal.EmptyArrays;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -123,8 +121,6 @@ public class BaseLang {
      * @param key the key
      * @return the string
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     public String tr(String key) {
         return tr(key, EmptyArrays.EMPTY_STRINGS);
     }
@@ -136,8 +132,6 @@ public class BaseLang {
      * @param args the args
      * @return the string
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     public String tr(String key, String... args) {
         String baseText = parseLanguageText(key);
         for (int i = 0; i < args.length; i++) {
@@ -155,8 +149,6 @@ public class BaseLang {
      * @param args the args
      * @return the string
      */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     public String tr(String key, Object... args) {
         String baseText = parseLanguageText(key);
         for (int i = 0; i < args.length; i++) {
@@ -165,8 +157,6 @@ public class BaseLang {
         return baseText;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     public String tr(TextContainer c) {
         String baseText = this.parseLanguageText(c.getText());
         if (c instanceof TranslationContainer cc) {

@@ -1,8 +1,6 @@
 package cn.nukkit.command;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.level.GameRule;
@@ -18,8 +16,7 @@ import java.util.function.Function;
 /**
  * @since 1.2.1.0-PN
  */
-@PowerNukkitOnly
-@AllArgsConstructor(onConstructor = @__(@PowerNukkitOnly))
+@AllArgsConstructor()
 public class CapturingCommandSender implements CommandSender {
     private final StringBuilder captured = new StringBuilder();
 
@@ -31,38 +28,33 @@ public class CapturingCommandSender implements CommandSender {
     @NotNull
     private final Permissible perms;
 
-    @PowerNukkitOnly
+
     public CapturingCommandSender() {
         this("System");
     }
 
-    @PowerNukkitOnly
     public CapturingCommandSender(@NotNull String name) {
         this.name = name;
         this.perms = new PermissibleBase(this);
     }
 
-    @PowerNukkitOnly
     public CapturingCommandSender(@NotNull String name, boolean isOp) {
         this.name = name;
         this.isOp = isOp;
         this.perms = new PermissibleBase(this);
     }
 
-    @PowerNukkitOnly
     public CapturingCommandSender(@NotNull String name, boolean isOp, @NotNull Function<ServerOperator, Permissible> permissibleFactory) {
         this.name = name;
         this.isOp = isOp;
         this.perms = permissibleFactory.apply(this);
     }
 
-    @NotNull
     @Override
-    public String getName() {
+    @NotNull public String getName() {
         return name;
     }
 
-    @PowerNukkitOnly
     public void setName(@NotNull String name) {
         this.name = name;
     }
@@ -77,17 +69,14 @@ public class CapturingCommandSender implements CommandSender {
         isOp = op;
     }
 
-    @PowerNukkitOnly
     public void resetCapture() {
         captured.setLength(0);
     }
 
-    @PowerNukkitOnly
     public synchronized String getRawCapture() {
         return captured.toString();
     }
 
-    @PowerNukkitOnly
     public synchronized String getCleanCapture() {
         return TextFormat.clean(captured.toString());
     }
@@ -109,7 +98,6 @@ public class CapturingCommandSender implements CommandSender {
         sendMessage(message.toString());
     }
 
-    @Since("1.19.60-r1")
     @Override
     public void sendCommandOutput(CommandOutputContainer container) {
         if (!container.getMessages().isEmpty() && this.getLocation().getLevel().getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {

@@ -2,10 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -15,27 +12,20 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-@PowerNukkitXOnly
-@Since("1.20.10-r2")
 public class BlockTorchflowerCrop extends BlockCrops {
-    public static final IntBlockProperty GROWTH = new IntBlockProperty("growth", false, 1);
-    public static final BlockProperties PROPERTIES = new BlockProperties(GROWTH);
+    public static final BlockProperties PROPERTIES = new BlockProperties(TORCHFLOWER_CROP, CommonBlockProperties.GROWTH);
 
     @Override
-    public BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     public BlockTorchflowerCrop() {
-        super(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockTorchflowerCrop(int meta) {
-        super(meta);
-    }
-
-    public int getId() {
-        return TORCHFLOWER_CROP;
+    public BlockTorchflowerCrop(BlockState blockstate) {
+        super(blockstate);
     }
 
     public String getName() {
@@ -48,13 +38,18 @@ public class BlockTorchflowerCrop extends BlockCrops {
     }
 
     @Override
+    @NotNull public String getItemId() {
+        return ItemID.TORCHFLOWER_SEEDS;
+    }
+
+    @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         //Bone meal
         if (item.isFertilizer()) {
             int max = getMaxGrowth();
             int growth = getGrowth();
 
-            if(growth == 1) {
+            if (growth == 1) {
                 BlockTorchflower block = new BlockTorchflower();
                 BlockGrowEvent ev = new BlockGrowEvent(this, block);
                 Server.getInstance().getPluginManager().callEvent(ev);
@@ -96,14 +91,14 @@ public class BlockTorchflowerCrop extends BlockCrops {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (this.down().getId() != FARMLAND) {
+            if (!this.down().getId().equals(FARMLAND)) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (ThreadLocalRandom.current().nextInt(2) == 1 && getLevel().getFullLight(this) >= getMinimumLightLevel()) {
                 int growth = getGrowth();
-                if(growth == 1) {
+                if (growth == 1) {
                     BlockTorchflower block = new BlockTorchflower();
                     BlockGrowEvent ev = new BlockGrowEvent(this, block);
                     Server.getInstance().getPluginManager().callEvent(ev);

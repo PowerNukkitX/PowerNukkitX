@@ -1,6 +1,7 @@
 package cn.nukkit.event.entity;
 
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.potion.Effect;
 import org.jetbrains.annotations.NotNull;
@@ -12,14 +13,16 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityDamageByEntityEvent extends EntityDamageEvent {
+    private static final HandlerList handlers = new HandlerList();
 
-    @NotNull
-    private final Entity damager;
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
+
+    private @NotNull final Entity damager;
 
     private float knockBack;
-
-    @Nullable
-    private Enchantment[] enchantments;
+    private @Nullable Enchantment[] enchantments;
 
     public EntityDamageByEntityEvent(@NotNull Entity damager, @NotNull Entity entity, @NotNull DamageCause cause, float damage) {
         this(damager, entity, cause, damage, 0.3f);
@@ -58,8 +61,7 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
         }
     }
 
-    @NotNull
-    public Entity getDamager() {
+    @NotNull public Entity getDamager() {
         return damager;
     }
 
@@ -71,8 +73,7 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
         this.knockBack = knockBack;
     }
 
-    @Nullable
-    public Enchantment[] getWeaponEnchantments() {
+    public @Nullable Enchantment[] getWeaponEnchantments() {
         if (enchantments == null) {
             return null;
         }

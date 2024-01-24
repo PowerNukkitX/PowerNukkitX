@@ -17,7 +17,7 @@ public class ProfessionFletcher extends Profession {
 
     @Override
     public ListTag<Tag> buildTrades(int seed) {
-        ListTag<Tag> recipes = new ListTag<>("Recipes");
+        ListTag<Tag> recipes = new ListTag<>();
         Random random = new Random(seed);
 
         Item bow = Item.get(Item.BOW);
@@ -44,7 +44,7 @@ public class ProfessionFletcher extends Profession {
                         .setTier(1)
                         .setTraderExp(1)
                         .build())
-                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,1), Item.get(Item.GRAVEL, 0 , 10), Item.get(Item.FLINT, 0 , 10))
+                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,1), Item.get(BlockID.GRAVEL, 0 , 10), Item.get(Item.FLINT, 0 , 10))
                         .setMaxUses(16)
                         .setRewardExp((byte) 1)
                         .setTier(1)
@@ -86,7 +86,7 @@ public class ProfessionFletcher extends Profession {
                         .setTier(4)
                         .setTraderExp(15)
                         .build())
-                .add(RecipeBuildUtils.of(Item.get(Item.TRIPWIRE_HOOK,0,8), Item.get(Item.EMERALD))
+                .add(RecipeBuildUtils.of(Item.get(BlockID.TRIPWIRE_HOOK,0,8), Item.get(Item.EMERALD))
                         .setMaxUses(12)
                         .setRewardExp((byte) 1)
                         .setTier(5)

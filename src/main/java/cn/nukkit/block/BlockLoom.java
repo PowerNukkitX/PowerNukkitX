@@ -1,9 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
@@ -11,39 +9,24 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
-
 /**
  * @implNote Faceable since FUTURE
  */
-@PowerNukkitOnly
-public class BlockLoom extends BlockSolidMeta implements Faceable {
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION);
-
-    @PowerNukkitOnly
-    public BlockLoom() {
-        this(0);
-    }
-
-    @PowerNukkitOnly
-    public BlockLoom(int meta) {
-        super(meta);
-    }
+public class BlockLoom extends BlockSolid implements Faceable {
+    public static final BlockProperties PROPERTIES = new BlockProperties(LOOM, CommonBlockProperties.DIRECTION);
 
     @Override
-    public int getId() {
-        return LOOM;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
+    }
+
+    public BlockLoom() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockLoom(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -96,16 +79,13 @@ public class BlockLoom extends BlockSolidMeta implements Faceable {
         return true;
     }
 
-    @Since("1.5.0.0-PN")
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(DIRECTION);
+        return BlockFace.getHorizontals()[getPropertyValue(CommonBlockProperties.DIRECTION)];
     }
 
-    @Since("1.5.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(DIRECTION, face);
+        setPropertyValue(CommonBlockProperties.DIRECTION, face.getHorizontalIndex());
     }
 }

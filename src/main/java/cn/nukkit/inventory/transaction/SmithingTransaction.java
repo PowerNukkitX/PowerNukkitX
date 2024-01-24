@@ -19,8 +19,8 @@
 package cn.nukkit.inventory.transaction;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+
+
 import cn.nukkit.event.inventory.SmithingTableEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.SmithingInventory;
@@ -36,16 +36,16 @@ import java.util.List;
  * @author joserobjr
  * @since 2021-05-16
  */
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+
+
 public class SmithingTransaction extends InventoryTransaction {
 
     private Item equipmentItem;
     private Item ingredientItem;
     private Item outputItem;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public SmithingTransaction(Player source, List<InventoryAction> actions) {
         super(source, actions);
     }
@@ -87,7 +87,7 @@ public class SmithingTransaction extends InventoryTransaction {
             return false;
         }
         
-        Item air = Item.get(0);
+        Item air = Item.AIR;
         Item equipment = equipmentItem != null? equipmentItem : air;
         Item ingredient = ingredientItem != null? ingredientItem : air;
         
@@ -104,7 +104,7 @@ public class SmithingTransaction extends InventoryTransaction {
             return false;
         }
         SmithingInventory inventory = (SmithingInventory) getSource().getWindowById(Player.SMITHING_WINDOW_ID);
-        Item air = Item.get(0);
+        Item air = Item.AIR;
         Item equipment = equipmentItem != null? equipmentItem : air;
         Item ingredient = ingredientItem != null? ingredientItem : air;
         SmithingTableEvent event = new SmithingTableEvent(inventory, equipment, outputItem, ingredient, source);
@@ -129,26 +129,26 @@ public class SmithingTransaction extends InventoryTransaction {
         return true;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public Item getEquipmentItem() {
         return equipmentItem == null? null : equipmentItem.clone();
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public Item getIngredientItem() {
         return ingredientItem == null? null : ingredientItem.clone();
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public Item getOutputItem() {
         return outputItem == null? null : outputItem.clone();
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public static boolean checkForItemPart(List<InventoryAction> actions) {
         return actions.stream().anyMatch(it-> it instanceof SmithingItemAction);
     }

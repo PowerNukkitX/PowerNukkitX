@@ -1,14 +1,18 @@
 package cn.nukkit.event.entity;
 
-import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.potion.Effect;
+import lombok.Getter;
 
-@PowerNukkitXOnly
+
 public class EntityEffectUpdateEvent extends EntityEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     private Effect oldEffect;
     private Effect newEffect;
@@ -17,10 +21,6 @@ public class EntityEffectUpdateEvent extends EntityEvent implements Cancellable 
         this.entity = entity;
         this.oldEffect = oldEffect;
         this.newEffect = newEffect;
-    }
-
-    public static HandlerList getHandlers() {
-        return handlers;
     }
 
     public Effect getOldEffect() {

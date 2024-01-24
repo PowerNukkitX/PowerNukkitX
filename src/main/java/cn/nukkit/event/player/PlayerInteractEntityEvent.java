@@ -6,6 +6,7 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
+import lombok.Getter;
 
 /**
  * @author CreeperFace
@@ -13,8 +14,11 @@ import cn.nukkit.math.Vector3;
  */
 public class PlayerInteractEntityEvent extends PlayerEvent implements Cancellable {
 
-
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     protected final Entity entity;
     protected final Item item;
@@ -39,7 +43,4 @@ public class PlayerInteractEntityEvent extends PlayerEvent implements Cancellabl
         return clickedPos;
     }
 
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 }

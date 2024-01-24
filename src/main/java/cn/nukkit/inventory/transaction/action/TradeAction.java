@@ -1,20 +1,20 @@
 package cn.nukkit.inventory.transaction.action;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+
+
 import cn.nukkit.entity.passive.EntityVillager;
+import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r1")
+
 public class TradeAction extends InventoryAction {
-    private final EntityVillager villager;
+    private final EntityVillagerV2 villager;
     private final int type;
 
-    public TradeAction(Item sourceItem, Item targetItem, int windowId, EntityVillager villager) {
+    public TradeAction(Item sourceItem, Item targetItem, int windowId, EntityVillagerV2 villager) {
         super(sourceItem, targetItem);
         this.type = windowId;
         this.villager = villager;
@@ -30,7 +30,7 @@ public class TradeAction extends InventoryAction {
                 if (cmp.containsCompound("buyA")) {
                     var buyA = cmp.getCompound("buyA");
                     result1 = buyA.getByte("Count") == targetItem.getCount() && buyA.getByte("Damage") == targetItem.getDamage()
-                            && buyA.getString("Name").equals(targetItem.getNamespaceId());
+                            && buyA.getString("Name").equals(targetItem.getId());
                     if (targetItem.hasCompoundTag()) {
                         result1 = simpleVerifyCompoundTag(targetItem.getNamedTag(), buyA.getCompound("tag"));
                     }
@@ -38,7 +38,7 @@ public class TradeAction extends InventoryAction {
                 if (cmp.containsCompound("buyB")) {
                     var buyB = cmp.getCompound("buyB");
                     result2 = buyB.getByte("Count") == targetItem.getCount() && buyB.getByte("Damage") == targetItem.getDamage()
-                            && buyB.getString("Name").equals(targetItem.getNamespaceId());
+                            && buyB.getString("Name").equals(targetItem.getId());
                     if (targetItem.hasCompoundTag()) {
                         result2 = simpleVerifyCompoundTag(targetItem.getNamedTag(), buyB.getCompound("tag"));
                     }
@@ -55,7 +55,7 @@ public class TradeAction extends InventoryAction {
                 if (cmp.contains("sell")) {
                     var sell = cmp.getCompound("sell");
                     result = sell.getByte("Count") == sourceItem.getCount() && sell.getByte("Damage") == sourceItem.getDamage()
-                            && sell.getString("Name").equals(sourceItem.getNamespaceId());
+                            && sell.getString("Name").equals(sourceItem.getId());
                     if (sourceItem.hasCompoundTag()) {
                         result = simpleVerifyCompoundTag(sourceItem.getNamedTag(), sell.getCompound("tag"));
                     }

@@ -1,16 +1,16 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.protocol.types.EventData;
 import lombok.ToString;
 
 @ToString
 public class EventPacket extends DataPacket {
-
     public long eid;
-    public int unknown1;
-    public byte unknown2;
+    public byte usePlayerId;
+    public EventData eventData;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.EVENT_PACKET;
     }
 
@@ -23,7 +23,8 @@ public class EventPacket extends DataPacket {
     public void encode() {
         this.reset();
         this.putVarLong(this.eid);
-        this.putVarInt(this.unknown1);
-        this.putByte(this.unknown2);
+        this.putVarInt(this.eventData.getType().ordinal());
+        this.putByte(this.usePlayerId);
+        eventData.write(this);
     }
 }

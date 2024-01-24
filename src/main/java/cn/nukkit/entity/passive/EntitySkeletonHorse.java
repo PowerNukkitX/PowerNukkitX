@@ -1,28 +1,27 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
  */
 public class EntitySkeletonHorse extends EntityAnimal implements EntitySmite, EntityWalkable {
+    @Override
+    @NotNull public String getIdentifier() {
+        return SKELETON_HORSE;
+    }
+    
 
-    public static final int NETWORK_ID = 26;
-
-    public EntitySkeletonHorse(FullChunk chunk, CompoundTag nbt) {
+    public EntitySkeletonHorse(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
+    
 
     @Override
     public float getWidth() {
@@ -45,15 +44,11 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntitySmite, En
         return new Item[]{Item.get(Item.BONE)};
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean isUndead() {
         return true;
     }
 
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Skeleton Horse";

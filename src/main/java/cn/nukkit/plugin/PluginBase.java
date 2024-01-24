@@ -1,10 +1,6 @@
 package cn.nukkit.plugin;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.PluginCommand;
@@ -95,8 +91,7 @@ abstract public class PluginBase implements Plugin {
      * @param value {@code true}为加载，{@code false}为卸载。<br>{@code true} for enable, {@code false} for disable.
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
-    @PowerNukkitDifference(info = "Made impossible to disable special the PowerNukkitPlugin", since = "1.3.0.0-PN")
-    @PowerNukkitXDifference(info = "Made impossible to disable special the PowerNukkitX Internal Plugin", since = "1.19.60-r1")
+
     public final void setEnabled(boolean value) {
         if (isEnabled != value) {
             if (!value && InternalPlugin.INSTANCE == this) {
@@ -177,8 +172,7 @@ abstract public class PluginBase implements Plugin {
     /**
      * TODO: FINISH JAVADOC
      */
-    @Nullable
-    public PluginIdentifiableCommand getCommand(String name) {
+    public @Nullable PluginIdentifiableCommand getCommand(String name) {
         PluginIdentifiableCommand command = this.getServer().getPluginCommand(name);
         if (command == null || !command.getPlugin().equals(this)) {
             command = this.getServer().getPluginCommand(this.description.getName().toLowerCase() + ":" + name);
@@ -191,10 +185,7 @@ abstract public class PluginBase implements Plugin {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @Nullable
-    public PluginCommand<?> getPluginCommand(@NotNull String name) {
+    public @Nullable PluginCommand<?> getPluginCommand(@NotNull String name) {
         PluginIdentifiableCommand command = getCommand(name);
         if (command instanceof PluginCommand<?>) {
             return (PluginCommand<?>) command;

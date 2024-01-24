@@ -3,6 +3,7 @@ package cn.nukkit.event.level;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
+import lombok.Getter;
 
 /**
  * @author MagicDroidX (Nukkit Project)

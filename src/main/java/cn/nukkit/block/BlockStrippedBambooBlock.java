@@ -1,42 +1,42 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
-public class BlockStrippedBambooBlock extends BlockLog {
+import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
+
+
+public class BlockStrippedBambooBlock extends BlockWoodStripped {
+    public static final BlockProperties PROPERTIES = new BlockProperties(STRIPPED_BAMBOO_BLOCK, PILLAR_AXIS);
+
+    @Override
+    @NotNull
+    public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockStrippedBambooBlock() {
-        super(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockStrippedBambooBlock(int meta) {
-        super(meta);
-    }
-
-
-    public int getId() {
-        return STRIPPED_BAMBOO_BLOCK;
+    public BlockStrippedBambooBlock(BlockState blockState) {
+        super(blockState);
     }
 
     public String getName() {
         return "Stripped Bamboo Block";
     }
 
-    @NotNull
     @Override
-    public BlockProperties getProperties() {
-        return PILLAR_PROPERTIES;
+    public WoodType getWoodType() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public BlockState getStrippedState() {
-        return getCurrentState();
+        return getBlockState();
     }
 
     @Override

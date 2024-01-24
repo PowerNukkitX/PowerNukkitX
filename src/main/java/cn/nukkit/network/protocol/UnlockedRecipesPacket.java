@@ -1,21 +1,18 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 
 import java.util.List;
 
-@Since("1.19.70-r1")
-@PowerNukkitXOnly
+
 @Getter
 public class UnlockedRecipesPacket extends DataPacket {
     public boolean unlockedNotification;
     public final List<String> unlockedRecipes = new ObjectArrayList<>();
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.UNLOCKED_RECIPES_PACKET;
     }
 

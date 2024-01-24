@@ -1,29 +1,25 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.nio.ByteOrder;
 
-@PowerNukkitOnly
-@Since("1.5.0.0-PN")
+
 public class SyncEntityPropertyPacket extends DataPacket {
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final byte NETWORK_ID = ProtocolInfo.SYNC_ENTITY_PROPERTY_PACKET;
+
+
+    public static final int NETWORK_ID = ProtocolInfo.SYNC_ENTITY_PROPERTY_PACKET;
 
     private CompoundTag data;
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+
     public SyncEntityPropertyPacket() {
         // Does nothing
     }
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 
@@ -46,14 +42,10 @@ public class SyncEntityPropertyPacket extends DataPacket {
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
     public CompoundTag getData() {
         return data;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
     public void setData(CompoundTag data) {
         this.data = data;
     }

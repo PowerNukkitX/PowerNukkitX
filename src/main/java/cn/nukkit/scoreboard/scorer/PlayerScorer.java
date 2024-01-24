@@ -2,8 +2,6 @@ package cn.nukkit.scoreboard.scorer;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.SetScorePacket;
 import cn.nukkit.scoreboard.data.ScorerType;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;
@@ -12,8 +10,7 @@ import lombok.Getter;
 
 import java.util.UUID;
 
-@PowerNukkitXOnly
-@Since("1.19.30-r1")
+
 @Getter
 public class PlayerScorer implements IScorer {
 

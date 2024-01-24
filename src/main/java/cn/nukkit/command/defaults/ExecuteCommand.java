@@ -2,8 +2,6 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.ExecutorCommandSender;
@@ -30,8 +28,7 @@ import java.util.stream.Collectors;
 
 import static cn.nukkit.utils.Utils.getLevelBlocks;
 
-@PowerNukkitXOnly
-@Since("1.19.20-r2")
+
 public class ExecuteCommand extends VanillaCommand {
 
     protected static final String SCORE_SCOPE_SEPARATOR = "..";
@@ -343,7 +340,7 @@ public class ExecuteCommand extends VanillaCommand {
                 Position pos = list.getResult(2);
                 Block block = pos.getLevelBlock();
                 Block blockName = list.getResult(3);
-                int id = blockName.getId();
+                String id = blockName.getId();
                 String isIF = list.getResult(0);
 
                 boolean matched = block.getId() == id;
@@ -365,11 +362,11 @@ public class ExecuteCommand extends VanillaCommand {
                 Position pos = list.getResult(2);
                 Block block = pos.getLevelBlock();
                 Block blockName = list.getResult(3);
-                int id = blockName.getId();
+                String id = blockName.getId();
                 int data = list.getResult(4);
                 String isIF = list.getResult(0);
 
-                boolean matched = id == block.getId() && (data == -1 || data == block.getDamage());
+                boolean matched = id == block.getId() && (data == -1 || data == block.getBlockState().specialValue());
                 boolean shouldMatch = isIF.equals("if");
                 boolean condition = (matched && shouldMatch) || (!matched && !shouldMatch);
 

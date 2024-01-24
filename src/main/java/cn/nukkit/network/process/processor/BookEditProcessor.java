@@ -4,8 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.event.player.PlayerEditBookEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBookAndQuill;
-import cn.nukkit.item.ItemBookWritten;
+import cn.nukkit.item.ItemWritableBook;
+import cn.nukkit.item.ItemWrittenBook;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.BookEditPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -18,7 +18,7 @@ public class BookEditProcessor extends DataPacketProcessor<BookEditPacket> {
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull BookEditPacket pk) {
         Player player = playerHandle.player;
         Item oldBook = player.getInventory().getItem(pk.inventorySlot);
-        if (oldBook.getId() != Item.BOOK_AND_QUILL) {
+        if (oldBook.getId() != Item.WRITABLE_BOOK) {
             return;
         }
 
@@ -30,16 +30,16 @@ public class BookEditProcessor extends DataPacketProcessor<BookEditPacket> {
         boolean success;
         switch (pk.action) {
             case REPLACE_PAGE:
-                success = ((ItemBookAndQuill) newBook).setPageText(pk.pageNumber, pk.text);
+                success = ((ItemWritableBook) newBook).setPageText(pk.pageNumber, pk.text);
                 break;
             case ADD_PAGE:
-                success = ((ItemBookAndQuill) newBook).insertPage(pk.pageNumber, pk.text);
+                success = ((ItemWritableBook) newBook).insertPage(pk.pageNumber, pk.text);
                 break;
             case DELETE_PAGE:
-                success = ((ItemBookAndQuill) newBook).deletePage(pk.pageNumber);
+                success = ((ItemWritableBook) newBook).deletePage(pk.pageNumber);
                 break;
             case SWAP_PAGES:
-                success = ((ItemBookAndQuill) newBook).swapPages(pk.pageNumber, pk.secondaryPageNumber);
+                success = ((ItemWritableBook) newBook).swapPages(pk.pageNumber, pk.secondaryPageNumber);
                 break;
             case SIGN_BOOK:
                 if (pk.title == null || pk.author == null || pk.xuid == null || pk.title.length() > 64 || pk.author.length() > 64 || pk.xuid.length() > 64) {
@@ -47,7 +47,7 @@ public class BookEditProcessor extends DataPacketProcessor<BookEditPacket> {
                     return;
                 }
                 newBook = Item.get(Item.WRITTEN_BOOK, 0, 1, oldBook.getCompoundTag());
-                success = ((ItemBookWritten) newBook).signBook(pk.title, pk.author, pk.xuid, ItemBookWritten.GENERATION_ORIGINAL);
+                success = ((ItemWrittenBook) newBook).signBook(pk.title, pk.author, pk.xuid, ItemWrittenBook.GENERATION_ORIGINAL);
                 break;
             default:
                 return;
@@ -64,6 +64,6 @@ public class BookEditProcessor extends DataPacketProcessor<BookEditPacket> {
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.BOOK_EDIT_PACKET);
+        return ProtocolInfo.BOOK_EDIT_PACKET;
     }
 }

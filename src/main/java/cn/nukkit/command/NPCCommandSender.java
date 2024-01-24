@@ -2,11 +2,8 @@ package cn.nukkit.command;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.passive.EntityNPCEntity;
+import cn.nukkit.entity.passive.EntityNpc;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.level.Location;
@@ -21,15 +18,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
 public class NPCCommandSender implements CommandSender {
 
     protected PermissibleBase perm = new PermissibleBase(this);
     private Player initiator;
-    private EntityNPCEntity npc;
+    private EntityNpc npc;
 
-    public NPCCommandSender(EntityNPCEntity npc, Player initiator) {
+    public NPCCommandSender(EntityNpc npc, Player initiator) {
         this.npc = npc;
         this.initiator = initiator;
     }
@@ -38,31 +33,26 @@ public class NPCCommandSender implements CommandSender {
         return initiator;
     }
 
-    public EntityNPCEntity getNpc() {
+    public EntityNpc getNpc() {
         return npc;
     }
 
     @Override
-    public void sendMessage(String message) {
-    }
+    public void sendMessage(String message) {}
 
     @Override
-    public void sendMessage(TextContainer message) {
-    }
+    public void sendMessage(TextContainer message) {}
 
-    @Since("1.19.60-r1")
     @Override
-    public void sendCommandOutput(CommandOutputContainer container) {
-    }
+    public void sendCommandOutput(CommandOutputContainer container) {}
 
     @Override
     public Server getServer() {
         return npc.getServer();
     }
 
-    @NotNull
     @Override
-    public String getName() {
+    @NotNull public String getName() {
         return npc.getName();
     }
 
@@ -71,42 +61,28 @@ public class NPCCommandSender implements CommandSender {
         return false;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
     @Override
     public boolean isEntity() {
         return true;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
-    @Nullable
     @Override
-    public Entity asEntity() {
+    public @Nullable Entity asEntity() {
         return npc;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
-    @Nullable
     @Override
-    public Player asPlayer() {
+    public @Nullable Player asPlayer() {
         return null;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
-    @NotNull
     @Override
-    public Position getPosition() {
+    @NotNull public Position getPosition() {
         return npc.getPosition();
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
-    @NotNull
     @Override
-    public Location getLocation() {
+    @NotNull public Location getLocation() {
         return npc.getLocation();
     }
 

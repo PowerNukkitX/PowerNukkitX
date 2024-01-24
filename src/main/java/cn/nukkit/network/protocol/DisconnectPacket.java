@@ -8,14 +8,14 @@ import lombok.ToString;
  */
 @ToString
 public class DisconnectPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.DISCONNECT_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.DISCONNECT_PACKET;
 
     public DisconnectFailReason reason = DisconnectFailReason.UNKNOWN;
     public boolean hideDisconnectionScreen = false;
     public String message;
 
     @Override
-    public byte pid() {
+    public int pid() {
         return NETWORK_ID;
     }
 
@@ -35,6 +35,5 @@ public class DisconnectPacket extends DataPacket {
             this.putString(this.message);
         }
     }
-
 
 }

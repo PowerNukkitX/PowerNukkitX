@@ -41,6 +41,6 @@ public class LecternUpdateProcessor extends DataPacketProcessor<LecternUpdatePac
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.LECTERN_UPDATE_PACKET);
+        return ProtocolInfo.LECTERN_UPDATE_PACKET;
     }
 }

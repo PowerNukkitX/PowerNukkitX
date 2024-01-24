@@ -1,7 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.utils.Identifier;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,8 +8,7 @@ import lombok.ToString;
 import java.util.ArrayList;
 import java.util.List;
 
-@PowerNukkitXOnly
-@Since("1.19.50-r3")
+
 @ToString
 public class PlayerFogPacket extends DataPacket {
 
@@ -23,7 +20,7 @@ public class PlayerFogPacket extends DataPacket {
     private List<Fog> fogStack = new ArrayList<>();
 
     @Override
-    public byte pid() {
+    public int pid() {
         return ProtocolInfo.PLAYER_FOG_PACKET;
     }
 

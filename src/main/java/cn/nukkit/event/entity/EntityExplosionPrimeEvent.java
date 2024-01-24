@@ -1,10 +1,9 @@
 package cn.nukkit.event.entity;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
 
 /**
  * @since 15-10-27
@@ -43,14 +42,10 @@ public class EntityExplosionPrimeEvent extends EntityEvent implements Cancellabl
         this.blockBreaking = blockBreaking;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public boolean isIncendiary() {
         return fireChance > 0;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setIncendiary(boolean incendiary) {
         if (!incendiary) {
             fireChance = 0;
@@ -59,14 +54,10 @@ public class EntityExplosionPrimeEvent extends EntityEvent implements Cancellabl
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public double getFireChance() {
         return fireChance;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setFireChance(double fireChance) {
         this.fireChance = fireChance;
     }

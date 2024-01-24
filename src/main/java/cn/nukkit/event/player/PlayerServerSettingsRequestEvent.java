@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.form.window.FormWindow;
+import lombok.Getter;
 
 import java.util.Map;
 

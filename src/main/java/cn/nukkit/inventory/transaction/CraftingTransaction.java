@@ -2,9 +2,7 @@ package cn.nukkit.inventory.transaction;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.event.inventory.CraftItemEvent;
 import cn.nukkit.inventory.*;
 import cn.nukkit.inventory.transaction.action.DamageAnvilAction;
@@ -12,6 +10,11 @@ import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.inventory.transaction.action.SlotChangeAction;
 import cn.nukkit.inventory.transaction.action.TakeLevelAction;
 import cn.nukkit.item.Item;
+import cn.nukkit.recipe.CraftingManager;
+import cn.nukkit.recipe.CraftingRecipe;
+import cn.nukkit.recipe.Recipe;
+import cn.nukkit.recipe.RepairRecipe;
+import cn.nukkit.recipe.SmithingRecipe;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -31,16 +34,9 @@ public class CraftingTransaction extends InventoryTransaction {
 
     protected Item primaryOutput;
 
-    @Deprecated
-    @DeprecationDetails(since = "FUTURE", reason = "When the recipe is not a CraftingRecipe, this is set to null instead of the recipe",
-            by = "PowerNukkit", replaceWith = "getTransactionRecipe()")
-    @Nullable
-    @Since("FUTURE")
-    protected CraftingRecipe recipe;
-
     private Recipe transactionRecipe;
 
-    @PowerNukkitOnly
+    
     protected int craftingType;
     
     private boolean readyToExecute;
@@ -104,26 +100,15 @@ public class CraftingTransaction extends InventoryTransaction {
         }
     }
 
-    @Deprecated
-    @DeprecationDetails(since = "FUTURE", reason = "When the recipe is not a CraftingRecipe, returns null instead of the recipe",
-        by = "PowerNukkit", replaceWith = "getTransactionRecipe()")
-    @Since("FUTURE")
-    @Nullable
-    public CraftingRecipe getRecipe() {
-        return recipe;
-    }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public Recipe getTransactionRecipe() {
         return transactionRecipe;
     }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+    
+
     protected void setTransactionRecipe(Recipe recipe) {
         this.transactionRecipe = recipe;
-        this.recipe = (recipe instanceof CraftingRecipe)? (CraftingRecipe) recipe: null;
     }
 
     @Override
@@ -156,7 +141,7 @@ public class CraftingTransaction extends InventoryTransaction {
                     addInventory(anvil);
                     if (this.primaryOutput.equalsIgnoringEnchantmentOrder(anvil.getResult(), true)) {
                         actions.removeIf(action -> action instanceof TakeLevelAction);
-                        TakeLevelAction takeLevel = new TakeLevelAction(anvil.getLevelCost());
+                        TakeLevelAction takeLevel = new TakeLevelAction(anvil.getCost());
                         addAction(takeLevel);
                         if (takeLevel.isValid(source)) {
                             setTransactionRecipe(new RepairRecipe(InventoryType.ANVIL, this.primaryOutput, this.inputs));
@@ -179,7 +164,7 @@ public class CraftingTransaction extends InventoryTransaction {
                 if (getTransactionRecipe() == null) {
                     source.sendExperienceLevel();
                 }
-                source.getUIInventory().setItem(AnvilInventory.RESULT, Item.get(0), false);
+                source.getUIInventory().setItem(AnvilInventory.RESULT, Item.AIR, false);
                 break;
             case Player.CRAFTING_GRINDSTONE:
                 inventory = source.getWindowById(Player.GRINDSTONE_WINDOW_ID);
@@ -188,7 +173,7 @@ public class CraftingTransaction extends InventoryTransaction {
                     addInventory(grindstone);
                     if (grindstone.updateResult(false) && this.primaryOutput.equals(grindstone.getResult(), true, true)) {
                         setTransactionRecipe(new RepairRecipe(InventoryType.GRINDSTONE, this.primaryOutput, this.inputs));
-                        grindstone.setResult(Item.get(0), false);
+                        grindstone.setResult(Item.AIR, false);
                     }
                 }
                 break;
@@ -203,13 +188,11 @@ public class CraftingTransaction extends InventoryTransaction {
     @Override
     protected boolean callExecuteEvent() {
         CraftItemEvent ev;
-
         this.source.getServer().getPluginManager().callEvent(ev = new CraftItemEvent(this));
         return !ev.isCancelled();
     }
 
     @Override
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "No longer closes the inventory")
     protected void sendInventories() {
         super.sendInventories();
     }
@@ -218,13 +201,13 @@ public class CraftingTransaction extends InventoryTransaction {
     public boolean execute() {
         if (super.execute()) {
             switch (this.primaryOutput.getId()) {
-                case Item.CRAFTING_TABLE:
+                case BlockID.CRAFTING_TABLE:
                     source.awardAchievement("buildWorkBench");
                     break;
                 case Item.WOODEN_PICKAXE:
                     source.awardAchievement("buildPickaxe");
                     break;
-                case Item.FURNACE:
+                case BlockID.FURNACE:
                     source.awardAchievement("buildFurnace");
                     break;
                 case Item.WOODEN_HOE:
@@ -256,11 +239,10 @@ public class CraftingTransaction extends InventoryTransaction {
         return false;
     }
 
-    @Since("1.3.0.0-PN")
+
     public boolean checkForCraftingPart(List<InventoryAction> actions) {
         for (InventoryAction action : actions) {
-            if (action instanceof SlotChangeAction) {
-                SlotChangeAction slotChangeAction = (SlotChangeAction) action;
+            if (action instanceof SlotChangeAction slotChangeAction) {
                 if (slotChangeAction.getInventory().getType() == InventoryType.UI && slotChangeAction.getSlot() == 50 &&
                         !slotChangeAction.getSourceItem().equals(slotChangeAction.getTargetItem())) {
                     return true;
@@ -270,14 +252,14 @@ public class CraftingTransaction extends InventoryTransaction {
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public void setReadyToExecute(boolean readyToExecute) {
         this.readyToExecute = readyToExecute;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    
     public boolean isReadyToExecute() {
         return readyToExecute;
     }

@@ -2,9 +2,6 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.*;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -33,13 +30,14 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Set;
@@ -50,17 +48,18 @@ import java.util.Set;
  * todo 野生狼不会被刷新
  */
 public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable, EntityColor {
-    public static final int NETWORK_ID = 14;
+    @Override
+    @NotNull
+    public String getIdentifier() {
+        return WOLF;
+    }
+
     protected float[] diffHandDamage = new float[]{3, 4, 6};
 
-    public EntityWolf(FullChunk chunk, CompoundTag nbt) {
+    public EntityWolf(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
@@ -153,9 +152,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
                         new NearestPlayerSensor(8, 0, 20),
                         new NearestTargetEntitySensor<>(0, 20, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, CoreMemoryTypes.NEAREST_SKELETON), this::attackTarget,
-                                entity -> switch (entity.getNetworkId()) {
-                                    case EntitySkeleton.NETWORK_ID, EntityWitherSkeleton.NETWORK_ID, EntityStray.NETWORK_ID ->
-                                            true;
+                                entity -> switch (entity.getIdentifier().toString()) {
+                                    case SKELETON, WITHER_SKELETON, STRAY -> true;
                                     default -> false;
                                 }),
                         new EntityAttackedByOwnerSensor(5, false)
@@ -182,8 +180,6 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
         return 0.8f;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Wolf";
@@ -270,19 +266,17 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
         return false;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
     @Override
     public boolean isBreedingItem(Item item) {
-        return item.getId() == ItemID.RAW_CHICKEN ||
+        return item.getId() == ItemID.CHICKEN ||
                 item.getId() == ItemID.COOKED_CHICKEN ||
-                item.getId() == ItemID.RAW_BEEF ||
+                item.getId() == ItemID.BEEF ||
                 item.getId() == ItemID.COOKED_BEEF ||
-                item.getId() == ItemID.RAW_MUTTON ||
+                item.getId() == ItemID.MUTTON ||
                 item.getId() == ItemID.COOKED_MUTTON ||
-                item.getId() == ItemID.RAW_PORKCHOP ||
+                item.getId() == ItemID.PORKCHOP ||
                 item.getId() == ItemID.COOKED_PORKCHOP ||
-                item.getId() == ItemID.RAW_RABBIT ||
+                item.getId() == ItemID.RABBIT ||
                 item.getId() == ItemID.COOKED_RABBIT ||
                 item.getId() == ItemID.ROTTEN_FLESH;
     }
@@ -290,15 +284,13 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     /**
      * 获得可以治疗狼的物品的治疗量
      */
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
     public int getHealingAmount(Item item) {
         return switch (item.getId()) {
-            case ItemID.RAW_PORKCHOP, ItemID.RAW_BEEF, ItemID.RAW_RABBIT -> 3;
+            case ItemID.PORKCHOP, ItemID.BEEF, ItemID.RABBIT -> 3;
             case ItemID.COOKED_PORKCHOP, ItemID.COOKED_BEEF -> 8;
-            case ItemID.RAW_FISH, ItemID.RAW_SALMON, ItemID.RAW_CHICKEN, ItemID.RAW_MUTTON -> 2;
-            case ItemID.CLOWNFISH, ItemID.PUFFERFISH -> 1;
-            case ItemID.COOKED_FISH, ItemID.COOKED_RABBIT -> 5;
+            case ItemID.COD, ItemID.SALMON, ItemID.CHICKEN, ItemID.MUTTON -> 2;
+            case ItemID.TROPICAL_FISH, ItemID.PUFFERFISH -> 1;
+            case ItemID.COOKED_COD, ItemID.COOKED_RABBIT -> 5;
             case ItemID.COOKED_SALMON, ItemID.COOKED_CHICKEN, ItemID.COOKED_MUTTON -> 6;
             case ItemID.ROTTEN_FLESH -> 4;
             case ItemID.RABBIT_STEW -> 10;
@@ -307,13 +299,12 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     }
 
     //兔子、狐狸、骷髅及其变种、羊驼、绵羊和小海龟。然而它们被羊驼啐唾沫时会逃跑。
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
+
+
     @Override
     public boolean attackTarget(Entity entity) {
-        return switch (entity.getNetworkId()) {
-            case EntityRabbit.NETWORK_ID, EntityFox.NETWORK_ID, EntitySkeleton.NETWORK_ID, EntityWitherSkeleton.NETWORK_ID, EntityStray.NETWORK_ID, EntityLlama.NETWORK_ID,
-                    EntitySheep.NETWORK_ID, EntityTurtle.NETWORK_ID -> true;
+        return switch (entity.getIdentifier()) {
+            case RABBIT, FOX, SKELETON, WITHER_SKELETON, STRAY, LLAMA, SHEEP, TURTLE -> true;
             default -> false;
         };
     }

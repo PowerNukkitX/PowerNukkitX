@@ -1,12 +1,9 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-@PowerNukkitXOnly
-@Since("1.19.21-r1")
+
 public class RecipeBuildUtils {
     private final CompoundTag recipe;
     private final int size;
@@ -28,7 +25,7 @@ public class RecipeBuildUtils {
                 .putCompound("buyA", new CompoundTag()
                         .putByte("Count", buyA.getCount())
                         .putShort("Damage", buyA.getDamage())
-                        .putString("Name", buyA.getNamespaceId())
+                        .putString("Name", buyA.getId())
                         .putBoolean("WasPickedUp", false))//是否是掉落物？？
                 .putInt("buyCountA", buyA.getCount())
                 .putInt("buyCountB", 0)
@@ -38,7 +35,7 @@ public class RecipeBuildUtils {
                 .putCompound("sell", new CompoundTag()
                         .putByte("Count", output.getCount())
                         .putShort("Damage", output.getDamage())
-                        .putString("Name", output.getNamespaceId())
+                        .putString("Name", output.getId())
                         .putBoolean("WasPickedUp", false))
                 .putInt("uses", 0);//未知
         if (buyA.hasCompoundTag()) {
@@ -61,12 +58,12 @@ public class RecipeBuildUtils {
                 .putCompound("buyA", new CompoundTag()
                         .putByte("Count", buyA.getCount())
                         .putShort("Damage", buyA.getDamage())
-                        .putString("Name", buyA.getNamespaceId())
+                        .putString("Name", buyA.getId())
                         .putBoolean("WasPickedUp", false))//是否是掉落物？？
                 .putCompound("buyB", new CompoundTag()
                         .putByte("Count", buyB.getCount())
                         .putShort("Damage", buyB.getDamage())
-                        .putString("Name", buyB.getNamespaceId())
+                        .putString("Name", buyB.getId())
                         .putBoolean("WasPickedUp", false))
                 .putInt("buyCountA", buyA.getCount())
                 .putInt("buyCountA", buyB.getCount())
@@ -75,7 +72,7 @@ public class RecipeBuildUtils {
                 .putCompound("sell", new CompoundTag()
                         .putByte("Count", output.getCount())
                         .putShort("Damage", output.getDamage())
-                        .putString("Name", output.getNamespaceId())
+                        .putString("Name", output.getId())
                         .putBoolean("WasPickedUp", false))
                 .putInt("uses", 0);//未知
         if (buyA.hasCompoundTag()) {

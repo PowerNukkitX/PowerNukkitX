@@ -1,42 +1,30 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
-import cn.nukkit.item.MinecraftItemID;
+import cn.nukkit.item.ItemTool;;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
-
-/**
- * @author LoboMetalurgico
- * @since 08/06/2021
- */
-
-@PowerNukkitOnly
-@Since("FUTURE")
 public class BlockDeepslate extends BlockSolid {
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    public static final BlockProperties PROPERTIES = new BlockProperties(PILLAR_AXIS);
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
+    public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE, CommonBlockProperties.PILLAR_AXIS);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockDeepslate() {
-        // Does nothing
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockDeepslate(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "Deepslate";
-    }
-
-    @Override
-    public int getId() {
-        return DEEPSLATE;
     }
 
     @Override
@@ -54,8 +42,6 @@ public class BlockDeepslate extends BlockSolid {
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
@@ -72,19 +58,11 @@ public class BlockDeepslate extends BlockSolid {
             return Item.EMPTY_ARRAY;
         }
 
-        return new Item[]{MinecraftItemID.COBBLED_DEEPSLATE.get(1)};
+        return new Item[]{Item.get(BlockID.COBBLED_DEEPSLATE)};
     }
 
     @Override
     public boolean canSilkTouch() {
         return true;
-    }
-
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 }

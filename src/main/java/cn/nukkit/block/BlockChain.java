@@ -2,9 +2,7 @@ package cn.nukkit.block;
 
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemChain;
 import cn.nukkit.item.ItemTool;
@@ -13,16 +11,21 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
 public class BlockChain extends BlockTransparent {
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    public static final BlockProperties PROPERTIES = new BlockProperties(CHAIN, CommonBlockProperties.PILLAR_AXIS);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockChain() {
-        // Does nothing
+        super(PROPERTIES.getDefaultState());
+    }
+
+    public BlockChain(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
@@ -30,29 +33,12 @@ public class BlockChain extends BlockTransparent {
         return "Chain";
     }
 
-    @Override
-    public int getId() {
-        return CHAIN_BLOCK;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return BlockLog.PILLAR_PROPERTIES;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public BlockFace.Axis getPillarAxis() {
-        return getPropertyValue(PILLAR_AXIS);
+        return getPropertyValue(CommonBlockProperties.PILLAR_AXIS);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setPillarAxis(BlockFace.Axis axis) {
-        setPropertyValue(PILLAR_AXIS, axis);
+        setPropertyValue(CommonBlockProperties.PILLAR_AXIS, axis);
     }
 
     @Override
@@ -66,7 +52,6 @@ public class BlockChain extends BlockTransparent {
         return 5;
     }
 
-    @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -107,8 +92,6 @@ public class BlockChain extends BlockTransparent {
         return new ItemChain();
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;

@@ -1,9 +1,6 @@
 package cn.nukkit.resourcepacks;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import com.google.gson.JsonParser;
 import lombok.extern.log4j.Log4j2;
 
@@ -20,13 +17,13 @@ import java.util.zip.ZipFile;
 @Log4j2
 public class ZippedResourcePack extends AbstractResourcePack {
     protected File file;
-    @PowerNukkitXOnly
-    @Since("1.19.62-r1")
+
+
     protected ByteBuffer byteBuffer;
     protected byte[] sha256;
     protected String encryptionKey = "";
 
-    @PowerNukkitDifference(info = "Accepts resource packs with subfolder structure", since = "1.4.0.0-PN")
+    
     public ZippedResourcePack(File file) {
         if (!file.exists()) {
             throw new IllegalArgumentException(Server.getInstance().getLanguage()

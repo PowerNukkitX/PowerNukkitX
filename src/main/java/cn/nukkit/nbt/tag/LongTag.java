@@ -1,7 +1,5 @@
 package cn.nukkit.nbt.tag;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 
@@ -9,20 +7,10 @@ import java.io.IOException;
 
 public class LongTag extends NumberTag<Long> {
     public long data;
+    public LongTag() {
+    }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     public LongTag(long data) {
-        super("");
-        this.data = data;
-    }
-
-    public LongTag(String name) {
-        super(name);
-    }
-
-    public LongTag(String name, long data) {
-        super(name);
         this.data = data;
     }
 
@@ -37,16 +25,6 @@ public class LongTag extends NumberTag<Long> {
     }
 
     @Override
-    void write(NBTOutputStream dos) throws IOException {
-        dos.writeLong(data);
-    }
-
-    @Override
-    void load(NBTInputStream dis) throws IOException {
-        data = dis.readLong();
-    }
-
-    @Override
     public Long parseValue() {
         return this.data;
     }
@@ -58,7 +36,7 @@ public class LongTag extends NumberTag<Long> {
 
     @Override
     public String toString() {
-        return "LongTag " + this.getName() + " (data:" + data + ")";
+        return "LongTag " +  " (data:" + data + ")";
     }
 
     @Override
@@ -73,7 +51,7 @@ public class LongTag extends NumberTag<Long> {
 
     @Override
     public Tag copy() {
-        return new LongTag(getName(), data);
+        return new LongTag(data);
     }
 
     @Override

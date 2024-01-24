@@ -1,21 +1,23 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 
-@PowerNukkitXOnly
-@Since("1.20.0-r2")
+import cn.nukkit.block.property.CommonBlockProperties;
+import org.jetbrains.annotations.NotNull;
+
 public class BlockBambooTrapdoor extends BlockTrapdoor {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_TRAPDOOR, CommonBlockProperties.DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPSIDE_DOWN_BIT);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     public BlockBambooTrapdoor() {
-        this(0);
+        this(PROPERTIES.getDefaultState());
     }
 
-    public BlockBambooTrapdoor(int meta) {
-        super(meta);
-    }
-
-    public int getId() {
-        return BAMBOO_TRAPDOOR;
+    public BlockBambooTrapdoor(BlockState blockstate) {
+        super(blockstate);
     }
 
     public String getName() {

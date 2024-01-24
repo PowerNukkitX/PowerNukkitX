@@ -1,27 +1,24 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 
-@PowerNukkitOnly
-@Since("1.4.0.0-PN")
+import org.jetbrains.annotations.NotNull;
+
+import static cn.nukkit.block.property.CommonBlockProperties.HANGING;
+
 public class BlockSoulLantern extends BlockLantern {
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public BlockSoulLantern() {
-        this(0);
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public BlockSoulLantern(int meta) {
-        super(meta);
-    }
+    public static final BlockProperties PROPERTIES = new BlockProperties(SOUL_LANTERN, HANGING);
 
     @Override
-    public int getId() {
-        return SOUL_LANTERN;
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockSoulLantern() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockSoulLantern(BlockState blockstate) {
+        super(blockstate);
     }
 
     @Override

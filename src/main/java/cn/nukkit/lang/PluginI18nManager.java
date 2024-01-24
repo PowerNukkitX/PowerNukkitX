@@ -1,7 +1,5 @@
 package cn.nukkit.lang;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.plugin.PluginBase;
 import lombok.extern.log4j.Log4j2;
 
@@ -27,8 +25,8 @@ import java.util.jar.JarFile;
  * <p>
  * Only support Java Plugin {@link PluginBase}
  */
-@PowerNukkitXOnly
-@Since("1.19.60-r1")
+
+
 @Log4j2
 public final class PluginI18nManager {
     private static final HashMap<String, PluginI18n> PLUGINS_MULTI_LANGUAGE = new HashMap<>();
@@ -159,8 +157,7 @@ public final class PluginI18nManager {
         }
     }
 
-    @Nullable
-    public static PluginI18n getI18n(PluginBase plugin) {
+    public @Nullable static PluginI18n getI18n(PluginBase plugin) {
         return PLUGINS_MULTI_LANGUAGE.get(plugin.getFile().getName());
     }
 }

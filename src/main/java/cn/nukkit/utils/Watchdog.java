@@ -62,6 +62,10 @@ public class Watchdog extends Thread {
     public void run() {
         while (this.running) {
             checkFinalizer();
+
+            //Refresh the advanced network information in watchdog, as this is time-consuming operate and will block the main thread
+            server.getNetwork().resetStatistics();
+
             long current = server.getNextTick();
             if (current != 0) {
                 var now = System.currentTimeMillis();
