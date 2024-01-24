@@ -19,7 +19,7 @@ public final class StartArgUtils {
     public static boolean isShaded() {
         var path = Nukkit.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         var jarFile = new File(path);
-        if (jarFile.getName().contains("shaded")) {
+        if (jarFile.getName().contains("all")) {
             return true;
         }
         if (jarFile.exists()) {

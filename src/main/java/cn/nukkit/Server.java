@@ -605,6 +605,9 @@ public class Server {
 
         var isShaded = StartArgUtils.isShaded();
         // 检测启动参数
+
+        System.out.println(StartArgUtils.isValidStart());
+
         if (!StartArgUtils.isValidStart() || (JarStart.isUsingJavaJar() && !isShaded)) {
             log.fatal(getLanguage().tr("nukkit.start.invalid"));
             return;
