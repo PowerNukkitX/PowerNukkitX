@@ -4,7 +4,7 @@
 JAVA_CMD="java"
 
 # Execute the Java command
-"$java" -Dfile.encoding=UTF-8 \
+"$JAVA_CMD" -Dfile.encoding=UTF-8 \
     -Djansi.passthrough=true \
     -Dterminal.ansi=true \
     -XX:+UnlockExperimentalVMOptions \
