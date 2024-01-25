@@ -1,7 +1,7 @@
 package cn.nukkit.scheduler;
 
 import cn.nukkit.Server;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Nukkit Project Team
  */
-@Log4j2
+@Slf4j
 public class AsyncPool extends ThreadPoolExecutor {
     private final Server server;
 
@@ -26,7 +26,7 @@ public class AsyncPool extends ThreadPoolExecutor {
     @Override
     protected void afterExecute(Runnable runnable, Throwable throwable) {
         if (throwable != null) {
-            log.fatal("Exception in asynchronous task", throwable);
+            log.error("Exception in asynchronous task", throwable);
         }
     }
 

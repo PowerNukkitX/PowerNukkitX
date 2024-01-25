@@ -1,7 +1,7 @@
 package cn.nukkit.item.customitem;
 
 import cn.nukkit.item.ItemEnchantedBook;
-import cn.nukkit.item.customitem.data.ItemCreativeCategory;
+import cn.nukkit.item.customitem.data.CreativeCategory;
 import cn.nukkit.item.enchantment.Enchantment;
 
 public abstract class ItemCustomBookEnchanted extends ItemEnchantedBook implements CustomItem {
@@ -15,7 +15,7 @@ public abstract class ItemCustomBookEnchanted extends ItemEnchantedBook implemen
         return CustomItemDefinition.customBuilder(this)
                 .texture("book_enchanted")
                 .allowOffHand(false)
-                .creativeCategory(ItemCreativeCategory.ITEMS)
+                .creativeCategory(CreativeCategory.ITEMS)
                 .creativeGroup("itemGroup.name.enchantedBook")
                 .foil(true)
                 .customBuild(nbt -> nbt.getCompound("components")

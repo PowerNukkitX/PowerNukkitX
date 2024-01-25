@@ -2,7 +2,7 @@ package cn.nukkit.permission;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,7 +14,7 @@ import java.util.TreeMap;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@Log4j2
+@Slf4j
 public class BanEntry {
     public static final String format = "yyyy-MM-dd HH:mm:ss Z";
 

@@ -2,7 +2,7 @@ package cn.nukkit.scheduler;
 
 import cn.nukkit.Server;
 import cn.nukkit.utils.ThreadStore;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * @author Nukkit Project Team
  */
-@Log4j2
+@Slf4j
 public abstract class AsyncTask implements Runnable {
 
     public static final Queue<AsyncTask> FINISHED_LIST = new ConcurrentLinkedQueue<>();
@@ -83,7 +83,7 @@ public abstract class AsyncTask implements Runnable {
             try {
                 task.onCompletion(Server.getInstance());
             } catch (Exception e) {
-                log.fatal("Exception while async task {} invoking onCompletion", task.getTaskId(), e);
+                log.error("Exception while async task {} invoking onCompletion", task.getTaskId(), e);
             }
         }
     }

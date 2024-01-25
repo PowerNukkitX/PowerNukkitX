@@ -1,6 +1,6 @@
 package cn.nukkit.network.rcon;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -20,7 +20,7 @@ import java.util.*;
  *
  * @author Tee7even
  */
-@Log4j2
+@Slf4j
 public class RCONServer extends Thread {
     private static final int SERVERDATA_AUTH = 3;
     private static final int SERVERDATA_AUTH_RESPONSE = 2;

@@ -83,9 +83,7 @@ package cn.nukkit.item.customitem.data;
  * @return The major group of the custom item in the creative inventory.
  * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
  */
-
-
-public enum ItemCreativeGroup {
+public enum CreativeGroup {
     NONE("none"),
 
     ANVIL("itemGroup.name.anvil"),
@@ -238,7 +236,7 @@ public enum ItemCreativeGroup {
 
     private final String groupName;
 
-    ItemCreativeGroup(String groupName) {
+    CreativeGroup(String groupName) {
         this.groupName = groupName;
     }
 

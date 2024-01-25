@@ -35,7 +35,7 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.io.ByteArrayInputStream;
@@ -52,7 +52,7 @@ import java.util.function.Function;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@Log4j2
+@Slf4j
 public class BinaryStream {
     public int offset;
     private byte[] buffer;

@@ -1,6 +1,6 @@
 package cn.nukkit.scheduler;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 表达一个任务的类。<br>A class that describes a task.
@@ -19,7 +19,7 @@ import lombok.extern.log4j.Log4j2;
  * @author 粉鞋大妈(javadoc) @ Nukkit Project
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
-@Log4j2
+@Slf4j
 public abstract class Task implements Runnable {
     private TaskHandler taskHandler = null;
 
@@ -60,7 +60,7 @@ public abstract class Task implements Runnable {
         try {
             this.getHandler().cancel();
         } catch (RuntimeException ex) {
-            log.fatal("Exception while invoking onCancel", ex);
+            log.error("Exception while invoking onCancel", ex);
         }
     }
 

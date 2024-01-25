@@ -3,14 +3,14 @@ package cn.nukkit.plugin;
 import cn.nukkit.Server;
 import cn.nukkit.event.plugin.PluginDisableEvent;
 import cn.nukkit.event.plugin.PluginEnableEvent;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.regex.Pattern;
 
-@Log4j2
+@Slf4j
 
 
 public class JSPluginLoader implements PluginLoader {

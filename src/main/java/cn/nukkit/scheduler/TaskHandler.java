@@ -1,12 +1,12 @@
 package cn.nukkit.scheduler;
 
 import cn.nukkit.plugin.Plugin;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author MagicDroidX
  */
-@Log4j2
+@Slf4j
 public class TaskHandler {
     private final int taskId;
     private final boolean asynchronous;
@@ -94,7 +94,7 @@ public class TaskHandler {
             setLastRunTick(currentTick);
             getTask().run();
         } catch (RuntimeException ex) {
-            log.fatal("Exception while invoking run", ex);
+            log.error("Exception while invoking run", ex);
         }
     }
 

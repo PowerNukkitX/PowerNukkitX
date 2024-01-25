@@ -7,7 +7,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
 import lombok.ToString;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -19,7 +19,7 @@ import java.util.UUID;
 /**
  * @since 15-10-13
  */
-@Log4j2
+@Slf4j
 @ToString
 public class StartGamePacket extends DataPacket {
 
@@ -181,7 +181,7 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(this.commandsEnabled);
         this.putBoolean(this.isTexturePacksRequired);
         this.putGameRules(this.gameRules);
-        if (Server.getInstance().isEnableExperimentMode() && !Server.getInstance().isWaterdogCapable()) {
+        if (!Server.getInstance().isWaterdogCapable()) {
             this.putLInt(4); // Experiment count
             {
                 this.putString("data_driven_items");

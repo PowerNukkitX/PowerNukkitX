@@ -5,7 +5,7 @@ import cn.nukkit.scheduler.FileWriteTask;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 /**
  * @author MagicDroidX (Nukkit)
  */
-@Log4j2
+@Slf4j
 public class Config {
 
     public static final int DETECT = -1; //Detect by file extension

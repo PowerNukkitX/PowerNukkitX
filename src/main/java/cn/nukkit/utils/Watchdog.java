@@ -1,15 +1,14 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.Server;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MonitorInfo;
 import java.lang.management.ThreadInfo;
 
-@Log4j2
+@Slf4j
 public class Watchdog extends Thread {
-
     private final Server server;
     private final long time;
     public volatile boolean running;
@@ -40,7 +39,7 @@ public class Watchdog extends Thread {
                     .append("---------------- ForcedFinalizer ----------------").append('\n');
             dumpThread(ManagementFactory.getThreadMXBean().getThreadInfo(forcedFinalizer.getId(), Integer.MAX_VALUE), sb);
             sb.append("-------------------------------------------------");
-            log.fatal(sb.toString());
+            log.error(sb.toString());
             warnedAboutFinalizer = true;
         } else {
             if (warnedAboutFinalizer) {
@@ -92,7 +91,7 @@ public class Watchdog extends Thread {
                         dumpThread(threads[i], builder);
                     }
                     builder.append("---------------------------------------------").append('\n');
-                    log.fatal(builder.toString());
+                    log.error(builder.toString());
                     responding = false;
                     this.server.forceShutdown();
                 }
@@ -100,7 +99,7 @@ public class Watchdog extends Thread {
             try {
                 sleep(Math.max(time / 4, 1000));
             } catch (InterruptedException interruption) {
-                log.fatal("The Watchdog Thread has been interrupted and is no longer monitoring the server state", interruption);
+                log.error("The Watchdog Thread has been interrupted and is no longer monitoring the server state", interruption);
                 running = false;
                 return;
             }

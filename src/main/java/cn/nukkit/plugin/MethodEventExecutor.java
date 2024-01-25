@@ -3,7 +3,7 @@ package cn.nukkit.plugin;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.Listener;
 import cn.nukkit.utils.EventException;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.objectweb.asm.*;
 
 import java.lang.ref.WeakReference;
@@ -19,7 +19,7 @@ import static org.objectweb.asm.Opcodes.*;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@Log4j2
+@Slf4j
 public class MethodEventExecutor implements EventExecutor {
 
     public static final AtomicInteger compileTime = new AtomicInteger(0);

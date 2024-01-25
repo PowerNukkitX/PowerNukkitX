@@ -4,9 +4,9 @@ import cn.nukkit.Server;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.registry.Registries;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
-@Log4j2
+@Slf4j
 public enum EnumLevel {
     OVERWORLD,
     NETHER,

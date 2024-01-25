@@ -4,13 +4,13 @@ import cn.nukkit.Server;
 import cn.nukkit.resourcepacks.ResourcePack;
 import cn.nukkit.resourcepacks.ZippedResourcePack;
 import com.google.common.io.Files;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-@Log4j2
+@Slf4j
 
 
 public class ZippedResourcePackLoader implements ResourcePackLoader {

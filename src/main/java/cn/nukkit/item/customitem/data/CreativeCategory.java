@@ -7,16 +7,14 @@ package cn.nukkit.item.customitem.data;
  * @return 自定义物品的在创造栏的大分类
  * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-tabs">bedrock wiki</a>
  */
-
-
-public enum ItemCreativeCategory {
+public enum CreativeCategory {
     CONSTRUCTOR,
     NATURE,
     EQUIPMENT,
     ITEMS,
     NONE;
 
-    public static ItemCreativeCategory fromID(int num) {
+    public static CreativeCategory fromID(int num) {
         return switch (num) {
             case 1 -> CONSTRUCTOR;
             case 2 -> NATURE;

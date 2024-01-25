@@ -8,7 +8,7 @@ import cn.nukkit.command.PluginIdentifiableCommand;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.Utils;
 import com.google.common.base.Preconditions;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -28,7 +28,7 @@ import java.util.LinkedHashMap;
  * @see cn.nukkit.plugin.PluginDescription
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
-@Log4j2
+@Slf4j
 abstract public class PluginBase implements Plugin {
 
     private PluginLoader loader;

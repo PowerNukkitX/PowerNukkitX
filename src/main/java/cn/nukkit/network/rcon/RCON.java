@@ -4,7 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.command.RemoteConsoleCommandSender;
 import cn.nukkit.event.server.RemoteServerCommandEvent;
 import cn.nukkit.utils.TextFormat;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
@@ -16,7 +16,7 @@ import java.io.IOException;
  *
  * @author Tee7even
  */
-@Log4j2
+@Slf4j
 public class RCON {
     private final Server server;
     private final RCONServer serverThread;

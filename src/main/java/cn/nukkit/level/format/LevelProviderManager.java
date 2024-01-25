@@ -1,7 +1,7 @@
 package cn.nukkit.level.format;
 
 import cn.nukkit.Server;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@Log4j2
+@Slf4j
 public abstract class LevelProviderManager {
     protected static final Map<String, Class<? extends LevelProvider>> providers = new HashMap<>();
 

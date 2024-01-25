@@ -1,7 +1,7 @@
 package cn.nukkit.scheduler;
 
 import cn.nukkit.utils.Utils;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@Log4j2
+@Slf4j
 public class FileWriteTask extends AsyncTask {
     private final File file;
     private final InputStream contents;
@@ -50,7 +50,7 @@ public class FileWriteTask extends AsyncTask {
         try {
             Utils.writeFile(file, contents);
         } catch (IOException e) {
-            log.fatal("An error occurred while writing the file {}", file, e);
+            log.error("An error occurred while writing the file {}", file, e);
         }
     }
 

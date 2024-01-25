@@ -3,13 +3,13 @@ package cn.nukkit.item;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.registry.Registries;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@Log4j2
+@Slf4j
 public class ItemBlock extends Item {
     public ItemBlock(Block block) {
         this(block, 0, 1);

@@ -28,6 +28,7 @@ import java.util.stream.IntStream;
 public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, Item> {
     private static final Int2ObjectLinkedOpenHashMap<Item> MAP = new Int2ObjectLinkedOpenHashMap<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+
     @Override
     public void init() {
         if (isLoad.getAndSet(true)) return;
@@ -101,7 +102,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     }
 
     /**
-     * Add a item to {@link CreativeItemRegistry}
+     * Add an item to {@link CreativeItemRegistry}
      */
     public void addCreativeItem(Item item) {
         int i = MAP.lastIntKey();
@@ -154,8 +155,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
 
     @Override
     public void register(Integer key, Item value) throws RegisterException {
-        if (MAP.putIfAbsent(key, value) == null) {
-        } else {
+        if (MAP.putIfAbsent(key, value) != null) {
             throw new RegisterException("This creative item has already been registered with the identifier: " + key);
         }
     }

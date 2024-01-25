@@ -6,7 +6,7 @@ import cn.nukkit.event.plugin.PluginEnableEvent;
 import cn.nukkit.utils.PluginException;
 import cn.nukkit.utils.Utils;
 import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 /**
  * @author Nukkit Team.
  */
-@Log4j2
+@Slf4j
 public class JavaPluginLoader implements PluginLoader {
 
     private final Server server;

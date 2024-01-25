@@ -2,8 +2,8 @@ package cn.nukkit.item.customitem;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.customitem.data.DigProperty;
-import cn.nukkit.item.customitem.data.ItemCreativeCategory;
-import cn.nukkit.item.customitem.data.ItemCreativeGroup;
+import cn.nukkit.item.customitem.data.CreativeCategory;
+import cn.nukkit.item.customitem.data.CreativeGroup;
 import cn.nukkit.item.customitem.data.RenderOffsets;
 import cn.nukkit.item.food.Food;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -126,8 +126,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             //定义在创造栏的分类
             this.nbt.getCompound("components")
                     .getCompound("item_properties")//1 none
-                    .putInt("creative_category", ItemCreativeCategory.NONE.ordinal() + 1)
-                    .putString("creative_group", ItemCreativeGroup.NONE.getGroupName());
+                    .putInt("creative_category", CreativeCategory.NONE.ordinal() + 1)
+                    .putString("creative_group", CreativeGroup.NONE.getGroupName());
         }
 
         public SimpleBuilder texture(String texture) {
@@ -202,14 +202,14 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          *
          * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
          */
-        public SimpleBuilder creativeGroup(ItemCreativeGroup creativeGroup) {
+        public SimpleBuilder creativeGroup(CreativeGroup creativeGroup) {
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
                     .putString("creative_group", creativeGroup.getGroupName());
             return this;
         }
 
-        public SimpleBuilder creativeCategory(ItemCreativeCategory creativeCategory) {
+        public SimpleBuilder creativeCategory(CreativeCategory creativeCategory) {
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
                     .putInt("creative_category", creativeCategory.ordinal() + 1);

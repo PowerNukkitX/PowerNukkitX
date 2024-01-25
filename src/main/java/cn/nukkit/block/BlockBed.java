@@ -20,7 +20,7 @@ import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.TextFormat;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -31,7 +31,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.*;
  * @author MagicDroidX (Nukkit Project)
  */
 
-@Log4j2
+@Slf4j
 public class BlockBed extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityBed> {
     public static final BlockProperties PROPERTIES = new BlockProperties(BED, DIRECTION, HEAD_PIECE_BIT, OCCUPIED_BIT);
 

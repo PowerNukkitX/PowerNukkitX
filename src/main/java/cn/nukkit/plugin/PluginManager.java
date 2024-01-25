@@ -12,7 +12,7 @@ import cn.nukkit.utils.PluginException;
 import cn.nukkit.utils.Utils;
 import io.netty.util.internal.EmptyArrays;
 import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 /**
  * @author MagicDroidX
  */
-@Log4j2
+@Slf4j
 public class PluginManager {
 
     private final Server server;
@@ -129,7 +129,7 @@ public class PluginManager {
                                 return plugin;
                             }
                         } catch (Exception e) {
-                            log.fatal("Could not load plugin", e);
+                            log.error("Could not load plugin", e);
                             return null;
                         }
                     }
@@ -197,10 +197,9 @@ public class PluginManager {
                                 continue;
                             }
 
-                            boolean compatible = false;
+                            int compatible = 0;
 
                             for (String version : description.getCompatibleAPIs()) {
-
                                 try {
                                     //Check the format: majorVersion.minorVersion.patch
                                     if (!Pattern.matches("^[0-9]+\\.[0-9]+\\.[0-9]+$", version)) {
@@ -216,20 +215,24 @@ public class PluginManager {
 
                                 //Completely different API version
                                 if (!Objects.equals(Integer.valueOf(versionArray[0]), Integer.valueOf(apiVersion[0]))) {
-                                    continue;
+                                    compatible = 1;
+                                    break;
                                 }
 
                                 //If the plugin requires new API features, being backwards compatible
                                 if (Integer.parseInt(versionArray[1]) > Integer.parseInt(apiVersion[1])) {
+                                    compatible = 2;
                                     continue;
                                 }
-
-                                compatible = true;
                                 break;
                             }
 
-                            if (!compatible) {
+                            if (compatible > 0) {
                                 log.error(this.server.getLanguage().tr("nukkit.plugin.loadError", name, "%nukkit.plugin.incompatibleAPI"));
+                                if (compatible == 1) {
+                                    log.error("The major version is not compatible, and the plugin will not load!");
+                                    continue;
+                                }
                             }
 
                             plugins.put(name, file);
@@ -267,7 +270,7 @@ public class PluginManager {
                             } else if (!plugins.containsKey(dependency)) {
                                 BaseLang language = this.server.getLanguage();
                                 String cause = language.tr("nukkit.plugin.missingDependency", dependency);
-                                log.fatal(language.tr("nukkit.plugin.loadError", name, cause));
+                                log.error(language.tr("nukkit.plugin.loadError", name, cause));
                                 break;
                             }
                         }
@@ -293,7 +296,7 @@ public class PluginManager {
                         if (plugin != null) {
                             loadedPlugins.put(name, plugin);
                         } else {
-                            log.fatal(this.server.getLanguage().tr("nukkit.plugin.genericLoadError", name));
+                            log.error(this.server.getLanguage().tr("nukkit.plugin.genericLoadError", name));
                         }
                     }
                 }
@@ -309,14 +312,14 @@ public class PluginManager {
                             if (plugin != null) {
                                 loadedPlugins.put(name, plugin);
                             } else {
-                                log.fatal(this.server.getLanguage().tr("nukkit.plugin.genericLoadError", name));
+                                log.error(this.server.getLanguage().tr("nukkit.plugin.genericLoadError", name));
                             }
                         }
                     }
 
                     if (missingDependency) {
                         for (String name : plugins.keySet()) {
-                            log.fatal(this.server.getLanguage().tr("nukkit.plugin.loadError", name, "%nukkit.plugin.circularDependency"));
+                            log.error(this.server.getLanguage().tr("nukkit.plugin.loadError", name, "%nukkit.plugin.circularDependency"));
                         }
                         plugins.clear();
                     }
@@ -456,7 +459,7 @@ public class PluginManager {
                 }
                 plugin.getPluginLoader().enablePlugin(plugin);
             } catch (Throwable e) {
-                log.fatal("An error occurred while enabling the plugin {}, {}, {}",
+                log.error("An error occurred while enabling the plugin {}, {}, {}",
                         plugin.getDescription().getName(), plugin.getDescription().getVersion(), plugin.getDescription().getMain(), e);
                 this.disablePlugin(plugin);
             }
@@ -470,7 +473,7 @@ public class PluginManager {
             String key = (String) entry.getKey();
             Object data = entry.getValue();
             if (key.contains(":")) {
-                log.fatal(this.server.getLanguage().tr("nukkit.plugin.commandError", key, plugin.getDescription().getFullName()));
+                log.error(this.server.getLanguage().tr("nukkit.plugin.commandError", key, plugin.getDescription().getFullName()));
                 continue;
             }
             if (data instanceof Map<?, ?> map) {
@@ -490,7 +493,7 @@ public class PluginManager {
                         List<String> aliasList = new ArrayList<>();
                         for (String alias : (List<String>) aliases) {
                             if (alias.contains(":")) {
-                                log.fatal(this.server.getLanguage().tr("nukkit.plugin.aliasError", alias, plugin.getDescription().getFullName()));
+                                log.error(this.server.getLanguage().tr("nukkit.plugin.aliasError", alias, plugin.getDescription().getFullName()));
                                 continue;
                             }
                             aliasList.add(alias);
@@ -535,7 +538,7 @@ public class PluginManager {
             try {
                 plugin.getPluginLoader().disablePlugin(plugin);
             } catch (Exception e) {
-                log.fatal("An error occurred while disabling the plugin {}, {}, {}",
+                log.error("An error occurred while disabling the plugin {}, {}, {}",
                         plugin.getDescription().getName(), plugin.getDescription().getVersion(), plugin.getDescription().getMain(), e);
             }
 

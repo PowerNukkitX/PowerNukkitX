@@ -6,7 +6,6 @@ import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.Locale;
 
 /**
  * 继承这个类实现自定义方块,重写{@link Block}中的方法控制方块属性
@@ -78,7 +77,7 @@ public interface CustomBlock {
      *
      * @return the block
      */
-    default Block toCustomBlock() {
+    default Block toBlock() {
         return ((Block) this).clone();
     }
 
@@ -90,7 +89,7 @@ public interface CustomBlock {
      * @return the break time
      */
     default double breakTime(@NotNull Item item, @Nullable Player player) {
-        var block = this.toCustomBlock();
+        var block = this.toBlock();
         double breakTime = block.calculateBreakTime(item, player);
         var comp = this.getDefinition().nbt().getCompound("components");
         if (comp.containsCompound("minecraft:destructible_by_mining")) {

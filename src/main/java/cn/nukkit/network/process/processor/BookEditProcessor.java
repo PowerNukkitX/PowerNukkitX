@@ -9,10 +9,10 @@ import cn.nukkit.item.ItemWrittenBook;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.BookEditPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
-@Log4j2
+@Slf4j
 public class BookEditProcessor extends DataPacketProcessor<BookEditPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull BookEditPacket pk) {

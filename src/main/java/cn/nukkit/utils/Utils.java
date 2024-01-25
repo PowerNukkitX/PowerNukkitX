@@ -6,7 +6,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import io.netty.buffer.ByteBuf;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -28,7 +28,7 @@ import java.util.zip.ZipOutputStream;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@Log4j2
+@Slf4j
 public class Utils {
 
 
@@ -45,11 +45,11 @@ public class Utils {
         File olderFile = new File(parent, currentFile.getName() + "_older");
 
         if (olderFile.isFile() && !olderFile.delete()) {
-            log.fatal("Could not delete the file {}", olderFile.getAbsolutePath());
+            log.error("Could not delete the file {}", olderFile.getAbsolutePath());
         }
 
         if (newFile.isFile() && !newFile.delete()) {
-            log.fatal("Could not delete the file {}", newFile.getAbsolutePath());
+            log.error("Could not delete the file {}", newFile.getAbsolutePath());
         }
 
         try {

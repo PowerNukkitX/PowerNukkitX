@@ -10,7 +10,7 @@ import cn.nukkit.inventory.transaction.action.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventoryTransactionPacket;
 import lombok.ToString;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
 
@@ -18,7 +18,7 @@ import java.util.Optional;
  * @author CreeperFace
  */
 @ToString
-@Log4j2
+@Slf4j
 public class NetworkInventoryAction {
     
     

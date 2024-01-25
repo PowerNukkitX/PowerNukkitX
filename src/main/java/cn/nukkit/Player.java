@@ -125,6 +125,7 @@ import cn.nukkit.permission.PermissionAttachmentInfo;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.potion.Effect;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.scheduler.TaskHandler;
@@ -154,7 +155,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -179,7 +180,7 @@ import static cn.nukkit.utils.Utils.dynamic;
  *
  * @author MagicDroidX &amp; Box (Nukkit Project)
  */
-@Log4j2
+@Slf4j
 public class Player extends EntityHuman implements CommandSender, InventoryHolder, ChunkLoader, IPlayer, IScoreboardViewer {
     /**
      * 一个承载玩家的空数组静态常量
@@ -1360,7 +1361,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.serverAuthoritativeMovement = getServer().getServerAuthoritativeMovement();
         startGamePacket.blockNetworkIdsHashed = true;//enable blockhash
         //写入自定义方块数据
-//        startGamePacket.blockProperties.addAll(Block.getCustomBlockDefinitionList());
+        startGamePacket.blockProperties.addAll(Registries.BLOCK.getCustomBlockDefinitionList());
         startGamePacket.playerPropertyData = EntityProperty.getPlayerPropertyCache();
         this.dataPacketImmediately(startGamePacket);
         this.loggedIn = true;
@@ -1372,10 +1373,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         //写入自定义物品数据
         ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
-        /*if (this.getServer().isEnableExperimentMode() && !Item.getCustomItemDefinition().isEmpty()) {
+        if (!Registries.ITEM.getCustomItemDefinition().isEmpty()) {
             Int2ObjectOpenHashMap<ItemComponentPacket.Entry> entries = new Int2ObjectOpenHashMap<>();
             int i = 0;
-            for (var entry : Item.getCustomItemDefinition().entrySet()) {
+            for (var entry : Registries.ITEM.getCustomItemDefinition().entrySet()) {
                 try {
                     CompoundTag data = entry.getValue().nbt();
                     data.putShort("minecraft:identifier", i);
@@ -1386,8 +1387,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
             }
             itemComponentPacket.setEntries(entries.values().toArray(ItemComponentPacket.Entry.EMPTY_ARRAY));
-        }*/
-        itemComponentPacket.setEntries(ItemComponentPacket.Entry.EMPTY_ARRAY);
+        }
         this.dataPacket(itemComponentPacket);
 
         this.dataPacket(new BiomeDefinitionListPacket());

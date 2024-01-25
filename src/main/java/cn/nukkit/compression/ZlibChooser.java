@@ -5,12 +5,12 @@ import cn.nukkit.lang.BaseLang;
 import cn.nukkit.network.connection.netty.codec.compression.ZlibCompressionCodec;
 import cn.nukkit.utils.TextFormat;
 import cn.powernukkitx.libdeflate.Libdeflate;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.zip.Deflater;
 
-@Log4j2
+@Slf4j
 public abstract class ZlibChooser {
     private static final int MAX_INFLATE_LEN = 1024 * 1024 * 10;
     private static ZlibProvider[] providers;

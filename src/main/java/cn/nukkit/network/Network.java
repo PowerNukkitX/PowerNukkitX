@@ -14,7 +14,7 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import oshi.SystemInfo;
@@ -34,7 +34,7 @@ import java.util.zip.Inflater;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@Log4j2
+@Slf4j
 public class Network {
     private final Server server;
     private final Set<SourceInterface> interfaces = new HashSet<>();
@@ -94,7 +94,7 @@ public class Network {
             try {
                 interfaz.process();
             } catch (Exception e) {
-                log.fatal(this.server.getLanguage().tr("nukkit.server.networkError", interfaz.getClass().getName(), Utils.getExceptionMessage(e)), e);
+                log.error(this.server.getLanguage().tr("nukkit.server.networkError", interfaz.getClass().getName(), Utils.getExceptionMessage(e)), e);
                 interfaz.shutdown();
                 this.unregisterInterface(interfaz);
             }

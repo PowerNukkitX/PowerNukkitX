@@ -29,7 +29,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.Faceable;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -39,7 +39,7 @@ import java.util.Objects;
 import static cn.nukkit.block.property.CommonBlockProperties.EXTINGUISHED;
 
 
-@Log4j2
+@Slf4j
 public class BlockCampfire extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityCampfire> {
     public static final BlockProperties PROPERTIES = new BlockProperties(CAMPFIRE, EXTINGUISHED, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 

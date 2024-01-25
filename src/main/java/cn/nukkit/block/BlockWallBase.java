@@ -10,7 +10,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.Faceable;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -23,7 +23,7 @@ import static cn.nukkit.math.VectorMath.calculateAxis;
 import static cn.nukkit.math.VectorMath.calculateFace;
 
 
-@Log4j2
+@Slf4j
 public abstract class BlockWallBase extends BlockTransparent implements BlockConnectable {
     private static final double MIN_POST_BB =  5.0/16;
     private static final double MAX_POST_BB = 11.0/16;

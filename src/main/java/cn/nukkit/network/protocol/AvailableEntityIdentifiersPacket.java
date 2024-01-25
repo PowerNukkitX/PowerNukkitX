@@ -1,8 +1,11 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.Nukkit;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.registry.Registries;
 import lombok.ToString;
 
 import java.io.BufferedInputStream;
@@ -23,9 +26,11 @@ public class AvailableEntityIdentifiersPacket extends DataPacket {
 
             BufferedInputStream bis = new BufferedInputStream(inputStream);
             CompoundTag nbt = NBTIO.read(bis, ByteOrder.BIG_ENDIAN, true);
-            /*for (var customEntityDefinition : Entity.getEntityDefinitions()) {
-                list.add(customEntityDefinition.nbt());
-            }*/
+            ListTag<CompoundTag> list = nbt.getList("idlist", CompoundTag.class);
+            for (var customEntityDefinition : Registries.ENTITY.getCustomEntityDefinitions()) {
+                list.add(customEntityDefinition.toNBT());
+            }
+            nbt.putList("idlist", list);
             TAG = NBTIO.write(nbt, ByteOrder.BIG_ENDIAN, true);
         } catch (Exception e) {
             throw new AssertionError("Error whilst loading entity_identifiers.dat", e);
