@@ -44,7 +44,7 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.*;
 import com.google.common.collect.Iterables;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -59,7 +59,7 @@ import static cn.nukkit.utils.Utils.dynamic;
 /**
  * @author MagicDroidX
  */
-@Log4j2
+@Slf4j
 public abstract class Entity extends Location implements Metadatable, EntityID {
     public static final Entity[] EMPTY_ARRAY = new Entity[0];
     //region data

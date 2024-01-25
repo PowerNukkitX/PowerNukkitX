@@ -6,7 +6,8 @@ import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.block.property.type.BooleanPropertyType;
 import cn.nukkit.block.property.type.EnumPropertyType;
 import cn.nukkit.block.property.type.IntPropertyType;
-import cn.nukkit.item.customitem.data.ItemCreativeGroup;
+import cn.nukkit.item.customitem.data.CreativeCategory;
+import cn.nukkit.item.customitem.data.CreativeGroup;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.*;
@@ -14,8 +15,6 @@ import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -28,30 +27,14 @@ import java.util.function.Consumer;
 
 
 public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
-
-
-    public static CustomBlockDefinition.Builder builder(CustomBlock customBlock, String texture) {
-        return builder(customBlock, Materials.builder().any(Materials.RenderMethod.OPAQUE, texture), BlockCreativeCategory.CONSTRUCTION);
-    }
-
-    public static CustomBlockDefinition.Builder builder(CustomBlock customBlock, String texture, BlockCreativeCategory blockCreativeCategory) {
-        return builder(customBlock, Materials.builder().any(Materials.RenderMethod.OPAQUE, texture), blockCreativeCategory);
-    }
-
-    public static CustomBlockDefinition.Builder builder(CustomBlock customBlock, Materials materials) {
-        return builder(customBlock, materials, BlockCreativeCategory.CONSTRUCTION);
-    }
-
     /**
      * Builder custom block definition.
      *
      * @param customBlock           the custom block
-     * @param materials             the materials
-     * @param blockCreativeCategory 自定义方块在创造栏的大分类<br>the block creative category
      * @return the custom block definition builder.
      */
-    public static CustomBlockDefinition.Builder builder(@NotNull CustomBlock customBlock, @NotNull Materials materials, BlockCreativeCategory blockCreativeCategory) {
-        return new CustomBlockDefinition.Builder(customBlock, materials, blockCreativeCategory);
+    public static CustomBlockDefinition.Builder builder(@NotNull CustomBlock customBlock) {
+        return new CustomBlockDefinition.Builder(customBlock);
     }
 
     public static class Builder {
@@ -61,7 +44,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         protected CompoundTag nbt = new CompoundTag()
                 .putCompound("components", new CompoundTag());
 
-        protected Builder(CustomBlock customBlock, Materials materials, BlockCreativeCategory blockCreativeCategory) {
+        protected Builder(CustomBlock customBlock) {
             this.identifier = customBlock.getId();
             this.customBlock = customBlock;
 
@@ -81,13 +64,13 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             //设置材质
             components.putCompound("minecraft:material_instances", new CompoundTag()
                     .putCompound("mappings", new CompoundTag())
-                    .putCompound("materials", materials.toCompoundTag()));
+                    .putCompound("materials", new CompoundTag()));
             //默认单位立方体方块
             components.putCompound("minecraft:unit_cube", new CompoundTag());
             //设置方块在创造栏的分类
             this.nbt.putCompound("menu_category", new CompoundTag()
-                    .putString("category", blockCreativeCategory.name().toLowerCase(Locale.ENGLISH))
-                    .putString("group", ItemCreativeGroup.NONE.getGroupName()));
+                    .putString("category", CreativeCategory.NONE.name())
+                    .putString("group", CreativeGroup.NONE.getGroupName()));
             //molang版本
             this.nbt.putInt("molangVersion", 6);
 
@@ -96,6 +79,37 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             if (propertiesNBT != null) {
                 nbt.putList("properties", propertiesNBT);
             }
+        }
+
+        public Builder texture(String texture) {
+            this.materials(Materials.builder().any(Materials.RenderMethod.OPAQUE, texture));
+            return this;
+        }
+
+        public Builder materials(Materials materials) {
+            this.nbt.getCompound("components").putCompound("minecraft:material_instances", new CompoundTag()
+                    .putCompound("mappings", new CompoundTag())
+                    .putCompound("materials", materials.toCompoundTag()));
+            return this;
+        }
+
+        public Builder creativeGroupAndCategory(CreativeGroup creativeGroup, CreativeCategory creativeCategory) {
+            this.nbt.getCompound("menu_category")
+                    .putString("category", creativeCategory.name().toLowerCase(Locale.ENGLISH))
+                    .putString("group", creativeGroup.getGroupName());
+            return this;
+        }
+
+        public Builder creativeCategory(String creativeCategory) {
+            this.nbt.getCompound("menu_category")
+                    .putString("category", creativeCategory.toLowerCase(Locale.ENGLISH));
+            return this;
+        }
+
+        public Builder creativeCategory(CreativeCategory creativeCategory) {
+            this.nbt.getCompound("menu_category")
+                    .putString("category", creativeCategory.name().toLowerCase(Locale.ENGLISH));
+            return this;
         }
 
         /**
@@ -137,7 +151,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          *
          * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html">wiki.bedrock.dev</a>
          */
-        public Builder creativeGroup(ItemCreativeGroup creativeGroup) {
+        public Builder creativeGroup(CreativeGroup creativeGroup) {
             this.nbt.getCompound("components").getCompound("menu_category").putString("group", creativeGroup.getGroupName());
             return this;
         }

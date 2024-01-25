@@ -5,7 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.LoginChainData;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedWriter;
@@ -23,7 +23,7 @@ import static cn.nukkit.utils.NukkitCollectors.countingInt;
 import static java.util.stream.Collectors.groupingBy;
 
 
-@Log4j2
+@Slf4j
 public class NukkitMetrics {
     private static final AtomicReference<Map<Server, NukkitMetrics>> metricsStarted = new AtomicReference<>(Collections.emptyMap());
 

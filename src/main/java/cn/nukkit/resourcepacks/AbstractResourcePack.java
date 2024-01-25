@@ -2,11 +2,11 @@ package cn.nukkit.resourcepacks;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.UUID;
 
-@Log4j2
+@Slf4j
 public abstract class AbstractResourcePack implements ResourcePack {
     protected JsonObject manifest;
     protected UUID id = null;

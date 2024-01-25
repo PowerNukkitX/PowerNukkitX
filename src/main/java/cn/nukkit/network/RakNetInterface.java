@@ -8,6 +8,8 @@ import cn.nukkit.network.connection.BedrockPeer;
 import cn.nukkit.network.connection.BedrockPong;
 import cn.nukkit.network.connection.BedrockServerSession;
 import cn.nukkit.network.connection.netty.initializer.BedrockServerInitializer;
+import cn.nukkit.network.newquery.codec.QueryPacketCodec;
+import cn.nukkit.network.newquery.handler.QueryPacketHandler;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.Utils;
 import com.google.common.base.Strings;
@@ -79,10 +81,10 @@ public class RakNetInterface implements SourceInterface {
                 .childHandler(new BedrockServerInitializer() {
                     @Override
                     protected void postInitChannel(Channel channel) {
-                        /*if (RakNetInterface.this.server.getPropertyBoolean("enable-query", true)) {
+                        if (RakNetInterface.this.server.getPropertyBoolean("enable-query", true)) {
                             channel.pipeline().addLast("queryPacketCodec", new QueryPacketCodec())
                                     .addLast("queryPacketHandler", new QueryPacketHandler(address -> RakNetInterface.this.server.getQueryInformation()));
-                        }*/
+                        }
                     }
 
                     @Override

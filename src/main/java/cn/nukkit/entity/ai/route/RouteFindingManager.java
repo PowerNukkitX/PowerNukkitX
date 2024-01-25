@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class RouteFindingManager {
     private static final AtomicInteger threadCount = new AtomicInteger(0);
     protected static RouteFindingManager INSTANCE = new RouteFindingManager();
-    protected final ExecutorService pool;
+    protected final ForkJoinPool pool;
 
     protected RouteFindingManager() {
         pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors(), new RouteFindingPoolThreadFactory(), null, true);
@@ -34,7 +34,7 @@ public class RouteFindingManager {
 
     public void submit(@NotNull RouteFindingTask task) {
         task.setStartTime(Server.getInstance().getNextTick());
-        ((ForkJoinPool) pool).submit(task);
+        pool.submit(task);
     }
 
     public static final class RouteFindingThread extends ForkJoinWorkerThread {

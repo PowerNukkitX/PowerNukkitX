@@ -4,7 +4,7 @@ import cn.nukkit.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -15,7 +15,7 @@ import java.util.*;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@Log4j2
+@Slf4j
 public class BanList {
 
     private LinkedHashMap<String, BanEntry> list = new LinkedHashMap<>();

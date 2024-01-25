@@ -5,7 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.utils.Utils;
 import com.sun.management.OperatingSystemMXBean;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +22,7 @@ import java.util.Date;
 /**
  * Project nukkit
  */
-@Log4j2
+@Slf4j
 public class BugReportGenerator extends Thread {
 
     private Throwable throwable;

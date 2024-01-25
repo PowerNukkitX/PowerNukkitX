@@ -11,7 +11,7 @@ import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
 import io.netty.util.internal.EmptyArrays;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@Log4j2
+@Slf4j
 public class SimpleCommandMap implements CommandMap {
     protected final Map<String, Command> knownCommands = new HashMap<>();
 
@@ -310,7 +310,7 @@ public class SimpleCommandMap implements CommandMap {
                     try {
                         output = target.execute(sender, sentCommandLabel, result, new CommandLogger(target, sender, sentCommandLabel, args, result.getValue().getMessageContainer(), plugin));
                     } catch (UnsupportedOperationException e) {
-                        log.fatal("If you use paramtree, you must override execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) method to run the command!");
+                        log.error("If you use paramtree, you must override execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) method to run the command!");
                         output = 0;
                     }
                 } else {
@@ -327,7 +327,7 @@ public class SimpleCommandMap implements CommandMap {
             }
         } catch (Exception e) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.exception"));
-            log.fatal(this.server.getLanguage().tr("nukkit.command.exception", cmdLine, target.toString(), Utils.getExceptionMessage(e)), e);
+            log.error(this.server.getLanguage().tr("nukkit.command.exception", cmdLine, target.toString(), Utils.getExceptionMessage(e)), e);
             output = 0;
         }
 

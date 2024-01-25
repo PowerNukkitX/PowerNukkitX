@@ -9,7 +9,7 @@ import cn.nukkit.item.ItemLodestoneCompass;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -20,7 +20,7 @@ import java.io.IOException;
  */
 
 
-@Log4j2
+@Slf4j
 public class BlockLodestone extends BlockSolid implements BlockEntityHolder<BlockEntityLodestone> {
     public static final BlockProperties PROPERTIES = new BlockProperties(LODESTONE);
     public BlockLodestone() {

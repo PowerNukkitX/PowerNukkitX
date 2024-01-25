@@ -7,12 +7,12 @@ import cn.nukkit.network.protocol.PositionTrackingDBClientRequestPacket;
 import cn.nukkit.network.protocol.PositionTrackingDBServerBroadcastPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.positiontracking.PositionTracking;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
-@Log4j2
+@Slf4j
 public class PositionTrackingDBClientRequestProcessor extends DataPacketProcessor<PositionTrackingDBClientRequestPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PositionTrackingDBClientRequestPacket pk) {

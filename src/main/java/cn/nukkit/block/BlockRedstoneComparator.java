@@ -12,7 +12,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.RedstoneComponent;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.*;
@@ -22,7 +22,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.*;
  */
 
 
-@Log4j2
+@Slf4j
 public abstract class BlockRedstoneComparator extends BlockRedstoneDiode implements RedstoneComponent, BlockEntityHolder<BlockEntityComparator> {
     public BlockRedstoneComparator(BlockState blockstate) {
         super(blockstate);

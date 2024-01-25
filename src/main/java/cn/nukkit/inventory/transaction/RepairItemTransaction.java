@@ -289,7 +289,7 @@ public class RepairItemTransaction extends InventoryTransaction {
             }
         }
         if (this.outputItem.getRepairCost() != nextBaseRepairCost) {
-            this.source.getServer().getLogger().debug("Got unexpected base cost " + this.outputItem.getRepairCost() + " from " + this.source.getName() + "(expected " + nextBaseRepairCost + ")");
+            log.debug("Got unexpected base cost " + this.outputItem.getRepairCost() + " from " + this.source.getName() + "(expected " + nextBaseRepairCost + ")");
             return false;
         }
 

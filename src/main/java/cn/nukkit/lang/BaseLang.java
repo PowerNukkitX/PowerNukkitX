@@ -2,7 +2,7 @@ package cn.nukkit.lang;
 
 import cn.nukkit.api.DeprecationDetails;
 import io.netty.util.internal.EmptyArrays;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@Log4j2
+@Slf4j
 public class BaseLang {
     /**
      * 默认备选语言，对应language文件夹
@@ -95,7 +95,7 @@ public class BaseLang {
                 return parseLang(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));
             }
         } catch (IOException e) {
-            log.fatal("Failed to load language at {}", path, e);
+            log.error("Failed to load language at {}", path, e);
             return null;
         }
     }
@@ -246,13 +246,18 @@ public class BaseLang {
     }
 
     protected String parseLanguageText(String str) {
+        StringBuilder builder = new StringBuilder();
         String result = internalGet(str);
-        if (result != null) {
-            return result;
-        } else {
+        if (result == null) {
             var matcher = split.matcher(str);
-            return matcher.replaceAll(m -> this.get(m.group().substring(1)));
+            result = matcher.replaceAll(m -> this.get(m.group().substring(1)));
         }
+        String[] comments = result.trim().split("\n");
+        for (int i = 0; i < comments.length - 1; i++) {
+            builder.append(comments[i]).append(System.lineSeparator());
+        }
+        builder.append(comments[comments.length - 1]);
+        return builder.toString();
     }
 
     protected String parseLanguageText(String str, String prefix, boolean mode) {
@@ -280,96 +285,5 @@ public class BaseLang {
                 }
             });
         }
-    }
-
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "old", replaceWith = "BaseLang#tr(String)")
-    public String translateString(String str) {
-        return tr(str);
-    }
-
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "old", replaceWith = "BaseLang#tr(String,String...)")
-    public String translateString(String str, @NotNull String... params) {
-        return this.tr(str, params);
-    }
-
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "old", replaceWith = "BaseLang#tr(String,Object...)")
-    public String translateString(String str, @NotNull Object... params) {
-        return this.tr(str, params);
-    }
-
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "old", replaceWith = "BaseLang#tr(String,Object...)")
-    public String translateString(String str, String param, String onlyPrefix) {
-        return this.tr(str, new String[]{param}, onlyPrefix, true);
-    }
-
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "old", replaceWith = "BaseLang#tr(String,Object...)")
-    public String translateString(String str, String[] params, String onlyPrefix) {
-        return this.tr(str, params, onlyPrefix, true);
-    }
-
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "old", replaceWith = "BaseLang#tr(TextContainer)")
-    public String translate(TextContainer c) {
-        return this.tr(c);
-    }
-
-    @Deprecated
-    protected String parseTranslation(String text) {
-        return this.parseTranslation(text, null);
-    }
-
-    @Deprecated
-    protected String parseTranslation(String text, String onlyPrefix) {
-        StringBuilder newString = new StringBuilder();
-        text = String.valueOf(text);
-
-        String replaceString = null;
-
-        int len = text.length();
-
-        for (int i = 0; i < len; ++i) {
-            char c = text.charAt(i);
-            if (replaceString != null) {
-                int ord = c;
-                if ((ord >= 0x30 && ord <= 0x39) // 0-9
-                        || (ord >= 0x41 && ord <= 0x5a) // A-Z
-                        || (ord >= 0x61 && ord <= 0x7a) || // a-z
-                        c == '.' || c == '-') {
-                    replaceString += String.valueOf(c);
-                } else {
-                    String t = this.internalGet(replaceString.substring(1));
-                    if (t != null && (onlyPrefix == null || replaceString.indexOf(onlyPrefix) == 1)) {
-                        newString.append(t);
-                    } else {
-                        newString.append(replaceString);
-                    }
-                    replaceString = null;
-                    if (c == '%') {
-                        replaceString = String.valueOf(c);
-                    } else {
-                        newString.append(c);
-                    }
-                }
-            } else if (c == '%') {
-                replaceString = String.valueOf(c);
-            } else {
-                newString.append(c);
-            }
-        }
-
-        if (replaceString != null) {
-            String t = this.internalGet(replaceString.substring(1));
-            if (t != null && (onlyPrefix == null || replaceString.indexOf(onlyPrefix) == 1)) {
-                newString.append(t);
-            } else {
-                newString.append(replaceString);
-            }
-        }
-        return newString.toString();
     }
 }

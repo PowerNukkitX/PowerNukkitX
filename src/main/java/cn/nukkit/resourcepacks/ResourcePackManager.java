@@ -4,12 +4,12 @@ import cn.nukkit.Server;
 import cn.nukkit.resourcepacks.loader.ResourcePackLoader;
 import cn.nukkit.resourcepacks.loader.ZippedResourcePackLoader;
 import com.dfsek.terra.lib.google.common.collect.Sets;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.*;
 
-@Log4j2
+@Slf4j
 public class ResourcePackManager {
 
     private int maxChunkSize = 1024 * 32;// 32kb is default

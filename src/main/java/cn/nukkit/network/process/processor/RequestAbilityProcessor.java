@@ -9,10 +9,10 @@ import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.RequestAbilityPacket;
 import cn.nukkit.network.protocol.types.PlayerAbility;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
-@Log4j2
+@Slf4j
 public class RequestAbilityProcessor extends DataPacketProcessor<RequestAbilityPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull RequestAbilityPacket pk) {

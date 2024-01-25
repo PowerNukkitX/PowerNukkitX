@@ -1,14 +1,19 @@
 package cn.nukkit.registry;
 
+import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.item.*;
+import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.sunlan.fastreflection.FastConstructor;
 import org.jetbrains.annotations.UnmodifiableView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -17,13 +22,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class<? extends Item>> {
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Item>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
-    private static final HashMap<String, CustomItemDefinition> CUSTOM_ITEM_DEFINITIONS = new HashMap<>();
-
+    private static final ArrayList<CustomItemDefinition> CUSTOM_ITEM_DEFINITIONS = new ArrayList<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
 
     @UnmodifiableView
-    public Map<String, CustomItemDefinition> getCustomItemDefinition() {
-        return Collections.unmodifiableMap(CUSTOM_ITEM_DEFINITIONS);
+    public List<CustomItemDefinition> getCustomItemDefinition() {
+        return Collections.unmodifiableList(CUSTOM_ITEM_DEFINITIONS);
     }
 
     @Override
@@ -588,11 +592,17 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         try {
             FastConstructor<? extends Item> c = FastConstructor.create(value.getConstructor());
             if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) == null) {
+                if (Arrays.stream(value.getInterfaces()).anyMatch(i -> i == CustomItem.class)) {
+                    CustomItem customItem = (CustomItem) c.invoke((Object) null);
+                    CUSTOM_ITEM_DEFINITIONS.add(customItem.getDefinition());
+                }
             } else {
                 throw new RegisterException("This item has already been registered with the identifier: " + key);
             }
         } catch (NoSuchMethodException e) {
             throw new RegisterException(e);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
     }
 

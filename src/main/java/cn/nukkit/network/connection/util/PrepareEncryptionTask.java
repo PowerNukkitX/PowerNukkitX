@@ -3,11 +3,11 @@ package cn.nukkit.network.connection.util;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.scheduler.AsyncTask;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.SecretKey;
 
-@Log4j2
+@Slf4j
 public class PrepareEncryptionTask extends AsyncTask {
 
     private final Player player;

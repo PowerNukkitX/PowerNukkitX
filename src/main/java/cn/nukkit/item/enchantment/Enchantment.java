@@ -29,7 +29,7 @@ import cn.nukkit.utils.OK;
 import cn.nukkit.utils.TextFormat;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -52,7 +52,7 @@ import static org.objectweb.asm.Opcodes.*;
  *
  * @author MagicDroidX (Nukkit Project)
  */
-@Log4j2
+@Slf4j
 public abstract class Enchantment implements Cloneable {
 
 

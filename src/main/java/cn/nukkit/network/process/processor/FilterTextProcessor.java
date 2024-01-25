@@ -7,10 +7,10 @@ import cn.nukkit.inventory.AnvilInventory;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.FilterTextPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
-@Log4j2
+@Slf4j
 public class FilterTextProcessor extends DataPacketProcessor<FilterTextPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull FilterTextPacket pk) {

@@ -1,6 +1,6 @@
 package cn.nukkit.lang;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 文本容器
@@ -8,7 +8,7 @@ import lombok.extern.log4j.Log4j2;
  *
  * @author MagicDroidX (Nukkit Project)
  */
-@Log4j2
+@Slf4j
 public class TextContainer implements Cloneable {
     protected String text;
 

@@ -97,7 +97,7 @@ import com.google.gson.GsonBuilder;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongLists;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
@@ -151,7 +151,7 @@ import java.util.stream.Stream;
  * @author MagicDroidX
  * @author Box
  */
-@Log4j2
+@Slf4j
 public class Server {
 
     public static final String BROADCAST_CHANNEL_ADMINISTRATIVE = "nukkit.broadcast.admin";
@@ -322,7 +322,6 @@ public class Server {
     private boolean checkMovement = true;
     private boolean allowTheEnd;
     private boolean useTerra;
-    private boolean enableExperimentMode;
     private FreezableArrayManager freezableArrayManager;
     public boolean enabledNetworkEncryption;
 
@@ -564,7 +563,6 @@ public class Server {
                 put("generator-settings", "");
                 put("level-name", "world");
                 put("level-seed", "");
-                put("level-type", "flat");//todo replace to overworld
                 put("allow-nether", false);
                 put("allow-the_end", false);
                 put("use-terra", false);
@@ -590,8 +588,6 @@ public class Server {
 
         this.useTerra = this.properties.getBoolean("use-terra", false);
 
-        this.enableExperimentMode = this.properties.getBoolean("enable-experiment-mode", true);
-
         this.checkLoginTime = this.properties.getBoolean("check-login-time", true);
 
         if (this.isWaterdogCapable()) {
@@ -606,15 +602,15 @@ public class Server {
         var isShaded = StartArgUtils.isShaded();
         // 检测启动参数
         if (!StartArgUtils.isValidStart() || (JarStart.isUsingJavaJar() && !isShaded)) {
-            log.fatal(getLanguage().tr("nukkit.start.invalid"));
+            log.error(getLanguage().tr("nukkit.start.invalid"));
             return;
         }
 
         // 检测非法使用shaded包启动
         if (!this.properties.getBoolean("allow-shaded", false) && isShaded) {
-            log.fatal(getLanguage().tr("nukkit.start.shaded1"));
-            log.fatal(getLanguage().tr("nukkit.start.shaded2"));
-            log.fatal(getLanguage().tr("nukkit.start.shaded3"));
+            log.error(getLanguage().tr("nukkit.start.shaded1"));
+            log.error(getLanguage().tr("nukkit.start.shaded2"));
+            log.error(getLanguage().tr("nukkit.start.shaded3"));
             return;
         }
 
@@ -723,12 +719,12 @@ public class Server {
             String c = BiomeTags.WARM;
             BlockStateUpdater d = BlockStateUpdaterBase.INSTANCE;
             Registries.BLOCKSTATE_ITEMMETA.init();
-            Registries.BLOCK.init();
-            Enchantment.init();
             Registries.ITEM_RUNTIMEID.init();
-            Potion.init();
+            Registries.BLOCK.init();
             Registries.ITEM.init();
             Registries.CREATIVE.init();
+            Enchantment.init();
+            Potion.init();
             Registries.BIOME.init();
             Registries.FUEL.init();
             Registries.GENERATOR.init();
@@ -788,7 +784,7 @@ public class Server {
             log.debug("Loading position tracking service");
             this.positionTrackingService = new PositionTrackingService(new File(Nukkit.DATA_PATH, "services/position_tracking_db"));
         } catch (IOException e) {
-            log.fatal("Failed to start the Position Tracking DB service!", e);
+            log.error("Failed to start the Position Tracking DB service!", e);
         }
 
         this.pluginManager.loadInternalPlugin();
@@ -841,7 +837,7 @@ public class Server {
         this.properties.save(true);
 
         if (this.getDefaultLevel() == null) {
-            log.fatal(this.getLanguage().tr("nukkit.level.defaultError"));
+            log.error(this.getLanguage().tr("nukkit.level.defaultError"));
             this.forceShutdown();
 
             return;
@@ -1000,11 +996,12 @@ public class Server {
                 this.watchdog.running = false;
             }
             NukkitMetrics.closeNow(this);
-            //close computeThreadPool
+            //close threadPool
+            ForkJoinPool.commonPool().shutdownNow();
             this.computeThreadPool.shutdownNow();
             //todo other things
         } catch (Exception e) {
-            log.fatal("Exception happened while shutting down, exiting the process", e);
+            log.error("Exception happened while shutting down, exiting the process", e);
             System.exit(1);
         }
     }
@@ -1078,7 +1075,7 @@ public class Server {
                 }
             }
         } catch (Throwable e) {
-            log.fatal("Exception happened while ticking server\n{}", Utils.getAllThreadDumps(), e);
+            log.error("Exception happened while ticking server\n{}", Utils.getAllThreadDumps(), e);
         }
     }
 
@@ -1193,7 +1190,7 @@ public class Server {
                 try {
                     this.getPluginManager().callEvent(this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5));
                 } catch (Exception e) {
-                    log.error(e);
+                    log.error("", e);
                 }
             }
 
@@ -1958,7 +1955,7 @@ public class Server {
                 try {
                     dataStream.get().close();
                 } catch (IOException e) {
-                    log.catching(e);
+                    log.error("", e);
                 }
             }
         }
@@ -2283,11 +2280,6 @@ public class Server {
         return this.serverID;
     }
 
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Use your own logger, sharing loggers makes bug analyses harder.",
-            replaceWith = "@Log4j2 annotation in the class and use the `log` static field that is generated by lombok, " +
-                    "also make sure to log the exception as the last argument, don't concatenate it or use it as parameter replacement. " +
-                    "Just put it as last argument and SLF4J will understand that the log message was caused by that exception/throwable.")
     public MainLogger getLogger() {
         return MainLogger.getLogger();
     }
@@ -2691,10 +2683,6 @@ public class Server {
         }
     }
 
-    public String getLevelType() {
-        return this.getPropertyString("level-type", "flat");
-    }
-
     /**
      * @return 服务器是否生成结构<br>Whether the server generate the structure.
      */
@@ -3074,10 +3062,6 @@ public class Server {
 
     public boolean isTheEndAllowed() {
         return this.allowTheEnd;
-    }
-
-    public boolean isEnableExperimentMode() {
-        return this.enableExperimentMode;
     }
 
     public boolean isWaterdogCapable() {

@@ -4,6 +4,9 @@ import cn.nukkit.block.*;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockProperties;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.block.customblock.CustomBlock;
+import cn.nukkit.block.customblock.CustomBlockDefinition;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.sunlan.fastreflection.FastConstructor;
@@ -11,10 +14,14 @@ import org.jetbrains.annotations.UnmodifiableView;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Cool_Loong | Mcayear | KoshakMineDEV | WWMB | Draglis
@@ -24,6 +31,8 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     private static final Set<String> KEYSET = new HashSet<>();
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Block>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
     private static final Object2ObjectOpenHashMap<String, BlockProperties> PROPERTIES = new Object2ObjectOpenHashMap<>();
+    private static final List<CustomBlockDefinition> CUSTOM_BLOCK_DEFINITIONS = new ArrayList<>();
+    private static final AtomicInteger CUSTOM_BLOCK_RUNTIMEID = new AtomicInteger(1000);
 
     @Override
     public void init() {
@@ -1050,7 +1059,17 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             if (Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers) && properties.getType() == BlockProperties.class) {
                 BlockProperties blockProperties = (BlockProperties) properties.get(value);
                 FastConstructor<? extends Block> c = FastConstructor.create(value.getConstructor(BlockState.class));
+
                 if (CACHE_CONSTRUCTORS.putIfAbsent(blockProperties.getIdentifier(), c) == null) {
+                    if (Arrays.stream(value.getInterfaces()).anyMatch(i -> i == CustomBlock.class)) {
+                        CustomBlock customBlock = (CustomBlock) c.invoke((Object) null);
+                        CUSTOM_BLOCK_DEFINITIONS.add(customBlock.getDefinition());
+                        int rid = 255 - CUSTOM_BLOCK_RUNTIMEID.getAndIncrement();
+                        Registries.ITEM_RUNTIMEID.register(customBlock.getId(), rid);
+                        if (customBlock.shouldBeRegisteredInCreative()) {
+                            Registries.CREATIVE.addCreativeItem(new ItemBlock(customBlock.toBlock()));
+                        }
+                    }
                     KEYSET.add(blockProperties.getIdentifier());
                     PROPERTIES.put(blockProperties.getIdentifier(), blockProperties);
                     return;
@@ -1061,6 +1080,8 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             }
         } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException e) {
             throw new RegisterException(e);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -1070,6 +1091,11 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @UnmodifiableView
+    public List<CustomBlockDefinition> getCustomBlockDefinitionList() {
+        return Collections.unmodifiableList(CUSTOM_BLOCK_DEFINITIONS);
     }
 
     public BlockProperties getBlockProperties(String identifier) {

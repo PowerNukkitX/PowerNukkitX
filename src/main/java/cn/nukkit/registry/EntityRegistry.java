@@ -37,6 +37,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     private static final Object2IntOpenHashMap<String> ID2RID = new Object2IntOpenHashMap<>();
     private static final Int2ObjectArrayMap<String> RID2ID = new Int2ObjectArrayMap<>();
     private static final Object2ObjectOpenHashMap<String, EntityRegistry.EntityDefinition> DEFINITIONS = new Object2ObjectOpenHashMap<>();
+    private static final List<EntityRegistry.EntityDefinition> CUSTOM_ENTITY_DEFINITIONS = new ArrayList<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
 
     @Override
@@ -185,8 +186,9 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         return DEFINITIONS.get(id);
     }
 
-    public EntityDefinition[] getEntityDefinitions() {
-        return DEFINITIONS.values().toArray(EntityDefinition[]::new);
+    @UnmodifiableView
+    public List<EntityDefinition> getCustomEntityDefinitions() {
+        return Collections.unmodifiableList(CUSTOM_ENTITY_DEFINITIONS);
     }
 
     /**
@@ -309,5 +311,13 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     }
 
     public record EntityDefinition(String id, String bid, int rid, boolean hasSpawnegg, boolean summonable) {
+        public CompoundTag toNBT() {
+            return new CompoundTag()
+                    .putString("bid", bid)
+                    .putBoolean("hasspawnegg", hasSpawnegg)
+                    .putString("id", id)
+                    .putInt("rid", rid)
+                    .putBoolean("summonable", summonable);
+        }
     }
 }

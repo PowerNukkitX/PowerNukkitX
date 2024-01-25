@@ -5,7 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.plugin.PluginBase;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 
-@Log4j2
+@Slf4j
 public class PluginI18n {
     /**
      * 插件多语言的默认备选语言
@@ -166,7 +166,7 @@ public class PluginI18n {
                 this.MULTI_LANGUAGE.put(langName, parseLang(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
             }
         } catch (IOException e) {
-            log.fatal("Failed to load language at {}", path, e);
+            log.error("Failed to load language at {}", path, e);
         }
     }
 
@@ -201,7 +201,7 @@ public class PluginI18n {
                 return reloadLang(lang, new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));
             }
         } catch (IOException e) {
-            log.fatal("Failed to load language at {}", path, e);
+            log.error("Failed to load language at {}", path, e);
             return false;
         }
     }

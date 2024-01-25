@@ -1,7 +1,7 @@
 package cn.nukkit.lang;
 
 import cn.nukkit.plugin.PluginBase;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -27,7 +27,7 @@ import java.util.jar.JarFile;
  */
 
 
-@Log4j2
+@Slf4j
 public final class PluginI18nManager {
     private static final HashMap<String, PluginI18n> PLUGINS_MULTI_LANGUAGE = new HashMap<>();
 

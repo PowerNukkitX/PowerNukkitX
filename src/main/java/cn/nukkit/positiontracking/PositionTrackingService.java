@@ -14,7 +14,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -39,7 +39,7 @@ import java.util.stream.IntStream;
 
 
 @ParametersAreNonnullByDefault
-@Log4j2
+@Slf4j
 public class PositionTrackingService implements Closeable {
     private static final Pattern FILENAME_PATTERN = Pattern.compile("^\\d+\\.pnt$", Pattern.CASE_INSENSITIVE);
     private static final FilenameFilter FILENAME_FILTER = (dir, name) -> FILENAME_PATTERN.matcher(name).matches() && new File(dir, name).isFile();

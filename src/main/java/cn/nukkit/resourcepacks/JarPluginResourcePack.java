@@ -2,7 +2,7 @@ package cn.nukkit.resourcepacks;
 
 import cn.nukkit.Server;
 import com.google.gson.JsonParser;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
@@ -21,7 +21,7 @@ import java.util.zip.ZipOutputStream;
  */
 
 
-@Log4j2
+@Slf4j
 public class JarPluginResourcePack extends AbstractResourcePack {
     public static final String RESOURCE_PACK_PATH = "assets/resource_pack/";
     protected File jarPluginFile;

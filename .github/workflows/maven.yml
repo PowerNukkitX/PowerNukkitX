@@ -60,7 +60,6 @@ jobs:
           mv scripts/start.bat target/start.bat
           mv scripts/start.sh target/start.sh
           tar -vczf target/libs.tar.gz target/libs
-          zip -r target/powernukkitx-run-full.zip target/libs target/powernukkitx.jar target/start.bat target/start.sh
       - name: Calculate hashes
         run: |
           cd target
@@ -87,8 +86,11 @@ jobs:
         uses: actions/upload-artifact@v3
         if: success()
         with:
-          name: PowerNukkitX-RUN-Full
-          path: target/powernukkitx-run-full.zip
+          name: PowerNukkitX-Run-Full
+          path: |
+            target/libs
+            target/powernukkitx.jar
+            target/start.bat target/start.sh
       - name: Archive Libraries
         uses: actions/upload-artifact@v3
         if: success()

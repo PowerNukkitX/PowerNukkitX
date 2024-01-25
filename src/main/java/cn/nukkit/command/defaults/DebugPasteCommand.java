@@ -13,7 +13,7 @@ import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.HumanStringComparator;
 import cn.nukkit.utils.Utils;
 import com.nimbusds.jose.util.IOUtils;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.iq80.leveldb.util.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-@Log4j2
+@Slf4j
 public class DebugPasteCommand extends TestCommand implements CoreCommand {
 
     private static final String ENDPOINT = "https://debugpaste.powernukkit.org/paste.php";

@@ -11,7 +11,7 @@ import io.netty.util.internal.logging.Log4J2LoggerFactory;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static cn.nukkit.utils.Utils.dynamic;
@@ -44,20 +45,13 @@ import static cn.nukkit.utils.Utils.dynamic;
  * @author 粉鞋大妈(javadoc) @ Nukkit Project
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
-@Log4j2
+@Slf4j
 public class Nukkit {
-
     public final static Properties GIT_INFO = getGitInfo();
     public final static String VERSION = getVersion();
-
     public final static String GIT_COMMIT = getGitCommit();
-    public final static String API_VERSION = dynamic("1.0.14");
+    public final static String API_VERSION = dynamic("2.0.0");
     public final static String CODENAME = dynamic("PowerNukkitX");
-    @Deprecated
-    public final static String MINECRAFT_VERSION = ProtocolInfo.MINECRAFT_VERSION;
-    @Deprecated
-    public final static String MINECRAFT_VERSION_NETWORK = ProtocolInfo.MINECRAFT_VERSION_NETWORK;
-
     public final static String PATH = System.getProperty("user.dir") + "/";
     public final static String DATA_PATH = System.getProperty("user.dir") + "/";
     public final static String PLUGIN_PATH = DATA_PATH + "plugins";
@@ -158,7 +152,7 @@ public class Nukkit {
             }
             new Server(PATH, DATA_PATH, PLUGIN_PATH, language);
         } catch (Throwable t) {
-            log.catching(t);
+            log.error("", t);
         }
 
         if (TITLE) {

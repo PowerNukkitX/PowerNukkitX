@@ -8,10 +8,10 @@ import cn.nukkit.item.Item;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
-@Log4j2
+@Slf4j
 public class MobEquipmentProcessor extends DataPacketProcessor<MobEquipmentPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull MobEquipmentPacket pk) {

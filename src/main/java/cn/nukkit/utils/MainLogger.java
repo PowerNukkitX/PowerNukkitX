@@ -2,7 +2,7 @@ package cn.nukkit.utils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author: MagicDroidX (Nukkit)
@@ -10,7 +10,7 @@ import lombok.extern.log4j.Log4j2;
 /*
 We need to keep this class for backwards compatibility
  */
-@Log4j2
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MainLogger extends ThreadedLogger {
 
@@ -22,7 +22,7 @@ public class MainLogger extends ThreadedLogger {
 
     @Override
     public void emergency(String message) {
-        log.fatal(message);
+        log.error(message);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class MainLogger extends ThreadedLogger {
 
     @Override
     public void critical(String message) {
-        log.fatal(message);
+        log.error(message);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class MainLogger extends ThreadedLogger {
     }
 
     public void logException(Throwable t) {
-        log.catching(t);
+        log.error("", t);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class MainLogger extends ThreadedLogger {
 
     @Override
     public void emergency(String message, Throwable t) {
-        log.fatal(message, t);
+        log.error(message, t);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class MainLogger extends ThreadedLogger {
 
     @Override
     public void critical(String message, Throwable t) {
-        log.fatal(message, t);
+        log.error(message, t);
     }
 
     @Override

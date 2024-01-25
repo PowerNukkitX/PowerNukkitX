@@ -11,12 +11,12 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-@Log4j2
+@Slf4j
 public abstract class BlockHangingSign extends BlockSignBase implements BlockEntityHolder<BlockEntityHangingSign> {
     public BlockHangingSign(BlockState blockState) {
         super(blockState);

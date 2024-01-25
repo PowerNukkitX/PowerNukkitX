@@ -1,7 +1,7 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.plugin.Plugin;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.lang.annotation.ElementType;
@@ -18,7 +18,7 @@ import java.util.List;
  * SimpleConfig for Nukkit
  * added 11/02/2016 by fromgate
  */
-@Log4j2
+@Slf4j
 public abstract class SimpleConfig {
 
     private final File configFile;

@@ -21,7 +21,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import com.google.common.collect.Lists;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * @author CreeperFace
  */
-@Log4j2
+@Slf4j
 public abstract class BlockPistonBase extends BlockTransparent implements Faceable, RedstoneComponent, BlockEntityHolder<BlockEntityPistonArm> {
     public boolean sticky = false;
 

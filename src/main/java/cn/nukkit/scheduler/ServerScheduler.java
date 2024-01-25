@@ -4,7 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.PluginException;
 import cn.nukkit.utils.Utils;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayDeque;
 import java.util.Map;
@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author Nukkit Project Team
  */
-@Log4j2
+@Slf4j
 public class ServerScheduler {
 
     public static int WORKERS = 4;
@@ -264,7 +264,7 @@ public class ServerScheduler {
             try {
                 taskMap.remove(taskId).cancel();
             } catch (RuntimeException ex) {
-                log.fatal("Exception while invoking onCancel", ex);
+                log.error("Exception while invoking onCancel", ex);
             }
         }
     }
@@ -281,7 +281,7 @@ public class ServerScheduler {
                 try {
                     taskHandler.cancel(); /* It will remove from task map automatic in next main heartbeat. */
                 } catch (RuntimeException ex) {
-                    log.fatal("Exception while invoking onCancel", ex);
+                    log.error("Exception while invoking onCancel", ex);
                 }
             }
         }
@@ -292,7 +292,7 @@ public class ServerScheduler {
             try {
                 entry.getValue().cancel();
             } catch (RuntimeException ex) {
-                log.fatal("Exception while invoking onCancel", ex);
+                log.error("Exception while invoking onCancel", ex);
             }
         }
         this.taskMap.clear();
@@ -368,7 +368,7 @@ public class ServerScheduler {
                     try {
                         taskHandler.run(currentTick);
                     } catch (Throwable e) {
-                        log.fatal("Could not execute taskHandler {}", taskHandler.getTaskId(), e);
+                        log.error("Could not execute taskHandler {}", taskHandler.getTaskId(), e);
                     }
                 }
                 if (taskHandler.isRepeating()) {
@@ -379,7 +379,7 @@ public class ServerScheduler {
                         TaskHandler removed = taskMap.remove(taskHandler.getTaskId());
                         if (removed != null) removed.cancel();
                     } catch (RuntimeException ex) {
-                        log.fatal("Exception while invoking onCancel", ex);
+                        log.error("Exception while invoking onCancel", ex);
                     }
                 }
             }

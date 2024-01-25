@@ -2,7 +2,7 @@ package cn.nukkit.resourcepacks;
 
 import cn.nukkit.Server;
 import com.google.gson.JsonParser;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.security.MessageDigest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-@Log4j2
+@Slf4j
 public class ZippedResourcePack extends AbstractResourcePack {
     protected File file;
 

@@ -7,12 +7,12 @@ import cn.nukkit.event.player.PlayerChangeSkinEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.PlayerSkinPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-@Log4j2
+@Slf4j
 public class PlayerSkinProcessor extends DataPacketProcessor<PlayerSkinPacket> {
 
     @Override

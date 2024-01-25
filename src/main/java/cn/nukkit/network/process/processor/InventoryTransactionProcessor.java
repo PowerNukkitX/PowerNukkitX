@@ -49,7 +49,7 @@ import cn.nukkit.network.protocol.UpdateBlockPacket;
 import cn.nukkit.network.protocol.types.ContainerIds;
 import cn.nukkit.network.protocol.types.InventorySource;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@Log4j2
+@Slf4j
 public class InventoryTransactionProcessor extends DataPacketProcessor<InventoryTransactionPacket> {
 
     @Override
@@ -96,7 +96,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         }
                     }
                     case InventoryTransactionPacket.RELEASE_ITEM_ACTION_CONSUME -> {
-                        log.debug("Unexpected release item action consume from {}", player::getName);
+                        log.debug("Unexpected release item action consume from {}", player.getName());
                     }
                 }
             } finally {

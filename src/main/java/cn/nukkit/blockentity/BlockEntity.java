@@ -13,7 +13,7 @@ import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.ChunkException;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * @author MagicDroidX
  */
-@Log4j2
+@Slf4j
 public abstract class BlockEntity extends Position implements BlockEntityID{
     public static long count = 1;
     public IChunk chunk;
