@@ -1376,11 +1376,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (!Registries.ITEM.getCustomItemDefinition().isEmpty()) {
             Int2ObjectOpenHashMap<ItemComponentPacket.Entry> entries = new Int2ObjectOpenHashMap<>();
             int i = 0;
-            for (var v : Registries.ITEM.getCustomItemDefinition()) {
+            for (var entry : Registries.ITEM.getCustomItemDefinition().entrySet()) {
                 try {
-                    CompoundTag data = v.nbt();
+                    CompoundTag data = entry.getValue().nbt();
                     data.putShort("minecraft:identifier", i);
-                    entries.put(i, new ItemComponentPacket.Entry(v.identifier(), data));
+                    entries.put(i, new ItemComponentPacket.Entry(entry.getKey(), data));
                     i++;
                 } catch (Exception e) {
                     log.error("ItemComponentPacket encoding error", e);
