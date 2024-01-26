@@ -377,7 +377,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
 
         //Fix for furnace inputs
         if (be instanceof BlockEntityFurnace furnace) {
-            FurnaceInventory inventory = furnace.getInventory();
+            FurnaceTypeInventory inventory = furnace.getInventory();
             if (inventory.isFull()) {
                 return false;
             }

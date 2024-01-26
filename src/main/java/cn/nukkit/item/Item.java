@@ -64,6 +64,7 @@ public abstract class Item implements Cloneable, ItemID {
     public int count;
     protected String name;
     protected Integer netId;
+    private static int STACK_NETWORK_ID_COUNTER = 1;
 
     private String idConvertToName() {
         if (this.name != null) {
@@ -743,16 +744,29 @@ public abstract class Item implements Cloneable, ItemID {
      *
      * @return whether this item is using a net id
      */
+    @ApiStatus.Internal
     public boolean isUsingNetId() {
         return netId != null;
     }
 
+    @ApiStatus.Internal
     public Integer getNetId() {
         return netId;
     }
 
+    @ApiStatus.Internal
     public void setNetId(Integer netId) {
-        this.netId = netId;
+        if (netId != null) {
+            if (netId < 0)
+                throw new IllegalArgumentException("stack network id cannot be negative");
+            this.netId = netId;
+        }
+    }
+
+    @ApiStatus.Internal
+    public Item autoAssignStackNetworkId() {
+        this.netId = STACK_NETWORK_ID_COUNTER++;
+        return this;
     }
 
     public int getCount() {
@@ -1302,7 +1316,7 @@ public abstract class Item implements Cloneable, ItemID {
     public Item clone() {
         try {
             Item item = (Item) super.clone();
-            item.tags = this.tags.clone();
+            item.tags = this.tags.clone();//deep copy
             item.cachedNBT = null;
             return item;
         } catch (CloneNotSupportedException e) {
@@ -1367,7 +1381,7 @@ public abstract class Item implements Cloneable, ItemID {
         for (Block block : blocks) {
             canDestroy.add(new StringTag(block.toItem().getId()));
         }
-        tag.putList("CanDestroy",canDestroy);
+        tag.putList("CanDestroy", canDestroy);
         this.setCompoundTag(tag);
     }
 

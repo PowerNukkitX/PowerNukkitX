@@ -76,7 +76,6 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
             playerHandle.setSocketAddress(new InetSocketAddress(playerHandle.getLoginChainData().getWaterdogIP(), playerHandle.player.getRawPort()));
         }
 
-        playerHandle.setRandomClientId(pk.clientId);
         playerHandle.player.setUniqueId(pk.clientUUID);
         playerHandle.player.setRawUniqueId(Binary.writeUUID(playerHandle.player.getUniqueId()));
 

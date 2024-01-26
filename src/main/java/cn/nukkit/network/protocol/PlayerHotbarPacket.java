@@ -1,13 +1,13 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.network.protocol.types.ContainerIds;
+import cn.nukkit.inventory.SpecialWindowId;
 import lombok.ToString;
 
 @ToString
 public class PlayerHotbarPacket extends DataPacket {
 
     public int selectedHotbarSlot;
-    public int windowId = ContainerIds.INVENTORY;
+    public int windowId = SpecialWindowId.PLAYER.getId();
 
     public boolean selectHotbarSlot = true;
 

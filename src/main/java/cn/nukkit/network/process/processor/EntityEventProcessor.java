@@ -3,8 +3,6 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
-import cn.nukkit.inventory.AnvilInventory;
-import cn.nukkit.inventory.Inventory;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -16,10 +14,6 @@ public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket>
         Player player = playerHandle.player;
         if (!player.spawned || !player.isAlive()) {
             return;
-        }
-        if (player.craftingType != Player.CRAFTING_ANVIL && pk.event != EntityEventPacket.ENCHANT) {
-            player.craftingType = Player.CRAFTING_SMALL;
-            //player.resetCraftingGridType();
         }
 
         if (pk.event == EntityEventPacket.EATING_ITEM) {
@@ -35,12 +29,6 @@ public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket>
         } else if (pk.event == EntityEventPacket.ENCHANT) {
             if (pk.eid != player.getId()) {
                 return;
-            }
-
-            Inventory inventory = player.getWindowById(Player.ANVIL_WINDOW_ID);
-            if (inventory instanceof AnvilInventory anvilInventory) {
-                //TODO
-                //anvilInventory.setCost(-pk.data);
             }
         }
     }

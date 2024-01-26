@@ -2,9 +2,9 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 
-public abstract class CraftingGridInventory extends BaseInventory {
-    public CraftingGridInventory(Player player, InventoryType type, int size) {
-        super(player, type, size);
+public class CraftingGridInventory extends BaseInventory {
+    public CraftingGridInventory(Player holder) {
+        super(holder, InventoryType.INVENTORY, 4);
     }
 
     @Override

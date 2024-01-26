@@ -22,7 +22,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.BlockSmithingTable;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Position;
 import cn.nukkit.recipe.SmithingRecipe;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,7 +33,7 @@ import javax.annotation.Nullable;
  */
 
 
-public class SmithingInventory extends ContainerInventory {
+public class SmithingInventory extends ContainerInventory implements CraftTypeInventory{
     private static final int EQUIPMENT = 0;
     private static final int INGREDIENT = 1;
     private Item currentResult = Item.AIR;

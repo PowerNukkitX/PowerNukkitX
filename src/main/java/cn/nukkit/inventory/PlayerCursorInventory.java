@@ -9,7 +9,7 @@ import cn.nukkit.network.protocol.InventorySlotPacket;
  * @author CreeperFace
  */
 public class PlayerCursorInventory extends BaseInventory {
-    PlayerCursorInventory(Player player) {
+    public PlayerCursorInventory(Player player) {
         super(player, InventoryType.INVENTORY, 1);
     }
 
@@ -30,7 +30,7 @@ public class PlayerCursorInventory extends BaseInventory {
     @Override
     public void sendContents(Player... players) {
         InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
-        inventorySlotPacket.inventoryId = SpecialWindowId.CURSOR_DEPRECATED.getId();
+        inventorySlotPacket.inventoryId = SpecialWindowId.CURSOR.getId();
         inventorySlotPacket.item = getItem();
         inventorySlotPacket.slot = 0;
         Server.broadcastPacket(players, inventorySlotPacket);

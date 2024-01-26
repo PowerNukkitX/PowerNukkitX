@@ -23,7 +23,6 @@ public class BlockEntityDataProcessor extends DataPacketProcessor<BlockEntityDat
             return;
         }
 
-        player.craftingType = Player.CRAFTING_SMALL;
         player.resetCraftingGridType();
 
         Vector3 pos = new Vector3(pk.x, pk.y, pk.z);

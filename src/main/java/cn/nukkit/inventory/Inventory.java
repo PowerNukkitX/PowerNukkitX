@@ -6,9 +6,13 @@ import cn.nukkit.api.DoNotModify;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventorySlotPacket;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -163,4 +167,25 @@ public interface Inventory {
 
 
     void removeListener(InventoryListener listener);
+
+    //native slot id <-> network slot id
+    default BiMap<Integer, Integer> networkSlotMap() {
+        return HashBiMap.create();
+    }
+
+    default Map<Integer, ContainerSlotType> slotTypeMap() {
+        return Collections.EMPTY_MAP;
+    }
+
+    default int fromNetworkSlot(int networkSlot) {
+        return networkSlotMap().inverse().get(networkSlot);
+    }
+
+    default int toNetworkSlot(int nativeSlot) {
+        return networkSlotMap().get(nativeSlot);
+    }
+
+    default ContainerSlotType getSlotType(int nativeSlot) {
+        return slotTypeMap().get(nativeSlot);
+    }
 }

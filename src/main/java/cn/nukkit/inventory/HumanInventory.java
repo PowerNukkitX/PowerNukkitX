@@ -20,7 +20,6 @@ import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
-import cn.nukkit.network.protocol.types.ContainerIds;
 import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.Range;
 
@@ -37,7 +36,7 @@ import java.util.Collection;
 public class HumanInventory extends BaseInventory {
     protected int itemInHandIndex = 0;
 
-    private static final int ARMORS_INDEX = 36;
+    public static final int ARMORS_INDEX = 36;
 
     public HumanInventory(IHuman human) {
         super(human, InventoryType.INVENTORY, 40);
@@ -380,7 +379,7 @@ public class HumanInventory extends BaseInventory {
         for (Player player : players) {
             if (player.equals(this.getHolder())) {
                 InventorySlotPacket pk2 = new InventorySlotPacket();
-                pk2.inventoryId = SpecialWindowId.ARMOR_DEPRECATED.getId();
+                pk2.inventoryId = SpecialWindowId.ARMOR.getId();
                 pk2.slot = index - ARMORS_INDEX;
                 pk2.item = this.getItem(index);
                 player.dataPacket(pk2);
@@ -449,7 +448,7 @@ public class HumanInventory extends BaseInventory {
 
         for (Player player : players) {
             if (player.equals(this.getHolder())) {
-                pk.inventoryId = ContainerIds.INVENTORY;
+                pk.inventoryId = SpecialWindowId.PLAYER.getId();
                 player.dataPacket(pk);
             } else {
                 int id = player.getWindowId(this);

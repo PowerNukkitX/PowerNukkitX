@@ -20,6 +20,7 @@ import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.DummyBossBar;
 import cn.nukkit.utils.LoginChainData;
 import com.github.benmanes.caffeine.cache.Cache;
+import com.google.common.collect.BiMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.InetSocketAddress;
@@ -54,8 +55,8 @@ public final class PlayerHandle {
         player.forceSendEmptyChunks();
     }
 
-    public void removeWindow(Inventory inventory, boolean isResponse) {
-        player.removeWindow(inventory, isResponse);
+    public void removeWindow(Inventory inventory) {
+        player.removeWindow(inventory);
     }
 
     public void onBlock(Entity entity, EntityDamageEvent e, boolean animate) {
@@ -248,6 +249,22 @@ public final class PlayerHandle {
 
     public Map<Integer, FormWindow> getFormWindows() {
         return player.formWindows;
+    }
+
+    public BiMap<Inventory, Integer> getWindows() {
+        return player.windows;
+    }
+
+    public BiMap<Integer, Inventory> getWindowIndex() {
+        return player.windowIndex;
+    }
+
+    public int getClosingWindowId() {
+        return player.closingWindowId;
+    }
+
+    public void setClosingWindowId(int closingWindowId) {
+        player.closingWindowId = closingWindowId;
     }
 
     public void setFormWindows(Map<Integer, FormWindow> formWindows) {
@@ -454,5 +471,13 @@ public final class PlayerHandle {
 
     public static int getNoShieldDelay() {
         return Player.NO_SHIELD_DELAY;
+    }
+
+    public boolean getInventoryOpen() {
+        return player.inventoryOpen;
+    }
+
+    public void setInventoryOpen(boolean inventoryOpen) {
+        player.inventoryOpen = inventoryOpen;
     }
 }

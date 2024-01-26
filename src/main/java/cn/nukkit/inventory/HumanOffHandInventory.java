@@ -6,7 +6,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
-import cn.nukkit.network.protocol.types.ContainerIds;
 
 public class HumanOffHandInventory extends BaseInventory {
     public HumanOffHandInventory(IHuman holder) {
@@ -43,7 +42,7 @@ public class HumanOffHandInventory extends BaseInventory {
         for (Player player : players) {
             if (player == this.getHolder()) {
                 InventoryContentPacket pk2 = new InventoryContentPacket();
-                pk2.inventoryId = ContainerIds.OFFHAND;
+                pk2.inventoryId = SpecialWindowId.OFFHAND.getId();
                 pk2.slots = new Item[]{item};
                 player.dataPacket(pk2);
             } else {
@@ -60,7 +59,7 @@ public class HumanOffHandInventory extends BaseInventory {
         for (Player player : players) {
             if (player == this.getHolder()) {
                 InventorySlotPacket pk2 = new InventorySlotPacket();
-                pk2.inventoryId = ContainerIds.OFFHAND;
+                pk2.inventoryId = SpecialWindowId.OFFHAND.getId();
                 pk2.item = item;
                 player.dataPacket(pk2);
             } else {
@@ -74,7 +73,7 @@ public class HumanOffHandInventory extends BaseInventory {
         pk.eid = this.getHolder().getEntity().getId();
         pk.item = item;
         pk.inventorySlot = 1;
-        pk.windowId = ContainerIds.OFFHAND;
+        pk.windowId = SpecialWindowId.OFFHAND.getId();
         pk.tryEncode();
         return pk;
     }

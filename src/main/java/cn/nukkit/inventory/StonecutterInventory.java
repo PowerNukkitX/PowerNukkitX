@@ -1,14 +1,11 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-
-import cn.nukkit.block.BlockSmithingTable;
 import cn.nukkit.block.BlockStonecutterBlock;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Position;
 
 
-public class StonecutterInventory extends ContainerInventory {
+public class StonecutterInventory extends ContainerInventory implements CraftTypeInventory {
 
 
     public StonecutterInventory(BlockStonecutterBlock blockStonecutterBlock) {

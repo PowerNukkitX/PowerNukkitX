@@ -59,11 +59,14 @@ import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.form.window.FormWindow;
-import cn.nukkit.inventory.BigCraftingGrid;
+import cn.nukkit.inventory.CraftTypeInventory;
+import cn.nukkit.inventory.CraftingGridInventory;
+import cn.nukkit.inventory.CreativeOutputInventory;
+import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.PlayerCursorInventory;
-import cn.nukkit.inventory.HumanInventory;
+import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemArrow;
@@ -107,7 +110,6 @@ import cn.nukkit.network.process.DataPacketManager;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.CommandOriginData;
 import cn.nukkit.network.protocol.types.CommandOutputType;
-import cn.nukkit.network.protocol.types.ContainerIds;
 import cn.nukkit.network.protocol.types.GameType;
 import cn.nukkit.network.protocol.types.PlayerBlockActionData;
 import cn.nukkit.permission.PermissibleBase;
@@ -162,8 +164,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-
-import static cn.nukkit.utils.Utils.dynamic;
 
 /**
  * 游戏玩家对象，代表操控的角色
@@ -225,13 +225,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected double blockBreakProgress = 0;
     protected final SourceInterface interfaz;
     protected final BedrockServerSession networkSession;
-
-    protected int windowsCnt = 1;
-    protected int closingWindowId = Integer.MIN_VALUE;
-    protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
-    protected final BiMap<Integer, Inventory> windowIndex = windows.inverse();
-    protected final Set<Integer> permanentWindows = new IntOpenHashSet();
-
     protected final InetSocketAddress rawSocketAddress;
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
     protected final int chunksPerTick;
@@ -371,6 +364,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private boolean needDimensionChangeACK = false;
     private Boolean openSignFront = null;
     protected Boolean flySneaking = false;
+
+    /// inventory system
+    protected int windowsCnt = 1;
+    protected int closingWindowId = Integer.MIN_VALUE;
+    protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
+    protected final BiMap<Integer, Inventory> windowIndex = windows.inverse();
+    protected final Set<Integer> permanentWindows = new IntOpenHashSet();
+    protected CraftingGridInventory craftingGridInventory;
+    protected PlayerCursorInventory playerCursorInventory;
+    protected CreativeOutputInventory creativeOutputInventory;
+    protected boolean inventoryOpen;
+    ///
 
     @UsedByReflection
     public Player(SourceInterface interfaz, Integer clientID, InetSocketAddress socketAddress) {
@@ -1441,7 +1446,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-        this.craftingType = CRAFTING_SMALL;
         this.resetCraftingGridType();
 
         //level spawn point < block spawn = self spawn
@@ -1571,26 +1575,28 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-
-    protected void removeWindow(Inventory inventory, boolean isResponse) {
-        inventory.close(this);
-        if (isResponse && !this.permanentWindows.contains(this.getWindowId(inventory))) {
-            this.windows.remove(inventory);
-            updateTrackingPositions(true);
-        }
-    }
-
     protected void addDefaultWindows() {
-        this.addWindow(this.getInventory(), ContainerIds.INVENTORY, true, true);
+        this.craftingGridInventory = new CraftingGridInventory(this);
+        this.playerCursorInventory = new PlayerCursorInventory(this);
+        this.creativeOutputInventory = new CreativeOutputInventory(this);
 
-        this.playerUIInventory = new PlayerUIInventory(this);
-        this.addWindow(this.playerUIInventory, ContainerIds.UI, true);
-        this.addWindow(this.offhandInventory, ContainerIds.OFFHAND, true, true);
+        this.addWindow(this.getInventory(), SpecialWindowId.PLAYER.getId());
+        this.permanentWindows.add(SpecialWindowId.PLAYER.getId());
 
-        this.craftingGrid = this.playerUIInventory.getCraftingGrid();
-        this.addWindow(this.craftingGrid, ContainerIds.NONE, true);
+        this.addWindow(this.getCreativeOutputInventory(), SpecialWindowId.CREATIVE.getId());
+        this.permanentWindows.add(SpecialWindowId.CREATIVE.getId());
 
-        //TODO: more windows
+        this.addWindow(this.getOffhandInventory(), SpecialWindowId.OFFHAND.getId());
+        this.permanentWindows.add(SpecialWindowId.OFFHAND.getId());
+
+        this.addWindow(this.getEnderChestInventory(), SpecialWindowId.ENDER_CHEST.getId());
+        this.permanentWindows.add(SpecialWindowId.ENDER_CHEST.getId());
+
+        this.addWindow(this.getCraftingGrid(), SpecialWindowId.NONE.getId());
+        this.permanentWindows.add(SpecialWindowId.NONE.getId());
+
+        this.addWindow(this.getCursorInventory(), SpecialWindowId.CURSOR.getId());
+        this.permanentWindows.add(SpecialWindowId.CURSOR.getId());
     }
 
     @Override
@@ -3145,7 +3151,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         this.resetCraftingGridType();
-        this.craftingType = CRAFTING_SMALL;
 
         if (this.removeFormat) {
             message = TextFormat.clean(message, true);
@@ -4016,14 +4021,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
 
                 if (this.inventory != null) {
-                    new HashMap<>(this.inventory.slots).forEach((slot, item) -> {
+                    new HashMap<>(this.inventory.getContents()).forEach((slot, item) -> {
                         if (!item.keepOnDeath()) {
                             this.inventory.clear(slot);
                         }
                     });
                 }
                 if (this.offhandInventory != null) {
-                    new HashMap<>(this.offhandInventory.slots).forEach((slot, item) -> {
+                    new HashMap<>(this.offhandInventory.getContents()).forEach((slot, item) -> {
                         if (!item.keepOnDeath()) {
                             this.offhandInventory.clear(slot);
                         }
@@ -4761,77 +4766,48 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.windowIndex.get(id);
     }
 
-    /**
-     * {@code forceId=null isPermanent=false alwaysOpen = false}
-     *
-     * @see #addWindow(Inventory, Integer, boolean, boolean)
-     */
     public int addWindow(Inventory inventory) {
-        return this.addWindow(inventory, null);
+        if (this.windows.containsKey(inventory)) {
+            return this.windows.get(inventory);
+        }
+        int cnt;
+        this.windowsCnt = cnt = Math.max(1, ++this.windowsCnt % 100);
+        if (this.windowIndex.containsKey(cnt)) {
+            this.windowIndex.get(cnt).close(this);
+        }
+        this.windows.forcePut(inventory, cnt);
+
+        if (this.spawned && inventory.open(this)) {
+            updateTrackingPositions(true);
+            return cnt;
+        } else {
+            this.removeWindow(inventory);
+            return -1;
+        }
     }
 
-    /**
-     * {@code isPermanent=false alwaysOpen = false}
-     *
-     * @see #addWindow(Inventory, Integer, boolean, boolean)
-     */
     public int addWindow(Inventory inventory, Integer forceId) {
-        return addWindow(inventory, forceId, false);
-    }
-
-    /**
-     * alwaysOpen = false
-     *
-     * @see #addWindow(Inventory, Integer, boolean, boolean)
-     */
-    public int addWindow(Inventory inventory, Integer forceId, boolean isPermanent) {
-        return addWindow(inventory, forceId, isPermanent, false);
-    }
-
-    /**
-     * 添加一个{@link Inventory}窗口显示到该玩家
-     *
-     * @param inventory   这个库存窗口<br>the inventory
-     * @param forceId     强制指定window id,若和现有window重复将会删除它并替换,为null则自动分配<br>Force the window id to be specified, if it is duplicated with an existing window, it will be deleted and replaced,if is null is automatically assigned.
-     * @param isPermanent 如果为true将会把Inventory存放到{@link #permanentWindows}<br>If true it will store the Inventory in {@link #permanentWindows}
-     * @param alwaysOpen  如果为true即使玩家未{@link #spawned}也会添加改玩家为指定inventory的viewer<br>If true, even if the player is not {@link #spawned}, it will add the player as viewer to the specified inventory.
-     * @return 返回窗口id，可以利用id通过{@link #windowIndex}重新获取该Inventory<br>Return the window id, you can use the id to retrieve the Inventory via {@link #windowIndex}
-     */
-
-    public int addWindow(Inventory inventory, Integer forceId, boolean isPermanent, boolean alwaysOpen) {
         if (this.windows.containsKey(inventory)) {
             return this.windows.get(inventory);
         }
         int cnt;
         if (forceId == null) {
-            this.windowCnt = cnt = Math.max(4, ++this.windowCnt % 99);
+            this.windowsCnt = cnt = Math.max(1, ++this.windowsCnt % 101);//1-100
         } else {
             cnt = forceId;
         }
+        if (this.windowIndex.containsKey(cnt)) {
+            this.windowIndex.get(cnt).close(this);
+        }
         this.windows.forcePut(inventory, cnt);
 
-        if (isPermanent) {
-            this.permanentWindows.add(cnt);
-        }
-
         if (this.spawned && inventory.open(this)) {
-            if (!isPermanent) {
-                updateTrackingPositions(true);
-            }
-            return cnt;
-        } else if (!alwaysOpen) {
-            this.removeWindow(inventory);
-
-            return -1;
-        } else {
-            inventory.getViewers().add(this);
-        }
-
-        if (!isPermanent) {
             updateTrackingPositions(true);
+            return cnt;
+        } else {
+            this.removeWindow(inventory);
+            return -1;
         }
-
-        return cnt;
     }
 
     public Optional<Inventory> getTopWindow() {
@@ -4851,7 +4827,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param inventory the inventory
      */
     public void removeWindow(Inventory inventory) {
-        this.removeWindow(inventory, false);
+        if (!this.permanentWindows.contains(windows.get(inventory))) {
+            inventory.close(this);
+            this.windows.remove(inventory);
+            updateTrackingPositions(true);
+        }
     }
 
     /**
@@ -4870,14 +4850,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-    /**
-     * 获取该玩家的{@link PlayerUIInventory}
-     * <p>
-     * Gets ui inventory of the player.
-     */
-    public PlayerUIInventory getUIInventory() {
-        return playerUIInventory;
-    }
 
     /**
      * 获取该玩家的{@link PlayerCursorInventory}
@@ -4885,70 +4857,40 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * Gets cursor inventory of the player.
      */
     public PlayerCursorInventory getCursorInventory() {
-        return this.playerUIInventory.getCursorInventory();
+        return playerCursorInventory;
     }
 
     /**
-     * 获取该玩家的{@link CraftingGrid}
+     * 获取该玩家的{@link CraftingGridInventory}
      * <p>
      * Gets crafting grid of the player.
      */
-    public CraftingGrid getCraftingGrid() {
-        return this.craftingGrid;
+    public CraftingGridInventory getCraftingGrid() {
+        return this.craftingGridInventory;
     }
 
-    /**
-     * 设置该玩家的{@link CraftingGrid}
-     * <p>
-     * Sets crafting grid.
-     *
-     * @param grid {@link CraftingGrid}
-     */
-    public void setCraftingGrid(CraftingGrid grid) {
-        this.craftingGrid = grid;
-        this.addWindow(grid, ContainerIds.NONE);
+    public CreativeOutputInventory getCreativeOutputInventory() {
+        return this.creativeOutputInventory;
     }
 
     /**
      * Reset crafting grid type.
      */
     public void resetCraftingGridType() {
-        if (this.craftingGrid != null) {
-            Item[] drops = this.inventory.addItem(this.craftingGrid.getContents().values().toArray(Item.EMPTY_ARRAY));
+        List<Item> drops = new ArrayList<>(this.getCraftingGrid().getContents().values());//small craft
 
-            if (drops.length > 0) {
-                for (Item drop : drops) {
-                    this.dropItem(drop);
-                }
-            }
+        drops.add(this.getCursorInventory().getItem(0));//cursor
 
-            drops = this.inventory.addItem(this.getCursorInventory().getItem(0));
-            if (drops.length > 0) {
-                for (Item drop : drops) {
-                    this.dropItem(drop);
-                }
-            }
-
-            this.playerUIInventory.clearAll();
-
-            if (this.craftingGrid instanceof BigCraftingGrid) {
-                this.craftingGrid = this.playerUIInventory.getCraftingGrid();
-                this.addWindow(this.craftingGrid, ContainerIds.NONE);
-//
-//                ContainerClosePacket pk = new ContainerClosePacket(); //be sure, big crafting is really closed
-//                pk.windowId = ContainerIds.NONE;
-//                this.dataPacket(pk);
-            }
-
-            this.craftingType = CRAFTING_SMALL;
+        Optional<Inventory> topWindow = getTopWindow();
+        Inventory value;
+        if (topWindow.isPresent() && (value = topWindow.get()) instanceof CraftTypeInventory) {
+            drops.addAll(value.getContents().values());
+        }
+        for (Item drop : drops) {
+            this.dropItem(drop);
         }
     }
 
-    /**
-     * permanent=false
-     *
-     * @see #removeAllWindows(boolean)
-     */
     public void removeAllWindows() {
         removeAllWindows(false);
     }

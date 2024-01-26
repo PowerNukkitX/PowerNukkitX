@@ -7,7 +7,7 @@ import cn.nukkit.item.Item;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class AnvilInventory extends ContainerInventory {
+public class AnvilInventory extends ContainerInventory implements CraftTypeInventory{
     public static final int INPUT = 0;
     public static final int MATERIAL = 1;
     public static final int OUTPUT = 2;

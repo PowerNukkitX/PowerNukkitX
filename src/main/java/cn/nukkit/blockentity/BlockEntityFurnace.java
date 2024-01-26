@@ -25,7 +25,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeInventoryHolder, BlockEntityInventoryHolder {
 
-    protected FurnaceInventory inventory;
+    protected FurnaceTypeInventory inventory;
 
     protected int burnTime;
     protected int burnDuration;
@@ -54,7 +54,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     @Override
     public void loadNBT() {
         super.loadNBT();
-        this.inventory = new FurnaceInventory(this, getInventoryType());
+        this.inventory = new FurnaceTypeInventory(this, getInventoryType());
 
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
             this.namedTag.putList("Items", new ListTag<CompoundTag>());
@@ -214,7 +214,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     }
 
     @Override
-    public FurnaceInventory getInventory() {
+    public FurnaceTypeInventory getInventory() {
         return inventory;
     }
 

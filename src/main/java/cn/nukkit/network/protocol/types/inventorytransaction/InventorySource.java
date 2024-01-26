@@ -1,7 +1,7 @@
 package cn.nukkit.network.protocol.types.inventorytransaction;
 
 
-import cn.nukkit.network.protocol.types.ContainerIds;
+import cn.nukkit.inventory.SpecialWindowId;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.AccessLevel;
@@ -12,9 +12,9 @@ import org.jetbrains.annotations.NotNull;
 @Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InventorySource {
-    private static final InventorySource CREATIVE_SOURCE = new InventorySource(Type.CREATIVE, ContainerIds.NONE, Flag.NONE);
-    private static final InventorySource GLOBAL_SOURCE = new InventorySource(Type.GLOBAL, ContainerIds.NONE, Flag.NONE);
-    private static final InventorySource INVALID_SOURCE = new InventorySource(Type.INVALID, ContainerIds.NONE, Flag.NONE);
+    private static final InventorySource CREATIVE_SOURCE = new InventorySource(Type.CREATIVE, SpecialWindowId.NONE.getId(), Flag.NONE);
+    private static final InventorySource GLOBAL_SOURCE = new InventorySource(Type.GLOBAL, SpecialWindowId.NONE.getId(), Flag.NONE);
+    private static final InventorySource INVALID_SOURCE = new InventorySource(Type.INVALID, SpecialWindowId.NONE.getId(), Flag.NONE);
     private final Type type;
     private final int containerId;
     private final Flag flag;
@@ -44,7 +44,7 @@ public final class InventorySource {
     }
 
     public static InventorySource fromWorldInteraction(@NotNull Flag flag) {
-        return new InventorySource(Type.WORLD_INTERACTION, ContainerIds.NONE, flag);
+        return new InventorySource(Type.WORLD_INTERACTION, SpecialWindowId.NONE.getId(), flag);
     }
 
     public enum Type {

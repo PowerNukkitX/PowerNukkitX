@@ -1,9 +1,7 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-
 import cn.nukkit.blockentity.BlockEntityEnchantTable;
-import cn.nukkit.blockentity.BlockEntityInventoryHolder;
 import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.item.Item;
 
@@ -11,7 +9,7 @@ import cn.nukkit.item.Item;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class EnchantInventory extends ContainerInventory implements BlockEntityInventoryNameable {
+public class EnchantInventory extends ContainerInventory implements BlockEntityInventoryNameable, CraftTypeInventory {
 
     public EnchantInventory(BlockEntityEnchantTable table) {
         super(table, InventoryType.ENCHANTMENT, 2);

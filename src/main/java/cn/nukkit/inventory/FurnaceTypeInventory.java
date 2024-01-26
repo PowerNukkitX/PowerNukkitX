@@ -9,14 +9,14 @@ import cn.nukkit.item.Item;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class FurnaceInventory extends ContainerInventory {
+public class FurnaceTypeInventory extends ContainerInventory {
 
-    public FurnaceInventory(BlockEntityFurnace furnace) {
+    public FurnaceTypeInventory(BlockEntityFurnace furnace) {
         super(furnace, InventoryType.FURNACE, 3);
     }
 
-    public FurnaceInventory(BlockEntityFurnace furnace, InventoryType inventoryType) {
-        super(furnace, inventoryType);
+    public FurnaceTypeInventory(BlockEntityFurnace furnace, InventoryType inventoryType) {
+        super(furnace, inventoryType, 3);
     }
 
     @Override
@@ -36,16 +36,16 @@ public class FurnaceInventory extends ContainerInventory {
         return this.getItem(0);
     }
 
-    public boolean setSmelting(Item item) {
-        return this.setItem(0, item);
+    public boolean setResult(Item item) {
+        return this.setItem(2, item);
     }
 
     public boolean setFuel(Item item) {
         return this.setItem(1, item);
     }
 
-    public boolean setResult(Item item) {
-        return this.setItem(2, item);
+    public boolean setSmelting(Item item) {
+        return this.setItem(0, item);
     }
 
 
