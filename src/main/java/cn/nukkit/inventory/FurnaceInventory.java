@@ -12,10 +12,9 @@ import cn.nukkit.item.Item;
 public class FurnaceInventory extends ContainerInventory {
 
     public FurnaceInventory(BlockEntityFurnace furnace) {
-        super(furnace, InventoryType.FURNACE);
+        super(furnace, InventoryType.FURNACE, 3);
     }
 
-    
     public FurnaceInventory(BlockEntityFurnace furnace, InventoryType inventoryType) {
         super(furnace, inventoryType);
     }
@@ -37,19 +36,19 @@ public class FurnaceInventory extends ContainerInventory {
         return this.getItem(0);
     }
 
-    public boolean setResult(Item item) {
-        return this.setItem(2, item);
+    public boolean setSmelting(Item item) {
+        return this.setItem(0, item);
     }
 
     public boolean setFuel(Item item) {
         return this.setItem(1, item);
     }
 
-    public boolean setSmelting(Item item) {
-        return this.setItem(0, item);
+    public boolean setResult(Item item) {
+        return this.setItem(2, item);
     }
 
-    
+
     @Override
     public boolean setItemByPlayer(Player player, int index, Item item, boolean send) {
         if (index == 2 && (item.isNull() || item.getCount() == 0)) {

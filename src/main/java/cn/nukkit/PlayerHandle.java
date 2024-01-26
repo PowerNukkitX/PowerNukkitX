@@ -1,18 +1,12 @@
 package cn.nukkit;
 
-import cn.nukkit.api.*;
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.inventory.Inventory;
-import cn.nukkit.inventory.transaction.CraftingTransaction;
-import cn.nukkit.inventory.transaction.EnchantTransaction;
-import cn.nukkit.inventory.transaction.GrindstoneTransaction;
-import cn.nukkit.inventory.transaction.RepairItemTransaction;
-import cn.nukkit.inventory.transaction.SmithingTransaction;
-import cn.nukkit.inventory.transaction.TradingTransaction;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
@@ -26,7 +20,6 @@ import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.DummyBossBar;
 import cn.nukkit.utils.LoginChainData;
 import com.github.benmanes.caffeine.cache.Cache;
-import com.google.common.collect.BiMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.InetSocketAddress;
@@ -89,14 +82,6 @@ public final class PlayerHandle {
         return player.interfaz;
     }
 
-    public BiMap<Inventory, Integer> getWindows() {
-        return player.windows;
-    }
-
-    public Map<Integer, Inventory> getWindowIndex() {
-        return player.windowIndex;
-    }
-
     public Map<UUID, Player> getHiddenPlayers() {
         return player.hiddenPlayers;
     }
@@ -109,36 +94,12 @@ public final class PlayerHandle {
         return player.spawnThreshold;
     }
 
-    public int getWindowCnt() {
-        return player.windowCnt;
-    }
-
-    public void setWindowCnt(int windowCnt) {
-        player.windowCnt = windowCnt;
-    }
-
-    public int getClosingWindowId() {
-        return player.closingWindowId;
-    }
-
-    public void setClosingWindowId(int closingWindowId) {
-        player.closingWindowId = closingWindowId;
-    }
-
     public int getMessageCounter() {
         return player.messageLimitCounter;
     }
 
     public void setMessageCounter(int messageCounter) {
         player.messageLimitCounter = messageCounter;
-    }
-
-    public long getRandomClientId() {
-        return player.randomClientId;
-    }
-
-    public void setRandomClientId(long randomClientId) {
-        player.randomClientId = randomClientId;
     }
 
     public void setConnected(boolean connected) {
@@ -151,54 +112,6 @@ public final class PlayerHandle {
 
     public boolean isRemoveFormat() {
         return player.removeFormat;
-    }
-
-    public CraftingTransaction getCraftingTransaction() {
-        return player.craftingTransaction;
-    }
-
-    public void setCraftingTransaction(CraftingTransaction craftingTransaction) {
-        player.craftingTransaction = craftingTransaction;
-    }
-
-    public EnchantTransaction getEnchantTransaction() {
-        return player.enchantTransaction;
-    }
-
-    public void setEnchantTransaction(EnchantTransaction enchantTransaction) {
-        player.enchantTransaction = enchantTransaction;
-    }
-
-    public RepairItemTransaction getRepairItemTransaction() {
-        return player.repairItemTransaction;
-    }
-
-    public void setRepairItemTransaction(RepairItemTransaction repairItemTransaction) {
-        player.repairItemTransaction = repairItemTransaction;
-    }
-
-    public GrindstoneTransaction getGrindstoneTransaction() {
-        return player.grindstoneTransaction;
-    }
-
-    public void setGrindstoneTransaction(GrindstoneTransaction grindstoneTransaction) {
-        player.grindstoneTransaction = grindstoneTransaction;
-    }
-
-    public SmithingTransaction getSmithingTransaction() {
-        return player.smithingTransaction;
-    }
-
-    public void setSmithingTransaction(SmithingTransaction smithingTransaction) {
-        player.smithingTransaction = smithingTransaction;
-    }
-
-    public TradingTransaction getTradingTransaction() {
-        return player.tradingTransaction;
-    }
-
-    public void setTradingTransaction(TradingTransaction tradingTransaction) {
-        player.tradingTransaction = tradingTransaction;
     }
 
     public String getUsername() {
@@ -535,16 +448,8 @@ public final class PlayerHandle {
         player.onBlockBreakComplete(blockPos, face);
     }
 
-    public boolean getInventoryOpen() {
-        return player.inventoryOpen;
-    }
-
     public boolean getShowingCredits() {
         return player.showingCredits;
-    }
-
-    public void setInventoryOpen(boolean inventoryOpen) {
-        player.inventoryOpen = inventoryOpen;
     }
 
     public static int getNoShieldDelay() {

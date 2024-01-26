@@ -1,4 +1,4 @@
-package cn.nukkit.network.protocol.types;
+package cn.nukkit.network.protocol.types.inventorytransaction;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;

@@ -2,12 +2,11 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.BarrelInventory;
-import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 
-public class BlockEntityBarrel extends BlockEntitySpawnableContainer implements BlockEntityNameable {
+public class BlockEntityBarrel extends BlockEntitySpawnableContainer{
 
 
     public BlockEntityBarrel(IChunk chunk, CompoundTag nbt) {
@@ -15,7 +14,7 @@ public class BlockEntityBarrel extends BlockEntitySpawnableContainer implements 
     }
 
     @Override
-    protected ContainerInventory requireContainerInventory() {
+    protected BarrelInventory requireContainerInventory() {
         return new BarrelInventory(this);
     }
 

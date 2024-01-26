@@ -1,6 +1,7 @@
-package cn.nukkit.network.protocol.types;
+package cn.nukkit.network.protocol.types.inventorytransaction;
 
 
+import cn.nukkit.network.protocol.types.ContainerIds;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.AccessLevel;

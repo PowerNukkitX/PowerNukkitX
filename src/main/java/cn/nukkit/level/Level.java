@@ -31,6 +31,7 @@ import cn.nukkit.event.level.WeatherChangeEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.weather.LightningStrikeEvent;
+import cn.nukkit.inventory.BlockInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemBucket;
@@ -63,6 +64,7 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.PlayerAbility;
+import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
@@ -3706,6 +3708,19 @@ public class Level implements Metadatable {
      * @return the list
      */
     public List<CompletableFuture<Void>> asyncChunkGarbageCollection() {
+        var gcBlockInventoryMetaData = CompletableFuture.runAsync(() -> {
+            for (var entry : this.getBlockMetadata().getBlockMetadataMap().entrySet()) {
+                String key = entry.getKey();
+                String[] split = key.split(":");
+                Map<Plugin, MetadataValue> value = entry.getValue();
+                if (split[3].equals("inventory") && value.containsKey(InternalPlugin.INSTANCE)) {
+                    Block block = getBlock(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
+                    if (!(block instanceof BlockInventoryHolder)) {
+                        this.getBlockMetadata().removeMetadata(block, key, InternalPlugin.INSTANCE);
+                    }
+                }
+            }
+        });
         var gcBlockEntities = CompletableFuture.runAsync(() -> {
             // remove all invaild block entities.
             if (!blockEntities.isEmpty()) {
@@ -3736,7 +3751,7 @@ public class Level implements Metadatable {
             this.unloadChunks();
         });
         var gcSuper = CompletableFuture.runAsync(() -> this.requireProvider().doGarbageCollection());
-        return List.of(gcBlockEntities, gcDeadChunks, gcSuper);
+        return List.of(gcBlockInventoryMetaData, gcBlockEntities, gcDeadChunks, gcSuper);
     }
 
     /**
@@ -3794,7 +3809,6 @@ public class Level implements Metadatable {
      *
      * @param allocatedTime free time slices
      */
-
     public void doGarbageCollection(long allocatedTime) {
         long start = System.currentTimeMillis();
         if (unloadChunks(start, allocatedTime, false)) {

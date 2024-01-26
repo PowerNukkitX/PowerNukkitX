@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Supplier;
 
 
-public class BlockGrindstone extends BlockTransparent implements Faceable {
+public class BlockGrindstone extends BlockTransparent implements Faceable, BlockInventoryHolder {
     public static final BlockProperties PROPERTIES = new BlockProperties(GRINDSTONE, CommonBlockProperties.ATTACHMENT, CommonBlockProperties.DIRECTION);
 
     @Override
@@ -219,8 +219,13 @@ public class BlockGrindstone extends BlockTransparent implements Faceable {
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         if (player != null) {
-            player.addWindow(new GrindstoneInventory(player.getUIInventory(), this), Player.GRINDSTONE_WINDOW_ID);
+            player.addWindow(getOrCreateInventory());
         }
         return true;
+    }
+
+    @Override
+    public Supplier<ContainerInventory> blockInventorySupplier() {
+        return () -> new GrindstoneInventory(this);
     }
 }

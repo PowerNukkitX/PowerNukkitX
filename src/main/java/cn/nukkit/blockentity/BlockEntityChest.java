@@ -3,8 +3,8 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.inventory.BaseInventory;
-import cn.nukkit.inventory.ChestInventory;
 import cn.nukkit.inventory.ContainerInventory;
+import cn.nukkit.inventory.ChestInventory;
 import cn.nukkit.inventory.DoubleChestInventory;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
@@ -15,8 +15,7 @@ import java.util.HashSet;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class BlockEntityChest extends BlockEntitySpawnableContainer implements BlockEntityNameable {
-
+public class BlockEntityChest extends BlockEntitySpawnableContainer {
     protected DoubleChestInventory doubleInventory = null;
 
     public BlockEntityChest(IChunk chunk, CompoundTag nbt) {
@@ -25,7 +24,9 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
 
     @Override
     protected ContainerInventory requireContainerInventory() {
-        return new ChestInventory(this);
+        if (this.inventory == null) {
+            return new ChestInventory(this);
+        } else return inventory;
     }
 
     @Override
@@ -78,9 +79,9 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
 
             if (pair.doubleInventory != null) {
                 this.doubleInventory = pair.doubleInventory;
-                this.namedTag.putBoolean("pairlead",false);
+                this.namedTag.putBoolean("pairlead", false);
             } else if (this.doubleInventory == null) {
-                this.namedTag.putBoolean("pairlead",true);
+                this.namedTag.putBoolean("pairlead", true);
                 if ((pair.x + ((int) pair.z << 15)) > (this.x + ((int) this.z << 15))) { //Order them correctly
                     this.doubleInventory = new DoubleChestInventory(pair, this);
                 } else {
@@ -211,8 +212,8 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
     }
 
     @Override
-    public void onBreak() {
+    public void onBreak(boolean isSilkTouch) {
         unpair();
-        super.onBreak();
+        super.onBreak(isSilkTouch);
     }
 }

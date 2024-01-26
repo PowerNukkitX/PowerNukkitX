@@ -6,7 +6,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.EntityArmorInventory;
 import cn.nukkit.inventory.EntityInventoryHolder;
-import cn.nukkit.inventory.PlayerInventory;
+import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -75,7 +75,7 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
                     return null;
                 }
             } else if (e instanceof Player p) {
-                PlayerInventory armorInventory = p.getInventory();
+                HumanInventory armorInventory = p.getInventory();
                 if (clone.isHelmet() && armorInventory.getHelmet().getId() == BlockID.AIR) {
                     armorInventory.setHelmet(clone);
                     return null;

@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 
-public class BlockSmithingTable extends BlockSolid {
+public class BlockSmithingTable extends BlockSolid implements BlockInventoryHolder {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(SMITHING_TABLE);
 
@@ -50,7 +50,7 @@ public class BlockSmithingTable extends BlockSolid {
             return false;
         }
 
-        player.addWindow(new SmithingInventory(player.getUIInventory(), this), Player.SMITHING_WINDOW_ID);
+        player.addWindow(getOrCreateInventory());
         return true;
     }
 
@@ -77,5 +77,10 @@ public class BlockSmithingTable extends BlockSolid {
     @Override
     public boolean canHarvestWithHand() {
         return true;
+    }
+
+    @Override
+    public Supplier<ContainerInventory> blockInventorySupplier() {
+        return () -> new SmithingInventory(this);
     }
 }

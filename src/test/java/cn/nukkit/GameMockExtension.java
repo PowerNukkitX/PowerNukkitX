@@ -6,10 +6,10 @@ import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.event.server.QueryRegenerateEvent;
+import cn.nukkit.inventory.HumanOffHandInventory;
 import cn.nukkit.inventory.Inventory;
-import cn.nukkit.inventory.PlayerEnderChestInventory;
-import cn.nukkit.inventory.PlayerInventory;
-import cn.nukkit.inventory.PlayerOffhandInventory;
+import cn.nukkit.inventory.HumanEnderChestInventory;
+import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.level.DimensionEnum;
@@ -195,9 +195,9 @@ public class GameMockExtension extends MockitoExtension {
         player.username = "test";
         player.iusername = "test";
         player.setInventories(new Inventory[]{
-                new PlayerInventory(player),
-                new PlayerOffhandInventory(player),
-                new PlayerEnderChestInventory(player)
+                new HumanInventory(player),
+                new HumanOffHandInventory(player),
+                new HumanEnderChestInventory(player)
         });
         try {
             FieldUtils.writeDeclaredField(player, "foodData", new PlayerFood(player, 20, 20), true);

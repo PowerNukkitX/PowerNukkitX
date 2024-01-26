@@ -12,9 +12,8 @@ import cn.nukkit.tags.BlockTags;
  * @author PetteriM1
  */
 public class ShulkerBoxInventory extends ContainerInventory {
-
     public ShulkerBoxInventory(BlockEntityShulkerBox box) {
-        super(box, InventoryType.SHULKER_BOX);
+        super(box, InventoryType.CONTAINER, 20);
     }
 
     @Override

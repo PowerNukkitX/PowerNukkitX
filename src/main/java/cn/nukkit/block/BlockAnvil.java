@@ -4,32 +4,29 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.block.property.enums.Damage;
-import cn.nukkit.inventory.*;
+import cn.nukkit.inventory.AnvilInventory;
+import cn.nukkit.inventory.ContainerInventory;
+import cn.nukkit.inventory.BlockInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.metadata.FixedMetadataValue;
-import cn.nukkit.metadata.MetadataValue;
-import cn.nukkit.metadata.SoftFixedMetaValue;
-import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.ref.SoftReference;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Supplier;
 
-import static cn.nukkit.block.property.CommonBlockProperties.*;
+import static cn.nukkit.block.property.CommonBlockProperties.DAMAGE;
+import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 
 /**
  * @author Pub4Game
  * @since 27.12.2015
  */
-public class BlockAnvil extends BlockFallable implements Faceable {
+public class BlockAnvil extends BlockFallable implements Faceable, BlockInventoryHolder {
     public static final BlockProperties PROPERTIES = new BlockProperties(ANVIL, DAMAGE, MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
@@ -108,9 +105,14 @@ public class BlockAnvil extends BlockFallable implements Faceable {
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         if (player != null) {
-            player.addWindow(new AnvilInventory(player.getUIInventory(), this), Player.ANVIL_WINDOW_ID);
+            player.addWindow(getOrCreateInventory());
         }
         return true;
+    }
+
+    @Override
+    public Supplier<ContainerInventory> blockInventorySupplier() {
+        return () -> new AnvilInventory(this);
     }
 
     @Override

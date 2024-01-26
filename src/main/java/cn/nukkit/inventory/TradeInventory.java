@@ -11,31 +11,17 @@ import cn.nukkit.network.protocol.UpdateTradePacket;
 
 
 public class TradeInventory extends BaseInventory {
-    //hack实现
-    public static final int TRADE_INPUT1_UI_SLOT = 4;
-    public static final int TRADE_INPUT2_UI_SLOT = 5;
-
     protected EntityVillagerV2 holder;
     public String displayName;
 
     public TradeInventory(EntityVillagerV2 holder) {
-        super(holder, InventoryType.TRADING);
+        super(holder, InventoryType.TRADE, 3);
         this.holder = holder;
     }
 
     @Override
     public EntityVillagerV2 getHolder() {
         return this.holder;
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 3;
-    }
-
-    @Override
-    public String getName() {
-        return "Trade";
     }
 
     @Override
@@ -54,7 +40,7 @@ public class TradeInventory extends BaseInventory {
             tierExpRequirements.add(i, new CompoundTag().putInt(String.valueOf(i), villager.tierExpRequirement[i]));
         }
         pk1.offers = new CompoundTag()
-                .putList("Recipes",villager.getRecipes())
+                .putList("Recipes", villager.getRecipes())
                 .putList("TierExpRequirements", tierExpRequirements);
         pk1.newTradingUi = true;
         pk1.usingEconomyTrade = true;

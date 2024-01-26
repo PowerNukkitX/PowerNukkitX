@@ -1,7 +1,6 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBrewingStand;
 import cn.nukkit.block.BlockID;
@@ -22,12 +21,9 @@ import cn.nukkit.recipe.ContainerRecipe;
 import cn.nukkit.recipe.CraftingManager;
 import cn.nukkit.recipe.MixRecipe;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 
-public class BlockEntityBrewingStand extends BlockEntitySpawnable implements RecipeInventoryHolder, BlockEntityContainer, BlockEntityNameable {
+public class BlockEntityBrewingStand extends BlockEntitySpawnable implements RecipeInventoryHolder, BlockEntityInventoryHolder {
 
     protected BrewingInventory inventory;
 
@@ -102,7 +98,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     }
 
     @Override
-    public void onBreak() {
+    public void onBreak(boolean isSilkTouch) {
         for (Item content : inventory.getContents().values()) {
             level.dropItem(this, content);
         }

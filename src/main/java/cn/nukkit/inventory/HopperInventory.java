@@ -9,7 +9,7 @@ import cn.nukkit.blockentity.BlockEntityHopper;
 public class HopperInventory extends ContainerInventory {
 
     public HopperInventory(BlockEntityHopper hopper) {
-        super(hopper, InventoryType.HOPPER);
+        super(hopper, InventoryType.HOPPER, 5);
     }
 
     @Override

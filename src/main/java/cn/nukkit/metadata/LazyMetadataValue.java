@@ -17,8 +17,6 @@ import java.util.concurrent.Callable;
  * level. Once invalidated, the LazyMetadataValue will recompute its value
  * when asked.
  */
-
-
 public class LazyMetadataValue extends MetadataValueAdapter {
     private Callable<Object> lazyValue;
     private CacheStrategy cacheStrategy;

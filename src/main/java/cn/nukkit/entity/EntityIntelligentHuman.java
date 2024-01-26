@@ -40,9 +40,10 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     protected UUID uuid;
     protected byte[] rawUUID;
     protected Skin skin;
-    protected FakeHumanInventory inventory;
-    protected FakeHumanEnderChestInventory enderChestInventory;
-    protected FakeHumanOffhandInventory offhandInventory;
+    protected HumanInventory inventory;
+    protected HumanEnderChestInventory enderChestInventory;
+    protected HumanOffHandInventory offhandInventory;
+
     public EntityIntelligentHuman(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -100,23 +101,23 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     }
 
     @Override
-    public FakeHumanInventory getInventory() {
+    public HumanInventory getInventory() {
         return inventory;
     }
 
-    public FakeHumanEnderChestInventory getEnderChestInventory() {
+    public HumanEnderChestInventory getEnderChestInventory() {
         return enderChestInventory;
     }
 
-    public FakeHumanOffhandInventory getOffhandInventory() {
+    public HumanOffHandInventory getOffhandInventory() {
         return offhandInventory;
     }
 
     @Override
     public void setInventories(Inventory[] inventory) {
-        this.inventory = (FakeHumanInventory) inventory[0];
-        this.offhandInventory = (FakeHumanOffhandInventory) inventory[1];
-        this.enderChestInventory = (FakeHumanEnderChestInventory) inventory[2];
+        this.inventory = (HumanInventory) inventory[0];
+        this.offhandInventory = (HumanOffHandInventory) inventory[1];
+        this.enderChestInventory = (HumanEnderChestInventory) inventory[2];
     }
 
     @Override
@@ -311,7 +312,8 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     }
 
     @Override
-    @NotNull public String getName() {
+    @NotNull
+    public String getName() {
         return this.getNameTag();
     }
 

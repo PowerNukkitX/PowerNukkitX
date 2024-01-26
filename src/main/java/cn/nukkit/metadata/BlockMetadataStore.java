@@ -4,6 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
 import cn.nukkit.plugin.Plugin;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -95,5 +96,9 @@ public class BlockMetadataStore extends MetadataStore {
         } else {
             throw new IllegalStateException("Block does not belong to world " + this.owningLevel.getName());
         }
+    }
+
+    public Map<String, Map<Plugin, MetadataValue>> getBlockMetadataMap() {
+        return Collections.unmodifiableMap(metadataMap);
     }
 }

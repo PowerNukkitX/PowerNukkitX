@@ -1,33 +1,35 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-import cn.nukkit.entity.EntityHuman;
-import cn.nukkit.entity.EntityHumanType;
+import cn.nukkit.entity.IHuman;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
 import cn.nukkit.network.protocol.types.ContainerIds;
 
-public class PlayerOffhandInventory extends BaseInventory {
-
-    public PlayerOffhandInventory(EntityHumanType holder) {
-        super(holder, InventoryType.OFFHAND);
+public class HumanOffHandInventory extends BaseInventory {
+    public HumanOffHandInventory(IHuman holder) {
+        super(holder, InventoryType.INVENTORY, 1);
     }
 
-    @Override
-    public void setSize(int size) {
-        throw new UnsupportedOperationException("Offhand can only carry one item at a time");
+    public void setItem(Item item) {
+        setItem(0, item);
     }
+
+    public void setItem(Item item, boolean send) {
+        setItem(0, item, send);
+    }
+
 
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
-        EntityHuman holder = this.getHolder();
+        IHuman holder = this.getHolder();
         if (holder instanceof Player player) {
             if (!player.spawned) return;
             if (send) {
                 this.sendContents(this.getViewers());
-                this.sendContents(holder.getViewers().values());
+                this.sendContents(holder.getEntity().getViewers().values());
                 this.sendContents(player);
             }
         }
@@ -69,7 +71,7 @@ public class PlayerOffhandInventory extends BaseInventory {
 
     private MobEquipmentPacket createMobEquipmentPacket(Item item) {
         MobEquipmentPacket pk = new MobEquipmentPacket();
-        pk.eid = this.getHolder().getId();
+        pk.eid = this.getHolder().getEntity().getId();
         pk.item = item;
         pk.inventorySlot = 1;
         pk.windowId = ContainerIds.OFFHAND;
@@ -78,7 +80,7 @@ public class PlayerOffhandInventory extends BaseInventory {
     }
 
     @Override
-    public EntityHuman getHolder() {
-        return (EntityHuman) super.getHolder();
+    public IHuman getHolder() {
+        return (IHuman) super.getHolder();
     }
 }

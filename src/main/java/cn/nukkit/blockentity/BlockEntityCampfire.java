@@ -7,8 +7,6 @@ import cn.nukkit.block.BlockCampfire;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.event.inventory.CampfireSmeltEvent;
 import cn.nukkit.inventory.CampfireInventory;
-import cn.nukkit.inventory.InventoryHolder;
-import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
@@ -19,7 +17,7 @@ import cn.nukkit.recipe.CampfireRecipe;
 import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BlockEntityCampfire extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer {
+public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
 
     private CampfireInventory inventory;
     private int[] burnTime;
@@ -40,13 +38,13 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
     @Override
     public void loadNBT() {
         super.loadNBT();
-        this.inventory = new CampfireInventory(this, InventoryType.CAMPFIRE);
+        this.inventory = new CampfireInventory(this);
         this.burnTime = new int[4];
         this.recipes = new CampfireRecipe[4];
         this.keepItem = new boolean[4];
         for (int i = 1; i <= burnTime.length; i++) {
-            burnTime[i -1] = namedTag.getInt("ItemTime" + i);
-            keepItem[i -1] = namedTag.getBoolean("KeepItem" + 1);
+            burnTime[i - 1] = namedTag.getInt("ItemTime" + i);
+            keepItem[i - 1] = namedTag.getBoolean("KeepItem" + 1);
 
             if (this.namedTag.contains("Item" + i) && this.namedTag.get("Item" + i) instanceof CompoundTag) {
                 inventory.setItem(i - 1, NBTIO.getItemHelper(this.namedTag.getCompound("Item" + i)));
@@ -91,7 +89,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
                         this.level.dropItem(add(random.nextFloat(), 0.5, random.nextFloat()), event.getResult());
                         burnTime[slot] = 0;
                         recipes[slot] = null;
-                    } else if(event.getKeepItem()) {
+                    } else if (event.getKeepItem()) {
                         keepItem[slot] = true;
                         burnTime[slot] = 0;
                         recipes[slot] = null;
@@ -128,13 +126,13 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
         for (int i = 1; i <= burnTime.length; i++) {
             Item item = inventory.getItem(i - 1);
             if (item == null || item.getId() == BlockID.AIR || item.getCount() <= 0) {
-                namedTag.remove("Item"+i);
+                namedTag.remove("Item" + i);
                 namedTag.putInt("ItemTime" + i, 0);
-                namedTag.remove("KeepItem"+i);
+                namedTag.remove("KeepItem" + i);
             } else {
-                namedTag.putCompound("Item"+i, NBTIO.putItemHelper(item));
+                namedTag.putCompound("Item" + i, NBTIO.putItemHelper(item));
                 namedTag.putInt("ItemTime" + i, burnTime[i - 1]);
-                namedTag.putBoolean("KeepItem"+i, keepItem[i-1]);
+                namedTag.putBoolean("KeepItem" + i, keepItem[i - 1]);
             }
         }
 
@@ -156,7 +154,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
     }
 
     @Override
-    public void onBreak() {
+    public void onBreak(boolean isSilkTouch) {
         for (Item content : inventory.getContents().values()) {
             level.dropItem(this, content);
         }
@@ -164,7 +162,21 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
 
     @Override
     public String getName() {
-        return "Campfire";
+        return this.hasName() ? this.namedTag.getString("CustomName") : "Campfire";
+    }
+
+    @Override
+    public void setName(String name) {
+        if (name == null || name.isBlank()) {
+            namedTag.remove("CustomName");
+            return;
+        }
+        namedTag.putString("CustomName", name);
+    }
+
+    @Override
+    public boolean hasName() {
+        return namedTag.contains("CustomName");
     }
 
     @Override
@@ -177,10 +189,10 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
 
         for (int i = 1; i <= burnTime.length; i++) {
             Item item = inventory.getItem(i - 1);
-            if (item == null || item.getId() == BlockID.AIR || item.getCount() <= 0) {
-                c.remove("Item"+i);
+            if (item.isNull()) {
+                c.remove("Item" + i);
             } else {
-                c.putCompound("Item"+i, NBTIO.putItemHelper(item));
+                c.putCompound("Item" + i, NBTIO.putItemHelper(item));
             }
         }
 

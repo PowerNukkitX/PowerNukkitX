@@ -3,7 +3,7 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.inventory.Inventory;
-import cn.nukkit.inventory.PlayerInventory;
+import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
@@ -27,7 +27,7 @@ public class MobEquipmentProcessor extends DataPacketProcessor<MobEquipmentPacke
             return;
         }
 
-        if(inv instanceof PlayerInventory inventory && inventory.getHeldItemIndex() == pk.hotbarSlot){
+        if(inv instanceof HumanInventory inventory && inventory.getHeldItemIndex() == pk.hotbarSlot){
             return;
         }
 
@@ -39,7 +39,7 @@ public class MobEquipmentProcessor extends DataPacketProcessor<MobEquipmentPacke
             return;
         }
 
-        if (inv instanceof PlayerInventory inventory) {
+        if (inv instanceof HumanInventory inventory) {
             inventory.equipItem(pk.hotbarSlot);
         }
 

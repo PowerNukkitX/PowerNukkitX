@@ -8,14 +8,17 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityInventoryChangeEvent;
+import cn.nukkit.event.inventory.InventoryCloseEvent;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -24,57 +27,18 @@ import java.util.*;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BaseInventory implements Inventory {
+    protected final Int2ObjectOpenHashMap<Item> slots = new Int2ObjectOpenHashMap<>();
     protected final InventoryType type;
-    protected int maxStackSize = Inventory.MAX_STACK;
-
-    protected int size;
-
-    protected final String name;
-
-    protected final String title;
-
-    public final Map<Integer, Item> slots = new HashMap<>();
-
     protected final Set<Player> viewers = new HashSet<>();
-
+    protected final int size;
+    protected int maxStackSize = Inventory.MAX_STACK;
     protected InventoryHolder holder;
+    protected List<InventoryListener> listeners;
 
-    private List<InventoryListener> listeners;
-
-    public BaseInventory(InventoryHolder holder, InventoryType type) {
-        this(holder, type, new HashMap<>());
-    }
-
-    public BaseInventory(InventoryHolder holder, InventoryType type, Map<Integer, Item> items) {
-        this(holder, type, items, null);
-    }
-
-    public BaseInventory(InventoryHolder holder, InventoryType type, Map<Integer, Item> items, Integer overrideSize) {
-        this(holder, type, items, overrideSize, null);
-    }
-
-    public BaseInventory(InventoryHolder holder, InventoryType type, Map<Integer, Item> items, Integer overrideSize, String overrideTitle) {
+    public BaseInventory(InventoryHolder holder, InventoryType type, int size) {
         this.holder = holder;
-
         this.type = type;
-
-        if (overrideSize != null) {
-            this.size = overrideSize;
-        } else {
-            this.size = this.type.getDefaultSize();
-        }
-
-        if (overrideTitle != null) {
-            this.title = overrideTitle;
-        } else {
-            this.title = this.type.getDefaultTitle();
-        }
-
-        this.name = this.type.getDefaultTitle();
-
-        if (!(this instanceof DoubleChestInventory)) {
-            this.setContents(items);
-        }
+        this.size = size;
     }
 
     @Override
@@ -82,23 +46,9 @@ public abstract class BaseInventory implements Inventory {
         return size;
     }
 
-    public void setSize(int size) {
-        this.size = size;
-    }
-
     @Override
     public int getMaxStackSize() {
         return maxStackSize;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getTitle() {
-        return title;
     }
 
     @NotNull
@@ -150,15 +100,19 @@ public abstract class BaseInventory implements Inventory {
         }
     }
 
-    @Override
+    @ApiStatus.Internal
+    public void setItemInternal(int index, Item item) {
+        this.slots.put(index, item);
+    }
+
     public boolean setItem(int index, Item item, boolean send) {
-        item = item.clone();
         if (index < 0 || index >= this.size) {
             return false;
         } else if (item.isNull()) {
             return this.clear(index, send);
         }
 
+        item = item.clone();
         InventoryHolder holder = this.getHolder();
         if (holder instanceof Entity) {
             EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent((Entity) holder, this.getItem(index), item, index);
@@ -176,7 +130,7 @@ public abstract class BaseInventory implements Inventory {
         }
 
         Item old = this.getUnclonedItem(index);
-        this.slots.put(index, item.clone());
+        this.slots.put(index, item);
         this.onSlotChange(index, old, send);
 
         return true;
@@ -319,7 +273,6 @@ public abstract class BaseInventory implements Inventory {
                             item.setCount(item.getCount() + amount);
                             this.setItem(i, item);
                             if (slot.getCount() <= 0) {
-//                                itemSlots.remove(slot);
                                 iterator.remove();
                             }
                         }
@@ -376,14 +329,13 @@ public abstract class BaseInventory implements Inventory {
                     item.setCount(item.getCount() - amount);
                     this.setItem(i, item);
                     if (slot.getCount() <= 0) {
-//                        itemSlots.remove(slot);
                         iterator.remove();
                     }
 
                 }
             }
 
-            if (itemSlots.size() == 0) {
+            if (itemSlots.isEmpty()) {
                 break;
             }
         }
@@ -443,7 +395,6 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public boolean open(Player who) {
-        //if (this.viewers.contains(who)) return false;
         InventoryOpenEvent ev = new InventoryOpenEvent(this, who);
         who.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
@@ -456,6 +407,8 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public void close(Player who) {
+        InventoryCloseEvent ev = new InventoryCloseEvent(this, who);
+        who.getServer().getPluginManager().callEvent(ev);
         this.onClose(who);
     }
 
@@ -555,6 +508,7 @@ public abstract class BaseInventory implements Inventory {
      * @param item 要检测的物品
      * @return 所能存放的空余数量
      */
+    @Override
     public int getFreeSpace(Item item) {
         int maxStackSize = Math.min(item.getMaxStackSize(), this.getMaxStackSize());
         int space = (this.getSize() - this.slots.size()) * maxStackSize;
@@ -611,7 +565,6 @@ public abstract class BaseInventory implements Inventory {
         if (this.listeners == null) {
             this.listeners = new ArrayList<>();
         }
-
         this.listeners.add(listener);
     }
 

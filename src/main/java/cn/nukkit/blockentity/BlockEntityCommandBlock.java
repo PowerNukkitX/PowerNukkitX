@@ -27,7 +27,6 @@ import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.TextFormat;
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,7 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Getter
-public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICommandBlock, BlockEntityNameable {
+public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICommandBlock, BlockEntityInventoryHolder {
     protected boolean conditionalMode;
     protected boolean auto;
     protected String command;
@@ -52,13 +51,13 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     protected boolean powered;
     protected int tickDelay;
     protected boolean executingOnFirstTick; //TODO: ???
-
     protected PermissibleBase perm;
-    protected final Set<Player> viewers = Sets.newHashSet();
     protected int currentTick;
+    protected CommandBlockInventory inventory;
 
     public BlockEntityCommandBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+        inventory = new CommandBlockInventory(this);
     }
 
     @Override
@@ -617,15 +616,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public Inventory getInventory() {
-        return new CommandBlockInventory(this, this.viewers);
-    }
-
-    @Override
-    public void onBreak() {
-        for (Player player : new HashSet<>(this.getInventory().getViewers())) {
-            player.removeWindow(this.getInventory());
-        }
-        super.onBreak();
+        return inventory;
     }
 
     @Override

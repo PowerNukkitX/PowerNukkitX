@@ -1,9 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
@@ -11,8 +9,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.ChunkException;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
@@ -194,12 +190,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID{
         }
     }
 
-    public void onBreak() {
-    }
-
-
     public void onBreak(boolean isSilkTouch) {
-        onBreak();
     }
 
     public void setDirty() {

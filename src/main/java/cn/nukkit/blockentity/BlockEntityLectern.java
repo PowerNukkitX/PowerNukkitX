@@ -66,7 +66,7 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     }
 
     @Override
-    public void onBreak() {
+    public void onBreak(boolean isSilkTouch) {
         level.dropItem(this, getBook());
     }
 

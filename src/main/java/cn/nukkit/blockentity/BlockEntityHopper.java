@@ -34,7 +34,7 @@ import java.util.HashSet;
  * @author CreeperFace
  * @since 8.5.2017
  */
-public class BlockEntityHopper extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer, BlockEntityNameable, BlockHopper.IHopper {
+public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEntityInventoryHolder, BlockHopper.IHopper {
 
     protected HopperInventory inventory;
 
@@ -302,7 +302,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
     }
 
     @Override
-    public void onBreak() {
+    public void onBreak(boolean isSilkTouch) {
         for (Item content : inventory.getContents().values()) {
             level.dropItem(this, content);
         }

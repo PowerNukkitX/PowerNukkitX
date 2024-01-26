@@ -1,16 +1,16 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
+import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.InventorySlotPacket;
 
 /**
  * @author CreeperFace
  */
-public class PlayerCursorInventory extends PlayerUIComponent {
-    private final PlayerUIInventory playerUI;
-
-    PlayerCursorInventory(PlayerUIInventory playerUI) {
-        super(playerUI, 0, 1);
-        this.playerUI = playerUI;
+public class PlayerCursorInventory extends BaseInventory {
+    PlayerCursorInventory(Player player) {
+        super(player, InventoryType.INVENTORY, 1);
     }
 
     /**
@@ -20,16 +20,19 @@ public class PlayerCursorInventory extends PlayerUIComponent {
      */
     @Override
     public Player getHolder() {
-        return playerUI.getHolder();
+        return (Player) super.getHolder();
     }
-    
-    @Override
-    public InventoryType getType() {
-        return InventoryType.CURSOR;
+
+    public Item getItem() {
+        return getItem(0);
     }
 
     @Override
     public void sendContents(Player... players) {
-        playerUI.sendSlot(0, players);
+        InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
+        inventorySlotPacket.inventoryId = SpecialWindowId.CURSOR_DEPRECATED.getId();
+        inventorySlotPacket.item = getItem();
+        inventorySlotPacket.slot = 0;
+        Server.broadcastPacket(players, inventorySlotPacket);
     }
 }

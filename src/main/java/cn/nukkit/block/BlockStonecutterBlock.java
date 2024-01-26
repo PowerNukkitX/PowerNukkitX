@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
-public class BlockStonecutterBlock extends BlockTransparent implements Faceable{
+public class BlockStonecutterBlock extends BlockTransparent implements Faceable, BlockInventoryHolder {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(STONECUTTER_BLOCK, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
@@ -68,8 +68,7 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable{
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         if (player != null) {
-            player.addWindow(new StonecutterInventory(player.getUIInventory(), this), ContainerIds.NONE);
-            player.craftingType = Player.CRAFTING_STONECUTTER;
+            player.addWindow(getOrCreateInventory());
         }
         return true;
     }
@@ -117,5 +116,10 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable{
     @Override
     public double getMaxY() {
         return y + 9 / 16.0;
+    }
+
+    @Override
+    public Supplier<ContainerInventory> blockInventorySupplier() {
+        return () -> new StonecutterInventory(this);
     }
 }

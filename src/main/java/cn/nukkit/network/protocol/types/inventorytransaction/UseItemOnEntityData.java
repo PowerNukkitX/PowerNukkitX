@@ -1,4 +1,4 @@
-package cn.nukkit.inventory.transaction.data;
+package cn.nukkit.network.protocol.types.inventorytransaction;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;

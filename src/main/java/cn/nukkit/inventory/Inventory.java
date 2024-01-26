@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.api.DoNotModify;
 
 
-
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import org.jetbrains.annotations.NotNull;
@@ -36,16 +35,6 @@ public interface Inventory {
     void setMaxStackSize(int size);
 
     /**
-     * 获取该库存的名字
-     */
-    String getName();
-
-    /**
-     * 获取该库存的标题
-     */
-    String getTitle();
-
-    /**
      * 获取该库存指定索引处的物品
      *
      * @param index the index
@@ -61,8 +50,6 @@ public interface Inventory {
      * @param index the index
      * @return the item
      */
-    
-    
     @DoNotModify
     default Item getUnclonedItem(int index) {
         //你需要覆写它来实现
@@ -90,16 +77,6 @@ public interface Inventory {
      */
     boolean setItem(int index, Item item, boolean send);
 
-    /**
-     * Now it is only called by {@link cn.nukkit.inventory.transaction.action.SlotChangeAction} and {@link cn.nukkit.inventory.transaction.EnchantTransaction}
-     *
-     * @param player player that will receive the changes
-     * @param index  index of the item
-     * @param item   item to set
-     * @return true if the item was set
-     */
-    
-    
     default boolean setItemByPlayer(Player player, int index, Item item, boolean send) {
         return setItem(index, item, send);
     }
@@ -125,6 +102,8 @@ public interface Inventory {
     void sendSlot(int index, Player... players);
 
     void sendSlot(int index, Collection<Player> players);
+
+    int getFreeSpace(Item item);
 
     boolean contains(Item item);
 
@@ -164,9 +143,9 @@ public interface Inventory {
 
     boolean open(Player who);
 
-    void close(Player who);
-
     void onClose(Player who);
+
+    void close(Player who);
 
     /**
      * 当执行{@link #setItem(int, Item)}时该方法会被调用，此时物品已经put进slots
@@ -179,9 +158,9 @@ public interface Inventory {
      */
     void onSlotChange(int index, Item before, boolean send);
 
-    
+
     void addListener(InventoryListener listener);
 
-    
+
     void removeListener(InventoryListener listener);
 }

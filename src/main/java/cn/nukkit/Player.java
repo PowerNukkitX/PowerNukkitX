@@ -60,18 +60,10 @@ import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.inventory.BigCraftingGrid;
-import cn.nukkit.inventory.CraftingGrid;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.PlayerCursorInventory;
-import cn.nukkit.inventory.PlayerInventory;
-import cn.nukkit.inventory.PlayerUIInventory;
-import cn.nukkit.inventory.transaction.CraftingTransaction;
-import cn.nukkit.inventory.transaction.EnchantTransaction;
-import cn.nukkit.inventory.transaction.GrindstoneTransaction;
-import cn.nukkit.inventory.transaction.RepairItemTransaction;
-import cn.nukkit.inventory.transaction.SmithingTransaction;
-import cn.nukkit.inventory.transaction.TradingTransaction;
+import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemArrow;
@@ -193,23 +185,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final int ADVENTURE = 2;
     public static final int SPECTATOR = 3;
     public static final int VIEW = SPECTATOR;
-    public static final int SURVIVAL_SLOTS = 36;
-    public static final int CREATIVE_SLOTS = 112;
-    public static final int CRAFTING_SMALL = 0;
-    public static final int CRAFTING_BIG = 1;
-    public static final int CRAFTING_ANVIL = 2;
-    public static final int CRAFTING_ENCHANT = 3;
-    public static final int CRAFTING_BEACON = 4;
-    public static final int CRAFTING_GRINDSTONE = 1000;
-    public static final int CRAFTING_STONECUTTER = 1001;
-    public static final int CRAFTING_CARTOGRAPHY = 1002;
-    public static final int CRAFTING_SMITHING = 1003;
-    /**
-     * 村民交易window id
-     * <p>
-     * Villager trading window id
-     */
-    public static final int TRADE_WINDOW_ID = 500;
     public static final float DEFAULT_SPEED = 0.1f;
     public static final float DEFAULT_FLY_SPEED = 0.05f;
     public static final float MAXIMUM_SPEED = 0.5f;
@@ -217,11 +192,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final int PERMISSION_OPERATOR = 2;
     public static final int PERMISSION_MEMBER = 1;
     public static final int PERMISSION_VISITOR = 0;
-    public static final int ANVIL_WINDOW_ID = 2;
-    public static final int ENCHANT_WINDOW_ID = 3;
-    public static final int BEACON_WINDOW_ID = 4;
-    public static final int GRINDSTONE_WINDOW_ID = dynamic(5);
-    public static final int SMITHING_WINDOW_ID = dynamic(6);
     public final HashSet<String> achievements = new HashSet<>();
     public boolean playedBefore;
     public boolean spawned = false;
@@ -235,7 +205,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * The difference between the current position and the moving target position vector per tick
      */
     public Vector3 speed = null;
-    public int craftingType = CRAFTING_SMALL;
     public long creationTime = 0;
     /**
      * 正在挖掘的方块
@@ -256,25 +225,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected double blockBreakProgress = 0;
     protected final SourceInterface interfaz;
     protected final BedrockServerSession networkSession;
+
+    protected int windowsCnt = 1;
+    protected int closingWindowId = Integer.MIN_VALUE;
     protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
     protected final BiMap<Integer, Inventory> windowIndex = windows.inverse();
     protected final Set<Integer> permanentWindows = new IntOpenHashSet();
+
     protected final InetSocketAddress rawSocketAddress;
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
     protected final int chunksPerTick;
     protected final int spawnThreshold;
-    protected int windowCnt = 4;
-    protected int closingWindowId = Integer.MIN_VALUE;
     protected int messageLimitCounter = 2;
-    protected PlayerUIInventory playerUIInventory;
-    protected CraftingGrid craftingGrid;
-    protected CraftingTransaction craftingTransaction;
-    protected EnchantTransaction enchantTransaction;
-    protected RepairItemTransaction repairItemTransaction;
-    protected GrindstoneTransaction grindstoneTransaction;
-    protected SmithingTransaction smithingTransaction;
-    protected TradingTransaction tradingTransaction;
-    protected long randomClientId;
     protected boolean connected = true;
     protected InetSocketAddress socketAddress;
     /**
@@ -297,7 +259,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     protected int startAction = -1;
     protected Vector3 sleeping = null;
-    protected Integer subClientId = null;
+    protected Integer subClientId;
     protected int chunkLoadCount = 0;
     protected int nextChunkOrderRun = 1;
     protected Vector3 newPosition = null;
@@ -305,7 +267,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected int viewDistance;
     protected Position spawnPosition;
     protected Position spawnBlockPosition;
-
     /**
      * 代表玩家悬浮空中所经过的tick数.
      * <p>
@@ -317,21 +278,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected boolean checkMovement = true;
     protected PlayerFood foodData = null;
     protected boolean enableClientCommand = true;
-
     /**
      * 返回上次投掷末影珍珠时的{@link Server#getTick() getTick()}，这个值用于控制末影珍珠的冷却时间.
      * <p>
      * Returns the {@link Server#getTick() getTick()} from the last time the pearl was cast, which is used to control the cooldown time of the pearl.
      */
     protected int lastEnderPearl = 20;
-
     /**
      * 返回上次吃紫颂果时的{@link Server#getTick() getTick()}，这个值用于控制吃紫颂果的冷却时间.
      * <p>
      * Returns the {@link Server#getTick() getTick()} of the last time you ate a chorus fruit, which is used to control the cooldown time for eating chorus fruit.
      */
     protected int lastChorusFruitTeleport = 20;
-
     protected int formWindowCount = 0;
     protected Map<Integer, FormWindow> formWindows = new Int2ObjectOpenHashMap<>();
     protected Map<Integer, FormWindow> serverSettings = new Int2ObjectOpenHashMap<>();
@@ -355,7 +313,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
     private final AtomicReference<Locale> locale = new AtomicReference<>(null);
     private int unverifiedPackets;
-    private String clientSecret;
     private int timeSinceRest;
     private String buttonText = "Button";
     private PermissibleBase perm = null;
@@ -378,7 +335,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private int noShieldTicks;
     protected boolean showingCredits;
     protected static final int NO_SHIELD_DELAY = 10;
-    protected boolean inventoryOpen;
     protected PlayerBlockActionData lastBlockAction;
     protected AsyncTask preLoginEventTask = null;
     protected boolean verified = false;
@@ -435,13 +391,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.setLevel(this.server.getDefaultLevel());
         this.viewDistance = this.server.getViewDistance();
         this.chunkRadius = viewDistance;
-        //this.newPosition = new Vector3(0, 0, 0);
         this.boundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
         this.lastSkinChange = -1;
-
         this.uuid = null;
         this.rawUUID = null;
-
         this.playerChunkManager = new PlayerChunkManager(this);
         this.creationTime = System.currentTimeMillis();
     }
@@ -1392,7 +1345,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.dataPacket(new BiomeDefinitionListPacket());
         this.dataPacket(new AvailableEntityIdentifiersPacket());
-        this.inventory.sendCreativeContents();
+        this.sendCreativeContents();
         //发送玩家权限列表
         server.getOnlinePlayers().values().forEach(player -> {
             if (player != this) {
@@ -1772,53 +1725,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
-     * 返回{@link Player#viewingEnderChest}的值，只在玩家打开末影箱时有效.
-     * <p>
-     * Returns the value of {@link Player#viewingEnderChest}, which is only valid when the player opens the Ender Chest.
-     */
-    public BlockEnderChest getViewingEnderChest() {
-        return viewingEnderChest;
-    }
-
-
-    /**
-     * 设置{@link Player#viewingEnderChest}值为chest
-     * <p>
-     * Set the {@link Player#viewingEnderChest} value to chest
-     *
-     * @param chest BlockEnderChest
-     */
-    public void setViewingEnderChest(BlockEnderChest chest) {
-        if (chest == null && this.viewingEnderChest != null) {
-            this.viewingEnderChest.getViewers().remove(this);
-        } else if (chest != null) {
-            chest.getViewers().add(this);
-        }
-        this.viewingEnderChest = chest;
-    }
-
-    /**
      * 获取玩家离开的消息
      *
      * @return {@link TranslationContainer}
      */
     public TranslationContainer getLeaveMessage() {
         return new TranslationContainer(TextFormat.YELLOW + "%multiplayer.player.left", this.getDisplayName());
-    }
-
-    public String getClientSecret() {
-        return clientSecret;
-    }
-
-    /**
-     * This might disappear in the future.
-     * Please use getUniqueId() instead (IP + clientId + name combo, in the future it'll change to real UUID for online auth)
-     *
-     * @return random client id
-     */
-    @Deprecated
-    public Long getClientId() {
-        return randomClientId;
     }
 
     @Override
@@ -3033,7 +2945,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                 //鞘翅检查和耐久计算
                 if (this.isGliding()) {
-                    PlayerInventory playerInventory = this.getInventory();
+                    HumanInventory playerInventory = this.getInventory();
                     if (playerInventory != null) {
                         Item chestplate = playerInventory.getChestplate();
                         if ((chestplate == null || !chestplate.getId().equals(ItemID.ELYTRA))) {
@@ -4952,8 +4864,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         for (Inventory inv : this.windows.keySet()) {
             inv.sendContents(this);
 
-            if (inv instanceof PlayerInventory) {
-                ((PlayerInventory) inv).sendArmorContents(this);
+            if (inv instanceof HumanInventory) {
+                ((HumanInventory) inv).sendArmorContents(this);
             }
         }
     }
@@ -5062,7 +4974,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * <p>
      * Get the id corresponding to the last closed window
      */
-
     public int getClosingWindowId() {
         return this.closingWindowId;
     }
@@ -5846,5 +5757,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public int getChunkSendCountPerTick() {
         return chunksPerTick;
+    }
+
+    public void sendCreativeContents() {
+        CreativeContentPacket pk = new CreativeContentPacket();
+        pk.entries = Registries.CREATIVE.getCreativeItems();
+        this.dataPacket(pk);
     }
 }

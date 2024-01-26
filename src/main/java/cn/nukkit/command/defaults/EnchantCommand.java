@@ -8,7 +8,7 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.inventory.PlayerInventory;
+import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -94,7 +94,7 @@ public class EnchantCommand extends VanillaCommand {
                 enchanted.addEnchantment(enchantment);
                 Item clone = item.clone();
                 clone.count--;
-                PlayerInventory inventory = player.getInventory();
+                HumanInventory inventory = player.getInventory();
                 inventory.setItemInHand(clone);
                 player.giveItem(enchanted);
             }

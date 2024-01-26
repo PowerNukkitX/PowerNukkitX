@@ -4,12 +4,15 @@ import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBeacon;
 import cn.nukkit.inventory.BeaconInventory;
+import cn.nukkit.inventory.ContainerInventory;
+import cn.nukkit.inventory.BlockInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
 /**
  * @author Angelic47 (Nukkit Project)
@@ -19,7 +22,8 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
     public static final BlockProperties PROPERTIES = new BlockProperties(BEACON);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -32,12 +36,14 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityBeacon> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityBeacon> getBlockEntityClass() {
         return BlockEntityBeacon.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.BEACON;
     }
 
@@ -92,8 +98,8 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
             return false;
         }
 
-        getOrCreateBlockEntity();
-        player.addWindow(new BeaconInventory(player.getUIInventory(), this), Player.BEACON_WINDOW_ID);
+        BlockEntityBeacon entity = getOrCreateBlockEntity();
+        player.addWindow(entity.getInventory());
         return true;
     }
 
@@ -108,7 +114,7 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
     }
 
     @Override
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 }
