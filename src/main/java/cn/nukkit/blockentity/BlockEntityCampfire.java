@@ -65,7 +65,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
             } else if (!keepItem[slot]) {
                 CampfireRecipe recipe = recipes[slot];
                 if (recipe == null) {
-                    recipe = this.server.getCraftingManager().matchCampfireRecipe(item);
+                    recipe = this.server.getRecipeRegistry().findCampfireRecipe(item);
                     if (recipe == null) {
                         inventory.setItem(slot, Item.AIR);
                         ThreadLocalRandom random = ThreadLocalRandom.current();

@@ -1,53 +1,49 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.recipe.descriptor.DefaultDescriptor;
+import cn.nukkit.recipe.descriptor.ItemDescriptor;
+import cn.nukkit.registry.Registries;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 
-public class CampfireRecipe implements SmeltingRecipe {
-    private final Item output;
-    private Item ingredient;
-    private final String recipeId;
-
-
+public class CampfireRecipe extends SmeltingRecipe {
     public CampfireRecipe(Item result, Item ingredient) {
         this(null, result, ingredient);
     }
 
-    public CampfireRecipe(@Nullable String recipeId, Item result, Item ingredient) {
-        this.recipeId = recipeId == null ? CraftingManager.getMultiItemHash(List.of(ingredient, result)).toString() : recipeId;
-        this.output = result.clone();
-        this.ingredient = ingredient.clone();
+    public CampfireRecipe(String recipeId, Item result, Item ingredient) {
+        super(recipeId == null ?
+                Registries.RECIPE.computeRecipeId(List.of(result), List.of(new DefaultDescriptor(ingredient)),
+                        ingredient.hasMeta() ? RecipeType.CAMPFIRE_DATA : RecipeType.CAMPFIRE) :
+                recipeId);
+        this.results.add(result);
+        this.ingredients.add(new DefaultDescriptor(ingredient));
     }
 
     @Override
-    public String getRecipeId() {
-        return recipeId;
-    }
-
-    public void setInput(Item item) {
-        this.ingredient = item.clone();
+    public void setInput(ItemDescriptor item) {
+        this.ingredients.set(0, item);
     }
 
     @Override
-    public Item getInput() {
-        return this.ingredient.clone();
+    public ItemDescriptor getInput() {
+        return this.ingredients.get(0);
     }
 
     @Override
     public Item getResult() {
-        return this.output.clone();
+        return this.results.get(0);
     }
 
     @Override
-    public void registerToCraftingManager(CraftingManager manager) {
-        manager.registerCampfireRecipe(this);
+    public boolean match(Input input) {
+        return false;
     }
 
     @Override
     public RecipeType getType() {
-        return this.ingredient.hasMeta() ? RecipeType.CAMPFIRE_DATA : RecipeType.CAMPFIRE;
+        return this.getInput().toItem().hasMeta() ? RecipeType.CAMPFIRE_DATA : RecipeType.CAMPFIRE;
     }
 }

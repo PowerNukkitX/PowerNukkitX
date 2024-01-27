@@ -263,7 +263,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     }
 
     protected SmeltingRecipe matchRecipe(Item raw) {
-        return this.server.getCraftingManager().matchFurnaceRecipe(raw);
+        return this.server.getRecipeRegistry().findFurnaceRecipe(raw);
     }
 
     protected int getSpeedMultiplier() {
@@ -312,7 +312,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
                     product = smelt.getResult().clone();
                     product.setCount(count);
 
-                    FurnaceSmeltEvent ev = new FurnaceSmeltEvent(this, raw, product, (float) this.server.getCraftingManager().getRecipeXp(smelt));
+                    FurnaceSmeltEvent ev = new FurnaceSmeltEvent(this, raw, product, (float) this.server.getRecipeRegistry().getRecipeXp(smelt));
                     this.server.getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         this.inventory.setResult(ev.getResult());

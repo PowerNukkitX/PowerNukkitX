@@ -7,7 +7,10 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.inventory.BrewEvent;
 import cn.nukkit.event.inventory.StartBrewEvent;
-import cn.nukkit.inventory.*;
+import cn.nukkit.inventory.BrewingInventory;
+import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.InventorySlice;
+import cn.nukkit.inventory.RecipeInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
@@ -18,8 +21,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.ContainerSetDataPacket;
 import cn.nukkit.recipe.ContainerRecipe;
-import cn.nukkit.recipe.CraftingManager;
 import cn.nukkit.recipe.MixRecipe;
+import cn.nukkit.registry.Registries;
 
 import java.util.HashSet;
 
@@ -269,16 +272,15 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     private MixRecipe[] matchRecipes(boolean quickTest) {
         MixRecipe[] recipes = new MixRecipe[quickTest ? 1 : 3];
         Item ingredient = inventory.getIngredient();
-        CraftingManager craftingManager = getLevel().getServer().getCraftingManager();
         for (int i = 0; i < 3; i++) {
             Item potion = inventory.getItem(i + 1);
             if (potion.isNull()) {
                 continue;
             }
 
-            MixRecipe recipe = craftingManager.matchBrewingRecipe(ingredient, potion);
+            MixRecipe recipe = Registries.RECIPE.findBrewingRecipe(ingredient, potion);
             if (recipe == null) {
-                recipe = craftingManager.matchContainerRecipe(ingredient, potion);
+                recipe = Registries.RECIPE.findContainerRecipe(ingredient, potion);
             }
             if (recipe == null) {
                 continue;

@@ -1,4 +1,4 @@
-package cn.nukkit.recipe;
+package cn.nukkit.recipe.descriptor;
 
 
 public enum ItemDescriptorType {

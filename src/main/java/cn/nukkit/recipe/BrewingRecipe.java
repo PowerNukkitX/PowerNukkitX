@@ -15,11 +15,6 @@ public class BrewingRecipe extends MixRecipe {
     }
 
     @Override
-    public void registerToCraftingManager(CraftingManager manager) {
-        manager.registerBrewingRecipe(this);
-    }
-
-    @Override
     public RecipeType getType() {
         throw new UnsupportedOperationException();
     }

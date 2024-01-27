@@ -46,7 +46,7 @@ public class SmithingInventory extends ContainerInventory implements CraftTypeIn
 
     @Nullable
     public SmithingRecipe matchRecipe() {
-        return Server.getInstance().getCraftingManager().matchSmithingRecipe(getEquipment(), getIngredient());
+        return Server.getInstance().getRecipeRegistry().findSmithingRecipe(getEquipment(), getIngredient());
     }
 
     @Override

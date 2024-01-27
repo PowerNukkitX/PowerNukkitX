@@ -1,6 +1,7 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.recipe.descriptor.ItemDescriptor;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,11 +24,6 @@ public class CartographyRecipe extends ShapelessRecipe {
 
     public CartographyRecipe(String recipeId, UUID uuid, int priority, Item result, List<ItemDescriptor> ingredients) {
         super(recipeId, uuid, priority, result, ingredients);
-    }
-
-    @Override
-    public void registerToCraftingManager(CraftingManager manager) {
-        manager.registerCartographyRecipe(this);
     }
 
     @Override

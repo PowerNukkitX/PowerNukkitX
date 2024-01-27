@@ -1,6 +1,7 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.recipe.descriptor.ItemDescriptor;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,7 +14,6 @@ import java.util.UUID;
 
 
 public class ShulkerBoxRecipe extends ShapelessRecipe {
-
     public ShulkerBoxRecipe(Item result, Collection<Item> ingredients) {
         super(result, ingredients);
     }

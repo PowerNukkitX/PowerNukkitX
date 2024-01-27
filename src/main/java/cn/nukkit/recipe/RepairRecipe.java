@@ -2,56 +2,32 @@ package cn.nukkit.recipe;
 
 import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
+import cn.nukkit.recipe.descriptor.DefaultDescriptor;
+import cn.nukkit.registry.Registries;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 
-public class RepairRecipe implements Recipe {
-    
-    private final Item result;
-    private final List<Item> ingredients;
+public class RepairRecipe extends BaseRecipe {
     private final InventoryType inventoryType;
 
-
     public RepairRecipe(InventoryType inventoryType, Item result, Collection<Item> ingredients) {
+        super(Registries.RECIPE.computeRecipeIdWithItem(List.of(result), ingredients, RecipeType.REPAIR));
         this.inventoryType = inventoryType;
-        this.result = result.clone();
-        this.ingredients = new ArrayList<>();
-
         for (Item item : ingredients) {
             if (item.getCount() < 1) {
                 throw new IllegalArgumentException("Recipe Ingredient amount was not 1 (value: " + item.getCount() + ")");
             }
-            this.ingredients.add(item.clone());
+            this.ingredients.add(new DefaultDescriptor(item.clone()));
         }
     }
 
     @Override
-    public String getRecipeId() {
-        return null;
+    public boolean match(Input input) {
+        return true;
     }
 
-    @Override
-    public Item getResult() {
-        return result.clone();
-    }
-
-    public List<Item> getIngredientList() {
-        List<Item> ingredients = new ArrayList<>();
-        for (Item ingredient : this.ingredients) {
-            ingredients.add(ingredient.clone());
-        }
-        
-        return ingredients;
-    }
-    
-    @Override
-    public void registerToCraftingManager(CraftingManager manager) {
-    
-    }
-    
     @Override
     public RecipeType getType() {
         return RecipeType.REPAIR;

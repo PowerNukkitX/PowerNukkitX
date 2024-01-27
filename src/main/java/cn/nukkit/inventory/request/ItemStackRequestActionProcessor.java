@@ -5,9 +5,12 @@ import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackReques
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponse;
 
+import javax.annotation.Nullable;
+
 public interface ItemStackRequestActionProcessor<T extends ItemStackRequestAction> {
     ItemStackRequestActionType getType();
 
+    @Nullable
     ItemStackResponse handle(T action, Player player, ItemStackRequestContext context);
 
     default boolean failToValidateStackNetworkId(int expectedSNID, int clientSNID) {

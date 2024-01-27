@@ -109,6 +109,7 @@ public abstract class Item implements Cloneable, ItemID {
         }
         this.count = count;
         this.name = name.intern();
+        autoAssignStackNetworkId();
     }
 
     public boolean hasMeta() {

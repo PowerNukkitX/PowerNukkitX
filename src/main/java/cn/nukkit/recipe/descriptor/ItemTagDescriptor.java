@@ -1,4 +1,4 @@
-package cn.nukkit.recipe;
+package cn.nukkit.recipe.descriptor;
 
 import cn.nukkit.tags.ItemTags;
 import cn.nukkit.item.Item;

@@ -1,4 +1,4 @@
-package cn.nukkit.recipe;
+package cn.nukkit.recipe.descriptor;
 
 import cn.nukkit.item.Item;
 
@@ -37,7 +37,7 @@ public class DefaultDescriptor implements ItemDescriptor {
 
     @Override
     public int hashCode() {
-        return CraftingManager.getFullItemHash(item);
+        return item.hashCode();
     }
 
     public Item getItem() {
