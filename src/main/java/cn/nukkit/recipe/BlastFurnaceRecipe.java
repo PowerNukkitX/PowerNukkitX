@@ -8,7 +8,7 @@ import java.util.List;
 
 public class BlastFurnaceRecipe extends SmeltingRecipe {
     public BlastFurnaceRecipe(Item result, Item ingredient) {
-        this(null, ingredient, result);
+        this(null, result, ingredient);
     }
 
 
