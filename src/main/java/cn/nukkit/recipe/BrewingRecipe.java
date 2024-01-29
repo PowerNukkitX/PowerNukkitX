@@ -2,6 +2,9 @@ package cn.nukkit.recipe;
 
 
 import cn.nukkit.item.Item;
+import cn.nukkit.registry.Registries;
+
+import java.util.List;
 
 
 public class BrewingRecipe extends MixRecipe {
@@ -11,11 +14,11 @@ public class BrewingRecipe extends MixRecipe {
     }
 
     public BrewingRecipe(String recipeId, Item input, Item ingredient, Item output) {
-        super(recipeId, input, ingredient, output);
+        super(recipeId == null ? Registries.RECIPE.computeRecipeIdWithItem(List.of(output), List.of(input, ingredient), RecipeType.BREWING) : recipeId, input, ingredient, output);
     }
 
     @Override
     public RecipeType getType() {
-        throw new UnsupportedOperationException();
+        return RecipeType.BREWING;
     }
 }

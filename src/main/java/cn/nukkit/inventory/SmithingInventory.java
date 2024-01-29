@@ -22,7 +22,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.BlockSmithingTable;
 import cn.nukkit.item.Item;
-import cn.nukkit.recipe.SmithingRecipe;
+import cn.nukkit.recipe.SmithingTransformRecipe;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -45,7 +45,7 @@ public class SmithingInventory extends ContainerInventory implements CraftTypeIn
 
 
     @Nullable
-    public SmithingRecipe matchRecipe() {
+    public SmithingTransformRecipe matchRecipe() {
         return Server.getInstance().getRecipeRegistry().findSmithingRecipe(getEquipment(), getIngredient());
     }
 
@@ -60,7 +60,7 @@ public class SmithingInventory extends ContainerInventory implements CraftTypeIn
 
     public void updateResult() {
         Item result;
-        SmithingRecipe recipe = matchRecipe();
+        SmithingTransformRecipe recipe = matchRecipe();
         if (recipe == null) {
             result = Item.AIR;
         } else {
@@ -76,7 +76,7 @@ public class SmithingInventory extends ContainerInventory implements CraftTypeIn
 
     @NotNull
     public Item getResult() {
-        SmithingRecipe recipe = matchRecipe();
+        SmithingTransformRecipe recipe = matchRecipe();
         if (recipe == null) {
             return Item.AIR;
         }

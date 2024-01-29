@@ -2327,7 +2327,7 @@ public class Server {
      * @param recipe 配方
      */
     public void addRecipe(Recipe recipe) {
-        Registries.RECIPE.registerRecipe(recipe);
+        Registries.RECIPE.register(recipe);
     }
 
     public RecipeRegistry getRecipeRegistry() {

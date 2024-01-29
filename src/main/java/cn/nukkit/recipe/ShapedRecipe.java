@@ -4,6 +4,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.recipe.descriptor.ItemTagDescriptor;
+import cn.nukkit.registry.Registries;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.netty.util.collection.CharObjectHashMap;
 
@@ -13,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
+
+import static cn.nukkit.recipe.RecipeType.SHAPED;
 
 public class ShapedRecipe extends CraftingRecipe {
     private final String[] shape;
@@ -51,7 +55,7 @@ public class ShapedRecipe extends CraftingRecipe {
     }
 
     public ShapedRecipe(String recipeId, UUID uuid, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients, Collection<Item> extraResults) {
-        super(recipeId, priority);
+        super(recipeId == null ? Registries.RECIPE.computeRecipeId(Lists.asList(primaryResult, extraResults.toArray(Item.EMPTY_ARRAY)), ingredients.values(), SHAPED) : recipeId, priority);
         this.uuid = uuid;
         this.row = shape.length;
         if (this.row > 3 || this.row <= 0) {

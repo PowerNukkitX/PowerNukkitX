@@ -2,8 +2,10 @@ package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
+import cn.nukkit.registry.Registries;
 import lombok.ToString;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -18,7 +20,7 @@ public class StonecutterRecipe extends CraftingRecipe {
     }
 
     public StonecutterRecipe(String recipeId, UUID uuid, int priority, Item result, Item ingredient) {
-        super(recipeId, priority);
+        super(Registries.RECIPE.computeRecipeIdWithItem(List.of(result), List.of(ingredient), RecipeType.STONECUTTER), priority);
         this.uuid = uuid;
         this.results.add(result.clone());
         if (ingredient.getCount() < 1) {

@@ -28,9 +28,9 @@ import org.jetbrains.annotations.NotNull;
  * @since 2020-09-28
  */
 @ToString
-public class SmithingRecipe extends BaseRecipe {
+public class SmithingTransformRecipe extends BaseRecipe {
 
-    public SmithingRecipe(@NotNull String recipeId, Item result, ItemDescriptor base, ItemDescriptor addition, ItemDescriptor template) {
+    public SmithingTransformRecipe(@NotNull String recipeId, Item result, ItemDescriptor base, ItemDescriptor addition, ItemDescriptor template) {
         super(recipeId);
         this.ingredients.add(base);
         this.ingredients.add(addition);

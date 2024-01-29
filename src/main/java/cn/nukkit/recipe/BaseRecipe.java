@@ -2,6 +2,7 @@ package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public abstract class BaseRecipe implements Recipe {
     protected final List<ItemDescriptor> ingredients = new ArrayList<>();
 
     protected BaseRecipe(String id) {
+        Preconditions.checkNotNull(id);
         this.id = id;
     }
 

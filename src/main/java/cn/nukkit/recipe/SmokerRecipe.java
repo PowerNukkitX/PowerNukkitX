@@ -2,9 +2,7 @@ package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
-import cn.nukkit.registry.RecipeRegistry;
 import cn.nukkit.registry.Registries;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -22,6 +20,11 @@ public class SmokerRecipe extends SmeltingRecipe {
                 recipeId);
         this.ingredients.add(new DefaultDescriptor(ingredient.clone()));
         this.results.add(result.clone());
+    }
+
+    @Override
+    public boolean match(Input input) {
+        return true;
     }
 
     @Override

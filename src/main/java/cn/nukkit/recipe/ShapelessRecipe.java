@@ -31,6 +31,10 @@ public class ShapelessRecipe extends CraftingRecipe {
         this.ingredients.addAll(ingredients);
     }
 
+    public Item getResult() {
+        return results.get(0);
+    }
+
     @Override
     public RecipeType getType() {
         return RecipeType.SHAPELESS;

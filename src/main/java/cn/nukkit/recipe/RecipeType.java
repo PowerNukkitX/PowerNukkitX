@@ -1,7 +1,5 @@
 package cn.nukkit.recipe;
 
-import cn.nukkit.api.DeprecationDetails;
-
 public enum RecipeType {
     SHAPELESS(0),
     SHAPED(1),
@@ -26,7 +24,9 @@ public enum RecipeType {
     CARTOGRAPHY(0),
     REPAIR(-1),
     // For mods
-    MOD_PROCESS(0);
+    MOD_PROCESS(0),//custom
+    BREWING(0),//custom
+    CONTAINER(0);//custom
 
 
     public final int networkType;
