@@ -86,7 +86,8 @@ public abstract class Item implements Cloneable, ItemID {
                     result.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1)).append(" ");
                 }
             }
-            return result.toString().trim().intern();
+            this.name = result.toString().trim().intern();
+            return name;
         }
     }
 
@@ -94,29 +95,23 @@ public abstract class Item implements Cloneable, ItemID {
         this(id, 0);
     }
 
-    public Item(@NotNull String id, @Nullable Integer meta) {
+    public Item(@NotNull String id, int meta) {
         this(id, meta, 1);
     }
 
-    public Item(@NotNull String id, @Nullable Integer meta, int count) {
+    public Item(@NotNull String id, int meta, int count) {
         this.id = id.intern();
-        if (meta != null && meta >= 0) {
-            this.meta = meta & 0xffff;
-        } else {
-            this.hasMeta = false;
-        }
+        this.meta = meta & 0xffff;
         this.count = count;
     }
 
-    public Item(@NotNull String id, @Nullable Integer meta, int count, @Nullable String name) {
+    public Item(@NotNull String id, int meta, int count, @Nullable String name) {
         this.id = id.intern();
-        if (meta != null && meta >= 0) {
-            this.meta = meta & 0xffff;
-        } else {
-            this.hasMeta = false;
-        }
+        this.meta = meta & 0xffff;
         this.count = count;
-        this.name = name.intern();
+        if (name != null) {
+            this.name = name.intern();
+        }
         autoAssignStackNetworkId();
     }
 
@@ -874,13 +869,9 @@ public abstract class Item implements Cloneable, ItemID {
         return meta;
     }
 
-    public void setDamage(Integer damage) {
-        if (damage != null) {
-            this.meta = damage & 0xffff;
-            this.hasMeta = true;
-        } else {
-            this.hasMeta = false;
-        }
+    public void setDamage(int damage) {
+        this.meta = damage & 0xffff;
+        this.hasMeta = true;
     }
 
     /**
@@ -888,10 +879,8 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * Create a wildcard recipe item,the item can be applied to a recipe without restriction on data(damage/meta) values
      */
-    public Item createFuzzyCraftingRecipe() {
-        Item item = clone();
-        item.hasMeta = false;
-        return item;
+    public void disableMeta() {
+        this.hasMeta = false;
     }
 
     /**

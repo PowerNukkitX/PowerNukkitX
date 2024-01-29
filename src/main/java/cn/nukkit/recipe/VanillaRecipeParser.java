@@ -218,7 +218,8 @@ public class VanillaRecipeParser {
         }
         if (data != 0) {
             if (data == 32767) {
-                i = i.createFuzzyCraftingRecipe();
+                i = i.clone();
+                i.disableMeta();
             } else {
                 i.setDamage(data);
             }

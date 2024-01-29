@@ -11,7 +11,7 @@ public class ItemZombieHorseSpawnEgg extends ItemSpawnEgg {
     }
 
     @Override
-    public void setDamage(Integer meta) {
+    public void setDamage(int meta) {
 
     }
 }

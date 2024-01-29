@@ -18,7 +18,7 @@ public class ItemSplashPotion extends ProjectileItem {
     }
 
     @Override
-    public void setDamage(Integer meta) {
+    public void setDamage(int meta) {
         super.setDamage(meta);
         updateName();
     }

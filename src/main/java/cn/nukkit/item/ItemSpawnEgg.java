@@ -42,7 +42,7 @@ public class ItemSpawnEgg extends Item {
     }
 
     @Override
-    public void setDamage(Integer meta) {
+    public void setDamage(int meta) {
         super.setDamage(meta);
         updateName();
     }

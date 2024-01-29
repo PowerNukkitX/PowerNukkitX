@@ -12,7 +12,7 @@ public class ConstAirItem extends Item {
     }
 
     @Override
-    public void setDamage(Integer meta) {
+    public void setDamage(int meta) {
     }
 
     @Override

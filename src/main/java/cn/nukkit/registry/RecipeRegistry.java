@@ -121,17 +121,13 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     }
 
     public FurnaceRecipe findFurnaceRecipe(Item... items) {
-        Item item = items[0];
-        if (item.hasMeta()) {
-            Set<Recipe> recipes2 = recipeMaps.get(RecipeType.FURNACE_DATA).get(items.length);
-            for (var r : recipes2) {
-                if (r.fastCheck(items)) return (FurnaceRecipe) r;
-            }
-        } else {
-            Set<Recipe> recipes = recipeMaps.get(RecipeType.FURNACE).get(items.length);
-            for (var r : recipes) {
-                if (r.fastCheck(items)) return (FurnaceRecipe) r;
-            }
+        Set<Recipe> recipes = recipeMaps.get(RecipeType.FURNACE).get(items.length);
+        for (var r : recipes) {
+            if (r.fastCheck(items)) return (FurnaceRecipe) r;
+        }
+        Set<Recipe> recipes2 = recipeMaps.get(RecipeType.FURNACE_DATA).get(items.length);
+        for (var r : recipes2) {
+            if (r.fastCheck(items)) return (FurnaceRecipe) r;
         }
         return null;
     }
@@ -155,16 +151,13 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public BlastFurnaceRecipe findBlastFurnaceRecipe(Item... items) {
         Item item = items[0];
-        if (item.hasMeta()) {
-            Set<Recipe> recipes2 = recipeMaps.get(RecipeType.BLAST_FURNACE_DATA).get(items.length);
-            for (var r : recipes2) {
-                if (r.fastCheck(items)) return (BlastFurnaceRecipe) r;
-            }
-        } else {
-            Set<Recipe> recipes = recipeMaps.get(RecipeType.BLAST_FURNACE).get(items.length);
-            for (var r : recipes) {
-                if (r.fastCheck(items)) return (BlastFurnaceRecipe) r;
-            }
+        Set<Recipe> recipes = recipeMaps.get(RecipeType.BLAST_FURNACE).get(items.length);
+        for (var r : recipes) {
+            if (r.fastCheck(items)) return (BlastFurnaceRecipe) r;
+        }
+        Set<Recipe> recipes2 = recipeMaps.get(RecipeType.BLAST_FURNACE_DATA).get(items.length);
+        for (var r : recipes2) {
+            if (r.fastCheck(items)) return (BlastFurnaceRecipe) r;
         }
         return null;
     }
@@ -188,16 +181,13 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public SmokerRecipe findSmokerRecipe(Item... items) {
         Item item = items[0];
-        if (item.hasMeta()) {
-            Set<Recipe> recipes2 = recipeMaps.get(RecipeType.SMOKER_DATA).get(items.length);
-            for (var r : recipes2) {
-                if (r.fastCheck(items)) return (SmokerRecipe) r;
-            }
-        } else {
-            Set<Recipe> recipes = recipeMaps.get(RecipeType.SMOKER).get(items.length);
-            for (var r : recipes) {
-                if (r.fastCheck(items)) return (SmokerRecipe) r;
-            }
+        Set<Recipe> recipes = recipeMaps.get(RecipeType.SMOKER).get(items.length);
+        for (var r : recipes) {
+            if (r.fastCheck(items)) return (SmokerRecipe) r;
+        }
+        Set<Recipe> recipes2 = recipeMaps.get(RecipeType.SMOKER_DATA).get(items.length);
+        for (var r : recipes2) {
+            if (r.fastCheck(items)) return (SmokerRecipe) r;
         }
         return null;
     }
@@ -233,16 +223,13 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public CampfireRecipe findCampfireRecipe(Item... items) {
         Item item = items[0];
-        if (item.hasMeta()) {
-            Set<Recipe> recipes2 = recipeMaps.get(RecipeType.CAMPFIRE_DATA).get(items.length);
-            for (var r : recipes2) {
-                if (r.fastCheck(items)) return (CampfireRecipe) r;
-            }
-        } else {
-            Set<Recipe> recipes = recipeMaps.get(RecipeType.CAMPFIRE).get(items.length);
-            for (var r : recipes) {
-                if (r.fastCheck(items)) return (CampfireRecipe) r;
-            }
+        Set<Recipe> recipes = recipeMaps.get(RecipeType.CAMPFIRE).get(items.length);
+        for (var r : recipes) {
+            if (r.fastCheck(items)) return (CampfireRecipe) r;
+        }
+        Set<Recipe> recipes2 = recipeMaps.get(RecipeType.CAMPFIRE_DATA).get(items.length);
+        for (var r : recipes2) {
+            if (r.fastCheck(items)) return (CampfireRecipe) r;
         }
         return null;
     }
@@ -376,7 +363,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                     .append('_')
                     .append(item.getCount())
                     .append('_')
-                    .append(item.isBlock() ? item.getBlockUnsafe().getRuntimeId() : item.getDamage())
+                    .append(item.isBlock() ? item.getBlockUnsafe().getBlockState().specialValue() : item.getDamage())
                     .append("_from_");
         });
         int limit = 5;
@@ -717,7 +704,8 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                 }
                 if (meta != null) {
                     if (meta == Short.MAX_VALUE) {
-                        item = Item.get(name).createFuzzyCraftingRecipe();
+                        item = Item.get(name);
+                        item.disableMeta();
                     } else {
                         item = Item.get(name, meta);
                     }

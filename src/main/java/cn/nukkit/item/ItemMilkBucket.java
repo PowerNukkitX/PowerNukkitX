@@ -11,7 +11,7 @@ public class ItemMilkBucket extends ItemBucket {
     }
 
     @Override
-    public void setDamage(Integer meta) {
+    public void setDamage(int meta) {
 
     }
 }

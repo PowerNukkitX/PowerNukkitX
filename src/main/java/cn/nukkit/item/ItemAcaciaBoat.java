@@ -11,7 +11,7 @@ public class ItemAcaciaBoat extends ItemBoat {
     }
 
     @Override
-    public void setDamage(Integer meta) {
+    public void setDamage(int meta) {
 
     }
 }
