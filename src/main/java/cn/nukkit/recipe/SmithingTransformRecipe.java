@@ -20,14 +20,12 @@ package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
-import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
  * @since 2020-09-28
  */
-@ToString
 public class SmithingTransformRecipe extends BaseRecipe {
 
     public SmithingTransformRecipe(@NotNull String recipeId, Item result, ItemDescriptor base, ItemDescriptor addition, ItemDescriptor template) {

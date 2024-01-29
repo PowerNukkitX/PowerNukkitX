@@ -15,7 +15,7 @@ import static cn.nukkit.recipe.RecipeType.CARTOGRAPHY;
 public class CartographyRecipe extends ShapelessRecipe {
 
     public CartographyRecipe(Item result, Collection<Item> ingredients) {
-        super(result, ingredients);
+        this(null, 10, result, ingredients);
     }
 
     public CartographyRecipe(String recipeId, int priority, Item result, Collection<Item> ingredients) {

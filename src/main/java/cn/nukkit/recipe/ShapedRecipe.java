@@ -3,7 +3,6 @@ package cn.nukkit.recipe;
 import cn.nukkit.item.Item;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
-import cn.nukkit.recipe.descriptor.ItemTagDescriptor;
 import cn.nukkit.registry.Registries;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -13,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import static cn.nukkit.recipe.RecipeType.SHAPED;
@@ -150,22 +148,5 @@ public class ShapedRecipe extends CraftingRecipe {
     @Override
     public RecipeType getType() {
         return RecipeType.SHAPED;
-    }
-
-    @Override
-    public String toString() {
-        StringJoiner joiner = new StringJoiner(", ");
-        shapedIngredients.forEach((character, itemDescriptor) -> {
-            switch (itemDescriptor.getType()) {
-                case DEFAULT -> {
-                    var item = itemDescriptor.toItem();
-                    joiner.add(item.getDisplayName() + ":" + item.getDamage());
-                }
-                case ITEM_TAG -> joiner.add(((ItemTagDescriptor) itemDescriptor).getItemTag());
-                default -> {
-                }
-            }
-        });
-        return joiner.toString();
     }
 }

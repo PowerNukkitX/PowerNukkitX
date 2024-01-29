@@ -2,9 +2,7 @@ package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
-import lombok.ToString;
 
-@ToString
 public abstract class MixRecipe extends BaseRecipe {
     public MixRecipe(Item input, Item ingredient, Item output) {
         this(null, input, ingredient, output);

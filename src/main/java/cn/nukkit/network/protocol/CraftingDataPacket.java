@@ -21,6 +21,7 @@ public class CraftingDataPacket extends DataPacket {
     public static final String CRAFTING_TAG_STONECUTTER = "stonecutter";
     public static final String CRAFTING_TAG_FURNACE = "furnace";
     public static final String CRAFTING_TAG_CAMPFIRE = "campfire";
+    public static final String CRAFTING_TAG_SOUL_CAMPFIRE = "soul_campfire";
     public static final String CRAFTING_TAG_BLAST_FURNACE = "blast_furnace";
     public static final String CRAFTING_TAG_SMOKER = "smoker";
     public static final String CRAFTING_TAG_SMITHING_TABLE = "smithing_table";
@@ -136,7 +137,11 @@ public class CraftingDataPacket extends DataPacket {
                     this.putVarInt(shaped.getPriority());
                     this.putUnsignedVarInt(recipeNetworkId++);
                 }
-                case FURNACE, FURNACE_DATA, SMOKER, SMOKER_DATA, BLAST_FURNACE, BLAST_FURNACE_DATA, CAMPFIRE, CAMPFIRE_DATA -> {
+                case MULTI -> {
+                    this.putUUID(((MultiRecipe) recipe).getId());
+                    this.putUnsignedVarInt(recipeNetworkId++);
+                }
+                case FURNACE, FURNACE_DATA, SMOKER, SMOKER_DATA, BLAST_FURNACE, BLAST_FURNACE_DATA, CAMPFIRE, CAMPFIRE_DATA, SOUL_CAMPFIRE_DATA, SOUL_CAMPFIRE -> {
                     SmeltingRecipe smelting = (SmeltingRecipe) recipe;
                     Item input = smelting.getInput().toItem();
                     this.putVarInt(input.getRuntimeId());
@@ -149,11 +154,8 @@ public class CraftingDataPacket extends DataPacket {
                         case SMOKER, SMOKER_DATA -> this.putString(CRAFTING_TAG_SMOKER);
                         case BLAST_FURNACE, BLAST_FURNACE_DATA -> this.putString(CRAFTING_TAG_BLAST_FURNACE);
                         case CAMPFIRE, CAMPFIRE_DATA -> this.putString(CRAFTING_TAG_CAMPFIRE);
+                        case SOUL_CAMPFIRE_DATA, SOUL_CAMPFIRE -> this.putString(CRAFTING_TAG_SOUL_CAMPFIRE);
                     }
-                }
-                case MULTI -> {
-                    this.putUUID(((MultiRecipe) recipe).getId());
-                    this.putUnsignedVarInt(recipeNetworkId++);
                 }
             }
         }

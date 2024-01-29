@@ -15,8 +15,6 @@ import static cn.nukkit.recipe.RecipeType.SHULKER_BOX;
  * @author joserobjr
  * @since 2021-09-25
  */
-
-
 public class ShulkerBoxRecipe extends ShapelessRecipe {
     public ShulkerBoxRecipe(Item result, Collection<Item> ingredients) {
         super(result, ingredients);

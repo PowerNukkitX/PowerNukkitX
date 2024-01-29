@@ -20,6 +20,8 @@ public enum RecipeType {
     SMOKER_DATA(3),
     CAMPFIRE(2),
     CAMPFIRE_DATA(3),
+    SOUL_CAMPFIRE_DATA(3),
+    SOUL_CAMPFIRE(2),
     STONECUTTER(0),
     CARTOGRAPHY(0),
     REPAIR(-1),

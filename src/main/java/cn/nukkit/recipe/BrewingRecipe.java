@@ -10,7 +10,7 @@ import java.util.List;
 public class BrewingRecipe extends MixRecipe {
 
     public BrewingRecipe(Item input, Item ingredient, Item output) {
-        super(input, ingredient, output);
+        this(null, input, ingredient, output);
     }
 
     public BrewingRecipe(String recipeId, Item input, Item ingredient, Item output) {

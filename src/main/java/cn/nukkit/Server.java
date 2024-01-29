@@ -708,6 +708,7 @@ public class Server {
         NukkitMetrics.startNow(this);
 
         {//init block
+            Potion.init();
             Registries.PACKET.init();
             Registries.ENTITY.init();
             Profession.init();
@@ -722,7 +723,6 @@ public class Server {
             Registries.ITEM.init();
             Registries.CREATIVE.init();
             Enchantment.init();
-            Potion.init();
             Registries.BIOME.init();
             Registries.FUEL.init();
             Registries.GENERATOR.init();

@@ -7,7 +7,7 @@ import java.util.List;
 
 public class ContainerRecipe extends MixRecipe {
     public ContainerRecipe(Item input, Item ingredient, Item output) {
-        super(input, ingredient, output);
+        this(null, input, ingredient, output);
     }
 
     public ContainerRecipe(String recipeId, Item input, Item ingredient, Item output) {

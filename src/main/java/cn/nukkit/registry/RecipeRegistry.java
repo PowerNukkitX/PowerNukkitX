@@ -105,11 +105,17 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public Set<FurnaceRecipe> getFurnaceRecipeMap() {
         HashSet<FurnaceRecipe> result = new HashSet<>();
-        for (var s : recipeMaps.get(RecipeType.FURNACE).values()) {
-            result.addAll(Collections2.transform(s, d -> (FurnaceRecipe) d));
+        Int2ObjectArrayMap<Set<Recipe>> recipe = recipeMaps.get(RecipeType.FURNACE);
+        if (recipe != null) {
+            for (var s : recipe.values()) {
+                result.addAll(Collections2.transform(s, d -> (FurnaceRecipe) d));
+            }
         }
-        for (var s : recipeMaps.get(RecipeType.FURNACE_DATA).values()) {
-            result.addAll(Collections2.transform(s, d -> (FurnaceRecipe) d));
+        Int2ObjectArrayMap<Set<Recipe>> recipe_data = recipeMaps.get(RecipeType.FURNACE_DATA);
+        if (recipe_data != null) {
+            for (var s : recipe_data.values()) {
+                result.addAll(Collections2.transform(s, d -> (FurnaceRecipe) d));
+            }
         }
         return result;
     }
@@ -132,11 +138,17 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public Set<BlastFurnaceRecipe> getBlastFurnaceRecipeMap() {
         HashSet<BlastFurnaceRecipe> result = new HashSet<>();
-        for (var s : recipeMaps.get(RecipeType.BLAST_FURNACE).values()) {
-            result.addAll(Collections2.transform(s, d -> (BlastFurnaceRecipe) d));
+        Int2ObjectArrayMap<Set<Recipe>> recipe = recipeMaps.get(RecipeType.BLAST_FURNACE);
+        if (recipe != null) {
+            for (var s : recipe.values()) {
+                result.addAll(Collections2.transform(s, d -> (BlastFurnaceRecipe) d));
+            }
         }
-        for (var s : recipeMaps.get(RecipeType.BLAST_FURNACE_DATA).values()) {
-            result.addAll(Collections2.transform(s, d -> (BlastFurnaceRecipe) d));
+        Int2ObjectArrayMap<Set<Recipe>> recipe_data = recipeMaps.get(RecipeType.BLAST_FURNACE_DATA);
+        if (recipe_data != null) {
+            for (var s : recipe_data.values()) {
+                result.addAll(Collections2.transform(s, d -> (BlastFurnaceRecipe) d));
+            }
         }
         return result;
     }
@@ -159,11 +171,17 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public Set<SmokerRecipe> getSmokerRecipeMap() {
         HashSet<SmokerRecipe> result = new HashSet<>();
-        for (var s : recipeMaps.get(RecipeType.SMOKER).values()) {
-            result.addAll(Collections2.transform(s, d -> (SmokerRecipe) d));
+        Int2ObjectArrayMap<Set<Recipe>> smoker = recipeMaps.get(RecipeType.SMOKER);
+        if (smoker != null) {
+            for (var s : smoker.values()) {
+                result.addAll(Collections2.transform(s, d -> (SmokerRecipe) d));
+            }
         }
-        for (var s : recipeMaps.get(RecipeType.SMOKER_DATA).values()) {
-            result.addAll(Collections2.transform(s, d -> (SmokerRecipe) d));
+        Int2ObjectArrayMap<Set<Recipe>> smoker_data = recipeMaps.get(RecipeType.SMOKER_DATA);
+        if (smoker_data != null) {
+            for (var s : smoker_data.values()) {
+                result.addAll(Collections2.transform(s, d -> (SmokerRecipe) d));
+            }
         }
         return result;
     }
@@ -186,11 +204,29 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public Set<CampfireRecipe> getCampfireRecipeMap() {
         HashSet<CampfireRecipe> result = new HashSet<>();
-        for (var s : recipeMaps.get(RecipeType.CAMPFIRE).values()) {
-            result.addAll(Collections2.transform(s, d -> (CampfireRecipe) d));
+        Int2ObjectArrayMap<Set<Recipe>> r1 = recipeMaps.get(RecipeType.CAMPFIRE);
+        if (r1 != null) {
+            for (var s : r1.values()) {
+                result.addAll(Collections2.transform(s, d -> (CampfireRecipe) d));
+            }
         }
-        for (var s : recipeMaps.get(RecipeType.CAMPFIRE_DATA).values()) {
-            result.addAll(Collections2.transform(s, d -> (CampfireRecipe) d));
+        Int2ObjectArrayMap<Set<Recipe>> r2 = recipeMaps.get(RecipeType.CAMPFIRE_DATA);
+        if (r2 != null) {
+            for (var s : r2.values()) {
+                result.addAll(Collections2.transform(s, d -> (CampfireRecipe) d));
+            }
+        }
+        Int2ObjectArrayMap<Set<Recipe>> r3 = recipeMaps.get(RecipeType.SOUL_CAMPFIRE);
+        if (r3 != null) {
+            for (var s : r3.values()) {
+                result.addAll(Collections2.transform(s, d -> (CampfireRecipe) d));
+            }
+        }
+        Int2ObjectArrayMap<Set<Recipe>> r4 = recipeMaps.get(RecipeType.SOUL_CAMPFIRE_DATA);
+        if (r4 != null) {
+            for (var s : r4.values()) {
+                result.addAll(Collections2.transform(s, d -> (CampfireRecipe) d));
+            }
         }
         return result;
     }
@@ -333,21 +369,35 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     }
 
     public String computeRecipeId(Collection<Item> results, Collection<? extends ItemDescriptor> inputs, RecipeType type) {
-        StringBuilder builder = new StringBuilder("pnx:");
+        StringBuilder builder = new StringBuilder();
         Optional<Item> first = results.stream().findFirst();
-        first.ifPresent(item -> builder.append(new Identifier(item.getId()).getPath()).append("from"));
-        int limit = 3;
+        first.ifPresent(item -> {
+            builder.append(new Identifier(item.getId()).getPath())
+                    .append('_')
+                    .append(item.getCount())
+                    .append('_')
+                    .append(item.isBlock() ? item.getBlockUnsafe().getRuntimeId() : item.getDamage())
+                    .append("_from_");
+        });
+        int limit = 5;
         for (var des : inputs) {
             if ((limit--) == 0) {
-                if (des instanceof ItemTagDescriptor tag) {
-                    builder.append("tag_").append(tag.getItemTag()).append("_and_");
-                } else if (des instanceof DefaultDescriptor def) {
-                    builder.append(new Identifier(def.getItem().getId()).getPath()).append("_and_");
-                }
+                break;
+            }
+            if (des instanceof ItemTagDescriptor tag) {
+                builder.append("tag_").append(tag.getItemTag()).append("_and_");
+            } else if (des instanceof DefaultDescriptor def) {
+                Item item = def.getItem();
+                builder.append(new Identifier(item.getId()).getPath())
+                        .append('_')
+                        .append(item.getCount())
+                        .append('_')
+                        .append(item.isBlock() ? item.getBlockUnsafe().getRuntimeId() : item.getDamage())
+                        .append("_and_");
             }
         }
         String r = builder.toString();
-        return r.substring(0, r.lastIndexOf("_and_")) + type.name();
+        return r.substring(0, r.lastIndexOf("_and_")) + "_" + type.name().toLowerCase(Locale.ENGLISH);
     }
 
     public int getRecipeCount() {
@@ -527,7 +577,8 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                             case "furnace" -> new FurnaceRecipe(result, input);
                             case "blast_furnace" -> new BlastFurnaceRecipe(result, input);
                             case "smoker" -> new SmokerRecipe(result, input);
-                            case "campfire", "soul_campfire" -> new CampfireRecipe(result, input);
+                            case "campfire" -> new CampfireRecipe(result, input);
+                            case "soul_campfire" -> new SoulCampfireRecipe(result, input);
                             default -> throw new IllegalStateException("Unexpected value: " + craftingBlock);
                         };
                         var xp = furnaceXpConfig.getDouble(input.getId() + ":" + input.getDamage());

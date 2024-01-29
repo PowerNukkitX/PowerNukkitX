@@ -45,4 +45,11 @@ public abstract class BaseRecipe implements Recipe {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "{" +
+                "id='" + id + '\'' +
+                '}';
+    }
 }
