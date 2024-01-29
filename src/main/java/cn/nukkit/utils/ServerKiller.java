@@ -1,5 +1,10 @@
 package cn.nukkit.utils;
 
+import cn.nukkit.Server;
+import cn.nukkit.console.NukkitConsole;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -28,7 +33,14 @@ public class ServerKiller extends Thread {
             // The thread was interrupted, which might mean that Ctrl+C was pressed
             // Support Ctrl+C
             System.out.println("\nServer stopping process was interrupted. Killing server...\n");
-            System.exit(1);
+            NukkitConsole console = new NukkitConsole(Server.getInstance());
+            try {
+                Method shutdownMethod = NukkitConsole.class.getDeclaredMethod("shutdown");
+                shutdownMethod.setAccessible(true);
+                shutdownMethod.invoke(console);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 }
