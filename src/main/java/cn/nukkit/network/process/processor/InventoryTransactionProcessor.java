@@ -15,6 +15,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.PlayerInteractEntityEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
+import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -29,6 +30,7 @@ import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.InventoryTransactionPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
+import cn.nukkit.network.protocol.types.inventorytransaction.InventorySource;
 import cn.nukkit.network.protocol.types.inventorytransaction.ReleaseItemData;
 import cn.nukkit.network.protocol.types.inventorytransaction.UseItemData;
 import cn.nukkit.network.protocol.types.inventorytransaction.UseItemOnEntityData;
@@ -78,6 +80,27 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 }
             } finally {
                 player.setUsingItem(false);
+            }
+        } else if (pk.transactionType == InventoryTransactionPacket.TYPE_NORMAL) {
+            for (var action : pk.actions) {
+                if (action.getInventorySource().getType().equals(InventorySource.Type.WORLD_INTERACTION)) {
+                    if (action.getInventorySource().getFlag().equals(InventorySource.Flag.DROP_ITEM)) {
+                        var count = action.newItem.getCount();
+                        Item item = player.getInventory().getItemInHand();
+                        if (item.isNull()) return;
+                        HumanInventory inventory = player.getInventory();
+                        int c = item.getCount() - count;
+                        if (c <= 0) {
+                            inventory.clear(inventory.getHeldItemIndex());
+                        } else {
+                            item.setCount(c);
+                            inventory.setItem(inventory.getHeldItemIndex(), item);
+                        }
+                        item.setCount(count);
+                        player.dropItem(item);
+                        return;
+                    }
+                }
             }
         }
     }
