@@ -54,14 +54,15 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
         }
         Item resultSourItem;
         Item resultDestItem;
+        //第一种：全部拿走
         if (sourItem.getCount() == count) {
-            //第一种：全部拿走
             resultSourItem = Item.AIR;
+            source.setItem(sourceSlot, resultSourItem, false);
             if (!destItem.isNull()) {
                 resultDestItem = destItem;
                 //目标物品不为空，直接添加数量，目标物品网络堆栈id不变
                 resultDestItem.setCount(destItem.getCount() + count);
-                destination.setItem(sourceSlot, resultSourItem);
+                destination.setItem(sourceSlot, resultSourItem, false);
             } else {
                 //目标物品为空，直接移动原有堆栈到新位置，网络堆栈id使用源物品的网络堆栈id（相当于换个位置）
                 if (source instanceof CreativeOutputInventory) {
@@ -69,23 +70,20 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
                     sourItem = sourItem.clone().autoAssignStackNetworkId();
                 }
                 resultDestItem = sourItem;
-                destination.setItem(destinationSlot, resultDestItem);
+                destination.setItem(destinationSlot, resultDestItem, false);
             }
-        } else {
-            //第二种：拿走一部分
+        } else {//第二种：拿走一部分
             resultSourItem = sourItem;
             resultSourItem.setCount(resultSourItem.getCount() - count);
-            //source.setItem(sourceSlot, sourItem);
-            if (!destItem.isNull()) {
-                //目标物品不为空
+            source.setItem(sourceSlot, resultSourItem, false);
+            if (!destItem.isNull()) {//目标物品不为空
                 resultDestItem = destItem;
                 resultDestItem.setCount(destItem.getCount() + count);
-                source.setItem(sourceSlot, resultSourItem);
-            } else {
-                //目标物品为空，为分出来的子物品堆栈新建网络堆栈id
+                source.setItem(sourceSlot, resultSourItem, false);
+            } else {//目标物品为空，为分出来的子物品堆栈新建网络堆栈id
                 resultDestItem = sourItem.clone().autoAssignStackNetworkId();
                 resultDestItem.setCount(count);
-                destination.setItem(destinationSlot, resultDestItem);
+                destination.setItem(destinationSlot, resultDestItem, false);
             }
         }
         var destItemStackResponseSlot =
@@ -104,21 +102,22 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
                 );
         //CREATED_OUTPUT不需要发响应
         if (source instanceof CreativeOutputInventory) {
-            return context.success(List.of(new ItemStackResponseContainer(
-                    source.getSlotType(sourceSlot),
-                    List.of(
-                            new ItemStackResponseSlot(
-                                    source.toNetworkSlot(sourceSlot),
-                                    source.toNetworkSlot(sourceSlot),
-                                    resultSourItem.getCount(),
-                                    resultSourItem.getNetId(),
-                                    resultSourItem.getCustomName(),
-                                    resultSourItem.getDamage()
-                            )
-                    )
-            ), destItemStackResponseSlot));
-        } else {
             return context.success(List.of(destItemStackResponseSlot));
+        } else {
+            return context.success(List.of(
+                    new ItemStackResponseContainer(
+                            source.getSlotType(sourceSlot),
+                            List.of(
+                                    new ItemStackResponseSlot(
+                                            source.toNetworkSlot(sourceSlot),
+                                            source.toNetworkSlot(sourceSlot),
+                                            resultSourItem.getCount(),
+                                            resultSourItem.getNetId(),
+                                            resultSourItem.getCustomName(),
+                                            resultSourItem.getDamage()
+                                    )
+                            )
+                    ), destItemStackResponseSlot));
         }
     }
 

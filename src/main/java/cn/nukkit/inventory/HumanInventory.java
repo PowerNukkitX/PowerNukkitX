@@ -2,15 +2,12 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.IHuman;
 import cn.nukkit.event.entity.EntityArmorChangeEvent;
 import cn.nukkit.event.entity.EntityInventoryChangeEvent;
 import cn.nukkit.event.player.PlayerItemHeldEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.network.protocol.ContainerClosePacket;
@@ -268,7 +265,7 @@ public class HumanInventory extends BaseInventory {
     @Override
     public boolean clear(int index, boolean send) {
         if (this.slots.containsKey(index)) {
-            Item item = new ItemBlock(Block.get(BlockID.AIR), null, 0);
+            Item item = Item.AIR;
             Item old = this.slots.get(index);
             if (index >= ARMORS_INDEX && index < this.size) {
                 EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder().getEntity(), old, item, index);
@@ -352,7 +349,7 @@ public class HumanInventory extends BaseInventory {
 
         for (int i = 0; i < 4; ++i) {
             if (items[i] == null) {
-                items[i] = new ItemBlock(Block.get(BlockID.AIR), null, 0);
+                items[i] = Item.AIR;
             }
 
             if (items[i].isNull()) {

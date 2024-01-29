@@ -15,11 +15,11 @@ public class ItemBlock extends Item {
         this(block, 0, 1);
     }
 
-    public ItemBlock(Block block, Integer aux) {
+    public ItemBlock(Block block, int aux) {
         this(block, aux, 1);
     }
 
-    public ItemBlock(Block block, Integer aux, int count) {
+    public ItemBlock(Block block, int aux, int count) {
         super(block.getItemId(), aux, count, block.getName());
         this.block = block;
     }

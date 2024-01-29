@@ -56,9 +56,10 @@ public class DestroyActionProcessor implements ItemStackRequestActionProcessor<D
         }
         if (item.getCount() > count) {
             item.setCount(item.getCount() - count);
-            sourceInventory.setItem(slot, item);
+            sourceInventory.setItem(slot, item, false);
         } else {
-            sourceInventory.clear(slot);
+            sourceInventory.clear(slot, false);
+            item = sourceInventory.getItem(slot);
         }
         return context.success(List.of(
                 new ItemStackResponseContainer(

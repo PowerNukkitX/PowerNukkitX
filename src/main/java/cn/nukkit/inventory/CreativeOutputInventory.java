@@ -152,12 +152,13 @@ public class CreativeOutputInventory implements Inventory {
 
     @Override
     public boolean clear(int index, boolean send) {
-        return false;
+        item = null;
+        return true;
     }
 
     @Override
     public void clearAll() {
-
+        item = null;
     }
 
     @Override

@@ -43,10 +43,18 @@ public class DropActionProcessor implements ItemStackRequestActionProcessor<Drop
             log.warn("cannot throw more items than the current amount!");
             return context.error();
         }
-        Item drop = inventory.getItem(slot);
+        Item drop = item.clone();
         drop.setCount(count);
         player.dropItem(drop);
-        item = inventory.getItem(slot);
+
+        int c = item.getCount() - count;
+        if (c <= 0) {
+            inventory.clear(slot, false);
+            item = inventory.getItem(slot);
+        } else {
+            item.setCount(c);
+            inventory.setItem(slot, item, false);
+        }
         return context.success(List.of(
                 new ItemStackResponseContainer(
                         inventory.getSlotType(slot),
