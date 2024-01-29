@@ -1317,6 +1317,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.worldName = this.getServer().getNetwork().getName();
         startGamePacket.generator = (byte) ((this.level.getDimension() + 1) & 0xff); //0 旧世界, 1 主世界, 2 下界, 3末地
         startGamePacket.serverAuthoritativeMovement = getServer().getServerAuthoritativeMovement();
+        startGamePacket.isInventoryServerAuthoritative = true;//enable item stack request packet
         startGamePacket.blockNetworkIdsHashed = true;//enable blockhash
         //写入自定义方块数据
         startGamePacket.blockProperties.addAll(Registries.BLOCK.getCustomBlockDefinitionList());
@@ -3667,7 +3668,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 scoreboardManager.beforePlayerQuit(this);
             }
 
-            if (notify && reason.length() > 0) {
+            if (notify && !reason.isEmpty()) {
                 DisconnectPacket pk = new DisconnectPacket();
                 pk.message = reason;
                 this.dataPacketImmediately(pk);
@@ -3675,7 +3676,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             this.connected = false;
             PlayerQuitEvent ev = null;
-            if (this.getName() != null && this.getName().length() > 0) {
+            if (!this.getName().isEmpty()) {
                 this.server.getPluginManager().callEvent(ev = new PlayerQuitEvent(this, message, true, reason));
                 if (this.fishing != null) {
                     this.stopFishing(false);
@@ -4801,13 +4802,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
         this.windows.forcePut(inventory, cnt);
 
-        if (this.spawned && inventory.open(this)) {
-            updateTrackingPositions(true);
-            return cnt;
-        } else {
-            this.removeWindow(inventory);
-            return -1;
+        if (this.spawned) {
+            if (inventory.open(this)) {
+                updateTrackingPositions(true);
+                return cnt;
+            } else {
+                this.removeWindow(inventory);
+                return -1;
+            }
         }
+        return cnt;
     }
 
     public Optional<Inventory> getTopWindow() {
