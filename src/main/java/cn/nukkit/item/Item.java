@@ -11,7 +11,11 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.*;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.IntTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.Binary;
@@ -30,7 +34,11 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.ByteOrder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.regex.Pattern;
 
 /**
@@ -1203,6 +1211,18 @@ public abstract class Item implements Cloneable, ItemID {
         return false;
     }
 
+    /**
+     * 返回物品堆叠是否与指定的物品堆叠有相同的ID,伤害,NBT和数量
+     * <p>
+     * Returns whether the specified item stack has the same ID, damage, NBT and count as this item stack.
+     *
+     * @param other item
+     * @return equal
+     */
+    public final boolean equalsExact(Item other) {
+        return this.equals(other, true, true) && this.count == other.count;
+    }
+
     @Override
     public final boolean equals(Object item) {
         return item instanceof Item && this.equals((Item) item, true);
@@ -1222,30 +1242,13 @@ public abstract class Item implements Cloneable, ItemID {
      */
     public final boolean equals(Item item, boolean checkDamage, boolean checkCompound) {
         if (!Objects.equals(this.getId(), item.getId())) return false;
-        if (!checkDamage || this.getDamage() == item.getDamage()) {
-            if (checkCompound) {
-                if (Arrays.equals(this.getCompoundTag(), item.getCompoundTag())) {
-                    return true;
-                } else if (this.hasCompoundTag() && item.hasCompoundTag()) {
-                    return this.getNamedTag().equals(item.getNamedTag());
-                }
-            } else {
-                return true;
-            }
+        if (checkDamage && this.hasMeta && item.hasMeta) {
+            if (this.getDamage() != item.getDamage()) return false;
         }
-        return false;
-    }
-
-    /**
-     * 返回物品堆叠是否与指定的物品堆叠有相同的ID,伤害,NBT和数量
-     * <p>
-     * Returns whether the specified item stack has the same ID, damage, NBT and count as this item stack.
-     *
-     * @param other item
-     * @return equal
-     */
-    public final boolean equalsExact(Item other) {
-        return this.equals(other, true, true) && this.count == other.count;
+        if (checkCompound && this.hasCompoundTag() && item.hasCompoundTag()) {
+            return Arrays.equals(this.getCompoundTag(), item.getCompoundTag());
+        }
+        return true;
     }
 
     /**
@@ -1296,21 +1299,6 @@ public abstract class Item implements Cloneable, ItemID {
         }
 
         return true;
-    }
-
-    @Deprecated
-    public final boolean deepEquals(Item item) {
-        return equals(item, true);
-    }
-
-    @Deprecated
-    public final boolean deepEquals(Item item, boolean checkDamage) {
-        return equals(item, checkDamage, true);
-    }
-
-    @Deprecated
-    public final boolean deepEquals(Item item, boolean checkDamage, boolean checkCompound) {
-        return equals(item, checkDamage, checkCompound);
     }
 
     @Override

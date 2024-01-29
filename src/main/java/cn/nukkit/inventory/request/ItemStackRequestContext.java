@@ -7,6 +7,7 @@ import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseStat
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,9 +16,22 @@ public class ItemStackRequestContext {
     @Setter
     private int currentActionIndex;
     @Getter
-    private ItemStackRequest itemStackRequest;
-    @Getter
-    private Map<Object, Object> extraData;
+    private final ItemStackRequest itemStackRequest;
+    private final Map<String, Object> extraData;
+
+    public ItemStackRequestContext(ItemStackRequest request) {
+        this.itemStackRequest = request;
+        this.extraData = new HashMap<>();
+    }
+
+    public void put(String key, Object value) {
+        extraData.put(key, value);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T get(String key) {
+        return (T) extraData.get(key);
+    }
 
     public ItemStackResponse error() {
         return new ItemStackResponse(ItemStackResponseStatus.ERROR, itemStackRequest.getRequestId(), List.of());

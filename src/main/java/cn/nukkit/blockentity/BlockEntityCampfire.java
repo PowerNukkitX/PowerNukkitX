@@ -59,7 +59,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
         boolean isLit = block instanceof BlockCampfire && !((BlockCampfire) block).isExtinguished();
         for (int slot = 0; slot < inventory.getSize(); slot++) {
             Item item = inventory.getItem(slot);
-            if (item == null || item.isNull() || item.getCount() <= 0) {
+            if (item.isNull()) {
                 burnTime[slot] = 0;
                 recipes[slot] = null;
             } else if (!keepItem[slot]) {

@@ -2,8 +2,6 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.DoNotModify;
-
-
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
@@ -178,11 +176,11 @@ public interface Inventory {
     }
 
     default int fromNetworkSlot(int networkSlot) {
-        return networkSlotMap().inverse().get(networkSlot);
+        return networkSlotMap().inverse().getOrDefault(networkSlot, networkSlot);
     }
 
     default int toNetworkSlot(int nativeSlot) {
-        return networkSlotMap().get(nativeSlot);
+        return networkSlotMap().getOrDefault(nativeSlot, nativeSlot);
     }
 
     default ContainerSlotType getSlotType(int nativeSlot) {

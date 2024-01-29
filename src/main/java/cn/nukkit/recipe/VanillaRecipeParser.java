@@ -7,6 +7,7 @@ import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.recipe.descriptor.ItemTagDescriptor;
 import cn.nukkit.registry.RecipeRegistry;
+import cn.nukkit.registry.Registries;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -121,7 +122,7 @@ public class VanillaRecipeParser {
                 } else if (o instanceof List<?> list) {
                     result = (Map<String, Object>) list.get(0);
                 }
-                new ShapedRecipe(description(recipeData), prior, parseItem(result), shapes, ingredients, List.of()).registerToRegistry(recipeRegistry);
+                Registries.RECIPE.register(new ShapedRecipe(description(recipeData), prior, parseItem(result), shapes, ingredients, List.of()));
             } catch (AssertionError ignore) {
             }
         }
@@ -154,7 +155,7 @@ public class VanillaRecipeParser {
                             new CartographyRecipe(description(recipeData), prior, re, itemDescriptors);
                     default -> throw new IllegalArgumentException(tag);
                 };
-                recipe.registerToRegistry(recipeRegistry);
+                Registries.RECIPE.register(recipe);
             }
         } catch (AssertionError ignore) {
         }
@@ -175,7 +176,7 @@ public class VanillaRecipeParser {
                 case CAMPFIRE_TAG, SOUL_CAMPFIRE_TAG -> new CampfireRecipe(description(recipeData), output, input);
                 default -> throw new IllegalArgumentException(tag);
             };
-            recipe.registerToRegistry(recipeRegistry);
+            Registries.RECIPE.register(recipe);
         }
     }
 
@@ -190,7 +191,7 @@ public class VanillaRecipeParser {
         }
         List<String> tags = tags(recipeData);
         if (tags.get(0).equals(BREW_STAND_TAG)) {
-            new BrewingRecipe(description(recipeData), input, reagent, output).registerToRegistry(recipeRegistry);
+            Registries.RECIPE.register(new BrewingRecipe(description(recipeData), input, reagent, output));
         }
     }
 
@@ -203,7 +204,7 @@ public class VanillaRecipeParser {
         }
         List<String> tags = tags(recipeData);
         if (tags.get(0).equals(BREW_STAND_TAG)) {
-            new ContainerRecipe(description(recipeData), input, reagent, output).registerToRegistry(recipeRegistry);
+            Registries.RECIPE.register(new ContainerRecipe(description(recipeData), input, reagent, output));
         }
     }
 

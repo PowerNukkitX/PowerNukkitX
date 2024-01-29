@@ -5,7 +5,11 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.event.inventory.FurnaceBurnEvent;
 import cn.nukkit.event.inventory.FurnaceSmeltEvent;
-import cn.nukkit.inventory.*;
+import cn.nukkit.inventory.FurnaceTypeInventory;
+import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.InventorySlice;
+import cn.nukkit.inventory.InventoryType;
+import cn.nukkit.inventory.RecipeInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemBucket;
@@ -286,7 +290,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
         if (smelt != null) {
             canSmelt = (raw.getCount() > 0 && ((smelt.getResult().equals(product, true) && product.getCount() < product.getMaxStackSize()) || product.getId() == BlockID.AIR));
             //检查输入
-            if (!smelt.getInput().equals(raw, true, false)) {
+            if (!smelt.getInput().toItem().equals(raw, true, false)) {
                 canSmelt = false;
             }
         }

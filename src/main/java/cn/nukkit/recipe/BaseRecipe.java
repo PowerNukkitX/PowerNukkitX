@@ -2,6 +2,7 @@ package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,5 +32,17 @@ public abstract class BaseRecipe implements Recipe {
     @Override
     public List<ItemDescriptor> getIngredients() {
         return ingredients;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BaseRecipe that)) return false;
+        return Objects.equal(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

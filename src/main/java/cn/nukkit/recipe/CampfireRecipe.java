@@ -2,7 +2,6 @@ package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
-import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.registry.Registries;
 
 import java.util.List;
@@ -20,21 +19,6 @@ public class CampfireRecipe extends SmeltingRecipe {
                 recipeId);
         this.results.add(result);
         this.ingredients.add(new DefaultDescriptor(ingredient));
-    }
-
-    @Override
-    public void setInput(ItemDescriptor item) {
-        this.ingredients.set(0, item);
-    }
-
-    @Override
-    public ItemDescriptor getInput() {
-        return this.ingredients.get(0);
-    }
-
-    @Override
-    public Item getResult() {
-        return this.results.get(0);
     }
 
     @Override

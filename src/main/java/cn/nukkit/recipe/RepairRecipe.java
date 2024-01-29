@@ -15,6 +15,7 @@ public class RepairRecipe extends BaseRecipe {
     public RepairRecipe(InventoryType inventoryType, Item result, Collection<Item> ingredients) {
         super(Registries.RECIPE.computeRecipeIdWithItem(List.of(result), ingredients, RecipeType.REPAIR));
         this.inventoryType = inventoryType;
+        this.results.add(result.clone());
         for (Item item : ingredients) {
             if (item.getCount() < 1) {
                 throw new IllegalArgumentException("Recipe Ingredient amount was not 1 (value: " + item.getCount() + ")");
