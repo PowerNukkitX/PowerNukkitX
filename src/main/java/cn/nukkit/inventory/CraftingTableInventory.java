@@ -2,13 +2,34 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.block.BlockCraftingTable;
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.recipe.Input;
+import com.google.common.collect.BiMap;
 
 import java.util.List;
+import java.util.Map;
 
 public class CraftingTableInventory extends ContainerInventory implements CraftTypeInventory, InputInventory {
     public CraftingTableInventory(BlockCraftingTable table) {
         super(table, InventoryType.INVENTORY, 9);
+    }
+
+    @Override
+    public BiMap<Integer, Integer> networkSlotMap() {
+        BiMap<Integer, Integer> map = super.networkSlotMap();
+        for (int i = 0; i < getSize(); i++) {
+            map.put(i, 32 + i);
+        }
+        return map;
+    }
+
+    @Override
+    public Map<Integer, ContainerSlotType> slotTypeMap() {
+        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        for (int i = 0; i < getSize(); i++) {
+            map.put(0, ContainerSlotType.CRAFTING_INPUT);
+        }
+        return map;
     }
 
     @Override

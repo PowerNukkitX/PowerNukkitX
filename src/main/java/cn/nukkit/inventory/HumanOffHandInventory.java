@@ -6,10 +6,28 @@ import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import com.google.common.collect.BiMap;
+
+import java.util.Map;
 
 public class HumanOffHandInventory extends BaseInventory {
     public HumanOffHandInventory(IHuman holder) {
         super(holder, InventoryType.INVENTORY, 1);
+    }
+
+    @Override
+    public BiMap<Integer, Integer> networkSlotMap() {
+        BiMap<Integer, Integer> map = super.networkSlotMap();
+        map.put(0, 1);
+        return map;
+    }
+
+    @Override
+    public Map<Integer, ContainerSlotType> slotTypeMap() {
+        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        map.put(0, ContainerSlotType.OFFHAND);
+        return map;
     }
 
     public void setItem(Item item) {
@@ -19,7 +37,6 @@ public class HumanOffHandInventory extends BaseInventory {
     public void setItem(Item item, boolean send) {
         setItem(0, item, send);
     }
-
 
     @Override
     public void onSlotChange(int index, Item before, boolean send) {

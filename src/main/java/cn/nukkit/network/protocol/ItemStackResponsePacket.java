@@ -29,6 +29,8 @@ public class ItemStackResponsePacket extends DataPacket {
                     putByte((byte) item.getHotbarSlot());
                     putByte((byte) item.getCount());
                     putVarInt(item.getStackNetworkId());
+                    putString(item.getCustomName());
+                    putVarInt(item.getDurabilityCorrection());
                 });
             });
         });

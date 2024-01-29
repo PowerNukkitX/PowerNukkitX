@@ -1,21 +1,29 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBarrel;
 import cn.nukkit.blockentity.BlockEntityBarrel;
-import cn.nukkit.blockentity.BlockEntityInventoryHolder;
 import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+
+import java.util.Map;
 
 
 public class BarrelInventory extends ContainerInventory implements BlockEntityInventoryNameable {
-
-
     public BarrelInventory(BlockEntityBarrel barrel) {
         super(barrel, InventoryType.CONTAINER, 27);
+    }
+
+    @Override
+    public Map<Integer, ContainerSlotType> slotTypeMap() {
+        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        for (int i = 0; i < getSize(); i++) {
+            map.put(0, ContainerSlotType.BARREL);
+        }
+        return map;
     }
 
     @Override

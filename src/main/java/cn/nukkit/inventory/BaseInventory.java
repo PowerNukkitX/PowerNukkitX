@@ -2,7 +2,6 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntity;
@@ -21,7 +20,15 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -514,16 +521,14 @@ public abstract class BaseInventory implements Inventory {
         int space = (this.getSize() - this.slots.size()) * maxStackSize;
 
         for (Item slot : this.getContents().values()) {
-            if (slot == null || slot.isNull()) {
+            if (slot.isNull()) {
                 space += maxStackSize;
                 continue;
             }
-
             if (slot.equals(item, true, true)) {
                 space += maxStackSize - slot.getCount();
             }
         }
-
         return space;
     }
 

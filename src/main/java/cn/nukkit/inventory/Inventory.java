@@ -10,7 +10,7 @@ import com.google.common.collect.HashBiMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -166,13 +166,18 @@ public interface Inventory {
 
     void removeListener(InventoryListener listener);
 
-    //native slot id <-> network slot id
+    /**
+     * native slot id <-> network slot id
+     */
     default BiMap<Integer, Integer> networkSlotMap() {
         return HashBiMap.create();
     }
 
+    /**
+     * slot id -> ContainerSlotType
+     */
     default Map<Integer, ContainerSlotType> slotTypeMap() {
-        return Collections.EMPTY_MAP;
+        return new HashMap<>();
     }
 
     default int fromNetworkSlot(int networkSlot) {

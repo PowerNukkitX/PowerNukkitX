@@ -21,7 +21,9 @@ public class CreativeOutputInventory implements Inventory {
 
     @Override
     public Map<Integer, ContainerSlotType> slotTypeMap() {
-        return Map.of(0, ContainerSlotType.CREATED_OUTPUT);
+        Map<Integer, ContainerSlotType> map = Inventory.super.slotTypeMap();
+        map.put(0, ContainerSlotType.CREATED_OUTPUT);
+        return map;
     }
 
     @Override

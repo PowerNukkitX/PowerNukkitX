@@ -15,15 +15,15 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
-import cn.nukkit.network.protocol.CreativeContentPacket;
 import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
-import cn.nukkit.registry.Registries;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import org.jetbrains.annotations.Range;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * 0-8 物品栏<br>
@@ -40,11 +40,21 @@ public class HumanInventory extends BaseInventory {
 
     public HumanInventory(IHuman human) {
         super(human, InventoryType.INVENTORY, 40);
-    }
+    }//9+27+4
 
     @Override
-    public int getSize() {
-        return super.getSize() - 4;
+    public Map<Integer, ContainerSlotType> slotTypeMap() {
+        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        for (int i = 0; i < 4; i++) {
+            map.put(ARMORS_INDEX + i, ContainerSlotType.ARMOR);
+        }
+        for (int i = 0; i < 9; i++) {
+            map.put(i, ContainerSlotType.HOTBAR);
+        }
+        for (int i = 9; i < 36; i++) {
+            map.put(i, ContainerSlotType.INVENTORY);
+        }
+        return map;
     }
 
     /**
@@ -264,26 +274,20 @@ public class HumanInventory extends BaseInventory {
                 EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder().getEntity(), old, item, index);
                 Server.getInstance().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
-                    if (index >= this.size) {
-                        this.sendArmorSlot(index, this.getViewers());
-                    } else {
-                        this.sendSlot(index, this.getViewers());
-                    }
+                    this.sendSlot(index, this.getViewers());
+                    return false;
+                }
+                item = ev.getNewItem();
+            } else if (index < ARMORS_INDEX) {
+                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder().getEntity(), old, item, index);
+                Server.getInstance().getPluginManager().callEvent(ev);
+                if (ev.isCancelled()) {
+                    this.sendSlot(index, this.getViewers());
                     return false;
                 }
                 item = ev.getNewItem();
             } else {
-                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder().getEntity(), old, item, index);
-                Server.getInstance().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
-                    if (index >= this.size) {
-                        this.sendArmorSlot(index, this.getViewers());
-                    } else {
-                        this.sendSlot(index, this.getViewers());
-                    }
-                    return false;
-                }
-                item = ev.getNewItem();
+                return false;
             }
 
             if (!item.isNull()) {
@@ -309,8 +313,7 @@ public class HumanInventory extends BaseInventory {
 
     @Override
     public void clearAll() {
-        int limit = ARMORS_INDEX + 4;
-        for (int index = 0; index < limit; ++index) {
+        for (int index = 0; index < getSize(); ++index) {
             this.clear(index);
         }
         getHolder().getOffhandInventory().clearAll();
@@ -411,13 +414,6 @@ public class HumanInventory extends BaseInventory {
             pk.slots[i] = this.getItem(i);
         }
 
-        /*//Because PE is stupid and shows 9 less slots than you send it, give it 9 dummy slots so it shows all the REAL slots.
-        for(int i = this.getSize(); i < this.getSize() + this.getHotbarSize(); ++i){
-            pk.slots[i] = new ItemBlock(Block.get(BlockID.AIR));
-        }
-            pk.slots[i] = new ItemBlock(Block.get(BlockID.AIR));
-        }*/
-
         for (Player player : players) {
             int id = player.getWindowId(this);
             if (id == -1 || !player.spawned) {
@@ -460,38 +456,6 @@ public class HumanInventory extends BaseInventory {
                 player.dataPacket(pk);
             }
         }
-    }
-
-    public void sendCreativeContents() {
-        if (!(this.getHolder() instanceof Player)) {
-            return;
-        }
-        Player p = (Player) this.getHolder();
-
-        CreativeContentPacket pk = new CreativeContentPacket();
-
-        pk.entries = Registries.CREATIVE.getCreativeItems();
-
-        p.dataPacket(pk);
-    }
-
-    //由于NK从PlayerInventory中分离了盔甲栏，并且getSize值修改为36，但实际上slots最大容量为40，按照逻辑应该将solts size也减4
-    @Override
-    public int getFreeSpace(Item item) {
-        int maxStackSize = Math.min(item.getMaxStackSize(), this.getMaxStackSize());
-        int slots = this.slots.size() > 36 ? this.slots.size() - 4 : this.slots.size();
-        int space = (this.getSize() - slots) * maxStackSize;
-        for (Item slot : this.getContents().values()) {
-            if (slot == null || slot.isNull()) {
-                space += maxStackSize;
-                continue;
-            }
-
-            if (slot.equals(item, true, true)) {
-                space += maxStackSize - slot.getCount();
-            }
-        }
-        return space;
     }
 
     @Override
