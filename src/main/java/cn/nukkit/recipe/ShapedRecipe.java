@@ -36,7 +36,7 @@ public class ShapedRecipe extends CraftingRecipe {
      *
      * @param primaryResult    Primary result of the recipe
      * @param shape<br>        Array of 1, 2, or 3 strings representing the rows of the recipe.
-     *                         This accepts an array of 1, 2 or 3 strings. Each string should be of the same col and must be at most 3
+     *                         This accepts an array of 1, 2 or 3 strings. Each string should be of the same length and must be at most 3
      *                         characters long. Each character represents a unique type of ingredient. Spaces are interpreted as air.
      * @param ingredients<br>  Char =&gt; Item map of items to be set into the shape.
      *                         This accepts an array of Items, indexed by character. Every unique character (except space) in the shape
@@ -72,7 +72,7 @@ public class ShapedRecipe extends CraftingRecipe {
         for (int i = 0, shapeLength = shape.length; i < shapeLength; i++) {
             String row = shape[i];
             if (row.length() != this.col) {
-                throw new RuntimeException("Shaped recipe rows must all have the same col (expected " + this.col + ", got " + row.length() + ")");
+                throw new RuntimeException("Shaped recipe rows must all have the same length (expected " + this.col + ", got " + row.length() + ")");
             }
 
             for (int x = 0; x < this.col; ++x) {
