@@ -1060,7 +1060,7 @@ public class Level implements Metadatable {
 
     private void performThunder(long index, IChunk chunk) {
         if (areNeighboringChunksLoaded(index)) return;
-        if (ThreadLocalRandom.current().nextInt(10000) == 0) {
+        if (ThreadLocalRandom.current().nextInt(100000) == 0) {
             int LCG = this.getUpdateLCG() >> 2;
 
             int chunkX = chunk.getX() * 16;
