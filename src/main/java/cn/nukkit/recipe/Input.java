@@ -2,7 +2,10 @@ package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
 
-public record Input(int length, int width, Item[][] data) {
+/**
+ * craft input,Upper left is origin point (0,0)
+ */
+public record Input(int col, int row, Item[][] data) {
     public int canConsumerItemCount() {
         int count = 0;
         for (var d : data) {

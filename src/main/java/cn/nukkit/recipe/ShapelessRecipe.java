@@ -4,6 +4,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -42,6 +43,22 @@ public class ShapelessRecipe extends CraftingRecipe {
 
     @Override
     public boolean match(Input input) {
-        return false;
+        Item[][] data = input.data();
+        List<Item> flatInputItem = new ArrayList<>();
+        for (int i = 0; i < input.row(); i++) {
+            for (int j = 0; j < input.col(); j++) {
+                if (!data[j][i].isNull()) {
+                    flatInputItem.add(data[j][i]);
+                }
+            }
+        }
+        next:
+        for (var i : flatInputItem) {
+            for (var ingredient : ingredients) {
+                if (ingredient.match(i)) continue next;
+            }
+            return false;
+        }
+        return true;
     }
 }

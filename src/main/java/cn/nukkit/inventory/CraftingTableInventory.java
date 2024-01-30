@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class CraftingTableInventory extends ContainerInventory implements CraftTypeInventory, InputInventory {
     public CraftingTableInventory(BlockCraftingTable table) {
-        super(table, InventoryType.INVENTORY, 9);
+        super(table, InventoryType.WORKBENCH, 9);
     }
 
     @Override

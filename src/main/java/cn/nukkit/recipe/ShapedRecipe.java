@@ -7,11 +7,15 @@ import cn.nukkit.registry.Registries;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.netty.util.collection.CharObjectHashMap;
+import it.unimi.dsi.fastutil.Pair;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.UUID;
 
 import static cn.nukkit.recipe.RecipeType.SHAPED;
@@ -32,7 +36,7 @@ public class ShapedRecipe extends CraftingRecipe {
      *
      * @param primaryResult    Primary result of the recipe
      * @param shape<br>        Array of 1, 2, or 3 strings representing the rows of the recipe.
-     *                         This accepts an array of 1, 2 or 3 strings. Each string should be of the same length and must be at most 3
+     *                         This accepts an array of 1, 2 or 3 strings. Each string should be of the same col and must be at most 3
      *                         characters long. Each character represents a unique type of ingredient. Spaces are interpreted as air.
      * @param ingredients<br>  Char =&gt; Item map of items to be set into the shape.
      *                         This accepts an array of Items, indexed by character. Every unique character (except space) in the shape
@@ -68,7 +72,7 @@ public class ShapedRecipe extends CraftingRecipe {
         for (int i = 0, shapeLength = shape.length; i < shapeLength; i++) {
             String row = shape[i];
             if (row.length() != this.col) {
-                throw new RuntimeException("Shaped recipe rows must all have the same length (expected " + this.col + ", got " + row.length() + ")");
+                throw new RuntimeException("Shaped recipe rows must all have the same col (expected " + this.col + ", got " + row.length() + ")");
             }
 
             for (int x = 0; x < this.col; ++x) {
@@ -142,7 +146,106 @@ public class ShapedRecipe extends CraftingRecipe {
 
     @Override
     public boolean match(Input input) {
-        return false;
+        Item[][] data = input.data();
+        data = tryShrinkMatrix(input.row(), input.col(), data);
+        for (int i = 0; i < input.row(); i++) {
+            for (int j = 0; j < input.col(); j++) {
+                ItemDescriptor ingredient = getIngredient(j, i);
+                if (!ingredient.match(data[j][i])) return false;
+            }
+        }
+        return true;
+    }
+
+    public static Item[][] tryShrinkMatrix(int row, int col, Item[][] data) {
+        Integer r = null, l = null;
+        end:
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (!data[j][i].isNull()) {
+                    r = i;
+                    l = j;
+                    break end;
+                }
+            }
+        }
+        if (r == null) {
+            return data;
+        }
+        Queue<Pair<Integer, Integer>> bfsQueue = new ArrayDeque<>(row * col);
+        HashSet<Pair<Integer, Integer>> result = new HashSet<>();
+        bfsQueue.add(Pair.of(l, r));
+        while (!bfsQueue.isEmpty()) {
+            Pair<Integer, Integer> poll = bfsQueue.poll();
+            if (result.contains(poll)) continue;
+            result.add(poll);
+            Integer left = poll.left();
+            Integer right = poll.right();
+            int al = left, ar = right + 1;
+            if (al >= 0 && al < col && ar >= 0 && ar < row) {
+                Item item = data[al][ar];
+                if (!item.isNull()) {
+                    bfsQueue.add(Pair.of(al, ar));
+                }
+            }
+            int bl = left, br = right - 1;
+            if (bl >= 0 && al < col && br >= 0 && br < row) {
+                Item item = data[bl][br];
+                if (!item.isNull()) {
+                    bfsQueue.add(Pair.of(bl, br));
+                }
+            }
+            int cl = left + 1, cr = right;
+            if (cl >= 0 && cl < col && cr >= 0 && cr < row) {
+                Item item = data[cl][cr];
+                if (!item.isNull()) {
+                    bfsQueue.add(Pair.of(cl, cr));
+                }
+            }
+            int dl = left - 1, dr = right;
+            if (dl >= 0 && dl < col && dr >= 0 && dr < row) {
+                Item item = data[dl][dr];
+                if (!item.isNull()) {
+                    bfsQueue.add(Pair.of(dl, dr));
+                }
+            }
+        }
+        Integer minR = null, maxR = null, minL = null, maxL = null;
+        for (var pair : result) {
+            Integer left = pair.left();
+            Integer right = pair.right();
+            if (minR == null) {
+                minR = right;
+            } else {
+                minR = Math.min(minR, right);
+            }
+            if (maxR == null) {
+                maxR = right;
+            } else {
+                maxR = Math.max(maxR, right);
+            }
+            if (minL == null) {
+                minL = left;
+            } else {
+                minL = Math.min(minL, left);
+            }
+            if (maxL == null) {
+                maxL = left;
+            } else {
+                maxL = Math.max(maxL, left);
+            }
+        }
+        int newRow = maxR - minR + 1;//+1 because is index
+        int newCol = maxL - minL + 1;
+        if (newRow > 0 && newRow < row && newCol > 0 && newCol < col) {
+            Item[][] items = new Item[newCol][newRow];
+            for (int i = 0; i < newRow; i++) {
+                for (int j = 0; j < newCol; j++) {
+                    items[j][i] = data[minL + j][minR + i];
+                }
+            }
+            return items;
+        } else return data;
     }
 
     @Override
