@@ -7,7 +7,7 @@ package cn.nukkit.block.property.enums;
  * @author daoge_cmd
  */
 public enum DirtType {
-    COARSE,
+    NORMAL,
+    COARSE
 
-    NORMAL
 }

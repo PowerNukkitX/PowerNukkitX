@@ -103,7 +103,7 @@ public interface CommonBlockProperties {
     // Horizontal-index based
     IntPropertyType DIRECTION = IntPropertyType.of("direction", 0, 3, 0);
 
-    EnumPropertyType<DirtType> DIRT_TYPE = EnumPropertyType.of("dirt_type", DirtType.class, DirtType.values()[1]);
+    EnumPropertyType<DirtType> DIRT_TYPE = EnumPropertyType.of("dirt_type", DirtType.class, DirtType.values()[0]);
 
     BooleanPropertyType DISARMED_BIT = BooleanPropertyType.of("disarmed_bit", false);
 
