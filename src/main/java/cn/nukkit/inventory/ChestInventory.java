@@ -3,16 +3,18 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockTrappedChest;
 import cn.nukkit.blockentity.BlockEntityChest;
-import cn.nukkit.blockentity.BlockEntityInventoryHolder;
 import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.BlockEventPacket;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.utils.LevelException;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -24,6 +26,15 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
     public ChestInventory(BlockEntityChest chest) {
         super(chest, InventoryType.CONTAINER, 27);
     }
+
+    @Override
+    public void init() {
+        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        for (int i = 0; i < getSize(); i++) {
+            map.put(i, ContainerSlotType.LEVEL_ENTITY);
+        }
+    }
+
 
     @Override
     public BlockEntityChest getHolder() {

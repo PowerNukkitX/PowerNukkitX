@@ -17,17 +17,12 @@ public class HumanOffHandInventory extends BaseInventory {
     }
 
     @Override
-    public BiMap<Integer, Integer> networkSlotMap() {
+    public void init() {
         BiMap<Integer, Integer> map = super.networkSlotMap();
         map.put(0, 1);
-        return map;
-    }
 
-    @Override
-    public Map<Integer, ContainerSlotType> slotTypeMap() {
-        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
-        map.put(0, ContainerSlotType.OFFHAND);
-        return map;
+        Map<Integer, ContainerSlotType> map2 = super.slotTypeMap();
+        map2.put(0, ContainerSlotType.OFFHAND);
     }
 
     public void setItem(Item item) {

@@ -15,21 +15,16 @@ public class CraftingTableInventory extends ContainerInventory implements CraftT
     }
 
     @Override
-    public BiMap<Integer, Integer> networkSlotMap() {
+    public void init() {
         BiMap<Integer, Integer> map = super.networkSlotMap();
         for (int i = 0; i < getSize(); i++) {
             map.put(i, 32 + i);
         }
-        return map;
-    }
 
-    @Override
-    public Map<Integer, ContainerSlotType> slotTypeMap() {
-        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        Map<Integer, ContainerSlotType> map2 = super.slotTypeMap();
         for (int i = 0; i < getSize(); i++) {
-            map.put(0, ContainerSlotType.CRAFTING_INPUT);
+            map2.put(i, ContainerSlotType.CRAFTING_INPUT);
         }
-        return map;
     }
 
     @Override

@@ -40,7 +40,7 @@ public class HumanInventory extends BaseInventory {
     }//9+27+4
 
     @Override
-    public Map<Integer, ContainerSlotType> slotTypeMap() {
+    public void init() {
         Map<Integer, ContainerSlotType> map = super.slotTypeMap();
         for (int i = 0; i < 4; i++) {
             map.put(ARMORS_INDEX + i, ContainerSlotType.ARMOR);
@@ -51,7 +51,6 @@ public class HumanInventory extends BaseInventory {
         for (int i = 9; i < 36; i++) {
             map.put(i, ContainerSlotType.INVENTORY);
         }
-        return map;
     }
 
     /**

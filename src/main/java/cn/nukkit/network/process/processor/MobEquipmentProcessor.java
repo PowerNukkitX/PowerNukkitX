@@ -2,8 +2,8 @@ package cn.nukkit.network.process.processor;
 
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
-import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.HumanInventory;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
@@ -33,7 +33,7 @@ public class MobEquipmentProcessor extends DataPacketProcessor<MobEquipmentPacke
 
         Item item = inv.getItem(pk.hotbarSlot);
 
-        if (!item.equals(pk.item)) {
+        if (!item.equals(pk.item, false, true)) {
             log.debug("Tried to equip {} but have {} in target slot", pk.item, item);
             inv.sendContents(player);
             return;

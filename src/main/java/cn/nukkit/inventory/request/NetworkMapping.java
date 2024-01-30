@@ -24,7 +24,8 @@ public class NetworkMapping {
                     SMITHING_TABLE_INPUT, SMITHING_TABLE_MATERIAL, SMITHING_TABLE_RESULT,
                     ANVIL_INPUT, ANVIL_MATERIAL, ANVIL_RESULT,
                     STONECUTTER_INPUT, STONECUTTER_RESULT,
-                    GRINDSTONE_ADDITIONAL, GRINDSTONE_INPUT, GRINDSTONE_RESULT -> {
+                    GRINDSTONE_ADDITIONAL, GRINDSTONE_INPUT, GRINDSTONE_RESULT,
+                    LEVEL_ENTITY -> {
                 if (player.getTopWindow().isPresent()) {
                     yield player.getTopWindow().get();
                 } else {
@@ -40,7 +41,7 @@ public class NetworkMapping {
             }
             //case CARTOGRAPHY_ADDITIONAL, CARTOGRAPHY_INPUT, CARTOGRAPHY_RESULT -> player.getCartographyTableInventory();//todo
             default ->
-                    throw new IllegalArgumentException("Cant handle containerSlotType when an ItemStackRequest is received!");
+                    throw new IllegalArgumentException("Cant handle containerSlotType: %s when an ItemStackRequest is received!".formatted(containerSlotType.name().toLowerCase()));
         };
     }
 }

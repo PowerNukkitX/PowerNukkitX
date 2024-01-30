@@ -11,6 +11,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -38,11 +41,26 @@ public abstract class BaseInventory implements Inventory {
     protected int maxStackSize = Inventory.MAX_STACK;
     protected InventoryHolder holder;
     protected List<InventoryListener> listeners;
+    protected Map<Integer, ContainerSlotType> slotTypeMap;
+    protected BiMap<Integer, Integer> networkSlotMap;
 
     public BaseInventory(InventoryHolder holder, InventoryType type, int size) {
         this.holder = holder;
         this.type = type;
         this.size = size;
+        this.slotTypeMap = new HashMap<>();
+        this.networkSlotMap = HashBiMap.create();
+        init();
+    }
+
+    @Override
+    public Map<Integer, ContainerSlotType> slotTypeMap() {
+        return this.slotTypeMap;
+    }
+
+    @Override
+    public BiMap<Integer, Integer> networkSlotMap() {
+        return this.networkSlotMap;
     }
 
     @Override

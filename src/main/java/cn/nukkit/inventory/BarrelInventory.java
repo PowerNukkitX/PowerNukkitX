@@ -18,12 +18,11 @@ public class BarrelInventory extends ContainerInventory implements BlockEntityIn
     }
 
     @Override
-    public Map<Integer, ContainerSlotType> slotTypeMap() {
+    public void init() {
         Map<Integer, ContainerSlotType> map = super.slotTypeMap();
         for (int i = 0; i < getSize(); i++) {
-            map.put(0, ContainerSlotType.BARREL);
+            map.put(i, ContainerSlotType.BARREL);
         }
-        return map;
     }
 
     @Override

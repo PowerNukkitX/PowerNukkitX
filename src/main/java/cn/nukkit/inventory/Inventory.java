@@ -18,7 +18,6 @@ import java.util.Set;
  * @author MagicDroidX (Nukkit Project)
  */
 public interface Inventory {
-
     int MAX_STACK = 64;
 
     /**
@@ -165,6 +164,9 @@ public interface Inventory {
 
 
     void removeListener(InventoryListener listener);
+
+    default void init() {
+    }
 
     /**
      * native slot id <-> network slot id

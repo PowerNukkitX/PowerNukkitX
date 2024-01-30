@@ -15,21 +15,16 @@ public class CraftingGridInventory extends BaseInventory implements InputInvento
     }
 
     @Override
-    public BiMap<Integer, Integer> networkSlotMap() {
-        BiMap<Integer, Integer> map = super.networkSlotMap();
+    public void init() {
+        Map<Integer, ContainerSlotType> map2 = super.slotTypeMap();
         for (int i = 0; i < getSize(); i++) {
-            map.put(i, 28 + i);
+            map2.put(i, ContainerSlotType.CRAFTING_INPUT);
         }
-        return map;
-    }
 
-    @Override
-    public Map<Integer, ContainerSlotType> slotTypeMap() {
-        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        BiMap<Integer, Integer> map1 = super.networkSlotMap();
         for (int i = 0; i < getSize(); i++) {
-            map.put(0, ContainerSlotType.CRAFTING_INPUT);
+            map1.put(i, 28 + i);
         }
-        return map;
     }
 
     @Override

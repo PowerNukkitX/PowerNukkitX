@@ -30,12 +30,10 @@ public class PlayerCursorInventory extends BaseInventory {
         return getItem(0);
     }
 
-
     @Override
-    public Map<Integer, ContainerSlotType> slotTypeMap() {
+    public void init() {
         Map<Integer, ContainerSlotType> slotTypeMap = super.slotTypeMap();
         slotTypeMap.put(0, ContainerSlotType.CURSOR);
-        return slotTypeMap;
     }
 
     @Override
