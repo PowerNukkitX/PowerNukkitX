@@ -178,7 +178,10 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public void doGarbageCollection() {
-        //todo
+    }
+
+    @Override
+    public void doGarbageCollection(long time) {
     }
 
     @Override

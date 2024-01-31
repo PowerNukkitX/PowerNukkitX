@@ -3,7 +3,6 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 
 
-
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,16 +52,6 @@ public class InventorySlice implements Inventory {
     @Override
     public void setMaxStackSize(int size) {
         rawInv.setMaxStackSize(size);
-    }
-
-    @Override
-    public String getName() {
-        return rawInv.getName();
-    }
-
-    @Override
-    public String getTitle() {
-        return rawInv.getTitle();
     }
 
     @NotNull
@@ -167,6 +156,11 @@ public class InventorySlice implements Inventory {
     @Override
     public void sendSlot(int index, Collection<Player> players) {
         rawInv.sendSlot(index + startSlot, players);
+    }
+
+    @Override
+    public int getFreeSpace(Item item) {
+        return rawInv.getFreeSpace(item);
     }
 
     @Override
@@ -328,13 +322,13 @@ public class InventorySlice implements Inventory {
         rawInv.onSlotChange(index + startSlot, before, send);
     }
 
-    
+
     @Override
     public void addListener(InventoryListener listener) {
         rawInv.addListener(((inventory, oldItem, slot) -> listener.onInventoryChanged(this, oldItem, slot - startSlot)));
     }
 
-    
+
     @Override
     public void removeListener(InventoryListener listener) {
         rawInv.removeListener(((inventory, oldItem, slot) -> listener.onInventoryChanged(this, oldItem, slot - startSlot)));

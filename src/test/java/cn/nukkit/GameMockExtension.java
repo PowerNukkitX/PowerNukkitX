@@ -6,10 +6,10 @@ import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.event.server.QueryRegenerateEvent;
+import cn.nukkit.inventory.HumanOffHandInventory;
 import cn.nukkit.inventory.Inventory;
-import cn.nukkit.inventory.PlayerEnderChestInventory;
-import cn.nukkit.inventory.PlayerInventory;
-import cn.nukkit.inventory.PlayerOffhandInventory;
+import cn.nukkit.inventory.HumanEnderChestInventory;
+import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.level.DimensionEnum;
@@ -28,8 +28,8 @@ import cn.nukkit.permission.BanList;
 import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
-import cn.nukkit.recipe.CraftingManager;
 import cn.nukkit.registry.BlockRegistry;
+import cn.nukkit.registry.RecipeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.ServerScheduler;
 import cn.nukkit.tags.BiomeTags;
@@ -155,9 +155,9 @@ public class GameMockExtension extends MockitoExtension {
         when(server.getAutoSave()).thenReturn(false);
         when(server.getTick()).thenReturn(1);
         when(server.getViewDistance()).thenReturn(4);
-        CraftingManager mock = mock(CraftingManager.class);
-        when(mock.matchBrewingRecipe(any(), any())).thenReturn(null);
-        when(server.getCraftingManager()).thenReturn(mock);
+        RecipeRegistry mock = mock(RecipeRegistry.class);
+        when(mock.findBrewingRecipe(any(), any())).thenReturn(null);
+        when(server.getRecipeRegistry()).thenReturn(mock);
         ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
         when(server.getComputeThreadPool()).thenReturn(pool);
         when(server.getCommandMap()).thenReturn(simpleCommandMap);
@@ -195,9 +195,9 @@ public class GameMockExtension extends MockitoExtension {
         player.username = "test";
         player.iusername = "test";
         player.setInventories(new Inventory[]{
-                new PlayerInventory(player),
-                new PlayerOffhandInventory(player),
-                new PlayerEnderChestInventory(player)
+                new HumanInventory(player),
+                new HumanOffHandInventory(player),
+                new HumanEnderChestInventory(player)
         });
         try {
             FieldUtils.writeDeclaredField(player, "foodData", new PlayerFood(player, 20, 20), true);

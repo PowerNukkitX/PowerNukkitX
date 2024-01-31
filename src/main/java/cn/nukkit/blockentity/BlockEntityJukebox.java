@@ -91,7 +91,7 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     }
 
     @Override
-    public void onBreak() {
+    public void onBreak(boolean isSilkTouch) {
         this.dropItem();
     }
 }

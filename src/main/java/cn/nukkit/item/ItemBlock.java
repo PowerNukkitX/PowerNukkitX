@@ -15,17 +15,17 @@ public class ItemBlock extends Item {
         this(block, 0, 1);
     }
 
-    public ItemBlock(Block block, Integer aux) {
+    public ItemBlock(Block block, int aux) {
         this(block, aux, 1);
     }
 
-    public ItemBlock(Block block, Integer aux, int count) {
+    public ItemBlock(Block block, int aux, int count) {
         super(block.getItemId(), aux, count, block.getName());
         this.block = block;
     }
 
     @Override
-    public void setDamage(Integer meta) {
+    public void setDamage(int meta) {
         int i = Registries.BLOCKSTATE_ITEMMETA.get(block.getId(), meta);
         if (i != 0) {
             BlockState blockState = Registries.BLOCKSTATE.get(i);

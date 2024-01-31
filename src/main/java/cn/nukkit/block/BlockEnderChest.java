@@ -5,6 +5,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityEnderChest;
+import cn.nukkit.inventory.HumanEnderChestInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
@@ -25,10 +26,9 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
 
     public static final BlockProperties PROPERTIES = new BlockProperties(ENDER_CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
-    private final Set<Player> viewers = new HashSet<>();
-
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -46,12 +46,14 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.ENDER_CHEST;
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityEnderChest> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityEnderChest> getBlockEntityClass() {
         return BlockEntityEnderChest.class;
     }
 
@@ -142,14 +144,14 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
         }
 
         BlockEntityEnderChest chest = getOrCreateBlockEntity();
-        if (chest.namedTag.contains("Lock") && chest.namedTag.get("Lock") instanceof StringTag 
+        if (chest.namedTag.contains("Lock") && chest.namedTag.get("Lock") instanceof StringTag
                 && !chest.namedTag.getString("Lock").equals(item.getCustomName())) {
             return false;
         }
 
-        player.setViewingEnderChest(this);
-        player.addWindow(player.getEnderChestInventory());
-
+        HumanEnderChestInventory enderChestInventory = player.getEnderChestInventory();
+        enderChestInventory.setBlockEntityEnderChest(player, chest);
+        player.addWindow(enderChestInventory);
         return true;
     }
 
@@ -169,17 +171,13 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
         }
     }
 
-    public Set<Player> getViewers() {
-        return viewers;
-    }
-
     @Override
     public boolean canBePushed() {
         return false;
     }
 
     @Override
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 

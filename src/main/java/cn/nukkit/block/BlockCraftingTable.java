@@ -1,23 +1,27 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.inventory.BlockInventoryHolder;
+import cn.nukkit.inventory.ContainerInventory;
+import cn.nukkit.inventory.CraftingTableInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
 /**
  * @author xtypr
  * @since 2015/12/5
  */
-public class BlockCraftingTable extends BlockSolid {
+public class BlockCraftingTable extends BlockSolid implements BlockInventoryHolder {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CRAFTING_TABLE);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -57,17 +61,13 @@ public class BlockCraftingTable extends BlockSolid {
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         if (player != null) {
-            player.craftingType = Player.CRAFTING_BIG;
-//            player.setCraftingGrid(player.getUIInventory().getBigCraftingGrid());
-            ContainerOpenPacket pk = new ContainerOpenPacket();
-            pk.windowId = -1;
-            pk.type = 1;
-            pk.x = (int) x;
-            pk.y = (int) y;
-            pk.z = (int) z;
-            pk.entityId = player.getId();
-            player.dataPacket(pk);
+            player.addWindow(getOrCreateInventory());
         }
         return true;
+    }
+
+    @Override
+    public Supplier<ContainerInventory> blockInventorySupplier() {
+        return () -> new CraftingTableInventory(this);
     }
 }

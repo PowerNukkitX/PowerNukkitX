@@ -1,14 +1,14 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.inventory.*;
-import cn.nukkit.recipe.*;
 import cn.nukkit.item.Item;
+import cn.nukkit.recipe.*;
+import cn.nukkit.recipe.descriptor.DefaultDescriptor;
+import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * @author Nukkit Project Team
@@ -21,29 +21,18 @@ public class CraftingDataPacket extends DataPacket {
     public static final String CRAFTING_TAG_STONECUTTER = "stonecutter";
     public static final String CRAFTING_TAG_FURNACE = "furnace";
     public static final String CRAFTING_TAG_CAMPFIRE = "campfire";
+    public static final String CRAFTING_TAG_SOUL_CAMPFIRE = "soul_campfire";
     public static final String CRAFTING_TAG_BLAST_FURNACE = "blast_furnace";
     public static final String CRAFTING_TAG_SMOKER = "smoker";
     public static final String CRAFTING_TAG_SMITHING_TABLE = "smithing_table";
 
-    private List<Recipe> entries = new ArrayList<>();
+    private final List<Recipe> entries = new ArrayList<>();
     private final List<BrewingRecipe> brewingEntries = new ArrayList<>();
     private final List<ContainerRecipe> containerEntries = new ArrayList<>();
     public boolean cleanRecipes;
 
-    public void addShapelessRecipe(ShapelessRecipe... recipe) {
-        Collections.addAll(entries, recipe);
-    }
-
-    public void addStonecutterRecipe(StonecutterRecipe... recipes) {
-        Collections.addAll(entries, recipes);
-    }
-
-    public void addShapedRecipe(ShapedRecipe... recipe) {
-        Collections.addAll(entries, recipe);
-    }
-
-    public void addCartographyRecipe(CartographyRecipe... recipe) {
-        Stream.of(recipe).filter(r -> r.getRecipeId() != null).forEachOrdered(r -> entries.add(r));
+    public void addNetworkIdRecipe(List<Recipe> recipes) {
+        entries.addAll(recipes);
     }
 
     public void addFurnaceRecipe(FurnaceRecipe... recipe) {
@@ -59,10 +48,6 @@ public class CraftingDataPacket extends DataPacket {
     }
 
     public void addCampfireRecipeRecipe(CampfireRecipe... recipe) {
-        Collections.addAll(entries, recipe);
-    }
-
-    public void addMultiRecipe(MultiRecipe... recipe) {
         Collections.addAll(entries, recipe);
     }
 
@@ -85,7 +70,6 @@ public class CraftingDataPacket extends DataPacket {
         this.putUnsignedVarInt(entries.size());
 
         int recipeNetworkId = 1;
-
         for (Recipe recipe : entries) {
             this.putVarInt(recipe.getType().networkType);
             switch (recipe.getType()) {
@@ -96,7 +80,7 @@ public class CraftingDataPacket extends DataPacket {
                     this.putRecipeIngredient(new DefaultDescriptor(stonecutter.getIngredient()));
                     this.putUnsignedVarInt(1);
                     this.putSlot(stonecutter.getResult(), true);
-                    this.putUUID(stonecutter.getId());
+                    this.putUUID(stonecutter.getUUID());
                     this.putString(CRAFTING_TAG_STONECUTTER);
                     this.putVarInt(stonecutter.getPriority());
                     this.putUnsignedVarInt(recipeNetworkId++);
@@ -104,14 +88,14 @@ public class CraftingDataPacket extends DataPacket {
                 case SHAPELESS, CARTOGRAPHY, SHULKER_BOX -> {
                     ShapelessRecipe shapeless = (ShapelessRecipe) recipe;
                     this.putString(shapeless.getRecipeId());
-                    List<ItemDescriptor> ingredients = shapeless.getNewIngredients();
+                    List<ItemDescriptor> ingredients = shapeless.getIngredients();
                     this.putUnsignedVarInt(ingredients.size());
                     for (var ingredient : ingredients) {
                         this.putRecipeIngredient(ingredient);
                     }
                     this.putUnsignedVarInt(1);
                     this.putSlot(shapeless.getResult(), true);
-                    this.putUUID(shapeless.getId());
+                    this.putUUID(shapeless.getUUID());
                     switch (recipe.getType()) {
                         case CARTOGRAPHY -> this.putString(CRAFTING_TAG_CARTOGRAPHY_TABLE);
                         case SHAPELESS, SHULKER_BOX -> this.putString(CRAFTING_TAG_CRAFTING_TABLE);
@@ -120,15 +104,18 @@ public class CraftingDataPacket extends DataPacket {
                     this.putUnsignedVarInt(recipeNetworkId++);
                 }
                 case SMITHING_TRANSFORM -> {
-                    SmithingRecipe smithing = (SmithingRecipe) recipe;
+                    SmithingTransformRecipe smithing = (SmithingTransformRecipe) recipe;
                     this.putString(smithing.getRecipeId());
                     //todo 1.19.80还没有模板，下个版本再加入
-                    this.putRecipeIngredient(new DefaultDescriptor(Item.AIR));
-                    this.putRecipeIngredient(smithing.getEquipment());
-                    this.putRecipeIngredient(smithing.getIngredient());
+                    this.putRecipeIngredient(smithing.getTemplate());
+                    this.putRecipeIngredient(smithing.getBase());
+                    this.putRecipeIngredient(smithing.getAddition());
                     this.putSlot(smithing.getResult(), true);
                     this.putString(CRAFTING_TAG_SMITHING_TABLE);
                     this.putUnsignedVarInt(recipeNetworkId++);
+                }
+                case SMITHING_TRIM -> {
+                    //todo
                 }
                 case SHAPED -> {
                     ShapedRecipe shaped = (ShapedRecipe) recipe;
@@ -137,24 +124,26 @@ public class CraftingDataPacket extends DataPacket {
                     this.putVarInt(shaped.getHeight());
                     for (int z = 0; z < shaped.getHeight(); ++z) {
                         for (int x = 0; x < shaped.getWidth(); ++x) {
-                            this.putRecipeIngredient(shaped.getNewIngredient(x, z));
+                            this.putRecipeIngredient(shaped.getIngredient(x, z));
                         }
                     }
-                    List<Item> outputs = new ArrayList<>();
-                    outputs.add(shaped.getResult());
-                    outputs.addAll(shaped.getExtraResults());
-                    this.putUnsignedVarInt(outputs.size());
-                    for (Item output : outputs) {
+                    List<Item> results = shaped.getResults();
+                    this.putUnsignedVarInt(results.size());
+                    for (Item output : results) {
                         this.putSlot(output, true);
                     }
-                    this.putUUID(shaped.getId());
+                    this.putUUID(shaped.getUUID());
                     this.putString(CRAFTING_TAG_CRAFTING_TABLE);
                     this.putVarInt(shaped.getPriority());
                     this.putUnsignedVarInt(recipeNetworkId++);
                 }
-                case FURNACE, FURNACE_DATA, SMOKER, SMOKER_DATA, BLAST_FURNACE, BLAST_FURNACE_DATA, CAMPFIRE, CAMPFIRE_DATA -> {
+                case MULTI -> {
+                    this.putUUID(((MultiRecipe) recipe).getId());
+                    this.putUnsignedVarInt(recipeNetworkId++);
+                }
+                case FURNACE, FURNACE_DATA, SMOKER, SMOKER_DATA, BLAST_FURNACE, BLAST_FURNACE_DATA, CAMPFIRE, CAMPFIRE_DATA, SOUL_CAMPFIRE_DATA, SOUL_CAMPFIRE -> {
                     SmeltingRecipe smelting = (SmeltingRecipe) recipe;
-                    Item input = smelting.getInput();
+                    Item input = smelting.getInput().toItem();
                     this.putVarInt(input.getRuntimeId());
                     if (recipe.getType().name().endsWith("_DATA")) {
                         this.putVarInt(input.getDamage());
@@ -165,14 +154,8 @@ public class CraftingDataPacket extends DataPacket {
                         case SMOKER, SMOKER_DATA -> this.putString(CRAFTING_TAG_SMOKER);
                         case BLAST_FURNACE, BLAST_FURNACE_DATA -> this.putString(CRAFTING_TAG_BLAST_FURNACE);
                         case CAMPFIRE, CAMPFIRE_DATA -> this.putString(CRAFTING_TAG_CAMPFIRE);
+                        case SOUL_CAMPFIRE_DATA, SOUL_CAMPFIRE -> this.putString(CRAFTING_TAG_SOUL_CAMPFIRE);
                     }
-                }
-                case MULTI -> {
-                    this.putUUID(((MultiRecipe) recipe).getId());
-                    this.putUnsignedVarInt(recipeNetworkId++);
-                }
-                case SMITHING_TRIM -> {
-                    //todo
                 }
             }
         }

@@ -2,6 +2,8 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityCommandBlock;
+import cn.nukkit.blockentity.BlockEntityInventoryHolder;
+import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
 import cn.nukkit.item.Item;
@@ -13,15 +15,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 //implement the command block's ui
-public class CommandBlockInventory implements Inventory {
-
-    protected final Position holder;
+public class CommandBlockInventory implements Inventory, BlockEntityInventoryNameable {
+    protected final BlockEntityCommandBlock holder;
     protected final Set<Player> viewers;
     private List<InventoryListener> listeners;
 
-    public CommandBlockInventory(Position holder, Set<Player> viewers) {
+    public CommandBlockInventory(BlockEntityCommandBlock holder) {
         this.holder = holder;
-        this.viewers = viewers;
+        this.viewers = new HashSet<>();
     }
 
     @Override
@@ -37,19 +38,6 @@ public class CommandBlockInventory implements Inventory {
     @Override
     public void setMaxStackSize(int size) {
 
-    }
-
-    @Override
-    public String getName() {
-        if (this.holder instanceof BlockEntityCommandBlock) {
-            return ((BlockEntityCommandBlock) this.holder).getName();
-        }
-        return "";
-    }
-
-    @Override
-    public String getTitle() {
-        return this.getName();
     }
 
     @NotNull
@@ -118,6 +106,11 @@ public class CommandBlockInventory implements Inventory {
     }
 
     @Override
+    public int getFreeSpace(Item item) {
+        return 0;
+    }
+
+    @Override
     public boolean contains(Item item) {
         return false;
     }
@@ -178,13 +171,14 @@ public class CommandBlockInventory implements Inventory {
     }
 
     @Override
-    public InventoryHolder getHolder() {
-        return (InventoryHolder) this.holder;
+    public BlockEntityCommandBlock getHolder() {
+        return this.holder;
     }
 
     @Override
     public void onOpen(Player who) {
         if (who.isOp() && who.isCreative()) {
+            this.viewers.add(who);
             ContainerOpenPacket pk = new ContainerOpenPacket();
             pk.windowId = who.getWindowId(this);
             pk.type = 16;
@@ -235,7 +229,6 @@ public class CommandBlockInventory implements Inventory {
         }
     }
 
-    @Deprecated
     @Override
     public void addListener(InventoryListener listener) {
         if (this.listeners == null) {
@@ -245,11 +238,15 @@ public class CommandBlockInventory implements Inventory {
         this.listeners.add(listener);
     }
 
-    @Deprecated
     @Override
     public void removeListener(InventoryListener listener) {
         if (this.listeners != null) {
             this.listeners.remove(listener);
         }
+    }
+
+    @Override
+    public BlockEntityNameable getBlockEntityInventoryHolder() {
+        return getHolder();
     }
 }

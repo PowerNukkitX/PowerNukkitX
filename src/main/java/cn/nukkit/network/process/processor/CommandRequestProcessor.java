@@ -1,6 +1,5 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.event.player.PlayerCommandPreprocessEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
@@ -14,8 +13,6 @@ public class CommandRequestProcessor extends DataPacketProcessor<CommandRequestP
         if (!playerHandle.player.spawned || !playerHandle.player.isAlive()) {
             return;
         }
-        //?? why set craftType
-        playerHandle.player.craftingType = Player.CRAFTING_SMALL;
         PlayerCommandPreprocessEvent playerCommandPreprocessEvent = new PlayerCommandPreprocessEvent(playerHandle.player, pk.command);
         playerHandle.player.getServer().getPluginManager().callEvent(playerCommandPreprocessEvent);
         if (playerCommandPreprocessEvent.isCancelled()) {

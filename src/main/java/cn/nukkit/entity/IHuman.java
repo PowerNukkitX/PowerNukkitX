@@ -3,14 +3,23 @@ package cn.nukkit.entity;
 import cn.nukkit.Player;
 import cn.nukkit.entity.data.IntPositionEntityData;
 import cn.nukkit.entity.data.Skin;
-import cn.nukkit.inventory.*;
+import cn.nukkit.inventory.HumanOffHandInventory;
+import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.InventoryHolder;
+import cn.nukkit.inventory.HumanInventory;
+import cn.nukkit.inventory.HumanEnderChestInventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Level;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.utils.*;
+import cn.nukkit.utils.PersonaPiece;
+import cn.nukkit.utils.PersonaPieceTint;
+import cn.nukkit.utils.SerializedImage;
+import cn.nukkit.utils.SkinAnimation;
+import cn.nukkit.utils.Utils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -21,7 +30,6 @@ public interface IHuman extends InventoryHolder {
     int NETWORK_ID = 257;
 
     default void initHumanEntity(Entity human) {
-        boolean isIntelligentHuman = this instanceof EntityIntelligentHuman;
         human.setDataFlag(Entity.DATA_PLAYER_FLAGS, Entity.DATA_PLAYER_FLAG_SLEEP, false);
         human.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_GRAVITY);
         human.setDataProperty(new IntPositionEntityData(Entity.DATA_PLAYER_BED_POSITION, 0, 0, 0), false);
@@ -142,110 +150,68 @@ public interface IHuman extends InventoryHolder {
                     this.getSkin().getSkinData().data, human.getNameTag().getBytes(StandardCharsets.UTF_8)));
         }
 
-        if (isIntelligentHuman) {
-            EntityIntelligentHuman entityIntelligentHuman = (EntityIntelligentHuman) this;
-            this.setInventories(new Inventory[]{
-                    new FakeHumanInventory(entityIntelligentHuman),
-                    new FakeHumanOffhandInventory(entityIntelligentHuman),
-                    new FakeHumanEnderChestInventory(entityIntelligentHuman)
-            });
-            if (human.namedTag.containsNumber("SelectedInventorySlot")) {
-                entityIntelligentHuman.getInventory().setHeldItemSlot(NukkitMath.clamp(human.namedTag.getInt("SelectedInventorySlot"), 0, 8));
-            }
-        } else {
-            EntityHumanType entityHumanType = (EntityHumanType) this;
-            this.setInventories(new Inventory[]{
-                    new PlayerInventory(entityHumanType),
-                    new PlayerOffhandInventory(entityHumanType),
-                    new PlayerEnderChestInventory(entityHumanType)
-            });
-            if (human.namedTag.containsNumber("SelectedInventorySlot")) {
-                entityHumanType.getInventory().setHeldItemSlot(NukkitMath.clamp(human.namedTag.getInt("SelectedInventorySlot"), 0, 8));
-            }
+        this.setInventories(new Inventory[]{
+                new HumanInventory(this),
+                new HumanOffHandInventory(this),
+                new HumanEnderChestInventory(this)
+        });
+
+        if (human.namedTag.containsNumber("SelectedInventorySlot")) {
+            this.getInventory().setHeldItemSlot(NukkitMath.clamp(human.namedTag.getInt("SelectedInventorySlot"), 0, 8));
         }
 
-        var inventory = this.getInventory();
         if (human.namedTag.contains("Inventory") && human.namedTag.get("Inventory") instanceof ListTag) {
+            var inventory = this.getInventory();
             ListTag<CompoundTag> inventoryList = human.namedTag.getList("Inventory", CompoundTag.class);
             for (CompoundTag item : inventoryList.getAll()) {
                 int slot = item.getByte("Slot");
-                if (slot >= 0 && slot < 9) { //hotbar
-                    //Old hotbar saving stuff, remove it (useless now)
-                    inventoryList.remove(item);
-                } else if (slot >= 100 && slot < 104) {
-                    inventory.setItem(inventory.getSize() + slot - 100, NBTIO.getItemHelper(item));
-                } else if (slot == -106) {
-                    this.getOffhandInventory().setItem(0, NBTIO.getItemHelper(item));
-                } else {
-                    inventory.setItem(slot - 9, NBTIO.getItemHelper(item));
-                }
+                inventory.setItem(slot, NBTIO.getItemHelper(item));//inventory 0-39
             }
+        }
+        if (human.namedTag.containsCompound("OffInventory")) {
+            HumanOffHandInventory offhandInventory = getOffhandInventory();
+            CompoundTag offHand = human.namedTag.getCompound("OffInventory");
+            offhandInventory.setItem(0, NBTIO.getItemHelper(offHand));//offinventory index 0
         }
         if (human.namedTag.contains("EnderItems") && human.namedTag.get("EnderItems") instanceof ListTag) {
             ListTag<CompoundTag> inventoryList = human.namedTag.getList("EnderItems", CompoundTag.class);
-            for (CompoundTag item : inventoryList.getAll()) {
+            for (CompoundTag item : inventoryList.getAll()) {//enderItems index 0-26
                 ((EntityHumanType) human).getEnderChestInventory().setItem(item.getByte("Slot"), NBTIO.getItemHelper(item));
             }
         }
     }
 
     default void saveHumanEntity(Entity human) {
-        boolean isIntelligentHuman = this instanceof EntityIntelligentHuman;
-
         //EntityHumanType
         ListTag<CompoundTag> inventoryTag = null;
         if (this.getInventory() != null) {
             inventoryTag = new ListTag<>();
             human.namedTag.putList("Inventory", inventoryTag);
 
-            for (int slot = 0; slot < 9; ++slot) {
-                inventoryTag.add(new CompoundTag()
-                        .putByte("Count", 0)
-                        .putShort("Damage", 0)
-                        .putByte("Slot", slot)
-                        .putByte("TrueSlot", -1)
-                        .putShort("id", 0)
-                );
+            for (var entry : getInventory().getContents().entrySet()) {
+                inventoryTag.add(NBTIO.putItemHelper(entry.getValue(), entry.getKey()));
             }
 
-            int slotCount = Player.SURVIVAL_SLOTS + 9;
-            for (int slot = 9; slot < slotCount; ++slot) {
-                Item item = this.getInventory().getItem(slot - 9);
-                inventoryTag.add(NBTIO.putItemHelper(item, slot));
-            }
-
-            for (int slot = 100; slot < 104; ++slot) {
-                Item item = this.getInventory().getItem(this.getInventory().getSize() + slot - 100);
-                if (item != null && !item.isNull()) {
-                    inventoryTag.add(NBTIO.putItemHelper(item, slot));
-                }
-            }
-            if (isIntelligentHuman) {
-                human.namedTag.putInt("SelectedInventorySlot", ((FakeHumanInventory) this.getInventory()).getHeldItemIndex());
-            } else {
-                human.namedTag.putInt("SelectedInventorySlot", ((PlayerInventory) this.getInventory()).getHeldItemIndex());
-            }
+            human.namedTag.putInt("SelectedInventorySlot", this.getInventory().getHeldItemIndex());
         }
 
         if (this.getOffhandInventory() != null) {
             Item item = this.getOffhandInventory().getItem(0);
             if (!item.isNull()) {
-                if (inventoryTag == null) {
-                    inventoryTag = new ListTag<>();
-                    human.namedTag.putList("Inventory", inventoryTag);
-                }
-                inventoryTag.add(NBTIO.putItemHelper(item, -106));
+                human.namedTag.putCompound("OffInventory", NBTIO.putItemHelper(item, 0));
             }
         }
 
         human.namedTag.putList("EnderItems", new ListTag<CompoundTag>());
         if (this.getEnderChestInventory() != null) {
-            for (int slot = 0; slot < 27; ++slot) {
+            ListTag<CompoundTag> enderItems = human.namedTag.getList("EnderItems", CompoundTag.class);
+            for (int slot = 0; slot < this.getEnderChestInventory().getSize(); ++slot) {
                 Item item = this.getEnderChestInventory().getItem(slot);
-                if (item != null && !item.isNull()) {
-                    human.namedTag.getList("EnderItems", CompoundTag.class).add(NBTIO.putItemHelper(item, slot));
+                if (!item.isNull()) {
+                    enderItems.add(NBTIO.putItemHelper(item, slot));
                 }
             }
+            human.namedTag.putList("EnderItems", enderItems);
         }
 
         //EntityHuman
@@ -328,9 +294,15 @@ public interface IHuman extends InventoryHolder {
 
     void setInventories(Inventory[] inventory);
 
-    Inventory getInventory();
+    HumanInventory getInventory();
 
-    Inventory getOffhandInventory();
+    HumanOffHandInventory getOffhandInventory();
 
-    Inventory getEnderChestInventory();
+    HumanEnderChestInventory getEnderChestInventory();
+
+    Level getLevel();
+
+    default Entity getEntity() {
+        return (Entity) this;
+    }
 }

@@ -11,7 +11,11 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.*;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.IntTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.Binary;
@@ -30,7 +34,11 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.ByteOrder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.regex.Pattern;
 
 /**
@@ -64,6 +72,7 @@ public abstract class Item implements Cloneable, ItemID {
     public int count;
     protected String name;
     protected Integer netId;
+    private static int STACK_NETWORK_ID_COUNTER = 1;
 
     private String idConvertToName() {
         if (this.name != null) {
@@ -77,7 +86,8 @@ public abstract class Item implements Cloneable, ItemID {
                     result.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1)).append(" ");
                 }
             }
-            return result.toString().trim().intern();
+            this.name = result.toString().trim().intern();
+            return name;
         }
     }
 
@@ -85,29 +95,21 @@ public abstract class Item implements Cloneable, ItemID {
         this(id, 0);
     }
 
-    public Item(@NotNull String id, @Nullable Integer meta) {
+    public Item(@NotNull String id, int meta) {
         this(id, meta, 1);
     }
 
-    public Item(@NotNull String id, @Nullable Integer meta, int count) {
-        this.id = id.intern();
-        if (meta != null && meta >= 0) {
-            this.meta = meta & 0xffff;
-        } else {
-            this.hasMeta = false;
-        }
-        this.count = count;
+    public Item(@NotNull String id, int meta, int count) {
+        this(id, meta, count, null);
     }
 
-    public Item(@NotNull String id, @Nullable Integer meta, int count, @Nullable String name) {
+    public Item(@NotNull String id, int meta, int count, @Nullable String name) {
         this.id = id.intern();
-        if (meta != null && meta >= 0) {
-            this.meta = meta & 0xffff;
-        } else {
-            this.hasMeta = false;
-        }
+        this.meta = meta & 0xffff;
         this.count = count;
-        this.name = name.intern();
+        if (name != null) {
+            this.name = name.intern();
+        }
     }
 
     public boolean hasMeta() {
@@ -132,6 +134,11 @@ public abstract class Item implements Cloneable, ItemID {
 
     @NotNull
     public static Item get(String id, Integer meta, int count, byte[] tags) {
+        return get(id, meta, count, tags, true);
+    }
+
+    @NotNull
+    public static Item get(String id, Integer meta, int count, byte[] tags, boolean autoAssignStackNetworkId) {
         Item item = Registries.ITEM.get(id, meta, count, tags);
         if (item == null) {
             BlockState itemBlockState = getItemBlockState(id, meta);
@@ -141,6 +148,9 @@ public abstract class Item implements Cloneable, ItemID {
             item = new ItemBlock(Registries.BLOCK.get(itemBlockState));
             item.setCount(count);
             item.setCompoundTag(tags);
+        }
+        if (autoAssignStackNetworkId) {
+            item.autoAssignStackNetworkId();
         }
         return item;
     }
@@ -743,16 +753,29 @@ public abstract class Item implements Cloneable, ItemID {
      *
      * @return whether this item is using a net id
      */
+    @ApiStatus.Internal
     public boolean isUsingNetId() {
         return netId != null;
     }
 
+    @ApiStatus.Internal
     public Integer getNetId() {
         return netId;
     }
 
+    @ApiStatus.Internal
     public void setNetId(Integer netId) {
-        this.netId = netId;
+        if (netId != null) {
+            if (netId < 0)
+                throw new IllegalArgumentException("stack network id cannot be negative");
+            this.netId = netId;
+        }
+    }
+
+    @ApiStatus.Internal
+    public Item autoAssignStackNetworkId() {
+        this.netId = STACK_NETWORK_ID_COUNTER++;
+        return this;
     }
 
     public int getCount() {
@@ -851,13 +874,9 @@ public abstract class Item implements Cloneable, ItemID {
         return meta;
     }
 
-    public void setDamage(Integer damage) {
-        if (damage != null) {
-            this.meta = damage & 0xffff;
-            this.hasMeta = true;
-        } else {
-            this.hasMeta = false;
-        }
+    public void setDamage(int damage) {
+        this.meta = damage & 0xffff;
+        this.hasMeta = true;
     }
 
     /**
@@ -865,10 +884,8 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * Create a wildcard recipe item,the item can be applied to a recipe without restriction on data(damage/meta) values
      */
-    public Item createFuzzyCraftingRecipe() {
-        Item item = clone();
-        item.hasMeta = false;
-        return item;
+    public void disableMeta() {
+        this.hasMeta = false;
     }
 
     /**
@@ -1188,6 +1205,18 @@ public abstract class Item implements Cloneable, ItemID {
         return false;
     }
 
+    /**
+     * 返回物品堆叠是否与指定的物品堆叠有相同的ID,伤害,NBT和数量
+     * <p>
+     * Returns whether the specified item stack has the same ID, damage, NBT and count as this item stack.
+     *
+     * @param other item
+     * @return equal
+     */
+    public final boolean equalsExact(Item other) {
+        return this.equals(other, true, true) && this.count == other.count;
+    }
+
     @Override
     public final boolean equals(Object item) {
         return item instanceof Item && this.equals((Item) item, true);
@@ -1207,30 +1236,13 @@ public abstract class Item implements Cloneable, ItemID {
      */
     public final boolean equals(Item item, boolean checkDamage, boolean checkCompound) {
         if (!Objects.equals(this.getId(), item.getId())) return false;
-        if (!checkDamage || this.getDamage() == item.getDamage()) {
-            if (checkCompound) {
-                if (Arrays.equals(this.getCompoundTag(), item.getCompoundTag())) {
-                    return true;
-                } else if (this.hasCompoundTag() && item.hasCompoundTag()) {
-                    return this.getNamedTag().equals(item.getNamedTag());
-                }
-            } else {
-                return true;
-            }
+        if (checkDamage && this.hasMeta && item.hasMeta) {
+            if (this.getDamage() != item.getDamage()) return false;
         }
-        return false;
-    }
-
-    /**
-     * 返回物品堆叠是否与指定的物品堆叠有相同的ID,伤害,NBT和数量
-     * <p>
-     * Returns whether the specified item stack has the same ID, damage, NBT and count as this item stack.
-     *
-     * @param other item
-     * @return equal
-     */
-    public final boolean equalsExact(Item other) {
-        return this.equals(other, true, true) && this.count == other.count;
+        if (checkCompound && this.hasCompoundTag() && item.hasCompoundTag()) {
+            return Arrays.equals(this.getCompoundTag(), item.getCompoundTag());
+        }
+        return true;
     }
 
     /**
@@ -1283,26 +1295,11 @@ public abstract class Item implements Cloneable, ItemID {
         return true;
     }
 
-    @Deprecated
-    public final boolean deepEquals(Item item) {
-        return equals(item, true);
-    }
-
-    @Deprecated
-    public final boolean deepEquals(Item item, boolean checkDamage) {
-        return equals(item, checkDamage, true);
-    }
-
-    @Deprecated
-    public final boolean deepEquals(Item item, boolean checkDamage, boolean checkCompound) {
-        return equals(item, checkDamage, checkCompound);
-    }
-
     @Override
     public Item clone() {
         try {
             Item item = (Item) super.clone();
-            item.tags = this.tags.clone();
+            item.tags = this.tags.clone();//deep copy
             item.cachedNBT = null;
             return item;
         } catch (CloneNotSupportedException e) {
@@ -1367,7 +1364,7 @@ public abstract class Item implements Cloneable, ItemID {
         for (Block block : blocks) {
             canDestroy.add(new StringTag(block.toItem().getId()));
         }
-        tag.putList("CanDestroy",canDestroy);
+        tag.putList("CanDestroy", canDestroy);
         this.setCompoundTag(tag);
     }
 

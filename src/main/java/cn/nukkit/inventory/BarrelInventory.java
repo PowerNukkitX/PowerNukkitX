@@ -1,19 +1,28 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBarrel;
 import cn.nukkit.blockentity.BlockEntityBarrel;
+import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+
+import java.util.Map;
 
 
-public class BarrelInventory extends ContainerInventory {
-
-    
+public class BarrelInventory extends ContainerInventory implements BlockEntityInventoryNameable {
     public BarrelInventory(BlockEntityBarrel barrel) {
-        super(barrel, InventoryType.BARREL);
+        super(barrel, InventoryType.CONTAINER, 27);
+    }
+
+    @Override
+    public void init() {
+        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        for (int i = 0; i < getSize(); i++) {
+            map.put(i, ContainerSlotType.BARREL);
+        }
     }
 
     @Override
@@ -50,8 +59,7 @@ public class BarrelInventory extends ContainerInventory {
             Level level = barrel.getLevel();
             if (level != null) {
                 Block block = barrel.getBlock();
-                if (block instanceof BlockBarrel) {
-                    BlockBarrel blockBarrel = (BlockBarrel) block;
+                if (block instanceof BlockBarrel blockBarrel) {
                     if (blockBarrel.isOpen()) {
                         blockBarrel.setOpen(false);
                         level.setBlock(blockBarrel, blockBarrel, true, true);
@@ -65,5 +73,10 @@ public class BarrelInventory extends ContainerInventory {
     @Override
     public boolean canCauseVibration() {
         return true;
+    }
+
+    @Override
+    public BlockEntityNameable getBlockEntityInventoryHolder() {
+        return getHolder();
     }
 }

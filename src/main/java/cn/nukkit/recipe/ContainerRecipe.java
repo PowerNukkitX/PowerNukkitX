@@ -1,23 +1,22 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.registry.Registries;
+
+import java.util.List;
 
 public class ContainerRecipe extends MixRecipe {
     public ContainerRecipe(Item input, Item ingredient, Item output) {
-        super(input, ingredient, output);
+        this(null, input, ingredient, output);
     }
 
     public ContainerRecipe(String recipeId, Item input, Item ingredient, Item output) {
-        super(recipeId, input, ingredient, output);
-    }
-
-    @Override
-    public void registerToCraftingManager(CraftingManager manager) {
-        manager.registerContainerRecipe(this);
+        super(recipeId == null ? Registries.RECIPE.computeRecipeIdWithItem(List.of(output), List.of(input, ingredient), RecipeType.CONTAINER) : recipeId,
+                input, ingredient, output);
     }
 
     @Override
     public RecipeType getType() {
-        throw new UnsupportedOperationException();
+        return RecipeType.CONTAINER;
     }
 }

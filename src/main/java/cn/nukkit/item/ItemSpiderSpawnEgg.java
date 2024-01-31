@@ -1,7 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
 public class ItemSpiderSpawnEgg extends ItemSpawnEgg {
     public ItemSpiderSpawnEgg() {
         super(SPIDER_SPAWN_EGG);
@@ -13,7 +11,7 @@ public class ItemSpiderSpawnEgg extends ItemSpawnEgg {
     }
 
     @Override
-    public void setDamage(Integer meta) {
+    public void setDamage(int meta) {
 
     }
 }

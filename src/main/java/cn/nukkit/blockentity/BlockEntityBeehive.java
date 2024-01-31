@@ -295,25 +295,20 @@ public class BlockEntityBeehive extends BlockEntity {
     }
 
     @Override
-    public void onBreak() {
-        if (!isEmpty()) {
-            for (BlockEntityBeehive.Occupant occupant : getOccupants()) {
-                Entity entity = spawnOccupant(occupant, null);
-                if (level == null || level.getBlock(down()).getId() != BlockID.CAMPFIRE) {
-                    if (entity instanceof EntityBee) {
-                        ((EntityBee) entity).setAngry(true);
-                    } else {
-                        // TODO attack nearest player
+    public void onBreak(boolean isSilkTouch) {
+        if (!isSilkTouch) {
+            if (!isEmpty()) {
+                for (BlockEntityBeehive.Occupant occupant : getOccupants()) {
+                    Entity entity = spawnOccupant(occupant, null);
+                    if (level == null || level.getBlock(down()).getId() != BlockID.CAMPFIRE) {
+                        if (entity instanceof EntityBee) {
+                            ((EntityBee) entity).setAngry(true);
+                        } else {
+                            // TODO attack nearest player
+                        }
                     }
                 }
             }
-        }
-    }
-
-    @Override
-    public void onBreak(boolean isSilkTouch) {
-        if (!isSilkTouch) {
-            onBreak();
         }
     }
 

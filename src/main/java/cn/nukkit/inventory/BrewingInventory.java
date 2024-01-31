@@ -2,11 +2,13 @@ package cn.nukkit.inventory;
 
 
 import cn.nukkit.blockentity.BlockEntityBrewingStand;
+import cn.nukkit.blockentity.BlockEntityInventoryHolder;
+import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.item.Item;
 
-public class BrewingInventory extends ContainerInventory {
+public class BrewingInventory extends ContainerInventory implements BlockEntityInventoryNameable {
     public BrewingInventory(BlockEntityBrewingStand brewingStand) {
-        super(brewingStand, InventoryType.BREWING_STAND);
+        super(brewingStand, InventoryType.BREWING_STAND, 5);//1 INPUT, 3 POTION, 1 fuel
     }
 
     @Override
@@ -39,5 +41,10 @@ public class BrewingInventory extends ContainerInventory {
         }
 
         this.getHolder().scheduleUpdate();
+    }
+
+    @Override
+    public BlockEntityNameable getBlockEntityInventoryHolder() {
+        return getHolder();
     }
 }

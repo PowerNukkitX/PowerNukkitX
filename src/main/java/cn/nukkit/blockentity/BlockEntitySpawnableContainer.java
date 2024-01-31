@@ -3,7 +3,6 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.inventory.ContainerInventory;
-import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
@@ -13,7 +12,7 @@ import cn.nukkit.nbt.tag.ListTag;
 
 import java.util.HashSet;
 
-public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer {
+public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
     protected ContainerInventory inventory;
 
 
@@ -32,7 +31,7 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
         ListTag<CompoundTag> list = (ListTag<CompoundTag>) this.namedTag.getList("Items");
         for (CompoundTag compound : list.getAll()) {
             Item item = NBTIO.getItemHelper(compound);
-            this.inventory.slots.put(compound.getByte("Slot"), item);
+            this.inventory.setItemInternal(compound.getByte("Slot"), item);
         }
     }
 
@@ -47,7 +46,7 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
     }
 
     @Override
-    public void onBreak() {
+    public void onBreak(boolean isSilkTouch) {
         for (Item content : inventory.getContents().values()) {
             level.dropItem(this, content);
         }

@@ -10,7 +10,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 
-public abstract class BlockEntityEjectable extends BlockEntitySpawnable implements BlockEntityContainer, BlockEntityNameable, InventoryHolder {
+public abstract class BlockEntityEjectable extends BlockEntitySpawnable implements BlockEntityInventoryHolder{
 
     protected EjectableInventory inventory;
 
@@ -129,7 +129,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
     }
 
     @Override
-    public void onBreak() {
+    public void onBreak(boolean isSilkTouch) {
         for (Item content : inventory.getContents().values()) {
             level.dropItem(this, content);
         }

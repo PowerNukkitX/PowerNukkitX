@@ -11,7 +11,7 @@ public class ItemWolfSpawnEgg extends ItemSpawnEgg {
     }
 
     @Override
-    public void setDamage(Integer meta) {
+    public void setDamage(int meta) {
 
     }
 }

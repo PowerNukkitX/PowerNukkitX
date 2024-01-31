@@ -5,7 +5,11 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.event.inventory.FurnaceBurnEvent;
 import cn.nukkit.event.inventory.FurnaceSmeltEvent;
-import cn.nukkit.inventory.*;
+import cn.nukkit.inventory.FurnaceTypeInventory;
+import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.InventorySlice;
+import cn.nukkit.inventory.InventoryType;
+import cn.nukkit.inventory.RecipeInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemBucket;
@@ -23,9 +27,9 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author MagicDroidX
  */
-public class BlockEntityFurnace extends BlockEntitySpawnable implements InventoryHolder, RecipeInventoryHolder, BlockEntityContainer, BlockEntityNameable {
+public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeInventoryHolder, BlockEntityInventoryHolder {
 
-    protected FurnaceInventory inventory;
+    protected FurnaceTypeInventory inventory;
 
     protected int burnTime;
     protected int burnDuration;
@@ -54,7 +58,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
     @Override
     public void loadNBT() {
         super.loadNBT();
-        this.inventory = new FurnaceInventory(this, getInventoryType());
+        this.inventory = new FurnaceTypeInventory(this, getInventoryType());
 
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
             this.namedTag.putList("Items", new ListTag<CompoundTag>());
@@ -140,7 +144,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
     }
 
     @Override
-    public void onBreak() {
+    public void onBreak(boolean isSilkTouch) {
         for (Item content : inventory.getContents().values()) {
             level.dropItem(this, content);
         }
@@ -214,7 +218,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
     }
 
     @Override
-    public FurnaceInventory getInventory() {
+    public FurnaceTypeInventory getInventory() {
         return inventory;
     }
 
@@ -263,7 +267,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
     }
 
     protected SmeltingRecipe matchRecipe(Item raw) {
-        return this.server.getCraftingManager().matchFurnaceRecipe(raw);
+        return this.server.getRecipeRegistry().findFurnaceRecipe(raw);
     }
 
     protected int getSpeedMultiplier() {
@@ -286,7 +290,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         if (smelt != null) {
             canSmelt = (raw.getCount() > 0 && ((smelt.getResult().equals(product, true) && product.getCount() < product.getMaxStackSize()) || product.getId() == BlockID.AIR));
             //检查输入
-            if (!smelt.getInput().equals(raw, true, false)) {
+            if (!smelt.getInput().toItem().equals(raw, true, false)) {
                 canSmelt = false;
             }
         }
@@ -312,7 +316,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
                     product = smelt.getResult().clone();
                     product.setCount(count);
 
-                    FurnaceSmeltEvent ev = new FurnaceSmeltEvent(this, raw, product, (float) this.server.getCraftingManager().getRecipeXp(smelt));
+                    FurnaceSmeltEvent ev = new FurnaceSmeltEvent(this, raw, product, (float) this.server.getRecipeRegistry().getRecipeXp(smelt));
                     this.server.getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         this.inventory.setResult(ev.getResult());

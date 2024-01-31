@@ -5,7 +5,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockUndyedShulkerBox;
 import cn.nukkit.inventory.BaseInventory;
-import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.ShulkerBoxInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -19,7 +18,7 @@ import java.util.HashSet;
 /**
  * @author PetteriM1
  */
-public class BlockEntityShulkerBox extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer, BlockEntityNameable {
+public class BlockEntityShulkerBox extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
 
     protected ShulkerBoxInventory inventory;
 
@@ -39,7 +38,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
         ListTag<CompoundTag> list = (ListTag<CompoundTag>) this.namedTag.getList("Items");
         for (CompoundTag compound : list.getAll()) {
             Item item = NBTIO.getItemHelper(compound);
-            this.inventory.slots.put(compound.getByte("Slot"), item);
+            this.inventory.setItemInternal(compound.getByte("Slot"), item);
         }
 
         if (!this.namedTag.contains("facing")) {

@@ -6,7 +6,7 @@ public class ItemCreeperBannerPattern extends ItemBannerPattern {
     }
 
     @Override
-    public void setDamage(Integer meta) {
+    public void setDamage(int meta) {
 
     }
 }

@@ -32,10 +32,11 @@ import java.util.Set;
 
 public class EntityVillagerV2 extends EntityIntelligent implements InventoryHolder, IEntityNPC, EntityAgeable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return VILLAGER_V2;
     }
-    
+
     /**
      * 代表交易配方
      */
@@ -116,7 +117,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     //todo 实现不同群系的村民
-    
+
 
     @Override
     public float getWidth() {
@@ -187,6 +188,9 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         }
         Profession profession = Profession.getProfession(this.profession);
         if (profession != null) applyProfession(profession);
+        if (canTrade) {
+            inventory = new TradeInventory(this);
+        }
     }
 
     @Override
@@ -330,8 +334,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (this.getCanTrade()) {
-            var inv = new TradeInventory(this);
-            player.addWindow(inv, Player.TRADE_WINDOW_ID);
+            player.addWindow(inventory);
             return true;
         } else return false;
     }
@@ -353,10 +356,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     public void addExperience(int xp) {
         this.tradeExp += xp;
         this.setDataProperty(new IntEntityData(DATA_TRADE_EXPERIENCE, this.tradeExp));
-        int next = getTradeTier()+1;
+        int next = getTradeTier() + 1;
         if (next < this.tierExpRequirement.length) {
             if (tradeExp >= this.tierExpRequirement[next]) {
-                setTradeTier(next+1);
+                setTradeTier(next + 1);
             }
         }
     }
