@@ -1,14 +1,12 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.block.*;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockProperties;
-import cn.nukkit.block.BlockState;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.extern.slf4j.Slf4j;
 import me.sunlan.fastreflection.FastConstructor;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -26,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author Cool_Loong | Mcayear | KoshakMineDEV | WWMB | Draglis
  */
+@Slf4j
 public final class BlockRegistry implements BlockID, IRegistry<String, Block, Class<? extends Block>> {
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
     private static final Set<String> KEYSET = new HashSet<>();
@@ -1056,6 +1055,18 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             Field properties = value.getDeclaredField("PROPERTIES");
             properties.setAccessible(true);
             int modifiers = properties.getModifiers();
+
+            try {
+                if (value.getMethod("getProperties").getDeclaringClass() != value) {
+                    throw new IllegalArgumentException();
+                }
+            } catch (Exception noSuchMethodException) {
+                throw new RegisterException("There block: %s must override a method \n@Override\n".formatted(key) +
+                        "    public @NotNull BlockProperties getProperties() {\n" +
+                        "        return PROPERTIES;\n" +
+                        "    } in this class!");
+            }
+
             if (Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers) && properties.getType() == BlockProperties.class) {
                 BlockProperties blockProperties = (BlockProperties) properties.get(value);
                 FastConstructor<? extends Block> c = FastConstructor.create(value.getConstructor(BlockState.class));
@@ -1076,7 +1087,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
                 }
                 throw new RegisterException("This block has already been registered with the identifier: " + blockProperties.getIdentifier());
             } else {
-                throw new RegisterException("There must define a field `public static final BlockProperties PROPERTIES` in this class!");
+                throw new RegisterException("There block: %s must define a field `public static final BlockProperties PROPERTIES` in this class!".formatted(key));
             }
         } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException e) {
             throw new RegisterException(e);
@@ -1088,8 +1099,8 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     private void register0(String key, Class<? extends Block> value) {
         try {
             register(key, value);
-        } catch (RegisterException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            log.error("", e);
         }
     }
 

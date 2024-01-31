@@ -24,6 +24,11 @@ public class BlockGrassPath extends BlockGrass {
     }
 
     @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
     public String getName() {
         return "Dirt Path";
     }

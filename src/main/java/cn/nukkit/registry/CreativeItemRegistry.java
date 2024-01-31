@@ -1,9 +1,6 @@
 package cn.nukkit.registry;
 
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockState;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -13,6 +10,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -38,24 +36,21 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 int index = entry.getKey();
                 CompoundTag tag = (CompoundTag) entry.getValue();
                 int damage = tag.getInt("damage");
-                if (tag.containsInt("blockStateHash")) {
-                    int blockStateHash = tag.getInt("blockStateHash");
-                    BlockState blockState = Registries.BLOCKSTATE.get(blockStateHash);
-                    if (blockState == null) {
-                        log.warn("Item {} block state Hash cannot be found, hash {}!", tag.getString("name"), blockStateHash);
-                        continue;
-                    }
-                    Block block = Registries.BLOCK.get(blockState);
-                    register(index, new ItemBlock(block, damage));
+                var nbt = tag.containsCompound("tag") ? NBTIO.write(tag.getCompound("tag"), ByteOrder.LITTLE_ENDIAN) : EmptyArrays.EMPTY_BYTES;
+                String name = tag.getString("name");
+                Item item = Item.get(name, damage, 1, nbt, false);
+                var isBlock = tag.contains("blockStateHash");
+                if (isBlock) {
+                    item.setBlockUnsafe(Registries.BLOCKSTATE.get(tag.getInt("blockStateHash")).toBlock());
                 } else {
-                    String name = tag.getString("name");
-                    Item item = Item.get(name, damage, 1, EmptyArrays.EMPTY_BYTES, false);
-                    register(index, item);
+                    item.setBlockUnsafe(null);
                 }
+                if (item.isNull()) {
+                    log.warn("load creative item {} damage {} is null", name, damage);
+                }
+                register(index, item);
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (RegisterException e) {
+        } catch (IOException | RegisterException e) {
             throw new RuntimeException(e);
         }
     }

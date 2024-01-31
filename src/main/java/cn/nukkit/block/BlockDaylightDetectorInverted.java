@@ -24,6 +24,11 @@ public class BlockDaylightDetectorInverted extends BlockDaylightDetector {
     }
 
     @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
     public String getName() {
         return "Daylight Detector Inverted";
     }

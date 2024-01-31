@@ -1,8 +1,14 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.*;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockFlowingLava;
+import cn.nukkit.block.BlockFlowingWater;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockLava;
+import cn.nukkit.block.BlockLiquid;
+import cn.nukkit.block.BlockPowderSnow;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.player.PlayerBucketEmptyEvent;
 import cn.nukkit.event.player.PlayerBucketFillEvent;
@@ -146,7 +152,7 @@ public class ItemBucket extends Item {
                     target = block.getLevelBlockAtLayer(1);
                 }
             }
-            if ((target instanceof BlockLiquid || target instanceof BlockPowderSnow) && !target.isDefaultState()) {
+            if ((target instanceof BlockLiquid || target instanceof BlockPowderSnow) && target.isDefaultState()) {
                 Item result;
                 if (target instanceof BlockPowderSnow) {
                     result = Item.get(BUCKET, 11, 1);

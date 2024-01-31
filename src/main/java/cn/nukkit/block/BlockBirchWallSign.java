@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBirchSign;
+import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
@@ -15,6 +16,11 @@ public class BlockBirchWallSign extends BlockWallSign {
 
     public BlockBirchWallSign(BlockState blockState) {
         super(blockState);
+    }
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override

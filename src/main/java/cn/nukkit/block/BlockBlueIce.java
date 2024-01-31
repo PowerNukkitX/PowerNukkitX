@@ -1,6 +1,8 @@
 package cn.nukkit.block;
 
 
+import org.jetbrains.annotations.NotNull;
+
 public class BlockBlueIce extends BlockPackedIce {
     public static final BlockProperties PROPERTIES = new BlockProperties(BLUE_ICE);
 
@@ -11,7 +13,11 @@ public class BlockBlueIce extends BlockPackedIce {
     public BlockBlueIce(BlockState blockState) {
         super(blockState);
     }
-    
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
     @Override
     public String getName() {
         return "Blue Ice";

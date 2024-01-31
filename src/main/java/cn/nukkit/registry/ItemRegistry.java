@@ -514,6 +514,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         register0(ZOMBIE_PIGMAN_SPAWN_EGG, ItemZombiePigmanSpawnEgg.class);
         register0(ZOMBIE_SPAWN_EGG, ItemZombieSpawnEgg.class);
         register0(ZOMBIE_VILLAGER_SPAWN_EGG, ItemZombieVillagerSpawnEgg.class);
+        register0(PITCHER_POD, ItemPitcherPod.class);
     }
 
     @Override
