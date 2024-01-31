@@ -1,11 +1,11 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.recipe.CraftingManager;
-import cn.nukkit.recipe.Recipe;
-import cn.nukkit.recipe.RecipeType;
+import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import lombok.ToString;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -14,24 +14,28 @@ public class MultiRecipe implements Recipe {
 
     private final UUID id;
 
-
     public MultiRecipe(UUID id) {
         this.id = id;
     }
 
     @Override
-    public String getRecipeId() {
+    public @NotNull String getRecipeId() {
         return id.toString();
     }
 
     @Override
-    public Item getResult() {
-        throw new UnsupportedOperationException();
+    public List<Item> getResults() {
+        return List.of();
     }
 
     @Override
-    public void registerToCraftingManager(CraftingManager manager) {
-        manager.registerMultiRecipe(this);
+    public List<ItemDescriptor> getIngredients() {
+        return List.of();
+    }
+
+    @Override
+    public boolean match(Input input) {
+        return true;
     }
 
     @Override

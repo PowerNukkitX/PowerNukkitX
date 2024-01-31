@@ -1,51 +1,35 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.recipe.descriptor.DefaultDescriptor;
+import cn.nukkit.registry.Registries;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
-public class BlastFurnaceRecipe implements SmeltingRecipe {
-    private final Item output;
-    private Item ingredient;
-    private final String recipeId;
-
+public class BlastFurnaceRecipe extends SmeltingRecipe {
     public BlastFurnaceRecipe(Item result, Item ingredient) {
         this(null, result, ingredient);
     }
 
-    public BlastFurnaceRecipe(@Nullable String recipeId, Item result, Item ingredient) {
-        this.recipeId = recipeId == null ? CraftingManager.getMultiItemHash(List.of(ingredient, result)).toString() : recipeId;
-        this.output = result.clone();
-        this.ingredient = ingredient.clone();
-    }
 
-    public void setInput(Item item) {
-        this.ingredient = item.clone();
-    }
-
-    @Override
-    public Item getInput() {
-        return this.ingredient.clone();
+    public BlastFurnaceRecipe(String recipeId, Item result, Item ingredient) {
+        super(recipeId == null ?
+                Registries.RECIPE.computeRecipeId(List.of(result), List.of(new DefaultDescriptor(ingredient)),
+                        ingredient.hasMeta() ? RecipeType.BLAST_FURNACE_DATA : RecipeType.BLAST_FURNACE) :
+                recipeId);
+        this.ingredients.add(new DefaultDescriptor(ingredient.clone()));
+        this.results.add(result.clone());
     }
 
     @Override
-    public String getRecipeId() {
-        return null;
-    }
-
-    @Override
-    public Item getResult() {
-        return this.output.clone();
-    }
-
-    @Override
-    public void registerToCraftingManager(CraftingManager manager) {
-        manager.registerBlastFurnaceRecipe(this);
+    public boolean match(Input input) {
+        return false;
     }
 
     @Override
     public RecipeType getType() {
-        return this.ingredient.hasMeta() ? RecipeType.BLAST_FURNACE_DATA : RecipeType.BLAST_FURNACE;
+        if (this.getInput() instanceof DefaultDescriptor des) {
+            return des.getItem().hasMeta() ? RecipeType.BLAST_FURNACE_DATA : RecipeType.BLAST_FURNACE;
+        } else return RecipeType.BLAST_FURNACE;
     }
 }

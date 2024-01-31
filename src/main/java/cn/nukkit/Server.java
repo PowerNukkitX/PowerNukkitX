@@ -72,8 +72,8 @@ import cn.nukkit.plugin.service.ServiceManager;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
-import cn.nukkit.recipe.CraftingManager;
 import cn.nukkit.recipe.Recipe;
+import cn.nukkit.registry.RecipeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.resourcepacks.ResourcePackManager;
 import cn.nukkit.resourcepacks.loader.JarPluginResourcePackLoader;
@@ -209,8 +209,6 @@ public class Server {
     public final ForkJoinPool computeThreadPool;
 
     private SimpleCommandMap commandMap;
-
-    private CraftingManager craftingManager;
 
     private ResourcePackManager resourcePackManager;
 
@@ -710,6 +708,7 @@ public class Server {
         NukkitMetrics.startNow(this);
 
         {//init block
+            Potion.init();
             Registries.PACKET.init();
             Registries.ENTITY.init();
             Profession.init();
@@ -724,7 +723,6 @@ public class Server {
             Registries.ITEM.init();
             Registries.CREATIVE.init();
             Enchantment.init();
-            Potion.init();
             Registries.BIOME.init();
             Registries.FUEL.init();
             Registries.GENERATOR.init();
@@ -733,6 +731,7 @@ public class Server {
             Attribute.init();
             BlockComposter.init();
             DispenseBehaviorRegister.init();
+            Registries.RECIPE.init();
         }
 
         freezableArrayManager = new FreezableArrayManager(
@@ -763,7 +762,6 @@ public class Server {
 
         convertLegacyPlayerData();
 
-        this.craftingManager = new CraftingManager();//load recipes
         this.resourcePackManager = new ResourcePackManager(
                 new ZippedResourcePackLoader(new File(Nukkit.DATA_PATH, "resource_packs")),
                 new JarPluginResourcePackLoader(new File(this.pluginPath))
@@ -2318,7 +2316,7 @@ public class Server {
      * @param player 玩家
      */
     public void sendRecipeList(Player player) {
-        player.dataPacket(CraftingManager.getCraftingPacket());
+        player.dataPacket(Registries.RECIPE.getCraftingPacket());
     }
 
     /**
@@ -2329,11 +2327,11 @@ public class Server {
      * @param recipe 配方
      */
     public void addRecipe(Recipe recipe) {
-        this.craftingManager.registerRecipe(recipe);
+        Registries.RECIPE.register(recipe);
     }
 
-    public CraftingManager getCraftingManager() {
-        return craftingManager;
+    public RecipeRegistry getRecipeRegistry() {
+        return Registries.RECIPE;
     }
 
     // endregion

@@ -2,8 +2,6 @@ package cn.nukkit.network.process.processor;
 
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
-import cn.nukkit.event.inventory.PlayerTypingAnvilInventoryEvent;
-import cn.nukkit.inventory.AnvilInventory;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.FilterTextPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -20,18 +18,6 @@ public class FilterTextProcessor extends DataPacketProcessor<FilterTextPacket> {
             return;
         }
         FilterTextPacket textResponsePacket = new FilterTextPacket();
-
-        if (player.craftingType == Player.CRAFTING_ANVIL) {
-            //todo fix anvil
-            /*AnvilInventory anvilInventory = (AnvilInventory) player.getWindowById(Player.ANVIL_WINDOW_ID);
-            if (anvilInventory != null) {
-                PlayerTypingAnvilInventoryEvent playerTypingAnvilInventoryEvent = new PlayerTypingAnvilInventoryEvent(
-                        player, anvilInventory, anvilInventory.getNewItemName(), pk.getText()
-                );
-                player.getServer().getPluginManager().callEvent(playerTypingAnvilInventoryEvent);
-                anvilInventory.setNewItemName(playerTypingAnvilInventoryEvent.getTypedName());
-            }*/
-        }
 
         textResponsePacket.text = pk.text;
         textResponsePacket.fromServer = true;

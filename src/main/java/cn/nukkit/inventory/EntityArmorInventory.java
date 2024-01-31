@@ -12,22 +12,19 @@ import java.util.Set;
 
 
 public class EntityArmorInventory extends BaseInventory {
-
     private final Entity entity;
-
     public static final int SLOT_HEAD = 0;
     public static final int SLOT_CHEST = 1;
     public static final int SLOT_LEGS = 2;
     public static final int SLOT_FEET = 3;
 
     /**
-     * @param entity an Entity which implements {@link InventoryHolder}.
+     * @param holder an Entity which implements {@link InventoryHolder}.
      * @throws ClassCastException if the entity does not implements {@link InventoryHolder}
      */
-
-    public EntityArmorInventory(Entity entity) {
-        super((InventoryHolder) entity, InventoryType.ENTITY_ARMOR);
-        this.entity = entity;
+    public EntityArmorInventory(InventoryHolder holder) {
+        super(holder, InventoryType.INVENTORY, 4);
+        this.entity = (Entity) holder;
     }
 
 
@@ -36,37 +33,27 @@ public class EntityArmorInventory extends BaseInventory {
     }
 
     @Override
-    public InventoryHolder getHolder() {
-        return this.holder;
-    }
-
-    @Override
-    public String getName() {
-        return "Entity Armor";
-    }
-
-    @Override
     public int getSize() {
         return 4;
     }
 
 
-    public Item getHelmet(){
+    public Item getHelmet() {
         return this.getItem(SLOT_HEAD);
     }
 
 
-    public Item getChestplate(){
+    public Item getChestplate() {
         return this.getItem(SLOT_CHEST);
     }
 
 
-    public Item getLeggings(){
+    public Item getLeggings() {
         return this.getItem(SLOT_LEGS);
     }
 
 
-    public Item getBoots(){
+    public Item getBoots() {
         return this.getItem(SLOT_FEET);
     }
 
@@ -87,7 +74,7 @@ public class EntityArmorInventory extends BaseInventory {
 
 
     public boolean setBoots(Item item) {
-        return  this.setItem(SLOT_FEET, item);
+        return this.setItem(SLOT_FEET, item);
     }
 
     @Override

@@ -13,7 +13,7 @@ import java.util.List;
 public class ItemStackResponsePacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.ITEM_STACK_RESPONSE_PACKET;
 
-    private final List<ItemStackResponse> entries = new ArrayList<>();
+    public final List<ItemStackResponse> entries = new ArrayList<>();
 
     @Override
     public void encode() {
@@ -29,6 +29,8 @@ public class ItemStackResponsePacket extends DataPacket {
                     putByte((byte) item.getHotbarSlot());
                     putByte((byte) item.getCount());
                     putVarInt(item.getStackNetworkId());
+                    putString(item.getCustomName());
+                    putVarInt(item.getDurabilityCorrection());
                 });
             });
         });

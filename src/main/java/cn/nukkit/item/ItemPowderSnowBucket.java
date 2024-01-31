@@ -10,7 +10,7 @@ public class ItemPowderSnowBucket extends ItemBucket {
     }
 
     @Override
-    public void setDamage(Integer meta) {
+    public void setDamage(int meta) {
 
     }
 }

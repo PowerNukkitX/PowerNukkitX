@@ -8,11 +8,12 @@ public class ConstAirItem extends Item {
     public ConstAirItem() {
         super("minecraft:air");
         this.block = new BlockAir();
-        this.count = 1;
+        this.count = 0;
+        this.netId = 0;
     }
 
     @Override
-    public void setDamage(Integer meta) {
+    public void setDamage(int meta) {
     }
 
     @Override

@@ -2,7 +2,7 @@ package cn.nukkit.network.protocol.types.itemstack.response;
 
 import cn.nukkit.network.protocol.ItemStackResponsePacket;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
-import lombok.Value;
+import lombok.Data;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import java.util.List;
  * Represents an individual response to a {@link ItemStackRequest}
  * sent as part of {@link ItemStackResponsePacket}.
  */
-@Value
+@Data
 public class ItemStackResponse {
 
     /**

@@ -41,7 +41,7 @@ public class BlockEntitySmoker extends BlockEntityFurnace {
 
     @Override
     protected SmeltingRecipe matchRecipe(Item raw) {
-        return this.server.getCraftingManager().matchSmokerRecipe(raw);
+        return this.server.getRecipeRegistry().findSmokerRecipe(raw);
     }
 
     @Override

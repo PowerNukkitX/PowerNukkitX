@@ -1,5 +1,6 @@
 package cn.nukkit.blockentity;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.property.enums.StructureBlockType;
 import cn.nukkit.inventory.Inventory;
@@ -12,8 +13,12 @@ import cn.nukkit.network.protocol.types.StructureAnimationMode;
 import cn.nukkit.network.protocol.types.StructureMirror;
 import cn.nukkit.network.protocol.types.StructureRedstoneSaveMode;
 import cn.nukkit.network.protocol.types.StructureRotation;
+import com.google.common.base.Strings;
+import org.jetbrains.annotations.NotNull;
 
-public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStructBlock {
+import java.util.HashSet;
+
+public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStructBlock, BlockEntityInventoryHolder {
     private StructureAnimationMode animationMode;
     private float animationSeconds;
     private StructureBlockType data;
@@ -31,10 +36,12 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     private String structureName;
     private BlockVector3 size;
     private BlockVector3 offset;
+    private StructBlockInventory structBlockInventory;
 
 
     public BlockEntityStructBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+        structBlockInventory = new StructBlockInventory(this);
     }
 
     @Override
@@ -185,14 +192,39 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
         return blockId == BlockID.STRUCTURE_BLOCK;
     }
 
+    @NotNull
     @Override
     public String getName() {
-        return BlockEntity.STRUCTURE_BLOCK;
+        return this.hasName() ? this.namedTag.getString(TAG_CUSTOM_NAME) : STRUCTURE_BLOCK;
+    }
+
+    @Override
+    public boolean hasName() {
+        return this.namedTag.contains(TAG_CUSTOM_NAME);
+    }
+
+    @Override
+    public void setName(String name) {
+        if (Strings.isNullOrEmpty(name)) {
+            this.namedTag.remove(TAG_CUSTOM_NAME);
+        } else {
+            this.namedTag.putString(TAG_CUSTOM_NAME, name);
+        }
     }
 
     @Override
     public Inventory getInventory() {
-        return new StructBlockInventory(this);
+        return structBlockInventory;
+    }
+
+    @Override
+    public void close() {
+        if (!closed) {
+            for (Player player : new HashSet<>(this.getInventory().getViewers())) {
+                player.removeWindow(this.getInventory());
+            }
+            super.close();
+        }
     }
 
     public void updateSetting(StructureBlockUpdatePacket packet) {

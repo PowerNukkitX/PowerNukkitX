@@ -3,6 +3,8 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 
 
+import cn.nukkit.block.BlockStructureBlock;
+import cn.nukkit.blockentity.BlockEntityCommandBlock;
 import cn.nukkit.blockentity.BlockEntityStructBlock;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
@@ -11,18 +13,22 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
-
 public class StructBlockInventory implements Inventory {
     protected final BlockEntityStructBlock holder;
+    protected final Set<Player> viewers;
+    private List<InventoryListener> listeners;
 
     public StructBlockInventory(BlockEntityStructBlock holder) {
         this.holder = holder;
+        this.viewers = new HashSet<>();
     }
 
     @Override
@@ -38,16 +44,6 @@ public class StructBlockInventory implements Inventory {
     @Override
     public void setMaxStackSize(int size) {
 
-    }
-
-    @Override
-    public String getName() {
-        return this.holder.getName();
-    }
-
-    @Override
-    public String getTitle() {
-        return this.getName();
     }
 
     @NotNull
@@ -117,6 +113,11 @@ public class StructBlockInventory implements Inventory {
     }
 
     @Override
+    public int getFreeSpace(Item item) {
+        return 0;
+    }
+
+    @Override
     public boolean contains(Item item) {
         return false;
     }
@@ -177,26 +178,24 @@ public class StructBlockInventory implements Inventory {
     }
 
     @Override
-    public InventoryHolder getHolder() {
-        return (InventoryHolder) this.holder;
+    public BlockEntityStructBlock getHolder() {
+        return this.holder;
     }
 
     @Override
     public void onOpen(Player who) {
         if (who.isOp() && who.isCreative()) {
+            this.viewers.add(who);
             ContainerOpenPacket pk = new ContainerOpenPacket();
             pk.windowId = who.getWindowId(this);
             pk.type = getType().getNetworkType();
             InventoryHolder holder = this.getHolder();
-            if (holder instanceof Vector3) {
-                pk.x = ((Vector3) holder).getFloorX();
-                pk.y = ((Vector3) holder).getFloorY();
-                pk.z = ((Vector3) holder).getFloorZ();
+            if (holder != null) {
+                pk.x = holder.getVector3().getFloorX();
+                pk.y = holder.getVector3().getFloorY();
+                pk.z = holder.getVector3().getFloorZ();
             } else {
                 pk.x = pk.y = pk.z = 0;
-            }
-            if (holder instanceof Entity) {
-                pk.entityId = ((Entity) holder).getId();
             }
             who.dataPacket(pk);
         }
@@ -220,19 +219,26 @@ public class StructBlockInventory implements Inventory {
 
     @Override
     public void onClose(Player who) {
+        this.viewers.remove(who);
     }
 
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
     }
 
-    @Deprecated
     @Override
     public void addListener(InventoryListener listener) {
+        if (this.listeners == null) {
+            this.listeners = new ArrayList<>();
+        }
+
+        this.listeners.add(listener);
     }
 
-    @Deprecated
     @Override
     public void removeListener(InventoryListener listener) {
+        if (this.listeners != null) {
+            this.listeners.remove(listener);
+        }
     }
 }

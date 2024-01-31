@@ -25,7 +25,7 @@ public class HorseInventory extends BaseInventory {
     private static final CompoundTag slot1;
 
     public HorseInventory(EntityHorse holder) {
-        super(holder, InventoryType.HORSE);
+        super(holder, InventoryType.HORSE, 2);
     }
 
     static {

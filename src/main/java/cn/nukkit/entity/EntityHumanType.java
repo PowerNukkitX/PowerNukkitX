@@ -6,10 +6,10 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageModifier;
+import cn.nukkit.inventory.HumanOffHandInventory;
 import cn.nukkit.inventory.Inventory;
-import cn.nukkit.inventory.PlayerEnderChestInventory;
-import cn.nukkit.inventory.PlayerInventory;
-import cn.nukkit.inventory.PlayerOffhandInventory;
+import cn.nukkit.inventory.HumanEnderChestInventory;
+import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -26,32 +26,32 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class EntityHumanType extends EntityCreature implements IHuman {
 
-    protected PlayerInventory inventory;
-    protected PlayerEnderChestInventory enderChestInventory;
-    protected PlayerOffhandInventory offhandInventory;
+    protected HumanInventory inventory;
+    protected HumanEnderChestInventory enderChestInventory;
+    protected HumanOffHandInventory offhandInventory;
 
     public EntityHumanType(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
-    public PlayerInventory getInventory() {
+    public HumanInventory getInventory() {
         return inventory;
     }
 
-    public PlayerOffhandInventory getOffhandInventory() {
+    public HumanOffHandInventory getOffhandInventory() {
         return offhandInventory;
     }
 
-    public PlayerEnderChestInventory getEnderChestInventory() {
+    public HumanEnderChestInventory getEnderChestInventory() {
         return enderChestInventory;
     }
 
     @Override
     public void setInventories(Inventory[] inventory) {
-        this.inventory = (PlayerInventory) inventory[0];
-        this.offhandInventory = (PlayerOffhandInventory) inventory[1];
-        this.enderChestInventory = (PlayerEnderChestInventory) inventory[2];
+        this.inventory = (HumanInventory) inventory[0];
+        this.offhandInventory = (HumanOffHandInventory) inventory[1];
+        this.enderChestInventory = (HumanEnderChestInventory) inventory[2];
     }
 
     @Override

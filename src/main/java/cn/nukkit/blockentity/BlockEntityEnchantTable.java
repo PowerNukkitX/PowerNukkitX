@@ -1,16 +1,20 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.inventory.EnchantInventory;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class BlockEntityEnchantTable extends BlockEntitySpawnable implements BlockEntityNameable {
+public class BlockEntityEnchantTable extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
+    protected EnchantInventory inventory;
 
     public BlockEntityEnchantTable(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+        this.inventory = new EnchantInventory(this);
     }
 
     @Override
@@ -30,7 +34,7 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
 
     @Override
     public void setName(String name) {
-        if (name == null || name.equals("")) {
+        if (name == null || name.isBlank()) {
             this.namedTag.remove("CustomName");
             return;
         }
@@ -53,4 +57,8 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
         return c;
     }
 
+    @Override
+    public EnchantInventory getInventory() {
+        return inventory;
+    }
 }

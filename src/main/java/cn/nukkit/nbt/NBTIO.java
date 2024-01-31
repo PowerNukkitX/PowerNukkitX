@@ -16,7 +16,14 @@ import cn.nukkit.utils.ThreadCache;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -83,6 +90,7 @@ public class NBTIO {
         if (tagTag instanceof CompoundTag compoundTag) {
             item.setNamedTag(compoundTag);
         }
+        item.autoAssignStackNetworkId();
         return item;
     }
 

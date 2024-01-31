@@ -1,40 +1,31 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.recipe.descriptor.ItemDescriptor;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public interface Recipe {
-    String getRecipeId();
+    @NotNull String getRecipeId();
 
-    Item getResult();
+    List<Item> getResults();
 
-    void registerToCraftingManager(CraftingManager manager);
+    List<ItemDescriptor> getIngredients();
+
+    boolean match(Input input);
+
+    default boolean fastCheck(Item... items) {
+        if (getIngredients().size() != items.length) return false;
+        for (var item : items) {
+            boolean b = getIngredients().stream().anyMatch(i -> i.match(item));
+            if (!b) return false;
+        }
+        return true;
+    }
 
     RecipeType getType();
-
-
-    static boolean matchItemList(List<Item> haveItems, List<Item> needItems) {
-        for (Item needItem : new ArrayList<>(needItems)) {
-            for (Item haveItem : new ArrayList<>(haveItems)) {
-                if (needItem.equals(haveItem, needItem.hasMeta(), needItem.hasCompoundTag())) {
-                    int amount = Math.min(haveItem.getCount(), needItem.getCount());
-                    needItem.setCount(needItem.getCount() - amount);
-                    haveItem.setCount(haveItem.getCount() - amount);
-                    if (haveItem.getCount() == 0) {
-                        haveItems.remove(haveItem);
-                    }
-                    if (needItem.getCount() == 0) {
-                        needItems.remove(needItem);
-                        break;
-                    }
-                }
-            }
-        }
-        return haveItems.isEmpty() && needItems.isEmpty();
-    }
 }

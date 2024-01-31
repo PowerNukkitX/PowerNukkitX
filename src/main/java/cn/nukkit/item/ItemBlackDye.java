@@ -13,7 +13,7 @@ public class ItemBlackDye extends ItemDye {
     }
 
     @Override
-    public void setDamage(Integer meta) {
+    public void setDamage(int meta) {
         
     }
 }

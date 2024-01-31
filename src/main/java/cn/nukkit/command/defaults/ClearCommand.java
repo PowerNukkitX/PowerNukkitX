@@ -7,8 +7,8 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.inventory.PlayerInventory;
-import cn.nukkit.inventory.PlayerOffhandInventory;
+import cn.nukkit.inventory.HumanInventory;
+import cn.nukkit.inventory.HumanOffHandInventory;
 import cn.nukkit.item.Item;
 
 import java.util.List;
@@ -58,8 +58,8 @@ public class ClearCommand extends VanillaCommand {
             }
 
             for (Player target : targets) {
-                PlayerInventory inventory = target.getInventory();
-                PlayerOffhandInventory offhand = target.getOffhandInventory();
+                HumanInventory inventory = target.getInventory();
+                HumanOffHandInventory offhand = target.getOffhandInventory();
 
                 if (item == null) {
                     int count = 0;

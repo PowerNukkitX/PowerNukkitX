@@ -15,4 +15,4 @@ JAVA_CMD="java"
     --add-opens java.base/java.lang=ALL-UNNAMED \
     --add-opens java.base/java.io=ALL-UNNAMED \
     -cp "powernukkitx.jar:./libs/*" \
-    cn.nukkit.JarStart
+    cn.nukkit.Nukkit

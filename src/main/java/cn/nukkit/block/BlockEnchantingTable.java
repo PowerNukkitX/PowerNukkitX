@@ -25,7 +25,8 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
     public static final BlockProperties PROPERTIES = new BlockProperties(ENCHANTING_TABLE);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -43,12 +44,14 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.ENCHANT_TABLE;
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityEnchantTable> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityEnchantTable> getBlockEntityClass() {
         return BlockEntityEnchantTable.class;
     }
 
@@ -106,7 +109,7 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
                 nbt.put(tag.getKey(), tag.getValue());
             }
         }
-        
+
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 
@@ -122,7 +125,7 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
             return false;
         }
 
-        player.addWindow(new EnchantInventory(player.getUIInventory(), this.getLocation()), Player.ENCHANT_WINDOW_ID);
+        player.addWindow(enchantTable.getInventory());
 
         return true;
     }

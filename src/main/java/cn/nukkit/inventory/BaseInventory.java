@@ -2,79 +2,65 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityInventoryChangeEvent;
+import cn.nukkit.event.inventory.InventoryCloseEvent;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BaseInventory implements Inventory {
+    protected final Int2ObjectOpenHashMap<Item> slots = new Int2ObjectOpenHashMap<>();
     protected final InventoryType type;
-    protected int maxStackSize = Inventory.MAX_STACK;
-
-    protected int size;
-
-    protected final String name;
-
-    protected final String title;
-
-    public final Map<Integer, Item> slots = new HashMap<>();
-
     protected final Set<Player> viewers = new HashSet<>();
-
+    protected final int size;
+    protected int maxStackSize = Inventory.MAX_STACK;
     protected InventoryHolder holder;
+    protected List<InventoryListener> listeners;
+    protected Map<Integer, ContainerSlotType> slotTypeMap;
+    protected BiMap<Integer, Integer> networkSlotMap;
 
-    private List<InventoryListener> listeners;
-
-    public BaseInventory(InventoryHolder holder, InventoryType type) {
-        this(holder, type, new HashMap<>());
-    }
-
-    public BaseInventory(InventoryHolder holder, InventoryType type, Map<Integer, Item> items) {
-        this(holder, type, items, null);
-    }
-
-    public BaseInventory(InventoryHolder holder, InventoryType type, Map<Integer, Item> items, Integer overrideSize) {
-        this(holder, type, items, overrideSize, null);
-    }
-
-    public BaseInventory(InventoryHolder holder, InventoryType type, Map<Integer, Item> items, Integer overrideSize, String overrideTitle) {
+    public BaseInventory(InventoryHolder holder, InventoryType type, int size) {
         this.holder = holder;
-
         this.type = type;
+        this.size = size;
+        this.slotTypeMap = new HashMap<>();
+        this.networkSlotMap = HashBiMap.create();
+        init();
+    }
 
-        if (overrideSize != null) {
-            this.size = overrideSize;
-        } else {
-            this.size = this.type.getDefaultSize();
-        }
+    @Override
+    public Map<Integer, ContainerSlotType> slotTypeMap() {
+        return this.slotTypeMap;
+    }
 
-        if (overrideTitle != null) {
-            this.title = overrideTitle;
-        } else {
-            this.title = this.type.getDefaultTitle();
-        }
-
-        this.name = this.type.getDefaultTitle();
-
-        if (!(this instanceof DoubleChestInventory)) {
-            this.setContents(items);
-        }
+    @Override
+    public BiMap<Integer, Integer> networkSlotMap() {
+        return this.networkSlotMap;
     }
 
     @Override
@@ -82,23 +68,9 @@ public abstract class BaseInventory implements Inventory {
         return size;
     }
 
-    public void setSize(int size) {
-        this.size = size;
-    }
-
     @Override
     public int getMaxStackSize() {
         return maxStackSize;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getTitle() {
-        return title;
     }
 
     @NotNull
@@ -150,15 +122,19 @@ public abstract class BaseInventory implements Inventory {
         }
     }
 
-    @Override
+    @ApiStatus.Internal
+    public void setItemInternal(int index, Item item) {
+        this.slots.put(index, item);
+    }
+
     public boolean setItem(int index, Item item, boolean send) {
-        item = item.clone();
         if (index < 0 || index >= this.size) {
             return false;
         } else if (item.isNull()) {
             return this.clear(index, send);
         }
 
+        item = item.clone();
         InventoryHolder holder = this.getHolder();
         if (holder instanceof Entity) {
             EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent((Entity) holder, this.getItem(index), item, index);
@@ -176,7 +152,7 @@ public abstract class BaseInventory implements Inventory {
         }
 
         Item old = this.getUnclonedItem(index);
-        this.slots.put(index, item.clone());
+        this.slots.put(index, item);
         this.onSlotChange(index, old, send);
 
         return true;
@@ -319,7 +295,6 @@ public abstract class BaseInventory implements Inventory {
                             item.setCount(item.getCount() + amount);
                             this.setItem(i, item);
                             if (slot.getCount() <= 0) {
-//                                itemSlots.remove(slot);
                                 iterator.remove();
                             }
                         }
@@ -376,14 +351,13 @@ public abstract class BaseInventory implements Inventory {
                     item.setCount(item.getCount() - amount);
                     this.setItem(i, item);
                     if (slot.getCount() <= 0) {
-//                        itemSlots.remove(slot);
                         iterator.remove();
                     }
 
                 }
             }
 
-            if (itemSlots.size() == 0) {
+            if (itemSlots.isEmpty()) {
                 break;
             }
         }
@@ -394,7 +368,7 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public boolean clear(int index, boolean send) {
         if (this.slots.containsKey(index)) {
-            Item item = new ItemBlock(Block.get(BlockID.AIR), null, 0);
+            Item item = Item.AIR;
             Item old = this.slots.get(index);
             InventoryHolder holder = this.getHolder();
             if (holder instanceof Entity) {
@@ -443,7 +417,6 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public boolean open(Player who) {
-        //if (this.viewers.contains(who)) return false;
         InventoryOpenEvent ev = new InventoryOpenEvent(this, who);
         who.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
@@ -456,6 +429,8 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public void close(Player who) {
+        InventoryCloseEvent ev = new InventoryCloseEvent(this, who);
+        who.getServer().getPluginManager().callEvent(ev);
         this.onClose(who);
     }
 
@@ -555,21 +530,20 @@ public abstract class BaseInventory implements Inventory {
      * @param item 要检测的物品
      * @return 所能存放的空余数量
      */
+    @Override
     public int getFreeSpace(Item item) {
         int maxStackSize = Math.min(item.getMaxStackSize(), this.getMaxStackSize());
         int space = (this.getSize() - this.slots.size()) * maxStackSize;
 
         for (Item slot : this.getContents().values()) {
-            if (slot == null || slot.isNull()) {
+            if (slot.isNull()) {
                 space += maxStackSize;
                 continue;
             }
-
             if (slot.equals(item, true, true)) {
                 space += maxStackSize - slot.getCount();
             }
         }
-
         return space;
     }
 
@@ -611,7 +585,6 @@ public abstract class BaseInventory implements Inventory {
         if (this.listeners == null) {
             this.listeners = new ArrayList<>();
         }
-
         this.listeners.add(listener);
     }
 

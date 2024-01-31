@@ -27,11 +27,6 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
             return;
         }
 
-        if (pk.action != InteractPacket.ACTION_MOUSEOVER || pk.target != 0) {
-            player.craftingType = Player.CRAFTING_SMALL;
-            //player.resetCraftingGridType();
-        }
-
         Entity targetEntity = player.level.getEntity(pk.target);
 
         if (targetEntity == null || !player.isAlive() || !targetEntity.isAlive()) {

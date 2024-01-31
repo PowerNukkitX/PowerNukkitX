@@ -22,7 +22,7 @@ public class ItemNetherWart extends Item {
     }
 
     @Override
-    public void setDamage(Integer meta) {
+    public void setDamage(int meta) {
         this.block = Registries.BLOCK.get(getItemBlockState(NETHER_WART, meta));
         super.setDamage(meta);
     }

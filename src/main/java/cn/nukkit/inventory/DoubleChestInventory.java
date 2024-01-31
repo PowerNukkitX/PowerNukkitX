@@ -15,14 +15,12 @@ import java.util.Map;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class DoubleChestInventory extends ContainerInventory implements InventoryHolder {
-
+public class DoubleChestInventory extends ContainerInventory {
     private final ChestInventory left;
     private final ChestInventory right;
 
     public DoubleChestInventory(BlockEntityChest left, BlockEntityChest right) {
-        super(null, InventoryType.DOUBLE_CHEST);
-        this.holder = this;
+        super(null, InventoryType.CONTAINER, 27 + 27);
 
         this.left = left.getRealInventory();
         this.left.setDoubleInventory(this);
@@ -48,11 +46,6 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
     }
 
     @Override
-    public Inventory getInventory() {
-        return this;
-    }
-
-    @Override
     public BlockEntityChest getHolder() {
         return this.left.getHolder();
     }
@@ -63,7 +56,7 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
         return index < this.left.getSize() ? this.left.getItem(index) : this.right.getItem(index - this.right.getSize());
     }
 
-    
+
     @Override
     public Item getUnclonedItem(int index) {
         return index < this.left.getSize() ? this.left.getUnclonedItem(index) : this.right.getUnclonedItem(index - this.right.getSize());
@@ -101,7 +94,17 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
         }
 
         for (int i = 0; i < this.size; i++) {
-            if (!items.containsKey(i)) {
+            if (items.containsKey(i)) {
+                if (i < this.left.size) {
+                    if (!left.setItem(i, items.get(i))) {
+                        this.clear(i);
+                    }
+                } else {
+                    if (!right.setItem(i, items.get(i))) {
+                        this.clear(i);
+                    }
+                }
+            } else {
                 if (i < this.left.size) {
                     if (this.left.slots.containsKey(i)) {
                         this.clear(i);

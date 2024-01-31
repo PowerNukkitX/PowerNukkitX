@@ -1,11 +1,11 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.inventory.transaction.data.ReleaseItemData;
-import cn.nukkit.inventory.transaction.data.TransactionData;
-import cn.nukkit.inventory.transaction.data.UseItemData;
-import cn.nukkit.inventory.transaction.data.UseItemOnEntityData;
 import cn.nukkit.network.protocol.types.LegacySetItemSlotData;
-import cn.nukkit.network.protocol.types.NetworkInventoryAction;
+import cn.nukkit.network.protocol.types.inventorytransaction.NetworkInventoryAction;
+import cn.nukkit.network.protocol.types.inventorytransaction.ReleaseItemData;
+import cn.nukkit.network.protocol.types.inventorytransaction.TransactionData;
+import cn.nukkit.network.protocol.types.inventorytransaction.UseItemData;
+import cn.nukkit.network.protocol.types.inventorytransaction.UseItemOnEntityData;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.ToString;
 

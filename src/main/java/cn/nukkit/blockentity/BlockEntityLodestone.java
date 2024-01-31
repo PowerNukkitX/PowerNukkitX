@@ -65,7 +65,7 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
     }
 
     @Override
-    public void onBreak() {
+    public void onBreak(boolean isSilkTouch) {
         IntList handlers;
         PositionTrackingService positionTrackingService = Server.getInstance().getPositionTrackingService();
         try {

@@ -11,7 +11,7 @@ import java.util.*;
  */
 public abstract class MetadataStore {
 
-    private final Map<String, Map<Plugin, MetadataValue>> metadataMap = new HashMap<>();
+    protected final Map<String, Map<Plugin, MetadataValue>> metadataMap = new HashMap<>();
 
     public void setMetadata(Metadatable subject, String metadataKey, MetadataValue newMetadataValue) {
         if (newMetadataValue == null) {
@@ -60,7 +60,7 @@ public abstract class MetadataStore {
             throw new PluginException("Plugin cannot be null");
         }
         String key = this.disambiguate(subject, metadataKey);
-        Map entry = this.metadataMap.get(key);
+        Map<Plugin, MetadataValue> entry = this.metadataMap.get(key);
         if (entry == null) {
             return;
         }
