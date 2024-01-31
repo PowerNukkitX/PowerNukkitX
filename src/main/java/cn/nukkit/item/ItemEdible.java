@@ -31,10 +31,10 @@ public abstract class ItemEdible extends Item {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        if (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel() || player.isCreative()) {
+        if (player.getFoodData().isHungry() || player.isCreative()) {
             return true;
         }
-        player.getFoodData().sendFoodLevel();
+        player.getFoodData().sendFood();
         return false;
     }
 

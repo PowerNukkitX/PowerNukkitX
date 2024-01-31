@@ -291,7 +291,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 Item oldItem = i.clone();
                 if (player.isSurvival() || player.isAdventure()) {
                     if (player.canInteract(blockVector.add(0.5, 0.5, 0.5), 7) && (i = player.level.useBreakOn(blockVector.asVector3(), face, i, player, true)) != null) {
-                        player.getFoodData().updateFoodExpLevel(0.005);
+                        player.getFoodData().exhaust(0.005);
                         if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
                             if (oldItem.getId() == i.getId() || i.isNull()) {
                                 player.getInventory().setItemInHand(i);
