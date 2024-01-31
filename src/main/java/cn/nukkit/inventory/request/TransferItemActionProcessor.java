@@ -6,9 +6,9 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.action.TransferItemStackRequestAction;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponse;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseSlot;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 @Slf4j
 public abstract class TransferItemActionProcessor<T extends TransferItemStackRequestAction> implements ItemStackRequestActionProcessor<T> {
     @Override
-    public ItemStackResponse handle(T action, Player player, ItemStackRequestContext context) {
+    public ActionResponse handle(T action, Player player, ItemStackRequestContext context) {
         ContainerSlotType sourceSlotType = action.getSource().getContainer();
         ContainerSlotType destinationSlotType = action.getDestination().getContainer();
         Inventory source = NetworkMapping.getInventory(player, sourceSlotType);
@@ -89,7 +89,7 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
         var destItemStackResponseSlot =
                 new ItemStackResponseContainer(
                         destination.getSlotType(destinationSlot),
-                        List.of(
+                        Lists.newArrayList(
                                 new ItemStackResponseSlot(
                                         destination.toNetworkSlot(destinationSlot),
                                         destination.toNetworkSlot(destinationSlot),
@@ -107,7 +107,7 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
             return context.success(List.of(
                     new ItemStackResponseContainer(
                             source.getSlotType(sourceSlot),
-                            List.of(
+                            Lists.newArrayList(
                                     new ItemStackResponseSlot(
                                             source.toNetworkSlot(sourceSlot),
                                             source.toNetworkSlot(sourceSlot),

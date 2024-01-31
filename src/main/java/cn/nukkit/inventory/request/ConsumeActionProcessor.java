@@ -4,9 +4,9 @@ import cn.nukkit.Player;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ConsumeAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponse;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseSlot;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
 @Slf4j
 public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<ConsumeAction> {
     @Override
-    public ItemStackResponse handle(ConsumeAction action, Player player, ItemStackRequestContext context) {
+    public ActionResponse handle(ConsumeAction action, Player player, ItemStackRequestContext context) {
         // We have validated the recipe in CraftRecipeActionProcessor, so here we can believe the client directly
         ContainerSlotType container = action.getSource().getContainer();
         var sourceContainer = NetworkMapping.getInventory(player, container);
@@ -45,14 +45,15 @@ public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<C
         }
         if (item.getCount() > count) {
             item.setCount(item.getCount() - count);
-            sourceContainer.setItem(slot, item);
+            sourceContainer.setItem(slot, item, false);
         } else {
-            sourceContainer.clear(slot);
+            sourceContainer.clear(slot, false);
+            item = sourceContainer.getItem(slot);
         }
         return context.success(List.of(
                 new ItemStackResponseContainer(
                         sourceContainer.getSlotType(slot),
-                        List.of(
+                        Lists.newArrayList(
                                 new ItemStackResponseSlot(
                                         sourceContainer.toNetworkSlot(slot),
                                         sourceContainer.toNetworkSlot(slot),

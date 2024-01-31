@@ -3,7 +3,6 @@ package cn.nukkit.inventory.request;
 import cn.nukkit.Player;
 import cn.nukkit.network.protocol.types.itemstack.request.action.CraftCreativeAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponse;
 import cn.nukkit.registry.Registries;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,7 +19,7 @@ public class CraftCreativeActionProcessor implements ItemStackRequestActionProce
     }
 
     @Override
-    public ItemStackResponse handle(CraftCreativeAction action, Player player, ItemStackRequestContext context) {
+    public ActionResponse handle(CraftCreativeAction action, Player player, ItemStackRequestContext context) {
         var item = Registries.CREATIVE.get(action.getCreativeItemNetworkId() - 1);
         if (item == null) {
             log.warn("Unknown creative item network id: {}", action.getCreativeItemNetworkId() - 1);
@@ -28,7 +27,7 @@ public class CraftCreativeActionProcessor implements ItemStackRequestActionProce
         }
         item = item.clone().autoAssignStackNetworkId();
         item.setCount(item.getMaxStackSize());
-        player.getCreativeOutputInventory().setItem(0, item);
+        player.getCreativeOutputInventory().setItem(0, item, false);
         //从创造物品栏拿东西不需要响应
         return null;
     }

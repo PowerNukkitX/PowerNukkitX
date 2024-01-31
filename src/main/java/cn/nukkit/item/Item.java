@@ -100,9 +100,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public Item(@NotNull String id, int meta, int count) {
-        this.id = id.intern();
-        this.meta = meta & 0xffff;
-        this.count = count;
+        this(id, meta, count, null);
     }
 
     public Item(@NotNull String id, int meta, int count, @Nullable String name) {
@@ -112,7 +110,6 @@ public abstract class Item implements Cloneable, ItemID {
         if (name != null) {
             this.name = name.intern();
         }
-        autoAssignStackNetworkId();
     }
 
     public boolean hasMeta() {
@@ -137,6 +134,11 @@ public abstract class Item implements Cloneable, ItemID {
 
     @NotNull
     public static Item get(String id, Integer meta, int count, byte[] tags) {
+        return get(id, meta, count, tags, true);
+    }
+
+    @NotNull
+    public static Item get(String id, Integer meta, int count, byte[] tags, boolean autoAssignStackNetworkId) {
         Item item = Registries.ITEM.get(id, meta, count, tags);
         if (item == null) {
             BlockState itemBlockState = getItemBlockState(id, meta);
@@ -146,6 +148,9 @@ public abstract class Item implements Cloneable, ItemID {
             item = new ItemBlock(Registries.BLOCK.get(itemBlockState));
             item.setCount(count);
             item.setCompoundTag(tags);
+        }
+        if (autoAssignStackNetworkId) {
+            item.autoAssignStackNetworkId();
         }
         return item;
     }

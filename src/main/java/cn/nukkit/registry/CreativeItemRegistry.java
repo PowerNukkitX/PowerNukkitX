@@ -8,16 +8,13 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
+import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
-import java.util.stream.IntStream;
 
 /**
  * Allay Project 12/21/2023
@@ -52,7 +49,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                     register(index, new ItemBlock(block, damage));
                 } else {
                     String name = tag.getString("name");
-                    Item item = Item.get(name, damage);
+                    Item item = Item.get(name, damage, 1, EmptyArrays.EMPTY_BYTES, false);
                     register(index, item);
                 }
             }

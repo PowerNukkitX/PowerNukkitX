@@ -146,10 +146,10 @@ public class ShapedRecipe extends CraftingRecipe {
 
     @Override
     public boolean match(Input input) {
-        Item[][] data = input.data();
-        data = tryShrinkMatrix(input.row(), input.col(), data);
-        for (int i = 0; i < input.row(); i++) {
-            for (int j = 0; j < input.col(); j++) {
+        ShapedRecipe.tryShrinkMatrix(input);
+        Item[][] data = input.getData();
+        for (int i = 0; i < input.getRow(); i++) {
+            for (int j = 0; j < input.getCol(); j++) {
                 ItemDescriptor ingredient = getIngredient(j, i);
                 if (!ingredient.match(data[j][i])) return false;
             }
@@ -157,8 +157,11 @@ public class ShapedRecipe extends CraftingRecipe {
         return true;
     }
 
-    public static Item[][] tryShrinkMatrix(int row, int col, Item[][] data) {
+    public static void tryShrinkMatrix(Input input) {
         Integer r = null, l = null;
+        int row = input.getRow();
+        int col = input.getCol();
+        Item[][] data = input.getData();
         end:
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < col; j++) {
@@ -170,7 +173,7 @@ public class ShapedRecipe extends CraftingRecipe {
             }
         }
         if (r == null) {
-            return data;
+            return;
         }
         Queue<Pair<Integer, Integer>> bfsQueue = new ArrayDeque<>(row * col);
         HashSet<Pair<Integer, Integer>> result = new HashSet<>();
@@ -182,33 +185,13 @@ public class ShapedRecipe extends CraftingRecipe {
             Integer left = poll.left();
             Integer right = poll.right();
             int al = left, ar = right + 1;
-            if (al >= 0 && al < col && ar >= 0 && ar < row) {
-                Item item = data[al][ar];
-                if (!item.isNull()) {
-                    bfsQueue.add(Pair.of(al, ar));
-                }
-            }
+            pushQueue(row, col, data, bfsQueue, result, al, ar);
             int bl = left, br = right - 1;
-            if (bl >= 0 && al < col && br >= 0 && br < row) {
-                Item item = data[bl][br];
-                if (!item.isNull()) {
-                    bfsQueue.add(Pair.of(bl, br));
-                }
-            }
+            pushQueue(row, col, data, bfsQueue, result, bl, br);
             int cl = left + 1, cr = right;
-            if (cl >= 0 && cl < col && cr >= 0 && cr < row) {
-                Item item = data[cl][cr];
-                if (!item.isNull()) {
-                    bfsQueue.add(Pair.of(cl, cr));
-                }
-            }
+            pushQueue(row, col, data, bfsQueue, result, cl, cr);
             int dl = left - 1, dr = right;
-            if (dl >= 0 && dl < col && dr >= 0 && dr < row) {
-                Item item = data[dl][dr];
-                if (!item.isNull()) {
-                    bfsQueue.add(Pair.of(dl, dr));
-                }
-            }
+            pushQueue(row, col, data, bfsQueue, result, dl, dr);
         }
         Integer minR = null, maxR = null, minL = null, maxL = null;
         for (var pair : result) {
@@ -244,8 +227,20 @@ public class ShapedRecipe extends CraftingRecipe {
                     items[j][i] = data[minL + j][minR + i];
                 }
             }
-            return items;
-        } else return data;
+            input.setRow(newRow);
+            input.setCol(newCol);
+            input.setData(items);
+        }
+    }
+
+    private static void pushQueue(int row, int col, Item[][] data, Queue<Pair<Integer, Integer>> bfsQueue, HashSet<Pair<Integer, Integer>> result, int l, int r) {
+        Pair<Integer, Integer> pair = Pair.of(l, r);
+        if (!result.contains(pair) && l >= 0 && l < col && r >= 0 && r < row) {
+            Item item = data[l][r];
+            if (!item.isNull()) {
+                bfsQueue.add(pair);
+            }
+        }
     }
 
     @Override

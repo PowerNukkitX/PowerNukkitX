@@ -6,7 +6,6 @@ import cn.nukkit.network.protocol.types.itemstack.request.action.ConsumeAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.CraftRecipeAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponse;
 import cn.nukkit.recipe.Input;
 import cn.nukkit.registry.Registries;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +23,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     public static final String RECIPE_DATA_KEY = "recipe";
 
     @Override
-    public ItemStackResponse handle(CraftRecipeAction action, Player player, ItemStackRequestContext context) {
+    public ActionResponse handle(CraftRecipeAction action, Player player, ItemStackRequestContext context) {
         InputInventory craft;
         if (player.getTopWindow().isPresent() && player.getTopWindow().get() instanceof InputInventory input) {
             craft = input;
@@ -52,7 +51,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 // 若配方输出物品为多个，客户端将会发送CreateAction，此时我们将在CreateActionProcessor里面输出物品到CREATED_OUTPUT
                 var output = recipe.getResults().get(0);
                 var createdOutput = player.getCreativeOutputInventory();
-                createdOutput.setItem(0, output);
+                createdOutput.setItem(0, output.clone().autoAssignStackNetworkId(), false);
             }
         }
         return null;

@@ -3,7 +3,6 @@ package cn.nukkit.inventory.request;
 import cn.nukkit.Player;
 import cn.nukkit.network.protocol.types.itemstack.request.action.CreateAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponse;
 import cn.nukkit.recipe.Recipe;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,7 +21,7 @@ public class CreateActionProcessor implements ItemStackRequestActionProcessor<Cr
     }
 
     @Override
-    public ItemStackResponse handle(CreateAction action, Player player, ItemStackRequestContext context) {
+    public ActionResponse handle(CreateAction action, Player player, ItemStackRequestContext context) {
         Recipe recipe = context.get(RECIPE_DATA_KEY);
         if (recipe == null) {
             log.warn("Recipe not found in ItemStackRequest Context!");
@@ -30,7 +29,7 @@ public class CreateActionProcessor implements ItemStackRequestActionProcessor<Cr
         }
         var output = recipe.getResults().get(action.getSlot());
         var createdOutput = player.getCreativeOutputInventory();
-        createdOutput.setItem(0, output);
+        createdOutput.setItem(0, output, false);
         return null;
     }
 }

@@ -1,9 +1,7 @@
 package cn.nukkit.inventory.request;
 
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponse;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,11 +31,11 @@ public class ItemStackRequestContext {
         return (T) extraData.get(key);
     }
 
-    public ItemStackResponse error() {
-        return new ItemStackResponse(ItemStackResponseStatus.ERROR, itemStackRequest.getRequestId(), List.of());
+    public ActionResponse error() {
+        return new ActionResponse(false, List.of());
     }
 
-    public ItemStackResponse success(List<ItemStackResponseContainer> containers) {
-        return new ItemStackResponse(ItemStackResponseStatus.OK, itemStackRequest.getRequestId(), containers);
+    public ActionResponse success(List<ItemStackResponseContainer> containers) {
+        return new ActionResponse(true, containers);
     }
 }

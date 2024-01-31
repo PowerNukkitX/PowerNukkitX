@@ -3,7 +3,6 @@ package cn.nukkit.inventory.request;
 import cn.nukkit.Player;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponse;
 
 import javax.annotation.Nullable;
 
@@ -11,7 +10,7 @@ public interface ItemStackRequestActionProcessor<T extends ItemStackRequestActio
     ItemStackRequestActionType getType();
 
     @Nullable
-    ItemStackResponse handle(T action, Player player, ItemStackRequestContext context);
+    ActionResponse handle(T action, Player player, ItemStackRequestContext context);
 
     default boolean failToValidateStackNetworkId(int expectedSNID, int clientSNID) {
         //若客户端发来的stackNetworkId小于0，说明客户端保证数据无误并要求遵从服务端的数据

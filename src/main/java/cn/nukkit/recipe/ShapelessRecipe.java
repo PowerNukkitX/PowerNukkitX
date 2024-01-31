@@ -43,10 +43,10 @@ public class ShapelessRecipe extends CraftingRecipe {
 
     @Override
     public boolean match(Input input) {
-        Item[][] data = input.data();
+        Item[][] data = input.getData();
         List<Item> flatInputItem = new ArrayList<>();
-        for (int i = 0; i < input.row(); i++) {
-            for (int j = 0; j < input.col(); j++) {
+        for (int i = 0; i < input.getRow(); i++) {
+            for (int j = 0; j < input.getCol(); j++) {
                 if (!data[j][i].isNull()) {
                     flatInputItem.add(data[j][i]);
                 }

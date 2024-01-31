@@ -589,12 +589,18 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         }
 
         // Allow to rename without crafting
-        register(new CartographyRecipe(Item.get(ItemID.EMPTY_MAP), Collections.singletonList(Item.get(ItemID.EMPTY_MAP))));
-        register(new CartographyRecipe(Item.get(ItemID.EMPTY_MAP, 2), Collections.singletonList(Item.get(ItemID.EMPTY_MAP, 2))));
-        register(new CartographyRecipe(Item.get(ItemID.FILLED_MAP), Collections.singletonList(Item.get(ItemID.FILLED_MAP))));
-        register(new CartographyRecipe(Item.get(ItemID.FILLED_MAP, 3), Collections.singletonList(Item.get(ItemID.FILLED_MAP, 3))));
-        register(new CartographyRecipe(Item.get(ItemID.FILLED_MAP, 4), Collections.singletonList(Item.get(ItemID.FILLED_MAP, 4))));
-        register(new CartographyRecipe(Item.get(ItemID.FILLED_MAP, 5), Collections.singletonList(Item.get(ItemID.FILLED_MAP, 5))));
+        register(new CartographyRecipe(Item.get(ItemID.EMPTY_MAP, 0, 1, EmptyArrays.EMPTY_BYTES, false),
+                Collections.singletonList(Item.get(ItemID.EMPTY_MAP, 0, 1, EmptyArrays.EMPTY_BYTES, false))));
+        register(new CartographyRecipe(Item.get(ItemID.EMPTY_MAP, 2, 1, EmptyArrays.EMPTY_BYTES, false),
+                Collections.singletonList(Item.get(ItemID.EMPTY_MAP, 2, 1, EmptyArrays.EMPTY_BYTES, false))));
+        register(new CartographyRecipe(Item.get(ItemID.FILLED_MAP, 0, 1, EmptyArrays.EMPTY_BYTES, false),
+                Collections.singletonList(Item.get(ItemID.FILLED_MAP, 0, 1, EmptyArrays.EMPTY_BYTES, false))));
+        register(new CartographyRecipe(Item.get(ItemID.FILLED_MAP, 3, 1, EmptyArrays.EMPTY_BYTES, false),
+                Collections.singletonList(Item.get(ItemID.FILLED_MAP, 3, 1, EmptyArrays.EMPTY_BYTES, false))));
+        register(new CartographyRecipe(Item.get(ItemID.FILLED_MAP, 4, 1, EmptyArrays.EMPTY_BYTES, false),
+                Collections.singletonList(Item.get(ItemID.FILLED_MAP, 4, 1, EmptyArrays.EMPTY_BYTES, false))));
+        register(new CartographyRecipe(Item.get(ItemID.FILLED_MAP, 5, 1, EmptyArrays.EMPTY_BYTES, false),
+                Collections.singletonList(Item.get(ItemID.FILLED_MAP, 5, 1, EmptyArrays.EMPTY_BYTES, false))));
     }
 
     private Recipe parseShapelessRecipe(Map<String, Object> recipeObject, String craftingBlock) {
@@ -704,17 +710,14 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                 }
                 if (meta != null) {
                     if (meta == Short.MAX_VALUE) {
-                        item = Item.get(name);
+                        item = Item.get(name, 0, count, nbtBytes, false);
                         item.disableMeta();
                     } else {
-                        item = Item.get(name, meta);
+                        item = Item.get(name, meta, count, nbtBytes, false);
                     }
                 } else {
-                    item = Item.get(name);
+                    item = Item.get(name, 0, count, nbtBytes, false);
                 }
-
-                item.setCount(count);
-                item.setCompoundTag(nbtBytes);
                 yield new DefaultDescriptor(item);
             }
             case COMPLEX_ALIAS -> {

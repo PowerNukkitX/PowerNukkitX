@@ -7,15 +7,20 @@ import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ItemStackRequestPacket;
 import cn.nukkit.network.protocol.ItemStackResponsePacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponse;
+import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
+import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemStackRequestPacket> {
@@ -38,10 +43,12 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
     @SuppressWarnings("unchecked")
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ItemStackRequestPacket pk) {
         Player player = playerHandle.player;
-        List<ItemStackResponse> responses = new LinkedList<>();
+        List<ItemStackResponse> responses = new ArrayList<>();
         for (var request : pk.getRequests()) {
             ItemStackRequestAction[] actions = request.getActions();
             ItemStackRequestContext context = new ItemStackRequestContext(request);
+            ItemStackResponse itemStackResponse = new ItemStackResponse(ItemStackResponseStatus.OK, request.getRequestId(), new ArrayList<>());
+            Map<ContainerSlotType, ItemStackResponseContainer> responseContainerMap = new LinkedHashMap<>();
             for (int index = 0; index < actions.length; index++) {
                 var action = actions[index];
                 context.setCurrentActionIndex(index);
@@ -52,9 +59,26 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
                 }
                 var response = processor.handle(action, player, context);
                 if (response != null) {
-                    responses.add(response);
+                    if (!response.ok()) {
+                        itemStackResponse.setResult(ItemStackResponseStatus.ERROR);
+                        itemStackResponse.getContainers().clear();
+                        responses.add(itemStackResponse);
+                        break;
+                    }
+                    for (var container : response.containers()) {
+                        responseContainerMap.compute(container.getContainer(), (key, oldValue) -> {
+                            if (oldValue == null) {
+                                return container;
+                            } else {
+                                oldValue.getItems().addAll(container.getItems());
+                                return oldValue;
+                            }
+                        });
+                    }
                 }
             }
+            itemStackResponse.getContainers().addAll(responseContainerMap.values());
+            responses.add(itemStackResponse);
         }
         var itemStackResponsePacket = new ItemStackResponsePacket();
         itemStackResponsePacket.entries.addAll(responses);

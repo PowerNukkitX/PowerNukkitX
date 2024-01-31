@@ -4,12 +4,11 @@ import cn.nukkit.Player;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.action.DestroyAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponse;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseSlot;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collections;
 import java.util.List;
 
 import static cn.nukkit.inventory.request.CraftResultDeprecatedActionProcessor.NO_RESPONSE_DESTROY_KEY;
@@ -28,7 +27,7 @@ public class DestroyActionProcessor implements ItemStackRequestActionProcessor<D
     }
 
     @Override
-    public ItemStackResponse handle(DestroyAction action, Player player, ItemStackRequestContext context) {
+    public ActionResponse handle(DestroyAction action, Player player, ItemStackRequestContext context) {
         Boolean noResponseForDestroyAction = context.get(NO_RESPONSE_DESTROY_KEY);
         if (noResponseForDestroyAction != null && noResponseForDestroyAction) {
             return null;
@@ -64,7 +63,7 @@ public class DestroyActionProcessor implements ItemStackRequestActionProcessor<D
         return context.success(List.of(
                 new ItemStackResponseContainer(
                         sourceInventory.getSlotType(slot),
-                        Collections.singletonList(
+                        Lists.newArrayList(
                                 new ItemStackResponseSlot(
                                         sourceInventory.toNetworkSlot(slot),
                                         sourceInventory.toNetworkSlot(slot),

@@ -3,6 +3,7 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.jetbrains.annotations.NotNull;
@@ -53,13 +54,14 @@ public class CreativeOutputInventory implements Inventory {
     }
 
     @Override
-    public boolean setItem(int index, Item item, boolean send) {
+    public boolean setItem(int index, @NotNull Item item, boolean send) {
         this.item = item;
-        return false;
+        return true;
     }
 
     @Override
-    public Item[] addItem(Item... slots) {
+    public Item[] addItem(@NotNull Item... slots) {
+        Preconditions.checkNotNull(slots[0]);
         this.item = slots[0];
         return new Item[]{item};
     }
@@ -71,7 +73,7 @@ public class CreativeOutputInventory implements Inventory {
 
     @Override
     public Item[] removeItem(Item... slots) {
-        item = null;
+        item = Item.AIR;
         return Item.EMPTY_ARRAY;
     }
 
@@ -152,13 +154,13 @@ public class CreativeOutputInventory implements Inventory {
 
     @Override
     public boolean clear(int index, boolean send) {
-        item = null;
+        item = Item.AIR;
         return true;
     }
 
     @Override
     public void clearAll() {
-        item = null;
+        item = Item.AIR;
     }
 
     @Override

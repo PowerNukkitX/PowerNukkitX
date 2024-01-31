@@ -46,8 +46,10 @@ public class RecipeTest {
         Item[] item1 = List.of(Item.AIR, Item.AIR, Item.AIR).toArray(Item.EMPTY_ARRAY);
         Item[] item2 = List.of(Item.AIR, Item.get(ItemID.PLANKS), Item.get(ItemID.DIAMOND)).toArray(Item.EMPTY_ARRAY);
         Item[] item3 = List.of(Item.AIR, Item.get(ItemID.TORCHFLOWER_SEEDS), Item.get(ItemID.MELON_SEEDS)).toArray(Item.EMPTY_ARRAY);
-        Item[][] input = new Item[][]{item1, item2, item3};
-        Item[][] items = ShapedRecipe.tryShrinkMatrix(3, 3, input);
+        Item[][] data = new Item[][]{item1, item2, item3};
+        Input input = new Input(3, 3, data);
+        ShapedRecipe.tryShrinkMatrix(input);
+        Item[][] items = input.getData();
 
         Item[] expected1 = List.of(Item.get(ItemID.PLANKS), Item.get(ItemID.DIAMOND)).toArray(Item.EMPTY_ARRAY);
         Item[] expected2 = List.of(Item.get(ItemID.TORCHFLOWER_SEEDS), Item.get(ItemID.MELON_SEEDS)).toArray(Item.EMPTY_ARRAY);
@@ -60,8 +62,10 @@ public class RecipeTest {
         Item[] item1 = List.of(Item.get(ItemID.PLANKS), Item.get(ItemID.DIAMOND), Item.AIR).toArray(Item.EMPTY_ARRAY);
         Item[] item2 = List.of(Item.get(ItemID.TORCHFLOWER_SEEDS), Item.get(ItemID.MELON_SEEDS), Item.AIR).toArray(Item.EMPTY_ARRAY);
         Item[] item3 = List.of(Item.AIR, Item.AIR, Item.AIR).toArray(Item.EMPTY_ARRAY);
-        Item[][] input = new Item[][]{item1, item2, item3};
-        Item[][] items = ShapedRecipe.tryShrinkMatrix(3, 3, input);
+        Item[][] data = new Item[][]{item1, item2, item3};
+        Input input = new Input(3, 3, data);
+        ShapedRecipe.tryShrinkMatrix(input);
+        Item[][] items = input.getData();
 
         Item[] expected1 = List.of(Item.get(ItemID.PLANKS), Item.get(ItemID.DIAMOND)).toArray(Item.EMPTY_ARRAY);
         Item[] expected2 = List.of(Item.get(ItemID.TORCHFLOWER_SEEDS), Item.get(ItemID.MELON_SEEDS)).toArray(Item.EMPTY_ARRAY);
@@ -74,8 +78,10 @@ public class RecipeTest {
         Item[] item1 = List.of(Item.get(ItemID.PLANKS), Item.get(ItemID.DIAMOND), Item.get(ItemID.TORCHFLOWER_SEEDS)).toArray(Item.EMPTY_ARRAY);
         Item[] item2 = List.of(Item.AIR, Item.get(ItemID.STICK), Item.AIR).toArray(Item.EMPTY_ARRAY);
         Item[] item3 = List.of(Item.AIR, Item.get(ItemID.STICK), Item.AIR).toArray(Item.EMPTY_ARRAY);
-        Item[][] input = new Item[][]{item1, item2, item3};
-        Item[][] items = ShapedRecipe.tryShrinkMatrix(3, 3, input);
+        Item[][] data = new Item[][]{item1, item2, item3};
+        Input input = new Input(3, 3, data);
+        ShapedRecipe.tryShrinkMatrix(input);
+        Item[][] items = input.getData();
         Item[][] expected = items.clone();
         Assertions.assertArrayEquals(expected, items);
     }
