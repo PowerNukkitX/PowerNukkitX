@@ -289,7 +289,6 @@ public class DebugPasteCommand extends TestCommand implements CoreCommand {
                     b.append("version.api: ").append(server.getApiVersion()).append('\n');
                     b.append("version.nukkit: ").append(server.getNukkitVersion()).append('\n');
                     b.append("version.git: ").append(server.getGitCommit()).append('\n');
-                    b.append("version.codename: ").append(server.getCodename()).append('\n');
                     b.append("version.minecraft: ").append(server.getVersion()).append('\n');
                     b.append("version.protocol: ").append(ProtocolInfo.CURRENT_PROTOCOL).append('\n');
                     b.append("plugins:");

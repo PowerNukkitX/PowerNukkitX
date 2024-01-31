@@ -122,7 +122,6 @@ public class VersionCommand extends Command implements CoreCommand {
         if (args.length == 0) {
             sender.sendMessage(new TranslationContainer("nukkit.server.info.extended", sender.getServer().getName(),
                     sender.getServer().getNukkitVersion() + " (" + sender.getServer().getGitCommit() + ")",
-                    sender.getServer().getCodename(),
                     sender.getServer().getApiVersion(),
                     sender.getServer().getVersion(),
                     String.valueOf(ProtocolInfo.CURRENT_PROTOCOL)));

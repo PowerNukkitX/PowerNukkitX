@@ -51,7 +51,6 @@ public class Nukkit {
     public final static String VERSION = getVersion();
     public final static String GIT_COMMIT = getGitCommit();
     public final static String API_VERSION = dynamic("2.0.0");
-    public final static String CODENAME = dynamic("PowerNukkitX");
     public final static String PATH = System.getProperty("user.dir") + "/";
     public final static String DATA_PATH = System.getProperty("user.dir") + "/";
     public final static String PLUGIN_PATH = DATA_PATH + "plugins";
