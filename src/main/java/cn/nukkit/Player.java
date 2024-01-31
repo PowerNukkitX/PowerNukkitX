@@ -638,10 +638,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected void doFirstSpawn() {
         this.spawned = true;
 
-        this.inventory.sendContents(this);
         this.inventory.sendHeldItem(this);
+
+        this.inventory.sendContents(this);
         this.inventory.sendArmorContents(this);
+        this.getCursorInventory().sendContents(this);
         this.offhandInventory.sendContents(this);
+
         this.setEnableClientCommand(true);
 
         SetTimePacket setTimePacket = new SetTimePacket();
@@ -1581,22 +1584,29 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.creativeOutputInventory = new CreativeOutputInventory(this);
 
         this.addWindow(this.getInventory(), SpecialWindowId.PLAYER.getId());
+        //addDefaultWindows when the player doesn't have a spawn yet,
+        // so we need to manually open it to add the player to the viewer
+        this.getInventory().open(this);
         this.permanentWindows.add(SpecialWindowId.PLAYER.getId());
 
         this.addWindow(this.getCreativeOutputInventory(), SpecialWindowId.CREATIVE.getId());
+        this.getCreativeOutputInventory().open(this);
         this.permanentWindows.add(SpecialWindowId.CREATIVE.getId());
 
         this.addWindow(this.getOffhandInventory(), SpecialWindowId.OFFHAND.getId());
+        this.getOffhandInventory().open(this);
         this.permanentWindows.add(SpecialWindowId.OFFHAND.getId());
 
-        this.addWindow(this.getEnderChestInventory(), SpecialWindowId.ENDER_CHEST.getId());
-        this.permanentWindows.add(SpecialWindowId.ENDER_CHEST.getId());
-
         this.addWindow(this.getCraftingGrid(), SpecialWindowId.NONE.getId());
+        this.getCraftingGrid().open(this);
         this.permanentWindows.add(SpecialWindowId.NONE.getId());
 
         this.addWindow(this.getCursorInventory(), SpecialWindowId.CURSOR.getId());
+        this.getCursorInventory().open(this);
         this.permanentWindows.add(SpecialWindowId.CURSOR.getId());
+
+        this.addWindow(this.getEnderChestInventory(), SpecialWindowId.ENDER_CHEST.getId());
+        this.permanentWindows.add(SpecialWindowId.ENDER_CHEST.getId());
     }
 
     @Override
@@ -4839,12 +4849,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * Commonly used for refreshing.
      */
     public void sendAllInventories() {
-        getCursorInventory().sendContents(this);
         for (Inventory inv : this.windows.keySet()) {
             inv.sendContents(this);
-
-            if (inv instanceof HumanInventory) {
-                ((HumanInventory) inv).sendArmorContents(this);
+            if (inv instanceof HumanInventory humanInventory) {
+                humanInventory.sendArmorContents(this);
             }
         }
     }
@@ -4876,6 +4884,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * Reset crafting grid type.
      */
     public void resetCraftingGridType() {
+        //todo more drop
         List<Item> drops = new ArrayList<>(this.getCraftingGrid().getContents().values());//small craft
 
         drops.add(this.getCursorInventory().getItem(0));//cursor
