@@ -6,10 +6,10 @@ import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.event.server.QueryRegenerateEvent;
-import cn.nukkit.inventory.HumanOffHandInventory;
-import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.HumanEnderChestInventory;
 import cn.nukkit.inventory.HumanInventory;
+import cn.nukkit.inventory.HumanOffHandInventory;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.level.DimensionEnum;
@@ -29,7 +29,6 @@ import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
 import cn.nukkit.registry.BlockRegistry;
-import cn.nukkit.registry.RecipeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.ServerScheduler;
 import cn.nukkit.tags.BiomeTags;
@@ -99,6 +98,7 @@ public class GameMockExtension extends MockitoExtension {
         Registries.BIOME.init();
         Registries.FUEL.init();
         Registries.GENERATOR.init();
+        Registries.RECIPE.init();
         Effect.init();
         Attribute.init();
         BlockComposter.init();
@@ -155,9 +155,7 @@ public class GameMockExtension extends MockitoExtension {
         when(server.getAutoSave()).thenReturn(false);
         when(server.getTick()).thenReturn(1);
         when(server.getViewDistance()).thenReturn(4);
-        RecipeRegistry mock = mock(RecipeRegistry.class);
-        when(mock.findBrewingRecipe(any(), any())).thenReturn(null);
-        when(server.getRecipeRegistry()).thenReturn(mock);
+        when(server.getRecipeRegistry()).thenCallRealMethod();
         ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
         when(server.getComputeThreadPool()).thenReturn(pool);
         when(server.getCommandMap()).thenReturn(simpleCommandMap);
@@ -199,6 +197,8 @@ public class GameMockExtension extends MockitoExtension {
                 new HumanOffHandInventory(player),
                 new HumanEnderChestInventory(player)
         });
+        PlayerHandle playerHandle = new PlayerHandle(player);
+        playerHandle.addDefaultWindows();
         try {
             FieldUtils.writeDeclaredField(player, "foodData", new PlayerFood(player, 20, 20), true);
             FileUtils.copyDirectory(new File("src/test/resources/level"), new File("src/test/resources/newlevel"));

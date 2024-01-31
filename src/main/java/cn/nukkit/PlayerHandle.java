@@ -480,4 +480,8 @@ public final class PlayerHandle {
     public void setInventoryOpen(boolean inventoryOpen) {
         player.inventoryOpen = inventoryOpen;
     }
+
+    public void addDefaultWindows() {
+        player.addDefaultWindows();
+    }
 }
