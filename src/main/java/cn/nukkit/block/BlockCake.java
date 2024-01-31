@@ -127,7 +127,7 @@ public class BlockCake extends BlockTransparent {
             return false;
         }
         int damage = getBiteCount();
-        if (player != null && (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel() || player.isCreative() || player.getServer().getDifficulty() == 0)) {
+        if (player != null && (player.getFoodData().isHungry() || player.isCreative() || player.getServer().getDifficulty() == 0)) {
             if (damage <= 0x06) setBiteCount(damage + 1);
             if (damage >= 0x06) {
                 getLevel().setBlock(this, Block.get(BlockID.AIR), true);
