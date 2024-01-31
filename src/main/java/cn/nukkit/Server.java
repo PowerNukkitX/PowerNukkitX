@@ -699,8 +699,8 @@ public class Server {
         this.network.setName(this.getMotd());
         this.network.setSubName(this.getSubMotd());
 
-        log.info(this.getLanguage().tr("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + " (" + this.getGitCommit() + ")" + TextFormat.WHITE, TextFormat.AQUA + this.getCodename() + TextFormat.WHITE, this.getApiVersion()));
-        log.info(this.getLanguage().tr("nukkit.server.license", this.getName()));
+        log.info(this.getLanguage().tr("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + " (" + this.getGitCommit() + ")" + TextFormat.WHITE, this.getApiVersion()));
+        log.info(this.getLanguage().tr("nukkit.server.license"));
 
         this.consoleSender = new ConsoleCommandSender();
 
@@ -2230,7 +2230,7 @@ public class Server {
      * @return 服务器名称<br>The name of server
      */
     public String getName() {
-        return "Nukkit";
+        return "PowerNukkitX";
     }
 
     public String getNukkitVersion() {
@@ -2240,13 +2240,8 @@ public class Server {
     public String getBStatsNukkitVersion() {
         return Nukkit.VERSION;
     }
-
     public String getGitCommit() {
         return Nukkit.GIT_COMMIT;
-    }
-
-    public String getCodename() {
-        return Nukkit.CODENAME;
     }
 
     public String getVersion() {
