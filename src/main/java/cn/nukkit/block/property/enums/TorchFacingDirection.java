@@ -1,6 +1,5 @@
 package cn.nukkit.block.property.enums;
 
-import cn.nukkit.block.BlockTorch;
 import cn.nukkit.math.BlockFace;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;

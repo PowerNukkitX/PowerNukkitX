@@ -14,9 +14,10 @@ import cn.nukkit.event.entity.EntityCombustByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.inventory.CampfireInventory;
-import cn.nukkit.recipe.CampfireRecipe;
 import cn.nukkit.inventory.ContainerInventory;
-import cn.nukkit.item.*;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
@@ -28,6 +29,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.potion.Effect;
+import cn.nukkit.recipe.CampfireRecipe;
 import cn.nukkit.utils.Faceable;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -293,7 +295,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
 
     @Override
     public Item toItem() {
-        return new ItemCampfire();
+        return Item.get(ItemID.CAMPFIRE);
     }
 
     @Override

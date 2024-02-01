@@ -55,7 +55,7 @@ public interface RedstoneComponent {
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
     default void updateAllAroundRedstone(@NotNull List<BlockFace> ignoredFaces) {
-        if (this instanceof Position) updateAllAroundRedstone((Position) this, ignoredFaces);
+        if (this instanceof Position pos) updateAllAroundRedstone(pos, ignoredFaces);
     }
 
     //

@@ -4233,9 +4233,8 @@ public class Level implements Metadatable {
     public int getRedstonePower(Vector3 pos, BlockFace face) {
         Block block;
 
-        if (pos instanceof Block) {
-            block = (Block) pos;
-            pos = pos.add(0);
+        if (pos instanceof Block b) {
+            block = b;
         } else {
             block = this.getBlock(pos);
         }

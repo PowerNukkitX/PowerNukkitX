@@ -547,7 +547,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
 
     @Override
     public Item toItem() {
-        return new ItemCauldron();
+        return Item.get(ItemID.CAULDRON);
     }
 
     @Override

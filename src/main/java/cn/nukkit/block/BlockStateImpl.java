@@ -1,18 +1,19 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.type.BlockPropertyType;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.CompoundTagView;
 import cn.nukkit.nbt.tag.LinkedCompoundTag;
 import cn.nukkit.nbt.tag.TreeMapCompoundTag;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.HashUtils;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import org.jetbrains.annotations.UnmodifiableView;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
-import java.util.TreeMap;
 
 /**
  * Allay Project 12/15/2023
@@ -118,24 +119,30 @@ record BlockStateImpl(String identifier,
     public BlockState setPropertyValues(BlockProperties properties, BlockPropertyType.BlockPropertyValue<?, ?, ?>... values) {
         final var blockPropertyValues = blockPropertyValues();
         final var newPropertyValues = new BlockPropertyType.BlockPropertyValue<?, ?, ?>[blockPropertyValues.length];
-        final var propertyValues = List.of(values);
-        final var succeed = new boolean[propertyValues.size()];
+        final var succeed = new boolean[values.length];
         var succeedCount = 0;
-        for (int i = 0; i < blockPropertyValues.length; i++) {
-            final var v = blockPropertyValues[i];
-            int index;
-            if ((index = propertyValues.indexOf(v)) != -1) {
-                succeedCount++;
-                succeed[index] = true;
-                newPropertyValues[i] = propertyValues.get(index);
-            } else newPropertyValues[i] = v;
+        ArrayList<BlockPropertyType.BlockPropertyValue<?, ?, ?>> input = Lists.newArrayList(values);
+        Iterator<BlockPropertyType.BlockPropertyValue<?, ?, ?>> iterator = input.iterator();
+        if (iterator.hasNext()) {
+            BlockPropertyType.BlockPropertyValue<?, ?, ?> newV = iterator.next();
+            for (int i = 0; i < blockPropertyValues.length; i++) {
+                BlockPropertyType.BlockPropertyValue<?, ?, ?> oldV = blockPropertyValues[i];
+                if (oldV.getPropertyType() == newV.getPropertyType()) {
+                    succeedCount++;
+                    succeed[i] = true;
+                    newPropertyValues[i] = newV;
+                    iterator.remove();
+                } else {
+                    newPropertyValues[i] = oldV;
+                }
+            }
         }
-        if (succeedCount != propertyValues.size()) {
+        if (succeedCount != values.length) {
             var errorMsgBuilder = new StringBuilder("Properties ");
-            for (int i = 0; i < propertyValues.size(); i++) {
+            for (int i = 0; i < values.length; i++) {
                 if (!succeed[i]) {
-                    errorMsgBuilder.append(propertyValues.get(i).getPropertyType().getName());
-                    if (i != propertyValues.size() - 1)
+                    errorMsgBuilder.append(values[i].getPropertyType().getName());
+                    if (i != values.length - 1)
                         errorMsgBuilder.append(", ");
                 }
             }

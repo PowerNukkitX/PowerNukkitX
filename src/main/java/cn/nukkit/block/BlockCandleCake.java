@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemCake;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
@@ -120,7 +119,7 @@ public class BlockCandleCake extends BlockTransparent {
 
     @Override
     public Item toItem() {
-        return new ItemCake();
+        return Item.get(ItemID.CAKE);
     }
 
     @SuppressWarnings("DuplicatedCode")

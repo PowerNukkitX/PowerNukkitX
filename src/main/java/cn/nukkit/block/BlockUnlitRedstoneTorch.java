@@ -9,11 +9,12 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockUnlitRedstoneTorch  extends BlockTorch implements RedstoneComponent {
+public class BlockUnlitRedstoneTorch extends BlockTorch implements RedstoneComponent {
     public static final BlockProperties PROPERTIES = new BlockProperties(UNLIT_REDSTONE_TORCH, CommonBlockProperties.TORCH_FACING_DIRECTION);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

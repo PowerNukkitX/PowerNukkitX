@@ -104,11 +104,18 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public Item(@NotNull String id, int meta, int count, @Nullable String name) {
+        this(id, meta, count, name, true);
+    }
+
+    public Item(@NotNull String id, int meta, int count, @Nullable String name, boolean autoAssignStackNetworkId) {
         this.id = id.intern();
         this.meta = meta & 0xffff;
         this.count = count;
         if (name != null) {
             this.name = name.intern();
+        }
+        if (autoAssignStackNetworkId) {
+            this.autoAssignStackNetworkId();
         }
     }
 
