@@ -543,7 +543,7 @@ public class Server {
                 put("motd", "PowerNukkitX Server");
                 put("sub-motd", "https://powernukkitx.cn");
                 put("server-port", 19132);
-                put("server-ip", "127.0.0.1");
+                put("server-ip", "0.0.0.0");
                 put("view-distance", 12);
                 put("white-list", false);
                 put("achievements", true);
@@ -2652,7 +2652,7 @@ public class Server {
      * @return 服务器网络地址<br>server ip
      */
     public String getIp() {
-        return this.getPropertyString("server-ip", "127.0.0.1");
+        return this.getPropertyString("server-ip", "0.0.0.0");
     }
 
     /**

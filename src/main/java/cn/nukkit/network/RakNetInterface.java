@@ -73,7 +73,7 @@ public class RakNetInterface implements SourceInterface {
             oclass = NioDatagramChannel.class;
             eventloopgroup = new NioEventLoopGroup(nettyThreadNumber, threadFactory);
         }
-        InetSocketAddress bindAddress = new InetSocketAddress(Strings.isNullOrEmpty(this.server.getIp()) ? "127.0.0.1" : this.server.getIp(), this.server.getPort());
+        InetSocketAddress bindAddress = new InetSocketAddress(Strings.isNullOrEmpty(this.server.getIp()) ? "0.0.0.0" : this.server.getIp(), this.server.getPort());
         this.channel = new ServerBootstrap()
                 .channelFactory(RakChannelFactory.server(oclass))
                 .option(RakChannelOption.RAK_ADVERTISEMENT, pong.toByteBuf())
