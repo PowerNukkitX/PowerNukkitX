@@ -7,11 +7,10 @@ public class ItemDrownedSpawnEgg extends ItemSpawnEgg {
 
     @Override
     public int getEntityNetworkId() {
-        return 132;
+        return 110;
     }
 
     @Override
     public void setDamage(int meta) {
-
     }
 }

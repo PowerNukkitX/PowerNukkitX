@@ -1128,7 +1128,7 @@ public class Level implements Metadatable {
         int sleepingPlayerCount = 0;
         for (Player p : this.getPlayers().values()) {
             playerCount++;
-            if (!p.isSleeping()) {
+            if (p.isSleeping()) {
                 sleepingPlayerCount++;
             }
         }
