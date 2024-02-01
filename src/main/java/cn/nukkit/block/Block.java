@@ -33,7 +33,9 @@ import org.jetbrains.annotations.Nullable;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
@@ -225,7 +227,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 0;
     }
 
-    public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player,@NotNull PlayerInteractEvent.Action action) {
+    public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player, @NotNull PlayerInteractEvent.Action action) {
         onUpdate(Level.BLOCK_UPDATE_TOUCH);
     }
 
@@ -724,7 +726,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                     .map(Enchantment::getLevel).orElse(0);
 
             if (canHarvest && efficiencyLevel > 0) {
-                speedMultiplier += efficiencyLevel ^ 2 + 1;
+                speedMultiplier += efficiencyLevel * efficiencyLevel + 1;
             }
 
             if (hasConduitPower) hasteEffectLevel = Integer.max(hasteEffectLevel, 2);
@@ -732,11 +734,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             if (hasteEffectLevel > 0) {
                 speedMultiplier *= 1 + (0.2 * hasteEffectLevel);
             }
-
         }
 
         if (miningFatigueLevel > 0) {
-            speedMultiplier /= 3 ^ miningFatigueLevel;
+            speedMultiplier /= Math.pow(miningFatigueLevel, 3);
         }
 
         seconds /= speedMultiplier;
