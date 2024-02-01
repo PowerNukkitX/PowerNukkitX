@@ -32,23 +32,15 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author joserobjr
  * @since 2021-01-13
  */
-
-
 public class EntityIronGolem extends EntityMob implements EntityWalkable {
     @Override
     @NotNull public String getIdentifier() {
         return IRON_GOLEM;
     }
 
-    
-
-
     public EntityIronGolem(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
-    
-
 
     @Override
     public String getOriginalName() {

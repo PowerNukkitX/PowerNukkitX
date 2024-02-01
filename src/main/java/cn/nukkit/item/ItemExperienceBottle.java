@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.entity.EntityID;
+
 public class ItemExperienceBottle extends ProjectileItem {
     public ItemExperienceBottle() {
         this(0, 1);
@@ -15,7 +17,7 @@ public class ItemExperienceBottle extends ProjectileItem {
 
     @Override
     public String getProjectileEntityType() {
-        return "ThrownExpBottle";
+        return EntityID.XP_BOTTLE;
     }
 
     @Override

@@ -45,7 +45,7 @@ public class ItemLingeringPotion extends ProjectileItem {
 
     @Override
     public String getProjectileEntityType() {
-        return "LingeringPotion";
+        return LINGERING_POTION;
     }
 
     @Override

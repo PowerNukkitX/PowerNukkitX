@@ -19,7 +19,7 @@ public class ItemEgg extends ProjectileItem {
 
     @Override
     public String getProjectileEntityType() {
-        return "Egg";
+        return EGG;
     }
 
     @Override

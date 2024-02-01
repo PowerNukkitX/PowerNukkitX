@@ -24,7 +24,7 @@ public class ItemSnowball extends ProjectileItem {
 
     @Override
     public String getProjectileEntityType() {
-        return "Snowball";
+        return SNOWBALL;
     }
 
     @Override

@@ -44,7 +44,7 @@ public class ItemSplashPotion extends ProjectileItem {
 
     @Override
     public String getProjectileEntityType() {
-        return "ThrownPotion";
+        return SPLASH_POTION;
     }
 
     @Override

@@ -25,7 +25,7 @@ public class ItemEnderPearl extends ProjectileItem {
 
     @Override
     public String getProjectileEntityType() {
-        return "EnderPearl";
+        return ENDER_PEARL;
     }
 
     @Override
