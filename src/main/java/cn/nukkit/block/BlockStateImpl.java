@@ -7,12 +7,9 @@ import cn.nukkit.nbt.tag.TreeMapCompoundTag;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.HashUtils;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -117,24 +114,21 @@ record BlockStateImpl(String identifier,
 
     @Override
     public BlockState setPropertyValues(BlockProperties properties, BlockPropertyType.BlockPropertyValue<?, ?, ?>... values) {
-        final var blockPropertyValues = blockPropertyValues();
-        final var newPropertyValues = new BlockPropertyType.BlockPropertyValue<?, ?, ?>[blockPropertyValues.length];
+        final var newPropertyValues = new BlockPropertyType.BlockPropertyValue<?, ?, ?>[this.blockPropertyValues.length];
         final var succeed = new boolean[values.length];
         var succeedCount = 0;
-        ArrayList<BlockPropertyType.BlockPropertyValue<?, ?, ?>> input = Lists.newArrayList(values);
-        Iterator<BlockPropertyType.BlockPropertyValue<?, ?, ?>> iterator = input.iterator();
-        if (iterator.hasNext()) {
-            BlockPropertyType.BlockPropertyValue<?, ?, ?> newV = iterator.next();
-            for (int i = 0; i < blockPropertyValues.length; i++) {
-                BlockPropertyType.BlockPropertyValue<?, ?, ?> oldV = blockPropertyValues[i];
-                if (oldV.getPropertyType() == newV.getPropertyType()) {
+        for (int i = 0; i < blockPropertyValues.length; i++) {
+            int index = -1;
+            for (int j = 0; j < values.length; j++) {
+                if (values[j].getPropertyType() == blockPropertyValues[i].getPropertyType()) {
+                    index = j;
                     succeedCount++;
-                    succeed[i] = true;
-                    newPropertyValues[i] = newV;
-                    iterator.remove();
-                } else {
-                    newPropertyValues[i] = oldV;
+                    succeed[index] = true;
+                    newPropertyValues[i] = values[j];
                 }
+            }
+            if (index == -1) {
+                newPropertyValues[i] = blockPropertyValues[i];
             }
         }
         if (succeedCount != values.length) {

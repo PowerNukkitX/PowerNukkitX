@@ -65,8 +65,7 @@ public class BlockPistonArmCollision extends BlockTransparent implements Faceabl
 
     @Override
     public BlockFace getBlockFace() {
-        BlockFace face = BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
-        return face.getHorizontalIndex() >= 0 ? face.getOpposite() : face;
+        return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
     }
 
     @Override

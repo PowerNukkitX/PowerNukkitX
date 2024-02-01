@@ -54,10 +54,15 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             this.getLevel().setBlock(block, this, true);
 
             this.updateSurroundingRedstone(true);
+
             Position pos = getLocation();
 
             for (BlockFace blockFace : Plane.VERTICAL) {
-                RedstoneComponent.updateAllAroundRedstone(pos.getSide(blockFace), blockFace.getOpposite());
+                RedstoneComponent.updateAroundRedstone(pos.getSide(blockFace), blockFace.getOpposite());
+            }
+
+            for (BlockFace blockFace : Plane.VERTICAL) {
+                this.updateAround(pos.getSide(blockFace), blockFace.getOpposite());
             }
 
             for (BlockFace blockFace : Plane.HORIZONTAL) {
@@ -75,6 +80,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         return true;
     }
 
+    //Update the neighbor's block of the pos location as well as the neighbor's neighbor's block
     private void updateAround(Position pos, BlockFace face) {
         if (this.level.getBlock(pos).getId().equals(Block.REDSTONE_WIRE)) {
             updateAroundRedstone(face);
@@ -86,10 +92,6 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
     }
 
     private void updateSurroundingRedstone(boolean force) {
-        this.calculateCurrentChanges(force);
-    }
-
-    private void calculateCurrentChanges(boolean force) {
         Vector3 pos = this.getLocation();
 
         int meta = this.getRedStoneSignal();
@@ -199,20 +201,19 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             return 0;
         }
 
-        // Redstone event
-        RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
-        getLevel().getServer().getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
-            return 0;
-        }
-
         if (type == Level.BLOCK_UPDATE_NORMAL && !this.canBePlacedOn(this.down())) {
             this.getLevel().useBreakOn(this);
             return Level.BLOCK_UPDATE_NORMAL;
+        } else if (type == Level.BLOCK_UPDATE_REDSTONE) {
+            // Redstone event
+            RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
+            getLevel().getServer().getPluginManager().callEvent(ev);
+            if (ev.isCancelled()) {
+                return 0;
+            }
+            this.updateSurroundingRedstone(false);
+            return 1;
         }
-
-        this.updateSurroundingRedstone(false);
-
         return Level.BLOCK_UPDATE_NORMAL;
     }
 
