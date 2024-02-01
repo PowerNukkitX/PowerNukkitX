@@ -453,10 +453,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     public BlockColor getColor() {
         if (color != null) return color;
-        else color = VANILLA_BLOCK_COLOR_MAP.get(this.blockstate.unsignedBlockStateHash());
+        else color = VANILLA_BLOCK_COLOR_MAP.get(this.blockstate.blockStateHash());
         if (color == null) {
             log.error("Failed to get color of block " + getName());
-            log.error("Current block state hash: " + this.blockstate.unsignedBlockStateHash());
+            log.error("Current block state hash: " + this.blockstate.blockStateHash());
             color = BlockColor.VOID_BLOCK_COLOR;
         }
         return color;

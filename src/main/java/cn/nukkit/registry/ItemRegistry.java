@@ -528,7 +528,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         }
     }
 
-    public Item get(String id, Integer meta) {
+    public Item get(String id, int meta) {
         try {
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
@@ -540,34 +540,20 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         }
     }
 
-    public Item get(String id, Integer meta, int count) {
-        try {
-            var c = CACHE_CONSTRUCTORS.get(id);
-            if (c == null) return null;
-            Item item = (Item) c.invoke();
-            item.setDamage(meta);
-            item.setCount(count);
-            return item;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Item get(String id, Integer meta, int count, CompoundTag tags) {
+    public Item get(String id, int meta, int count) {
         try {
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
             item.setDamage(meta);
             item.setCount(count);
-            item.setCompoundTag(tags);
             return item;
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Item get(String id, Integer meta, int count, byte[] tags) {
+    public Item get(String id, int meta, int count, CompoundTag tags) {
         try {
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
@@ -575,6 +561,22 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             item.setDamage(meta);
             item.setCount(count);
             item.setCompoundTag(tags);
+            return item;
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Item get(String id, int meta, int count, byte[] tags) {
+        try {
+            var c = CACHE_CONSTRUCTORS.get(id);
+            if (c == null) return null;
+            Item item = (Item) c.invoke();
+            item.setDamage(meta);
+            item.setCount(count);
+            if (tags != null) {
+                item.setCompoundTag(tags);
+            }
             return item;
         } catch (Throwable e) {
             throw new RuntimeException(e);
