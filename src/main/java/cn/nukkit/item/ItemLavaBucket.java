@@ -12,6 +12,5 @@ public class ItemLavaBucket extends ItemBucket {
 
     @Override
     public void setDamage(int meta) {
-
     }
 }

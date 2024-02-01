@@ -143,7 +143,7 @@ public class BlockKelp extends BlockFlowable {
                 String blockIdAbove = blockAbove.getId();
                 if (!Objects.equals(blockIdAbove, KELP)) {
                     if (blockAbove instanceof BlockFlowingWater water) {
-                        if ((water.getBlock()).isSourceOrFlowingDown()) {
+                        if (water.isSourceOrFlowingDown()) {
                             BlockKelp highestKelp = (BlockKelp) getLevel().getBlock(x, y - 1, z);
                             if (highestKelp.grow()) {
                                 this.level.addParticle(new BoneMealParticle(this));

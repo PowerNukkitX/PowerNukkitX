@@ -2161,6 +2161,11 @@ public class Level implements Metadatable {
         block.layer = layer;
 
         Block blockPrevious = statePrevious.toBlock();
+        blockPrevious.x = x;
+        blockPrevious.y = y;
+        blockPrevious.z = z;
+        blockPrevious.level = this;
+        blockPrevious.layer = layer;
 
         int cx = x >> 4;
         int cz = z >> 4;

@@ -36,7 +36,7 @@ public class BlockWater extends BlockFlowingWater {
     }
 
     @Override
-    public BlockLiquid getBlock() {
-        return new BlockWater(blockstate);
+    public BlockLiquid getLiquidWithNewDepth(int depth) {
+        return new BlockWater(this.blockstate.setPropertyValue(PROPERTIES, CommonBlockProperties.LIQUID_DEPTH.createValue(depth)));
     }
 }

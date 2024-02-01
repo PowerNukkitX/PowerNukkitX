@@ -126,8 +126,11 @@ public class ItemBucket extends Item {
         return true;
     }
 
+    /**
+     * get the placed block for this bucket
+     */
     public Block getTargetBlock() {
-        return Objects.equals(getId(), BUCKET) ? Block.get(getDamageByTarget(getBucketType())) : Block.get(BlockID.AIR);
+        return Block.get(getDamageByTarget(getBucketType()));
     }
 
     @SuppressWarnings("DuplicatedCode")

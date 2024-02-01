@@ -144,8 +144,8 @@ public class BlockFlowingLava extends BlockLiquid {
     }
 
     @Override
-    public BlockLiquid getBlock() {
-        return (BlockLiquid) Block.get(blockstate);
+    public BlockLiquid getLiquidWithNewDepth(int depth) {
+        return new BlockFlowingLava(this.blockstate.setPropertyValue(PROPERTIES, CommonBlockProperties.LIQUID_DEPTH.createValue(depth)));
     }
 
     @Override
@@ -165,7 +165,7 @@ public class BlockFlowingLava extends BlockLiquid {
     }
 
     @Override
-    protected void checkForHarden() {
+    protected void checkForMixing() {
         Block colliding = null;
         Block down = this.getSide(BlockFace.DOWN);
         for (int side = 1; side < 6; ++side) { //don't check downwards side
