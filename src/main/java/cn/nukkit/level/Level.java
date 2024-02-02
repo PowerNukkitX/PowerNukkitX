@@ -4192,44 +4192,18 @@ public class Level implements Metadatable {
         }
 
         return i;
-//        i = Math.max(i, this.getStrongPower(pos.down(), BlockFace.DOWN));
-//
-//        if (i >= 15) {
-//            return i;
-//        } else {
-//            i = Math.max(i, this.getStrongPower(pos.up(), BlockFace.UP));
-//
-//            if (i >= 15) {
-//                return i;
-//            } else {
-//                i = Math.max(i, this.getStrongPower(pos.north(), BlockFace.NORTH));
-//
-//                if (i >= 15) {
-//                    return i;
-//                } else {
-//                    i = Math.max(i, this.getStrongPower(pos.south(), BlockFace.SOUTH));
-//
-//                    if (i >= 15) {
-//                        return i;
-//                    } else {
-//                        i = Math.max(i, this.getStrongPower(pos.west(), BlockFace.WEST));
-//
-//                        if (i >= 15) {
-//                            return i;
-//                        } else {
-//                            i = Math.max(i, this.getStrongPower(pos.east(), BlockFace.EAST));
-//                            return i >= 15 ? i : i;
-//                        }
-//                    }
-//                }
-//            }
-//        }
     }
 
     public boolean isSidePowered(Vector3 pos, BlockFace face) {
         return this.getRedstonePower(pos, face) > 0;
     }
 
+    /**
+     * Get the block redstone power can output.
+     *
+     * @param pos  the block pos
+     * @param face Only be used on block with not isNormalBlock, such as redstone torch
+     */
     public int getRedstonePower(Vector3 pos, BlockFace face) {
         Block block;
 

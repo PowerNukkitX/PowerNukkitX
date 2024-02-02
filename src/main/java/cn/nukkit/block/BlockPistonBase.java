@@ -18,6 +18,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.UpdateBlockPacket;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import com.google.common.collect.Lists;
@@ -47,7 +48,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         var min = block.level.getMinHeight();
         var max = block.level.getMaxHeight() - 1;
         if (block.getY() >= min && (face != BlockFace.DOWN || block.getY() != min) &&
-                        block.getY() <= max && (face != BlockFace.UP || block.getY() != max)
+                block.getY() <= max && (face != BlockFace.UP || block.getY() != max)
         ) {
             if (extending && !block.canBePushed() || !extending && !block.canBePulled())
                 return false;
@@ -61,23 +62,25 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityPistonArm> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityPistonArm> getBlockEntityClass() {
         return BlockEntityPistonArm.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.PISTON_ARM;
     }
 
     @Override
     public double getResistance() {
-        return 2.5;
+        return 1.5;
     }
 
     @Override
     public double getHardness() {
-        return 0.5;
+        return 1.5;
     }
 
     @Override
@@ -285,12 +288,13 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 if (blockEntity != null && !(blockEntity instanceof BlockEntityMovingBlock)) {
                     blockEntity.saveNBT();
                     nbt.putCompound("movingEntity", new CompoundTag(blockEntity.namedTag.getTags()));
-                    if (blockEntity instanceof InventoryHolder inventoryHolder) inventoryHolder.getInventory().clearAll();
+                    if (blockEntity instanceof InventoryHolder inventoryHolder)
+                        inventoryHolder.getInventory().clearAll();
                     blockEntity.close();
                 }
                 oldPosList.add(oldPos);
 
-                blockEntityHolderList.add((BlockEntityHolder<?>) Block.get(MOVING_BLOCK,Position.fromObject(newPos, this.level)));
+                blockEntityHolderList.add((BlockEntityHolder<?>) Block.get(MOVING_BLOCK, Position.fromObject(newPos, this.level)));
                 nbtList.add(nbt);
             }
         }
@@ -311,7 +315,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
             var pistonArmPos = this.getSide(pistonFace);
             //清除位置上所含的水等
             level.setBlock(pistonArmPos, 1, Block.get(AIR), true, false);
-            this.level.setBlock(pistonArmPos, createHead(getBlockFace()));
+            level.setBlock(pistonArmPos, createHead(getBlockFace()), true, false);
         }
         //开始移动
         this.getBlockEntity().move();

@@ -33,12 +33,12 @@ public class BlockPistonArmCollision extends BlockTransparent implements Faceabl
 
     @Override
     public double getResistance() {
-        return 2.5;
+        return 1.5;
     }
 
     @Override
     public double getHardness() {
-        return 0.5;
+        return 1.5;
     }
 
     @Override

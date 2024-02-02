@@ -201,19 +201,20 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             return 0;
         }
 
+        // Redstone event
+        RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
+        getLevel().getServer().getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) {
+            return 0;
+        }
+
         if (type == Level.BLOCK_UPDATE_NORMAL && !this.canBePlacedOn(this.down())) {
             this.getLevel().useBreakOn(this);
             return Level.BLOCK_UPDATE_NORMAL;
-        } else if (type == Level.BLOCK_UPDATE_REDSTONE) {
-            // Redstone event
-            RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
-            getLevel().getServer().getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
-                return 0;
-            }
-            this.updateSurroundingRedstone(false);
-            return 1;
         }
+
+        this.updateSurroundingRedstone(false);
+
         return Level.BLOCK_UPDATE_NORMAL;
     }
 
@@ -223,7 +224,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
 
     @Override
     public int getStrongPower(BlockFace side) {
-        return !this.isPowerSource() ? 0 : getWeakPower(side);
+        return this.isPowerSource() ? getWeakPower(side) : 0;
     }
 
     @Override
@@ -267,11 +268,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
     }
 
     protected static boolean canConnectUpwardsTo(Level level, Vector3 pos) {
-        return canConnectUpwardsTo(level.getBlock(pos));
-    }
-
-    protected static boolean canConnectUpwardsTo(Block block) {
-        return canConnectTo(block, null);
+        return canConnectTo(level.getBlock(pos), null);
     }
 
     protected static boolean canConnectTo(Block block, BlockFace side) {
@@ -284,6 +281,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             return block.isPowerSource() && side != null;
         }
     }
+    ///
 
     @Override
     public boolean isPowerSource() {

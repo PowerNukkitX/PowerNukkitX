@@ -1110,6 +1110,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 0;
     }
 
+    /**
+     * Gets strong power.
+     *
+     * @param side the side
+     * @return the strong power
+     */
     public int getStrongPower(BlockFace side) {
         return 0;
     }

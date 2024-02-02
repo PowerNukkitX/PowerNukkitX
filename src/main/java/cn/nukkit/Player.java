@@ -4884,18 +4884,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * Reset crafting grid type.
      */
     public void resetCraftingGridType() {
-        //todo more drop
-        List<Item> drops = new ArrayList<>(this.getCraftingGrid().getContents().values());//small craft
+        if (spawned) {
+            //todo more drop
+            List<Item> drops = new ArrayList<>(this.getCraftingGrid().getContents().values());//small craft
 
-        drops.add(this.getCursorInventory().getItem(0));//cursor
+            drops.add(this.getCursorInventory().getItem(0));//cursor
 
-        Optional<Inventory> topWindow = getTopWindow();
-        Inventory value;
-        if (topWindow.isPresent() && (value = topWindow.get()) instanceof CraftTypeInventory) {
-            drops.addAll(value.getContents().values());
-        }
-        for (Item drop : drops) {
-            this.dropItem(drop);
+            Optional<Inventory> topWindow = getTopWindow();
+            Inventory value;
+            if (topWindow.isPresent() && (value = topWindow.get()) instanceof CraftTypeInventory) {
+                drops.addAll(value.getContents().values());
+            }
+            for (Item drop : drops) {
+                this.dropItem(drop);
+            }
         }
     }
 
