@@ -1,13 +1,13 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.FlowerType;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.potion.Effect;
+import cn.nukkit.entity.effect.Effect;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -40,9 +40,9 @@ public class BlockWitherRose extends BlockRedFlower {
     @Override
     public void onEntityCollide(Entity entity) {
         if (level.getServer().getDifficulty() != 0 && entity instanceof EntityLiving living) {
-            if (!living.invulnerable && !living.hasEffect(Effect.WITHER)
+            if (!living.invulnerable && !living.hasEffect(EffectType.WITHER)
                     && (!(living instanceof Player) || !((Player) living).isCreative() && !((Player) living).isSpectator())) {
-                Effect effect = Effect.getEffect(Effect.WITHER);
+                Effect effect = Effect.get(EffectType.WITHER);
                 effect.setDuration(40);
                 effect.setAmplifier(1);
                 living.addEffect(effect);

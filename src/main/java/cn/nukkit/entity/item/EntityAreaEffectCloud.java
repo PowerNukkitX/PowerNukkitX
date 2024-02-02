@@ -6,17 +6,15 @@ import cn.nukkit.entity.data.FloatEntityData;
 import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.data.ShortEntityData;
-import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.potion.Effect;
-import cn.nukkit.potion.InstantEffect;
-import cn.nukkit.potion.Potion;
+import cn.nukkit.entity.effect.Effect;
+import cn.nukkit.entity.effect.PotionType;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,32 +73,32 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void recalculatePotionColor(boolean send) {
-        int a;
-        int r;
-        int g;
-        int b;
+        int[] color = new int[4];
+        int count = 0;
 
-        int color;
         if (namedTag.contains("ParticleColor")) {
-            color = namedTag.getInt("ParticleColor");
-            a = (color & 0xFF000000) >> 24;
-            r = (color & 0x00FF0000) >> 16;
-            g = (color & 0x0000FF00) >> 8;
-            b = color & 0x000000FF;
+            int effectColor = namedTag.getInt("ParticleColor");
+            color[0] = (effectColor & 0xFF000000) >> 24;
+            color[1] = (effectColor & 0x00FF0000) >> 16;
+            color[2] = (effectColor & 0x0000FF00) >> 8;
+            color[3] = effectColor & 0x000000FF;
         } else {
-            a = 255;
-            Effect effect = Potion.getEffect(getPotionId(), true);
-            if (effect == null) {
-                r = 40;
-                g = 40;
-                b = 255;
-            } else {
-                int[] colors = effect.getColor();
-                r = colors[0];
-                g = colors[1];
-                b = colors[2];
+            color[0] = 255;
+
+            PotionType potion = PotionType.get(getPotionId());
+            for (Effect effect : potion.getEffects(true)) {
+                Color effectColor = effect.getColor();
+                color[1] += effectColor.getRed() * effect.getLevel();
+                color[2] += effectColor.getGreen() * effect.getLevel();
+                color[3] += effectColor.getBlue() * effect.getLevel();
+                count += effect.getLevel();
             }
         }
+
+        int a = (color[0] / count) & 0xff;
+        int r = (color[1] / count) & 0xff;
+        int g = (color[2] / count) & 0xff;
+        int b = (color[3] / count) & 0xff;
 
         setPotionColor(a, r, g, b, send);
     }
@@ -217,7 +215,7 @@ public class EntityAreaEffectCloud extends Entity {
 
         cloudEffects = new ArrayList<>(1);
         for (CompoundTag effectTag : namedTag.getList("mobEffects", CompoundTag.class).getAll()) {
-            Effect effect = Effect.getEffect(effectTag.getByte("Id"))
+            Effect effect = Effect.get(effectTag.getByte("Id"))
                     .setAmbient(effectTag.getBoolean("Ambient"))
                     .setAmplifier(effectTag.getByte("Amplifier"))
                     .setVisible(effectTag.getBoolean("DisplayOnScreenTextureAnimation"))
@@ -344,18 +342,6 @@ public class EntityAreaEffectCloud extends Entity {
                         if (collidingEntity == this || !(collidingEntity instanceof EntityLiving)) continue;
 
                         for (Effect effect : cloudEffects) {
-                            if (effect instanceof InstantEffect) {
-                                boolean damage = effect.getId() == Effect.HARMING;
-                                if (collidingEntity.isUndead()) damage = !damage; // invert effect if undead
-
-                                if (damage)
-                                    collidingEntity.attack(new EntityDamageByEntityEvent(this, collidingEntity, EntityDamageEvent.DamageCause.MAGIC, (float) (0.5 * (double) (6 << (effect.getAmplifier() + 1)))));
-                                else
-                                    collidingEntity.heal(new EntityRegainHealthEvent(collidingEntity, (float) (0.5 * (double) (4 << (effect.getAmplifier() + 1))), EntityRegainHealthEvent.CAUSE_MAGIC));
-
-                                continue;
-                            }
-
                             collidingEntity.addEffect(effect);
                         }
                     }

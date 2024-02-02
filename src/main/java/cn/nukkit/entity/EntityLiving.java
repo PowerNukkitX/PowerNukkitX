@@ -6,6 +6,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCactus;
 import cn.nukkit.block.BlockMagma;
 import cn.nukkit.entity.data.ShortEntityData;
+import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.weather.EntityWeather;
 import cn.nukkit.event.entity.EntityDamageBlockedEvent;
@@ -24,7 +25,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.TickCachedBlockIterator;
 
 import java.util.ArrayList;
@@ -237,11 +237,11 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 this.attack(new EntityDamageEvent(this, DamageCause.SUFFOCATION, 1));
             }
 
-            if (this.isOnLadder() || this.hasEffect(Effect.LEVITATION) || this.hasEffect(Effect.SLOW_FALLING)) {
+            if (this.isOnLadder() || this.hasEffect(EffectType.LEVITATION) || this.hasEffect(EffectType.SLOW_FALLING)) {
                 this.resetFallDistance();
             }
 
-            if (!this.hasEffect(Effect.WATER_BREATHING) && !this.hasEffect(Effect.CONDUIT_POWER) && this.isInsideOfWater()) {
+            if (!this.hasEffect(EffectType.WATER_BREATHING) && !this.hasEffect(EffectType.CONDUIT_POWER) && this.isInsideOfWater()) {
                 if (this instanceof EntitySwimmable || (this instanceof Player && (((Player) this).isCreative() || ((Player) this).isSpectator()))) {
                     this.setAirTicks(400);
                 } else {

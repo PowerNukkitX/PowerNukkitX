@@ -1,7 +1,7 @@
 package cn.nukkit.event.potion;
 
 import cn.nukkit.event.Event;
-import cn.nukkit.potion.Potion;
+import cn.nukkit.entity.effect.PotionType;
 
 /**
  * @author Snake1999
@@ -9,17 +9,17 @@ import cn.nukkit.potion.Potion;
  */
 public abstract class PotionEvent extends Event {
 
-    private Potion potion;
+    private PotionType potion;
 
-    public PotionEvent(Potion potion) {
+    public PotionEvent(PotionType potion) {
         this.potion = potion;
     }
 
-    public Potion getPotion() {
+    public PotionType getPotion() {
         return potion;
     }
 
-    public void setPotion(Potion potion) {
+    public void setPotion(PotionType potion) {
         this.potion = potion;
     }
 

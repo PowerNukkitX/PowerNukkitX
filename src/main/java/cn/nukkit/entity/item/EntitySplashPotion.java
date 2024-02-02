@@ -8,9 +8,11 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.particle.SpellParticle;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.potion.Effect;
-import cn.nukkit.potion.Potion;
+import cn.nukkit.entity.effect.Effect;
+import cn.nukkit.entity.effect.PotionType;
 import org.jetbrains.annotations.NotNull;
+
+import java.awt.*;
 
 /**
  * @author xtypr
@@ -90,7 +92,7 @@ public class EntitySplashPotion extends EntityProjectile {
     }
 
     protected void splash(Entity collidedWith) {
-        Potion potion = Potion.getPotion(this.potionId);
+        PotionType potion = PotionType.get(this.potionId);
         PotionCollideEvent event = new PotionCollideEvent(potion, this);
         this.server.getPluginManager().callEvent(event);
 
@@ -105,27 +107,21 @@ public class EntitySplashPotion extends EntityProjectile {
             return;
         }
 
-        potion.setSplash(true);
+        int[] color = new int[3];
+        int count = 0;
 
-        Particle particle;
-        int r;
-        int g;
-        int b;
-
-        Effect effect = Potion.getEffect(potion.getId(), true);
-
-        if (effect == null) {
-            r = 40;
-            g = 40;
-            b = 255;
-        } else {
-            int[] colors = effect.getColor();
-            r = colors[0];
-            g = colors[1];
-            b = colors[2];
+        for (Effect effect : potion.getEffects(true)) {
+            Color effectColor = effect.getColor();
+            color[0] += effectColor.getRed() * effect.getLevel();
+            color[1] += effectColor.getGreen() * effect.getLevel();
+            color[2] += effectColor.getBlue() * effect.getLevel();
+            count += effect.getLevel();
         }
 
-        particle = new SpellParticle(this, r, g, b);
+        int r = (color[0] / count) & 0xff;
+        int g = (color[1] / count) & 0xff;
+        int b = (color[2] / count) & 0xff;
+        Particle particle = new SpellParticle(this, r, g, b);
 
         this.getLevel().addParticle(particle);
         this.getLevel().addSound(this, Sound.RANDOM_GLASS);
@@ -134,8 +130,8 @@ public class EntitySplashPotion extends EntityProjectile {
         for (Entity anEntity : entities) {
             double distance = anEntity.distanceSquared(this);
             if (distance < 16) {
-                double d = anEntity.equals(collidedWith) ? 1 : 1 - Math.sqrt(distance) / 4;
-                potion.applyPotion(anEntity, d);
+                double splashDistance = anEntity.equals(collidedWith) ? 1 : 1 - Math.sqrt(distance) / 4;
+                potion.applyEffects(anEntity, true, splashDistance);
             }
         }
     }

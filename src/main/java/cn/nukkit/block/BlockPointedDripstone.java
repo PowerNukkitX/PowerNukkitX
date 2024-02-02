@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.block.property.enums.CauldronLiquid;
 import cn.nukkit.block.property.enums.DripstoneThickness;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.block.BlockFallEvent;
 import cn.nukkit.event.block.CauldronFilledByDrippingLiquidEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -15,7 +16,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.potion.Effect;
+import cn.nukkit.entity.effect.Effect;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -24,7 +25,6 @@ import java.util.Random;
 
 import static cn.nukkit.block.property.CommonBlockProperties.DRIPSTONE_THICKNESS;
 import static cn.nukkit.block.property.CommonBlockProperties.HANGING;
-import static cn.nukkit.potion.Effect.getEffect;
 
 /**
  * @author CoolLoong
@@ -256,7 +256,7 @@ public class BlockPointedDripstone extends BlockFallable {
     @Override
     public void onEntityFallOn(Entity entity, float fallDistance) {
         if (this.level.gameRules.getBoolean(GameRule.FALL_DAMAGE) && this.getPropertyValue(DRIPSTONE_THICKNESS) == DripstoneThickness.TIP && !this.getPropertyValue(HANGING)) {
-            int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST) ? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
+            int jumpBoost = entity.hasEffect(EffectType.JUMP_BOOST) ? Effect.get(EffectType.JUMP_BOOST).getLevel() : 0;
             float damage = (fallDistance - jumpBoost) * 2 - 2;
             if (damage > 0)
                 entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.FALL, damage));

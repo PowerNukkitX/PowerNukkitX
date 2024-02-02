@@ -3,11 +3,12 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.potion.Effect;
+import cn.nukkit.entity.effect.Effect;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockHayBlock extends BlockSolid {
@@ -69,7 +70,7 @@ public class BlockHayBlock extends BlockSolid {
 
     @Override
     public void onEntityFallOn(Entity entity, float fallDistance) {
-        int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST)? (Effect.getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
+        int jumpBoost = entity.hasEffect(EffectType.JUMP_BOOST)? Effect.get(EffectType.JUMP_BOOST).getLevel() : 0;
         float damage = (float) Math.floor(fallDistance - 3 - jumpBoost);
 
         damage *= 0.2F;

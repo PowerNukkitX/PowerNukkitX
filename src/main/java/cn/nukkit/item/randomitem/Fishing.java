@@ -5,7 +5,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.potion.Potion;
 
 import static cn.nukkit.item.randomitem.RandomItem.*;
 
@@ -31,7 +30,7 @@ public final class Fishing {
     public static final Selector JUNK_ROTTEN_FLESH = putSelector(new ConstantItemSelector(ItemID.ROTTEN_FLESH, JUNKS), 0.12F);
     public static final Selector JUNK_STICK = putSelector(new ConstantItemSelector(ItemID.STICK, JUNKS), 0.06F);
     public static final Selector JUNK_STRING_ITEM = putSelector(new ConstantItemSelector(ItemID.STRING, JUNKS), 0.06F);
-    public static final Selector JUNK_WATTER_BOTTLE = putSelector(new ConstantItemSelector(ItemID.POTION, Potion.NO_EFFECTS, JUNKS), 0.12F);
+    public static final Selector JUNK_WATTER_BOTTLE = putSelector(new ConstantItemSelector(ItemID.POTION, 0, JUNKS), 0.12F);
     public static final Selector JUNK_BONE = putSelector(new ConstantItemSelector(ItemID.BONE, JUNKS), 0.12F);
     public static final Selector JUNK_TRIPWIRE_HOOK = putSelector(new ConstantItemSelector(Item.get(BlockID.TRIPWIRE_HOOK), JUNKS), 0.12F);
 

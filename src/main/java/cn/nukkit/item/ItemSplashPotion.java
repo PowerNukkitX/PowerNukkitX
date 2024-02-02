@@ -1,7 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.potion.Potion;
+import cn.nukkit.entity.effect.PotionType;
 
 public class ItemSplashPotion extends ProjectileItem {
     public ItemSplashPotion() {
@@ -24,11 +24,11 @@ public class ItemSplashPotion extends ProjectileItem {
     }
 
     private void updateName() {
-        int potionId = getDamage();
-        if (potionId == Potion.WATER) {
+        PotionType potion = PotionType.get(getDamage());
+        if (potion == PotionType.WATER) {
             name = "Splash Water Bottle";
         } else {
-            name = ItemPotion.buildName(potionId, "Splash Potion", true);
+            name = ItemPotion.buildName(potion, "Splash Potion", true);
         }
     }
 
@@ -44,7 +44,7 @@ public class ItemSplashPotion extends ProjectileItem {
 
     @Override
     public String getProjectileEntityType() {
-        return "ThrownPotion";
+        return SPLASH_POTION;
     }
 
     @Override

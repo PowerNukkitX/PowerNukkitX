@@ -8,6 +8,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityNameable;
 import cn.nukkit.entity.data.IntEntityData;
+import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.PlayerChangeArmorStandEvent;
@@ -29,7 +30,6 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.SetEntityDataPacket;
-import cn.nukkit.potion.Effect;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -391,7 +391,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             case FIRE:
             case FIRE_TICK:
             case LAVA:
-                if (hasEffect(Effect.FIRE_RESISTANCE)) {
+                if (hasEffect(EffectType.FIRE_RESISTANCE)) {
                     return false;
                 }
             default:

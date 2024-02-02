@@ -19,6 +19,7 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.RouteUnreachableTimeSensor;
 import cn.nukkit.entity.data.IntEntityData;
+import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -31,7 +32,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
-import cn.nukkit.potion.Effect;
+import cn.nukkit.entity.effect.Effect;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -91,9 +92,9 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                             for (var player : entity.level.getPlayers().values()) {
                                 if (!player.isCreative() && !player.isSpectator()
                                         && entity.distanceSquared(player) <= 400) {
-                                    var effect = player.getEffect(Effect.DARKNESS);
+                                    var effect = player.getEffect(EffectType.DARKNESS);
                                     if (effect == null) {
-                                        effect = Effect.getEffect(Effect.DARKNESS);
+                                        effect = Effect.get(EffectType.DARKNESS);
                                         effect.setDuration(260);
                                         player.addEffect(effect);
                                         continue;

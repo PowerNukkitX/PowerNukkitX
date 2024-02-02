@@ -14,7 +14,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.potion.Effect;
+import cn.nukkit.entity.effect.Effect;
 
 import java.util.EnumMap;
 import java.util.Map;

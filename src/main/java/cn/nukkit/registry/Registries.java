@@ -15,4 +15,5 @@ public final class Registries {
     public static final FuelRegistry FUEL = new FuelRegistry();
     public static final PacketRegistry PACKET = new PacketRegistry();
     public static final RecipeRegistry RECIPE = new RecipeRegistry();
+    public static final EffectRegistry EFFECT = new EffectRegistry();
 }

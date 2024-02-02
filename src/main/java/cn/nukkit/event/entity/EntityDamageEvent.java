@@ -1,12 +1,11 @@
 package cn.nukkit.event.entity;
 
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.EventException;
 import com.google.common.collect.ImmutableMap;
-import lombok.Getter;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -50,8 +49,8 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
             throw new EventException("BASE Damage modifier missing");
         }
 
-        if (entity.hasEffect(Effect.RESISTANCE)) {
-            this.setDamage((float) -(this.getDamage(DamageModifier.BASE) * 0.20 * (entity.getEffect(Effect.RESISTANCE).getAmplifier() + 1)), DamageModifier.RESISTANCE);
+        if (entity.hasEffect(EffectType.RESISTANCE)) {
+            this.setDamage((float) -(this.getDamage(DamageModifier.BASE) * 0.20 * entity.getEffect(EffectType.RESISTANCE).getLevel()), DamageModifier.RESISTANCE);
         }
     }
 

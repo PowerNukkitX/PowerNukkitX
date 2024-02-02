@@ -28,6 +28,7 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.IntEntityData;
+import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.block.FarmLandDecayEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityFallEvent;
@@ -44,7 +45,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
-import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -276,7 +276,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
 
     @Override
     public void fall(float fallDistance) {
-        if (this.hasEffect(Effect.SLOW_FALLING)) {
+        if (this.hasEffect(EffectType.SLOW_FALLING)) {
             return;
         }
 
@@ -291,7 +291,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         fallDistance = event.getFallDistance();
 
         if ((!this.isPlayer || level.getGameRules().getBoolean(GameRule.FALL_DAMAGE)) && down.useDefaultFallDamage()) {
-            int jumpBoost = this.hasEffect(Effect.JUMP_BOOST) ? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
+            int jumpBoost = this.hasEffect(EffectType.JUMP_BOOST) ? getEffect(EffectType.JUMP_BOOST).getLevel() : 0;
             float damage = fallDistance - 3 - jumpBoost - getClientMaxJumpHeight();
 
             if (damage > 0) {

@@ -3,9 +3,10 @@ package cn.nukkit.event.potion;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.potion.Effect;
-import cn.nukkit.potion.Potion;
-import lombok.Getter;
+import cn.nukkit.entity.effect.Effect;
+import cn.nukkit.entity.effect.PotionType;
+
+import java.util.List;
 
 /**
  * @author Snake1999
@@ -20,11 +21,11 @@ public class PotionApplyEvent extends PotionEvent implements Cancellable {
     }
 
     private final Entity entity;
-    private Effect applyEffect;
+    private List<Effect> applyEffects;
 
-    public PotionApplyEvent(Potion potion, Effect applyEffect, Entity entity) {
+    public PotionApplyEvent(PotionType potion, List<Effect> applyEffects, Entity entity) {
         super(potion);
-        this.applyEffect = applyEffect;
+        this.applyEffects = applyEffects;
         this.entity = entity;
     }
 
@@ -32,11 +33,11 @@ public class PotionApplyEvent extends PotionEvent implements Cancellable {
         return entity;
     }
 
-    public Effect getApplyEffect() {
-        return applyEffect;
+    public List<Effect> getApplyEffects() {
+        return applyEffects;
     }
 
-    public void setApplyEffect(Effect applyEffect) {
-        this.applyEffect = applyEffect;
+    public void setApplyEffect(List<Effect> applyEffects) {
+        this.applyEffects = applyEffects;
     }
 }

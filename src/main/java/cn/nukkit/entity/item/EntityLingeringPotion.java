@@ -6,9 +6,11 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.potion.Effect;
-import cn.nukkit.potion.Potion;
+import cn.nukkit.entity.effect.Effect;
+import cn.nukkit.entity.effect.PotionType;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 
 public class EntityLingeringPotion extends EntitySplashPotion {
@@ -50,11 +52,12 @@ public class EntityLingeringPotion extends EntitySplashPotion {
                         .putShort("PotionId", potionId)
         );
 
-        Effect effect = Potion.getEffect(potionId, true);
-
-        if (effect != null && entity != null) {
-            entity.cloudEffects.add(effect/*.setDuration(1)*/.setVisible(false).setAmbient(false));
-            entity.spawnToAll();
+        List<Effect> effects = PotionType.get(potionId).getEffects(true);
+        for (Effect effect : effects) {
+            if (effect != null && entity != null) {
+                entity.cloudEffects.add(effect/*.setDuration(1)*/.setVisible(false).setAmbient(false));
+                entity.spawnToAll();
+            }
         }
     }
 
