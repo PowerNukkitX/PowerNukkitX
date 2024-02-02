@@ -5,7 +5,6 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.potion.Potion;
 import cn.nukkit.registry.CreativeItemRegistry;
 import cn.nukkit.registry.Registries;
 import org.junit.jupiter.api.Assertions;
@@ -18,7 +17,6 @@ public class CreativeItemTest {
     @Test
     void init() {
         Registries.BLOCK.init();
-        Potion.init();
         Registries.ITEM.init();
         Assertions.assertDoesNotThrow(() -> {
             try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("creative_items.nbt")) {
