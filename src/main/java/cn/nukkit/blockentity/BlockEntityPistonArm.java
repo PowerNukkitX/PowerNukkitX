@@ -65,7 +65,6 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 this.z + (pushDirection.getZOffset() * progress)
                 //带动站在移动方块上的实体
         ).addCoord(0, pushDirection.getAxis().isHorizontal() ? 0.25 : 0, 0);
-        ;
         for (var entity : this.level.getCollidingEntities(bb))
             moveEntity(entity, pushDirection);
     }
@@ -250,9 +249,9 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     protected ListTag<IntTag> getAttachedBlocks() {
         var attachedBlocks = new ListTag<IntTag>();
         for (var block : this.attachedBlocks) {
-            attachedBlocks.add(new IntTag( block.x));
-            attachedBlocks.add(new IntTag( block.y));
-            attachedBlocks.add(new IntTag( block.z));
+            attachedBlocks.add(new IntTag(block.x));
+            attachedBlocks.add(new IntTag(block.y));
+            attachedBlocks.add(new IntTag(block.z));
         }
         return attachedBlocks;
     }

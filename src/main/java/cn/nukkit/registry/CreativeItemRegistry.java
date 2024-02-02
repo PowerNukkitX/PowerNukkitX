@@ -7,7 +7,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -22,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, Item> {
     private static final Int2ObjectLinkedOpenHashMap<Item> MAP = new Int2ObjectLinkedOpenHashMap<>();
+    private static final Int2ObjectOpenHashMap<Item> INTERNAL_DIFF_ITEM = new Int2ObjectOpenHashMap<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
 
     @Override
@@ -39,14 +42,15 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 var nbt = tag.containsCompound("tag") ? NBTIO.write(tag.getCompound("tag"), ByteOrder.LITTLE_ENDIAN) : EmptyArrays.EMPTY_BYTES;
                 String name = tag.getString("name");
                 Item item = Item.get(name, damage, 1, nbt, false);
+                if (item.isNull() || (item.isBlock() && item.getBlockUnsafe().isAir())) {
+                    log.warn("load creative item {} damage {} is null", name, damage);
+                }
                 var isBlock = tag.contains("blockStateHash");
                 if (isBlock) {
                     item.setBlockUnsafe(Registries.BLOCKSTATE.get(tag.getInt("blockStateHash")).toBlock());
                 } else {
+                    INTERNAL_DIFF_ITEM.put(index, item.clone());
                     item.setBlockUnsafe(null);
-                }
-                if (item.isNull()) {
-                    log.warn("load creative item {} damage {} is null", name, damage);
                 }
                 register(index, item);
             }
@@ -72,8 +76,12 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         return -1;
     }
 
+    @NotNull
     public Item getCreativeItem(int index) {
-        return (index >= 0 && index < MAP.size()) ? MAP.get(index) : null;
+        if (INTERNAL_DIFF_ITEM.containsKey(index)) {
+            return INTERNAL_DIFF_ITEM.get(index);
+        }
+        return (index >= 0 && index < MAP.size()) ? MAP.get(index) : Item.AIR;
     }
 
     /**
@@ -84,6 +92,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
 
     public void clearCreativeItems() {
         MAP.clear();
+        INTERNAL_DIFF_ITEM.clear();
     }
 
     /**
@@ -127,6 +136,11 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
      * Detect if the item exists in the Creative backpack
      */
     public boolean isCreativeItem(Item item) {
+        for (Item aCreative : INTERNAL_DIFF_ITEM.values()) {
+            if (item.equals(aCreative, !item.isTool())) {
+                return true;
+            }
+        }
         for (Item aCreative : MAP.values()) {
             if (item.equals(aCreative, !item.isTool())) {
                 return true;
@@ -137,12 +151,16 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
 
     @Override
     public Item get(Integer key) {
+        if (INTERNAL_DIFF_ITEM.containsKey(key.intValue())) {
+            return INTERNAL_DIFF_ITEM.get(key.intValue());
+        }
         return MAP.get(key.intValue());
     }
 
     @Override
     public void trim() {
         MAP.trim();
+        INTERNAL_DIFF_ITEM.trim();
     }
 
     @Override

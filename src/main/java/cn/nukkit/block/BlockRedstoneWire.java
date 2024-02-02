@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
@@ -15,9 +14,7 @@ import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 import static cn.nukkit.block.property.CommonBlockProperties.REDSTONE_SIGNAL;
 
@@ -29,7 +26,8 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
     public static final BlockProperties PROPERTIES = new BlockProperties(REDSTONE_WIRE, REDSTONE_SIGNAL);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -40,9 +38,6 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
     public BlockRedstoneWire(BlockState blockState) {
         super(blockState);
     }
-    private boolean canProvidePower = true;
-
-    private final Set<Vector3> blocksNeedingUpdate = new HashSet<>();
 
     @Override
     public String getName() {
@@ -59,6 +54,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             this.getLevel().setBlock(block, this, true);
 
             this.updateSurroundingRedstone(true);
+
             Position pos = getLocation();
 
             for (BlockFace blockFace : Plane.VERTICAL) {
@@ -84,6 +80,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         return true;
     }
 
+    //Update the neighbor's block of the pos location as well as the neighbor's neighbor's block
     private void updateAround(Position pos, BlockFace face) {
         if (this.level.getBlock(pos).getId().equals(Block.REDSTONE_WIRE)) {
             updateAroundRedstone(face);
@@ -95,18 +92,11 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
     }
 
     private void updateSurroundingRedstone(boolean force) {
-        this.calculateCurrentChanges(force);
-    }
-
-    private void calculateCurrentChanges(boolean force) {
         Vector3 pos = this.getLocation();
 
         int meta = this.getRedStoneSignal();
         int maxStrength = meta;
-        this.canProvidePower = false;
         int power = this.getIndirectPower();
-
-        this.canProvidePower = true;
 
         if (power > 0 && power > maxStrength - 1) {
             maxStrength = power;
@@ -234,12 +224,12 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
 
     @Override
     public int getStrongPower(BlockFace side) {
-        return !this.canProvidePower ? 0 : getWeakPower(side);
+        return this.isPowerSource() ? getWeakPower(side) : 0;
     }
 
     @Override
     public int getWeakPower(BlockFace side) {
-        if (!this.canProvidePower) {
+        if (!this.isPowerSource()) {
             return 0;
         } else {
             int power = this.getRedStoneSignal();
@@ -278,11 +268,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
     }
 
     protected static boolean canConnectUpwardsTo(Level level, Vector3 pos) {
-        return canConnectUpwardsTo(level.getBlock(pos));
-    }
-
-    protected static boolean canConnectUpwardsTo(Block block) {
-        return canConnectTo(block, null);
+        return canConnectTo(level.getBlock(pos), null);
     }
 
     protected static boolean canConnectTo(Block block, BlockFace side) {
@@ -295,10 +281,11 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             return block.isPowerSource() && side != null;
         }
     }
+    ///
 
     @Override
     public boolean isPowerSource() {
-        return this.canProvidePower;
+        return getPropertyValue(REDSTONE_SIGNAL) > 0;
     }
 
     public int getRedStoneSignal() {

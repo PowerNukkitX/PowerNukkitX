@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.type.BlockPropertyType;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.CompoundTagView;
 import cn.nukkit.nbt.tag.LinkedCompoundTag;
 import cn.nukkit.nbt.tag.TreeMapCompoundTag;
@@ -12,7 +11,6 @@ import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.TreeMap;
 
 /**
  * Allay Project 12/15/2023
@@ -116,26 +114,29 @@ record BlockStateImpl(String identifier,
 
     @Override
     public BlockState setPropertyValues(BlockProperties properties, BlockPropertyType.BlockPropertyValue<?, ?, ?>... values) {
-        final var blockPropertyValues = blockPropertyValues();
-        final var newPropertyValues = new BlockPropertyType.BlockPropertyValue<?, ?, ?>[blockPropertyValues.length];
-        final var propertyValues = List.of(values);
-        final var succeed = new boolean[propertyValues.size()];
+        final var newPropertyValues = new BlockPropertyType.BlockPropertyValue<?, ?, ?>[this.blockPropertyValues.length];
+        final var succeed = new boolean[values.length];
         var succeedCount = 0;
         for (int i = 0; i < blockPropertyValues.length; i++) {
-            final var v = blockPropertyValues[i];
-            int index;
-            if ((index = propertyValues.indexOf(v)) != -1) {
-                succeedCount++;
-                succeed[index] = true;
-                newPropertyValues[i] = propertyValues.get(index);
-            } else newPropertyValues[i] = v;
+            int index = -1;
+            for (int j = 0; j < values.length; j++) {
+                if (values[j].getPropertyType() == blockPropertyValues[i].getPropertyType()) {
+                    index = j;
+                    succeedCount++;
+                    succeed[index] = true;
+                    newPropertyValues[i] = values[j];
+                }
+            }
+            if (index == -1) {
+                newPropertyValues[i] = blockPropertyValues[i];
+            }
         }
-        if (succeedCount != propertyValues.size()) {
+        if (succeedCount != values.length) {
             var errorMsgBuilder = new StringBuilder("Properties ");
-            for (int i = 0; i < propertyValues.size(); i++) {
+            for (int i = 0; i < values.length; i++) {
                 if (!succeed[i]) {
-                    errorMsgBuilder.append(propertyValues.get(i).getPropertyType().getName());
-                    if (i != propertyValues.size() - 1)
+                    errorMsgBuilder.append(values[i].getPropertyType().getName());
+                    if (i != values.length - 1)
                         errorMsgBuilder.append(", ");
                 }
             }

@@ -8,7 +8,8 @@ public class BlockStickyPiston extends BlockPistonBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(STICKY_PISTON, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -18,6 +19,7 @@ public class BlockStickyPiston extends BlockPistonBase {
 
     public BlockStickyPiston(BlockState blockstate) {
         super(blockstate);
+        sticky = true;
     }
 
     @Override

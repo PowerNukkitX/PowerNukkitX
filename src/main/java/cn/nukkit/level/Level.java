@@ -1128,7 +1128,7 @@ public class Level implements Metadatable {
         int sleepingPlayerCount = 0;
         for (Player p : this.getPlayers().values()) {
             playerCount++;
-            if (!p.isSleeping()) {
+            if (p.isSleeping()) {
                 sleepingPlayerCount++;
             }
         }
@@ -1468,7 +1468,7 @@ public class Level implements Metadatable {
             return;
         }
 
-        BlockUpdateEntry entry = new BlockUpdateEntry(pos.floor(), block, ((long) delay) + getCurrentTick(), priority, checkBlockWhenUpdate);
+        BlockUpdateEntry entry = new BlockUpdateEntry(pos.floor(), block, delay + getCurrentTick(), priority, checkBlockWhenUpdate);
 
         if (!this.updateQueue.contains(entry)) {
             this.updateQueue.add(entry);
@@ -2161,6 +2161,11 @@ public class Level implements Metadatable {
         block.layer = layer;
 
         Block blockPrevious = statePrevious.toBlock();
+        blockPrevious.x = x;
+        blockPrevious.y = y;
+        blockPrevious.z = z;
+        blockPrevious.level = this;
+        blockPrevious.layer = layer;
 
         int cx = x >> 4;
         int cz = z >> 4;
@@ -4187,50 +4192,23 @@ public class Level implements Metadatable {
         }
 
         return i;
-//        i = Math.max(i, this.getStrongPower(pos.down(), BlockFace.DOWN));
-//
-//        if (i >= 15) {
-//            return i;
-//        } else {
-//            i = Math.max(i, this.getStrongPower(pos.up(), BlockFace.UP));
-//
-//            if (i >= 15) {
-//                return i;
-//            } else {
-//                i = Math.max(i, this.getStrongPower(pos.north(), BlockFace.NORTH));
-//
-//                if (i >= 15) {
-//                    return i;
-//                } else {
-//                    i = Math.max(i, this.getStrongPower(pos.south(), BlockFace.SOUTH));
-//
-//                    if (i >= 15) {
-//                        return i;
-//                    } else {
-//                        i = Math.max(i, this.getStrongPower(pos.west(), BlockFace.WEST));
-//
-//                        if (i >= 15) {
-//                            return i;
-//                        } else {
-//                            i = Math.max(i, this.getStrongPower(pos.east(), BlockFace.EAST));
-//                            return i >= 15 ? i : i;
-//                        }
-//                    }
-//                }
-//            }
-//        }
     }
 
     public boolean isSidePowered(Vector3 pos, BlockFace face) {
         return this.getRedstonePower(pos, face) > 0;
     }
 
+    /**
+     * Get the block redstone power can output.
+     *
+     * @param pos  the block pos
+     * @param face Only be used on block with not isNormalBlock, such as redstone torch
+     */
     public int getRedstonePower(Vector3 pos, BlockFace face) {
         Block block;
 
-        if (pos instanceof Block) {
-            block = (Block) pos;
-            pos = pos.add(0);
+        if (pos instanceof Block b) {
+            block = b;
         } else {
             block = this.getBlock(pos);
         }

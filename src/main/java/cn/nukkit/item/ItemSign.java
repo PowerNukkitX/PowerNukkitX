@@ -11,6 +11,8 @@ public abstract class ItemSign extends Item {
         super(id);
         if (id.equals(DARK_OAK_SIGN)) {
             this.block = Block.get(BlockID.DARKOAK_STANDING_SIGN);
+        } else if (id.equals(OAK_SIGN)) {
+            this.block = Block.get(BlockID.STANDING_SIGN);
         } else {
             this.block = Block.get(id.replace("_sign", "_standing_sign"));
         }

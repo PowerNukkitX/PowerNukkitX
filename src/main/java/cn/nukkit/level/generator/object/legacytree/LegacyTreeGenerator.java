@@ -5,7 +5,9 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.NewLeafType;
 import cn.nukkit.block.property.enums.OldLeafType;
 import cn.nukkit.block.property.enums.WoodType;
+import cn.nukkit.block.property.type.EnumPropertyType;
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.random.RandomSource;
 
 public abstract class LegacyTreeGenerator {
@@ -106,7 +108,16 @@ public abstract class LegacyTreeGenerator {
     }
 
     protected BlockState getTrunkBlockState() {
-        return BlockWood.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE, getType());
+        EnumPropertyType<BlockFace.Axis>.EnumPropertyValue pillarAxisValue = CommonBlockProperties.PILLAR_AXIS.createValue(BlockFace.Axis.Y);
+        BlockState log = BlockOakLog.PROPERTIES.getBlockState(pillarAxisValue);
+        switch (getType()) {
+            case JUNGLE -> log = BlockJungleLog.PROPERTIES.getBlockState(pillarAxisValue);
+            case DARK_OAK -> log = BlockDarkOakLog.PROPERTIES.getBlockState(pillarAxisValue);
+            case SPRUCE -> log = BlockSpruceLog.PROPERTIES.getBlockState(pillarAxisValue);
+            case ACACIA -> log = BlockAcaciaLog.PROPERTIES.getBlockState(pillarAxisValue);
+            case BIRCH -> log = BlockBirchLog.PROPERTIES.getBlockState(pillarAxisValue);
+        }
+        return log;
     }
 
     protected BlockState getLeafBlockState() {

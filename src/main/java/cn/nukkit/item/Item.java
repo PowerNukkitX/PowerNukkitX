@@ -104,11 +104,18 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public Item(@NotNull String id, int meta, int count, @Nullable String name) {
+        this(id, meta, count, name, true);
+    }
+
+    public Item(@NotNull String id, int meta, int count, @Nullable String name, boolean autoAssignStackNetworkId) {
         this.id = id.intern();
         this.meta = meta & 0xffff;
         this.count = count;
         if (name != null) {
             this.name = name.intern();
+        }
+        if (autoAssignStackNetworkId) {
+            this.autoAssignStackNetworkId();
         }
     }
 
@@ -124,21 +131,21 @@ public abstract class Item implements Cloneable, ItemID {
         return get(id, 0);
     }
 
-    public static Item get(String id, Integer meta) {
+    public static Item get(String id, int meta) {
         return get(id, meta, 1);
     }
 
-    public static Item get(String id, Integer meta, int count) {
-        return get(id, meta, count, EmptyArrays.EMPTY_BYTES);
+    public static Item get(String id, int meta, int count) {
+        return get(id, meta, count, null);
     }
 
     @NotNull
-    public static Item get(String id, Integer meta, int count, byte[] tags) {
+    public static Item get(String id, int meta, int count, byte[] tags) {
         return get(id, meta, count, tags, true);
     }
 
     @NotNull
-    public static Item get(String id, Integer meta, int count, byte[] tags, boolean autoAssignStackNetworkId) {
+    public static Item get(String id, int meta, int count, byte[] tags, boolean autoAssignStackNetworkId) {
         Item item = Registries.ITEM.get(id, meta, count, tags);
         if (item == null) {
             BlockState itemBlockState = getItemBlockState(id, meta);
@@ -147,7 +154,9 @@ public abstract class Item implements Cloneable, ItemID {
             }
             item = new ItemBlock(Registries.BLOCK.get(itemBlockState));
             item.setCount(count);
-            item.setCompoundTag(tags);
+            if (tags != null) {
+                item.setCompoundTag(tags);
+            }
         }
         if (autoAssignStackNetworkId) {
             item.autoAssignStackNetworkId();
@@ -1299,7 +1308,9 @@ public abstract class Item implements Cloneable, ItemID {
     public Item clone() {
         try {
             Item item = (Item) super.clone();
-            item.tags = this.tags.clone();//deep copy
+            if (this.tags != null) {
+                item.tags = this.tags.clone();//deep copy
+            }
             item.cachedNBT = null;
             return item;
         } catch (CloneNotSupportedException e) {

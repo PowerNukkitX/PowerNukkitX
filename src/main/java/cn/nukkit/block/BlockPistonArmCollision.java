@@ -33,12 +33,12 @@ public class BlockPistonArmCollision extends BlockTransparent implements Faceabl
 
     @Override
     public double getResistance() {
-        return 2.5;
+        return 1.5;
     }
 
     @Override
     public double getHardness() {
-        return 0.5;
+        return 1.5;
     }
 
     @Override
@@ -65,8 +65,7 @@ public class BlockPistonArmCollision extends BlockTransparent implements Faceabl
 
     @Override
     public BlockFace getBlockFace() {
-        BlockFace face = BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
-        return face.getHorizontalIndex() >= 0 ? face.getOpposite() : face;
+        return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
     }
 
     @Override

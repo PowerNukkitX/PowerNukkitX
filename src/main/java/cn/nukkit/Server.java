@@ -541,7 +541,7 @@ public class Server {
                 put("motd", "PowerNukkitX Server");
                 put("sub-motd", "https://powernukkitx.cn");
                 put("server-port", 19132);
-                put("server-ip", "127.0.0.1");
+                put("server-ip", "0.0.0.0");
                 put("view-distance", 12);
                 put("white-list", false);
                 put("achievements", true);
@@ -697,8 +697,8 @@ public class Server {
         this.network.setName(this.getMotd());
         this.network.setSubName(this.getSubMotd());
 
-        log.info(this.getLanguage().tr("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + " (" + this.getGitCommit() + ")" + TextFormat.WHITE, TextFormat.AQUA + this.getCodename() + TextFormat.WHITE, this.getApiVersion()));
-        log.info(this.getLanguage().tr("nukkit.server.license", this.getName()));
+        log.info(this.getLanguage().tr("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + " (" + this.getGitCommit() + ")" + TextFormat.WHITE, this.getApiVersion()));
+        log.info(this.getLanguage().tr("nukkit.server.license"));
 
         this.consoleSender = new ConsoleCommandSender();
 
@@ -2227,7 +2227,7 @@ public class Server {
      * @return 服务器名称<br>The name of server
      */
     public String getName() {
-        return "Nukkit";
+        return "PowerNukkitX";
     }
 
     public String getNukkitVersion() {
@@ -2237,13 +2237,8 @@ public class Server {
     public String getBStatsNukkitVersion() {
         return Nukkit.VERSION;
     }
-
     public String getGitCommit() {
         return Nukkit.GIT_COMMIT;
-    }
-
-    public String getCodename() {
-        return Nukkit.CODENAME;
     }
 
     public String getVersion() {
@@ -2654,7 +2649,7 @@ public class Server {
      * @return 服务器网络地址<br>server ip
      */
     public String getIp() {
-        return this.getPropertyString("server-ip", "127.0.0.1");
+        return this.getPropertyString("server-ip", "0.0.0.0");
     }
 
     /**

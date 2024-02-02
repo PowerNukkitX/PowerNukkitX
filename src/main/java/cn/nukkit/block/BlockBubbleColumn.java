@@ -7,7 +7,6 @@ import cn.nukkit.entity.EntityPhysical;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.event.block.BlockFromToEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BubbleParticle;
 import cn.nukkit.level.particle.SplashParticle;
@@ -62,7 +61,7 @@ public class BlockBubbleColumn extends BlockTransparent {
     
     @Override
     public Item toItem() {
-        return new ItemBlock(new BlockAir());
+        return Item.AIR;
     }
 
     @Override

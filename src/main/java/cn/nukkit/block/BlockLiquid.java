@@ -95,6 +95,9 @@ public abstract class BlockLiquid extends BlockTransparent {
         return this;
     }
 
+    /**
+     * Whether this fluid can place the second layer (aquifer)
+     */
     public boolean usesWaterLogging() {
         return false;
     }
@@ -109,25 +112,31 @@ public abstract class BlockLiquid extends BlockTransparent {
     }
 
     protected int getFlowDecay(Block block) {
-        if (!block.getId().equals(this.getId())) {
+        if (block instanceof BlockLiquid liquid) {
+            return liquid.getLiquidDepth();
+        } else {
             Block layer1 = block.getLevelBlockAtLayer(1);
-            if (!layer1.getId().equals(this.getId())) {
-                return -1;
+            if (layer1 instanceof BlockLiquid liquid) {
+                return liquid.getLiquidDepth();
             } else {
-                return ((BlockLiquid) layer1).getLiquidDepth();
+                return -1;
             }
         }
-        return ((BlockLiquid) block).getLiquidDepth();
     }
 
     protected int getEffectiveFlowDecay(Block block) {
-        if (!block.getId().equals(this.getId())) {
-            block = block.getLevelBlockAtLayer(1);
-            if (!block.getId().equals(this.getId())) {
+        BlockLiquid l;
+        if (block instanceof BlockLiquid liquid) {
+            l = liquid;
+        } else {
+            Block layer1 = block.getLevelBlockAtLayer(1);
+            if (layer1 instanceof BlockLiquid liquid) {
+                l = liquid;
+            } else {
                 return -1;
             }
         }
-        int decay = ((BlockLiquid) block).getLiquidDepth();
+        int decay = l.getLiquidDepth();
         if (decay >= 8) {
             decay = 0;
         }
@@ -207,14 +216,17 @@ public abstract class BlockLiquid extends BlockTransparent {
         }
     }
 
+    /**
+     * define the depth at which the fluid flows one block of decay
+     */
     public int getFlowDecayPerBlock() {
         return 1;
     }
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
-            this.checkForHarden();
+        if (type == Level.BLOCK_UPDATE_NORMAL) {//for normal update tick
+            this.checkForMixing();
             if (usesWaterLogging() && layer > 0) {
                 Block layer0 = this.level.getBlock(this, 0);
                 if (layer0.isAir()) {
@@ -248,7 +260,7 @@ public abstract class BlockLiquid extends BlockTransparent {
                     Block bottomBlock = this.level.getBlock((int) this.x, (int) this.y - 1, (int) this.z);
                     if (bottomBlock.isSolid()) {
                         newDecay = 0;
-                    } else if (bottomBlock instanceof BlockFlowingWater w&& w.getLiquidDepth() == 0) {
+                    } else if (bottomBlock instanceof BlockFlowingWater w && w.getLiquidDepth() == 0) {
                         newDecay = 0;
                     } else {
                         bottomBlock = bottomBlock.getLevelBlockAtLayer(1);
@@ -264,7 +276,7 @@ public abstract class BlockLiquid extends BlockTransparent {
                     if (decayed) {
                         to = Block.get(BlockID.AIR);
                     } else {
-                        to = getBlock();
+                        to = getLiquidWithNewDepth(decay);
                     }
                     BlockFromToEvent event = new BlockFromToEvent(this, to);
                     level.getServer().getPluginManager().callEvent(event);
@@ -302,7 +314,7 @@ public abstract class BlockLiquid extends BlockTransparent {
                         }
                     }
                 }
-                this.checkForHarden();
+                this.checkForMixing();
             }
         }
         return 0;
@@ -327,7 +339,7 @@ public abstract class BlockLiquid extends BlockTransparent {
                 if (block.layer == 0 && !block.isAir()) {
                     this.level.useBreakOn(block, block instanceof BlockWeb ? Item.get(Item.WOODEN_SWORD) : null);
                 }
-                this.level.setBlock(block, block.layer, getBlock(), true, true);
+                this.level.setBlock(block, block.layer, getLiquidWithNewDepth(newFlowDecay), true, true);
                 this.level.scheduleUpdate(block, this.tickRate());
             }
         }
@@ -453,7 +465,11 @@ public abstract class BlockLiquid extends BlockTransparent {
         return (decay >= 0 && blockDecay >= decay) ? decay : blockDecay;
     }
 
-    protected void checkForHarden() {
+    /**
+     * Handle for mixing function between fluids,
+     * which is currently used to handle with the mixing of lava with water
+     */
+    protected void checkForMixing() {
     }
 
     protected void triggerLavaMixEffects(Vector3 pos) {
@@ -465,7 +481,7 @@ public abstract class BlockLiquid extends BlockTransparent {
         }
     }
 
-    public abstract BlockLiquid getBlock();
+    public abstract BlockLiquid getLiquidWithNewDepth(int depth);
 
     @Override
     public boolean canPassThrough() {
@@ -477,7 +493,7 @@ public abstract class BlockLiquid extends BlockTransparent {
         entity.resetFallDistance();
     }
 
-    
+
     protected boolean liquidCollide(Block cause, Block result) {
         BlockFromToEvent event = new BlockFromToEvent(this, result);
         this.level.getServer().getPluginManager().callEvent(event);
@@ -494,10 +510,10 @@ public abstract class BlockLiquid extends BlockTransparent {
         if (usesWaterLogging()) {
             if (block.canWaterloggingFlowInto()) {
                 Block blockLayer1 = block.getLevelBlockAtLayer(1);
-                return !(block instanceof BlockLiquid && ((BlockLiquid) block).getLiquidDepth() == 0) && !(blockLayer1 instanceof BlockLiquid && ((BlockLiquid) blockLayer1).getLiquidDepth() == 0);
+                return !(block instanceof BlockLiquid liquid && liquid.getLiquidDepth() == 0) && !(blockLayer1 instanceof BlockLiquid liquid1 && liquid1.getLiquidDepth() == 0);
             }
         }
-        return block.canBeFlowedInto() && !(block instanceof BlockLiquid && ((BlockLiquid) block).getLiquidDepth() == 0);
+        return block.canBeFlowedInto() && !(block instanceof BlockLiquid liquid && liquid.getLiquidDepth() == 0);
     }
 
     @Override
@@ -515,6 +531,11 @@ public abstract class BlockLiquid extends BlockTransparent {
         return false;
     }
 
+    /**
+     * If bit 0x8 is set, this fluid is "falling" and spreads only downward. At this level, the lower bits are essentially ignored, since this block is then at its highest fluid level. This level is equal to the falling water above, equal to 8 plus the level of the non-falling lava above it.
+     * <p>
+     * The lower three bits are the fluid block's level. 0 is the highest fluid level (not necessarily filling the block - this depends on the neighboring fluid blocks above each upper corner of the block). Data values increase as the fluid level of the block drops: 1 is the next highest, 2 lower, on through 7, the lowest fluid level. Along a line on a flat plane, water drops one level per meter.
+     */
     public int getLiquidDepth() {
         return getPropertyValue(LIQUID_DEPTH);
     }
@@ -525,14 +546,6 @@ public abstract class BlockLiquid extends BlockTransparent {
 
     public boolean isSource() {
         return getLiquidDepth() == 0;
-    }
-
-    public int getDepthOnTop() {
-        int liquidDepth = getLiquidDepth();
-        if (liquidDepth > 8) {
-            liquidDepth -= 8;
-        }
-        return liquidDepth;
     }
 
     public boolean isFlowingDown() {

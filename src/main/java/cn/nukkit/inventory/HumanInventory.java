@@ -330,7 +330,7 @@ public class HumanInventory extends BaseInventory {
         for (Player player : players) {
             if (player.equals(this.getHolder())) {
                 InventoryContentPacket pk2 = new InventoryContentPacket();
-                pk2.inventoryId = InventoryContentPacket.SPECIAL_ARMOR;
+                pk2.inventoryId = SpecialWindowId.ARMOR.getId();
                 pk2.slots = armor;
                 player.dataPacket(pk2);
             } else {
@@ -405,8 +405,9 @@ public class HumanInventory extends BaseInventory {
     @Override
     public void sendContents(Player[] players) {
         InventoryContentPacket pk = new InventoryContentPacket();
-        pk.slots = new Item[this.getSize()];
-        for (int i = 0; i < this.getSize(); ++i) {
+        int inventoryAndHotBarSize = this.getSize() - 4;
+        pk.slots = new Item[inventoryAndHotBarSize];
+        for (int i = 0; i < inventoryAndHotBarSize; ++i) {
             pk.slots[i] = this.getItem(i);
         }
 

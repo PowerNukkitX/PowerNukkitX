@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,8 +33,8 @@ public class BlockLava extends BlockFlowingLava {
     }
 
     @Override
-    public BlockLiquid getBlock() {
-        return (BlockLiquid) Block.get(blockstate);
+    public BlockLiquid getLiquidWithNewDepth(int depth) {
+        return new BlockLava(this.blockstate.setPropertyValue(PROPERTIES, CommonBlockProperties.LIQUID_DEPTH.createValue(depth)));
     }
 
     @Override

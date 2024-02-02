@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.type.BlockPropertyType;
+import cn.nukkit.level.Position;
 import cn.nukkit.nbt.tag.CompoundTagView;
 import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.Unmodifiable;
@@ -58,5 +59,9 @@ public interface BlockState {
 
     default Block toBlock() {
         return Block.get(this);
+    }
+
+    default Block toBlock(Position position) {
+        return Block.get(this, position);
     }
 }

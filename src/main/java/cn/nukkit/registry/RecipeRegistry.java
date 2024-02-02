@@ -26,10 +26,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @SuppressWarnings("unchecked")
 public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
+    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
     private static int RECIPE_COUNT = 0;
     public static final Comparator<Item> recipeComparator = (i1, i2) -> {
         int i = MinecraftNamespaceComparator.compareFNV(i1.getId(), i2.getId());
@@ -401,6 +403,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     @Override
     public void init() {
+        if (isLoad.getAndSet(true)) return;
         log.info("Loading recipes...");
         this.loadRecipes();
         this.rebuildPacket();
