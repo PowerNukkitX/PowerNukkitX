@@ -88,8 +88,7 @@ public final class CameraPreset {
     @Nullable
     private CameraAudioListener listener;
     @NotNull
-    @Builder.Default
-    private OptionalValue<Boolean> playEffect = OptionalValue.empty();
+    private OptionalValue<Boolean> playEffect;
     private int id = 0;
 
     /**
