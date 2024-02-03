@@ -10,10 +10,8 @@ com-google-code-findbugs-jsr305 = "3.0.2"
 com-google-code-gson-gson = "2.10.1"
 com-google-guava-guava = "33.0.0-jre"
 com-lmax-disruptor = "3.4.4"
-com-nimbusds-nimbus-jose-jwt = "9.13"
 com-nukkitx-natives = "1.0.3"
 commons-io-commons-io = "2.15.1"
-fr-inria-gforge-spoon-spoon-core = "9.1.0"
 io-netty-netty-transport-classes-epoll = "4.1.101.Final"
 io-sentry-sentry = "7.1.0"
 io-sentry-sentry-log4j2 = "7.1.0"
@@ -45,44 +43,52 @@ org-xerial-snappy-snappy-java = "1.1.10.5"
 org-yaml-snakeyaml = "2.2"
 
 [libraries]
-cn-powernukkitx-libdeflate-java = { module = "cn.powernukkitx:libdeflate-java", version.ref = "cn-powernukkitx-libdeflate-java" }
-cn-powernukkitx-terra-binary = { module = "cn.powernukkitx:Terra-Binary", version.ref = "cn-powernukkitx-terra-binary" }
-com-github-daniellansun-fast-reflection = { module = "com.github.daniellansun:fast-reflection", version.ref = "com-github-daniellansun-fast-reflection" }
-com-github-oshi-oshi-core = { module = "com.github.oshi:oshi-core", version.ref = "com-github-oshi-oshi-core" }
-com-google-code-findbugs-jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "com-google-code-findbugs-jsr305" }
-com-google-code-gson-gson = { module = "com.google.code.gson:gson", version.ref = "com-google-code-gson-gson" }
-com-google-guava-guava = { module = "com.google.guava:guava", version.ref = "com-google-guava-guava" }
-com-lmax-disruptor = { module = "com.lmax:disruptor", version.ref = "com-lmax-disruptor" }
-com-nimbusds-nimbus-jose-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "com-nimbusds-nimbus-jose-jwt" }
-com-nukkitx-natives = { module = "com.nukkitx:natives", version.ref = "com-nukkitx-natives" }
-commons-io-commons-io = { module = "commons-io:commons-io", version.ref = "commons-io-commons-io" }
-fr-inria-gforge-spoon-spoon-core = { module = "fr.inria.gforge.spoon:spoon-core", version.ref = "fr-inria-gforge-spoon-spoon-core" }
-io-netty-netty-transport-classes-epoll = { module = "io.netty:netty-transport-classes-epoll", version.ref = "io-netty-netty-transport-classes-epoll" }
-io-sentry-sentry = { module = "io.sentry:sentry", version.ref = "io-sentry-sentry" }
-io-sentry-sentry-log4j2 = { module = "io.sentry:sentry-log4j2", version.ref = "io-sentry-sentry-log4j2" }
-it-unimi-dsi-fastutil = { module = "it.unimi.dsi:fastutil", version.ref = "it-unimi-dsi-fastutil" }
-net-daporkchop-leveldb-mcpe-jni = { module = "net.daporkchop:leveldb-mcpe-jni", version.ref = "net-daporkchop-leveldb-mcpe-jni" }
-net-minecrell-terminalconsoleappender = { module = "net.minecrell:terminalconsoleappender", version.ref = "net-minecrell-terminalconsoleappender" }
-net-sf-jopt-simple-jopt-simple = { module = "net.sf.jopt-simple:jopt-simple", version.ref = "net-sf-jopt-simple-jopt-simple" }
-org-apache-logging-log4j-log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "org-apache-logging-log4j-log4j-core" }
-org-apache-logging-log4j-log4j-slf4j2-impl = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "org-apache-logging-log4j-log4j-slf4j2-impl" }
-org-bitbucket-b-c-jose4j = { module = "org.bitbucket.b_c:jose4j", version.ref = "org-bitbucket-b-c-jose4j" }
-org-cloudburstmc-netty-netty-transport-raknet = { module = "org.cloudburstmc.netty:netty-transport-raknet", version.ref = "org-cloudburstmc-netty-netty-transport-raknet" }
-org-graalvm-js-js = { module = "org.graalvm.js:js", version.ref = "org-graalvm-js-js" }
-org-graalvm-js-js-scriptengine = { module = "org.graalvm.js:js-scriptengine", version.ref = "org-graalvm-js-js-scriptengine" }
-org-graalvm-sdk-graal-sdk = { module = "org.graalvm.sdk:graal-sdk", version.ref = "org-graalvm-sdk-graal-sdk" }
-org-graalvm-tools-chromeinspector = { module = "org.graalvm.tools:chromeinspector", version.ref = "org-graalvm-tools-chromeinspector" }
-org-graalvm-tools-profiler = { module = "org.graalvm.tools:profiler", version.ref = "org-graalvm-tools-profiler" }
-org-jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "org-jetbrains-annotations" }
-org-jline-jline-reader = { module = "org.jline:jline-reader", version.ref = "org-jline-jline-reader" }
-org-jline-jline-terminal = { module = "org.jline:jline-terminal", version.ref = "org-jline-jline-terminal" }
-org-jline-jline-terminal-jna = { module = "org.jline:jline-terminal-jna", version.ref = "org-jline-jline-terminal-jna" }
-org-junit-jupiter-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "org-junit-jupiter-junit-jupiter" }
-org-lz4-lz4-java = { module = "org.lz4:lz4-java", version.ref = "org-lz4-lz4-java" }
-org-mockito-mockito-junit-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "org-mockito-mockito-junit-jupiter" }
-org-openjdk-jmh-jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "org-openjdk-jmh-jmh-core" }
-org-openjdk-jmh-jmh-generator-annprocess = { module = "org.openjdk.jmh:jmh-generator-annprocess", version.ref = "org-openjdk-jmh-jmh-generator-annprocess" }
-org-ow2-asm-asm = { module = "org.ow2.asm:asm", version.ref = "org-ow2-asm-asm" }
-org-projectlombok-lombok = { module = "org.projectlombok:lombok", version.ref = "org-projectlombok-lombok" }
-org-xerial-snappy-snappy-java = { module = "org.xerial.snappy:snappy-java", version.ref = "org-xerial-snappy-snappy-java" }
-org-yaml-snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "org-yaml-snakeyaml" }
+libdeflate = { module = "cn.powernukkitx:libdeflate-java", version.ref = "cn-powernukkitx-libdeflate-java" }
+terra = { module = "cn.powernukkitx:Terra-Binary", version.ref = "cn-powernukkitx-terra-binary" }
+fastreflection = { module = "com.github.daniellansun:fast-reflection", version.ref = "com-github-daniellansun-fast-reflection" }
+oshi = { module = "com.github.oshi:oshi-core", version.ref = "com-github-oshi-oshi-core" }
+jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "com-google-code-findbugs-jsr305" }
+gson = { module = "com.google.code.gson:gson", version.ref = "com-google-code-gson-gson" }
+guava = { module = "com.google.guava:guava", version.ref = "com-google-guava-guava" }
+disruptor = { module = "com.lmax:disruptor", version.ref = "com-lmax-disruptor" }
+nukkitx-natives = { module = "com.nukkitx:natives", version.ref = "com-nukkitx-natives" }
+commonsio = { module = "commons-io:commons-io", version.ref = "commons-io-commons-io" }
+sentry = { module = "io.sentry:sentry", version.ref = "io-sentry-sentry" }
+sentry-log4j2 = { module = "io.sentry:sentry-log4j2", version.ref = "io-sentry-sentry-log4j2" }
+fastutil = { module = "it.unimi.dsi:fastutil", version.ref = "it-unimi-dsi-fastutil" }
+leveldbjni = { module = "net.daporkchop:leveldb-mcpe-jni", version.ref = "net-daporkchop-leveldb-mcpe-jni" }
+annotations = { module = "org.jetbrains:annotations", version.ref = "org-jetbrains-annotations" }
+asm = { module = "org.ow2.asm:asm", version.ref = "org-ow2-asm-asm" }
+lombok = { module = "org.projectlombok:lombok", version.ref = "org-projectlombok-lombok" }
+snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "org-yaml-snakeyaml" }
+# Command-line parser
+joptsimple = { module = "net.sf.jopt-simple:jopt-simple", version.ref = "net-sf-jopt-simple-jopt-simple" }
+log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "org-apache-logging-log4j-log4j-core" }
+log4j-slf4j2-impl = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "org-apache-logging-log4j-log4j-slf4j2-impl" }
+jose4j = { module = "org.bitbucket.b_c:jose4j", version.ref = "org-bitbucket-b-c-jose4j" }
+netty-epoll = { module = "io.netty:netty-transport-classes-epoll", version.ref = "io-netty-netty-transport-classes-epoll" }
+netty-raknet = { module = "org.cloudburstmc.netty:netty-transport-raknet", version.ref = "org-cloudburstmc-netty-netty-transport-raknet" }
+graalvm-js = { module = "org.graalvm.js:js", version.ref = "org-graalvm-js-js" }
+graalvm-js-scriptengine = { module = "org.graalvm.js:js-scriptengine", version.ref = "org-graalvm-js-js-scriptengine" }
+graalsdk = { module = "org.graalvm.sdk:graal-sdk", version.ref = "org-graalvm-sdk-graal-sdk" }
+graalvm-chromeinspector = { module = "org.graalvm.tools:chromeinspector", version.ref = "org-graalvm-tools-chromeinspector" }
+graalvm-profiler = { module = "org.graalvm.tools:profiler", version.ref = "org-graalvm-tools-profiler" }
+terminalconsoleappender = { module = "net.minecrell:terminalconsoleappender", version.ref = "net-minecrell-terminalconsoleappender" }
+jline-reader = { module = "org.jline:jline-reader", version.ref = "org-jline-jline-reader" }
+jline-terminal = { module = "org.jline:jline-terminal", version.ref = "org-jline-jline-terminal" }
+jline-terminaljna = { module = "org.jline:jline-terminal-jna", version.ref = "org-jline-jline-terminal-jna" }
+junit = { module = "org.junit.jupiter:junit-jupiter", version.ref = "org-junit-jupiter-junit-jupiter" }
+lz4 = { module = "org.lz4:lz4-java", version.ref = "org-lz4-lz4-java" }
+mockito = { module = "org.mockito:mockito-junit-jupiter", version.ref = "org-mockito-mockito-junit-jupiter" }
+jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "org-openjdk-jmh-jmh-core" }
+jmh-generator = { module = "org.openjdk.jmh:jmh-generator-annprocess", version.ref = "org-openjdk-jmh-jmh-generator-annprocess" }
+snappy = { module = "org.xerial.snappy:snappy-java", version.ref = "org-xerial-snappy-snappy-java" }
+
+[bundles]
+netty = ["netty-raknet", "netty-epoll"]
+graalvm-runtime = ["graalvm-js", "graalvm-chromeinspector", "graalvm-profiler"]
+graalvm = ["graalvm-js-scriptengine", "graalsdk"]
+terminal = ["jline-reader", "jline-terminal", "jline-terminaljna", "terminalconsoleappender"]
+logging = ["log4j-slf4j2-impl", "log4j-core"]
+test = ["junit", "mockito", "jmh-core", "jmh-generator"]
+compress = ["snappy", "lz4", "libdeflate"]

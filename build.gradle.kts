@@ -22,47 +22,39 @@ repositories {
 }
 
 dependencies {
-    api(libs.org.jetbrains.annotations)
-    api(libs.com.github.daniellansun.fast.reflection)
-    api(libs.net.daporkchop.leveldb.mcpe.jni)
-    api(libs.org.cloudburstmc.netty.netty.transport.raknet)
-    api(libs.com.nukkitx.natives)
-    api(libs.io.netty.netty.transport.classes.epoll)
-    api(libs.org.bitbucket.b.c.jose4j)
-    api(libs.it.unimi.dsi.fastutil)
-    api(libs.com.google.guava.guava)
-    api(libs.com.google.code.gson.gson)
-    api(libs.org.yaml.snakeyaml)
-    api(libs.io.sentry.sentry)
-    api(libs.io.sentry.sentry.log4j2)
-    api(libs.com.nimbusds.nimbus.jose.jwt)
-    api(libs.org.apache.logging.log4j.log4j.core)
-    api(libs.org.apache.logging.log4j.log4j.slf4j2.impl)
-    api(libs.com.lmax.disruptor)
-    api(libs.net.sf.jopt.simple.jopt.simple)
-    api(libs.net.minecrell.terminalconsoleappender)
-    api(libs.org.jline.jline.terminal)
-    api(libs.org.jline.jline.terminal.jna)
-    api(libs.org.jline.jline.reader)
-    api(libs.com.google.code.findbugs.jsr305)
-    api(libs.org.graalvm.sdk.graal.sdk)
-    api(libs.org.graalvm.js.js.scriptengine)
-    api(libs.cn.powernukkitx.terra.binary)
-    api(libs.org.ow2.asm.asm)
-    api(libs.com.github.oshi.oshi.core)
-    api(libs.cn.powernukkitx.libdeflate.java)
-    api(libs.org.lz4.lz4.java)
-    api(libs.org.xerial.snappy.snappy.java)
-    runtimeOnly(libs.org.graalvm.js.js)
-    runtimeOnly(libs.org.graalvm.tools.profiler)
-    runtimeOnly(libs.org.graalvm.tools.chromeinspector)
-    testImplementation(libs.org.openjdk.jmh.jmh.core)
-    testImplementation(libs.org.openjdk.jmh.jmh.generator.annprocess)
-    testImplementation(libs.org.junit.jupiter.junit.jupiter)
-    testImplementation(libs.org.mockito.mockito.junit.jupiter)
-    testImplementation(libs.fr.inria.gforge.spoon.spoon.core)
-    testImplementation(libs.commons.io.commons.io)
-    compileOnly(libs.org.projectlombok.lombok)
+    api(libs.bundles.netty)
+    api(libs.bundles.logging)
+    api(libs.annotations)
+    api(libs.jsr305)
+    api(libs.gson)
+    api(libs.guava)
+    api(libs.commonsio)
+    api(libs.fastutil)
+    api(libs.leveldbjni)
+    api(libs.snakeyaml)
+
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
+
+    implementation(libs.asm)
+    implementation(libs.jose4j)
+    implementation(libs.joptsimple)
+    implementation(libs.sentry)
+    implementation(libs.sentry.log4j2)
+    implementation(libs.nukkitx.natives)
+    implementation(libs.disruptor)
+    implementation(libs.oshi)
+    implementation(libs.fastreflection)
+    implementation(libs.terra)
+    implementation(libs.bundles.compress)
+    implementation(libs.bundles.terminal)
+    implementation(libs.bundles.graalvm)
+    runtimeOnly(libs.bundles.graalvm.runtime)
+
+    testImplementation(libs.bundles.test)
+    testImplementation(libs.commonsio)
+    testCompileOnly(libs.lombok)
+    testAnnotationProcessor(libs.lombok)
 }
 
 java {
@@ -78,7 +70,7 @@ sourceSets {
     }
 }
 
-tasks.register<DefaultTask>("buildFast"){
+tasks.register<DefaultTask>("buildFast") {
     dependsOn(tasks.build)
     group = "alpha build"
     tasks["delombok"].enabled = false
@@ -94,7 +86,7 @@ tasks.register<DefaultTask>("buildFast"){
     tasks["check"].enabled = false
 }
 
-tasks.register<DefaultTask>("buildSkipChores"){
+tasks.register<DefaultTask>("buildSkipChores") {
     dependsOn(tasks.build)
     group = "alpha build"
     tasks["delombok"].enabled = false
@@ -113,7 +105,7 @@ tasks.build {
     group = "alpha build"
 }
 
-tasks.clean{
+tasks.clean {
     group = "alpha build"
 }
 

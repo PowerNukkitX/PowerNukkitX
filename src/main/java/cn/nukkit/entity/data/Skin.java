@@ -3,10 +3,10 @@ package cn.nukkit.entity.data;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.utils.*;
 import com.google.common.base.Preconditions;
-import com.nimbusds.jose.shaded.json.JSONObject;
-import com.nimbusds.jose.shaded.json.JSONValue;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.jose4j.json.internal.json_simple.JSONObject;
+import org.jose4j.json.internal.json_simple.JSONValue;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

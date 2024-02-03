@@ -12,16 +12,15 @@ import cn.nukkit.plugin.PluginDescription;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.HumanStringComparator;
 import cn.nukkit.utils.Utils;
-import com.nimbusds.jose.util.IOUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.core.util.IOUtils;
 import org.iq80.leveldb.util.FileUtils;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -196,11 +195,10 @@ public class DebugPasteCommand extends TestCommand implements CoreCommand {
         }
     }
 
-    @NotNull
     private static String eval(String... command) {
         try {
             try (InputStream in = Runtime.getRuntime().exec(command).getInputStream()) {
-                return IOUtils.readInputStreamToString(in, Charset.defaultCharset()).trim();
+                return IOUtils.toString(new InputStreamReader(in, StandardCharsets.UTF_8)).trim();
             }
         } catch (Exception e) {
             return e.toString().trim();

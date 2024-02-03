@@ -49,7 +49,9 @@ jobs:
           java-version: 17
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: |
+          chmod +x gradlew
+          ./gradlew build
 
       - name: Read version
         id: read_version

@@ -6,11 +6,9 @@ import cn.nukkit.network.protocol.LoginPacket;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWSObject;
-import com.nimbusds.jose.crypto.ECDSAVerifier;
+import org.jose4j.jws.JsonWebSignature;
+import org.jose4j.lang.JoseException;
 
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -286,14 +284,12 @@ public final class ClientChainData implements LoginChainData {
         Iterator<String> iterator = chains.iterator();
         long epoch = Instant.now().getEpochSecond();
         while (iterator.hasNext()) {
-            JWSObject jws = JWSObject.parse(iterator.next());
-
-            URI x5u = jws.getHeader().getX509CertURL();
-            if (x5u == null) {
+            JsonWebSignature jws = (JsonWebSignature) JsonWebSignature.fromCompactSerialization(iterator.next());
+            String x5us = jws.getHeader("x5u");
+            if (x5us == null) {
                 return false;
             }
-
-            ECPublicKey expectedKey = generateKey(x5u.toString());
+            ECPublicKey expectedKey = generateKey(x5us);
             // First key is self-signed
             if (lastKey == null) {
                 lastKey = expectedKey;
@@ -313,15 +309,15 @@ public final class ClientChainData implements LoginChainData {
                 mojangKeyVerified = true;
             }
 
-            Map<String, Object> payload = jws.getPayload().toJSONObject();
+            Map<String, Object> payload = (Map<String, Object>) new Gson().fromJson(jws.getPayload(), Map.class);
 
             // chain expiry check
             Object chainExpiresObj = payload.get("exp");
             long chainExpires;
             if (chainExpiresObj instanceof Long) {
-                chainExpires = (Long)chainExpiresObj;
+                chainExpires = (Long) chainExpiresObj;
             } else if (chainExpiresObj instanceof Integer) {
-                chainExpires = (Integer)chainExpiresObj;
+                chainExpires = (Integer) chainExpiresObj;
             } else {
                 throw new RuntimeException("Unsupported expiry time format");
             }
@@ -339,7 +335,15 @@ public final class ClientChainData implements LoginChainData {
         return mojangKeyVerified;
     }
 
-    private boolean verify(ECPublicKey key, JWSObject object) throws JOSEException {
-        return object.verify(new ECDSAVerifier(key));
+    private boolean verify(ECPublicKey key, JsonWebSignature jws) {
+        try {
+            if (key == null || jws == null) {
+                return false;
+            }
+            jws.setKey(key);
+            return jws.verifySignature();
+        } catch (JoseException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
