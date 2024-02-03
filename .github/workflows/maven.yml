@@ -29,7 +29,15 @@ jobs:
     needs: check-files
     #    event为push且发生改变或push或commit第一条信息+b +u
     #    event is push and there is a change or push or commit the first message +b +u
-    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository) && (contains(needs.check-files.outputs.changed-files, 'src/') || contains(needs.check-files.outputs.changed-files, 'scripts/') || (github.event_name == 'push' && (contains(github.event.commits[0].message, '+b') || contains(github.event.commits[0].message, '+u'))))
+    if: |
+      (github.event_name == 'push' || 
+      github.event.pull_request.head.repo.full_name != github.repository) && 
+      (contains(needs.check-files.outputs.changed-files, 'src/') || 
+      contains(needs.check-files.outputs.changed-files, 'scripts/') || 
+      contains(needs.check-files.outputs.changed-files, '.github/workflows') || 
+      (github.event_name == 'push' && 
+      (contains(github.event.commits[0].message, '+b') || contains(github.event.commits[0].message, '+u'))
+      ))
 
     steps:
       - uses: actions/checkout@v4
