@@ -63,12 +63,12 @@ jobs:
         id: read_version
         uses: christian-draeger/read-properties@1.1.1
         with:
-          path: 'build/resources/git.properties'
+          path: 'build/resources/main/git.properties'
           properties: 'git.build.version'
 
       - name: Rename artifacts
         run: |
-          cd target
+          cd build
           ls
           cd ../
           mv build/libs build/bin
