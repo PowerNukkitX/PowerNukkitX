@@ -32,7 +32,7 @@ public class ItemPotion extends Item {
 
     private void updateName() {
         PotionType potion = this.getPotion();
-        if (potion == PotionType.WATER) {
+        if (PotionType.WATER.equals(potion)) {
             name = buildName(potion, "Bottle", true);
         } else {
             name = buildName(potion, "Potion", true);
@@ -40,31 +40,31 @@ public class ItemPotion extends Item {
     }
 
     static String buildName(PotionType potion, String type, boolean includeLevel) {
-        return switch (potion) {
-            case WATER -> "Water " + type;
-            case MUNDANE, MUNDANE_LONG -> "Mundane " + type;
-            case THICK -> "Thick " + type;
-            case AWKWARD -> "Awkward " + type;
-            case TURTLE_MASTER, TURTLE_MASTER_LONG, TURTLE_MASTER_STRONG -> {
+        return switch (potion.stringId()) {
+            case "minecraft:water" -> "Water " + type;
+            case "minecraft:mundane", "minecraft:long_mundane" -> "Mundane " + type;
+            case "minecraft:thick" -> "Thick " + type;
+            case "minecraft:awkward" -> "Awkward " + type;
+            case "minecraft:turtle_master", "minecraft:long_turtle_master", "minecraft:strong_turtle_master" -> {
                 String name = type + " of the Turtle Master";
                 if (!includeLevel) {
                     yield name;
                 }
 
-                if (potion.getLevel() <= 1) {
+                if (potion.level() <= 1) {
                     yield name;
                 }
 
                 yield name + " " + potion.getRomanLevel();
             }
             default -> {
-                String finalName = potion.getName();
+                String finalName = potion.name();
                 if (finalName.isEmpty()) {
                     finalName = type;
                 } else {
                     finalName = type + " of " + finalName;
                 }
-                if (includeLevel && potion.getLevel() > 1) {
+                if (includeLevel && potion.level() > 1) {
                     finalName += " " + potion.getRomanLevel();
                 }
                 yield finalName;
@@ -111,6 +111,6 @@ public class ItemPotion extends Item {
     }
 
     public static ItemPotion fromPotion(PotionType potion) {
-        return new ItemPotion(potion.ordinal());
+        return new ItemPotion(potion.id());
     }
 }

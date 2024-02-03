@@ -15,6 +15,7 @@ public class RecipeTest {
     @BeforeAll
     @SneakyThrows
     static void before() {
+        Registries.POTION.init();
         Registries.BLOCKSTATE_ITEMMETA.init();
         Registries.BLOCK.init();
         Registries.ITEM.init();

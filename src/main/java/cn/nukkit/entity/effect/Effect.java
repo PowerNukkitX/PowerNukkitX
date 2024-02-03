@@ -43,8 +43,8 @@ public abstract class Effect implements Cloneable {
         return type;
     }
 
-    public int getId() {
-        return type.getId();
+    public Integer getId() {
+        return type.id();
     }
 
     public String getName() {

@@ -25,7 +25,7 @@ public class ItemSplashPotion extends ProjectileItem {
 
     private void updateName() {
         PotionType potion = PotionType.get(getDamage());
-        if (potion == PotionType.WATER) {
+        if (PotionType.WATER.equals(potion)) {
             name = "Splash Water Bottle";
         } else {
             name = ItemPotion.buildName(potion, "Splash Potion", true);

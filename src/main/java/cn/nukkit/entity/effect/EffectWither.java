@@ -13,11 +13,8 @@ public class EffectWither extends Effect {
 
     @Override
     public boolean canTick() {
-        int interval;
-        if ((interval = (50 >> this.getAmplifier())) > 0) {
-            return (this.getDuration() % interval) == 0;
-        }
-        return true;
+        int interval = 25 >> this.getAmplifier();
+        return interval > 0 && this.getDuration() % interval == 0;
     }
 
     @Override

@@ -706,6 +706,7 @@ public class Server {
         NukkitMetrics.startNow(this);
 
         {//init block
+            Registries.POTION.init();
             Registries.PACKET.init();
             Registries.ENTITY.init();
             Profession.init();

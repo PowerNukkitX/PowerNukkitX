@@ -3,404 +3,107 @@ package cn.nukkit.entity.effect;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.potion.PotionApplyEvent;
+import cn.nukkit.registry.Registries;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * @author MEFRREEX
  */
-public enum PotionType {
-    WATER("Water", "minecraft:water"),
-    MUNDANE("Mundane", "minecraft:mundane"),
-    MUNDANE_LONG("Long Mundane", "minecraft:long_mundane") ,
-    THICK("Thick", "minecraft:thick"),
-    AWKWARD("Awkward", "minecraft:awkward"),
-    NIGHT_VISION("Night Vision", "minecraft:nightvision") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectNightVision()
-                            .setDuration(splash ? 2700 : 3600));
-        }
-    },
-    NIGHT_VISION_LONG("Long Night Vision", "minecraft:long_nightvision") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectNightVision()
-                            .setDuration(splash ? 7200 : 9600)
-            );
-        }
-    },
-    INVISIBILITY("Invisibility", "minecraft:invisibility") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectInvisibility()
-                            .setDuration(splash ? 2700 : 3600)
-            );
-        }
-    },
-    INVISIBILITY_LONG("Long Invisibility", "minecraft:long_invisibility") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectInvisibility()
-                            .setDuration(splash ? 7200 : 9600)
-            );
-        }
-    },
-    LEAPING("Leaping", "minecraft:leaping") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectJumpBoost()
-                            .setDuration(splash ? 2700 : 3600)
-            );
-        }
-    },
-    LEAPING_LONG("Long Leaping", "minecraft:long_leaping") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectJumpBoost()
-                            .setDuration(splash ? 7200 : 9600)
-            );
-        }
-    },
-    LEAPING_STRONG("Strong Leaping", "minecraft:strong_leaping", 2) {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectJumpBoost()
-                            .setDuration(splash ? 1340 : 1800)
-                            .setAmplifier(1)
-            );
-        }
-    },
-    FIRE_RESISTANCE("Fire Resistance", "minecraft:fire_resistance") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectFireResistance()
-                            .setDuration(splash ? 2700 : 3600)
-            );
-        }
-    },
-    FIRE_RESISTANCE_LONG("Long Fire Resistance", "minecraft:long_fire_resistance") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectFireResistance()
-                            .setDuration(splash ? 7200 : 9600)
-            );
-        }
-    },
-    SWIFTNESS("Swiftness", "minecraft:swiftness") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectSpeed()
-                            .setDuration(splash ? 2700 : 3600)
-            );
-        }
-    },
-    SWIFTNESS_LONG("Long Swiftness", "minecraft:long_swiftness") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectSpeed()
-                            .setDuration(splash ? 7200 : 9600)
-            );
-        }
-    },
-    SWIFTNESS_STRONG("Strong Swiftness", "minecraft:strong_swiftness", 2) {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectSpeed()
-                            .setDuration(splash ? 1340 : 1800)
-                            .setAmplifier(1)
-            );
-        }
-    },
-    SLOWNESS("Slowness", "minecraft:slowness") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectSlowness()
-                            .setDuration(splash ? 1340 : 1800)
-            );
-        }
-    },
-    SLOWNESS_LONG("Long Slowness", "minecraft:long_slowness") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectSlowness()
-                            .setDuration(splash ? 3600 : 4800)
-            );
-        }
-    },
-    WATER_BREATHING("Water Breathing", "minecraft:water_breathing") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectWaterBreathing()
-                            .setDuration(splash ? 2700 : 3600)
-            );
-        }
-    },
-    WATER_BREATHING_LONG("Long Water Breathing", "minecraft:long_water_breathing") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectWaterBreathing()
-                            .setDuration(splash ? 7200 : 9600)
-            );
-        }
-    },
-    HEALING("Healing", "minecraft:healing") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(new EffectInstantHealth());
-        }
-    },
-    HEALING_STRONG("Strong Healing", "minecraft:strong_healing", 2) {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectInstantHealth()
-                            .setAmplifier(1)
-            );
-        }
-    },
-    HARMING("Harming", "minecraft:harming") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(new EffectInstantDamage());
-        }
-    },
-    HARMING_STRONG("Strong Harming", "minecraft:strong_harming", 2) {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectInstantDamage()
-                            .setAmplifier(1)
-            );
-        }
-    },
-    POISON("Poison", "minecraft:poison") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectPoison()
-                            .setDuration(splash ? 660 : 900)
-            );
-        }
-    },
-    POISON_LONG("Long Poison", "minecraft:long_poison") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectPoison()
-                            .setDuration(splash ? 1800 : 2400)
-            );
-        }
-    },
-    POISON_STRONG("Strong Poison", "minecraft:strong_poison", 2) {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectPoison()
-                            .setDuration(splash ? 320 : 440)
-                            .setAmplifier(1)
-            );
-        }
-    },
-    REGENERATION("Regeneration", "minecraft:regeneration") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectRegeneration()
-                            .setDuration(splash ? 660 : 900)
-            );
-        }
-    },
-    REGENERATION_LONG("Long Regeneration", "minecraft:long_regeneration") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectRegeneration()
-                            .setDuration(splash ? 1800 : 2400)
-            );
-        }
-    },
-    REGENERATION_STRONG("Strong Regeneration", "minecraft:strong_regeneration", 2) {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectRegeneration()
-                            .setDuration(splash ? 320 : 440)
-                            .setAmplifier(1)
-            );
-        }
-    },
-    STRENGTH("Strength", "minecraft:strength") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectStrength()
-                            .setDuration(splash ? 2700 : 3600)
-            );
-        }
-    },
-    STRENGTH_LONG("Long Strength", "minecraft:long_strength") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectStrength()
-                            .setDuration(splash ? 7200 : 9600)
-            );
-        }
-    },
-    STRENGTH_STRONG("Strong Strength", "minecraft:strong_strength", 2) {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectStrength()
-                            .setDuration(splash ? 1340 : 1800)
-                            .setAmplifier(1)
-            );
-        }
-    },
-    WEAKNESS("Weakness", "minecraft:weakness") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectWeakness()
-                            .setDuration(splash ? 1340 : 1800)
-            );
-        }
-    },
-    WEAKNESS_LONG("Long Weakness", "minecraft:long_weakness") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectWeakness()
-                            .setDuration(splash ? 3600 : 4800)
-            );
-        }
-    },
-    WITHER("Wither", "minecraft:strong_wither", 2) {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectWither()
-                            .setDuration(splash ? 600 : 800)
-                            .setAmplifier(1)
-            );
-        }
-    },
-    TURTLE_MASTER("Turtle Master", "minecraft:turtle_master") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectSlowness()
-                            .setDuration(splash ? 300 : 400)
-                            .setAmplifier(3),
-                    new EffectResistance()
-                            .setDuration(splash ? 300 : 400)
-                            .setAmplifier(2)
-            );
-        }
-    },
-    TURTLE_MASTER_LONG("Long Turtle Master", "minecraft:long_turtle_master") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectSlowness()
-                            .setDuration(splash ? 600 : 800)
-                            .setAmplifier(3),
-                    new EffectResistance()
-                            .setDuration(splash ? 600 : 800)
-                            .setAmplifier(2)
-            );
-        }
-    },
-    TURTLE_MASTER_STRONG("Strong Turtle Master", "minecraft:strong_turtle_master", 2) {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectSlowness()
-                            .setDuration(splash ? 300 : 400)
-                            .setAmplifier(5),
-                    new EffectResistance()
-                            .setDuration(splash ? 300 : 400)
-                            .setAmplifier(3)
-            );
-        }
-    },
-    SLOW_FALLING("Slow Falling", "minecraft:slow_falling") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectSlowFalling()
-                        .setDuration(splash ? 1340 : 1800)
-            );
-        }
-    },
-    SLOW_FALLING_LONG("Long Slow Falling", "minecraft:long_slow_falling") {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectSlowFalling()
-                            .setDuration(splash ? 3600 : 4800)
-            );
-        }
-    },
-    SLOWNESS_STRONG("Strong Slowness", "minecraft:strong_slowness", 2) {
-        @Override
-        public List<Effect> getEffects(boolean splash) {
-            return List.of(
-                    new EffectSlowness()
-                            .setDuration(splash ? 300 : 400)
-                            .setAmplifier(3)
-            );
-        }
-    };
+public record PotionType(String name, String stringId, int id, int level, PotionEffects effects) {
 
-    private final String name;
-    private final String id;
-    private final int level;
-
-    private static final Map<Integer, PotionType> BY_ORDINAL = new HashMap<>();
-    private static final Map<String, PotionType> BY_ID = new HashMap<>();
-
-    PotionType(String name, String id) {
-        this(name, id, 1);
+    public PotionType(String name, String stringId, int id, PotionEffects effects) {
+        this(name, stringId, id, 1, effects);
     }
 
-    PotionType(String name, String id, int level) {
-        this.name = name;
-        this.id = id;
-        this.level = level;
-    }
+    public static final PotionType WATER = new PotionType("Water", "minecraft:water", 0, PotionEffects.EMPTY);
 
-    public String getName() {
-        return name;
-    }
+    public static final PotionType MUNDANE = new PotionType("Mundane", "minecraft:mundane", 1, PotionEffects.EMPTY);
 
-    public String getId() {
-        return id;
-    }
+    public static final PotionType MUNDANE_LONG = new PotionType("Long Mundane", "minecraft:long_mundane", 2, PotionEffects.EMPTY);
 
-    public int getLevel() {
-        return level;
-    }
+    public static final PotionType THICK = new PotionType("Thick", "minecraft:thick", 3, PotionEffects.EMPTY);
+
+    public static final PotionType AWKWARD = new PotionType("Awkward", "minecraft:awkward", 4, PotionEffects.EMPTY);
+
+    public static final PotionType NIGHT_VISION = new PotionType("Night Vision", "minecraft:nightvision", 5, PotionEffects.NIGHT_VISION);
+
+    public static final PotionType NIGHT_VISION_LONG = new PotionType("Long Night Vision", "minecraft:long_nightvision", 6, PotionEffects.NIGHT_VISION_LONG);
+
+    public static final PotionType INVISIBILITY = new PotionType("Invisibility", "minecraft:invisibility", 7, PotionEffects.INVISIBILITY);
+
+    public static final PotionType INVISIBILITY_LONG = new PotionType("Long Invisibility", "minecraft:long_invisibility", 8, PotionEffects.INVISIBILITY_LONG);
+
+    public static final PotionType LEAPING = new PotionType("Leaping", "minecraft:leaping", 9, PotionEffects.LEAPING);
+
+    public static final PotionType LEAPING_LONG = new PotionType("Long Leaping", "minecraft:long_leaping", 10, PotionEffects.LEAPING_LONG);
+
+    public static final PotionType LEAPING_STRONG = new PotionType("Strong Leaping", "minecraft:strong_leaping", 11, 2, PotionEffects.LEAPING_STRONG);
+
+    public static final PotionType FIRE_RESISTANCE = new PotionType("Fire Resistance", "minecraft:fire_resistance", 12, PotionEffects.FIRE_RESISTANCE);
+
+    public static final PotionType FIRE_RESISTANCE_LONG = new PotionType("Long Fire Resistance", "minecraft:long_fire_resistance", 13, PotionEffects.FIRE_RESISTANCE_LONG);
+
+    public static final PotionType SWIFTNESS = new PotionType("Swiftness", "minecraft:swiftness", 14, PotionEffects.SWIFTNESS);
+
+    public static final PotionType SWIFTNESS_LONG = new PotionType("Long Swiftness", "minecraft:long_swiftness", 15, PotionEffects.SWIFTNESS_LONG);
+
+    public static final PotionType SWIFTNESS_STRONG = new PotionType("Strong Swiftness", "minecraft:strong_swiftness", 16, 2, PotionEffects.SWIFTNESS_STRONG);
+
+    public static final PotionType SLOWNESS = new PotionType("Slowness", "minecraft:slowness", 17, PotionEffects.SLOWNESS);
+
+    public static final PotionType SLOWNESS_LONG = new PotionType("Long Slowness", "minecraft:long_slowness", 18, PotionEffects.SLOWNESS_LONG);
+
+    public static final PotionType WATER_BREATHING = new PotionType("Water Breathing", "minecraft:water_breathing", 19, PotionEffects.WATER_BREATHING);
+
+    public static final PotionType WATER_BREATHING_LONG = new PotionType("Long Water Breathing", "minecraft:long_water_breathing", 20, PotionEffects.WATER_BREATHING_LONG);
+
+    public static final PotionType HEALING = new PotionType("Healing", "minecraft:healing", 21, PotionEffects.HEALING);
+
+    public static final PotionType HEALING_STRONG = new PotionType("Strong Healing", "minecraft:strong_healing", 22, 2, PotionEffects.HEALING_STRONG);
+
+    public static final PotionType HARMING = new PotionType("Harming", "minecraft:harming", 23, PotionEffects.HARMING);
+
+    public static final PotionType HARMING_STRONG = new PotionType("Strong Harming", "minecraft:strong_harming", 24, 2, PotionEffects.HARMING_STRONG);
+
+    public static final PotionType POISON = new PotionType("Poison", "minecraft:poison", 25, PotionEffects.POISON);
+
+    public static final PotionType POISON_LONG = new PotionType("Long Poison", "minecraft:long_poison", 26, PotionEffects.POISON_LONG);
+
+    public static final PotionType POISON_STRONG = new PotionType("Strong Poison", "minecraft:strong_poison", 27, 2, PotionEffects.POISON_STRONG);
+
+    public static final PotionType REGENERATION = new PotionType("Regeneration", "minecraft:regeneration", 28, PotionEffects.REGENERATION);
+
+    public static final PotionType REGENERATION_LONG = new PotionType("Long Regeneration", "minecraft:long_regeneration", 29, PotionEffects.REGENERATION_LONG);
+
+    public static final PotionType REGENERATION_STRONG = new PotionType("Strong Regeneration", "minecraft:strong_regeneration", 30, 2, PotionEffects.REGENERATION_STRONG);
+
+    public static final PotionType STRENGTH = new PotionType("Strength", "minecraft:strength", 31, PotionEffects.STRENGTH);
+
+    public static final PotionType STRENGTH_LONG = new PotionType("Long Strength", "minecraft:long_strength", 32, PotionEffects.STRENGTH_LONG);
+
+    public static final PotionType STRENGTH_STRONG = new PotionType("Strong Strength", "minecraft:strong_strength", 33, 2, PotionEffects.STRENGTH_STRONG);
+
+    public static final PotionType WEAKNESS = new PotionType("Weakness", "minecraft:weakness", 34, PotionEffects.WEAKNESS);
+
+    public static final PotionType WEAKNESS_LONG = new PotionType("Long Weakness", "minecraft:long_weakness", 35, PotionEffects.WEAKNESS_LONG);
+
+    public static final PotionType WITHER = new PotionType("Wither", "minecraft:strong_wither", 36, 2, PotionEffects.WITHER);
+
+    public static final PotionType TURTLE_MASTER = new PotionType("Turtle Master", "minecraft:turtle_master", 37, PotionEffects.TURTLE_MASTER);
+
+    public static final PotionType TURTLE_MASTER_LONG = new PotionType("Long Turtle Master", "minecraft:long_turtle_master", 38, PotionEffects.TURTLE_MASTER_LONG);
+
+    public static final PotionType TURTLE_MASTER_STRONG = new PotionType("Strong Turtle Master", "minecraft:strong_turtle_master", 39, 2, PotionEffects.TURTLE_MASTER_STRONG);
+
+    public static final PotionType SLOW_FALLING = new PotionType("Slow Falling", "minecraft:slow_falling", 40, PotionEffects.SLOW_FALLING);
+
+    public static final PotionType SLOW_FALLING_LONG = new PotionType("Long Slow Falling", "minecraft:long_slow_falling", 41, PotionEffects.SLOW_FALLING_LONG);
+
+    public static final PotionType SLOWNESS_STRONG = new PotionType("Strong Slowness", "minecraft:strong_slowness", 42, 2, PotionEffects.SLOWNESS_STRONG);
 
     public List<Effect> getEffects(boolean splash) {
-        return new ArrayList<>();
+        return effects.getEffects(splash);
     }
 
     public void applyEffects(Entity entity, boolean splash, double health) {
@@ -420,7 +123,7 @@ public enum PotionType {
     }
 
     public String getRomanLevel() {
-        int currentLevel = getLevel();
+        int currentLevel = this.level;
         if (currentLevel == 0) {
             return "0";
         }
@@ -447,19 +150,19 @@ public enum PotionType {
         }
     }
 
-
-    public static PotionType get(int ordinal) {
-        return BY_ORDINAL.get(ordinal);
+    public static PotionType get(String stringId) {
+        return Registries.POTION.get(stringId);
     }
 
-    public static PotionType get(String id) {
-        return BY_ID.get(id);
+    public static PotionType get(int id) {
+        return Registries.POTION.get(id);
     }
 
-    static {
-        for (PotionType type : values()) {
-            BY_ORDINAL.put(type.ordinal(), type);
-            BY_ID.put(type.getId(), type);
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof PotionType type) {
+            return type.stringId.equals(this.stringId) && type.id == this.id;
         }
+        return false;
     }
 }

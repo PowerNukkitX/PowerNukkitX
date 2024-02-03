@@ -4,10 +4,14 @@ import cn.nukkit.entity.effect.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.sunlan.fastreflection.FastConstructor;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EffectRegistry implements IRegistry<EffectType, Effect, Class<? extends Effect>> {
     private static final Object2ObjectOpenHashMap<EffectType, FastConstructor<? extends Effect>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
+    private static final Object2ObjectOpenHashMap<String, EffectType> STRING_ID_2_TYPE = new Object2ObjectOpenHashMap<>();
+    private static final Object2ObjectOpenHashMap<Integer, EffectType> INT_ID_2_TYPE = new Object2ObjectOpenHashMap<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
 
     @Override
@@ -56,17 +60,38 @@ public class EffectRegistry implements IRegistry<EffectType, Effect, Class<? ext
         }
     }
 
+    public EffectType getType(String stringId) {
+        return STRING_ID_2_TYPE.get(stringId);
+    }
+
+    public EffectType getType(Integer id) {
+        return INT_ID_2_TYPE.get(id);
+    }
+
+    public Map<String, EffectType> getEffectStringId2TypeMap() {
+        return Collections.unmodifiableMap(STRING_ID_2_TYPE);
+    }
+
+    public Map<Integer, EffectType> getEffectId2TypeMap() {
+        return Collections.unmodifiableMap(INT_ID_2_TYPE);
+    }
+
     @Override
     public void trim() {
         CACHE_CONSTRUCTORS.trim();
     }
 
     @Override
-    public void register(EffectType key, Class<? extends Effect> value) throws RegisterException {
+    public void register(EffectType type, Class<? extends Effect> effect) throws RegisterException {
         try {
-            FastConstructor<? extends Effect> c = FastConstructor.create(value.getConstructor());
-            if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) != null) {
-                throw new RegisterException("This effect has already been registered with the identifier: " + key);
+            FastConstructor<? extends Effect> c = FastConstructor.create(effect.getConstructor());
+            if (CACHE_CONSTRUCTORS.putIfAbsent(type, c) == null) {
+                STRING_ID_2_TYPE.put(type.stringId(), type);
+                if (type.id() != null) {
+                    INT_ID_2_TYPE.put(type.id(), type);
+                }
+            } else {
+                throw new RegisterException("This effect has already been registered with the identifier: " + type);
             }
         } catch (NoSuchMethodException e) {
             throw new RegisterException(e);
@@ -75,9 +100,9 @@ public class EffectRegistry implements IRegistry<EffectType, Effect, Class<? ext
         }
     }
 
-    private void register0(EffectType key, Class<? extends Effect> value){
+    private void register0(EffectType type, Class<? extends Effect> effect){
         try {
-            register(key, value);
+            register(type, effect);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

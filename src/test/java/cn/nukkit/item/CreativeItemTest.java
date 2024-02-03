@@ -17,6 +17,7 @@ public class CreativeItemTest {
     @Test
     void init() {
         Registries.BLOCK.init();
+        Registries.POTION.init();
         Registries.ITEM.init();
         Assertions.assertDoesNotThrow(() -> {
             try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("creative_items.nbt")) {

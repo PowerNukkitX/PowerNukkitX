@@ -1182,7 +1182,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 return;
             }
 
-            if (this instanceof Player player) {
+            if (this instanceof Player player && effect.getId() != null) {
                 MobEffectPacket packet = new MobEffectPacket();
                 packet.eid = player.getId();
                 packet.effectId = effect.getId();
@@ -1227,7 +1227,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             return;
         }
 
-        if (this instanceof Player player) {
+        if (this instanceof Player player && effect.getId() != null) {
             MobEffectPacket packet = new MobEffectPacket();
             packet.eid = player.getId();
             packet.effectId = effect.getId();
@@ -1467,16 +1467,17 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public void sendPotionEffects(Player player) {
-        for (Effect effect : this.effects.values()) {
-            MobEffectPacket pk = new MobEffectPacket();
-            pk.eid = this.getId();
-            pk.effectId = effect.getId();
-            pk.amplifier = effect.getAmplifier();
-            pk.particles = effect.isVisible();
-            pk.duration = effect.getDuration();
-            pk.eventId = MobEffectPacket.EVENT_ADD;
-
-            player.dataPacket(pk);
+        for (Effect effect : effects.values()) {
+            if (effect.getId() != null) {
+                MobEffectPacket packet = new MobEffectPacket();
+                packet.eid = this.getId();
+                packet.effectId = effect.getId();
+                packet.amplifier = effect.getAmplifier();
+                packet.particles = effect.isVisible();
+                packet.duration = effect.getDuration();
+                packet.eventId = MobEffectPacket.EVENT_ADD;
+                player.dataPacket(packet);
+            }
         }
     }
 

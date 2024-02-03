@@ -1,76 +1,87 @@
 package cn.nukkit.entity.effect;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import cn.nukkit.registry.Registries;
+
+import java.util.Objects;
 
 /**
  * @author MEFRREEX
  */
-public enum EffectType {
-    SPEED("speed", 1),
-    SLOWNESS("slowness", 2),
-    HASTE("haste", 3),
-    MINING_FATIGUE("mining_fatigue", 4),
-    STRENGTH("strength", 5),
-    INSTANT_HEALTH("instant_health", 6),
-    INSTANT_DAMAGE("instant_damage", 7),
-    JUMP_BOOST("jump_boost", 8),
-    NAUSEA("nausea", 9),
-    REGENERATION("regeneration", 10),
-    RESISTANCE("resistance", 11),
-    FIRE_RESISTANCE("fire_resistance", 12),
-    WATER_BREATHING("water_breathing", 13),
-    INVISIBILITY("invisibility", 14),
-    BLINDNESS("blindness", 15),
-    NIGHT_VISION("night_vision", 16),
-    HUNGER("hunger", 17),
-    WEAKNESS("weakness", 18),
-    POISON("poison", 19),
-    WITHER("wither", 20),
-    HEALTH_BOOST("health_boost", 21),
-    ABSORPTION("absorption", 22),
-    SATURATION("saturation", 23),
-    LEVITATION("levitation", 24),
-    FATAL_POISON("fatal_poison", 25),
-    CONDUIT_POWER("conduit_power", 26),
-    SLOW_FALLING("slow_falling", 27),
-    BAD_OMEN("bad_omen", 28),
-    VILLAGE_HERO("village_hero", 29),
-    DARKNESS("darkness", 30);
+public record EffectType(String stringId, Integer id) {
 
-    private final String stringId;
-    private final int id;
+    public static final EffectType SPEED = new EffectType("speed", 1);
 
-    private static final Map<Integer, EffectType> BY_ID = new HashMap<>();
-    private static final Map<String, EffectType> BY_STRING_ID = new HashMap<>();
+    public static final EffectType SLOWNESS = new EffectType("slowness", 2);
 
-    EffectType(String namespaceId, int id) {
-        this.stringId = namespaceId;
-        this.id = id;
-    }
+    public static final EffectType HASTE = new EffectType("haste", 3);
 
-    public String getStringId() {
-        return stringId;
-    }
+    public static final EffectType MINING_FATIGUE = new EffectType("mining_fatigue", 4);
 
-    public int getId() {
-        return id;
-    }
+    public static final EffectType STRENGTH = new EffectType("strength", 5);
+
+    public static final EffectType INSTANT_HEALTH = new EffectType("instant_health", 6);
+
+    public static final EffectType INSTANT_DAMAGE = new EffectType("instant_damage", 7);
+
+    public static final EffectType JUMP_BOOST = new EffectType("jump_boost", 8);
+
+    public static final EffectType NAUSEA = new EffectType("nausea", 9);
+
+    public static final EffectType REGENERATION = new EffectType("regeneration", 10);
+
+    public static final EffectType RESISTANCE = new EffectType("resistance", 11);
+
+    public static final EffectType FIRE_RESISTANCE = new EffectType("fire_resistance", 12);
+
+    public static final EffectType WATER_BREATHING = new EffectType("water_breathing", 13);
+
+    public static final EffectType INVISIBILITY = new EffectType("invisibility", 14);
+
+    public static final EffectType BLINDNESS = new EffectType("blindness", 15);
+
+    public static final EffectType NIGHT_VISION = new EffectType("night_vision", 16);
+
+    public static final EffectType HUNGER = new EffectType("hunger", 17);
+
+    public static final EffectType WEAKNESS = new EffectType("weakness", 18);
+
+    public static final EffectType POISON = new EffectType("poison", 19);
+
+    public static final EffectType WITHER = new EffectType("wither", 20);
+
+    public static final EffectType HEALTH_BOOST = new EffectType("health_boost", 21);
+
+    public static final EffectType ABSORPTION = new EffectType("absorption", 22);
+
+    public static final EffectType SATURATION = new EffectType("saturation", 23);
+
+    public static final EffectType LEVITATION = new EffectType("levitation", 24);
+
+    public static final EffectType FATAL_POISON = new EffectType("fatal_poison", 25);
+
+    public static final EffectType CONDUIT_POWER = new EffectType("conduit_power", 26);
+
+    public static final EffectType SLOW_FALLING = new EffectType("slow_falling", 27);
+
+    public static final EffectType BAD_OMEN = new EffectType("bad_omen", 28);
+
+    public static final EffectType VILLAGE_HERO = new EffectType("village_hero", 29);
+
+    public static final EffectType DARKNESS = new EffectType("darkness", 30);
 
     public static EffectType get(String stringId) {
-        return BY_STRING_ID.get(stringId);
+        return Registries.EFFECT.getType(stringId);
     }
 
     public static EffectType get(int id) {
-        return BY_ID.get(id);
+        return Registries.EFFECT.getType(id);
     }
 
-    static {
-        for (EffectType type : values()) {
-            BY_ID.put(type.getId(), type);
-            BY_STRING_ID.put(type.getStringId(), type);
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof EffectType type) {
+            return type.stringId.equals(this.stringId) && Objects.equals(type.id, this.id);
         }
+        return false;
     }
 }
-

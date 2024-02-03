@@ -23,6 +23,7 @@ public class FindRecipeTest {
 
     @Setup
     public void setup() {
+        Registries.POTION.init();
         Registries.BLOCKSTATE_ITEMMETA.init();
         Registries.BLOCK.init();
         Registries.ITEM.init();

@@ -90,6 +90,7 @@ public class GameMockExtension extends MockitoExtension {
         Registries.BLOCK.init();
         Enchantment.init();
         Registries.ITEM_RUNTIMEID.init();
+        Registries.POTION.init();
         Registries.ITEM.init();
         Registries.CREATIVE.init();
         Registries.BIOME.init();

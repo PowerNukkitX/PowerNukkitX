@@ -38,9 +38,9 @@ public class ItemArrow extends Item {
         }
 
         PotionType potion = PotionType.get(type - 1);
-        this.name = switch (potion) {
-            case WATER -> "Arrow of Splashing";
-            case MUNDANE, MUNDANE_LONG, THICK, AWKWARD -> "Tipped Arrow";
+        this.name = switch (potion.stringId()) {
+            case "minecraft:water" -> "Arrow of Splashing";
+            case "minecraft:mundane", "minecraft:long_mundane", "minecraft:thick", "minecraft:awkward" -> "Tipped Arrow";
             default -> ItemPotion.buildName(potion, GENERIC_NAME, false);
         };
     }

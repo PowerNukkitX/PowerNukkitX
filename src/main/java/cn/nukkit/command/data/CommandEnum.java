@@ -2,9 +2,9 @@ package cn.nukkit.command.data;
 
 import cn.nukkit.Server;
 import cn.nukkit.camera.data.CameraPreset;
-import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.Identifier;
 import com.google.common.collect.ImmutableList;
 
@@ -63,8 +63,9 @@ public class CommandEnum {
 
         ENUM_ENTITY = new CommandEnum("Entity", Collections.emptyList());
 
-        List<String> effects = Arrays.stream(EffectType.values())
-                .map(EffectType::getStringId)
+        List<String> effects = Registries.EFFECT.getEffectStringId2TypeMap()
+                .keySet()
+                .stream()
                 .toList();
 
         ENUM_EFFECT = new CommandEnum("Effect", effects, false);

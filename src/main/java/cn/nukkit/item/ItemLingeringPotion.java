@@ -26,7 +26,7 @@ public class ItemLingeringPotion extends ProjectileItem {
 
     private void updateName() {
         PotionType potion = PotionType.get(getDamage());
-        if (potion == PotionType.WATER) {
+        if (PotionType.WATER.equals(potion)) {
             name = "Lingering Water Bottle";
         } else {
             name = ItemPotion.buildName(potion, "Lingering Potion", true);

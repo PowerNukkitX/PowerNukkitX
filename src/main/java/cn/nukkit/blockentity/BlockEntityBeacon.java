@@ -132,7 +132,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
                 }
 
                 //If we have a secondary power as regen, apply it
-                if (getPowerLevel() == POWER_LEVEL_MAX && getSecondaryPower() == EffectType.REGENERATION.getId()) {
+                if (getPowerLevel() == POWER_LEVEL_MAX && getSecondaryPower() == EffectType.REGENERATION.id()) {
                     //Get the regen effect
                     e = Effect.get(EffectType.REGENERATION);
 
@@ -248,7 +248,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
         }
 
         int secondary = nbt.getInt("secondary");
-        if (secondary != 0 && secondary != primary && secondary != EffectType.REGENERATION.getId()) {
+        if (secondary != 0 && secondary != primary && secondary != EffectType.REGENERATION.id()) {
             return false;
         }
 
@@ -264,9 +264,9 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     }
 
     private static boolean isPrimaryAllowed(int primary, int powerLevel) {
-        return ((primary == EffectType.SPEED.getId() || primary == EffectType.HASTE.getId()) && powerLevel >= 1) ||
-                ((primary == EffectType.RESISTANCE.getId() || primary == EffectType.JUMP_BOOST.getId()) && powerLevel >= 2) ||
-                (primary == EffectType.STRENGTH.getId() && powerLevel >= 3);
+        return ((primary == EffectType.SPEED.id() || primary == EffectType.HASTE.id()) && powerLevel >= 1) ||
+                ((primary == EffectType.RESISTANCE.id() || primary == EffectType.JUMP_BOOST.id()) && powerLevel >= 2) ||
+                (primary == EffectType.STRENGTH.id() && powerLevel >= 3);
     }
 
     @Override
