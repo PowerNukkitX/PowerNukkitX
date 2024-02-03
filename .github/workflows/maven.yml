@@ -43,6 +43,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -52,7 +53,9 @@ jobs:
         uses: gradle/gradle-build-action@v3
 
       - name: Execute Gradle build
-        run: ./gradlew build
+        run: |
+          chmod +x gradlew 
+          ./gradlew build
 
       - name: Read version
         id: read_version
