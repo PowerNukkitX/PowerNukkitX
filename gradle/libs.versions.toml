@@ -41,6 +41,7 @@ org-ow2-asm-asm = "9.6"
 org-projectlombok-lombok = "1.18.30"
 org-xerial-snappy-snappy-java = "1.1.10.5"
 org-yaml-snakeyaml = "2.2"
+commons-lang3 = "3.14.0"
 
 [libraries]
 libdeflate = { module = "cn.powernukkitx:libdeflate-java", version.ref = "cn-powernukkitx-libdeflate-java" }
@@ -53,6 +54,7 @@ guava = { module = "com.google.guava:guava", version.ref = "com-google-guava-gua
 disruptor = { module = "com.lmax:disruptor", version.ref = "com-lmax-disruptor" }
 nukkitx-natives = { module = "com.nukkitx:natives", version.ref = "com-nukkitx-natives" }
 commonsio = { module = "commons-io:commons-io", version.ref = "commons-io-commons-io" }
+commonslang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
 sentry = { module = "io.sentry:sentry", version.ref = "io-sentry-sentry" }
 sentry-log4j2 = { module = "io.sentry:sentry-log4j2", version.ref = "io-sentry-sentry-log4j2" }
 fastutil = { module = "it.unimi.dsi:fastutil", version.ref = "it-unimi-dsi-fastutil" }

@@ -53,6 +53,7 @@ dependencies {
 
     testImplementation(libs.bundles.test)
     testImplementation(libs.commonsio)
+    testImplementation(libs.commonslang3)
     testCompileOnly(libs.lombok)
     testAnnotationProcessor(libs.lombok)
 }
