@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Check out repository contents
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -29,46 +29,60 @@ jobs:
     needs: check-files
     #    event为push且发生改变或push或commit第一条信息+b +u
     #    event is push and there is a change or push or commit the first message +b +u
-    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository) && (contains(needs.check-files.outputs.changed-files, 'src/') || contains(needs.check-files.outputs.changed-files, 'scripts/') || (github.event_name == 'push' && (contains(github.event.commits[0].message, '+b') || contains(github.event.commits[0].message, '+u'))))
+    if: |
+      (github.event_name == 'push' || 
+      github.event.pull_request.head.repo.full_name != github.repository) && 
+      (contains(needs.check-files.outputs.changed-files, 'src/') || 
+      contains(needs.check-files.outputs.changed-files, 'scripts/') || 
+      contains(needs.check-files.outputs.changed-files, '.github/workflows') || 
+      (github.event_name == 'push' && 
+      (contains(github.event.commits[0].message, '+b') || contains(github.event.commits[0].message, '+u'))
+      ))
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
-      - uses: actions/cache@v1
+      - uses: actions/setup-java@v4
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v1
-        with:
+          distribution: temurin
           java-version: 17
+      - run: chmod +x gradlew
 
-      - name: Build with Maven
-        run: mvn -B package -DskipTests=false -Darguments="-Dmaven.javadoc.skip=true"
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: wrapper
+          cache-overwrite-existing: true
+          build-scan-publish: true
+          build-scan-terms-of-service-url: "https://gradle.com/terms-of-service"
+          build-scan-terms-of-service-agree: "yes"
+          arguments: build --scan
 
-      - name: Get version
-        id: getVersion
-        uses: entimaniac/read-pom-version-action@1.0.0
+      - name: Read version
+        id: read_version
+        uses: christian-draeger/read-properties@1.1.1
+        with:
+          path: 'build/resources/main/git.properties'
+          properties: 'git.build.version'
 
       - name: Rename artifacts
         run: |
-          cd target
+          cd build
           ls
           cd ../
-          mv target/powernukkitx-${{ steps.getVersion.outputs.version }}-shaded.jar target/powernukkitx-shaded.jar
-          mv target/powernukkitx-${{ steps.getVersion.outputs.version }}.jar target/powernukkitx.jar
-          mv scripts/start.bat target/start.bat
-          mv scripts/start.sh target/start.sh
-          tar -vczf target/libs.tar.gz target/libs
+          mv build/libs build/bin
+          mv build/lib build/libs
+          mv build/bin/powernukkitx-${{ steps.read_version.outputs.git-build-version }}-all.jar build/powernukkitx-shaded.jar
+          mv build/bin/powernukkitx-${{ steps.read_version.outputs.git-build-version }}.jar build/powernukkitx.jar
+          mv scripts/start.bat build/start.bat
+          mv scripts/start.sh build/start.sh
+          tar -vczf build/libs.tar.gz build/libs
 
       - name: Calculate hashes
         run: |
-          cd target
+          cd build
           mkdir -p hash/sha256 hash/md5
           sha256sum powernukkitx-shaded.jar > hash/sha256/powernukkitx-shaded.jar.sha256
           sha256sum powernukkitx.jar > hash/sha256/powernukkitx.jar.sha256
@@ -82,14 +96,14 @@ jobs:
         if: success()
         with:
           name: PowerNukkitX-Core
-          path: target/powernukkitx.jar
+          path: build/powernukkitx.jar
 
       - name: Archive PNX SHADED
         uses: actions/upload-artifact@v3
         if: success()
         with:
           name: PowerNukkitX-Shaded
-          path: target/powernukkitx-shaded.jar
+          path: build/powernukkitx-shaded.jar
 
       - name: Archive PNX RUN Full
         uses: actions/upload-artifact@v3
@@ -97,16 +111,16 @@ jobs:
         with:
           name: PowerNukkitX-Run-Full
           path: |
-            target/libs
-            target/powernukkitx.jar
-            target/start.bat target/start.sh
+            build/libs
+            build/powernukkitx.jar
+            build/start.bat build/start.sh
 
       - name: Archive Libraries
         uses: actions/upload-artifact@v3
         if: success()
         with:
           name: PowerNukkitX-Libs
-          path: target/libs/
+          path: build/libs/
 
       - name: Archive Hashes
         uses: actions/upload-artifact@v3
@@ -124,8 +138,8 @@ jobs:
         if: success() && contains(github.event.commits[0].message, '+u') && github.repository == 'PowerNukkitX/PowerNukkitX' && contains(github.ref_name, 'master')
         with:
           artifacts: "target/powernukkitx.jar,target/libs.tar.gz,target/hash/sha256/powernukkitx.jar.sha256,target/hash/sha256/libs.tar.gz.sha256,target/hash/md5/powernukkitx.jar.md5,target/hash/md5/libs.tar.gz.md5"
-          tag: ${{ steps.getVersion.outputs.version }}
-          body: ${{ steps.getVersion.outputs.version }} - ${{ github.ref_name }} - ${{ steps.vars.outputs.sha_short }}
+          tag: ${{ steps.read_version.outputs.git-build-version }}
+          body: ${{ steps.read_version.outputs.git-build-version }} - ${{ github.ref_name }} - ${{ steps.vars.outputs.sha_short }}
           token: ${{ secrets.GITHUB_TOKEN }}
           commit: ${{ github.ref_name }}
           allowUpdates: true
