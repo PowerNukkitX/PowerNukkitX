@@ -209,17 +209,19 @@ public class Nukkit {
     private static String getVersion() {
         InputStream resourceAsStream = null;
         try {
-            resourceAsStream = Nukkit.class.getModule().getResourceAsStream("VERSION.txt");
+            resourceAsStream = Nukkit.class.getModule().getResourceAsStream("git.properties");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         if (resourceAsStream == null) {
             return "Unknown-PNX-SNAPSHOT";
         }
+        Properties properties = new Properties();
         try (InputStream is = resourceAsStream;
              InputStreamReader reader = new InputStreamReader(is);
              BufferedReader buffered = new BufferedReader(reader)) {
-            String line = buffered.readLine().trim();
+            properties.load(buffered);
+            String line = properties.getProperty("git.build.version");
             if ("${project.version}".equalsIgnoreCase(line)) {
                 return "Unknown-PNX-SNAPSHOT";
             } else {
