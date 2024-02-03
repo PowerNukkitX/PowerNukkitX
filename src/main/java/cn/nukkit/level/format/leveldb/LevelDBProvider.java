@@ -22,6 +22,7 @@ import cn.nukkit.network.protocol.types.GameType;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.SemVersion;
+import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
@@ -287,6 +288,8 @@ public class LevelDBProvider implements LevelProvider {
                 for (BlockEntity blockEntity : tiles) {
                     if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
                         tagList.add(blockEntitySpawnable.getSpawnCompound());
+                        //Adding NBT to a chunk pack does not show some block entities, and you have to send block entity packets to the player
+                        level.addChunkPacket(blockEntitySpawnable.getChunkX(), blockEntitySpawnable.getChunkZ(), blockEntitySpawnable.getSpawnPacket());
                     }
                 }
                 try (ByteBufOutputStream stream = new ByteBufOutputStream(byteBuf)) {
@@ -294,8 +297,7 @@ public class LevelDBProvider implements LevelProvider {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                byte[] data = new byte[byteBuf.readableBytes()];
-                byteBuf.readBytes(data);
+                byte[] data = Utils.convertByteBuf2Array(byteBuf);
                 callback.accept(data, firstExist);
             } finally {
                 byteBuf.release();

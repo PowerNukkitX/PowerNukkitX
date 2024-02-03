@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +15,8 @@ public class BlockPistonArmCollision extends BlockTransparent implements Faceabl
     public static final BlockProperties PROPERTIES = new BlockProperties(PISTON_ARM_COLLISION, CommonBlockProperties.FACING_DIRECTION);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -59,13 +61,25 @@ public class BlockPistonArmCollision extends BlockTransparent implements Faceabl
         return true;
     }
 
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_NORMAL) {
+            if (!(getSide(getBlockFace().getOpposite()) instanceof BlockPistonBase)) {
+                level.setBlock(this, new BlockAir(), true, false);
+            }
+            return type;
+        }
+        return 0;
+    }
+
     public BlockFace getFacing() {
         return getBlockFace();
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
+        var face = BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
+        return face.getHorizontalIndex() >= 0 ? face.getOpposite() : face;
     }
 
     @Override

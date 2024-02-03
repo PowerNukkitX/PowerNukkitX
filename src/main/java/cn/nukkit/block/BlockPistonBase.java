@@ -315,7 +315,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
             var pistonArmPos = this.getSide(pistonFace);
             //清除位置上所含的水等
             level.setBlock(pistonArmPos, 1, Block.get(AIR), true, false);
-            level.setBlock(pistonArmPos, createHead(getBlockFace()), true, false);
+            level.setBlock(pistonArmPos, createHead(getBlockFace().getOpposite()), true, false);
         }
         //开始移动
         this.getBlockEntity().move();
@@ -328,6 +328,11 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
     public BlockFace getBlockFace() {
         var face = BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
         return face.getHorizontalIndex() >= 0 ? face.getOpposite() : face;
+    }
+
+    @Override
+    public void setBlockFace(BlockFace face) {
+        setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
     }
 
     @Override
