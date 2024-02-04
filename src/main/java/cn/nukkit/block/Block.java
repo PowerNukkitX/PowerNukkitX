@@ -47,7 +47,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static final Block[] EMPTY_ARRAY = new Block[0];
     public static final double DEFAULT_FRICTION_FACTOR = 0.6;
     public static final double DEFAULT_AIR_FLUID_FRICTION = 0.95;
-    //todo fix getcolor
     protected static final Long2ObjectOpenHashMap<BlockColor> VANILLA_BLOCK_COLOR_MAP = new Long2ObjectOpenHashMap<>();
     protected BlockState blockstate;
     protected BlockColor color;
@@ -472,7 +471,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 result.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1)).append(" ");
             }
         }
-        return result.toString().trim().intern();
+        return result.toString().trim();
     }
 
     /**
