@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author Superice666
  */
-public class ItemGlowBerries extends ItemEdible {
+public class ItemGlowBerries extends ItemFood {
 
     public ItemGlowBerries() {
         this(0, 1);
@@ -47,5 +47,15 @@ public class ItemGlowBerries extends ItemEdible {
         }
 
         return false;
+    }
+
+    @Override
+    public int getFoodRestore() {
+        return 2;
+    }
+
+    @Override
+    public float getSaturationRestore() {
+        return 0.4F;
     }
 }

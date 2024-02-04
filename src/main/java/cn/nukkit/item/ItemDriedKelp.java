@@ -3,7 +3,7 @@ package cn.nukkit.item;
 /**
  * @author PetteriM1
  */
-public class ItemDriedKelp extends ItemEdible {
+public class ItemDriedKelp extends ItemFood {
 
     public ItemDriedKelp() {
         this(0, 1);
@@ -15,5 +15,20 @@ public class ItemDriedKelp extends ItemEdible {
 
     public ItemDriedKelp(Integer meta, int count) {
         super(DRIED_KELP, 0, count, "Dried Kelp");
+    }
+
+    @Override
+    public int getFoodRestore() {
+        return 1;
+    }
+
+    @Override
+    public float getSaturationRestore() {
+        return 0.6F;
+    }
+
+    @Override
+    public int getEatingTicks() {
+        return 17;
     }
 }

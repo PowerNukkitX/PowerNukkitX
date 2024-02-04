@@ -11,4 +11,14 @@ public class ItemCod extends ItemFish {
     protected ItemCod(String id, Integer meta, int count) {
         super(id, meta, count);
     }
+
+    @Override
+    public int getFoodRestore() {
+        return 2;
+    }
+
+    @Override
+    public float getSaturationRestore() {
+        return 0.4F;
+    }
 }

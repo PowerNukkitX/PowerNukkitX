@@ -1,12 +1,13 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.math.Vector3;
 
 /**
  * @author joserobjr
  */
-public class ItemHoneyBottle extends ItemEdible {
+public class ItemHoneyBottle extends ItemFood {
     
     public ItemHoneyBottle() {
         this(0, 1);
@@ -33,5 +34,23 @@ public class ItemHoneyBottle extends ItemEdible {
     @Override
     public boolean onUse(Player player, int ticksUsed) {
         return super.onUse(player, ticksUsed);
+    }
+
+    @Override
+    public int getFoodRestore() {
+        return 6;
+    }
+
+    @Override
+    public float getSaturationRestore() {
+        return 1.2F;
+    }
+
+    @Override
+    public boolean onEaten(Player player) {
+        player.getInventory().addItem(new ItemGlassBottle());
+        player.removeEffect(EffectType.POISON);
+
+        return true;
     }
 }

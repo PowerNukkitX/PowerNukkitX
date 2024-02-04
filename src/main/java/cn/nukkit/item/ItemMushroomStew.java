@@ -1,9 +1,11 @@
 package cn.nukkit.item;
 
+import cn.nukkit.Player;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class ItemMushroomStew extends ItemEdible {
+public class ItemMushroomStew extends ItemFood {
 
     public ItemMushroomStew() {
         this(0, 1);
@@ -20,5 +22,22 @@ public class ItemMushroomStew extends ItemEdible {
     @Override
     public int getMaxStackSize() {
         return 1;
+    }
+
+    @Override
+    public int getFoodRestore() {
+        return 6;
+    }
+
+    @Override
+    public float getSaturationRestore() {
+        return 7.2F;
+    }
+
+    @Override
+    public boolean onEaten(Player player) {
+        player.getInventory().addItem(new ItemBowl());
+
+        return true;
     }
 }
