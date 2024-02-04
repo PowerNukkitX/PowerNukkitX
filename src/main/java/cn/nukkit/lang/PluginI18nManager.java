@@ -51,7 +51,7 @@ public final class PluginI18nManager {
             while (jarEntrys.hasMoreElements()) {
                 JarEntry entry = jarEntrys.nextElement();
                 String name = entry.getName();
-                if (name.startsWith("language") && name.endsWith(".lang")) {
+                if (name.startsWith("language") && name.endsWith(".json")) {
                     // 开始读取文件内容
                     InputStream inputStream = plugin.getResource(name);
                     assert inputStream != null;
@@ -85,7 +85,7 @@ public final class PluginI18nManager {
             int count = 0;
             for (var f : files) {
                 try (InputStream inputStream = new FileInputStream(f)) {
-                    i18n.reloadLang(LangCode.valueOf(f.getName().replace(".lang", "")), inputStream);
+                    i18n.reloadLang(LangCode.valueOf(f.getName().replace(".json", "")), inputStream);
                     count++;
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -113,7 +113,7 @@ public final class PluginI18nManager {
             while (jarEntrys.hasMoreElements()) {
                 JarEntry entry = jarEntrys.nextElement();
                 String name = entry.getName();
-                if (name.startsWith("language") && name.endsWith(".lang")) {
+                if (name.startsWith("language") && name.endsWith(".json")) {
                     // 开始读取文件内容
                     InputStream inputStream = plugin.getResource(name);
                     assert inputStream != null;
@@ -145,7 +145,7 @@ public final class PluginI18nManager {
             var pluginMultiLanguage = new PluginI18n(plugin);
             for (var f : files) {
                 try (InputStream inputStream = new FileInputStream(f)) {
-                    pluginMultiLanguage.addLang(LangCode.valueOf(f.getName().replace(".lang", "")), inputStream);
+                    pluginMultiLanguage.addLang(LangCode.valueOf(f.getName().replace(".json", "")), inputStream);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -157,7 +157,8 @@ public final class PluginI18nManager {
         }
     }
 
-    public @Nullable static PluginI18n getI18n(PluginBase plugin) {
+    public @Nullable
+    static PluginI18n getI18n(PluginBase plugin) {
         return PLUGINS_MULTI_LANGUAGE.get(plugin.getFile().getName());
     }
 }

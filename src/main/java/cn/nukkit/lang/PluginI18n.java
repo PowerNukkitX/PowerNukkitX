@@ -3,6 +3,7 @@ package cn.nukkit.lang;
 
 import cn.nukkit.Server;
 import cn.nukkit.plugin.PluginBase;
+import com.google.gson.Gson;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
@@ -279,42 +280,13 @@ public class PluginI18n {
 
     private boolean reloadLang(LangCode lang, BufferedReader reader) {
         Map<String, String> d = this.MULTI_LANGUAGE.get(lang);
-        try {
-            readAndWriteLang(reader, d);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+        d.putAll((Map<String, String>) new Gson().fromJson(reader, Map.class));
+        return true;
     }
 
     private Map<String, String> parseLang(BufferedReader reader) throws IOException {
         Map<String, String> d = new Object2ObjectOpenHashMap<>();
-        readAndWriteLang(reader, d);
-        return d;
-    }
-
-    static void readAndWriteLang(BufferedReader reader, Map<String, String> d) throws IOException {
-        String line;
-        while ((line = reader.readLine()) != null) {
-            line = line.trim();
-            if (line.isEmpty() || line.charAt(0) == '#') {
-                continue;
-            }
-            String[] t = line.split("=", 2);
-            if (t.length < 2) {
-                continue;
-            }
-            String key = t[0];
-            String value = t[1];
-            if (value.length() > 1 && value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
-                value = value.substring(1, value.length() - 1).replace("\\\"", "\"").replace("\\\\", "\\");
-            }
-            if (value.isEmpty()) {
-                continue;
-            }
-            d.put(key, value);
-        }
+        return (Map<String, String>) new Gson().fromJson(reader, Map.class);
     }
 }
 

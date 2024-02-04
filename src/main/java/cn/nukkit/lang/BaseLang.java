@@ -1,6 +1,7 @@
 package cn.nukkit.lang;
 
 import cn.nukkit.api.DeprecationDetails;
+import com.google.gson.Gson;
 import io.netty.util.internal.EmptyArrays;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -56,15 +57,15 @@ public class BaseLang {
         if (path == null) {
             path = "language/";
             try {
-                this.lang = this.loadLang(this.getClass().getModule().getResourceAsStream(path + this.langName + "/lang.ini"));
+                this.lang = this.loadLang(this.getClass().getModule().getResourceAsStream(path + this.langName + "/lang.json"));
                 if (useFallback)
-                    this.fallbackLang = this.loadLang(this.getClass().getModule().getResourceAsStream(path + fallback + "/lang.ini"));
+                    this.fallbackLang = this.loadLang(this.getClass().getModule().getResourceAsStream(path + fallback + "/lang.json"));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         } else {
-            this.lang = this.loadLang(path + this.langName + "/lang.ini");
-            if (useFallback) this.fallbackLang = this.loadLang(path + fallback + "/lang.ini");
+            this.lang = this.loadLang(path + this.langName + "/lang.json");
+            if (useFallback) this.fallbackLang = this.loadLang(path + fallback + "/lang.json");
         }
         if (this.fallbackLang == null) this.fallbackLang = this.lang;
     }
@@ -111,7 +112,7 @@ public class BaseLang {
 
     private Map<String, String> parseLang(BufferedReader reader) throws IOException {
         Map<String, String> d = new HashMap<>();
-        PluginI18n.readAndWriteLang(reader, d);
+        d.putAll((Map<String, String>) new Gson().fromJson(reader, Map.class));
         return d;
     }
 
