@@ -143,7 +143,12 @@ tasks.withType<AbstractCopyTask>() {
 }
 
 tasks.named<AbstractArchiveTask>("sourcesJar") {
+    dependsOn("copyScripts")
     destinationDirectory = layout.buildDirectory
+}
+
+tasks.compileTestJava{
+    dependsOn("copyScripts")
 }
 
 tasks.jar {
@@ -181,6 +186,10 @@ tasks.register<Copy>("copyDependencies") {
     description = "Copy all dependencies to libs folder"
     from(configurations.runtimeClasspath)
     into(layout.buildDirectory.dir("libs"))
+}
+
+tasks.delombok{
+    dependsOn("copyScripts")
 }
 
 tasks.javadoc {
