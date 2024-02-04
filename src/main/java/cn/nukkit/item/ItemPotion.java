@@ -102,7 +102,6 @@ public class ItemPotion extends Item {
         if (potion != null) {
             potion.applyEffects(player, false, 1);
         }
-        player.sendMessage(name);
         return true;
     }
 

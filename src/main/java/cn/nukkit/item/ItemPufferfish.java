@@ -42,6 +42,7 @@ public class ItemPufferfish extends ItemFish {
         player.addEffect(Effect.get(EffectType.NAUSEA)
                 .setDuration(15*20)
                 .setAmplifier(1));
+
         return true;
     }
 }
