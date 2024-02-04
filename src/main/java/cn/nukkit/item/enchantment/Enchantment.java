@@ -24,6 +24,8 @@ import cn.nukkit.item.enchantment.trident.EnchantmentTridentImpaling;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentLoyalty;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentRiptide;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.registry.RegisterException;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.OK;
 import cn.nukkit.utils.TextFormat;
@@ -369,28 +371,27 @@ public abstract class Enchantment implements Cloneable {
                 methodVisitor.visitCode();
                 Label label0 = new Label();
                 methodVisitor.visitLabel(label0);
-                methodVisitor.visitLineNumber(6, label0);
+                methodVisitor.visitLineNumber(5, label0);
                 methodVisitor.visitVarInsn(ALOAD, 0);
                 methodVisitor.visitLdcInsn(identifier.toString());
-                methodVisitor.visitLdcInsn(name);
-                methodVisitor.visitMethodInsn(INVOKESPECIAL, "cn/nukkit/item/customitem/ItemCustomBookEnchanted", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V", false);
+                methodVisitor.visitMethodInsn(INVOKESPECIAL, "cn/nukkit/item/customitem/ItemCustomBookEnchanted", "<init>", "(Ljava/lang/String;)V", false);
                 Label label1 = new Label();
                 methodVisitor.visitLabel(label1);
-                methodVisitor.visitLineNumber(7, label1);
+                methodVisitor.visitLineNumber(6, label1);
                 methodVisitor.visitInsn(RETURN);
                 Label label2 = new Label();
                 methodVisitor.visitLabel(label2);
                 methodVisitor.visitLocalVariable("this", "Lcn/nukkit/item/customitem/" + className + ";", null, label0, label2, 0);
-                methodVisitor.visitMaxs(3, 1);
+                methodVisitor.visitMaxs(2, 1);
                 methodVisitor.visitEnd();
             }
             classWriter.visitEnd();
             BOOK_NUMBER++;
             try {
-                Class<? extends CustomItem> clazz = (Class<? extends CustomItem>) loadClass(Thread.currentThread().getContextClassLoader(), "cn.nukkit.item.customitem." + className, classWriter.toByteArray());
-                //                Item.registerCustomItem(clazz).assertOK();//todo fix custom ench
+                Class<? extends Item> clazz = (Class<? extends Item>) loadClass(Thread.currentThread().getContextClassLoader(), "cn.nukkit.item.customitem." + className, classWriter.toByteArray());
+                Registries.ITEM.registerCustomItem(clazz);
             } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
-                     IllegalAccessException | AssertionError e) {
+                     IllegalAccessException | AssertionError | RegisterException e) {
                 return new OK<>(false, e);
             }
         }
@@ -425,9 +426,6 @@ public abstract class Enchantment implements Cloneable {
      * @return The enchantment, if no enchantment is found with that id, {@link UnknownEnchantment} is returned.
      * The UnknownEnchantment will be always a new instance and changes to it does not affects other calls.
      */
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", reason = "This is very insecure and can break the environment", since = "1.4.0.0-PN",
-            replaceWith = "getEnchantment(int)")
     public static Enchantment get(int id) {
         Enchantment enchantment = null;
         if (id >= 0 && id < enchantments.length) {
@@ -440,13 +438,21 @@ public abstract class Enchantment implements Cloneable {
     }
 
     /**
-     * The same as {@link #get(int)} but returns a safe copy of the enchantment.
+     * Returns the enchantment object registered with this ID
      *
-     * @param id The enchantment id
-     * @return A new enchantment object.
+     * @param id The enchantment id.
+     * @return The enchantment, if no enchantment is found with that id, {@link UnknownEnchantment} is returned.
+     * The UnknownEnchantment will be always a new instance and changes to it does not affects other calls.
      */
     public static Enchantment getEnchantment(int id) {
-        return get(id).clone();
+        Enchantment enchantment = null;
+        if (id >= 0 && id < enchantments.length) {
+            enchantment = enchantments[id];
+        }
+        if (enchantment == null) {
+            return new UnknownEnchantment(id);
+        }
+        return enchantment.clone();
     }
 
     /**
@@ -459,12 +465,12 @@ public abstract class Enchantment implements Cloneable {
      */
     public static Enchantment getEnchantment(String name) {
         if (Identifier.isValid(name)) {
-            return customEnchantments.get(Identifier.tryParse(name));
-        } else return customEnchantments.get(new Identifier(Identifier.DEFAULT_NAMESPACE, name));
+            return customEnchantments.get(Identifier.tryParse(name)).clone();
+        } else return customEnchantments.get(new Identifier(Identifier.DEFAULT_NAMESPACE, name)).clone();
     }
 
     public static Enchantment getEnchantment(@NotNull Identifier name) {
-        return customEnchantments.get(name);
+        return customEnchantments.get(name).clone();
     }
 
     /**
@@ -499,7 +505,8 @@ public abstract class Enchantment implements Cloneable {
     /**
      * The group of objects that this enchantment can be applied.
      */
-    @NotNull public EnchantmentType type;
+    @NotNull
+    public EnchantmentType type;
 
     /**
      * The level of this enchantment. Starting from {@code 1}.
@@ -516,20 +523,6 @@ public abstract class Enchantment implements Cloneable {
     @Nullable
     protected final Identifier identifier;
 
-    /**
-     * Constructs this instance using the given data and with level 1.
-     *
-     * @param id     The enchantment ID
-     * @param name   The translation key without the "%enchantment." suffix
-     * @param weight How rare this enchantment is, from {@code 1} to {@code 10} both inclusive where {@code 1} is the rarest
-     * @param type   Where the enchantment can be applied
-     */
-    @Deprecated
-    @DeprecationDetails(by = "Cloudburst Nukkit", since = "1.4.0.0-PN", reason = "Changed the signature without backward compatibility",
-            replaceWith = "Enchantment(int, String, Rarity, EnchantmentType)")
-    protected Enchantment(int id, String name, int weight, @NotNull EnchantmentType type) {
-        this(id, name, Rarity.fromWeight(weight), type);
-    }
 
     /**
      * Constructs this instance using the given data and with level 1.
@@ -600,7 +593,8 @@ public abstract class Enchantment implements Cloneable {
      * @return This object so you can do chained calls
      */
 
-    @NotNull public Enchantment setLevel(int level) {
+    @NotNull
+    public Enchantment setLevel(int level) {
         return this.setLevel(level, true);
     }
 
@@ -613,7 +607,8 @@ public abstract class Enchantment implements Cloneable {
      * @param safe  If the level should clamped or applied directly
      * @return This object so you can do chained calls
      */
-    @NotNull public Enchantment setLevel(int level, boolean safe) {
+    @NotNull
+    public Enchantment setLevel(int level, boolean safe) {
         if (!safe) {
             this.level = level;
             return this;
@@ -635,7 +630,8 @@ public abstract class Enchantment implements Cloneable {
      * How rare this enchantment is.
      */
 
-    @NotNull public Rarity getRarity() {
+    @NotNull
+    public Rarity getRarity() {
         return this.rarity;
     }
 
