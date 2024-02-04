@@ -3865,7 +3865,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
 
     public LangCode getLanguageCode() {
-        return LangCode.valueOf(this.getLoginChainData().getLanguageCode());
+        try {
+            return LangCode.valueOf(this.getLoginChainData().getLanguageCode());
+        } catch (IllegalArgumentException ignore) {
+            return LangCode.en_US;
+        }
     }
 
     @Override
