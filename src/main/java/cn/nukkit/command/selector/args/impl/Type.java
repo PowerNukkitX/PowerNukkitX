@@ -41,7 +41,7 @@ public class Type extends CachedSimpleSelectorArgument {
                 dontHave.add(type);
             } else have.add(completionPrefix(type));
         }
-        return entity -> have.stream().allMatch(type -> isType(entity, type)) && dontHave.stream().noneMatch(type ->isType(entity, type));
+        return entity -> have.stream().allMatch(type -> isType(entity, type)) && dontHave.stream().noneMatch(type -> isType(entity, type));
     }
 
     @Override
@@ -72,8 +72,8 @@ public class Type extends CachedSimpleSelectorArgument {
         if (entity instanceof Player)
             //player需要特判，因为EntityHuman的getNetworkId()返回-1
             return type.equals("minecraft:player");
-        else if (entity instanceof CustomEntity customEntity)
-            return customEntity.getDefinition().getStringId().equals(type);
+        else if (entity instanceof CustomEntity)
+            return entity.getIdentifier().equals(type);
         else
             return ENTITY_TYPE2ID.containsKey(type) && entity.getNetworkId() == ENTITY_TYPE2ID.get(type);
 

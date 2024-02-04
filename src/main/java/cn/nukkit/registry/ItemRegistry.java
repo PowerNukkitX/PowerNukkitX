@@ -591,13 +591,32 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     public void register(String key, Class<? extends Item> value) throws RegisterException {
         try {
             FastConstructor<? extends Item> c = FastConstructor.create(value.getConstructor());
-            if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) == null) {
-                if (Arrays.stream(value.getInterfaces()).anyMatch(i -> i == CustomItem.class)) {
-                    CustomItem customItem = (CustomItem) c.invoke((Object) null);
-                    CUSTOM_ITEM_DEFINITIONS.put(customItem.getDefinition().identifier(), customItem.getDefinition());
+            if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) != null) {
+                throw new RegisterException("This item has already been registered with the identifier: " + key);
+            }
+        } catch (NoSuchMethodException e) {
+            throw new RegisterException(e);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * register custom item
+     */
+    public void registerCustomItem(Class<? extends Item> value) throws RegisterException {
+        try {
+            if (Arrays.stream(value.getInterfaces()).anyMatch(i -> i == CustomItem.class)) {
+                FastConstructor<? extends Item> c = FastConstructor.create(value.getConstructor());
+                CustomItem customItem = (CustomItem) c.invoke((Object) null);
+                String key = customItem.getDefinition().identifier();
+                if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) == null) {
+                    CUSTOM_ITEM_DEFINITIONS.put(key, customItem.getDefinition());
+                } else {
+                    throw new RegisterException("This item has already been registered with the identifier: " + key);
                 }
             } else {
-                throw new RegisterException("This item has already been registered with the identifier: " + key);
+                throw new RegisterException("This class does not implement the CustomItem interface and cannot be registered as a custom item!");
             }
         } catch (NoSuchMethodException e) {
             throw new RegisterException(e);

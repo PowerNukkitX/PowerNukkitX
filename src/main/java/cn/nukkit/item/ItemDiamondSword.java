@@ -1,6 +1,6 @@
 package cn.nukkit.item;
 
-public class ItemDiamondSword extends Item {
+public class ItemDiamondSword extends ItemTool {
     public ItemDiamondSword() {
         super(DIAMOND_SWORD);
     }

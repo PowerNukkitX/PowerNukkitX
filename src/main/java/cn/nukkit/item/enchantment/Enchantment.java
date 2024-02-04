@@ -40,6 +40,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.rmi.registry.Registry;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -387,7 +388,7 @@ public abstract class Enchantment implements Cloneable {
             BOOK_NUMBER++;
             try {
                 Class<? extends CustomItem> clazz = (Class<? extends CustomItem>) loadClass(Thread.currentThread().getContextClassLoader(), "cn.nukkit.item.customitem." + className, classWriter.toByteArray());
-//                Item.registerCustomItem(clazz).assertOK();//todo fix custom ench
+                //                Item.registerCustomItem(clazz).assertOK();//todo fix custom ench
             } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
                      IllegalAccessException | AssertionError e) {
                 return new OK<>(false, e);
@@ -411,12 +412,8 @@ public abstract class Enchantment implements Cloneable {
             method = defineClassMethodRef.get();
         }
         Objects.requireNonNull(method).setAccessible(true);
-        try {
-            var args = new Object[]{className, b, 0, b.length};
-            clazz = (Class<?>) method.invoke(loader, args);
-        } finally {
-            method.setAccessible(false);
-        }
+        var args = new Object[]{className, b, 0, b.length};
+        clazz = (Class<?>) method.invoke(loader, args);
         return clazz;
     }
 
