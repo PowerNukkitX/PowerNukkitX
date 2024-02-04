@@ -107,6 +107,14 @@ tasks.register<DefaultTask>("buildSkipChores") {
     tasks["check"].enabled = false
 }
 
+tasks.register<DefaultTask>("buildForGithubAction") {
+    dependsOn(tasks.build)
+    group = "build"
+    tasks["delombok"].enabled = false
+    tasks["javadoc"].enabled = false
+    tasks["javadocJar"].enabled = false
+}
+
 tasks.build {
     dependsOn(tasks.shadowJar)
     group = "alpha build"
