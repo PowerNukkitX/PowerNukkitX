@@ -2,6 +2,7 @@
 
 # Construct the full path to the Java executable
 JAVA_CMD="java"
+JAR_NAME="powernukkitx.jar"
 
 # Execute the Java command
 "$JAVA_CMD" -Dfile.encoding=UTF-8 \
@@ -14,5 +15,5 @@ JAVA_CMD="java"
     --module-path="./libs/graal-sdk-23.0.0.jar:./libs/truffle-api-23.0.0.jar" \
     --add-opens java.base/java.lang=ALL-UNNAMED \
     --add-opens java.base/java.io=ALL-UNNAMED \
-    -cp "powernukkitx.jar:./libs/*" \
+    -cp "$JAR_NAME:./libs/*" \
     cn.nukkit.Nukkit

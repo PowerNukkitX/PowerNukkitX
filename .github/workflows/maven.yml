@@ -58,7 +58,7 @@ jobs:
           build-scan-publish: true
           build-scan-terms-of-service-url: "https://gradle.com/terms-of-service"
           build-scan-terms-of-service-agree: "yes"
-          arguments: build --scan
+          arguments: buildForGithubAction --scan
 
       - name: Read version
         id: read_version
@@ -72,12 +72,7 @@ jobs:
           cd build
           ls
           cd ../
-          mv build/libs build/bin
-          mv build/lib build/libs
-          mv build/bin/powernukkitx-${{ steps.read_version.outputs.git-build-version }}-all.jar build/powernukkitx-shaded.jar
-          mv build/bin/powernukkitx-${{ steps.read_version.outputs.git-build-version }}.jar build/powernukkitx.jar
-          mv scripts/start.bat build/start.bat
-          mv scripts/start.sh build/start.sh
+          mv build/powernukkitx-${{ steps.read_version.outputs.git-build-version }}-all.jar build/powernukkitx-shaded.jar
           tar -vczf build/libs.tar.gz build/libs
 
       - name: Calculate hashes
@@ -127,7 +122,7 @@ jobs:
         if: success()
         with:
           name: Hashes(md5 & sha256)
-          path: target/hash/
+          path: build/hash/
 
       - name: Get Short SHA
         id: vars
@@ -137,7 +132,7 @@ jobs:
         name: Release new version
         if: success() && contains(github.event.commits[0].message, '+u') && github.repository == 'PowerNukkitX/PowerNukkitX' && contains(github.ref_name, 'master')
         with:
-          artifacts: "target/powernukkitx.jar,target/libs.tar.gz,target/hash/sha256/powernukkitx.jar.sha256,target/hash/sha256/libs.tar.gz.sha256,target/hash/md5/powernukkitx.jar.md5,target/hash/md5/libs.tar.gz.md5"
+          artifacts: "build/powernukkitx.jar,build/libs.tar.gz,build/hash/sha256/powernukkitx.jar.sha256,build/hash/sha256/libs.tar.gz.sha256,build/hash/md5/powernukkitx.jar.md5,build/hash/md5/libs.tar.gz.md5"
           tag: ${{ steps.read_version.outputs.git-build-version }}
           body: ${{ steps.read_version.outputs.git-build-version }} - ${{ github.ref_name }} - ${{ steps.vars.outputs.sha_short }}
           token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,4 +1,10 @@
+import org.gradle.internal.FileUtils
+import org.gradle.internal.impldep.org.apache.ivy.util.FileUtil
 import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 
 plugins {
     `java-library`
@@ -101,6 +107,14 @@ tasks.register<DefaultTask>("buildSkipChores") {
     tasks["check"].enabled = false
 }
 
+tasks.register<DefaultTask>("buildForGithubAction") {
+    dependsOn(tasks.build)
+    group = "build"
+    tasks["delombok"].enabled = false
+    tasks["javadoc"].enabled = false
+    tasks["javadocJar"].enabled = false
+}
+
 tasks.build {
     dependsOn(tasks.shadowJar)
     group = "alpha build"
@@ -128,13 +142,42 @@ tasks.withType<AbstractCopyTask>() {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
+tasks.named<AbstractArchiveTask>("sourcesJar") {
+    dependsOn("copyScripts")
+    destinationDirectory = layout.buildDirectory
+}
+
+tasks.compileTestJava{
+    dependsOn("copyScripts")
+}
+
+tasks.jar {
+    destinationDirectory = layout.buildDirectory
+    finalizedBy("copyScripts")
+    doLast {//execution phase
+        project.extra["jarfile"] = archiveFile.get()
+    }
+}
+
+tasks.register<Copy>("copyScripts") {
+    dependsOn("jar")
+    from(project.projectDir.resolve("scripts"))
+    into(layout.buildDirectory)
+    doLast {//execution phase
+        val f: RegularFile = project.extra["jarfile"] as RegularFile
+        val tf: RegularFile = layout.buildDirectory.file("${project.description}.jar").get()
+        Files.copy(Path.of(f.asFile.absolutePath), Path.of(tf.asFile.absolutePath), StandardCopyOption.REPLACE_EXISTING)
+    }
+}
+
 tasks.shadowJar {
-    dependsOn("copyDependencies", tasks.jar)
+    dependsOn("copyDependencies", "copyScripts")
     manifest {
         attributes(
                 "Main-Class" to "cn.nukkit.JarStart"
         )
     }
+    destinationDirectory = layout.buildDirectory
 }
 
 tasks.register<Copy>("copyDependencies") {
@@ -142,7 +185,11 @@ tasks.register<Copy>("copyDependencies") {
     group = "other"
     description = "Copy all dependencies to libs folder"
     from(configurations.runtimeClasspath)
-    into(layout.buildDirectory.dir("lib"))
+    into(layout.buildDirectory.dir("libs"))
+}
+
+tasks.delombok{
+    dependsOn("copyScripts")
 }
 
 tasks.javadoc {
