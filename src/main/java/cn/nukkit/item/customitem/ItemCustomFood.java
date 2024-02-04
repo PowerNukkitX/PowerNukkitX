@@ -23,7 +23,4 @@ public abstract class ItemCustomFood extends ItemFood implements CustomItem {
         return false;
     }
 
-    public boolean canAlwaysEat() {
-        return false;
-    }
 }

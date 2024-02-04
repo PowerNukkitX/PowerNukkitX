@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.vibration.VibrationEvent;
@@ -59,9 +60,10 @@ public abstract class ItemFood extends Item {
             return false;
         }
 
-        PlayerItemConsumeEvent consumeEvent = new PlayerItemConsumeEvent(player, this);
-        player.getServer().getPluginManager().callEvent(consumeEvent);
-        if (consumeEvent.isCancelled()) {
+        PlayerItemConsumeEvent event = new PlayerItemConsumeEvent(player, this);
+        Server.getInstance().getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) {
             player.getInventory().sendContents(player);
             return false;
         }
@@ -78,16 +80,13 @@ public abstract class ItemFood extends Item {
             }
         }
 
-        player.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, player.add(0, player.getEyeHeight()), VibrationType.EAT));
+        player.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(player, player.add(0, player.getEyeHeight()), VibrationType.EAT));
 
         return true;
     }
 
-    /**
-     * Used for additional behaviour in Food like Chorus
-     *
-     * @param player
-     * @return
+    /*
+     * Used for additional behaviour in Food like: Chorus, Suspicious Stew and etc.
      */
     public boolean onEaten(Player player) {
         return true;
