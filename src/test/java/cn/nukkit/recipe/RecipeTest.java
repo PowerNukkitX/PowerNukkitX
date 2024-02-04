@@ -3,7 +3,6 @@ package cn.nukkit.recipe;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.potion.Potion;
 import cn.nukkit.registry.Registries;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
@@ -16,7 +15,7 @@ public class RecipeTest {
     @BeforeAll
     @SneakyThrows
     static void before() {
-        Potion.init();
+        Registries.POTION.init();
         Registries.BLOCKSTATE_ITEMMETA.init();
         Registries.BLOCK.init();
         Registries.ITEM.init();

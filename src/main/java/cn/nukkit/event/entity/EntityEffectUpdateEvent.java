@@ -3,8 +3,7 @@ package cn.nukkit.event.entity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.potion.Effect;
-import lombok.Getter;
+import cn.nukkit.entity.effect.Effect;
 
 
 public class EntityEffectUpdateEvent extends EntityEvent implements Cancellable {

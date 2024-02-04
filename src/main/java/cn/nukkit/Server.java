@@ -70,8 +70,6 @@ import cn.nukkit.plugin.js.JSIInitiator;
 import cn.nukkit.plugin.service.NKServiceManager;
 import cn.nukkit.plugin.service.ServiceManager;
 import cn.nukkit.positiontracking.PositionTrackingService;
-import cn.nukkit.potion.Effect;
-import cn.nukkit.potion.Potion;
 import cn.nukkit.recipe.Recipe;
 import cn.nukkit.registry.RecipeRegistry;
 import cn.nukkit.registry.Registries;
@@ -708,7 +706,7 @@ public class Server {
         NukkitMetrics.startNow(this);
 
         {//init block
-            Potion.init();
+            Registries.POTION.init();
             Registries.PACKET.init();
             Registries.ENTITY.init();
             Profession.init();
@@ -727,7 +725,7 @@ public class Server {
             Registries.FUEL.init();
             Registries.GENERATOR.init();
             Registries.GENERATE_STAGE.init();
-            Effect.init();
+            Registries.EFFECT.init();
             Attribute.init();
             BlockComposter.init();
             DispenseBehaviorRegister.init();

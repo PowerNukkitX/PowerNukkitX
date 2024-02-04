@@ -2,7 +2,7 @@ package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemPotion;
-import cn.nukkit.potion.Potion;
+import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.recipe.descriptor.ItemTagDescriptor;
@@ -182,9 +182,9 @@ public class VanillaRecipeParser {
 
     private void parseAndRegisterBrewRecipe(Map<String, Object> recipeData) {
         String inputID = "minecraft:" + recipeData.get("input").toString().split(":")[2].toLowerCase(Locale.ENGLISH);
-        Item input = ItemPotion.fromPotion(Potion.getPotionByName(inputID));
+        Item input = ItemPotion.fromPotion(PotionType.get(inputID));
         String outputID = "minecraft:" + recipeData.get("output").toString().split(":")[2].toLowerCase(Locale.ENGLISH);
-        Item output = ItemPotion.fromPotion(Potion.getPotionByName(outputID));
+        Item output = ItemPotion.fromPotion(PotionType.get(outputID));
         Item reagent = Item.get(recipeData.get("reagent").toString());
         if (input.isNull() || output.isNull() || reagent.isNull()) {
             return;

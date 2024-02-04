@@ -3,7 +3,6 @@ package jmh;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.potion.Potion;
 import cn.nukkit.registry.Registries;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
@@ -24,7 +23,7 @@ public class FindRecipeTest {
 
     @Setup
     public void setup() {
-        Potion.init();
+        Registries.POTION.init();
         Registries.BLOCKSTATE_ITEMMETA.init();
         Registries.BLOCK.init();
         Registries.ITEM.init();

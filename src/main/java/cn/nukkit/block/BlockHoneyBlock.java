@@ -3,17 +3,16 @@ package cn.nukkit.block;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.potion.Effect;
+import cn.nukkit.entity.effect.Effect;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
-
-import static cn.nukkit.potion.Effect.getEffect;
 
 public class BlockHoneyBlock extends BlockSolid {
     private static final Random RANDOM = new Random();
@@ -119,7 +118,7 @@ public class BlockHoneyBlock extends BlockSolid {
 
     @Override
     public void onEntityFallOn(Entity entity, float fallDistance) {
-        int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST)? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
+        int jumpBoost = entity.hasEffect(EffectType.JUMP_BOOST)? Effect.get(EffectType.JUMP_BOOST).getLevel() : 0;
         float damage = (float) Math.floor(fallDistance - 3 - jumpBoost);
 
         damage *= 0.2F;

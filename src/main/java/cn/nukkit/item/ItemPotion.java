@@ -1,54 +1,15 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.potion.Potion;
-import cn.nukkit.utils.ServerException;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
 
 public class ItemPotion extends Item {
-    public static final int NO_EFFECTS = 0;
-    public static final int MUNDANE = 1;
-    public static final int MUNDANE_II = 2;
-    public static final int THICK = 3;
-    public static final int AWKWARD = 4;
-    public static final int NIGHT_VISION = 5;
-    public static final int NIGHT_VISION_LONG = 6;
-    public static final int INVISIBLE = 7;
-    public static final int INVISIBLE_LONG = 8;
-    public static final int LEAPING = 9;
-    public static final int LEAPING_LONG = 10;
-    public static final int LEAPING_II = 11;
-    public static final int FIRE_RESISTANCE = 12;
-    public static final int FIRE_RESISTANCE_LONG = 13;
-    public static final int SPEED = 14;
-    public static final int SPEED_LONG = 15;
-    public static final int SPEED_II = 16;
-    public static final int SLOWNESS = 17;
-    public static final int SLOWNESS_LONG = 18;
-    public static final int WATER_BREATHING = 19;
-    public static final int WATER_BREATHING_LONG = 20;
-    public static final int INSTANT_HEALTH = 21;
-    public static final int INSTANT_HEALTH_II = 22;
-    public static final int HARMING = 23;
-    public static final int HARMING_II = 24;
-    public static final int POISON = 25;
-    public static final int POISON_LONG = 26;
-    public static final int POISON_II = 27;
-    public static final int REGENERATION = 28;
-    public static final int REGENERATION_LONG = 29;
-    public static final int REGENERATION_II = 30;
-    public static final int STRENGTH = 31;
-    public static final int STRENGTH_LONG = 32;
-    public static final int STRENGTH_II = 33;
-    public static final int WEAKNESS = 34;
-    public static final int WEAKNESS_LONG = 35;
-    public static final int DECAY = 36;
 
     public ItemPotion() {
         this(0, 1);
@@ -70,52 +31,45 @@ public class ItemPotion extends Item {
     }
 
     private void updateName() {
-        int potionId = getDamage();
-        if (potionId == Potion.WATER) {
-            name = buildName(potionId, "Bottle", true);
+        PotionType potion = this.getPotion();
+        if (PotionType.WATER.equals(potion)) {
+            name = buildName(potion, "Bottle", true);
         } else {
-            name = buildName(potionId, "Potion", true);
+            name = buildName(potion, "Potion", true);
         }
     }
 
-    static String buildName(int potionId, String type, boolean includeLevel) {
-        switch (potionId) {
-            case Potion.WATER:
-                return "Water " + type;
-            case Potion.MUNDANE:
-            case Potion.MUNDANE_II:
-                return "Mundane " + type;
-            case Potion.THICK:
-                return "Thick " + type;
-            case Potion.AWKWARD:
-                return "Awkward " + type;
-            case Potion.TURTLE_MASTER:
-            case Potion.TURTLE_MASTER_II:
-            case Potion.TURTLE_MASTER_LONG: {
+    static String buildName(PotionType potion, String type, boolean includeLevel) {
+        return switch (potion.stringId()) {
+            case "minecraft:water" -> "Water " + type;
+            case "minecraft:mundane", "minecraft:long_mundane" -> "Mundane " + type;
+            case "minecraft:thick" -> "Thick " + type;
+            case "minecraft:awkward" -> "Awkward " + type;
+            case "minecraft:turtle_master", "minecraft:long_turtle_master", "minecraft:strong_turtle_master" -> {
                 String name = type + " of the Turtle Master";
                 if (!includeLevel) {
-                    return name;
+                    yield name;
                 }
-                Potion potion = Objects.requireNonNull(getPotion(potionId));
-                if (potion.getLevel() <= 1) {
-                    return name;
+
+                if (potion.level() <= 1) {
+                    yield name;
                 }
-                return name + " " + potion.getRomanLevel();
+
+                yield name + " " + potion.getRomanLevel();
             }
-            default: {
-                Potion potion = getPotion(potionId);
-                String finalName = potion != null ? potion.getPotionTypeName() : "";
+            default -> {
+                String finalName = potion.name();
                 if (finalName.isEmpty()) {
                     finalName = type;
                 } else {
                     finalName = type + " of " + finalName;
                 }
-                if (includeLevel && potion != null && potion.getLevel() > 1) {
+                if (includeLevel && potion.level() > 1) {
                     finalName += " " + potion.getRomanLevel();
                 }
-                return finalName;
+                yield finalName;
             }
-        }
+        };
     }
 
     @Override
@@ -135,7 +89,7 @@ public class ItemPotion extends Item {
         if (consumeEvent.isCancelled()) {
             return false;
         }
-        Potion potion = Potion.getPotion(this.getDamage()).setSplash(false);
+        PotionType potion = PotionType.get(this.getDamage());
 
         player.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, player.clone(), VibrationType.DRINKING));
 
@@ -146,24 +100,17 @@ public class ItemPotion extends Item {
         }
 
         if (potion != null) {
-            potion.applyPotion(player);
+            potion.applyEffects(player, false, 1);
         }
+        player.sendMessage(name);
         return true;
     }
 
-    public @Nullable Potion getPotion() {
-        return getPotion(getDamage());
+    public @Nullable PotionType getPotion() {
+        return PotionType.get(getDamage());
     }
 
-    public static ItemPotion fromPotion(Potion potion) {
-        return new ItemPotion(potion.getId());
-    }
-
-    static Potion getPotion(int damage) {
-        try {
-            return Potion.getPotion(damage);
-        } catch (ServerException ignored) {
-            return null;
-        }
+    public static ItemPotion fromPotion(PotionType potion) {
+        return new ItemPotion(potion.id());
     }
 }

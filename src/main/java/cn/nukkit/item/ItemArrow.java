@@ -1,7 +1,6 @@
 package cn.nukkit.item;
 
-import cn.nukkit.potion.Potion;
-import cn.nukkit.utils.ServerException;
+import cn.nukkit.entity.effect.PotionType;
 
 import javax.annotation.Nullable;
 
@@ -38,31 +37,18 @@ public class ItemArrow extends Item {
             return;
         }
 
-        final int potionId = type - 1;
-        switch (potionId) {
-            case Potion.WATER:
-                name = "Arrow of Splashing";
-                return;
-            case Potion.MUNDANE:
-            case Potion.MUNDANE_II:
-            case Potion.THICK:
-            case Potion.AWKWARD:
-                name = "Tipped Arrow";
-                return;
-            default:
-                name = ItemPotion.buildName(potionId, GENERIC_NAME, false);
-        }
+        PotionType potion = PotionType.get(type - 1);
+        this.name = switch (potion.stringId()) {
+            case "minecraft:water" -> "Arrow of Splashing";
+            case "minecraft:mundane", "minecraft:long_mundane", "minecraft:thick", "minecraft:awkward" -> "Tipped Arrow";
+            default -> ItemPotion.buildName(potion, GENERIC_NAME, false);
+        };
     }
 
-    public @Nullable Potion getTippedArrowPotion() {
+    public @Nullable PotionType getTippedArrowPotion() {
         final int damage = getDamage();
         if (damage > 0) {
-            try {
-                return Potion.getPotion(damage - 1);
-            } catch (ServerException ignored) {
-                // Not found
-                return null;
-            }
+            return PotionType.get(damage - 1);
         }
         return null;
     }

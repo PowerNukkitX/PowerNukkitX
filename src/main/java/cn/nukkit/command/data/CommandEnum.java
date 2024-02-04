@@ -4,12 +4,10 @@ import cn.nukkit.Server;
 import cn.nukkit.camera.data.CameraPreset;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
-import cn.nukkit.potion.Effect;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.Identifier;
 import com.google.common.collect.ImmutableList;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -65,12 +63,11 @@ public class CommandEnum {
 
         ENUM_ENTITY = new CommandEnum("Entity", Collections.emptyList());
 
-        List<String> effects = new ArrayList<>();
-        for (Field field : Effect.class.getDeclaredFields()) {
-            if (field.getType() == int.class && field.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL)) {
-                effects.add(field.getName().toLowerCase());
-            }
-        }
+        List<String> effects = Registries.EFFECT.getEffectStringId2TypeMap()
+                .keySet()
+                .stream()
+                .toList();
+
         ENUM_EFFECT = new CommandEnum("Effect", effects, false);
 
         ENUM_ENCHANTMENT = new CommandEnum("enchantmentName", () -> {

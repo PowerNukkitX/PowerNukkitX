@@ -25,6 +25,7 @@ import cn.nukkit.entity.item.EntityArmorStand;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.mob.EntityEnderDragon;
 import cn.nukkit.entity.projectile.EntityProjectile;
+import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.block.FarmLandDecayEvent;
 import cn.nukkit.event.entity.*;
@@ -67,7 +68,7 @@ import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.PropertySyncData;
 import cn.nukkit.plugin.Plugin;
-import cn.nukkit.potion.Effect;
+import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.tags.ItemTags;
@@ -79,7 +80,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiPredicate;
@@ -483,7 +486,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public final List<Entity> passengers = new ArrayList<>();
     public final AxisAlignedBB offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
     protected final Map<Integer, Player> hasSpawned = new ConcurrentHashMap<>();
-    protected final Map<Integer, Effect> effects = new ConcurrentHashMap<>();
+    protected final Map<EffectType, Effect> effects = new ConcurrentHashMap<>();
     protected final EntityMetadata dataProperties = new EntityMetadata()
             .putLong(DATA_FLAGS, 0)
             .putShort(DATA_AIR, 400)
@@ -847,7 +850,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (this.namedTag.contains("ActiveEffects")) {
             ListTag<CompoundTag> effects = this.namedTag.getList("ActiveEffects", CompoundTag.class);
             for (CompoundTag e : effects.getAll()) {
-                Effect effect = Effect.getEffect(e.getByte("Id"));
+                Effect effect = Effect.get(e.getByte("Id"));
                 if (effect == null) {
                     continue;
                 }
@@ -1157,53 +1160,93 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return riding;
     }
 
-    public Map<Integer, Effect> getEffects() {
+    public Map<EffectType, Effect> getEffects() {
         return effects;
     }
 
     public void removeAllEffects() {
-        for (Effect effect : this.effects.values()) {
-            this.removeEffect(effect.getId());
+        for (Effect effect : effects.values()) {
+            this.removeEffect(effect.getType());
         }
     }
 
-    public void removeEffect(int effectId) {
-        if (this.effects.containsKey(effectId)) {
-            Effect effect = this.effects.get(effectId);
-            this.effects.remove(effectId);
+    public void removeEffect(EffectType type) {
+        if (effects.containsKey(type)) {
+
+            Effect effect = effects.get(type);
+
+            EntityEffectRemoveEvent event = new EntityEffectRemoveEvent(this, effect);
+            Server.getInstance().getPluginManager().callEvent(event);
+
+            if (event.isCancelled()) {
+                return;
+            }
+
+            if (this instanceof Player player && effect.getId() != null) {
+                MobEffectPacket packet = new MobEffectPacket();
+                packet.eid = player.getId();
+                packet.effectId = effect.getId();
+                packet.eventId = MobEffectPacket.EVENT_REMOVE;
+                player.dataPacket(packet);
+            }
+
             effect.remove(this);
+            effects.remove(type);
 
             this.recalculateEffectColor();
         }
     }
 
-    public Effect getEffect(int effectId) {
-        return this.effects.getOrDefault(effectId, null);
+    public Effect getEffect(EffectType type) {
+        return effects.getOrDefault(type, null);
     }
 
-    public boolean hasEffect(int effectId) {
-        return this.effects.containsKey(effectId);
+    public boolean hasEffect(EffectType type) {
+        return effects.containsKey(type);
     }
 
     public void addEffect(Effect effect) {
         if (effect == null) {
-            return; //here add null means add nothing
-        }
-        Effect oldEffect = this.getEffect(effect.getId());
-        if (oldEffect != null && (Math.abs(effect.getAmplifier()) < Math.abs(oldEffect.getAmplifier()) ||
-                Math.abs(effect.getAmplifier()) == Math.abs(oldEffect.getAmplifier())
-                        && effect.getDuration() < oldEffect.getDuration())) {
             return;
         }
-        effect.add(this);
-        this.effects.put(effect.getId(), effect);
 
-        this.recalculateEffectColor();
+        Effect oldEffect = this.getEffect(effect.getType());
 
-        if (effect.getId() == Effect.HEALTH_BOOST) {
-            this.setHealth(this.getHealth() + 4 * (effect.getAmplifier() + 1));
+        EntityEffectUpdateEvent event = new EntityEffectUpdateEvent(this, oldEffect, effect);
+        Server.getInstance().getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) {
+            return;
         }
 
+        if (oldEffect != null && (
+                Math.abs(effect.getAmplifier()) < Math.abs(oldEffect.getAmplifier()) ||
+                (Math.abs(effect.getAmplifier()) == Math.abs(oldEffect.getAmplifier()) &&
+                effect.getDuration() < oldEffect.getDuration())
+        )) {
+            return;
+        }
+
+        if (this instanceof Player player && effect.getId() != null) {
+            MobEffectPacket packet = new MobEffectPacket();
+            packet.eid = player.getId();
+            packet.effectId = effect.getId();
+            packet.amplifier = effect.getAmplifier();
+            packet.particles = effect.isVisible();
+            packet.duration = effect.getDuration();
+            if (oldEffect != null) {
+                packet.eventId = MobEffectPacket.EVENT_MODIFY;
+            } else {
+                packet.eventId = MobEffectPacket.EVENT_ADD;
+            }
+
+            player.dataPacket(packet);
+        }
+
+        effect.add(this);
+        effects.put(effect.getType(), effect);
+
+        this.recalculateEffectColor();
     }
 
     public void recalculateBoundingBox() {
@@ -1237,13 +1280,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         int[] color = new int[3];
         int count = 0;
         boolean ambient = true;
-        for (Effect effect : this.effects.values()) {
+        for (Effect effect : effects.values()) {
             if (effect.isVisible()) {
-                int[] c = effect.getColor();
-                color[0] += c[0] * (effect.getAmplifier() + 1);
-                color[1] += c[1] * (effect.getAmplifier() + 1);
-                color[2] += c[2] * (effect.getAmplifier() + 1);
-                count += effect.getAmplifier() + 1;
+                Color effectColor = effect.getColor();
+                color[0] += effectColor.getRed() * effect.getLevel();
+                color[1] += effectColor.getGreen() * effect.getLevel();
+                color[2] += effectColor.getBlue() * effect.getLevel();
+                count += effect.getLevel();
                 if (!effect.isAmbient()) {
                     ambient = false;
                 }
@@ -1424,16 +1467,17 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public void sendPotionEffects(Player player) {
-        for (Effect effect : this.effects.values()) {
-            MobEffectPacket pk = new MobEffectPacket();
-            pk.eid = this.getId();
-            pk.effectId = effect.getId();
-            pk.amplifier = effect.getAmplifier();
-            pk.particles = effect.isVisible();
-            pk.duration = effect.getDuration();
-            pk.eventId = MobEffectPacket.EVENT_ADD;
-
-            player.dataPacket(pk);
+        for (Effect effect : effects.values()) {
+            if (effect.getId() != null) {
+                MobEffectPacket packet = new MobEffectPacket();
+                packet.eid = this.getId();
+                packet.effectId = effect.getId();
+                packet.amplifier = effect.getAmplifier();
+                packet.particles = effect.isVisible();
+                packet.duration = effect.getDuration();
+                packet.eventId = MobEffectPacket.EVENT_ADD;
+                player.dataPacket(packet);
+            }
         }
     }
 
@@ -1490,7 +1534,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      */
     public boolean attack(EntityDamageEvent source) {
         //火焰保护附魔实现
-        if (hasEffect(Effect.FIRE_RESISTANCE)
+        if (hasEffect(EffectType.FIRE_RESISTANCE)
                 && (source.getCause() == DamageCause.FIRE
                 || source.getCause() == DamageCause.FIRE_TICK
                 || source.getCause() == DamageCause.LAVA)) {
@@ -1552,9 +1596,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                     this.removeAllEffects();
                     this.setHealth(1);
 
-                    this.addEffect(Effect.getEffect(Effect.REGENERATION).setDuration(800).setAmplifier(1));
-                    this.addEffect(Effect.getEffect(Effect.FIRE_RESISTANCE).setDuration(800));
-                    this.addEffect(Effect.getEffect(Effect.ABSORPTION).setDuration(100).setAmplifier(1));
+                    this.addEffect(Effect.get(EffectType.REGENERATION).setDuration(800).setAmplifier(1));
+                    this.addEffect(Effect.get(EffectType.FIRE_RESISTANCE).setDuration(800));
+                    this.addEffect(Effect.get(EffectType.ABSORPTION).setDuration(100).setAmplifier(1));
 
                     EntityEventPacket pk = new EntityEventPacket();
                     pk.eid = this.getId();
@@ -1648,7 +1692,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public int getMaxHealth() {
-        return maxHealth + (this.hasEffect(Effect.HEALTH_BOOST) ? 4 * (this.getEffect(Effect.HEALTH_BOOST).getAmplifier() + 1) : 0);
+        return maxHealth;
     }
 
     public void setMaxHealth(int maxHealth) {
@@ -1792,12 +1836,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (!this.effects.isEmpty()) {
             for (Effect effect : this.effects.values()) {
                 if (effect.canTick()) {
-                    effect.applyEffect(this);
+                    effect.apply(this, 1);
                 }
                 effect.setDuration(effect.getDuration() - tickDiff);
 
                 if (effect.getDuration() <= 0) {
-                    this.removeEffect(effect.getId());
+                    this.removeEffect(effect.getType());
                 }
             }
         }
@@ -1822,7 +1866,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                     this.fireTicks = 0;
                 }
             } else {
-                if (!this.hasEffect(Effect.FIRE_RESISTANCE) && ((this.fireTicks % 20) == 0 || tickDiff > 20)) {
+                if (!this.hasEffect(EffectType.FIRE_RESISTANCE) && ((this.fireTicks % 20) == 0 || tickDiff > 20)) {
                     this.attack(new EntityDamageEvent(this, DamageCause.FIRE_TICK, 1));
                 }
                 this.fireTicks -= tickDiff;
@@ -2284,7 +2328,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public void fall(float fallDistance) {//todo: check why @param fallDistance always less than the real distance
-        if (this.hasEffect(Effect.SLOW_FALLING)) {
+        if (this.hasEffect(EffectType.SLOW_FALLING)) {
             return;
         }
 
@@ -2299,7 +2343,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         fallDistance = event.getFallDistance();
 
         if ((!this.isPlayer || level.getGameRules().getBoolean(GameRule.FALL_DAMAGE)) && down.useDefaultFallDamage()) {
-            int jumpBoost = this.hasEffect(Effect.JUMP_BOOST) ? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
+            int jumpBoost = this.hasEffect(EffectType.JUMP_BOOST) ? this.getEffect(EffectType.JUMP_BOOST).getLevel() : 0;
             float damage = fallDistance - 3 - jumpBoost;
 
             if (damage > 0) {

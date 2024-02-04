@@ -1,11 +1,11 @@
 package cn.nukkit;
 
 import cn.nukkit.entity.Attribute;
+import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.event.player.PlayerFoodLevelChangeEvent;
 import cn.nukkit.item.food.Food;
-import cn.nukkit.potion.Effect;
 
 /**
  * @author funcraft
@@ -112,7 +112,7 @@ public class PlayerFood {
     }
 
     public void exhaust(double amount) {
-        if (!this.isEnabled() || Server.getInstance().getDifficulty() == 0 || player.hasEffect(Effect.SATURATION)) {
+        if (!this.isEnabled() || Server.getInstance().getDifficulty() == 0 || player.hasEffect(EffectType.SATURATION)) {
             return;
         }
 
@@ -187,10 +187,6 @@ public class PlayerFood {
 
         if (this.food <= 6) {
             this.player.setSprinting(false);
-        }
-
-        if (player.hasEffect(Effect.HUNGER)) {
-            this.exhaust(0.1 * (this.player.getEffect(Effect.HUNGER).getAmplifier() + 1));
         }
     }
 

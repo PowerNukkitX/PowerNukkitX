@@ -9,8 +9,8 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityItem;
-import cn.nukkit.potion.Effect;
-import cn.nukkit.potion.InstantEffect;
+import cn.nukkit.entity.effect.Effect;
+import cn.nukkit.entity.effect.InstantEffect;
 
 import java.util.List;
 import java.util.Map;
@@ -52,7 +52,7 @@ public class EffectCommand extends Command {
                 Effect effect;
                 String str = list.getResult(1);
                 try {
-                    effect = Effect.getEffectByName(str);
+                    effect = Effect.get(str);
                 } catch (RuntimeException e) {
                     log.addError("commands.effect.notFound", str).output();
                     return 0;
@@ -88,11 +88,11 @@ public class EffectCommand extends Command {
                 int success = 0;
                 for (Entity entity : entities) {
                     if (duration == 0) {
-                        if (!entity.hasEffect(effect.getId())) {
+                        if (!entity.hasEffect(effect.getType())) {
                             log.addError("commands.effect.failure.notActive", effect.getName(), entity.getName()).output();
                             continue;
                         }
-                        entity.removeEffect(effect.getId());
+                        entity.removeEffect(effect.getType());
                         log.addSuccess("commands.effect.success.removed", effect.getName(), entity.getName()).output();
                     } else {
                         effect.setDuration(duration).setAmplifier(amplification);
@@ -107,12 +107,12 @@ public class EffectCommand extends Command {
             case "clear" -> {
                 int success = 0;
                 for (Entity entity : entities) {
-                    if (entity.getEffects().size() == 0) {
+                    if (entity.getEffects().isEmpty()) {
                         log.addError("commands.effect.failure.notActive.all", entity.getName());
                         continue;
                     }
                     for (Effect effect : entity.getEffects().values()) {
-                        entity.removeEffect(effect.getId());
+                        entity.removeEffect(effect.getType());
                     }
                     success++;
                     log.addSuccess("commands.effect.success.removed.all", entity.getName());

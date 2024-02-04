@@ -6,6 +6,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCampfire;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.item.EntitySplashPotion;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
@@ -28,7 +29,6 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.potion.Effect;
 import cn.nukkit.recipe.CampfireRecipe;
 import cn.nukkit.utils.Faceable;
 import lombok.extern.slf4j.Slf4j;
@@ -161,7 +161,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
             return;
         }
 
-        if (entity.hasEffect(Effect.FIRE_RESISTANCE)
+        if (entity.hasEffect(EffectType.FIRE_RESISTANCE)
                 || entity instanceof EntityProjectile
                 || !entity.attack(getDamageEvent(entity))
                 || !entity.isAlive()) {

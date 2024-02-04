@@ -3,6 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.mob.EntityMob;
 import cn.nukkit.event.block.ConduitActivateEvent;
 import cn.nukkit.event.block.ConduitDeactivateEvent;
@@ -13,7 +14,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.potion.Effect;
+import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.tags.BlockTags;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -151,7 +152,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         this.getLevel().getPlayers().values().stream()
                 .filter(this::canAffect)
                 .filter(p -> conduitPos.distanceSquared(p.x, p.z) <= radiusSquared)
-                .forEach(p -> p.addEffect(Effect.getEffect(Effect.CONDUIT_POWER)
+                .forEach(p -> p.addEffect(Effect.get(EffectType.CONDUIT_POWER)
                                 .setDuration(260)
                                 .setVisible(true)
                                 .setAmplifier(0)

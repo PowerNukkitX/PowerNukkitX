@@ -3,6 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.inventory.BeaconInventory;
 import cn.nukkit.inventory.EnchantInventory;
 import cn.nukkit.inventory.Inventory;
@@ -10,7 +11,7 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.potion.Effect;
+import cn.nukkit.entity.effect.Effect;
 
 import java.util.Map;
 
@@ -116,7 +117,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
 
                 if (getPrimaryPower() != 0) {
                     //Apply the primary power
-                    e = Effect.getEffect(getPrimaryPower());
+                    e = Effect.get(getPrimaryPower());
 
                     //Set duration
                     e.setDuration(duration * 20);
@@ -131,9 +132,9 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
                 }
 
                 //If we have a secondary power as regen, apply it
-                if (getPowerLevel() == POWER_LEVEL_MAX && getSecondaryPower() == Effect.REGENERATION) {
+                if (getPowerLevel() == POWER_LEVEL_MAX && getSecondaryPower() == EffectType.REGENERATION.id()) {
                     //Get the regen effect
-                    e = Effect.getEffect(Effect.REGENERATION);
+                    e = Effect.get(EffectType.REGENERATION);
 
                     //Set duration
                     e.setDuration(duration * 20);
@@ -247,7 +248,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
         }
 
         int secondary = nbt.getInt("secondary");
-        if (secondary != 0 && secondary != primary && secondary != Effect.REGENERATION) {
+        if (secondary != 0 && secondary != primary && secondary != EffectType.REGENERATION.id()) {
             return false;
         }
 
@@ -263,9 +264,9 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     }
 
     private static boolean isPrimaryAllowed(int primary, int powerLevel) {
-        return ((primary == Effect.SPEED || primary == Effect.HASTE) && powerLevel >= 1) ||
-                ((primary == Effect.DAMAGE_RESISTANCE || primary == Effect.JUMP) && powerLevel >= 2) ||
-                (primary == Effect.STRENGTH && powerLevel >= 3);
+        return ((primary == EffectType.SPEED.id() || primary == EffectType.HASTE.id()) && powerLevel >= 1) ||
+                ((primary == EffectType.RESISTANCE.id() || primary == EffectType.JUMP_BOOST.id()) && powerLevel >= 2) ||
+                (primary == EffectType.STRENGTH.id() && powerLevel >= 3);
     }
 
     @Override

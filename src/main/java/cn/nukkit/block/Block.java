@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -20,7 +21,7 @@ import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
-import cn.nukkit.potion.Effect;
+import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.BlockColor;
@@ -710,12 +711,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         int miningFatigueLevel = 0;
 
         if (player != null) {
-            hasConduitPower = player.hasEffect(Effect.CONDUIT_POWER);
+            hasConduitPower = player.hasEffect(EffectType.CONDUIT_POWER);
             hasAquaAffinity = Optional.ofNullable(player.getInventory().getHelmet().getEnchantment(Enchantment.ID_WATER_WORKER))
                     .map(Enchantment::getLevel).map(l -> l >= 1).orElse(false);
-            hasteEffectLevel = Optional.ofNullable(player.getEffect(Effect.HASTE))
+            hasteEffectLevel = Optional.ofNullable(player.getEffect(EffectType.HASTE))
                     .map(Effect::getAmplifier).orElse(0);
-            miningFatigueLevel = Optional.ofNullable(player.getEffect(Effect.MINING_FATIGUE))
+            miningFatigueLevel = Optional.ofNullable(player.getEffect(EffectType.MINING_FATIGUE))
                     .map(Effect::getAmplifier).orElse(0);
         }
 

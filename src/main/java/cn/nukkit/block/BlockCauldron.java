@@ -6,6 +6,7 @@ import cn.nukkit.block.property.enums.CauldronLiquid;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCauldron;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.entity.EntityCombustByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -22,7 +23,6 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
-import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
@@ -603,7 +603,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
             // Making sure the entity is actually alive and not invulnerable.
             if (getCauldronLiquid() == CauldronLiquid.LAVA && entity.isAlive() && entity.noDamageTicks == 0) {
                 entity.setOnFire(ev.getDuration());
-                if (!entity.hasEffect(Effect.FIRE_RESISTANCE)) {
+                if (!entity.hasEffect(EffectType.FIRE_RESISTANCE)) {
                     entity.attack(new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.LAVA, 4));
                 }
             } else if (entity.isAlive() && entity.isOnFire()) {
