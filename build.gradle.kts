@@ -9,6 +9,7 @@ import java.nio.file.StandardCopyOption
 plugins {
     `java-library`
     `maven-publish`
+    idea
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.freefair.lombok") version "8.4"
     id("com.gorylenko.gradle-git-properties") version "2.4.1"
@@ -40,6 +41,7 @@ dependencies {
     api(libs.snakeyaml)
 
     compileOnly(libs.lombok)
+    compileOnlyApi(libs.lombok)
     annotationProcessor(libs.lombok)
 
     implementation(libs.asm)
@@ -67,6 +69,14 @@ dependencies {
 java {
     withSourcesJar()
     withJavadocJar()
+}
+
+//Automatically download dependencies source code
+idea {
+    module {
+        isDownloadSources = true
+        isDownloadJavadoc = false
+    }
 }
 
 sourceSets {
