@@ -1,10 +1,12 @@
-package cn.nukkit.level.generator.object;
+package cn.nukkit.level.generator.object.legacytree;
 
 import cn.nukkit.block.*;
 import cn.nukkit.block.property.enums.TallGrassType;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.RandomSource;
+
+import java.util.Objects;
 
 import static cn.nukkit.block.property.CommonBlockProperties.TALL_GRASS_TYPE;
 
@@ -13,13 +15,14 @@ public class LegacyTallGrass {
         for (int i = 0; i < 128; ++i) {
             int num = 0;
 
+            //todo fix grass bug spawn
             int x = pos.getFloorX();
             int y = pos.getFloorY() + 1;
             int z = pos.getFloorZ();
 
             while (true) {
                 if (num >= i / 16) {
-                    if (level.getBlockIdAt(x, y, z) == Block.AIR) {
+                    if (Objects.equals(level.getBlockIdAt(x, y, z), Block.AIR)) {
                         if (random.nextInt(8) == 0) {
                             //porktodo: biomes have specific flower types that can grow in them
                             if (random.nextBoolean()) {
@@ -39,7 +42,7 @@ public class LegacyTallGrass {
                 y += random.nextInt(-1, 1) * random.nextInt(3) / 2;
                 z += random.nextInt(-1, 1);
 
-                if (level.getBlockIdAt(x, y - 1, z) != Block.GRASS || y > 255 || y < 0) {
+                if (!Objects.equals(level.getBlockIdAt(x, y - 1, z), Block.GRASS) || y > level.getMaxHeight() || y < level.getMinHeight()) {
                     break;
                 }
 

@@ -7,6 +7,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
 import java.util.Map;
@@ -167,6 +168,7 @@ public interface IChunk {
 
     BlockEntity getTile(int x, int y, int z);
 
+    @ApiStatus.Experimental
     void batchProcess(Consumer<UnsafeChunk> unsafeChunkConsumer);
 
     boolean isLoaded();

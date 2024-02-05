@@ -55,7 +55,7 @@ public class BlockWarpedFungus extends BlockFungus {
         if (ev.isCancelled()) {
             return false;
         }
-        blockManager.apply(ev.getBlockList());
+        blockManager.applySubChunkUpdate(ev.getBlockList());
         return true;
     }
 }

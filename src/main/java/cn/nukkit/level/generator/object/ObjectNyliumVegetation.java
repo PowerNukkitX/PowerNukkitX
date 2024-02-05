@@ -21,25 +21,25 @@ public class ObjectNyliumVegetation {
                         if (crimson) {
                             if (random.nextInt(8) == 0) {
                                 if (random.nextInt(8) == 0) {
-                                    level.setBlockAt(x, y, z, BlockID.WARPED_FUNGUS);
+                                    level.setBlockStateAt(x, y, z, BlockID.WARPED_FUNGUS);
                                 } else {
-                                    level.setBlockAt(x, y, z, BlockID.CRIMSON_FUNGUS);
+                                    level.setBlockStateAt(x, y, z, BlockID.CRIMSON_FUNGUS);
                                 }
                             } else {
-                                level.setBlockAt(x, y, z, BlockID.CRIMSON_ROOTS);
+                                level.setBlockStateAt(x, y, z, BlockID.CRIMSON_ROOTS);
                             }
                         } else {
                             if (random.nextInt(8) == 0) {
                                 if (random.nextInt(8) == 0) {
-                                    level.setBlockAt(x, y, z, BlockID.CRIMSON_FUNGUS);
+                                    level.setBlockStateAt(x, y, z, BlockID.CRIMSON_FUNGUS);
                                 } else {
-                                    level.setBlockAt(x, y, z, BlockID.WARPED_FUNGUS);
+                                    level.setBlockStateAt(x, y, z, BlockID.WARPED_FUNGUS);
                                 }
                             } else {
                                 if (random.nextBoolean()) {
-                                    level.setBlockAt(x, y, z, BlockID.WARPED_ROOTS);
+                                    level.setBlockStateAt(x, y, z, BlockID.WARPED_ROOTS);
                                 } else {
-                                    level.setBlockAt(x, y, z, BlockID.NETHER_SPROUTS);
+                                    level.setBlockStateAt(x, y, z, BlockID.NETHER_SPROUTS);
                                 }
                             }
                         }

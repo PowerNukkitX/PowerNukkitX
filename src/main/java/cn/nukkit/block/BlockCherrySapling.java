@@ -85,7 +85,7 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
             if (this.level.getBlock(vector3).getId().equals(BlockID.DIRT_WITH_ROOTS)) {
                 this.level.setBlock(vector3, Block.get(BlockID.DIRT));
             }
-            blockManager.apply(ev.getBlockList(), block -> !block.isAir());
+            blockManager.applySubChunkUpdate(ev.getBlockList(), block -> !block.isAir());
         }
     }
 

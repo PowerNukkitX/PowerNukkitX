@@ -1,13 +1,23 @@
 package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockAzaleaLeaves;
+import cn.nukkit.block.BlockAzaleaLeavesFlowered;
+import cn.nukkit.block.BlockDirtWithRoots;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockOakLog;
+import cn.nukkit.block.BlockState;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.RandomSource;
 
 public class ObjectAzaleaTree extends TreeGenerator {
 
-    private static final Block OAK_LOG = Block.get(BlockID.OAK_LOG);
+    private static final BlockState OAK_LOG = BlockOakLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS.createValue(BlockFace.Axis.Y));
+    private static final BlockState DIRT_WITH_ROOTS = BlockDirtWithRoots.PROPERTIES.getDefaultState();
+    private static final BlockState AZALEA_LEAVES_FLOWERED = BlockAzaleaLeavesFlowered.PROPERTIES.getDefaultState();
+    private static final BlockState AZALEA_LEAVES = BlockAzaleaLeaves.PROPERTIES.getDefaultState();
 
     @Override
     public boolean generate(BlockManager level, RandomSource rand, Vector3 position) {
@@ -69,9 +79,7 @@ public class ObjectAzaleaTree extends TreeGenerator {
 
     @Override
     protected void setDirtAt(BlockManager level, Vector3 pos) {
-        if (!level.getBlockIdAt((int) pos.x, (int) pos.y, (int) pos.z).equals(BlockID.DIRT_WITH_ROOTS)) {
-            level.setBlockAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), Block.get(BlockID.DIRT_WITH_ROOTS));
-        }
+        level.setBlockStateAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), DIRT_WITH_ROOTS);
     }
 
     private void placeLogAt(BlockManager worldIn, int x, int y, int z) {
@@ -79,7 +87,7 @@ public class ObjectAzaleaTree extends TreeGenerator {
         String material = worldIn.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
 
         if (material.equals(BlockID.AIR) || material.equals(BlockID.AZALEA_LEAVES) || material.equals(BlockID.AZALEA_LEAVES_FLOWERED)) {
-            worldIn.setBlockAt(blockpos, OAK_LOG);
+            worldIn.setBlockStateAt(blockpos, OAK_LOG);
         }
     }
 
@@ -89,9 +97,9 @@ public class ObjectAzaleaTree extends TreeGenerator {
 
         if (material.equals(BlockID.AIR)) {
             if (random.nextInt(3) == 1) {
-                worldIn.setBlockAt(blockpos, Block.get(BlockID.AZALEA_LEAVES_FLOWERED));
+                worldIn.setBlockStateAt(blockpos, AZALEA_LEAVES_FLOWERED);
             } else {
-                worldIn.setBlockAt(blockpos, Block.get(BlockID.AZALEA_LEAVES));
+                worldIn.setBlockStateAt(blockpos, AZALEA_LEAVES);
             }
         }
     }

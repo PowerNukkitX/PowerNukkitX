@@ -58,7 +58,7 @@ public abstract class BlockNylium extends BlockSolid {
     public boolean grow() {
         BlockManager blockManager = new BlockManager(this.level);
         ObjectNyliumVegetation.growVegetation(blockManager, this, new NukkitRandomSource());
-        blockManager.apply();
+        blockManager.applySubChunkUpdate();
         return true;
     }
 

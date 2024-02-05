@@ -12,12 +12,12 @@ public class ObjectSavannaTree extends TreeGenerator {
     /**
      * The metadata value of the wood to use in tree generation.
      */
-    private final Block TRUNK = BlockWood.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE, WoodType.ACACIA).toBlock();
+    private final BlockState TRUNK = BlockWood.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE, WoodType.ACACIA);
 
     /**
      * The metadata value of the leaves to use in tree generation.
      */
-    private final Block LEAF = BlockLeaves2.PROPERTIES.getBlockState(CommonBlockProperties.NEW_LEAF_TYPE, NewLeafType.ACACIA).toBlock();
+    private final BlockState LEAF = BlockLeaves2.PROPERTIES.getBlockState(CommonBlockProperties.NEW_LEAF_TYPE, NewLeafType.ACACIA);
 
     @Override
     public boolean generate(BlockManager level, RandomSource rand, Vector3 position) {
@@ -166,13 +166,13 @@ public class ObjectSavannaTree extends TreeGenerator {
     }
 
     private void placeLogAt(BlockManager worldIn, Vector3 pos) {
-        worldIn.setBlockAt(pos, TRUNK);
+        worldIn.setBlockStateAt(pos, TRUNK);
     }
 
     private void placeLeafAt(BlockManager worldIn, Vector3 pos) {
         String material = worldIn.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
         if (material.equals(Block.AIR) || material.equals(Block.LEAVES)) {
-            worldIn.setBlockAt(pos, LEAF);
+            worldIn.setBlockStateAt(pos, LEAF);
         }
     }
 }

@@ -37,7 +37,7 @@ public class LegacyBigSpruceTree extends LegacySpruceTree {
     @Override
     protected void placeTrunk(BlockManager level, int x, int y, int z, RandomSource random, int trunkHeight) {
         // The base dirt block
-        level.setBlockAt(x, y - 1, z, Block.get(Block.DIRT));
+        level.setBlockStateAt(x, y - 1, z, Block.DIRT);
         int radius = 2;
 
         for (int yy = 0; yy < trunkHeight; ++yy) {

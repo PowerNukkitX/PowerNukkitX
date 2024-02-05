@@ -2,6 +2,7 @@ package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockLeaves2;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockWood;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.NewLeafType;
@@ -18,12 +19,12 @@ public class ObjectDarkOakTree extends TreeGenerator {
     /**
      * The metadata value of the wood to use in tree generation.
      */
-    private final Block DARK_OAK_LOG = BlockWood.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE, WoodType.DARK_OAK).toBlock();
+    private final BlockState DARK_OAK_LOG = BlockWood.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE, WoodType.DARK_OAK);
 
     /**
      * The metadata value of the leaves to use in tree generation.
      */
-    private final Block DARK_OAK_LEAVES = BlockLeaves2.PROPERTIES.getBlockState(CommonBlockProperties.NEW_LEAF_TYPE, NewLeafType.DARK_OAK).toBlock();
+    private final BlockState DARK_OAK_LEAVES = BlockLeaves2.PROPERTIES.getBlockState(CommonBlockProperties.NEW_LEAF_TYPE, NewLeafType.DARK_OAK);
 
     @Override
     public boolean generate(BlockManager level, RandomSource rand, Vector3 position) {
@@ -169,7 +170,7 @@ public class ObjectDarkOakTree extends TreeGenerator {
 
     private void placeLogAt(BlockManager worldIn, Vector3 pos) {
         if (this.canGrowInto(worldIn.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()))) {
-            worldIn.setBlockAt(pos, DARK_OAK_LOG);
+            worldIn.setBlockStateAt(pos, DARK_OAK_LOG);
         }
     }
 
@@ -177,7 +178,7 @@ public class ObjectDarkOakTree extends TreeGenerator {
         Vector3 blockpos = new Vector3(x, y, z);
         String material = worldIn.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
         if (material.equals(Block.AIR)) {
-            worldIn.setBlockAt(blockpos, DARK_OAK_LEAVES);
+            worldIn.setBlockStateAt(blockpos, DARK_OAK_LEAVES);
         }
     }
 }

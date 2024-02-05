@@ -36,9 +36,7 @@ public abstract class TreeGenerator extends ObjectGenerator {
      * sets dirt at a specific location if it isn't already dirt
      */
     protected void setDirtAt(BlockManager level, Vector3 pos) {
-        if (!Objects.equals(level.getBlockIdAt((int) pos.x, (int) pos.y, (int) pos.z), Block.DIRT)) {
-            level.setBlockAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), Block.get(BlockID.DIRT));
-        }
+        level.setBlockStateAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), BlockID.DIRT);
     }
 }
 

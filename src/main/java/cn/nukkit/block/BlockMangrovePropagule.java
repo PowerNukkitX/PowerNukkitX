@@ -100,7 +100,7 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
         if (ev.isCancelled()) {
             return;
         }
-        chunkManager.apply(ev.getBlockList());
+        chunkManager.applySubChunkUpdate(ev.getBlockList());
         this.level.setBlock(this, Block.get(BlockID.AIR));
         if (this.level.getBlock(vector3).getId().equals(BlockID.DIRT_WITH_ROOTS)) {
             this.level.setBlock(vector3, Block.get(BlockID.DIRT));

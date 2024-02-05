@@ -25,12 +25,12 @@ public class NewJungleTree extends TreeGenerator {
     /**
      * The metadata value of the wood to use in tree generation.
      */
-    private final Block metaWood = BlockWood.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE, WoodType.JUNGLE).toBlock();
+    private final BlockState metaWood = BlockJungleLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS.createValue(BlockFace.Axis.Y));
 
     /**
      * The metadata value of the leaves to use in tree generation.
      */
-    private final Block metaLeaves = BlockLeaves.PROPERTIES.getBlockState(CommonBlockProperties.OLD_LEAF_TYPE, OldLeafType.JUNGLE).toBlock();
+    private final BlockState metaLeaves = BlockLeaves.PROPERTIES.getBlockState(CommonBlockProperties.OLD_LEAF_TYPE, OldLeafType.JUNGLE);
 
     public NewJungleTree(int minTreeHeight, int maxTreeHeight) {
         this.minTreeHeight = minTreeHeight;
@@ -44,7 +44,8 @@ public class NewJungleTree extends TreeGenerator {
         int i = rand.nextInt(maxTreeHeight) + this.minTreeHeight;
         boolean flag = true;
 
-        if (position.getY() >= 1 && position.getY() + i + 1 <= 256) {
+        //Check the height of the tree and if exist block in it
+        if (position.getY() >= level.getMinHeight() && position.getY() + i + 1 < level.getMaxHeight()) {
             for (int j = position.getY(); j <= position.getY() + 1 + i; ++j) {
                 int k = 1;
 
@@ -60,7 +61,7 @@ public class NewJungleTree extends TreeGenerator {
 
                 for (int l = position.getX() - k; l <= position.getX() + k && flag; ++l) {
                     for (int i1 = position.getZ() - k; i1 <= position.getZ() + k && flag; ++i1) {
-                        if (j >= 0 && j < 256) {
+                        if (j >= level.getMinHeight() && j < level.getMaxHeight()) {
                             pos2.setComponents(l, j, i1);
                             if (!this.canGrowInto(level.getBlockIdAt(pos2.x, pos2.y, pos2.z))) {
                                 flag = false;
@@ -78,9 +79,10 @@ public class NewJungleTree extends TreeGenerator {
                 BlockVector3 down = position.down();
                 String block = level.getBlockIdAt(down.x, down.y, down.z);
 
-                if ((block.equals(Block.GRASS) || block.equals(Block.DIRT) || block.equals(Block.FARMLAND)) && position.getY() < 256 - i - 1) {
+                if ((block.equals(Block.GRASS) || block.equals(Block.DIRT) || block.equals(Block.FARMLAND)) && position.getY() < level.getMaxHeight() - i - 1) {
                     this.setDirtAt(level, down);
 
+                    //Add leaves
                     for (int i3 = position.getY() - 3 + i; i3 <= position.getY() + i; ++i3) {
                         int i4 = i3 - (position.getY() + i);
                         int j1 = 1 - i4 / 2;
@@ -96,19 +98,21 @@ public class NewJungleTree extends TreeGenerator {
                                     String id = level.getBlockIdAt(blockpos.x, blockpos.y, blockpos.z);
 
                                     if (id.equals(Block.AIR) || id.equals(Block.LEAVES) || id.equals(Block.VINE)) {
-                                        level.setBlockAt(blockpos, metaLeaves);
+                                        level.setBlockStateAt(blockpos, metaLeaves);
                                     }
                                 }
                             }
                         }
                     }
 
+                    //Add vine
                     for (int j3 = 0; j3 < i; ++j3) {
                         BlockVector3 up = position.up(j3);
                         String id = level.getBlockIdAt(up.x, up.y, up.z);
 
                         if (id.equals(Block.AIR) || id.equals(Block.LEAVES) || id.equals(Block.VINE)) {
-                            level.setBlockAt(up, metaWood);
+                            //Add tree trunks
+                            level.setBlockStateAt(up, metaWood);
                             if (j3 > 0) {
                                 if (rand.nextInt(3) > 0 && isAirBlock(level, position.add(-1, j3, 0))) {
                                     this.addVine(level, position.add(-1, j3, 0), 8);
@@ -164,6 +168,7 @@ public class NewJungleTree extends TreeGenerator {
                         }
                     }
 
+                    //Add cocoa beans
                     if (rand.nextInt(5) == 0 && i > 5) {
                         for (int l3 = 0; l3 < 2; ++l3) {
                             for (BlockFace enumfacing : BlockFace.Plane.HORIZONTAL) {
@@ -199,7 +204,7 @@ public class NewJungleTree extends TreeGenerator {
         this.addVine(level, pos, meta);
         int i = 4;
 
-        for (pos = pos.down(); i > 0 && level.getBlockIdAt(pos.x, pos.y, pos.z).equals(Block.AIR); --i) {
+        for (pos = pos.down(); i > 0 && level.getBlockIdAt(pos.x, pos.y, pos.z).equals(BlockID.AIR); --i) {
             this.addVine(level, pos, meta);
             pos = pos.down();
         }

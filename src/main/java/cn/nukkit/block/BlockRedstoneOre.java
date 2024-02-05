@@ -59,8 +59,7 @@ public class BlockRedstoneOre extends BlockOre {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_TOUCH) { //type == Level.BLOCK_UPDATE_NORMAL ||
-            this.getLevel().setBlock(this, getLitBlock(), false, true);
-
+            this.getLevel().setBlock(this, getLitBlock(), true, true);
             return Level.BLOCK_UPDATE_WEAK;
         }
 

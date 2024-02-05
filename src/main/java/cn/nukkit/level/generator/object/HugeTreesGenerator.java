@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.RandomSource;
@@ -16,15 +17,15 @@ public abstract class HugeTreesGenerator extends TreeGenerator {
     /**
      * Sets the metadata for the wood blocks used
      */
-    protected final Block woodMetadata;
+    protected final BlockState woodMetadata;
 
     /**
      * Sets the metadata for the leaves used in huge trees
      */
-    protected final Block leavesMetadata;
+    protected final BlockState leavesMetadata;
     protected int extraRandomHeight;
 
-    public HugeTreesGenerator(int baseHeightIn, int extraRandomHeightIn, Block woodMetadataIn, Block leavesMetadataIn) {
+    public HugeTreesGenerator(int baseHeightIn, int extraRandomHeightIn, BlockState woodMetadataIn, BlockState leavesMetadataIn) {
         this.baseHeight = baseHeightIn;
         this.extraRandomHeight = extraRandomHeightIn;
         this.woodMetadata = woodMetadataIn;
@@ -119,7 +120,7 @@ public abstract class HugeTreesGenerator extends TreeGenerator {
                     String id = worldIn.getBlockIdAt((int) blockpos.x, (int) blockpos.y, (int) blockpos.z);
 
                     if (Objects.equals(id, Block.AIR) || Objects.equals(id, Block.LEAVES)) {
-                        worldIn.setBlockAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ(), this.leavesMetadata);
+                        worldIn.setBlockStateAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ(), this.leavesMetadata);
                     }
                 }
             }
@@ -139,7 +140,7 @@ public abstract class HugeTreesGenerator extends TreeGenerator {
                     String id = worldIn.getBlockIdAt((int) blockpos.x, (int) blockpos.y, (int) blockpos.z);
 
                     if (Objects.equals(id, Block.AIR) || Objects.equals(id, Block.LEAVES)) {
-                        worldIn.setBlockAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ(), this.leavesMetadata);
+                        worldIn.setBlockStateAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ(), this.leavesMetadata);
                     }
                 }
             }

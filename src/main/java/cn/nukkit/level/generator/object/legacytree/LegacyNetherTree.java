@@ -56,7 +56,7 @@ public abstract class LegacyNetherTree extends LegacyTreeGenerator {
                     }
                     Block block = level.getBlockAt(xx, yy, zz);
                     if (!block.isSolid()) {
-                        if (random.nextInt(20) == 0) level.setBlockAt(xx, yy, zz, Block.get(Block.SHROOMLIGHT));
+                        if (random.nextInt(20) == 0) level.setBlockStateAt(xx, yy, zz, Block.SHROOMLIGHT);
                         else level.setBlockStateAt(xx, yy, zz, this.getLeafBlockState());
                     }
                 }
@@ -71,7 +71,7 @@ public abstract class LegacyNetherTree extends LegacyTreeGenerator {
                     }
                     Block block = level.getBlockAt(xx, yy, zz);
                     if (!block.isSolid()) {
-                        if (random.nextInt(20) == 0) level.setBlockAt(xx, yy, zz, Block.get(Block.SHROOMLIGHT));
+                        if (random.nextInt(20) == 0) level.setBlockStateAt(xx, yy, zz, Block.SHROOMLIGHT);
                         else level.setBlockStateAt(xx, yy, zz, this.getLeafBlockState());
                     }
                 }

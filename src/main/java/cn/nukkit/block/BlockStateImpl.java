@@ -160,8 +160,6 @@ record BlockStateImpl(String identifier,
     public String toString() {
         return "BlockStateImpl{" +
                 "identifier='" + identifier + '\'' +
-                ", blockhash=" + blockhash +
-                ", specialValue=" + specialValue +
                 ", blockPropertyValues=" + Arrays.stream(blockPropertyValues).map(BlockPropertyType.BlockPropertyValue::getValue).toList() +
                 '}';
     }

@@ -157,11 +157,11 @@ public class BlockLadder extends BlockTransparent implements Faceable {
     }
 
     private boolean isSupportValid(Block support, BlockFace face) {
-        if (support instanceof BlockGlassStained || support instanceof BlockBlackStainedGlassPane) return false;
-        return switch (support.getId()) {
-            case GLASS, GLASS_PANE, BEACON -> false;
-            default -> BlockLever.isSupportValid(support, face);
-        };
+        if (support instanceof BlockGlassStained || support instanceof BlockBlackStainedGlassPane
+        || support instanceof BlockLeaves
+        ) return false;
+        if(support.getId().equals(BlockID.BEACON)) return false;
+        return BlockLever.isSupportValid(support, face);
     }
 
     @Override
@@ -190,7 +190,7 @@ public class BlockLadder extends BlockTransparent implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
+        return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION)).getOpposite();
     }
 
     @Override

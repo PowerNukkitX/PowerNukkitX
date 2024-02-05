@@ -2,15 +2,20 @@ package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockMangroveLeaves;
+import cn.nukkit.block.BlockMangroveLog;
 import cn.nukkit.block.BlockMangrovePropagule;
-import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.block.BlockMangroveRoots;
+import cn.nukkit.block.BlockState;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.RandomSource;
 
 public class ObjectMangroveTree extends TreeGenerator {
-
-    private static final Block LOG = Block.get(BlockID.MANGROVE_LOG);
-    private static final Block ROOTS = Block.get(BlockID.MANGROVE_ROOTS);
+    private static final BlockState LOG = BlockMangroveLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS.createValue(BlockFace.Axis.Y));
+    private static final BlockState ROOTS = BlockMangroveRoots.PROPERTIES.getDefaultState();
+    private static final BlockState MANGROVE_LEAVES = BlockMangroveLeaves.PROPERTIES.getDefaultState();
 
     @Override
     public boolean generate(BlockManager level, RandomSource rand, Vector3 position) {
@@ -82,7 +87,7 @@ public class ObjectMangroveTree extends TreeGenerator {
         Vector3 blockpos = new Vector3(x, y, z);
         String material = worldIn.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
         if (material == Block.AIR || material == Block.MANGROVE_LEAVES || material == Block.MANGROVE_PROPAGULE) {
-            worldIn.setBlockAt(blockpos, LOG);
+            worldIn.setBlockStateAt(blockpos, LOG);
         }
     }
 
@@ -90,7 +95,7 @@ public class ObjectMangroveTree extends TreeGenerator {
         Vector3 blockpos = new Vector3(x, y, z);
         String material = worldIn.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
         if (material == Block.AIR || material == Block.MANGROVE_LEAVES || material == Block.MANGROVE_PROPAGULE) {
-            worldIn.setBlockAt(blockpos, ROOTS);
+            worldIn.setBlockStateAt(blockpos, ROOTS);
         }
     }
 
@@ -98,7 +103,7 @@ public class ObjectMangroveTree extends TreeGenerator {
         Vector3 blockpos = new Vector3(x, y, z);
         Block material = worldIn.getBlockAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
         if (material.isAir() || (material instanceof BlockMangrovePropagule propagule && propagule.isHanging())) {
-            worldIn.setBlockAt(blockpos, Block.get(BlockID.MANGROVE_LEAVES));
+            worldIn.setBlockStateAt(blockpos, MANGROVE_LEAVES);
             if (random.nextInt(7) == 0) {
                 placePropaguleAt(worldIn, blockpos.getFloorX(), blockpos.getFloorY() - 1, blockpos.getFloorZ());
             }

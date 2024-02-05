@@ -13,6 +13,7 @@ import it.unimi.dsi.fastutil.longs.LongArrayFIFOQueue;
 import it.unimi.dsi.fastutil.longs.LongComparator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.ApiStatus;
 
 @Slf4j
 public final class PlayerChunkManager {
@@ -62,8 +63,14 @@ public final class PlayerChunkManager {
         loadAndSendQueuedChunks();
     }
 
+    @ApiStatus.Internal
     public LongOpenHashSet getUsedChunks() {
         return sentChunks;
+    }
+
+    @ApiStatus.Internal
+    public LongOpenHashSet getInRadiusChunks() {
+        return inRadiusChunks;
     }
 
     private void updateInRadiusChunks(BlockVector3 currentPos) {

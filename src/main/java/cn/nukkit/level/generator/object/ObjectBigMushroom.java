@@ -173,7 +173,7 @@ public class ObjectBigMushroom extends ObjectGenerator {
 
                                     if (!(Block.get(level.getBlockIdAt(blockPos.getFloorX(), blockPos.getFloorY(), blockPos.getFloorZ())) instanceof BlockSolid)) {
                                         mushroom.setPropertyValue(CommonBlockProperties.HUGE_MUSHROOM_BITS, meta);
-                                        level.setBlockAt(blockPos, mushroom);
+                                        level.setBlockStateAt(blockPos, mushroom.getBlockState());
                                     }
                                 }
                             }
@@ -186,7 +186,7 @@ public class ObjectBigMushroom extends ObjectGenerator {
 
                         if (!(Block.get(identifier) instanceof BlockSolid)) {
                             mushroom.setPropertyValue(CommonBlockProperties.HUGE_MUSHROOM_BITS, STEM);
-                            level.setBlockAt(pos, mushroom);
+                            level.setBlockStateAt(pos, mushroom.getBlockState());
                         }
                     }
 

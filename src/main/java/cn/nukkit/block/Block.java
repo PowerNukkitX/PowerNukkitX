@@ -904,7 +904,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @Override
     public String toString() {
-        return this.blockstate.toString() + (isValid() ? " at " + super.toString() : "");
+        return this.blockstate.toString() + " at " + super.toString();
     }
 
     public boolean collidesWithBB(AxisAlignedBB bb) {

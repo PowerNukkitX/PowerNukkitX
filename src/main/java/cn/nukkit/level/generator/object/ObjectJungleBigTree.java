@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockVine;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.MathHelper;
@@ -12,7 +13,7 @@ import java.util.Objects;
 import static cn.nukkit.block.property.CommonBlockProperties.VINE_DIRECTION_BITS;
 
 public class ObjectJungleBigTree extends HugeTreesGenerator {
-    public ObjectJungleBigTree(int baseHeightIn, int extraRandomHeight, Block woodMetadata, Block leavesMetadata) {
+    public ObjectJungleBigTree(int baseHeightIn, int extraRandomHeight, BlockState woodMetadata, BlockState leavesMetadata) {
         super(baseHeightIn, extraRandomHeight, woodMetadata, leavesMetadata);
     }
 
@@ -33,7 +34,7 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
                 for (int i1 = 0; i1 < 5; ++i1) {
                     k = (int) (position.getX() + (1.5F + MathHelper.cos(f) * (float) i1));
                     l = (int) (position.getZ() + (1.5F + MathHelper.sin(f) * (float) i1));
-                    level.setBlockAt(new BlockVector3(k, j - 3 + i1 / 2, l), this.woodMetadata);
+                    level.setBlockStateAt(new BlockVector3(k, j - 3 + i1 / 2, l), this.woodMetadata);
                 }
 
                 int j2 = 1 + rand.nextInt(2);
@@ -48,7 +49,7 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
                 Vector3 blockpos = position.up(i2);
 
                 if (this.canGrowInto(level.getBlockIdAt((int) blockpos.x, (int) blockpos.y, (int) blockpos.z))) {
-                    level.setBlockAt((int) blockpos.x, (int) blockpos.y, (int) blockpos.z, this.woodMetadata);
+                    level.setBlockStateAt((int) blockpos.x, (int) blockpos.y, (int) blockpos.z, this.woodMetadata);
                     if (i2 > 0) {
                         this.placeVine(level, rand, blockpos.west(), 8);
                         this.placeVine(level, rand, blockpos.north(), 1);
@@ -59,7 +60,7 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
                     Vector3 blockpos1 = blockpos.east();
 
                     if (this.canGrowInto(level.getBlockIdAt((int) blockpos1.x, (int) blockpos1.y, (int) blockpos1.z))) {
-                        level.setBlockAt((int) blockpos1.x, (int) blockpos1.y, (int) blockpos1.z, this.woodMetadata);
+                        level.setBlockStateAt((int) blockpos1.x, (int) blockpos1.y, (int) blockpos1.z, this.woodMetadata);
 
                         if (i2 > 0) {
                             this.placeVine(level, rand, blockpos1.east(), 2);
@@ -70,7 +71,7 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
                     Vector3 blockpos2 = blockpos.south().east();
 
                     if (this.canGrowInto(level.getBlockIdAt((int) blockpos2.x, (int) blockpos2.y, (int) blockpos2.z))) {
-                        level.setBlockAt((int) blockpos2.x, (int) blockpos2.y, (int) blockpos2.z, this.woodMetadata);
+                        level.setBlockStateAt((int) blockpos2.x, (int) blockpos2.y, (int) blockpos2.z, this.woodMetadata);
 
                         if (i2 > 0) {
                             this.placeVine(level, rand, blockpos2.east(), 2);
@@ -81,7 +82,7 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
                     Vector3 blockpos3 = blockpos.south();
 
                     if (this.canGrowInto(level.getBlockIdAt((int) blockpos3.x, (int) blockpos3.y, (int) blockpos3.z))) {
-                        level.setBlockAt((int) blockpos3.x, (int) blockpos3.y, (int) blockpos3.z, this.woodMetadata);
+                        level.setBlockStateAt((int) blockpos3.x, (int) blockpos3.y, (int) blockpos3.z, this.woodMetadata);
 
                         if (i2 > 0) {
                             this.placeVine(level, rand, blockpos3.west(), 8);
@@ -97,8 +98,8 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
 
     private void placeVine(BlockManager level, RandomSource random, Vector3 pos, int meta) {
         if (random.nextInt(3) > 0 && Objects.equals(level.getBlockIdAt((int) pos.x, (int) pos.y, (int) pos.z), Block.AIR)) {
-            Block block = new BlockVine().setPropertyValue(VINE_DIRECTION_BITS, meta);
-            level.setBlockAt(pos, block);
+            BlockState block = BlockVine.PROPERTIES.getBlockState(VINE_DIRECTION_BITS, meta);
+            level.setBlockStateAt(pos, block);
         }
     }
 

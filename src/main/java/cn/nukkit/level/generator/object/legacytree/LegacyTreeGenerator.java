@@ -97,7 +97,7 @@ public abstract class LegacyTreeGenerator {
 
     protected void placeTrunk(BlockManager level, int x, int y, int z, RandomSource random, int trunkHeight) {
         // The base dirt block
-        level.setBlockAt(x, y - 1, z, Block.get(Block.DIRT));
+        level.setBlockStateAt(x, y - 1, z, Block.DIRT);
 
         for (int yy = 0; yy < trunkHeight; ++yy) {
             String blockId = level.getBlockIdAt(x, y + yy, z);

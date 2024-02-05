@@ -33,7 +33,8 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
     public static final BlockProperties PROPERTIES = new BlockProperties(SAPLING, CommonBlockProperties.AGE_BIT, SAPLING_TYPE);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -135,8 +136,8 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
                 if ((vector2 = this.findSaplings(WoodType.JUNGLE)) != null) {
                     vector3 = this.add(vector2.getFloorX(), 0, vector2.getFloorY());
                     generator = new ObjectJungleBigTree(10, 20,
-                            new BlockWood().setPropertyValue(CommonBlockProperties.WOOD_TYPE, WoodType.JUNGLE),
-                            new BlockLeaves().setPropertyValue(CommonBlockProperties.OLD_LEAF_TYPE, OldLeafType.JUNGLE)
+                            BlockJungleLog.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE, WoodType.JUNGLE),
+                            BlockLeaves.PROPERTIES.getBlockState(CommonBlockProperties.OLD_LEAF_TYPE, OldLeafType.JUNGLE)
                     );
                     bigTree = true;
                 }
@@ -193,9 +194,10 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
                 if (this.level.getBlock(vector3).getId().equals(BlockID.DIRT_WITH_ROOTS)) {
                     this.level.setBlock(vector3, Block.get(BlockID.DIRT));
                 }
-                for (Block block : ev.getBlockList()) {
-                    this.level.setBlock(block, block);
-                }
+                blockManager.applySubChunkUpdate(ev.getBlockList());
+//                for (Block block : ev.getBlockList()) {
+//                    this.level.setBlock(block, block);
+//                }
                 return;
         }
 
@@ -227,9 +229,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
         if (this.level.getBlock(vector3).getId().equals(BlockID.DIRT_WITH_ROOTS)) {
             this.level.setBlock(vector3, Block.get(BlockID.DIRT));
         }
-        for (Block block : ev.getBlockList()) {
-            this.level.setBlock(block, block);
-        }
+        blockManager.applySubChunkUpdate(ev.getBlockList());
     }
 
     private Vector2 findSaplings(WoodType type) {
