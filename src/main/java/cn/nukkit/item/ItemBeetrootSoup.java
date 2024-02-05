@@ -3,7 +3,7 @@ package cn.nukkit.item;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class ItemBeetrootSoup extends ItemEdible {
+public class ItemBeetrootSoup extends ItemFood {
 
     public ItemBeetrootSoup() {
         this(0, 1);
@@ -20,5 +20,15 @@ public class ItemBeetrootSoup extends ItemEdible {
     @Override
     public int getMaxStackSize() {
         return 1;
+    }
+
+    @Override
+    public int getFoodRestore() {
+        return 6;
+    }
+
+    @Override
+    public float getSaturationRestore() {
+        return 7.2F;
     }
 }

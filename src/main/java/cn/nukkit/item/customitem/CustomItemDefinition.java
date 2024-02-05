@@ -5,7 +5,6 @@ import cn.nukkit.item.customitem.data.DigProperty;
 import cn.nukkit.item.customitem.data.CreativeCategory;
 import cn.nukkit.item.customitem.data.CreativeGroup;
 import cn.nukkit.item.customitem.data.RenderOffsets;
-import cn.nukkit.item.food.Food;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
@@ -85,7 +84,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
      *
      * @param item the item
      */
-    public static CustomItemDefinition.EdibleBuilder edibleBuilder(ItemCustomEdible item) {
+    public static CustomItemDefinition.EdibleBuilder edibleBuilder(ItemCustomFood item) {
         return new CustomItemDefinition.EdibleBuilder(item);
     }
 
@@ -725,16 +724,16 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
     }
 
     public static class EdibleBuilder extends SimpleBuilder {
-        private EdibleBuilder(ItemCustomEdible item) {
+        private EdibleBuilder(ItemCustomFood item) {
             super(item);
-            var food = Food.registerFood(item.getFood().getValue(), item.getFood().getKey());
+
             if (this.nbt.getCompound("components").contains("minecraft:food")) {
-                this.nbt.getCompound("components").getCompound("minecraft:food").putBoolean("can_always_eat", item.canAlwaysEat());
+                this.nbt.getCompound("components").getCompound("minecraft:food").putBoolean("can_always_eat", item.isRequiresHunger());
             } else {
-                this.nbt.getCompound("components").putCompound("minecraft:food", new CompoundTag().putBoolean("can_always_eat", item.canAlwaysEat()));
+                this.nbt.getCompound("components").putCompound("minecraft:food", new CompoundTag().putBoolean("can_always_eat", item.isRequiresHunger()));
             }
 
-            int eatingtick = food.getEatingTickSupplier() == null ? food.getEatingTick() : food.getEatingTickSupplier().getAsInt();
+            int eatingtick = item.getEatingTicks();
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
                     .putInt("use_duration", eatingtick)

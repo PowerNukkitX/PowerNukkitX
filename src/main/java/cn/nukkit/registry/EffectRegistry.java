@@ -25,6 +25,7 @@ public class EffectRegistry implements IRegistry<EffectType, Effect, Class<? ext
         register0(EffectType.INSTANT_HEALTH, EffectInstantHealth.class);
         register0(EffectType.INSTANT_DAMAGE, EffectInstantDamage.class);
         register0(EffectType.JUMP_BOOST, EffectJumpBoost.class);
+        register0(EffectType.NAUSEA, EffectNausea.class);
         register0(EffectType.REGENERATION, EffectRegeneration.class);
         register0(EffectType.RESISTANCE, EffectResistance.class);
         register0(EffectType.FIRE_RESISTANCE, EffectFireResistance.class);
