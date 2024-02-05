@@ -1332,7 +1332,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         for (SyncEntityPropertyPacket pk : EntityProperty.getPacketCache()) {
             this.dataPacket(pk);
         }
-
         //写入自定义物品数据
         ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
         if (!Registries.ITEM.getCustomItemDefinition().isEmpty()) {
@@ -1340,9 +1339,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             int i = 0;
             for (var entry : Registries.ITEM.getCustomItemDefinition().entrySet()) {
                 try {
-                    CompoundTag data = entry.getValue().nbt();
-                    data.putShort("minecraft:identifier", i);
-                    entries.put(i, new ItemComponentPacket.Entry(entry.getKey(), data));
+                    entries.put(i, new ItemComponentPacket.Entry(entry.getKey(), entry.getValue().nbt()));
                     i++;
                 } catch (Exception e) {
                     log.error("ItemComponentPacket encoding error", e);

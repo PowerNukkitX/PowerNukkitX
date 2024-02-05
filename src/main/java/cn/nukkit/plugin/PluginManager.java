@@ -88,7 +88,7 @@ public class PluginManager {
             file = new File(".");
         }
         PluginDescription description = new PluginDescription(info);
-        plugin.init(pluginLoader, server, description, new File("PowerNukkitX"), file);
+        plugin.init(pluginLoader, this.getClass().getClassLoader(), server, description, new File("PowerNukkitX"), file);
         plugins.put(description.getName(), plugin);
         enablePlugin(plugin);
     }

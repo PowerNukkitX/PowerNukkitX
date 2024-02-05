@@ -24,6 +24,7 @@ import cn.nukkit.item.enchantment.trident.EnchantmentTridentImpaling;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentLoyalty;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentRiptide;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.registry.RegisterException;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.Identifier;
@@ -373,15 +374,21 @@ public abstract class Enchantment implements Cloneable {
                 methodVisitor.visitLabel(label0);
                 methodVisitor.visitLineNumber(5, label0);
                 methodVisitor.visitVarInsn(ALOAD, 0);
-                methodVisitor.visitLdcInsn(identifier.toString());
+                methodVisitor.visitLdcInsn(identifier.toString() + i);
                 methodVisitor.visitMethodInsn(INVOKESPECIAL, "cn/nukkit/item/customitem/ItemCustomBookEnchanted", "<init>", "(Ljava/lang/String;)V", false);
                 Label label1 = new Label();
                 methodVisitor.visitLabel(label1);
                 methodVisitor.visitLineNumber(6, label1);
-                methodVisitor.visitInsn(RETURN);
+                methodVisitor.visitVarInsn(ALOAD, 0);
+                methodVisitor.visitLdcInsn(name);
+                methodVisitor.visitFieldInsn(PUTFIELD, "cn/nukkit/item/customitem/" + className, "name", "Ljava/lang/String;");
                 Label label2 = new Label();
                 methodVisitor.visitLabel(label2);
-                methodVisitor.visitLocalVariable("this", "Lcn/nukkit/item/customitem/" + className + ";", null, label0, label2, 0);
+                methodVisitor.visitLineNumber(7, label2);
+                methodVisitor.visitInsn(RETURN);
+                Label label3 = new Label();
+                methodVisitor.visitLabel(label3);
+                methodVisitor.visitLocalVariable("this", "Lcn/nukkit/item/customitem/" + className + ";", null, label0, label3, 0);
                 methodVisitor.visitMaxs(2, 1);
                 methodVisitor.visitEnd();
             }
@@ -389,7 +396,7 @@ public abstract class Enchantment implements Cloneable {
             BOOK_NUMBER++;
             try {
                 Class<? extends Item> clazz = (Class<? extends Item>) loadClass(Thread.currentThread().getContextClassLoader(), "cn.nukkit.item.customitem." + className, classWriter.toByteArray());
-                Registries.ITEM.registerCustomItem(clazz);
+                Registries.ITEM.registerCustomItem(InternalPlugin.INSTANCE, clazz);
             } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
                      IllegalAccessException | AssertionError | RegisterException e) {
                 return new OK<>(false, e);

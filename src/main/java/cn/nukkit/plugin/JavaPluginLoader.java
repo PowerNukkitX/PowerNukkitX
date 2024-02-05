@@ -42,7 +42,7 @@ public class JavaPluginLoader implements PluginLoader {
             log.info(this.server.getLanguage().tr("nukkit.plugin.load", description.getFullName()));
             File dataFolder = new File(file.getParentFile(), description.getName());
             if (dataFolder.exists() && !dataFolder.isDirectory()) {
-                throw new IllegalStateException("Projected dataFolder '" + dataFolder.toString() + "' for " + description.getName() + " exists and is not a directory");
+                throw new IllegalStateException("Projected dataFolder '" + dataFolder + "' for " + description.getName() + " exists and is not a directory");
             }
 
             String className = description.getMain();
@@ -50,7 +50,7 @@ public class JavaPluginLoader implements PluginLoader {
             this.classLoaders.put(description.getName(), classLoader);
             PluginBase plugin;
             try {
-                Class javaClass = classLoader.loadClass(className);
+                Class<?> javaClass = classLoader.loadClass(className);
 
                 if (!PluginBase.class.isAssignableFrom(javaClass)) {
                     throw new PluginException("Main class `" + description.getMain() + "' does not extend PluginBase");
@@ -60,7 +60,7 @@ public class JavaPluginLoader implements PluginLoader {
                     Class<PluginBase> pluginClass = (Class<PluginBase>) javaClass.asSubclass(PluginBase.class);
 
                     plugin = pluginClass.newInstance();
-                    this.initPlugin(plugin, description, dataFolder, file);
+                    this.initPlugin(plugin, classLoader, description, dataFolder, file);
 
                     return plugin;
                 } catch (ClassCastException e) {
@@ -110,8 +110,8 @@ public class JavaPluginLoader implements PluginLoader {
         return new Pattern[]{Pattern.compile("^.+\\.jar$")};
     }
 
-    private void initPlugin(PluginBase plugin, PluginDescription description, File dataFolder, File file) {
-        plugin.init(this, this.server, description, dataFolder, file);
+    private void initPlugin(PluginBase plugin, ClassLoader classLoader, PluginDescription description, File dataFolder, File file) {
+        plugin.init(this, classLoader, this.server, description, dataFolder, file);
         plugin.onLoad();
     }
 
@@ -126,8 +126,7 @@ public class JavaPluginLoader implements PluginLoader {
         }
     }
 
-    
-    
+
     @Override
     public void disablePlugin(Plugin plugin) {
         if (plugin instanceof PluginBase && plugin.isEnabled()) {

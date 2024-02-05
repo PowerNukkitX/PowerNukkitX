@@ -99,11 +99,11 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
     }
 
     public int getRuntimeId() {
-        return CustomItemDefinition.INTERNAL_ALLOCATION_ID_MAP.get(identifier);
+        return CustomItemDefinition.INTERNAL_ALLOCATION_ID_MAP.getInt(identifier);
     }
 
     public static int getRuntimeId(String identifier) {
-        return CustomItemDefinition.INTERNAL_ALLOCATION_ID_MAP.get(identifier);
+        return CustomItemDefinition.INTERNAL_ALLOCATION_ID_MAP.getInt(identifier);
     }
 
     public static class SimpleBuilder {
@@ -131,13 +131,13 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         }
 
         public SimpleBuilder texture(String texture) {
-            Preconditions.checkArgument(texture.isBlank());
+            Preconditions.checkArgument(!texture.isBlank(), "texture name is blank");
             this.texture = texture;
             return this;
         }
 
         public SimpleBuilder name(String name) {
-            Preconditions.checkArgument(name.isBlank());
+            Preconditions.checkArgument(!name.isBlank(), "name is blank");
             this.name = name;
             return this;
         }

@@ -314,10 +314,8 @@ public final class ClientChainData implements LoginChainData {
             // chain expiry check
             Object chainExpiresObj = payload.get("exp");
             long chainExpires;
-            if (chainExpiresObj instanceof Long) {
-                chainExpires = (Long) chainExpiresObj;
-            } else if (chainExpiresObj instanceof Integer) {
-                chainExpires = (Integer) chainExpiresObj;
+            if (chainExpiresObj instanceof Number number) {
+                chainExpires = number.longValue();
             } else {
                 throw new RuntimeException("Unsupported expiry time format");
             }

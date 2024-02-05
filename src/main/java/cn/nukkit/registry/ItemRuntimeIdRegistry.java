@@ -7,9 +7,11 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -20,6 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer> {
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
     private static final Object2IntOpenHashMap<String> REGISTRY = new Object2IntOpenHashMap<>();
+    private static final Object2ObjectOpenHashMap<String, RuntimeEntry> CUSTOM_REGISTRY = new Object2ObjectOpenHashMap<>();
 
     static {
         REGISTRY.defaultReturnValue(Integer.MAX_VALUE);
@@ -34,11 +37,16 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
 
     private void generatePalette() {
         BinaryStream paletteBuffer = new BinaryStream();
-        paletteBuffer.putUnsignedVarInt(REGISTRY.size());
+        paletteBuffer.putUnsignedVarInt(REGISTRY.size() + CUSTOM_REGISTRY.size());
         for (var entry : REGISTRY.object2IntEntrySet()) {
             paletteBuffer.putString(entry.getKey());
             paletteBuffer.putLShort(entry.getIntValue());
             paletteBuffer.putBoolean(false); //Vanilla Item doesnt component item
+        }
+        for (var entry : CUSTOM_REGISTRY.object2ObjectEntrySet()) {
+            paletteBuffer.putString(entry.getKey());
+            paletteBuffer.putLShort(entry.getValue().runtimeId());
+            paletteBuffer.putBoolean(entry.getValue().isComponent());
         }
         itemPalette = paletteBuffer.getBuffer();
     }
@@ -64,11 +72,23 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
 
     @Override
     public Integer get(String key) {
-        return REGISTRY.get(key);
+        int i = REGISTRY.getInt(key);
+        if (i == Integer.MAX_VALUE) {
+            RuntimeEntry runtimeEntry = CUSTOM_REGISTRY.get(key);
+            if (runtimeEntry == null) return Integer.MAX_VALUE;
+            else return runtimeEntry.runtimeId;
+        }
+        return i;
     }
 
     public int getInt(String key) {
-        return REGISTRY.getInt(key);
+        int i = REGISTRY.getInt(key);
+        if (i == Integer.MAX_VALUE) {
+            RuntimeEntry runtimeEntry = CUSTOM_REGISTRY.get(key);
+            if (runtimeEntry == null) return Integer.MAX_VALUE;
+            else return runtimeEntry.runtimeId;
+        }
+        return i;
     }
 
     public String getIdentifier(int runtimeId) {
@@ -78,6 +98,8 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
     @Override
     public void trim() {
         REGISTRY.trim();
+        CUSTOM_REGISTRY.trim();
+        generatePalette();
     }
 
     @Override
@@ -85,7 +107,15 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
         if (REGISTRY.putIfAbsent(key, value.intValue()) == Integer.MAX_VALUE) {
             ID2NAME.put(value.intValue(), key);
         } else {
-            throw new RegisterException("The item runtime has been registered!");
+            throw new RegisterException("The item: " + key + "runtime id has been registered!");
+        }
+    }
+
+    public void registerCustomRuntimeItem(RuntimeEntry entry) throws RegisterException {
+        if (CUSTOM_REGISTRY.putIfAbsent(entry.identifier, entry) == null) {
+            ID2NAME.put(entry.runtimeId(), entry.identifier);
+        } else {
+            throw new RegisterException("The item: " + entry.identifier + " runtime id has been registered!");
         }
     }
 
@@ -93,5 +123,8 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
         if (REGISTRY.putIfAbsent(key, value.intValue()) == Integer.MAX_VALUE) {
             ID2NAME.put(value.intValue(), key);
         }
+    }
+
+    public record RuntimeEntry(String identifier, int runtimeId, boolean isComponent) {
     }
 }

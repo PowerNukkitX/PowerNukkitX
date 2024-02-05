@@ -45,7 +45,13 @@ public class ResourcePackClientResponseProcessor extends DataPacketProcessor<Res
                         new ResourcePackStackPacket.ExperimentData("data_driven_items", true)
                 );
                 stackPacket.experiments.add(
+                        new ResourcePackStackPacket.ExperimentData("data_driven_biomes", true)
+                );
+                stackPacket.experiments.add(
                         new ResourcePackStackPacket.ExperimentData("upcoming_creator_features", true)
+                );
+                stackPacket.experiments.add(
+                        new ResourcePackStackPacket.ExperimentData("gametest", true)
                 );
                 stackPacket.experiments.add(
                         new ResourcePackStackPacket.ExperimentData("experimental_molang_features", true)
