@@ -254,11 +254,12 @@ public class CommonJSPlugin implements Plugin, Listener {
         return fileSystem;
     }
 
-    public JSClassLoader getClassLoader() {
+    @Override
+    public JSClassLoader getPluginClassLoader() {
         return classLoader;
     }
 
-    public CommonJSPlugin setClassLoader(JSClassLoader classLoader) {
+    public CommonJSPlugin getPluginClassLoader(JSClassLoader classLoader) {
         this.classLoader = classLoader;
         return this;
     }

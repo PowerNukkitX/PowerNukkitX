@@ -1,5 +1,7 @@
 package cn.nukkit.registry;
 
+import cn.nukkit.Server;
+
 public final class Registries {
     public static final BlockStateRegistry BLOCKSTATE = new BlockStateRegistry();
     public static final BlockState2ItemMetaRegistry BLOCKSTATE_ITEMMETA = new BlockState2ItemMetaRegistry();

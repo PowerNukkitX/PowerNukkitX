@@ -45,6 +45,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -498,8 +499,8 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         AddEntityPacket addEntity = new AddEntityPacket();
         addEntity.type = this.getNetworkId();
         addEntity.entityUniqueId = this.getId();
-        if (this instanceof CustomEntity customEntity) {
-            addEntity.id = customEntity.getDefinition().getStringId();
+        if (this instanceof CustomEntity) {
+            addEntity.id = this.getIdentifier();
         }
         addEntity.entityRuntimeId = this.getId();
         addEntity.yaw = (float) this.yaw;

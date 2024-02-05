@@ -11,8 +11,6 @@ import java.nio.file.Files;
 import java.util.regex.Pattern;
 
 @Slf4j
-
-
 public class JSPluginLoader implements PluginLoader {
 
     public final Server server;

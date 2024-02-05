@@ -25,7 +25,7 @@ public interface Plugin extends CommandExecutor {
 
 
     Plugin[] EMPTY_ARRAY = new Plugin[0];
-    
+
     /**
      * 在一个Nukkit插件被加载时调用的方法。这个方法会在{@link Plugin#onEnable()}之前调用。<br>
      * Called when a Nukkit plugin is loaded, before {@link Plugin#onEnable()} .
@@ -280,6 +280,8 @@ public interface Plugin extends CommandExecutor {
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     PluginLoader getPluginLoader();
+
+    ClassLoader getPluginClassLoader();
 
     /**
      * 返回这个插件的文件{@code File}对象。<br>

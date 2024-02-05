@@ -379,27 +379,25 @@ public class Server {
 
             String fallback = BaseLang.FALLBACK_LANGUAGE;
             String language = null;
-            try {
-                while (language == null) {
-                    String lang;
-                    if (predefinedLanguage != null) {
-                        log.info("Trying to load language from predefined language: {}", predefinedLanguage);
-                        lang = predefinedLanguage;
-                    } else {
-                        lang = this.console.readLine();
-                    }
+            while (language == null) {
+                String lang;
+                if (predefinedLanguage != null) {
+                    log.info("Trying to load language from predefined language: {}", predefinedLanguage);
+                    lang = predefinedLanguage;
+                } else {
+                    lang = this.console.readLine();
+                }
 
-                    InputStream conf = null;
-                    conf = this.getClass().getModule().getResourceAsStream("language/" + lang + "/lang.ini");
+                try (InputStream conf = this.getClass().getClassLoader().getResourceAsStream("language/" + lang + "/lang.json")) {
                     if (conf != null) {
                         language = lang;
                     } else if (predefinedLanguage != null) {
                         log.warn("No language found for predefined language: {}, please choose a valid language", predefinedLanguage);
                         predefinedLanguage = null;
                     }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
 
             Properties nukkitYmlLang = new Properties();
@@ -705,7 +703,7 @@ public class Server {
         // Initialize metrics
         NukkitMetrics.startNow(this);
 
-        {//init block
+        {//init
             Registries.POTION.init();
             Registries.PACKET.init();
             Registries.ENTITY.init();
@@ -785,7 +783,24 @@ public class Server {
 
         this.pluginManager.loadInternalPlugin();
         this.pluginManager.loadPlugins(this.pluginPath);
-        //Block.initCustomBlock();  todo adapt custom block
+
+        {//trim
+            Registries.POTION.trim();
+            Registries.PACKET.trim();
+            Registries.ENTITY.trim();
+            Registries.BLOCKENTITY.trim();
+            Registries.BLOCKSTATE_ITEMMETA.trim();
+            Registries.ITEM_RUNTIMEID.trim();
+            Registries.BLOCK.trim();
+            Registries.ITEM.trim();
+            Registries.CREATIVE.trim();
+            Registries.BIOME.trim();
+            Registries.FUEL.trim();
+            Registries.GENERATOR.trim();
+            Registries.GENERATE_STAGE.trim();
+            Registries.EFFECT.trim();
+            Registries.RECIPE.trim();
+        }
 
         this.enablePlugins(PluginLoadOrder.STARTUP);
 
@@ -2238,6 +2253,7 @@ public class Server {
     public String getBStatsNukkitVersion() {
         return Nukkit.VERSION;
     }
+
     public String getGitCommit() {
         return Nukkit.GIT_COMMIT;
     }

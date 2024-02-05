@@ -3,11 +3,15 @@ package cn.nukkit.registry;
 import cn.nukkit.block.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
+import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.level.Level;
+import cn.nukkit.plugin.Plugin;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 import me.sunlan.fastreflection.FastConstructor;
+import me.sunlan.fastreflection.FastMemberLoader;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.lang.reflect.Field;
@@ -31,7 +35,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Block>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
     private static final Object2ObjectOpenHashMap<String, BlockProperties> PROPERTIES = new Object2ObjectOpenHashMap<>();
     private static final List<CustomBlockDefinition> CUSTOM_BLOCK_DEFINITIONS = new ArrayList<>();
-    private static final AtomicInteger CUSTOM_BLOCK_RUNTIMEID = new AtomicInteger(1000);
+    private static final AtomicInteger CUSTOM_BLOCK_RUNTIMEID = new AtomicInteger(10000);
 
     @Override
     public void init() {
@@ -1066,28 +1070,76 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
                         "        return PROPERTIES;\n" +
                         "    } in this class!");
             }
-
             if (Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers) && properties.getType() == BlockProperties.class) {
                 BlockProperties blockProperties = (BlockProperties) properties.get(value);
                 FastConstructor<? extends Block> c = FastConstructor.create(value.getConstructor(BlockState.class));
-
-                if (CACHE_CONSTRUCTORS.putIfAbsent(blockProperties.getIdentifier(), c) == null) {
-                    if (Arrays.stream(value.getInterfaces()).anyMatch(i -> i == CustomBlock.class)) {
-                        CustomBlock customBlock = (CustomBlock) c.invoke((Object) null);
-                        CUSTOM_BLOCK_DEFINITIONS.add(customBlock.getDefinition());
-                        int rid = 255 - CUSTOM_BLOCK_RUNTIMEID.getAndIncrement();
-                        Registries.ITEM_RUNTIMEID.register(customBlock.getId(), rid);
-                        if (customBlock.shouldBeRegisteredInCreative()) {
-                            Registries.CREATIVE.addCreativeItem(new ItemBlock(customBlock.toBlock()));
-                        }
-                    }
-                    KEYSET.add(blockProperties.getIdentifier());
-                    PROPERTIES.put(blockProperties.getIdentifier(), blockProperties);
-                    return;
+                if (CACHE_CONSTRUCTORS.putIfAbsent(blockProperties.getIdentifier(), c) != null) {
+                    throw new RegisterException("This block has already been registered with the identifier: " + blockProperties.getIdentifier());
                 }
-                throw new RegisterException("This block has already been registered with the identifier: " + blockProperties.getIdentifier());
             } else {
                 throw new RegisterException("There block: %s must define a field `public static final BlockProperties PROPERTIES` in this class!".formatted(key));
+            }
+        } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException e) {
+            throw new RegisterException(e);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * register custom item
+     */
+    @SafeVarargs
+    public final void registerCustomBlock(Plugin plugin, Class<? extends Block>... values) throws RegisterException {
+        for (var c : values) {
+            registerCustomBlock(plugin, c);
+        }
+    }
+
+    /**
+     * register custom block
+     */
+    public void registerCustomBlock(Plugin plugin, Class<? extends Block> value) throws RegisterException {
+        if (Modifier.isAbstract(value.getModifiers())) {
+            throw new RegisterException("you cant register a abstract block class!");
+        }
+        try {
+            Field properties = value.getDeclaredField("PROPERTIES");
+            properties.setAccessible(true);
+            int modifiers = properties.getModifiers();
+            BlockProperties blockProperties;
+            if (Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers) && properties.getType() == BlockProperties.class) {
+                blockProperties = (BlockProperties) properties.get(value);
+            } else {
+                throw new RegisterException("There custom block class: %s must define a field `public static final BlockProperties PROPERTIES` in this class!".formatted(value.getSimpleName()));
+            }
+            try {
+                if (value.getMethod("getProperties").getDeclaringClass() != value) {
+                    throw new IllegalArgumentException();
+                }
+            } catch (Exception noSuchMethodException) {
+                throw new RegisterException("There custom block class: %s must override a method \n@Override\n".formatted(value.getSimpleName()) +
+                        "    public @NotNull BlockProperties getProperties() {\n" +
+                        "        return PROPERTIES;\n" +
+                        "    } in this class!");
+            }
+            String key = blockProperties.getIdentifier();
+            FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
+            FastConstructor<? extends Block> c = FastConstructor.create(value.getConstructor(BlockState.class), memberLoader, false);
+            if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) == null) {
+                if (CustomBlock.class.isAssignableFrom(value)) {
+                    CustomBlock customBlock = (CustomBlock) c.invoke((Object) null);
+                    CUSTOM_BLOCK_DEFINITIONS.add(customBlock.getDefinition());
+                    int rid = 255 - CUSTOM_BLOCK_RUNTIMEID.getAndIncrement();
+                    Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(customBlock.getId(), rid, false));
+                    if (customBlock.shouldBeRegisteredInCreative()) {
+                        Registries.CREATIVE.addCreativeItem(new ItemBlock(customBlock.toBlock()));
+                    }
+                }
+                KEYSET.add(key);
+                PROPERTIES.put(key, blockProperties);
+            } else {
+                throw new RegisterException("There custom block has already been registered with the identifier: " + key);
             }
         } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException e) {
             throw new RegisterException(e);

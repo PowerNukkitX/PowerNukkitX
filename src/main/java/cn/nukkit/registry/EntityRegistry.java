@@ -1,7 +1,9 @@
 package cn.nukkit.registry;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
+import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.mob.*;
 import cn.nukkit.entity.passive.*;
@@ -14,12 +16,15 @@ import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.plugin.Plugin;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import me.sunlan.fastreflection.FastConstructor;
+import me.sunlan.fastreflection.FastMemberLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -29,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.EntityDefinition, Class<? extends Entity>, Class<? extends Entity>> {
@@ -302,11 +308,54 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         }
     }
 
+    /**
+     * register custom entity
+     */
+    public void registerCustomEntity(Plugin plugin, CustomEntityDefinition key, Class<? extends Entity> value) throws RegisterException {
+        if (CustomEntity.class.isAssignableFrom(value)) {
+            if (CLASS.putIfAbsent(key.id, value) == null) {
+                try {
+                    FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
+                    FAST_NEW.put(key.id, FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class), memberLoader, false));
+                } catch (NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                }
+                int rid = RUNTIME_ID.getAndIncrement();
+                ID2RID.put(key.id, rid);
+                RID2ID.put(rid, key.id);
+                EntityDefinition entityDefinition = new EntityDefinition(key.id, key.bid, rid, key.hasSpawnegg, key.summonable);
+                DEFINITIONS.put(key.id, entityDefinition);
+                CUSTOM_ENTITY_DEFINITIONS.add(entityDefinition);
+            } else {
+                throw new RegisterException("This Entity has already been registered with the identifier: " + key.id);
+            }
+        } else {
+            throw new RegisterException("This class does not implement the CustomEntity interface and cannot be registered as a custom entity!");
+        }
+    }
+
     private void registerInternal(EntityDefinition key, Class<? extends Entity> value) {
         try {
             register(key, value);
         } catch (RegisterException e) {
             log.error("{}", e.getCause().getMessage());
+        }
+    }
+
+    private static AtomicInteger RUNTIME_ID = new AtomicInteger(10000);
+
+    @Getter
+    public static final class CustomEntityDefinition {
+        private final String id;
+        private final String bid;
+        private final boolean hasSpawnegg;
+        private final boolean summonable;
+
+        public CustomEntityDefinition(String id, String bid, boolean hasSpawnegg, boolean summonable) {
+            this.id = id;
+            this.bid = bid;
+            this.hasSpawnegg = hasSpawnegg;
+            this.summonable = summonable;
         }
     }
 

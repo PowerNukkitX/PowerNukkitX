@@ -22,13 +22,13 @@ public class ProfessionFletcher extends Profession {
 
         Item bow = Item.get(Item.BOW);
         int[] bowEnchantments = new int[] {Enchantment.ID_BOW_FLAME, Enchantment.ID_BOW_INFINITY, Enchantment.ID_BOW_KNOCKBACK, Enchantment.ID_BOW_POWER, Enchantment.ID_DURABILITY};
-        Enchantment bowEnchantmemt = Enchantment.get(bowEnchantments[random.nextInt(bowEnchantments.length)]);
+        Enchantment bowEnchantmemt = Enchantment.getEnchantment(bowEnchantments[random.nextInt(bowEnchantments.length)]);
         bowEnchantmemt.setLevel(random.nextInt(bowEnchantmemt.getMaxLevel()) +1);
         bow.addEnchantment(bowEnchantmemt);
 
         Item crossbow = Item.get(Item.BOW);
         int[] crossbowEnchantments = new int[] {Enchantment.ID_CROSSBOW_MULTISHOT, Enchantment.ID_CROSSBOW_PIERCING, Enchantment.ID_CROSSBOW_QUICK_CHARGE, Enchantment.ID_DURABILITY};
-        Enchantment crossbowEnchantment = Enchantment.get(crossbowEnchantments[random.nextInt(crossbowEnchantments.length)]);
+        Enchantment crossbowEnchantment = Enchantment.getEnchantment(crossbowEnchantments[random.nextInt(crossbowEnchantments.length)]);
         crossbowEnchantment.setLevel(random.nextInt(crossbowEnchantment.getMaxLevel()) +1);
         crossbow.addEnchantment(crossbowEnchantment);
 

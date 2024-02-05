@@ -4,10 +4,13 @@ import cn.nukkit.item.*;
 import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.plugin.Plugin;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.sunlan.fastreflection.FastConstructor;
+import me.sunlan.fastreflection.FastMemberLoader;
 import org.jetbrains.annotations.UnmodifiableView;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -591,13 +594,44 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     public void register(String key, Class<? extends Item> value) throws RegisterException {
         try {
             FastConstructor<? extends Item> c = FastConstructor.create(value.getConstructor());
-            if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) == null) {
-                if (Arrays.stream(value.getInterfaces()).anyMatch(i -> i == CustomItem.class)) {
-                    CustomItem customItem = (CustomItem) c.invoke((Object) null);
-                    CUSTOM_ITEM_DEFINITIONS.put(customItem.getDefinition().identifier(), customItem.getDefinition());
+            if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) != null) {
+                throw new RegisterException("This item has already been registered with the identifier: " + key);
+            }
+        } catch (NoSuchMethodException e) {
+            throw new RegisterException(e);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * register custom item
+     */
+    @SafeVarargs
+    public final void registerCustomItem(Plugin plugin, Class<? extends Item>... values) throws RegisterException {
+        for (var c : values) {
+            registerCustomItem(plugin, c);
+        }
+    }
+
+
+    public void registerCustomItem(Plugin plugin, Class<? extends Item> value) throws RegisterException {
+        try {
+            if (CustomItem.class.isAssignableFrom(value)) {
+                FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
+                FastConstructor<? extends Item> c = FastConstructor.create(value.getConstructor(), memberLoader, false);
+                CustomItem customItem = (CustomItem) c.invoke((Object) null);
+                String key = customItem.getDefinition().identifier();
+                if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) == null) {
+                    CUSTOM_ITEM_DEFINITIONS.put(key, customItem.getDefinition());
+
+                    Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(key, customItem.getDefinition().getRuntimeId(), true));
+                    Registries.CREATIVE.addCreativeItem((Item) customItem);
+                } else {
+                    throw new RegisterException("This item has already been registered with the identifier: " + key);
                 }
             } else {
-                throw new RegisterException("This item has already been registered with the identifier: " + key);
+                throw new RegisterException("This class does not implement the CustomItem interface and cannot be registered as a custom item!");
             }
         } catch (NoSuchMethodException e) {
             throw new RegisterException(e);

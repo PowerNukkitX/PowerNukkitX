@@ -29,18 +29,13 @@ import java.util.LinkedHashMap;
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
 @Slf4j
-abstract public class PluginBase implements Plugin {
-
+public abstract class PluginBase implements Plugin {
     private PluginLoader loader;
-
+    private ClassLoader classLoader;
     private Server server;
-
     private boolean isEnabled = false;
-
     private boolean initialized = false;
-
     private PluginDescription description;
-
     private File dataFolder;
     private Config config;
     private File configFile;
@@ -140,10 +135,11 @@ abstract public class PluginBase implements Plugin {
      *                    The {@code File} object of this plugin itself. For jar-packed plugins, it is the jar file itself.
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
-    public final void init(PluginLoader loader, Server server, PluginDescription description, File dataFolder, File file) {
+    public final void init(PluginLoader loader, ClassLoader classLoader, Server server, PluginDescription description, File dataFolder, File file) {
         if (!initialized) {
             initialized = true;
             this.loader = loader;
+            this.classLoader = classLoader;
             this.server = server;
             this.description = description;
             this.dataFolder = dataFolder;
@@ -172,7 +168,8 @@ abstract public class PluginBase implements Plugin {
     /**
      * TODO: FINISH JAVADOC
      */
-    public @Nullable PluginIdentifiableCommand getCommand(String name) {
+    @Nullable
+    public PluginIdentifiableCommand getCommand(String name) {
         PluginIdentifiableCommand command = this.getServer().getPluginCommand(name);
         if (command == null || !command.getPlugin().equals(this)) {
             command = this.getServer().getPluginCommand(this.description.getName().toLowerCase() + ":" + name);
@@ -320,5 +317,10 @@ abstract public class PluginBase implements Plugin {
     @Override
     public PluginLoader getPluginLoader() {
         return this.loader;
+    }
+
+    @Override
+    public ClassLoader getPluginClassLoader() {
+        return classLoader;
     }
 }

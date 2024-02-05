@@ -6,6 +6,7 @@ import cn.nukkit.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -50,7 +51,7 @@ public class EnchantmentItemSelector extends ConstantItemSelector {
     public List<Enchantment> getSupportEnchantments(Item item) {
         ArrayList<Enchantment> enchantments = new ArrayList<>();
         for (Enchantment enchantment : Enchantment.getRegisteredEnchantments()) {
-            if (item.getId() == Item.ENCHANTED_BOOK || enchantment.canEnchant(item)) {
+            if (Objects.equals(item.getId(), Item.ENCHANTED_BOOK) || enchantment.canEnchant(item)) {
                 enchantments.add(enchantment);
             }
         }

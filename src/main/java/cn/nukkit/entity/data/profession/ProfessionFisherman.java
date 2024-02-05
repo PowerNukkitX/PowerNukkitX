@@ -22,7 +22,7 @@ public class ProfessionFisherman extends Profession {
         Random random = new Random(seed);
 
         Item rod = Item.get(ItemID.FISHING_ROD);
-        Enchantment rodEnchantment = Enchantment.get(new int[]{Enchantment.ID_DURABILITY, Enchantment.ID_LURE, Enchantment.ID_FORTUNE_FISHING}[random.nextInt(2)]);
+        Enchantment rodEnchantment = Enchantment.getEnchantment(new int[]{Enchantment.ID_DURABILITY, Enchantment.ID_LURE, Enchantment.ID_FORTUNE_FISHING}[random.nextInt(2)]);
         rodEnchantment.setLevel(random.nextInt(3) + 1);
         rod.addEnchantment(rodEnchantment);
 
