@@ -81,7 +81,7 @@ import cn.nukkit.scheduler.Task;
 import cn.nukkit.scoreboard.manager.IScoreboardManager;
 import cn.nukkit.scoreboard.manager.ScoreboardManager;
 import cn.nukkit.scoreboard.storage.JSONScoreboardStorage;
-import cn.nukkit.spark.SparkInstaller;
+import cn.nukkit.utils.SparkInstaller;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.tags.ItemTags;
