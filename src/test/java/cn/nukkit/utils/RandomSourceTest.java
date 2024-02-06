@@ -30,4 +30,8 @@ public class RandomSourceTest {
         int i = randomSource.nextInt(4, 10);
         Assertions.assertTrue(10 >= i && i >= 4);
     }
+    @Test
+    void d() {
+        System.out.println(randomSource.nextGaussian());
+    }
 }

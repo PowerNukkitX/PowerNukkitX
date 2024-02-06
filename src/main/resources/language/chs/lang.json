@@ -1062,7 +1062,6 @@
   "nukkit.start.shaded2": "为了保护您的数据免于损坏，服务器将自动关闭，您可以通过在server.properties中将allow-shaded设置为true来允许启动。",
   "nukkit.start.shaded3": "请注意，如果您允许启动shaded包，服务器数据损坏或出现的任何bug带来的不利影响由您自行承担，开发组不负责任。",
   "nukkit.zlib.acceleration-can-enable": "您的设备支持硬件压缩/解压缩加速，您可以前往PNX文档站查看如何启用。",
-  "nukkit.zlib.acceleration-experimental": "硬件压缩/解压缩加速是实验性的，若您遇到任何问题，请在 GitHub 上提交 issue。",
   "nukkit.zlib.affect-performance": "您选择的压缩策略将会影响性能。",
   "nukkit.zlib.selected": "已选择压缩策略",
   "nukkit.zlib.unavailable": "硬件压缩/解压缩加速在您的设备上不可用，已回退到默认的软件实现。",

@@ -2,8 +2,6 @@ package cn.nukkit.network;
 
 import cn.nukkit.GameMockExtension;
 import cn.nukkit.Server;
-import cn.nukkit.compression.NativeByteBufZlib;
-import cn.nukkit.network.connection.netty.codec.compression.ZlibCompressionCodec;
 import cn.nukkit.network.connection.netty.initializer.BedrockChannelInitializer;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.NetworkSettingsPacket;
@@ -13,7 +11,6 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.ByteBufVarInt;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;

@@ -14,7 +14,7 @@ network:
   compression-level: 7
   compression-buffer-size: 1048576
   async-compression: false
-  zlib-provider: 2
+  zlib-provider: 3
   snappy: false
 
 debug:

@@ -11,8 +11,8 @@ import java.util.zip.Inflater;
 public class ZlibOriginal implements ZlibProvider {
 
     @Override
-    public byte[] deflate(byte[] data, int level) throws IOException {
-        Deflater deflater = new Deflater(level);
+    public byte[] deflate(byte[] data, int level, boolean raw) throws IOException {
+        Deflater deflater = new Deflater(level, raw);
         deflater.setInput(data);
         deflater.finish();
         FastByteArrayOutputStream bos = ThreadCache.fbaos.get();
@@ -30,8 +30,8 @@ public class ZlibOriginal implements ZlibProvider {
     }
 
     @Override
-    public byte[] inflate(byte[] data, int maxSize) throws IOException {
-        Inflater inflater = new Inflater();
+    public byte[] inflate(byte[] data, int maxSize, boolean raw) throws IOException {
+        Inflater inflater = new Inflater(raw);
         inflater.setInput(data);
         inflater.finished();
         FastByteArrayOutputStream bos = ThreadCache.fbaos.get();

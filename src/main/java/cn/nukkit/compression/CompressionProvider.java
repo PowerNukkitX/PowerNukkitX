@@ -6,7 +6,6 @@ import org.xerial.snappy.Snappy;
 
 
 public interface CompressionProvider {
-
     CompressionProvider NONE = new CompressionProvider() {
         @Override
         public byte[] compress(BinaryStream packet, int level) throws Exception {
@@ -27,20 +26,36 @@ public interface CompressionProvider {
     CompressionProvider ZLIB = new CompressionProvider() {
         @Override
         public byte[] compress(BinaryStream packet, int level) throws Exception {
-            return ZlibChooser.deflate(packet.getBuffer(), level);
+            return ZlibChooser.deflate(packet.getBuffer(), level, false);
         }
 
         @Override
         public byte[] compress(byte[] data, int level) throws Exception {
-            return ZlibChooser.deflate(data);
+            return ZlibChooser.deflate(data, false);
         }
 
         @Override
         public byte[] decompress(byte[] compressed) throws Exception {
-            return ZlibChooser.inflate(compressed);
+            return ZlibChooser.inflate(compressed, false);
         }
     };
 
+    CompressionProvider ZLIB_RAW = new CompressionProvider() {
+        @Override
+        public byte[] compress(BinaryStream packet, int level) throws Exception {
+            return ZlibChooser.deflate(packet.getBuffer(), level, true);
+        }
+
+        @Override
+        public byte[] compress(byte[] data, int level) throws Exception {
+            return ZlibChooser.deflate(data, true);
+        }
+
+        @Override
+        public byte[] decompress(byte[] compressed) throws Exception {
+            return ZlibChooser.inflate(compressed, true);
+        }
+    };
 
     CompressionProvider SNAPPY = new CompressionProvider() {
         @Override

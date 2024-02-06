@@ -1,10 +1,13 @@
 package cn.nukkit.network.connection;
 
-import cn.nukkit.compression.NativeByteBufZlib;
+import cn.nukkit.network.connection.netty.codec.compression.CompressionCodec;
+import cn.nukkit.network.connection.netty.codec.compression.CompressionStrategy;
+import cn.nukkit.network.connection.netty.initializer.BedrockChannelInitializer;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -21,12 +24,11 @@ import org.cloudburstmc.netty.channel.raknet.RakDisconnectReason;
 import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
 import cn.nukkit.network.connection.netty.codec.FrameIdCodec;
 import cn.nukkit.network.connection.netty.codec.batch.BedrockBatchDecoder;
-import cn.nukkit.network.connection.netty.codec.compression.CompressionCodec;
-import cn.nukkit.network.connection.netty.codec.compression.SnappyCompressionCodec;
-import cn.nukkit.network.connection.netty.codec.compression.ZlibCompressionCodec;
+import cn.nukkit.network.connection.netty.codec.compression.SnappyCompression;
 import cn.nukkit.network.connection.netty.codec.encryption.BedrockEncryptionDecoder;
 import cn.nukkit.network.connection.netty.codec.encryption.BedrockEncryptionEncoder;
 import cn.nukkit.network.connection.util.EncryptionUtils;
+import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
 import org.cloudburstmc.netty.handler.codec.raknet.common.RakSessionCodec;
 
 import javax.crypto.SecretKey;
@@ -105,12 +107,41 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
         }
     }
 
+    /**
+     * Send packet Asynchronously.
+     *
+     * @param senderClientId the sender client id
+     * @param targetClientId the target client id
+     * @param packet         the packet
+     */
     public void sendPacket(int senderClientId, int targetClientId, DataPacket packet) {
         this.packetQueue.add(new BedrockPacketWrapper(0, senderClientId, targetClientId, packet, null));
     }
 
+    /**
+     * Send packet immediately Asynchronously.
+     *
+     * @param senderClientId the sender client id
+     * @param targetClientId the target client id
+     * @param packet         the packet
+     */
     public void sendPacketImmediately(int senderClientId, int targetClientId, DataPacket packet) {
         this.channel.writeAndFlush(new BedrockPacketWrapper(0, senderClientId, targetClientId, packet, null));
+    }
+
+
+    /**
+     * Send packet immediately and call back.
+     * Note that this method is executed synchronously
+     */
+    public void sendPacketImmediatelyAndCallBack(int senderClientId, int targetClientId, DataPacket packet, Runnable callback) {
+        ChannelFuture channelFuture = this.channel.writeAndFlush(new BedrockPacketWrapper(0, senderClientId, targetClientId, packet, null));
+        try {
+            channelFuture.sync();
+            callback.run();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void enableEncryption(@NonNull SecretKey secretKey) {
@@ -137,31 +168,28 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
 
     public void setCompression(PacketCompressionAlgorithm algorithm) {
         Objects.requireNonNull(algorithm, "algorithm");
-        ChannelHandler handler = this.channel.pipeline().get(CompressionCodec.NAME);
-        if (handler != null) {
-            throw new IllegalArgumentException("Compression is already set");
-        }
-        ChannelHandler compressionHandler = switch (algorithm) {
-            case ZLIB ->  new ZlibCompressionCodec(NativeByteBufZlib.RAW);
-            case SNAPPY -> new SnappyCompressionCodec();
-        };
-        this.channel.pipeline().addBefore(BedrockBatchDecoder.NAME, CompressionCodec.NAME, compressionHandler);
+        this.setCompression(BedrockChannelInitializer.getCompression(algorithm, this.getRakVersion(), false));
     }
 
-    public void setCompressionLevel(int level) {
+    public void setCompression(CompressionStrategy strategy) {
+        Objects.requireNonNull(strategy, "strategy");
+
+        boolean needsPrefix = ProtocolInfo.CURRENT_PROTOCOL >= 649; // TODO: do not hardcode
+
         ChannelHandler handler = this.channel.pipeline().get(CompressionCodec.NAME);
         if (handler == null) {
-            throw new IllegalArgumentException("Peer has no compression!");
+            this.channel.pipeline().addBefore(BedrockBatchDecoder.NAME, CompressionCodec.NAME, new CompressionCodec(strategy, needsPrefix));
+        } else {
+            this.channel.pipeline().replace(CompressionCodec.NAME, CompressionCodec.NAME, new CompressionCodec(strategy, needsPrefix));
         }
-        ((CompressionCodec) handler).setLevel(level);
     }
 
-    public PacketCompressionAlgorithm getCompression() {
+    public CompressionStrategy getCompressionStrategy() {
         ChannelHandler handler = this.channel.pipeline().get(CompressionCodec.NAME);
         if (!(handler instanceof CompressionCodec)) {
             return null;
         }
-        return ((CompressionCodec) handler).getAlgorithm();
+        return ((CompressionCodec) handler).getStrategy();
     }
 
     public void close(String reason) {
@@ -212,10 +240,13 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
         return this.channel;
     }
 
+    public int getRakVersion() {
+        return this.channel.config().getOption(RakChannelOption.RAK_PROTOCOL_VERSION);
+    }
+
     /*
         Netty handler methods
      */
-
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
         this.onClose();

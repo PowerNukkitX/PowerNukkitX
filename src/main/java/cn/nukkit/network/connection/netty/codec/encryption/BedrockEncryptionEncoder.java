@@ -1,5 +1,6 @@
 package cn.nukkit.network.connection.netty.codec.encryption;
 
+import cn.nukkit.network.connection.netty.BedrockBatchWrapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
@@ -16,11 +17,9 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 @RequiredArgsConstructor
-public class BedrockEncryptionEncoder extends MessageToMessageEncoder<ByteBuf> {
-
+public class BedrockEncryptionEncoder extends MessageToMessageEncoder<BedrockBatchWrapper> {
     public static final String NAME = "bedrock-encryption-encoder";
-
-    private static final FastThreadLocal<MessageDigest> DIGEST = new FastThreadLocal<MessageDigest>() {
+    private static final FastThreadLocal<MessageDigest> DIGEST = new FastThreadLocal<>() {
         @Override
         protected MessageDigest initialValue() {
             try {
@@ -36,18 +35,19 @@ public class BedrockEncryptionEncoder extends MessageToMessageEncoder<ByteBuf> {
     private final Cipher cipher;
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-        ByteBuf buf = ctx.alloc().ioBuffer(in.readableBytes() + 8);
+    protected void encode(ChannelHandlerContext ctx, BedrockBatchWrapper in, List<Object> out) throws Exception {
+        ByteBuf buf = ctx.alloc().ioBuffer(in.getCompressed().readableBytes() + 8);
         try {
-            ByteBuffer trailer = ByteBuffer.wrap(generateTrailer(in, this.key, this.packetCounter));
-            ByteBuffer inBuffer = in.nioBuffer();
-            ByteBuffer outBuffer = buf.nioBuffer(0, in.readableBytes() + 8);
+            ByteBuffer trailer = ByteBuffer.wrap(generateTrailer(in.getCompressed(), this.key, this.packetCounter));
+            ByteBuffer inBuffer = in.getCompressed().nioBuffer();
+            ByteBuffer outBuffer = buf.nioBuffer(0, in.getCompressed().readableBytes() + 8);
 
             int index = this.cipher.update(inBuffer, outBuffer);
             index += this.cipher.update(trailer, outBuffer);
 
             buf.writerIndex(index);
-            out.add(buf.retain());
+            in.setCompressed(buf.retain());
+            out.add(in.retain());
         } finally {
             buf.release();
         }

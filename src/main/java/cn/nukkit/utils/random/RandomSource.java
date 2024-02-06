@@ -1,6 +1,5 @@
 package cn.nukkit.utils.random;
 
-import io.netty.util.internal.ThreadLocalRandom;
 
 public interface RandomSource {
     static RandomSource create() {

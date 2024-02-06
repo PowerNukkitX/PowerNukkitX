@@ -7,7 +7,7 @@ import java.io.IOException;
  */
 interface ZlibProvider {
 
-    byte[] deflate(byte[] data, int level) throws IOException;
+    byte[] deflate(byte[] data, int level, boolean raw) throws IOException;
 
-    byte[] inflate(byte[] data, int maxSize) throws IOException;
+    byte[] inflate(byte[] data, int maxSize, boolean raw) throws IOException;
 }

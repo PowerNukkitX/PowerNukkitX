@@ -1062,7 +1062,6 @@
   "nukkit.start.shaded2": "In order to protect your data from corruption, the server will shutdown now. You can allow startup by setting allow-shaded to true in server.properties.",
   "nukkit.start.shaded3": "Please note that if you allow to start the shaded jar, the adverse effects of server data corruption or any bug will be borne by you and the development team will not be responsible.",
   "nukkit.zlib.acceleration-can-enable": "You can enable hardware (de)compression acceleration. Goto PNX documentation for more information.",
-  "nukkit.zlib.acceleration-experimental": "Hardware (de)compression acceleration is still experimental! If you find any issue, please report them at github.",
   "nukkit.zlib.affect-performance": "The Zlib provider you selected may affect performance.",
   "nukkit.zlib.selected": "Selected Zlib provider",
   "nukkit.zlib.unavailable": "Hardware (de)compression acceleration is not available on your server, and has been backed to the default software implementation.",

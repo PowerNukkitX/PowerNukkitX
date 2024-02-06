@@ -17,7 +17,8 @@ import java.util.function.Predicate;
 
 public class BlockManager {
     private final Level level;
-    private final Int2ObjectOpenHashMap<Block> blocks;
+    private final Int2ObjectOpenHashMap<Block> caches;
+    private final Int2ObjectOpenHashMap<Block> places;
 
     private int hashXYZ(int x, int y, int z, int layer) {
         return Level.localBlockHash(x, y, z, layer, level);
@@ -25,7 +26,8 @@ public class BlockManager {
 
     public BlockManager(Level level) {
         this.level = level;
-        this.blocks = new Int2ObjectOpenHashMap<>();
+        this.caches = new Int2ObjectOpenHashMap<>();
+        this.places = new Int2ObjectOpenHashMap<>();
     }
 
     public String getBlockIdAt(int x, int y, int z) {
@@ -33,12 +35,12 @@ public class BlockManager {
     }
 
     public String getBlockIdAt(int x, int y, int z, int layer) {
-        Block block = this.blocks.computeIfAbsent(hashXYZ(x, y, z, layer), k -> level.getBlock(x, y, z));
+        Block block = this.caches.computeIfAbsent(hashXYZ(x, y, z, layer), k -> level.getBlock(x, y, z));
         return block.getId();
     }
 
     public Block getBlockAt(int x, int y, int z) {
-        return this.blocks.computeIfAbsent(hashXYZ(x, y, z, 0), k -> level.getBlock(x, y, z));
+        return this.caches.computeIfAbsent(hashXYZ(x, y, z, 0), k -> level.getBlock(x, y, z));
     }
 
     public void setBlockStateAt(Vector3 blockVector3, BlockState blockState) {
@@ -50,16 +52,24 @@ public class BlockManager {
     }
 
     public void setBlockStateAt(int x, int y, int z, BlockState state) {
-        blocks.put(hashXYZ(x, y, z, 0), Block.get(state, level, x, y, z, 0));
+        int hashXYZ = hashXYZ(x, y, z, 0);
+        Block block = Block.get(state, level, x, y, z, 0);
+        places.put(hashXYZ, block);
+        caches.put(hashXYZ, block);
     }
 
     public void setBlockStateAt(int x, int y, int z, int layer, BlockState state) {
-        blocks.put(hashXYZ(x, y, z, layer), Block.get(state, level, x, y, z, layer));
+        int hashXYZ = hashXYZ(x, y, z, layer);
+        Block block = Block.get(state, level, x, y, z, layer);
+        places.put(hashXYZ, block);
+        caches.put(hashXYZ, block);
     }
 
     public void setBlockStateAt(int x, int y, int z, String blockId) {
+        int hashXYZ = hashXYZ(x, y, z, 0);
         Block block = Block.get(blockId, level, x, y, z, 0);
-        blocks.put(hashXYZ(x, y, z, 0), block);
+        places.put(hashXYZ, block);
+        caches.put(hashXYZ, block);
     }
 
     public IChunk getChunk(int chunkX, int chunkZ) {
@@ -83,21 +93,21 @@ public class BlockManager {
     }
 
     public List<Block> getBlocks() {
-        return new ArrayList<>(this.blocks.values());
+        return new ArrayList<>(this.places.values());
     }
 
     public void applyBlockUpdate() {
-        for (var b : this.blocks.values()) {
+        for (var b : this.places.values()) {
             this.level.setBlock(b, b, true, true);
         }
     }
 
     public void applySubChunkUpdate() {
-        this.applySubChunkUpdate(new ArrayList<>(this.blocks.values()), null);
+        this.applySubChunkUpdate(new ArrayList<>(this.places.values()), null);
     }
 
     public void applySubChunkUpdate(List<Block> blockList) {
-        this.applySubChunkUpdate(blockList, b -> !b.isAir());
+        this.applySubChunkUpdate(blockList, null);
     }
 
     public void applySubChunkUpdate(List<Block> blockList, Predicate<Block> predicate) {
@@ -128,7 +138,8 @@ public class BlockManager {
         for (var p : batchs.values()) {
             Server.broadcastPacket(level.getPlayers().values(), p);
         }
-        blocks.clear();
+        places.clear();
+        caches.clear();
     }
 
     public int getMaxHeight() {

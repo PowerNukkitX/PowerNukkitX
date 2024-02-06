@@ -40,4 +40,9 @@ public class BedrockPacketWrapper extends AbstractReferenceCounted {
         ReferenceCountUtil.touch(this.packetBuffer);
         return this;
     }
+
+    @Override
+    public BedrockPacketWrapper retain() {
+        return (BedrockPacketWrapper) super.retain();
+    }
 }

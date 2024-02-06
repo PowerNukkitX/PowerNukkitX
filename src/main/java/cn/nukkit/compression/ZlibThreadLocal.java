@@ -11,11 +11,13 @@ import java.util.zip.Inflater;
 public final class ZlibThreadLocal implements ZlibProvider {
     private static final ThreadLocal<Inflater> INFLATER = ThreadLocal.withInitial(Inflater::new);
     private static final ThreadLocal<Deflater> DEFLATER = ThreadLocal.withInitial(Deflater::new);
+    private static final ThreadLocal<Inflater> INFLATER_RAW = ThreadLocal.withInitial(() -> new Inflater(true));
+    private static final ThreadLocal<Deflater> DEFLATER_RAW = ThreadLocal.withInitial(() -> new Deflater(-1, true));
     private static final ThreadLocal<byte[]> BUFFER = ThreadLocal.withInitial(() -> new byte[8192]);
 
     @Override
-    public byte[] deflate(byte[] data, int level) throws IOException {
-        Deflater deflater = DEFLATER.get();
+    public byte[] deflate(byte[] data, int level, boolean raw) throws IOException {
+        Deflater deflater = raw ? DEFLATER_RAW.get() : DEFLATER.get();
         FastByteArrayOutputStream bos = ThreadCache.fbaos.get();
         try {
             deflater.reset();
@@ -36,8 +38,8 @@ public final class ZlibThreadLocal implements ZlibProvider {
     }
 
     @Override
-    public byte[] inflate(byte[] data, int maxSize) throws IOException {
-        Inflater inflater = INFLATER.get();
+    public byte[] inflate(byte[] data, int maxSize, boolean raw) throws IOException {
+        Inflater inflater = raw ? INFLATER_RAW.get() : INFLATER.get();
         try {
             inflater.reset();
             inflater.setInput(data);

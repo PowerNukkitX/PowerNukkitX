@@ -48,6 +48,11 @@ public abstract class BedrockSession {
         this.logOutbound(packet);
     }
 
+    public void sendPacketImmediatelyAndCallBack(@NonNull DataPacket packet, Runnable runnable) {
+        this.peer.sendPacketImmediatelyAndCallBack(this.subClientId, 0, packet, runnable);
+        this.logOutbound(packet);
+    }
+
     public BedrockPeer getPeer() {
         return peer;
     }
@@ -57,13 +62,6 @@ public abstract class BedrockSession {
             throw new IllegalStateException("The compression algorithm can only be set by the primary session");
         }
         this.peer.setCompression(algorithm);
-    }
-
-    public void setCompressionLevel(int level) {
-        if (isSubClient()) {
-            throw new IllegalStateException("The compression level can only be set by the primary session");
-        }
-        this.peer.setCompressionLevel(level);
     }
 
     public void enableEncryption(SecretKey key) {

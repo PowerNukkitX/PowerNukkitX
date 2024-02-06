@@ -12,6 +12,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * The default is red flower, but there are other flower variants
+ */
 public class BlockRedFlower extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
     public static final BlockProperties PROPERTIES = new BlockProperties(RED_FLOWER, CommonBlockProperties.FLOWER_TYPE);
 

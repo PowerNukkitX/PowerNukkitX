@@ -9,7 +9,6 @@ import java.util.zip.CRC32;
  */
 public class NukkitRandomSource implements BitRandomSource {
     protected long seed;
-    private final MarsagliaPolarGaussian gaussianSource = new MarsagliaPolarGaussian(this);
 
     public NukkitRandomSource() {
         this(-1);
@@ -33,7 +32,6 @@ public class NukkitRandomSource implements BitRandomSource {
         buffer.putInt((int) seeds);
         crc32.update(buffer.array());
         this.seed = crc32.getValue();
-        this.gaussianSource.reset();
     }
 
     public int nextSignedInt() {
@@ -65,7 +63,7 @@ public class NukkitRandomSource implements BitRandomSource {
 
     @Override
     public double nextGaussian() {
-        return this.gaussianSource.nextGaussian();
+        return 0;//todo implement it
     }
 
     @Override

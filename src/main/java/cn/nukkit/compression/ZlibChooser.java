@@ -2,7 +2,6 @@ package cn.nukkit.compression;
 
 import cn.nukkit.Server;
 import cn.nukkit.lang.BaseLang;
-import cn.nukkit.network.connection.netty.codec.compression.ZlibCompressionCodec;
 import cn.nukkit.utils.TextFormat;
 import cn.powernukkitx.libdeflate.Libdeflate;
 import lombok.extern.slf4j.Slf4j;
@@ -11,9 +10,9 @@ import java.io.IOException;
 import java.util.zip.Deflater;
 
 @Slf4j
-public abstract class ZlibChooser {
+public final class ZlibChooser {
     private static final int MAX_INFLATE_LEN = 1024 * 1024 * 10;
-    private static ZlibProvider[] providers;
+    private static final ZlibProvider[] providers;
     private static ZlibProvider provider;
 
     static {
@@ -41,7 +40,6 @@ public abstract class ZlibChooser {
                 break;
             case 3:
                 if (Libdeflate.isAvailable()) {
-                    ZlibCompressionCodec.libDeflateAvailable = true;
                     if (providers[providerIndex] == null) {
                         providers[providerIndex] = new LibDeflateThreadLocal();
                     }
@@ -58,28 +56,25 @@ public abstract class ZlibChooser {
         if (providerIndex < 2) {
             log.warn(lang.tr("nukkit.zlib.affect-performance"));
         }
-        if (providerIndex == 3) {
-            log.warn(lang.tr("nukkit.zlib.acceleration-experimental"));
-        }
         provider = providers[providerIndex];
         log.info(lang.tr("nukkit.zlib.selected") + ": {} ({})", providerIndex, provider.getClass().getCanonicalName());
     }
 
 
-    public static byte[] deflate(byte[] data) throws IOException {
-        return deflate(data, Deflater.DEFAULT_COMPRESSION);
+    public static byte[] deflate(byte[] data, boolean raw) throws IOException {
+        return deflate(data, Deflater.DEFAULT_COMPRESSION, raw);
     }
 
 
-    public static byte[] deflate(byte[] data, int level) throws IOException {
-        return provider.deflate(data, level);
+    public static byte[] deflate(byte[] data, int level, boolean raw) throws IOException {
+        return provider.deflate(data, level, raw);
     }
 
-    public static byte[] inflate(byte[] data) throws IOException {
-        return inflate(data, MAX_INFLATE_LEN);
+    public static byte[] inflate(byte[] data, boolean raw) throws IOException {
+        return inflate(data, MAX_INFLATE_LEN, raw);
     }
 
-    public static byte[] inflate(byte[] data, int maxSize) throws IOException {
-        return provider.inflate(data, maxSize);
+    public static byte[] inflate(byte[] data, int maxSize, boolean raw) throws IOException {
+        return provider.inflate(data, maxSize, raw);
     }
 }

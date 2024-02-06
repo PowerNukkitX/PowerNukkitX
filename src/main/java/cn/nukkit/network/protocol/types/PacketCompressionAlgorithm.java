@@ -1,7 +1,7 @@
 package cn.nukkit.network.protocol.types;
 
-
-public enum PacketCompressionAlgorithm {
+public enum PacketCompressionAlgorithm implements CompressionAlgorithm {
     ZLIB,
-    SNAPPY
+    SNAPPY,
+    NONE
 }

@@ -187,7 +187,7 @@ public class RakNetInterface implements SourceInterface {
         while (iterator.hasNext()) {
             BedrockServerSession nukkitSession = iterator.next();
             Player player = nukkitSession.getPlayer();
-            if (nukkitSession.getDisconnectReason() != null) {
+            if (player!=null && player.loggedIn && nukkitSession.getDisconnectReason() != null) {
                 player.close(player.getLeaveMessage(), nukkitSession.getDisconnectReason(), false);
                 iterator.remove();
             } else {
