@@ -18,7 +18,6 @@ import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
-import cn.nukkit.event.server.PlayerDataSerializeEvent;
 import cn.nukkit.event.server.QueryRegenerateEvent;
 import cn.nukkit.event.server.ServerStartedEvent;
 import cn.nukkit.event.server.ServerStopEvent;
@@ -60,6 +59,7 @@ import cn.nukkit.permission.BanEntry;
 import cn.nukkit.permission.BanList;
 import cn.nukkit.permission.DefaultPermissions;
 import cn.nukkit.permission.Permissible;
+import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.JSPluginLoader;
 import cn.nukkit.plugin.JavaPluginLoader;
 import cn.nukkit.plugin.Plugin;
@@ -92,6 +92,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.ByteBufOutputStream;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongLists;
@@ -110,7 +113,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -310,8 +312,7 @@ public class Server {
     private final Thread currentThread;
     private final long launchTime;
     private Watchdog watchdog;
-    private DB nameLookup;
-    private PlayerDataSerializer playerDataSerializer;
+    private DB playerDataDB;
     private final Set<String> ignoredPackets = new HashSet<>();
     private boolean safeSpawn;
     private boolean forceSkinTrusted = false;
@@ -352,10 +353,6 @@ public class Server {
         this.consoleThread = new ConsoleThread();
         this.consoleThread.start();
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
-
-        this.playerDataSerializer = new DefaultPlayerDataSerializer(this);
-
-        //todo: VersionString 现在不必要
 
         if (!new File(this.dataPath + "nukkit.yml").exists()) {
             log.info(TextFormat.GREEN + "Welcome! Please choose a language first!");
@@ -749,14 +746,13 @@ public class Server {
 
         // Convert legacy data before plugins get the chance to mess with it.
         try {
-            nameLookup = Iq80DBFactory.factory.open(new File(dataPath, "players"), new Options()
+            playerDataDB = Iq80DBFactory.factory.open(new File(dataPath, "players"), new Options()
                     .createIfMissing(true)
                     .compressionType(CompressionType.ZLIB_RAW));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            System.exit(1);
         }
-
-        convertLegacyPlayerData();
 
         this.resourcePackManager = new ResourcePackManager(
                 new ZippedResourcePackLoader(new File(Nukkit.DATA_PATH, "resource_packs")),
@@ -999,9 +995,7 @@ public class Server {
                 this.network.unregisterInterface(interfaz);
             }
 
-            if (nameLookup != null) {
-                nameLookup.close();
-            }
+            playerDataDB.close();
             //close watchdog and metrics
             if (this.watchdog != null) {
                 this.watchdog.running = false;
@@ -1851,14 +1845,14 @@ public class Server {
      */
     public Optional<UUID> lookupName(String name) {
         byte[] nameBytes = name.toLowerCase().getBytes(StandardCharsets.UTF_8);
-        byte[] uuidBytes = nameLookup.get(nameBytes);
+        byte[] uuidBytes = playerDataDB.get(nameBytes);
         if (uuidBytes == null) {
             return Optional.empty();
         }
 
         if (uuidBytes.length != 16) {
             log.warn("Invalid uuid in name lookup database detected! Removing");
-            nameLookup.delete(nameBytes);
+            playerDataDB.delete(nameBytes);
             return Optional.empty();
         }
 
@@ -1871,17 +1865,22 @@ public class Server {
      * <p>
      * Update the UUID of the specified player name in the database, or add it if it does not exist.
      *
-     * @param uuid uuid
-     * @param name 名字
+     * @param player the player
      */
-    void updateName(UUID uuid, String name) {
-        byte[] nameBytes = name.toLowerCase().getBytes(StandardCharsets.UTF_8);
+    void updateName(Player player) {
+        byte[] nameBytes = player.getName().toLowerCase().getBytes(StandardCharsets.UTF_8);
 
         ByteBuffer buffer = ByteBuffer.allocate(16);
-        buffer.putLong(uuid.getMostSignificantBits());
-        buffer.putLong(uuid.getLeastSignificantBits());
-
-        nameLookup.put(nameBytes, buffer.array());
+        buffer.putLong(player.getUniqueId().getMostSignificantBits());
+        buffer.putLong(player.getUniqueId().getLeastSignificantBits());
+        byte[] array = buffer.array();
+        byte[] bytes = playerDataDB.get(array);
+        if (bytes == null) {
+            playerDataDB.put(nameBytes, array);
+        }
+        if (player.getLoginChainData().isXboxAuthed() && this.getPropertyBoolean("xbox-auth") || !this.getPropertyBoolean("xbox-auth")) {//update
+            playerDataDB.put(nameBytes, array);
+        }
     }
 
     public IPlayer getOfflinePlayer(final String name) {
@@ -1931,52 +1930,49 @@ public class Server {
      * @return {@link CompoundTag}
      */
     public CompoundTag getOfflinePlayerData(UUID uuid, boolean create) {
-        return getOfflinePlayerDataInternal(uuid.toString(), true, create);
+        return getOfflinePlayerDataInternal(uuid, create);
     }
 
-    @Deprecated
     public CompoundTag getOfflinePlayerData(String name) {
         return getOfflinePlayerData(name, false);
     }
 
-    @Deprecated
     public CompoundTag getOfflinePlayerData(String name, boolean create) {
         Optional<UUID> uuid = lookupName(name);
-        return getOfflinePlayerDataInternal(uuid.map(UUID::toString).orElse(name), true, create);
+        return getOfflinePlayerDataInternal(uuid.orElse(null), create);
     }
 
-    private CompoundTag getOfflinePlayerDataInternal(String name, boolean runEvent, boolean create) {
-        Preconditions.checkNotNull(name, "name");
+    public boolean hasOfflinePlayerData(UUID uuid) {
+        ByteBuffer buffer = ByteBuffer.allocate(16);
+        buffer.putLong(uuid.getMostSignificantBits());
+        buffer.putLong(uuid.getLeastSignificantBits());
+        byte[] bytes = playerDataDB.get(buffer.array());
+        return bytes != null;
+    }
 
-        PlayerDataSerializeEvent event = new PlayerDataSerializeEvent(name, playerDataSerializer);
-        if (runEvent) {
-            pluginManager.callEvent(event);
+    private CompoundTag getOfflinePlayerDataInternal(UUID uuid, boolean create) {
+        if (uuid == null) {
+            log.error("UUID is empty, cannot query player data");
+            return null;
         }
-
-        Optional<InputStream> dataStream = Optional.empty();
         try {
-            dataStream = event.getSerializer().read(name, event.getUuid().orElse(null));
-            if (dataStream.isPresent()) {
-                return NBTIO.readCompressed(dataStream.get());
+            ByteBuffer buffer = ByteBuffer.allocate(16);
+            buffer.putLong(uuid.getMostSignificantBits());
+            buffer.putLong(uuid.getLeastSignificantBits());
+            byte[] bytes = playerDataDB.get(buffer.array());
+            if (bytes != null) {
+                return NBTIO.readCompressed(bytes);
             }
         } catch (IOException e) {
-            log.warn(this.getLanguage().tr("nukkit.data.playerCorrupted", name), e);
-        } finally {
-            if (dataStream.isPresent()) {
-                try {
-                    dataStream.get().close();
-                } catch (IOException e) {
-                    log.error("", e);
-                }
-            }
+            log.warn(this.getLanguage().tr("nukkit.data.playerCorrupted", uuid), e);
         }
-        CompoundTag nbt = null;
+
         if (create) {
             if (this.shouldSavePlayerData()) {
-                log.info(this.getLanguage().tr("nukkit.data.playerNotFound", name));
+                log.info(this.getLanguage().tr("nukkit.data.playerNotFound", uuid));
             }
             Position spawn = this.getDefaultLevel().getSafeSpawn();
-            nbt = new CompoundTag()
+            CompoundTag nbt = new CompoundTag()
                     .putLong("firstPlayed", System.currentTimeMillis() / 1000)
                     .putLong("lastPlayed", System.currentTimeMillis() / 1000)
                     .putList("Pos", new ListTag<DoubleTag>()
@@ -2000,9 +1996,12 @@ public class Server {
                     .putBoolean("OnGround", true)
                     .putBoolean("Invulnerable", false);
 
-            this.saveOfflinePlayerData(name, nbt, true, runEvent);
+            this.saveOfflinePlayerData(uuid, nbt, true);
+            return nbt;
+        } else {
+            log.error("Player {} does not exist and cannot read playerdata", uuid);
+            return null;
         }
-        return nbt;
     }
 
     /**
@@ -2015,15 +2014,15 @@ public class Server {
     /**
      * @see #saveOfflinePlayerData(String, CompoundTag, boolean)
      */
-    public void saveOfflinePlayerData(String name, CompoundTag tag) {
-        this.saveOfflinePlayerData(name, tag, false);
+    public void saveOfflinePlayerData(UUID uuid, CompoundTag tag, boolean async) {
+        this.saveOfflinePlayerData(uuid.toString(), tag, async);
     }
 
     /**
      * @see #saveOfflinePlayerData(String, CompoundTag, boolean)
      */
-    public void saveOfflinePlayerData(UUID uuid, CompoundTag tag, boolean async) {
-        this.saveOfflinePlayerData(uuid.toString(), tag, async);
+    public void saveOfflinePlayerData(String name, CompoundTag tag) {
+        this.saveOfflinePlayerData(name, tag, false);
     }
 
     /**
@@ -2031,25 +2030,15 @@ public class Server {
      * <p>
      * Save player data, players can be offline.
      *
-     * @param name  玩家名<br>player name
-     * @param tag   NBT数据<br>nbt data
-     * @param async 是否异步保存<br>Whether to save asynchronously
+     * @param nameOrUUid the name or uuid
+     * @param tag        NBT数据<br>nbt data
+     * @param async      是否异步保存<br>Whether to save asynchronously
      */
-    public void saveOfflinePlayerData(String name, CompoundTag tag, boolean async) {
-        Optional<UUID> uuid = lookupName(name);
-        saveOfflinePlayerData(uuid.map(UUID::toString).orElse(name), tag, async, true);
-    }
-
-    private void saveOfflinePlayerData(String name, CompoundTag tag, boolean async, boolean runEvent) {
-        String nameLower = name.toLowerCase();
+    public void saveOfflinePlayerData(String nameOrUUid, CompoundTag tag, boolean async) {
+        UUID uuid = lookupName(nameOrUUid).orElse(UUID.fromString(nameOrUUid));
         if (this.shouldSavePlayerData()) {
-            PlayerDataSerializeEvent event = new PlayerDataSerializeEvent(nameLower, playerDataSerializer);
-            if (runEvent) {
-                pluginManager.callEvent(event);
-            }
-
-            this.getScheduler().scheduleTask(new Task() {
-                boolean hasRun = false;
+            this.getScheduler().scheduleTask(InternalPlugin.INSTANCE, new Task() {
+                AtomicBoolean hasRun = new AtomicBoolean(false);
 
                 @Override
                 public void onRun(int currentTick) {
@@ -2059,69 +2048,23 @@ public class Server {
                 //doing it like this ensures that the playerdata will be saved in a server shutdown
                 @Override
                 public void onCancel() {
-                    if (!this.hasRun) {
-                        this.hasRun = true;
-                        saveOfflinePlayerDataInternal(event.getSerializer(), tag, nameLower, event.getUuid().orElse(null));
+                    if (!hasRun.getAndSet(true)) {
+                        saveOfflinePlayerDataInternal(tag, uuid);
                     }
                 }
             }, async);
         }
     }
 
-    private void saveOfflinePlayerDataInternal(PlayerDataSerializer serializer, CompoundTag tag, String name, UUID uuid) {
-        try (OutputStream dataStream = serializer.write(name, uuid)) {
-            NBTIO.writeGZIPCompressed(tag, dataStream, ByteOrder.BIG_ENDIAN);
-        } catch (Exception e) {
-            log.error(this.getLanguage().tr("nukkit.data.saveError", name, e));
-        }
-    }
-
-    private void convertLegacyPlayerData() {
-        File dataDirectory = new File(getDataPath(), "players/");
-        Pattern uuidPattern = Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.dat$");
-
-        File[] files = dataDirectory.listFiles(file -> {
-            String name = file.getName();
-            return !uuidPattern.matcher(name).matches() && name.endsWith(".dat");
-        });
-
-        if (files == null) {
-            return;
-        }
-
-        for (File legacyData : files) {
-            String name = legacyData.getName();
-            // Remove file extension
-            name = name.substring(0, name.length() - 4);
-
-            log.debug("Attempting legacy player data conversion for {}", name);
-
-            CompoundTag tag = getOfflinePlayerDataInternal(name, false, false);
-
-            if (tag == null || !tag.contains("UUIDLeast") || !tag.contains("UUIDMost")) {
-                // No UUID so we cannot convert. Wait until player logs in.
-                continue;
-            }
-
-            UUID uuid = new UUID(tag.getLong("UUIDMost"), tag.getLong("UUIDLeast"));
-            if (!tag.contains("NameTag")) {
-                tag.putString("NameTag", name);
-            }
-
-            if (new File(getDataPath() + "players/" + uuid.toString() + ".dat").exists()) {
-                // We don't want to overwrite existing data.
-                continue;
-            }
-
-            saveOfflinePlayerData(uuid.toString(), tag, false, false);
-
-            // Add name to lookup table
-            updateName(uuid, name);
-
-            // Delete legacy data
-            if (!legacyData.delete()) {
-                log.warn("Unable to delete legacy data for {}", name);
-            }
+    private void saveOfflinePlayerDataInternal(CompoundTag tag, UUID uuid) {
+        try {
+            byte[] bytes = NBTIO.writeGZIPCompressed(tag, ByteOrder.BIG_ENDIAN);
+            ByteBuffer buffer = ByteBuffer.allocate(16);
+            buffer.putLong(uuid.getMostSignificantBits());
+            buffer.putLong(uuid.getLeastSignificantBits());
+            playerDataDB.put(buffer.array(), bytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -2214,14 +2157,6 @@ public class Server {
                 break;
             }
         }
-    }
-
-    public PlayerDataSerializer getPlayerDataSerializer() {
-        return playerDataSerializer;
-    }
-
-    public void setPlayerDataSerializer(PlayerDataSerializer playerDataSerializer) {
-        this.playerDataSerializer = Preconditions.checkNotNull(playerDataSerializer, "playerDataSerializer");
     }
 
     /**

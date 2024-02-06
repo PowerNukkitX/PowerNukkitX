@@ -2,12 +2,23 @@ package cn.nukkit.nbt;
 
 import cn.nukkit.nbt.tag.*;
 import cn.nukkit.registry.CreativeItemRegistry;
+import cn.nukkit.utils.Utils;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.ByteOrder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -135,9 +146,38 @@ public class NbtTest {
 
     @Test
     @SneakyThrows
-    void testReadCreativeItems(){
+    void testReadCreativeItems() {
         try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("creative_items.nbt")) {
             NBTIO.readCompressed(input);
         }
+    }
+
+    @Test
+    @SneakyThrows
+    void testWriteReadGzipNbt() {
+        var write = new LinkedCompoundTag()
+                .putInt("test1", 1)
+                .putString("test2", "hahaha")
+                .putBoolean("test3", false)
+                .putByte("test4", 12)
+                .putFloat("test5", (float) 1.22)
+                .putDouble("test6", 2.333);
+        byte[] bytes = NBTIO.writeGZIPCompressed(write, ByteOrder.BIG_ENDIAN);
+        BufferedInputStream inputStream = new BufferedInputStream(new ByteArrayInputStream(bytes));
+        CompoundTag read = NBTIO.readCompressed(inputStream);
+        inputStream.close();
+        Assertions.assertEquals(1, read.getInt("test1"));
+    }
+    @Test
+    @SneakyThrows
+    void testWriteReadGzipPlayerNbt() {
+        CompoundTag parse = SNBTParser.parse("{\"Invulnerable\":0b,\"lastPlayed\":1707229766L,\"FallDistance\":0.0f,\"TimeSinceRest\":0,\"fogIdentifiers\":[],\"playerGameType\":0,\"Motion\":[0.0d,0.0d,0.0d],\"UUIDLeast\":-7192577760381195715L,\"Health\":20.0f,\"foodSaturationLevel\":20.0f,\"Scale\":1.0f,\"Air\":300s,\"OnGround\":1b,\"Rotation\":[0.0f,0.0f],\"NameTag\":\"CoolLoong2247\",\"UUIDMost\":-6918519038489903261L,\"Pos\":[129.77989953269983d,5.0d,127.44398166306108d],\"firstPlayed\":1707229766L,\"Achievements\":{},\"Fire\":0s,\"HasSeenCredits\":0b,\"Level\":\"world Dim0\",\"foodLevel\":20,\"userProvidedFogIds\":[],\"Inventory\":[]}");
+        byte[] bytes = NBTIO.writeGZIPCompressed(parse, ByteOrder.BIG_ENDIAN);
+        BufferedInputStream inputStream = new BufferedInputStream(new ByteArrayInputStream(bytes));
+        CompoundTag read1 = NBTIO.readCompressed(bytes);
+        CompoundTag read2 = NBTIO.readCompressed(inputStream);
+        inputStream.close();
+        Assertions.assertFalse(read1.getBoolean("Invulnerable"));
+        Assertions.assertFalse(read2.getBoolean("Invulnerable"));
     }
 }

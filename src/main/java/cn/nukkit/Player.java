@@ -1133,14 +1133,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             nbt = oldPlayer.namedTag;
             oldPlayer.close("", "disconnectionScreen.loggedinOtherLocation");
         } else {
-            File legacyDataFile = new File(server.getDataPath() + "players/" + this.username.toLowerCase() + ".dat");
-            File dataFile = new File(server.getDataPath() + "players/" + this.uuid.toString() + ".dat");
-            if (legacyDataFile.exists() && !dataFile.exists()) {
+            boolean existData = Server.getInstance().hasOfflinePlayerData(uuid);
+            if (existData) {
                 nbt = this.server.getOfflinePlayerData(this.username, false);
-
-                if (!legacyDataFile.delete()) {
-                    log.warn("Could not delete legacy player data for {}", this.username);
-                }
             } else {
                 nbt = this.server.getOfflinePlayerData(this.uuid, true);
             }
@@ -1151,9 +1146,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-        if (loginChainData.isXboxAuthed() && server.getPropertyBoolean("xbox-auth") || !server.getPropertyBoolean("xbox-auth")) {
-            server.updateName(this.uuid, this.username);
-        }
+        server.updateName(this);
 
         this.playedBefore = (nbt.getLong("lastPlayed") - nbt.getLong("firstPlayed")) > 1;
 

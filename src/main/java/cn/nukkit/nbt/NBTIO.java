@@ -147,9 +147,9 @@ public class NBTIO {
 
     public static CompoundTag readCompressed(byte[] data, ByteOrder endianness) throws IOException {
         try (InputStream bytes = new ByteArrayInputStream(data);
-             InputStream gzip = new GZIPInputStream(bytes);
-             InputStream buffered = new BufferedInputStream(gzip)) {
-            return read(buffered, endianness, true);
+             InputStream buffered = new BufferedInputStream(bytes);
+             InputStream gzip = new GZIPInputStream(buffered)) {
+            return read(gzip, endianness, false);
         }
     }
 
