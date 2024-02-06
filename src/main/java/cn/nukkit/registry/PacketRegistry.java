@@ -245,7 +245,7 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.OPEN_SIGN, OpenSignPacket.class);
         this.register0(ProtocolInfo.AGENT_ANIMATION, AgentAnimationPacket.class);
         this.register0(ProtocolInfo.TOGGLE_CRAFTER_SLOT_REQUEST, ToggleCrafterSlotRequestPacket.class);
-        //todo SetPlayerInventoryOptionsPacket
+        this.register0(ProtocolInfo.SET_PLAYER_INVENTORY_OPTIONS_PACKET, SetPlayerInventoryOptionsPacket.class);
         this.PACKET_POOL.trim();
     }
 }

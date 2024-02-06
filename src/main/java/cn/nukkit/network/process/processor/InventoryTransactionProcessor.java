@@ -30,10 +30,10 @@ import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.InventoryTransactionPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
-import cn.nukkit.network.protocol.types.inventorytransaction.InventorySource;
-import cn.nukkit.network.protocol.types.inventorytransaction.ReleaseItemData;
-import cn.nukkit.network.protocol.types.inventorytransaction.UseItemData;
-import cn.nukkit.network.protocol.types.inventorytransaction.UseItemOnEntityData;
+import cn.nukkit.network.protocol.types.inventory.transaction.InventorySource;
+import cn.nukkit.network.protocol.types.inventory.transaction.ReleaseItemData;
+import cn.nukkit.network.protocol.types.inventory.transaction.UseItemData;
+import cn.nukkit.network.protocol.types.inventory.transaction.UseItemOnEntityData;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
