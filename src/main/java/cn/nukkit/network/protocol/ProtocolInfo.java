@@ -214,12 +214,9 @@ public interface ProtocolInfo {
 
     int CLIENTBOUND_DEBUG_RENDERER_PACKET = 0xa4;
 
-
     int SYNC_ENTITY_PROPERTY_PACKET = 0xa5;
 
-
     int ADD_VOLUME_ENTITY_PACKET = 0xa6;
-
 
     int REMOVE_VOLUME_ENTITY_PACKET = 0xa7;
 
@@ -227,109 +224,77 @@ public interface ProtocolInfo {
 
     int NPC_DIALOGUE_PACKET = 0xa9;
 
-
     int EDU_URI_RESOURCE_PACKET = 0xaa;
-
 
     int CREATE_PHOTO_PACKET = 0xab;
 
-
     int UPDATE_SUB_CHUNK_BLOCKS_PACKET = 0xac;
-
 
     int PHOTO_INFO_REQUEST_PACKET = 0xad;
 
-
     int SUB_CHUNK_PACKET = 0xae;
-
 
     int SUB_CHUNK_REQUEST_PACKET = 0xaf;
 
-
     int PLAYER_START_ITEM_COOL_DOWN_PACKET = 0xb0;
-
 
     int SCRIPT_MESSAGE_PACKET = 0xb1;
 
-
     int CODE_BUILDER_SOURCE_PACKET = 0xb2;
-
 
     int AGENT_ACTION_EVENT_PACKET = 0xb3;
 
-
     int CHANGE_MOB_PROPERTY_PACKET = 0xb4;
-
 
     int DIMENSION_DATA_PACKET = 0xb5;
 
-
     int TICKING_AREAS_LOAD_STATUS_PACKET = 0xb6;
-
 
     int LESSON_PROGRESS_PACKET = 0xb7;
 
-
     int REQUEST_ABILITY_PACKET = 0xb8;
-
 
     int REQUEST_PERMISSIONS_PACKET = 0xb9;
     int TOAST_REQUEST_PACKET = 0xba;
 
-
     int UPDATE_ABILITIES_PACKET = 0xbb;
-
 
     int UPDATE_ADVENTURE_SETTINGS_PACKET = 0xbc;
 
-
     int DEATH_INFO_PACKET = 0xbd;
-
 
     int EDITOR_NETWORK_PACKET = 0xbe;
 
-
     int FEATURE_REGISTRY_PACKET = 0xbf;
-
 
     int SERVER_STATS_PACKET = 0xc0;
 
-
     int REQUEST_NETWORK_SETTINGS_PACKET = 0xc1;
 
-
     int GAME_TEST_REQUEST_PACKET = 0xc2;
-
 
     int GAME_TEST_RESULTS_PACKET = 0xc3;
     int UPDATE_CLIENT_INPUT_LOCKS = 0xc4;
 
-
     int CLIENT_CHEAT_ABILITY_PACKET = 0xc5;
-
 
     int CAMERA_PRESETS_PACKET = 0xc6;
 
-
     int UNLOCKED_RECIPES_PACKET = (int) 0xc7;
-
 
     int CAMERA_INSTRUCTION_PACKET = 300;
 
-
     int COMPRESSED_BIOME_DEFINITIONS_LIST = 301;
-
 
     int TRIM_DATA = 302;
 
-
     int OPEN_SIGN = 303;
 
-
     int AGENT_ANIMATION = 304;
-
 
     int REFRESH_ENTITLEMENTS = 305;
 
     int TOGGLE_CRAFTER_SLOT_REQUEST = 306;
+
+    int SET_PLAYER_INVENTORY_OPTIONS_PACKET = 307;
 }
