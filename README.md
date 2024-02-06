@@ -1,3 +1,4 @@
+[![](https://jitpack.io/v/PowerNukkitX/PowerNukkitX.svg)](https://jitpack.io/#PowerNukkitX/PowerNukkitX)![fix/003](.github/badges/jacoco.svg)
 ### Version 2.0.0 of PowerNukkitX, work in progress...
 
 ### Start PowerNukkitX:

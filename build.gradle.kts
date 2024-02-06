@@ -7,6 +7,7 @@ plugins {
     `java-library`
     `maven-publish`
     idea
+    jacoco
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.freefair.lombok") version "8.4"
     id("com.gorylenko.gradle-git-properties") version "2.4.1"
@@ -144,8 +145,17 @@ tasks.test {
     useJUnitPlatform()
     jvmArgs(listOf("--add-opens", "java.base/java.lang=ALL-UNNAMED"))
     jvmArgs(listOf("--add-opens", "java.base/java.io=ALL-UNNAMED"))
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
 }
 
+tasks.jacocoTestReport {
+    reports {
+        csv to true
+        xml to false
+        html to false
+    }
+    dependsOn(tasks.test) // tests are required to run before generating the report
+}
 
 tasks.withType<AbstractCopyTask>() {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
