@@ -10,7 +10,6 @@ com-google-code-findbugs-jsr305 = "3.0.2"
 com-google-code-gson-gson = "2.10.1"
 com-google-guava-guava = "33.0.0-jre"
 com-lmax-disruptor = "3.4.4"
-com-nukkitx-natives = "1.0.3"
 commons-io-commons-io = "2.15.1"
 io-netty-netty-transport-classes-epoll = "4.1.101.Final"
 io-sentry-sentry = "7.1.0"
@@ -42,6 +41,7 @@ org-projectlombok-lombok = "1.18.30"
 org-xerial-snappy-snappy-java = "1.1.10.5"
 org-yaml-snakeyaml = "2.2"
 commons-lang3 = "3.14.0"
+commons-rng = "1.5"
 
 [libraries]
 libdeflate = { module = "cn.powernukkitx:libdeflate-java", version.ref = "cn-powernukkitx-libdeflate-java" }
@@ -52,7 +52,6 @@ jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "com-google
 gson = { module = "com.google.code.gson:gson", version.ref = "com-google-code-gson-gson" }
 guava = { module = "com.google.guava:guava", version.ref = "com-google-guava-guava" }
 disruptor = { module = "com.lmax:disruptor", version.ref = "com-lmax-disruptor" }
-nukkitx-natives = { module = "com.nukkitx:natives", version.ref = "com-nukkitx-natives" }
 commonsio = { module = "commons-io:commons-io", version.ref = "commons-io-commons-io" }
 commonslang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
 sentry = { module = "io.sentry:sentry", version.ref = "io-sentry-sentry" }
@@ -85,6 +84,8 @@ mockito = { module = "org.mockito:mockito-junit-jupiter", version.ref = "org-moc
 jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "org-openjdk-jmh-jmh-core" }
 jmh-generator = { module = "org.openjdk.jmh:jmh-generator-annprocess", version.ref = "org-openjdk-jmh-jmh-generator-annprocess" }
 snappy = { module = "org.xerial.snappy:snappy-java", version.ref = "org-xerial-snappy-snappy-java" }
+rng-simple = { module = "org.apache.commons:commons-rng-simple", version.ref = "commons-rng" }
+rng-sampling = { module = "org.apache.commons:commons-rng-sampling", version.ref = "commons-rng" }
 
 [bundles]
 netty = ["netty-raknet", "netty-epoll"]

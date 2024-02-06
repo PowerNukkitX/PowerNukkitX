@@ -1,0 +1,16 @@
+# The position that players will always get teleported to after joining the server
+permaSpawnPos: [0, 100, 0]
+permaSpawnWorld: "world"
+
+opSlots:
+  slotsCount: 20
+
+safezone:
+  # The Range the player can see safe zone border particles
+  showParticleRange: 10
+
+scoreboard:
+  # Delay between updating each batch's scoreboard. (In Ticks)
+  batchUpdateDelay: 2
+  # Number of scoreboard batches
+  batchCount: 10

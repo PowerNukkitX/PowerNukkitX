@@ -1,9 +1,6 @@
-import org.gradle.internal.FileUtils
-import org.gradle.internal.impldep.org.apache.ivy.util.FileUtil
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
 plugins {
@@ -39,6 +36,8 @@ dependencies {
     api(libs.fastutil)
     api(libs.leveldbjni)
     api(libs.snakeyaml)
+    api(libs.rng.simple)
+    api(libs.rng.sampling)
 
     compileOnly(libs.lombok)
     compileOnlyApi(libs.lombok)
@@ -49,7 +48,6 @@ dependencies {
     implementation(libs.joptsimple)
     implementation(libs.sentry)
     implementation(libs.sentry.log4j2)
-    implementation(libs.nukkitx.natives)
     implementation(libs.disruptor)
     implementation(libs.oshi)
     implementation(libs.fastreflection)
@@ -179,7 +177,7 @@ tasks.register<Copy>("copySomeFile") {
         inputs.files(tasks.jar)
     }
     doLast {//execution phase
-        if(project.extra.has("jarfile")){
+        if (project.extra.has("jarfile")) {
             val f: RegularFile = project.extra["jarfile"] as RegularFile
             val tf: RegularFile = layout.buildDirectory.file("${project.description}.jar").get()
             Files.copy(Path.of(f.asFile.absolutePath), Path.of(tf.asFile.absolutePath), StandardCopyOption.REPLACE_EXISTING)

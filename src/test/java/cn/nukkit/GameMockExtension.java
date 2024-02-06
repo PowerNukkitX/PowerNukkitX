@@ -25,6 +25,7 @@ import cn.nukkit.network.RakNetInterface;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.connection.BedrockServerSession;
 import cn.nukkit.permission.BanList;
+import cn.nukkit.plugin.JavaPluginLoader;
 import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.registry.BlockRegistry;
 import cn.nukkit.registry.Registries;
@@ -123,6 +124,7 @@ public class GameMockExtension extends MockitoExtension {
         when(baseLang.tr(anyString(), anyString())).thenAnswer(t -> "mock tr " + t.getArgument(0));
         when(simpleCommandMap.getCommands()).thenReturn(Collections.EMPTY_MAP);
         pluginManager = new PluginManager(server, simpleCommandMap);
+        pluginManager.registerInterface(JavaPluginLoader.class);
         when(server.getPluginManager()).thenReturn(pluginManager);
 
         freezableArrayManager = new FreezableArrayManager(

@@ -6,6 +6,7 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.PluginCommand;
 import cn.nukkit.command.PluginIdentifiableCommand;
 import cn.nukkit.utils.Config;
+import cn.nukkit.utils.ConfigSection;
 import cn.nukkit.utils.Utils;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
@@ -269,7 +270,7 @@ public abstract class PluginBase implements Plugin {
             dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
             Yaml yaml = new Yaml(dumperOptions);
             try {
-                this.config.setDefault(yaml.loadAs(Utils.readFile(this.configFile), LinkedHashMap.class));
+                this.config.setDefault(yaml.loadAs(Utils.readFile(this.configFile), ConfigSection.class));
             } catch (IOException e) {
                 log.error("Error while reloading configs for the plugin {}", getDescription().getName(), e);
             }
