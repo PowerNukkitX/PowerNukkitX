@@ -6,7 +6,7 @@ import cn.nukkit.block.BlockVine;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.random.RandomSource;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 import java.util.Objects;
 
@@ -18,7 +18,7 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
     }
 
     @Override
-    public boolean generate(BlockManager level, RandomSource rand, Vector3 position) {
+    public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position) {
         int height = this.getHeight(rand);
 
         if (!this.ensureGrowable(level, rand, position, height)) {
@@ -96,7 +96,7 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
         }
     }
 
-    private void placeVine(BlockManager level, RandomSource random, Vector3 pos, int meta) {
+    private void placeVine(BlockManager level, RandomSourceProvider random, Vector3 pos, int meta) {
         if (random.nextInt(3) > 0 && Objects.equals(level.getBlockIdAt((int) pos.x, (int) pos.y, (int) pos.z), Block.AIR)) {
             BlockState block = BlockVine.PROPERTIES.getBlockState(VINE_DIRECTION_BITS, meta);
             level.setBlockStateAt(pos, block);

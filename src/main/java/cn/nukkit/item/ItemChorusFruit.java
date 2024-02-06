@@ -56,9 +56,9 @@ public class ItemChorusFruit extends ItemFood {
 
         NukkitRandomSource random = new NukkitRandomSource();
         for (int attempts = 0; attempts < 128; attempts++) {
-            int x = random.nextRange(minX, maxX);
-            int y = random.nextRange(minY, maxY);
-            int z = random.nextRange(minZ, maxZ);
+            int x = random.nextInt(minX, maxX);
+            int y = random.nextInt(minY, maxY);
+            int z = random.nextInt(minZ, maxZ);
 
             if (y < 0) continue;
 

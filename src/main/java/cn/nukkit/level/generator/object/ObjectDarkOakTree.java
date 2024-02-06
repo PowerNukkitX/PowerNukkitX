@@ -9,7 +9,7 @@ import cn.nukkit.block.property.enums.NewLeafType;
 import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.random.RandomSource;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 /**
  * @author CreeperFace
@@ -27,7 +27,7 @@ public class ObjectDarkOakTree extends TreeGenerator {
     private final BlockState DARK_OAK_LEAVES = BlockLeaves2.PROPERTIES.getBlockState(CommonBlockProperties.NEW_LEAF_TYPE, NewLeafType.DARK_OAK);
 
     @Override
-    public boolean generate(BlockManager level, RandomSource rand, Vector3 position) {
+    public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position) {
         int i = rand.nextInt(3) + rand.nextInt(2) + 6;
         int j = position.getFloorX();
         int k = position.getFloorY();

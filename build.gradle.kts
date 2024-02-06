@@ -36,13 +36,14 @@ dependencies {
     api(libs.fastutil)
     api(libs.leveldbjni)
     api(libs.snakeyaml)
-    api(libs.rng.simple)
-    api(libs.rng.sampling)
+
 
     compileOnly(libs.lombok)
     compileOnlyApi(libs.lombok)
     annotationProcessor(libs.lombok)
 
+    implementation(libs.rng.simple)
+    implementation(libs.rng.sampling)
     implementation(libs.asm)
     implementation(libs.jose4j)
     implementation(libs.joptsimple)

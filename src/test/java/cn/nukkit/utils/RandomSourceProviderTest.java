@@ -1,16 +1,16 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.utils.random.RandomSource;
+import cn.nukkit.utils.random.RandomSourceProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class RandomSourceTest {
-    static RandomSource randomSource;
+public class RandomSourceProviderTest {
+    static RandomSourceProvider randomSource;
 
     @BeforeAll
     static void test_create() {
-        randomSource = RandomSource.create();
+        randomSource = RandomSourceProvider.create();
     }
 
     @Test
@@ -30,8 +30,12 @@ public class RandomSourceTest {
         int i = randomSource.nextInt(4, 10);
         Assertions.assertTrue(10 >= i && i >= 4);
     }
+
     @Test
-    void d() {
-        System.out.println(randomSource.nextGaussian());
+    void nextGaussian() {
+        for (int i = 0; i < 100; i++) {
+            double v = randomSource.nextGaussian();
+            Assertions.assertTrue(v <= 1 && v >= -1, String.valueOf(v));
+        }
     }
 }

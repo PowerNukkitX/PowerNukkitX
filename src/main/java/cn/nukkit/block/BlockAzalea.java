@@ -11,7 +11,7 @@ import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.random.NukkitRandomSource;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.random.RandomSource;
+import cn.nukkit.utils.random.RandomSourceProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -124,7 +124,7 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
         vector3 = this.add(0, 0, 0);
 
         BlockManager chunkManager = new BlockManager(this.level);
-        boolean success = generator.generate(chunkManager, RandomSource.create(), vector3);
+        boolean success = generator.generate(chunkManager, RandomSourceProvider.create(), vector3);
         StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
         this.level.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled() || !success) {

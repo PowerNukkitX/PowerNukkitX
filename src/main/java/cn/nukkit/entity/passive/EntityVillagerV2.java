@@ -20,11 +20,11 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.TradeInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.utils.random.NukkitRandomSource;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.utils.random.NukkitRandomSource;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -153,7 +153,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             this.setDataProperty(new IntEntityData(DATA_VARIANT, profession));
         }
         if (!this.namedTag.contains("tradeSeed")) {
-            this.setTradeSeed(new NukkitRandomSource().nextBoundedInt(Integer.MAX_VALUE));
+            this.setTradeSeed(new NukkitRandomSource().nextInt(Integer.MAX_VALUE));
         } else {
             this.tradeSeed = this.namedTag.getInt("tradeSeed");
         }
@@ -380,7 +380,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                             if (id == profession.getBlockID()) {
                                 professionFound = true;
                                 if (this.profession != profession.getIndex()) {
-                                    this.setTradeSeed(new NukkitRandomSource().nextBoundedInt(Integer.MAX_VALUE));
+                                    this.setTradeSeed(new NukkitRandomSource().nextInt(Integer.MAX_VALUE));
                                     this.setProfession(profession.getIndex());
                                     this.applyProfession(profession);
 

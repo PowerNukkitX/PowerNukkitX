@@ -52,7 +52,7 @@ public class BlockGlowLichen extends BlockLichen {
         Set<Block> keySet = candidates.keySet();
         List<Block> keyList = new ArrayList<>(keySet);
 
-        int rand = RANDOM.nextRange(0, candidates.size() - 1);
+        int rand = RANDOM.nextInt(0, candidates.size() - 1);
 
         Block random = keyList.get(rand);
         Block newLichen;

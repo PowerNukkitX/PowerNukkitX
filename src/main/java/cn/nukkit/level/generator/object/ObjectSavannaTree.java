@@ -6,7 +6,7 @@ import cn.nukkit.block.property.enums.NewLeafType;
 import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.random.RandomSource;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class ObjectSavannaTree extends TreeGenerator {
     /**
@@ -20,7 +20,7 @@ public class ObjectSavannaTree extends TreeGenerator {
     private final BlockState LEAF = BlockLeaves2.PROPERTIES.getBlockState(CommonBlockProperties.NEW_LEAF_TYPE, NewLeafType.ACACIA);
 
     @Override
-    public boolean generate(BlockManager level, RandomSource rand, Vector3 position) {
+    public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position) {
         int i = rand.nextInt(3) + rand.nextInt(3) + 5;
         boolean flag = true;
 

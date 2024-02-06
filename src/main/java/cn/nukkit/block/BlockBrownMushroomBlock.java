@@ -39,7 +39,7 @@ public class BlockBrownMushroomBlock extends BlockSolid {
 
     @Override
     public Item[] getDrops(Item item) {
-        if (new NukkitRandomSource().nextRange(1, 20) == 1) {
+        if (new NukkitRandomSource().nextInt(1, 20) == 1) {
             return new Item[]{
                     Item.get(BROWN_MUSHROOM_BLOCK)
             };

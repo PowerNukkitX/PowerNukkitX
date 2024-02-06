@@ -48,24 +48,24 @@ public class BlockNetherGoldOre extends BlockGoldOre {
         }
 
         NukkitRandomSource nukkitRandom = new NukkitRandomSource();
-        int count = nukkitRandom.nextRange(2, 6);
+        int count = nukkitRandom.nextInt(2, 6);
         switch (fortune) {
             case 0 -> {
                 // Does nothing
             }
             case 1 -> {
-                if (nukkitRandom.nextRange(0, 2) == 0) {
+                if (nukkitRandom.nextInt(0, 2) == 0) {
                     count *= 2;
                 }
             }
             case 2 -> {
-                if (nukkitRandom.nextRange(0, 1) == 0) {
-                    count *= nukkitRandom.nextRange(2, 3);
+                if (nukkitRandom.nextInt(0, 1) == 0) {
+                    count *= nukkitRandom.nextInt(2, 3);
                 }
             }
             default -> {
-                if (nukkitRandom.nextRange(0, 4) < 3) {
-                    count *= nukkitRandom.nextRange(2, 4);
+                if (nukkitRandom.nextInt(0, 4) < 3) {
+                    count *= nukkitRandom.nextInt(2, 4);
                 }
             }
         }

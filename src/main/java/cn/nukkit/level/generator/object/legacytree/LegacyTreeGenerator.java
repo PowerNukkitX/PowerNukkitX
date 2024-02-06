@@ -8,12 +8,12 @@ import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.block.property.type.EnumPropertyType;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.random.RandomSource;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public abstract class LegacyTreeGenerator {
     protected int treeHeight = 7;
 
-    public static void growTree(BlockManager level, int x, int y, int z, RandomSource random, WoodType type, boolean tall) {
+    public static void growTree(BlockManager level, int x, int y, int z, RandomSourceProvider random, WoodType type, boolean tall) {
         LegacyTreeGenerator tree;
         switch (type) {
             case SPRUCE -> tree = new LegacySpruceTree();
@@ -54,7 +54,7 @@ public abstract class LegacyTreeGenerator {
         return treeHeight;
     }
 
-    public boolean canPlaceObject(BlockManager level, int x, int y, int z, RandomSource random) {
+    public boolean canPlaceObject(BlockManager level, int x, int y, int z, RandomSourceProvider random) {
         int radiusToCheck = 0;
         for (int yy = 0; yy < this.getTreeHeight() + 3; ++yy) {
             if (yy == 1 || yy == this.getTreeHeight()) {
@@ -72,7 +72,7 @@ public abstract class LegacyTreeGenerator {
         return true;
     }
 
-    public void placeObject(BlockManager level, int x, int y, int z, RandomSource random) {
+    public void placeObject(BlockManager level, int x, int y, int z, RandomSourceProvider random) {
 
         this.placeTrunk(level, x, y, z, random, this.getTreeHeight() - 1);
 
@@ -95,7 +95,7 @@ public abstract class LegacyTreeGenerator {
         }
     }
 
-    protected void placeTrunk(BlockManager level, int x, int y, int z, RandomSource random, int trunkHeight) {
+    protected void placeTrunk(BlockManager level, int x, int y, int z, RandomSourceProvider random, int trunkHeight) {
         // The base dirt block
         level.setBlockStateAt(x, y - 1, z, Block.DIRT);
 

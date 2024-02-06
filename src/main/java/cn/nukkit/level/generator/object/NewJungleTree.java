@@ -3,11 +3,10 @@ package cn.nukkit.level.generator.object;
 import cn.nukkit.block.*;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.OldLeafType;
-import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.random.RandomSource;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 /**
  * @author CreeperFace
@@ -38,7 +37,7 @@ public class NewJungleTree extends TreeGenerator {
     }
 
     @Override
-    public boolean generate(BlockManager level, RandomSource rand, Vector3 vectorPosition) {
+    public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 vectorPosition) {
         BlockVector3 position = new BlockVector3(vectorPosition.getFloorX(), vectorPosition.getFloorY(), vectorPosition.getFloorZ());
 
         int i = rand.nextInt(maxTreeHeight) + this.minTreeHeight;

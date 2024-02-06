@@ -4,7 +4,7 @@ import cn.nukkit.block.*;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.random.RandomSource;
+import cn.nukkit.utils.random.RandomSourceProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -29,7 +29,7 @@ public class ObjectCherryTree extends TreeGenerator {
     }
 
     @Override
-    public boolean generate(BlockManager level, RandomSource rand, Vector3 pos) {
+    public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 pos) {
         final int x = pos.getFloorX();
         final int y = pos.getFloorY();
         final int z = pos.getFloorZ();
@@ -42,7 +42,7 @@ public class ObjectCherryTree extends TreeGenerator {
         return generateSmallTree(level, rand, x, y, z);
     }
 
-    protected boolean generateBigTree(BlockManager level, @NotNull RandomSource rand, final int x, final int y, final int z) {
+    protected boolean generateBigTree(BlockManager level, @NotNull RandomSourceProvider rand, final int x, final int y, final int z) {
         final int mainTrunkHeight = (rand.nextBoolean() ? 1 : 0) + 10;
 
         if (!canPlaceObject(level, mainTrunkHeight, x, y, z)) return false;
@@ -158,7 +158,7 @@ public class ObjectCherryTree extends TreeGenerator {
         return true;
     }
 
-    protected boolean generateSmallTree(BlockManager level, @NotNull RandomSource rand, final int x, final int y, final int z) {
+    protected boolean generateSmallTree(BlockManager level, @NotNull RandomSourceProvider rand, final int x, final int y, final int z) {
         final int mainTrunkHeight = (rand.nextBoolean() ? 1 : 0) + 4;
         final int sideTrunkHeight = rand.nextInt(3, 5);
 
@@ -228,7 +228,7 @@ public class ObjectCherryTree extends TreeGenerator {
 
     static final int LEAVES_RADIUS = 4;
 
-    public void generateLeaves(BlockManager level, RandomSource rand, final int x, final int y, final int z) {
+    public void generateLeaves(BlockManager level, RandomSourceProvider rand, final int x, final int y, final int z) {
         for (int dy = -2; dy <= 2; dy++) {
             for (int dx = -LEAVES_RADIUS; dx <= LEAVES_RADIUS; dx++) {
                 for (int dz = -LEAVES_RADIUS; dz <= LEAVES_RADIUS; dz++) {

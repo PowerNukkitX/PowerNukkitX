@@ -2,13 +2,13 @@ package cn.nukkit.level.generator.object.legacytree;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.generator.object.BlockManager;
-import cn.nukkit.utils.random.RandomSource;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public abstract class LegacyNetherTree extends LegacyTreeGenerator {
     protected int treeHeight;
 
     public LegacyNetherTree() {
-        this(RandomSource.create().nextInt(9) + 4);
+        this(RandomSourceProvider.create().nextInt(9) + 4);
     }
 
     public LegacyNetherTree(int treeHeight) {
@@ -33,7 +33,7 @@ public abstract class LegacyNetherTree extends LegacyTreeGenerator {
     }
 
     @Override
-    public void placeObject(BlockManager level, int x, int y, int z, RandomSource random) {
+    public void placeObject(BlockManager level, int x, int y, int z, RandomSourceProvider random) {
         if (checkY(level, y)) { // 防止长出下界顶部基岩层
             return;
         }
@@ -124,7 +124,7 @@ public abstract class LegacyNetherTree extends LegacyTreeGenerator {
     }
 
     @Override
-    protected void placeTrunk(BlockManager level, int x, int y, int z, RandomSource random, int trunkHeight) {
+    protected void placeTrunk(BlockManager level, int x, int y, int z, RandomSourceProvider random, int trunkHeight) {
         level.setBlockStateAt(x, y, z, getTrunkBlockState());
         for (int yy = 0; yy < trunkHeight; ++yy) {
             if (checkY(level, y + yy)) { // 防止长出下界顶部基岩层

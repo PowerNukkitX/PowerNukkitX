@@ -1,10 +1,13 @@
 package cn.nukkit.math;
 
-import cn.nukkit.utils.random.NukkitRandomSource;
-import cn.nukkit.utils.random.RandomSource;
+import cn.nukkit.utils.random.RandomSourceProvider;
 import com.google.common.collect.Iterators;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
@@ -410,7 +413,7 @@ public enum BlockFace {
             return faces[ThreadLocalRandom.current().nextInt(faces.length)];
         }
 
-        public BlockFace random(RandomSource rand) {
+        public BlockFace random(RandomSourceProvider rand) {
             return faces[rand.nextInt(faces.length)];
         }
 

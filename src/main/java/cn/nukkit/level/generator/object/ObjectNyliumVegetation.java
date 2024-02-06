@@ -2,10 +2,10 @@ package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.random.RandomSource;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class ObjectNyliumVegetation {
-    public static void growVegetation(BlockManager level, Vector3 pos, RandomSource random) {
+    public static void growVegetation(BlockManager level, Vector3 pos, RandomSourceProvider random) {
         for (int i = 0; i < 128; ++i) {
             int num = 0;
 

@@ -15,7 +15,7 @@ import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.random.RandomSource;
+import cn.nukkit.utils.random.RandomSourceProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -167,7 +167,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
                     vector3 = this.add(vector2.getFloorX(), 0, vector2.getFloorY());
                     generator = new HugeTreesGenerator(0, 0, null, null) {
                         @Override
-                        public boolean generate(BlockManager level, RandomSource rand, Vector3 position) {
+                        public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position) {
                             var object = new LegacyBigSpruceTree(0.75f, 4);
                             object.setRandomTreeHeight(rand);
                             if (!this.ensureGrowable(level, rand, position, object.getTreeHeight())) {
@@ -185,7 +185,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
                 }
             default:
                 BlockManager blockManager = new BlockManager(this.level);
-                LegacyTreeGenerator.growTree(blockManager, this.getFloorX(), this.getFloorY(), this.getFloorZ(), RandomSource.create(), getWoodType(), false);
+                LegacyTreeGenerator.growTree(blockManager, this.getFloorX(), this.getFloorY(), this.getFloorZ(), RandomSourceProvider.create(), getWoodType(), false);
                 StructureGrowEvent ev = new StructureGrowEvent(this, blockManager.getBlocks());
                 this.level.getServer().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
@@ -211,7 +211,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
         }
 
         BlockManager blockManager = new BlockManager(this.level);
-        boolean success = generator.generate(blockManager, RandomSource.create(), vector3);
+        boolean success = generator.generate(blockManager, RandomSourceProvider.create(), vector3);
         StructureGrowEvent ev = new StructureGrowEvent(this, blockManager.getBlocks());
         this.level.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled() || !success) {

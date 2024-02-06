@@ -57,8 +57,8 @@ public class BlockBuddingAmethyst extends BlockSolid {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
-            if (RANDOM.nextBoundedInt(5) == 1) {
-                final Block side = this.getSide(BlockFace.fromIndex(RANDOM.nextRange(6)));
+            if (RANDOM.nextInt(5) == 1) {
+                final Block side = this.getSide(BlockFace.fromIndex(RANDOM.nextInt(6)));
                 tryGrow(0);
             }
             return type;
@@ -70,7 +70,7 @@ public class BlockBuddingAmethyst extends BlockSolid {
         if (time > 6) {
             return;
         }
-        final BlockFace face = BlockFace.fromIndex(RANDOM.nextRange(6));
+        final BlockFace face = BlockFace.fromIndex(RANDOM.nextInt(6));
         final Block side = this.getSide(face);
         BlockAmethystBud tmp;
         if (side.canBeReplaced()) {

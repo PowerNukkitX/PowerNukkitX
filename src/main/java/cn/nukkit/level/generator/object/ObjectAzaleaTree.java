@@ -1,6 +1,5 @@
 package cn.nukkit.level.generator.object;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAzaleaLeaves;
 import cn.nukkit.block.BlockAzaleaLeavesFlowered;
 import cn.nukkit.block.BlockDirtWithRoots;
@@ -10,7 +9,7 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.random.RandomSource;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class ObjectAzaleaTree extends TreeGenerator {
 
@@ -20,7 +19,7 @@ public class ObjectAzaleaTree extends TreeGenerator {
     private static final BlockState AZALEA_LEAVES = BlockAzaleaLeaves.PROPERTIES.getDefaultState();
 
     @Override
-    public boolean generate(BlockManager level, RandomSource rand, Vector3 position) {
+    public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position) {
         int i = rand.nextInt(2) + 2;
         int j = position.getFloorX();
         int k = position.getFloorY();
@@ -91,7 +90,7 @@ public class ObjectAzaleaTree extends TreeGenerator {
         }
     }
 
-    private void placeLeafAt(BlockManager worldIn, int x, int y, int z, RandomSource random) {
+    private void placeLeafAt(BlockManager worldIn, int x, int y, int z, RandomSourceProvider random) {
         Vector3 blockpos = new Vector3(x, y, z);
         String material = worldIn.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
 

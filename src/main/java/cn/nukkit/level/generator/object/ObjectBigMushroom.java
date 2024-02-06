@@ -5,7 +5,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockSolid;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.random.RandomSource;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class ObjectBigMushroom extends ObjectGenerator {
 
@@ -35,7 +35,7 @@ public class ObjectBigMushroom extends ObjectGenerator {
     }
 
     @Override
-    public boolean generate(BlockManager level, RandomSource rand, Vector3 position) {
+    public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position) {
         MushroomType block = this.mushroomType;
         if (block == null) {
             block = rand.nextBoolean() ? MushroomType.RED : MushroomType.BROWN;

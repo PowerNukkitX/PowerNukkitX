@@ -3,7 +3,7 @@ package cn.nukkit.level.generator.object.legacytree;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.level.generator.object.BlockManager;
-import cn.nukkit.utils.random.RandomSource;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -15,7 +15,7 @@ public class LegacySpruceTree extends LegacyTreeGenerator {
     }
 
     @Override
-    public void placeObject(BlockManager level, int x, int y, int z, RandomSource random) {
+    public void placeObject(BlockManager level, int x, int y, int z, RandomSourceProvider random) {
         this.treeHeight = random.nextInt(4) + 6;
 
         int topSize = this.getTreeHeight() - (1 + random.nextInt(2));
@@ -26,7 +26,7 @@ public class LegacySpruceTree extends LegacyTreeGenerator {
         this.placeLeaves(level, topSize, lRadius, x, y, z, random);
     }
 
-    public void placeLeaves(BlockManager level, int topSize, int lRadius, int x, int y, int z, RandomSource random) {
+    public void placeLeaves(BlockManager level, int topSize, int lRadius, int x, int y, int z, RandomSourceProvider random) {
         int radius = random.nextInt(2);
         int maxR = 1;
         int minR = 0;

@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.object.legacytree;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.generator.object.BlockManager;
-import cn.nukkit.utils.random.RandomSource;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 /**
  * @author DaPorkchop_ (Nukkit Project)
@@ -16,12 +16,12 @@ public class LegacyBigSpruceTree extends LegacySpruceTree {
         this.baseLeafRadius = baseLeafRadius;
     }
 
-    public void setRandomTreeHeight(RandomSource random) {
+    public void setRandomTreeHeight(RandomSourceProvider random) {
         this.treeHeight = random.nextInt(15) + 20;
     }
 
     @Override
-    public void placeObject(BlockManager level, int x, int y, int z, RandomSource random) {
+    public void placeObject(BlockManager level, int x, int y, int z, RandomSourceProvider random) {
         if (this.treeHeight == 0) {
             this.setRandomTreeHeight(random);
         }
@@ -35,7 +35,7 @@ public class LegacyBigSpruceTree extends LegacySpruceTree {
     }
 
     @Override
-    protected void placeTrunk(BlockManager level, int x, int y, int z, RandomSource random, int trunkHeight) {
+    protected void placeTrunk(BlockManager level, int x, int y, int z, RandomSourceProvider random, int trunkHeight) {
         // The base dirt block
         level.setBlockStateAt(x, y - 1, z, Block.DIRT);
         int radius = 2;
@@ -52,7 +52,7 @@ public class LegacyBigSpruceTree extends LegacySpruceTree {
         }
     }
 
-    public void placeLeaves(BlockManager level, int topSize, int lRadius, int x, int y, int z, RandomSource random) {
+    public void placeLeaves(BlockManager level, int topSize, int lRadius, int x, int y, int z, RandomSourceProvider random) {
         int radius = random.nextInt(2);
         int maxR = 1;
         int minR = 0;

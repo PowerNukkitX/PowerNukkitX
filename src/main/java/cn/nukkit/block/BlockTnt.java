@@ -10,13 +10,13 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
-import cn.nukkit.utils.random.NukkitRandomSource;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.RedstoneComponent;
+import cn.nukkit.utils.random.NukkitRandomSource;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -83,7 +83,7 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent {
 
     public void prime(int fuse, Entity source) {
         this.getLevel().setBlock(this, Block.get(BlockID.AIR), true);
-        double mot = (new NukkitRandomSource()).nextSignedFloat() * Math.PI * 2;
+        double mot = (new NukkitRandomSource()).nextFloat() * Math.PI * 2;
         CompoundTag nbt = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
                         .add(new DoubleTag(this.x + 0.5))

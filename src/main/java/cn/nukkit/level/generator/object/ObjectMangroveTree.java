@@ -1,7 +1,6 @@
 package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockMangroveLeaves;
 import cn.nukkit.block.BlockMangroveLog;
 import cn.nukkit.block.BlockMangrovePropagule;
@@ -10,7 +9,7 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.random.RandomSource;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class ObjectMangroveTree extends TreeGenerator {
     private static final BlockState LOG = BlockMangroveLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS.createValue(BlockFace.Axis.Y));
@@ -18,7 +17,7 @@ public class ObjectMangroveTree extends TreeGenerator {
     private static final BlockState MANGROVE_LEAVES = BlockMangroveLeaves.PROPERTIES.getDefaultState();
 
     @Override
-    public boolean generate(BlockManager level, RandomSource rand, Vector3 position) {
+    public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position) {
         int i = rand.nextInt(3) + 8;
         int j = position.getFloorX();
         int k = position.getFloorY();
@@ -99,7 +98,7 @@ public class ObjectMangroveTree extends TreeGenerator {
         }
     }
 
-    private void placeLeafAt(BlockManager worldIn, int x, int y, int z, RandomSource random) {
+    private void placeLeafAt(BlockManager worldIn, int x, int y, int z, RandomSourceProvider random) {
         Vector3 blockpos = new Vector3(x, y, z);
         Block material = worldIn.getBlockAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
         if (material.isAir() || (material instanceof BlockMangrovePropagule propagule && propagule.isHanging())) {

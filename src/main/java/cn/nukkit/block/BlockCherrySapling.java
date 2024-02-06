@@ -10,7 +10,7 @@ import cn.nukkit.level.generator.object.ObjectCherryTree;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.random.RandomSource;
+import cn.nukkit.utils.random.RandomSourceProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -75,7 +75,7 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
         BlockManager blockManager = new BlockManager(this.level);
         Vector3 vector3 = new Vector3(this.x, this.y - 1, this.z);
         var objectCherryTree = new ObjectCherryTree();
-        boolean generate = objectCherryTree.generate(blockManager, RandomSource.create(), this);
+        boolean generate = objectCherryTree.generate(blockManager, RandomSourceProvider.create(), this);
         if (generate) {
             StructureGrowEvent ev = new StructureGrowEvent(this, blockManager.getBlocks());
             this.level.getServer().getPluginManager().callEvent(ev);
