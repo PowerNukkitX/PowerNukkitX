@@ -728,9 +728,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             super(item);
 
             if (this.nbt.getCompound("components").contains("minecraft:food")) {
-                this.nbt.getCompound("components").getCompound("minecraft:food").putBoolean("can_always_eat", item.isRequiresHunger());
+                this.nbt.getCompound("components").getCompound("minecraft:food").putBoolean("can_always_eat", !item.isRequiresHunger());
             } else {
-                this.nbt.getCompound("components").putCompound("minecraft:food", new CompoundTag().putBoolean("can_always_eat", item.isRequiresHunger()));
+                this.nbt.getCompound("components").putCompound("minecraft:food", new CompoundTag().putBoolean("can_always_eat", !item.isRequiresHunger()));
             }
 
             int eatingtick = item.getEatingTicks();
