@@ -82,7 +82,7 @@ public class NBTIO {
             if (blockState != null) item.setBlockUnsafe(blockState.toBlock());
         }
 
-        if (item.getDamage() == 0 && damage != 0) {
+        if (damage != 0) {
             item.setDamage(damage);
         }
         item.setCount(amount);
