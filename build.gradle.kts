@@ -150,9 +150,9 @@ tasks.test {
 
 tasks.jacocoTestReport {
     reports {
-        csv to true
-        xml to false
-        html to false
+        csv.required = true
+        xml.required = false
+        html.required = false
     }
     dependsOn(tasks.test) // tests are required to run before generating the report
 }
