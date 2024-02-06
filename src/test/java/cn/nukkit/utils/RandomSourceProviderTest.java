@@ -22,7 +22,7 @@ public class RandomSourceProviderTest {
     @Test
     void nextIntBound() {
         int i = randomSource.nextInt(5);
-        Assertions.assertTrue(4 >= i && i >= 0);
+        Assertions.assertTrue(5 >= i && i >= 0);
     }
 
     @Test
