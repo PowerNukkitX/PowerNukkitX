@@ -25,6 +25,7 @@ jobs:
 
   build-server:
     name: Build PNX server
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     needs: check-files
     #    event为push且发生改变或push或commit第一条信息+b +u
