@@ -3,20 +3,16 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.network.protocol.types.inventory.InventoryLayout;
 import cn.nukkit.network.protocol.types.inventory.InventoryTabLeft;
 import cn.nukkit.network.protocol.types.inventory.InventoryTabRight;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 public class SetPlayerInventoryOptionsPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.SET_PLAYER_INVENTORY_OPTIONS_PACKET;
 
-    private InventoryTabLeft leftTab;
-    private InventoryTabRight rightTab;
-    private boolean filtering;
-    private InventoryLayout layout;
-    private InventoryLayout craftingLayout;
+    public InventoryTabLeft leftTab;
+    public InventoryTabRight rightTab;
+    public boolean filtering;
+    public InventoryLayout layout;
+    public InventoryLayout craftingLayout;
 
     @Override
     public int pid() {
@@ -25,11 +21,11 @@ public class SetPlayerInventoryOptionsPacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.setLeftTab(InventoryTabLeft.VALUES[this.getVarInt()]);
-        this.setRightTab(InventoryTabRight.VALUES[this.getVarInt()]);
-        this.setFiltering(this.getBoolean());
-        this.setLayout(InventoryLayout.VALUES[this.getVarInt()]);
-        this.setCraftingLayout(InventoryLayout.VALUES[this.getVarInt()]);
+        this.leftTab = InventoryTabLeft.VALUES[this.getVarInt()];
+        this.rightTab = InventoryTabRight.VALUES[this.getVarInt()];
+        this.filtering = this.getBoolean();
+        this.layout = InventoryLayout.VALUES[this.getVarInt()];
+        this.craftingLayout = InventoryLayout.VALUES[this.getVarInt()];
     }
 
     @Override
