@@ -1,20 +1,17 @@
 package cn.nukkit.level.format.palette;
 
-import cn.nukkit.level.blockstateupdater.BlockStateUpdaters;
-import cn.nukkit.level.blockstateupdater.util.tagupdater.CompoundTagUpdaterContext;
+import cn.nukkit.level.updater.BlockStateUpdaters;
+import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.bitarray.BitArray;
 import cn.nukkit.level.format.bitarray.BitArrayVersion;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.stream.NBTInputStream;
-import cn.nukkit.nbt.stream.NBTOutputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.nbt.tag.TreeMapCompoundTag;
 import cn.nukkit.utils.ByteBufVarInt;
 import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.SemVersion;
-import cn.nukkit.utils.VarInt;
 import com.google.common.base.Objects;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
@@ -24,9 +21,7 @@ import it.unimi.dsi.fastutil.Pair;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.TreeMap;
 
 /**
  * Allay Project 2023/4/14
