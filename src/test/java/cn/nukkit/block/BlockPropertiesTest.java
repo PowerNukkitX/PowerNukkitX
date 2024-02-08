@@ -31,7 +31,6 @@ public class BlockPropertiesTest {
                 }
             }
         }
-        //errors.values().forEach(System.out::println);
-        Assertions.assertEquals(184, errors.size());//Version 1.20.50, There are now a total of 184 blocks for 1.21 content or educational content
+        Assertions.assertEquals(184, errors.size());//Version 1.20.60, There are now a total of 184 blocks for 1.21 content or educational content
     }
 }

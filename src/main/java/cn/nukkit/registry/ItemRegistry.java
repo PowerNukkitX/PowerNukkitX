@@ -10,8 +10,6 @@ import me.sunlan.fastreflection.FastConstructor;
 import me.sunlan.fastreflection.FastMemberLoader;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.lang.reflect.Constructor;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -408,7 +406,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         register0(SALMON, ItemSalmon.class);
         register0(SALMON_BUCKET, ItemSalmonBucket.class);
         register0(SALMON_SPAWN_EGG, ItemSalmonSpawnEgg.class);
-        register0(SCUTE, ItemScute.class);
+        register0(TURTLE_SCUTE, ItemTurtleScute.class);
         register0(SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSentryArmorTrimSmithingTemplate.class);
         register0(SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE, ItemShaperArmorTrimSmithingTemplate.class);
         register0(SHEAF_POTTERY_SHERD, ItemSheafPotterySherd.class);

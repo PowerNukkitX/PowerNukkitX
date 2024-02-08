@@ -33,13 +33,16 @@ public class CreativeItemTest {
                         int blockStateHash = tag.getInt("blockStateHash");
                         BlockState blockState = Registries.BLOCKSTATE.get(blockStateHash);
                         if (blockState == null) {
-                            throw new IllegalArgumentException();
+                            throw new IllegalArgumentException(String.valueOf(blockStateHash));
                         }
                         Block block = Registries.BLOCK.get(blockState);
                         new ItemBlock(block, damage);
                     } else {
                         String name = tag.getString("name");
                         Item item = Item.get(name, damage);
+                        if (item.isNull()) {
+                            throw new IllegalArgumentException(name);
+                        }
                     }
                 }
             } catch (IOException e) {

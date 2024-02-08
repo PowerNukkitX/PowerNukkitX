@@ -751,7 +751,7 @@ public interface ItemID {
 
     String SALMON_SPAWN_EGG = "minecraft:salmon_spawn_egg";
 
-    String SCUTE = "minecraft:scute";
+    String TURTLE_SCUTE = "minecraft:turtle_scute";
 
     String SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:sentry_armor_trim_smithing_template";
 
