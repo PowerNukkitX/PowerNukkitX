@@ -32,11 +32,6 @@ public class ItemHoneyBottle extends ItemFood {
     }
 
     @Override
-    public boolean onUse(Player player, int ticksUsed) {
-        return super.onUse(player, ticksUsed);
-    }
-
-    @Override
     public int getFoodRestore() {
         return 6;
     }

@@ -46,7 +46,6 @@ public class Network {
     private final List<NetworkIF> hardWareNetworkInterfaces;
 
     public Network(Server server) {
-        DataPacketManager.registerDefaultProcessors();
         this.server = server;
         List<NetworkIF> tmpIfs = null;
         try {

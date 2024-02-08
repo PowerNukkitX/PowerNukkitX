@@ -345,26 +345,4 @@ public class ItemBucket extends Item {
     public boolean onClickAir(Player player, Vector3 directionVector) {
         return Objects.equals(getId(), BUCKET) && this.getBucketType() == 1; // Milk
     }
-
-    @Override
-    public boolean onUse(Player player, int ticksUsed) {
-        if (player.isSpectator() || this.getBucketType() != 1) {
-            return false;
-        }
-
-        PlayerItemConsumeEvent consumeEvent = new PlayerItemConsumeEvent(player, this);
-
-        player.getServer().getPluginManager().callEvent(consumeEvent);
-        if (consumeEvent.isCancelled()) {
-            player.getInventory().sendContents(player);
-            return false;
-        }
-
-        if (!player.isCreative()) {
-            player.getInventory().setItemInHand(Item.get(ItemID.BUCKET));
-        }
-
-        player.removeAllEffects();
-        return true;
-    }
 }

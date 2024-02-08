@@ -10,7 +10,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ItemGoatHorn extends Item {
     protected int coolDownTick = 140;
-    private final AtomicBoolean banUse = new AtomicBoolean(false);
 
     public ItemGoatHorn() {
         this(1);
@@ -33,10 +32,9 @@ public class ItemGoatHorn extends Item {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        if (!banUse.getAndSet(true)) {
+        if (player.isItemCoolDownEnd(this.getIdentifier())) {
             playSound(player);
-            Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> banUse.set(false), coolDownTick);
-            player.setItemCoolDown(coolDownTick, "goat_horn");
+            player.setItemCoolDown(coolDownTick, this.getIdentifier());
             return true;
         } else return false;
     }

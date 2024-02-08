@@ -43,6 +43,8 @@ import java.util.Objects;
 
 @Slf4j
 public class InventoryTransactionProcessor extends DataPacketProcessor<InventoryTransactionPacket> {
+    Item lastUsedItem = null;
+
 
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull InventoryTransactionPacket pk) {
@@ -61,15 +63,16 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 int type = releaseItemData.actionType;
                 switch (type) {
                     case InventoryTransactionPacket.RELEASE_ITEM_ACTION_RELEASE -> {
-                        if (player.getStartActionTick() != -1) {
+                        int lastUseTick = player.getLastUseTick(releaseItemData.itemInHand.getId());
+                        if (lastUseTick != -1) {
                             Item item = player.getInventory().getItemInHand();
 
-                            int ticksUsed = player.getServer().getTick() - player.getStartActionTick();
+                            int ticksUsed = player.getServer().getTick() - lastUseTick;
                             if (!item.onRelease(player, ticksUsed)) {
                                 player.getInventory().sendContents(player);
                             }
 
-                            player.setUsingItem(false);
+                            player.removeLastUseTick(releaseItemData.itemInHand.getId());
                         } else {
                             player.getInventory().sendContents(player);
                         }
@@ -79,7 +82,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     }
                 }
             } finally {
-                player.setUsingItem(false);
+                player.removeLastUseTick(releaseItemData.itemInHand.getId());
             }
         } else if (pk.transactionType == InventoryTransactionPacket.TYPE_NORMAL) {
             for (var action : pk.actions) {
@@ -293,7 +296,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     if (player.canInteract(blockVector.add(0.5, 0.5, 0.5), 7) && (i = player.level.useBreakOn(blockVector.asVector3(), face, i, player, true)) != null) {
                         player.getFoodData().exhaust(0.005);
                         if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
-                            if (oldItem.getId() == i.getId() || i.isNull()) {
+                            if (Objects.equals(oldItem.getId(), i.getId()) || i.isNull()) {
                                 player.getInventory().setItemInHand(i);
                             } else {
                                 logTriedToSetButHadInHand(playerHandle, i, oldItem);
@@ -334,24 +337,23 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 }
                 if (item.onClickAir(player, directionVector)) {
                     if (!player.isCreative()) {
-                        if (item.isNull() || player.getInventory().getItemInHand().getId() == item.getId()) {
+                        if (item.isNull() || Objects.equals(player.getInventory().getItemInHand().getId(), item.getId())) {
                             player.getInventory().setItemInHand(item);
                         } else {
                             logTriedToSetButHadInHand(playerHandle, item, player.getInventory().getItemInHand());
                         }
                     }
-
-                    if (!player.isUsingItem()) {
-                        player.setUsingItem(true);
+                    if (!player.isUsingItem(item.getId())) {
+                        lastUsedItem = item;
+                        player.setLastUseTick(item.getId(), player.getServer().getTick());//set lastUsed tick
                         return;
                     }
 
-                    // Used item
-                    int ticksUsed = player.getServer().getTick() - player.getStartActionTick();
-                    player.setUsingItem(false);
-
-                    if (!item.onUse(player, ticksUsed)) {
-                        player.getInventory().sendContents(player);
+                    int ticksUsed = player.getServer().getTick() - player.getLastUseTick(lastUsedItem.getId());
+                    if (lastUsedItem.onUse(player, ticksUsed)) {
+                        lastUsedItem.afterUse(player);
+                        player.removeLastUseTick(item.getId());
+                        lastUsedItem = null;
                     }
                 }
             }

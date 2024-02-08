@@ -12,9 +12,13 @@ import org.jetbrains.annotations.NotNull;
  */
 @SuppressWarnings("rawtypes")
 public final class DataPacketManager {
-    private static final Int2ObjectOpenHashMap<DataPacketProcessor> CURRENT_PROTOCOL_PROCESSORS = new Int2ObjectOpenHashMap<>(300);
+    private final Int2ObjectOpenHashMap<DataPacketProcessor> CURRENT_PROTOCOL_PROCESSORS = new Int2ObjectOpenHashMap<>(300);
 
-    public static void registerProcessor(@NotNull DataPacketProcessor... processors) {
+    public DataPacketManager() {
+        registerDefaultProcessors();
+    }
+
+    public void registerProcessor(@NotNull DataPacketProcessor... processors) {
         for (var processor : processors) {
             if (processor.getProtocol() != ProtocolInfo.CURRENT_PROTOCOL) {
                 throw new IllegalArgumentException("Processor protocol " + processor.getProtocol() + " does not match current protocol " + ProtocolInfo.CURRENT_PROTOCOL
@@ -25,14 +29,14 @@ public final class DataPacketManager {
         CURRENT_PROTOCOL_PROCESSORS.trim();
     }
 
-    public static boolean canProcess(int protocol, int packetId) {
+    public boolean canProcess(int protocol, int packetId) {
         if (protocol != ProtocolInfo.CURRENT_PROTOCOL) {
             return false;
         }
         return CURRENT_PROTOCOL_PROCESSORS.containsKey(packetId);
     }
 
-    public static void processPacket(@NotNull PlayerHandle playerHandle, @NotNull DataPacket packet) {
+    public void processPacket(@NotNull PlayerHandle playerHandle, @NotNull DataPacket packet) {
         if (packet.getProtocolUsed() != ProtocolInfo.CURRENT_PROTOCOL) {
             throw new IllegalArgumentException("Packet protocol " + packet.getProtocolUsed() + " does not match current protocol " + ProtocolInfo.CURRENT_PROTOCOL
                     + ". Multi-version support is not implemented yet.");
@@ -46,7 +50,7 @@ public final class DataPacketManager {
         }
     }
 
-    public static void registerDefaultProcessors() {
+    public void registerDefaultProcessors() {
         registerProcessor(
                 new RequestNetworkSettingsProcessor(),
                 new LoginProcessor(),

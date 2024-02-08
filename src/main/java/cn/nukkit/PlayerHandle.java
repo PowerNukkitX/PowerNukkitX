@@ -139,14 +139,6 @@ public final class PlayerHandle {
         player.displayName = displayName;
     }
 
-    public int getStartAction() {
-        return player.startAction;
-    }
-
-    public void setStartAction(int startAction) {
-        player.startAction = startAction;
-    }
-
     public Vector3 getSleeping() {
         return player.sleeping;
     }
@@ -225,18 +217,6 @@ public final class PlayerHandle {
 
     public void setFoodData(PlayerFood foodData) {
         player.foodData = foodData;
-    }
-
-    public int getLastEnderPearl() {
-        return player.lastEnderPearl;
-    }
-
-    public void setLastEnderPearl(int lastEnderPearl) {
-        player.lastEnderPearl = lastEnderPearl;
-    }
-
-    public void setLastChorusFruitTeleport(int lastChorusFruitTeleport) {
-        player.lastChorusFruitTeleport = lastChorusFruitTeleport;
     }
 
     public int getFormWindowCount() {

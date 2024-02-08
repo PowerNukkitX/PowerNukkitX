@@ -119,7 +119,6 @@ import cn.nukkit.permission.PermissionAttachment;
 import cn.nukkit.permission.PermissionAttachmentInfo;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.positiontracking.PositionTrackingService;
-import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.Task;
@@ -155,7 +154,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import javax.annotation.Nullable;
-import java.io.File;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -246,12 +244,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected String iusername;
     protected String displayName;
     protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
-    /**
-     * 这个值代表玩家是否正在使用物品(长按右键)，-1时玩家未使用物品，当玩家使用物品时该值为{@link Server#getTick() getTick()}的值.
-     * <p>
-     * This value represents whether the player is using the item or not (long right click), -1 means the player is not using the item, when the player is using the item this value is the value of {@link Server#getTick() getTick()}.
-     */
-    protected int startAction = -1;
     protected Vector3 sleeping = null;
     protected Integer subClientId;
     protected int chunkLoadCount = 0;
@@ -272,18 +264,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected boolean checkMovement = true;
     protected PlayerFood foodData = null;
     protected boolean enableClientCommand = true;
-    /**
-     * 返回上次投掷末影珍珠时的{@link Server#getTick() getTick()}，这个值用于控制末影珍珠的冷却时间.
-     * <p>
-     * Returns the {@link Server#getTick() getTick()} from the last time the pearl was cast, which is used to control the cooldown time of the pearl.
-     */
-    protected int lastEnderPearl = 20;
-    /**
-     * 返回上次吃紫颂果时的{@link Server#getTick() getTick()}，这个值用于控制吃紫颂果的冷却时间.
-     * <p>
-     * Returns the {@link Server#getTick() getTick()} of the last time you ate a chorus fruit, which is used to control the cooldown time for eating chorus fruit.
-     */
-    protected int lastChorusFruitTeleport = 20;
     protected int formWindowCount = 0;
     protected Map<Integer, FormWindow> formWindows = new Int2ObjectOpenHashMap<>();
     protected Map<Integer, FormWindow> serverSettings = new Int2ObjectOpenHashMap<>();
@@ -326,7 +306,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     private BlockEnderChest viewingEnderChest = null;
     private TaskHandler delayedPosTrackingUpdate;
-    private int noShieldTicks;
     protected boolean showingCredits;
     protected static final int NO_SHIELD_DELAY = 10;
     protected PlayerBlockActionData lastBlockAction;
@@ -365,6 +344,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private Boolean openSignFront = null;
     protected Boolean flySneaking = false;
 
+    /// lastUseItem System and item cooldown
+    protected final HashMap<String, Integer> cooldownTickMap = new HashMap<>();
+    protected final HashMap<String, Integer> lastUseItemMap = new HashMap<>(1);
+    ///
+
     /// inventory system
     protected int windowsCnt = 1;
     protected int closingWindowId = Integer.MIN_VALUE;
@@ -376,7 +360,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected CreativeOutputInventory creativeOutputInventory;
     protected boolean inventoryOpen;
     ///
+    /// network system
+    protected DataPacketManager dataPacketManager;
 
+    ///
     @UsedByReflection
     public Player(SourceInterface interfaz, Integer clientID, InetSocketAddress socketAddress) {
         super(null, new CompoundTag());
@@ -402,6 +389,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.rawUUID = null;
         this.playerChunkManager = new PlayerChunkManager(this);
         this.creationTime = System.currentTimeMillis();
+        this.dataPacketManager = new DataPacketManager();
     }
 
     private static InetSocketAddress uncheckedNewInetSocketAddress(String ip, int port) {
@@ -618,7 +606,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     private void updateBlockingFlag() {
-        boolean shouldBlock = getNoShieldTicks() == 0
+        boolean shouldBlock = this.isItemCoolDownEnd("shield")
                 && (this.isSneaking() || getRiding() != null)
                 && (this.getInventory().getItemInHand() instanceof ItemShield || this.getOffhandInventory().getItem(0) instanceof ItemShield);
 
@@ -1609,7 +1597,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected void onBlock(Entity entity, EntityDamageEvent e, boolean animate) {
         super.onBlock(entity, e, animate);
         if (e.isBreakShield()) {
-            this.setNoShieldTicks(e.getShieldBreakCoolDown());
             this.setItemCoolDown(e.getShieldBreakCoolDown(), "shield");
         }
         if (animate) {
@@ -1650,67 +1637,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.soulSpeedMultiplier;
     }
 
-
-    /**
-     * 返回{@link Player#startAction}的值
-     * <p>
-     * Returns the value of {@link Player#startAction}
-     *
-     * @return int
-     */
-    public int getStartActionTick() {
-        return startAction;
-    }
-
-    /**
-     * 设置{@link Player#startAction}值为{@link Server#getTick() getTick()}
-     * <p>
-     * Set the {@link Player#startAction} value to {@link Server#getTick() getTick()}
-     */
-    public void startAction() {
-        this.startAction = this.server.getTick();
-    }
-
-    /**
-     * 设置{@link Player#startAction}值为-1
-     * <p>
-     * Set the {@link Player#startAction} value to -1
-     */
-    public void stopAction() {
-        this.startAction = -1;
-    }
-
-    /**
-     * 返回{@link Player#lastEnderPearl}的值
-     * <p>
-     * Returns the value of {@link Player#lastEnderPearl}
-     *
-     * @return int
-     */
-    public int getLastEnderPearlThrowingTick() {
-        return lastEnderPearl;
-    }
-
-    /**
-     * 设置{@link Player#lastEnderPearl}值为{@link Server#getTick() getTick()}
-     * <p>
-     * Set {@link Player#lastEnderPearl} value to {@link Server#getTick() getTick()}
-     */
-    public void onThrowEnderPearl() {
-        this.lastEnderPearl = this.server.getTick();
-    }
-
-    /**
-     * 返回{@link Player#lastChorusFruitTeleport}的值
-     * <p>
-     * Returns the value of {@link Player#lastChorusFruitTeleport}
-     *
-     * @return int
-     */
-    public int getLastChorusFruitTeleport() {
-        return lastChorusFruitTeleport;
-    }
-
     /**
      * 返回{@link Player#lastInAirTick}的值,代表玩家上次在空中的server tick
      * <p>
@@ -1720,15 +1646,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     public int getLastInAirTick() {
         return this.lastInAirTick;
-    }
-
-    /**
-     * 设置{@link Player#lastChorusFruitTeleport}值为{@link Server#getTick() getTick()}
-     * <p>
-     * Set {@link Player#lastChorusFruitTeleport} value to {@link Server#getTick() getTick()}
-     */
-    public void onChorusFruitTeleport() {
-        this.lastChorusFruitTeleport = this.server.getTick();
     }
 
     /**
@@ -2259,23 +2176,70 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * 返回玩家当前是否正在使用某项物品（右击并按住）。
      * <p>
      * Returns whether the player is currently using an item (right-click and hold).
-     *
-     * @return {@link #startAction}
      */
-    public boolean isUsingItem() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_ACTION) && this.startAction > -1;
+    public boolean isUsingItem(String itemId) {
+        return getLastUseTick(itemId) != -1 && this.getDataFlag(DATA_FLAGS, DATA_FLAG_ACTION);
     }
 
     /**
-     * 设置玩家当前是否正在使用某项物品 {@link #startAction}（右击并按住）。
+     * 设置指定itemCategory物品的冷却显示效果，注意该方法仅为客户端显示效果，冷却逻辑实现仍需自己实现
      * <p>
-     * Set whether the player is currently using an item {@link #startAction} (right-click and hold).
+     * Set the cooling display effect of the specified itemCategory items, note that this method is only for client-side display effect, cooling logic implementation still needs to be implemented by itself
      *
-     * @param value 玩家当前是否正在使用某项物品<br>whether the player is currently using an item.
+     * @param coolDown the cool down
+     * @param itemId   the item id
      */
-    public void setUsingItem(boolean value) {
-        this.startAction = value ? this.server.getTick() : -1;
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_ACTION, value);
+    public void setItemCoolDown(int coolDown, Identifier itemId) {
+        var pk = new PlayerStartItemCoolDownPacket();
+        pk.setCoolDownDuration(coolDown);
+        pk.setItemCategory(itemId.getPath());
+        this.cooldownTickMap.put(itemId.toString(), this.server.getTick() + coolDown);
+        this.dataPacket(pk);
+    }
+
+    public boolean isItemCoolDownEnd(Identifier itemId) {
+        Integer tick = this.cooldownTickMap.getOrDefault(itemId.toString(), 0);
+        boolean result = this.getServer().getTick() - tick > 0;
+        if (result) {
+            cooldownTickMap.remove(itemId.toString());
+        }
+        return result;
+    }
+
+    public void setItemCoolDown(int coolDown, String category) {
+        var pk = new PlayerStartItemCoolDownPacket();
+        pk.setCoolDownDuration(coolDown);
+        pk.setItemCategory(category);
+        this.cooldownTickMap.put(category, this.server.getTick() + coolDown);
+        this.dataPacket(pk);
+    }
+
+    public boolean isItemCoolDownEnd(String category) {
+        Integer tick = this.cooldownTickMap.getOrDefault(category, 0);
+        boolean result = this.getServer().getTick() - tick > 0;
+        if (result) {
+            cooldownTickMap.remove(category);
+        }
+        return result;
+    }
+
+    /**
+     * Start last use tick for an item(right-click).
+     *
+     * @param itemId the item id
+     */
+    public void setLastUseTick(@NotNull String itemId, int tick) {
+        lastUseItemMap.put(itemId, tick);
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_ACTION, true);
+    }
+
+    public void removeLastUseTick(@NotNull String itemId) {
+        lastUseItemMap.remove(itemId);
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_ACTION, false);
+    }
+
+    public int getLastUseTick(String itemId) {
+        return lastUseItemMap.getOrDefault(itemId, -1);
     }
 
     /**
@@ -3002,27 +2966,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
-    @Override
-    public boolean entityBaseTick(int tickDiff) {
-        boolean hasUpdated = false;
-        if (isUsingItem()) {
-            if (noShieldTicks < NO_SHIELD_DELAY) {
-                noShieldTicks = NO_SHIELD_DELAY;
-                hasUpdated = true;
-            }
-        } else {
-            if (noShieldTicks > 0) {
-                noShieldTicks -= tickDiff;
-                hasUpdated = true;
-            }
-            if (noShieldTicks < 0) {
-                noShieldTicks = 0;
-                hasUpdated = true;
-            }
-        }
-        return super.entityBaseTick(tickDiff) || hasUpdated;
-    }
-
     /**
      * 检查附近可交互的实体(插件一般不使用)
      * <p>
@@ -3128,9 +3071,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
             log.trace("Inbound {}: {}", this.getName(), packet);
         }
-        if (DataPacketManager.canProcess(packet.getProtocolUsed(), packet.pid())) {
-            DataPacketManager.processPacket(this.playerHandle, packet);
+        if (dataPacketManager.canProcess(packet.getProtocolUsed(), packet.pid())) {
+            dataPacketManager.processPacket(this.playerHandle, packet);
         }
+    }
+
+
+    /**
+     * Gets data packet manager,responsible for processing packets received by the player.
+     */
+    public DataPacketManager getDataPacketManager() {
+        return this.dataPacketManager;
     }
 
     /**
@@ -5360,14 +5311,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.gamemode != SPECTATOR;
     }
 
-    public int getNoShieldTicks() {
-        return noShieldTicks;
-    }
-
-    public void setNoShieldTicks(int noShieldTicks) {
-        this.noShieldTicks = noShieldTicks;
-    }
-
     @Override
     public String toString() {
         return "Player(name='" + getName() +
@@ -5538,21 +5481,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         packet.shakeType = shakeType;
         packet.shakeAction = shakeAction;
         this.dataPacket(packet);
-    }
-
-    /**
-     * 设置指定itemCategory物品的冷却显示效果，注意该方法仅为客户端显示效果，冷却逻辑实现仍需自己实现
-     * <p>
-     * Set the cooling display effect of the specified itemCategory items, note that this method is only for client-side display effect, cooling logic implementation still needs to be implemented by itself
-     *
-     * @param coolDown     the cool down
-     * @param itemCategory the item category
-     */
-    public void setItemCoolDown(int coolDown, String itemCategory) {
-        var pk = new PlayerStartItemCoolDownPacket();
-        pk.setCoolDownDuration(coolDown);
-        pk.setItemCategory(itemCategory);
-        this.dataPacket(pk);
     }
 
     /**

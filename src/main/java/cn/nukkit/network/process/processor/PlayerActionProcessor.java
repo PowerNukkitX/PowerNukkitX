@@ -29,32 +29,27 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
         BlockFace face = BlockFace.fromIndex(pk.face);
 
         switch (pk.action) {
-            case PlayerActionPacket.ACTION_START_BREAK:
-                playerHandle.onBlockBreakStart(pos, face);
-                break;
-            case PlayerActionPacket.ACTION_ABORT_BREAK:
-            case PlayerActionPacket.ACTION_STOP_BREAK:
-                playerHandle.onBlockBreakAbort(pos, face);
-                break;
-            case PlayerActionPacket.ACTION_GET_UPDATED_BLOCK:
-                break; //TODO
-            case PlayerActionPacket.ACTION_DROP_ITEM:
-                break; //TODO
-            case PlayerActionPacket.ACTION_STOP_SLEEPING:
-                player.stopSleep();
-                break;
-            case PlayerActionPacket.ACTION_RESPAWN:
+            case PlayerActionPacket.ACTION_START_BREAK -> playerHandle.onBlockBreakStart(pos, face);
+            case PlayerActionPacket.ACTION_ABORT_BREAK, PlayerActionPacket.ACTION_STOP_BREAK ->
+                    playerHandle.onBlockBreakAbort(pos, face);
+            case PlayerActionPacket.ACTION_GET_UPDATED_BLOCK -> {
+                //TODO
+            }
+            case PlayerActionPacket.ACTION_DROP_ITEM -> {
+                //TODO
+            }
+            case PlayerActionPacket.ACTION_STOP_SLEEPING -> player.stopSleep();
+            case PlayerActionPacket.ACTION_RESPAWN -> {
                 if (!player.spawned || player.isAlive() || !player.isOnline()) {
-                    break;
+                    return;
                 }
-
                 playerHandle.respawn();
-                break;
-            case PlayerActionPacket.ACTION_JUMP:
+            }
+            case PlayerActionPacket.ACTION_JUMP -> {
                 PlayerJumpEvent playerJumpEvent = new PlayerJumpEvent(player);
                 player.getServer().getPluginManager().callEvent(playerJumpEvent);
-                return;
-            case PlayerActionPacket.ACTION_START_SPRINT:
+            }
+            case PlayerActionPacket.ACTION_START_SPRINT -> {
                 PlayerToggleSprintEvent playerToggleSprintEvent = new PlayerToggleSprintEvent(player, true);
                 player.getServer().getPluginManager().callEvent(playerToggleSprintEvent);
                 if (playerToggleSprintEvent.isCancelled()) {
@@ -62,17 +57,17 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 } else {
                     player.setSprinting(true);
                 }
-                return;
-            case PlayerActionPacket.ACTION_STOP_SPRINT:
-                playerToggleSprintEvent = new PlayerToggleSprintEvent(player, false);
+            }
+            case PlayerActionPacket.ACTION_STOP_SPRINT -> {
+                var playerToggleSprintEvent = new PlayerToggleSprintEvent(player, false);
                 player.getServer().getPluginManager().callEvent(playerToggleSprintEvent);
                 if (playerToggleSprintEvent.isCancelled()) {
                     player.sendData(player);
                 } else {
                     player.setSprinting(false);
                 }
-                return;
-            case PlayerActionPacket.ACTION_START_SNEAK:
+            }
+            case PlayerActionPacket.ACTION_START_SNEAK -> {
                 PlayerToggleSneakEvent playerToggleSneakEvent = new PlayerToggleSneakEvent(player, true);
                 player.getServer().getPluginManager().callEvent(playerToggleSneakEvent);
                 if (playerToggleSneakEvent.isCancelled()) {
@@ -80,24 +75,23 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 } else {
                     player.setSneaking(true);
                 }
-                return;
-            case PlayerActionPacket.ACTION_STOP_SNEAK:
-                playerToggleSneakEvent = new PlayerToggleSneakEvent(player, false);
+            }
+            case PlayerActionPacket.ACTION_STOP_SNEAK -> {
+                var playerToggleSneakEvent = new PlayerToggleSneakEvent(player, false);
                 player.getServer().getPluginManager().callEvent(playerToggleSneakEvent);
                 if (playerToggleSneakEvent.isCancelled()) {
                     player.sendData(player);
                 } else {
                     player.setSneaking(false);
                 }
-                return;
-            case PlayerActionPacket.ACTION_CREATIVE_PLAYER_DESTROY_BLOCK:
+            }
+            case PlayerActionPacket.ACTION_CREATIVE_PLAYER_DESTROY_BLOCK -> {
                 if (player.getServer().getServerAuthoritativeMovement() > 0) break;//ServerAuthorInput not use player
                 playerHandle.onBlockBreakComplete(new BlockVector3(pk.x, pk.y, pk.z), face);
-                break;
-            case PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK:
-                player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.MODE_NORMAL);
-                break; //TODO
-            case PlayerActionPacket.ACTION_START_GLIDE:
+            }
+            case PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK ->
+                    player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.MODE_NORMAL);
+            case PlayerActionPacket.ACTION_START_GLIDE -> {
                 PlayerToggleGlideEvent playerToggleGlideEvent = new PlayerToggleGlideEvent(player, true);
                 player.getServer().getPluginManager().callEvent(playerToggleGlideEvent);
                 if (playerToggleGlideEvent.isCancelled()) {
@@ -105,20 +99,18 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 } else {
                     player.setGliding(true);
                 }
-                return;
-            case PlayerActionPacket.ACTION_STOP_GLIDE:
-                playerToggleGlideEvent = new PlayerToggleGlideEvent(player, false);
+            }
+            case PlayerActionPacket.ACTION_STOP_GLIDE -> {
+                var playerToggleGlideEvent = new PlayerToggleGlideEvent(player, false);
                 player.getServer().getPluginManager().callEvent(playerToggleGlideEvent);
                 if (playerToggleGlideEvent.isCancelled()) {
                     player.sendData(player);
                 } else {
                     player.setGliding(false);
                 }
-                return;
-            case PlayerActionPacket.ACTION_CONTINUE_BREAK:
-                playerHandle.onBlockBreakContinue(pos, face);
-                break;
-            case PlayerActionPacket.ACTION_START_SWIMMING:
+            }
+            case PlayerActionPacket.ACTION_CONTINUE_BREAK -> playerHandle.onBlockBreakContinue(pos, face);
+            case PlayerActionPacket.ACTION_START_SWIMMING -> {
                 PlayerToggleSwimEvent ptse = new PlayerToggleSwimEvent(player, true);
                 player.getServer().getPluginManager().callEvent(ptse);
 
@@ -127,9 +119,9 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 } else {
                     player.setSwimming(true);
                 }
-                break;
-            case PlayerActionPacket.ACTION_STOP_SWIMMING:
-                ptse = new PlayerToggleSwimEvent(player, false);
+            }
+            case PlayerActionPacket.ACTION_STOP_SWIMMING -> {
+                var ptse = new PlayerToggleSwimEvent(player, false);
                 player.getServer().getPluginManager().callEvent(ptse);
 
                 if (ptse.isCancelled()) {
@@ -137,8 +129,8 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 } else {
                     player.setSwimming(false);
                 }
-                break;
-            case PlayerActionPacket.ACTION_START_SPIN_ATTACK:
+            }
+            case PlayerActionPacket.ACTION_START_SPIN_ATTACK -> {
                 if (player.getInventory().getItemInHand().getId() != ItemID.TRIDENT) {
                     player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.MODE_RESET);
                     break;
@@ -173,9 +165,9 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                     }
                     player.level.addSound(player, riptideSound);
                 }
-                return;
-            case PlayerActionPacket.ACTION_STOP_SPIN_ATTACK:
-                playerToggleSpinAttackEvent = new PlayerToggleSpinAttackEvent(player, false);
+            }
+            case PlayerActionPacket.ACTION_STOP_SPIN_ATTACK -> {
+                var playerToggleSpinAttackEvent = new PlayerToggleSpinAttackEvent(player, false);
                 player.getServer().getPluginManager().callEvent(playerToggleSpinAttackEvent);
 
                 if (playerToggleSpinAttackEvent.isCancelled()) {
@@ -183,8 +175,8 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 } else {
                     player.setSpinAttacking(false);
                 }
-                break;
-            case PlayerActionPacket.ACTION_START_FLYING:
+            }
+            case PlayerActionPacket.ACTION_START_FLYING -> {
                 if (!player.getServer().getAllowFlight() && !player.getAdventureSettings().get(AdventureSettings.Type.ALLOW_FLIGHT)) {
                     player.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
                     break;
@@ -196,19 +188,17 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 } else {
                     player.getAdventureSettings().set(AdventureSettings.Type.FLYING, playerToggleFlightEvent.isFlying());
                 }
-                break;
-            case PlayerActionPacket.ACTION_STOP_FLYING:
-                playerToggleFlightEvent = new PlayerToggleFlightEvent(player, false);
+            }
+            case PlayerActionPacket.ACTION_STOP_FLYING -> {
+                var playerToggleFlightEvent = new PlayerToggleFlightEvent(player, false);
                 player.getServer().getPluginManager().callEvent(playerToggleFlightEvent);
                 if (playerToggleFlightEvent.isCancelled()) {
                     player.getAdventureSettings().update();
                 } else {
                     player.getAdventureSettings().set(AdventureSettings.Type.FLYING, playerToggleFlightEvent.isFlying());
                 }
-                break;
+            }
         }
-
-        player.setUsingItem(false);
     }
 
     @Override

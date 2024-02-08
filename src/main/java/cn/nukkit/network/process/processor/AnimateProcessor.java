@@ -45,7 +45,7 @@ public class AnimateProcessor extends DataPacketProcessor<AnimatePacket> {
         }
 
         if (animationEvent.getAnimationType() == AnimatePacket.Action.SWING_ARM) {
-            player.setNoShieldTicks(PlayerHandle.getNoShieldDelay());
+            player.setItemCoolDown(PlayerHandle.getNoShieldDelay(), "shield");
         }
 
         pk = new AnimatePacket();

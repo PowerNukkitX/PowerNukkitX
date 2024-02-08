@@ -2,6 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.projectile.EntityEnderPearl;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
@@ -60,9 +61,6 @@ public abstract class ProjectileItem extends Item {
                 } else {
                     if (!player.isCreative()) {
                         this.count--;
-                    }
-                    if (projectile instanceof EntityEnderPearl) {
-                        player.onThrowEnderPearl();
                     }
                     projectile.spawnToAll();
                     addThrowSound(player);

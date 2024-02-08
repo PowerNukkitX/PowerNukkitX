@@ -29,16 +29,12 @@ public class ItemChorusFruit extends ItemFood {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        return player.getServer().getTick() - player.getLastChorusFruitTeleport() >= 20;
+        return player.isItemCoolDownEnd(this.getIdentifier());
     }
 
     @Override
-    public boolean onUse(Player player, int ticksUsed) {
-        boolean successful = super.onUse(player, ticksUsed);
-        if (successful) {
-            player.onChorusFruitTeleport();
-        }
-        return successful;
+    public void afterUse(Player player) {
+        player.setItemCoolDown(20, this.getIdentifier());//ban 20tick for the item
     }
 
     @Override

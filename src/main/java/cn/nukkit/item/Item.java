@@ -65,6 +65,7 @@ public abstract class Item implements Cloneable, ItemID {
     public static String UNKNOWN_STR = "Unknown";
     protected Block block = null;
     protected final String id;
+    protected final Identifier identifier;
     protected int meta;
     protected boolean hasMeta = true;
     private byte[] tags = EmptyArrays.EMPTY_BYTES;
@@ -109,6 +110,7 @@ public abstract class Item implements Cloneable, ItemID {
 
     public Item(@NotNull String id, int meta, int count, @Nullable String name, boolean autoAssignStackNetworkId) {
         this.id = id.intern();
+        this.identifier = new Identifier(id);
         this.meta = meta & 0xffff;
         this.count = count;
         if (name != null) {
@@ -842,6 +844,10 @@ public abstract class Item implements Cloneable, ItemID {
         return id;
     }
 
+    public final Identifier getIdentifier() {
+        return identifier;
+    }
+
     private int getAirRuntimeId() {
         return Registries.ITEM_RUNTIMEID.getInt(BlockID.AIR);
     }
@@ -1121,7 +1127,18 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 在{@link #onClickAir}执行成功后才会调用
+     * Called before {@link #onUse},The player is right clicking use on an item
+     *
+     * @param player          player
+     * @param directionVector 点击的方向向量<br>The direction vector of the click
+     * @return if false is returned, calls {@link #onUse(Player, int)} will be stopped
+     */
+    public boolean onClickAir(Player player, Vector3 directionVector) {
+        return false;
+    }
+
+    /**
+     * The {@link #onClickAir} is called only after the command is successful
      *
      * @param player    the player
      * @param ticksUsed 物品被使用了多久(右键持续时间)<br>How long the item has been used (right-click duration)
@@ -1129,6 +1146,12 @@ public abstract class Item implements Cloneable, ItemID {
      */
     public boolean onUse(Player player, int ticksUsed) {
         return false;
+    }
+
+    /**
+     * Called after {@link #onUse(Player, int)},It will only be called when onUse returns true
+     */
+    public void afterUse(Player player) {
     }
 
     /**
@@ -1200,19 +1223,6 @@ public abstract class Item implements Cloneable, ItemID {
         return false;
     }
 
-    /**
-     * 当玩家对着空中使用物品时调用，例如投掷物品。返回物品是否已更改，例如数量减少或耐久度更改。
-     * <p>
-     * Called when a player uses the item on air, for example throwing a projectile.
-     * Returns whether the item was changed, for example count decrease or durability change.
-     *
-     * @param player          player
-     * @param directionVector 点击的方向向量<br>The direction vector of the click
-     * @return item changed
-     */
-    public boolean onClickAir(Player player, Vector3 directionVector) {
-        return false;
-    }
 
     /**
      * 返回物品堆叠是否与指定的物品堆叠有相同的ID,伤害,NBT和数量
