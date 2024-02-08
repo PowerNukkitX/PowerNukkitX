@@ -57,7 +57,7 @@ public class BlockNetherrack extends BlockSolid {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isNull() || !item.isFertilizer() || up().getId() != AIR) {
             return false;
         }

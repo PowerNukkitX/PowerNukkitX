@@ -9,9 +9,7 @@ import cn.nukkit.item.ItemFlowerPot;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.Tag;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -147,7 +145,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (getPropertyValue(CommonBlockProperties.UPDATE_BIT)) {
             if (player == null) {
                 return false;

@@ -116,7 +116,7 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
             NukkitRandomSource random = new NukkitRandomSource();
             int height = random.nextInt(4) + 2;

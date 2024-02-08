@@ -104,7 +104,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.getId().equals(ItemID.SHEARS) && isFull()) {
             honeyCollected(player);
             level.addSound(add(0.5, 0.5, 0.5), Sound.BLOCK_BEEHIVE_SHEAR);

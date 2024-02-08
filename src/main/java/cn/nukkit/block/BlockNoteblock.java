@@ -176,7 +176,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         this.increaseStrength();
         this.emitSound(player);
         return true;

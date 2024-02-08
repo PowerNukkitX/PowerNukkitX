@@ -8,6 +8,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
+import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -43,7 +44,7 @@ public class BlockTorchflowerCrop extends BlockCrops {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         //Bone meal
         if (item.isFertilizer()) {
             int max = getMaxGrowth();

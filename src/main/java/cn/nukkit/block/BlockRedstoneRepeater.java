@@ -17,7 +17,7 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         int repeaterDelay = getPropertyValue(REPEATER_DELAY);
         if (repeaterDelay == 3) {
             setPropertyValue(REPEATER_DELAY, 0);

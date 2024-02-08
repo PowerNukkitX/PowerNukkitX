@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.CrackedState;
 import cn.nukkit.block.property.enums.TurtleEggCount;
 import cn.nukkit.entity.Entity;
@@ -93,7 +91,7 @@ public class BlockTurtleEgg extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.getBlock() != null && Objects.equals(item.getBlockId(), TURTLE_EGG) && (player == null || !player.isSneaking())) {
             TurtleEggCount eggCount = getEggCount();
             if (eggCount == FOUR_EGG) {

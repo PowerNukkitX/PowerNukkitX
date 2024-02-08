@@ -68,7 +68,7 @@ public class BlockCandle extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (!Objects.equals(item.getId(), ItemID.FLINT_AND_STEEL) && !item.isNull()) {
             return false;
         }

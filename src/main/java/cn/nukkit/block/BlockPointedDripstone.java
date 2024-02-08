@@ -129,7 +129,7 @@ public class BlockPointedDripstone extends BlockFallable {
     public void tryDrop(boolean hanging) {
         if (!hanging) return;
         boolean AirUp = false;
-        Block blockUp = this.getLevelBlock();
+        Block blockUp = this.clone();
         while (blockUp.getSide(BlockFace.UP).getId().equals(POINTED_DRIPSTONE)) {
             blockUp = blockUp.getSide(BlockFace.UP);
         }

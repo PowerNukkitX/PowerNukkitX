@@ -261,7 +261,7 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
             int top = (int) y;
             int count = 1;

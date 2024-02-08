@@ -2,20 +2,17 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemSugarCane;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.MathHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 import static cn.nukkit.block.property.CommonBlockProperties.AGE_16;
-import static cn.nukkit.block.property.CommonBlockProperties.AGE_BIT;
 
 public class BlockReeds extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(REEDS, AGE_16);
@@ -57,7 +54,7 @@ public class BlockReeds extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { //Bonemeal
             int count = 1;
 

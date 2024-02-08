@@ -90,7 +90,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
 
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
 
         BlockFace dir = getBlockFace();
 

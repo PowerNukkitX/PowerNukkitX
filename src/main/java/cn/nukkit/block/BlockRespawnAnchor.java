@@ -28,6 +28,7 @@ import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.TextFormat;
 import org.jetbrains.annotations.NotNull;
 
@@ -61,7 +62,7 @@ public class BlockRespawnAnchor extends Block {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         int charge = getCharge();
         if (item.getBlockId().equals(BlockID.GLOWSTONE) && charge < CommonBlockProperties.RESPAWN_ANCHOR_CHARGE.getMax()) {
             if (player == null || !player.isCreative()) {

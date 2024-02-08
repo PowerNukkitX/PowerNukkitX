@@ -91,7 +91,7 @@ public class BlockBambooSapling extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
 
             boolean success = false;

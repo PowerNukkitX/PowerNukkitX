@@ -7,6 +7,7 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.particle.WaxOffParticle;
 import cn.nukkit.level.particle.WaxOnParticle;
+import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -19,7 +20,7 @@ public interface Waxable {
 
     @NotNull Location getLocation();
 
-    default boolean onActivate(@NotNull Item item, @Nullable Player player) {
+    default boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         boolean waxed = isWaxed();
         if ((item.getId() != ItemID.HONEYCOMB || waxed) && (!item.isAxe() || !waxed)) {
             return false;

@@ -8,6 +8,7 @@ import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.entity.effect.Effect;
+import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -33,7 +34,7 @@ public class BlockWitherRose extends BlockRedFlower {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         return false;
     }
 

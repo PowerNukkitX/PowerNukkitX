@@ -201,7 +201,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isNull()) {
             return false;
         }

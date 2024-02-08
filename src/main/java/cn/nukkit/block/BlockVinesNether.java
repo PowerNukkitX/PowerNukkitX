@@ -268,7 +268,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (!item.isFertilizer()) {
             return false;
         }

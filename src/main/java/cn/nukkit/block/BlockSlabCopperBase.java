@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.enums.OxidizationLevel;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -24,9 +25,9 @@ public abstract class BlockSlabCopperBase extends BlockSlab implements Waxable, 
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
-        return Waxable.super.onActivate(item, player)
-                || Oxidizable.super.onActivate(item, player);
+    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        return Waxable.super.onActivate(item, player, blockFace, fx, fy, fz)
+                || Oxidizable.super.onActivate(item, player, blockFace, fx, fy, fz);
     }
 
     @Override

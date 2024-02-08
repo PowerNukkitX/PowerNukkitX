@@ -7,6 +7,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectNyliumVegetation;
 import cn.nukkit.level.particle.BoneMealParticle;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.random.NukkitRandomSource;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,7 +39,7 @@ public abstract class BlockNylium extends BlockSolid {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         Block up = up();
         if (item.isNull() || !item.isFertilizer() || !up.isAir()) {
             return false;

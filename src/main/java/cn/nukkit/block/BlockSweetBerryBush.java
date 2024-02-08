@@ -64,7 +64,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         int age = MathHelper.clamp(getGrowth(), 0, 3);
 
         if (age < 3 && item.isFertilizer()) {

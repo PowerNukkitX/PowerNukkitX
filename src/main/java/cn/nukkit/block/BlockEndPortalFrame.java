@@ -101,7 +101,7 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (!this.isEndPortalEye() && player != null && item.getId().equals(Item.ENDER_EYE)) {
             this.setEndPortalEye(true);
             this.getLevel().setBlock(this, this, true, true);

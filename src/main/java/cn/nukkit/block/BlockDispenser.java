@@ -126,7 +126,7 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player == null) {
             return false;
         }

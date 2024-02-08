@@ -9,7 +9,6 @@ import cn.nukkit.level.generator.object.ObjectAzaleaTree;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.random.NukkitRandomSource;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +46,7 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { // BoneMeal
             if (player != null && !player.isCreative()) {
                 item.count--;

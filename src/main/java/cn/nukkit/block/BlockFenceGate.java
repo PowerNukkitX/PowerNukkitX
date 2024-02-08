@@ -144,7 +144,7 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         return toggle(player);
     }
 

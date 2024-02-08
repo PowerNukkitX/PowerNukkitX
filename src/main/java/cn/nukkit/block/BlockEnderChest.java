@@ -8,7 +8,6 @@ import cn.nukkit.blockentity.BlockEntityEnderChest;
 import cn.nukkit.inventory.HumanEnderChestInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -18,9 +17,7 @@ import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class BlockEnderChest extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityEnderChest> {
 
@@ -133,7 +130,7 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player == null) {
             return false;
         }

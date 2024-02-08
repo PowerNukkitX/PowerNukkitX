@@ -60,7 +60,7 @@ public class BlockPumpkin extends BlockSolid implements Faceable {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isShears()) {
             BlockCarvedPumpkin carvedPumpkin = new BlockCarvedPumpkin();
             // TODO: Use the activated block face not the player direction

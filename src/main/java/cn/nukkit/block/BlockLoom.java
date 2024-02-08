@@ -65,7 +65,7 @@ public class BlockLoom extends BlockSolid implements Faceable {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         //TODO Loom's inventory
         return false;
     }

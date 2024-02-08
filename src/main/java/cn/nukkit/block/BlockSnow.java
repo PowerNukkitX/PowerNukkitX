@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemSnowball;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockSnow extends BlockSolid {
@@ -69,7 +70,7 @@ public class BlockSnow extends BlockSolid {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isShovel()) {
             item.useOn(this);
             this.level.useBreakOn(this, item.clone().clearNamedTag(), null, true);

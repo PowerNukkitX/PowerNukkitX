@@ -278,7 +278,7 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         return toggle(player);
     }
 

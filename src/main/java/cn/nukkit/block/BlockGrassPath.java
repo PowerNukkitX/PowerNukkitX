@@ -71,7 +71,7 @@ public class BlockGrassPath extends BlockGrass {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isHoe()) {
             item.useOn(this);
             this.getLevel().setBlock(this, get(FARMLAND), true);

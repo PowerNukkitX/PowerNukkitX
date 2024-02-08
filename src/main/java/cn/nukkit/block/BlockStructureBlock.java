@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.StructureBlockType;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityStructBlock;
@@ -43,7 +42,7 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null) {
             if (player.isCreative() && player.isOp()) {
                 BlockEntityStructBlock tile = this.getOrCreateBlockEntity();

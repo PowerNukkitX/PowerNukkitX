@@ -34,7 +34,7 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isNull() || !item.isFertilizer()) {
             return false;
         }

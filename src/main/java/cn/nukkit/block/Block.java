@@ -238,7 +238,18 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return true;
     }
 
-    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
+    /**
+     * When right-clicked on the block, {@link #canBeActivated()}=true will only be called
+     *
+     * @param item      used item
+     * @param player    player for Activator
+     * @param blockFace a direction the player is facing
+     * @param fx        the fx at block
+     * @param fy        the fy at block
+     * @param fz        the fz at block
+     * @return the boolean
+     */
+    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         return false;
     }
 

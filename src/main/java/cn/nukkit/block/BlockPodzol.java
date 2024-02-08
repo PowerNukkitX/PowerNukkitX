@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.enums.DirtType;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
+import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
@@ -50,7 +51,7 @@ public class BlockPodzol extends BlockDirt {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (!this.up().canBeReplaced()) {
             return false;
         }

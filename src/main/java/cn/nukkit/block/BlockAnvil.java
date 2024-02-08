@@ -103,7 +103,7 @@ public class BlockAnvil extends BlockFallable implements Faceable, BlockInventor
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null) {
             player.addWindow(getOrCreateInventory());
         }

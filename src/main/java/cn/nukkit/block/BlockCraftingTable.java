@@ -6,6 +6,7 @@ import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.CraftingTableInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -59,7 +60,7 @@ public class BlockCraftingTable extends BlockSolid implements BlockInventoryHold
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null) {
             player.addWindow(getOrCreateInventory());
         }

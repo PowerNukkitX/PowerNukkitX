@@ -33,7 +33,8 @@ public class BlockCandleCake extends BlockTransparent {
     }
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -124,7 +125,7 @@ public class BlockCandleCake extends BlockTransparent {
 
     @SuppressWarnings("DuplicatedCode")
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (getPropertyValue(CommonBlockProperties.LIT) && !Objects.equals(item.getId(), ItemID.FLINT_AND_STEEL)) {
             setPropertyValue(CommonBlockProperties.LIT, false);
             getLevel().addSound(this, Sound.RANDOM_FIZZ);
@@ -139,7 +140,7 @@ public class BlockCandleCake extends BlockTransparent {
             final Block cake = new BlockCake();
             this.getLevel().setBlock(this, cake, true, true);
             this.getLevel().dropItem(this.add(0.5, 0.5, 0.5), getDrops(null)[0]);
-            return this.getLevel().getBlock(this).onActivate(Item.get(AIR), player);
+            return this.getLevel().getBlock(this).onActivate(Item.get(AIR), player, blockFace, fx, fy, fz);
         }
         return false;
     }

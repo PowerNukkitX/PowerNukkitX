@@ -63,7 +63,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
             return false;
         if (this.isActivated()) {

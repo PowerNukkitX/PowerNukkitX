@@ -102,7 +102,7 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null) {
             BlockEntityCommandBlock tile = this.getOrCreateBlockEntity();
             tile.spawnTo(player);

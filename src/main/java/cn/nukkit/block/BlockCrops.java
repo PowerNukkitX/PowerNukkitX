@@ -58,7 +58,7 @@ public abstract class BlockCrops extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         //Bone meal
         if (item.isFertilizer()) {
             int max = getMaxGrowth();

@@ -67,7 +67,7 @@ public class BlockPinkPetals extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
             if (getPropertyValue(GROWTH) < 3) {
                 setPropertyValue(GROWTH, getPropertyValue(GROWTH) + 1);

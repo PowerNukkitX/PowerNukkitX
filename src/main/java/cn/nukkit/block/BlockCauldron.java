@@ -41,7 +41,8 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
     public static final BlockProperties PROPERTIES = new BlockProperties(CAULDRON, CAULDRON_LIQUID, FILL_LEVEL);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -54,12 +55,14 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.CAULDRON;
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityCauldron> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityCauldron> getBlockEntityClass() {
         return BlockEntityCauldron.class;
     }
 
@@ -123,10 +126,10 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         // lava
         if (getCauldronLiquid() == CauldronLiquid.LAVA) {
-            return onLavaActivate(item, player);
+            return onLavaActivate(item, player, blockFace, fx, fy, fz);
         }
 
         // non-lava
@@ -397,7 +400,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
         return true;
     }
 
-    public boolean onLavaActivate(@NotNull Item item, Player player) {
+    public boolean onLavaActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         BlockEntity be = this.level.getBlockEntity(this);
 
         if (!(be instanceof BlockEntityCauldron cauldron)) {
@@ -462,10 +465,10 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     clearWithFizz(cauldron);
                     break;
                 }
-                return super.onActivate(item, player);
+                return super.onActivate(item, player, blockFace, fx, fy, fz);
             case Item.GLASS_BOTTLE:
                 if (!isEmpty() && cauldron.hasPotion()) {
-                    return super.onActivate(item, player);
+                    return super.onActivate(item, player, blockFace, fx, fy, fz);
                 }
             default:
                 return true;

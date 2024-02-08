@@ -137,7 +137,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, @org.jetbrains.annotations.Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @org.jetbrains.annotations.Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
             Block head = this;
             Block up;

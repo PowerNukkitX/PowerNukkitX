@@ -158,7 +158,7 @@ public class BlockDoublePlant extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { //Bone meal
             switch (getDoublePlantType()) {
                 case SUNFLOWER:

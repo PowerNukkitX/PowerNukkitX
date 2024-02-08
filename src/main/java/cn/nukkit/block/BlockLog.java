@@ -37,7 +37,7 @@ public abstract class BlockLog extends BlockSolid implements IBlockWood {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isAxe()) {
             Block strippedBlock = Block.get(getStrippedState());
             item.useOn(this);

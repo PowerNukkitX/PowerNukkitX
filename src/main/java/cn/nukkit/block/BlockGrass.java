@@ -12,6 +12,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.legacytree.LegacyTallGrass;
 import cn.nukkit.level.particle.BoneMealParticle;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.random.NukkitRandomSource;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
@@ -69,7 +70,7 @@ public class BlockGrass extends BlockDirt {
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (!this.up().canBeReplaced()) {
             return false;
         }

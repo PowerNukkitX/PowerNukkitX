@@ -517,7 +517,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
                 Item itemToAdd = item.clone();
                 itemToAdd.setCount(1);
 
-                if (!composter.onActivate(item,null)) {
+                if (!composter.onActivate(item, null, BlockFace.DOWN, 0, 0, 0)) {
                     return false;
                 }
                 item.count--;

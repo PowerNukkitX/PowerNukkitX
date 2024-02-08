@@ -80,7 +80,7 @@ public class BlockRedFlower extends BlockFlowable implements BlockFlowerPot.Flow
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { //Bone meal
             if (player != null && (player.gamemode & 0x01) == 0) {
                 item.count--;

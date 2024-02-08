@@ -45,7 +45,7 @@ public class BlockSmithingTable extends BlockSolid implements BlockInventoryHold
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player == null) {
             return false;
         }

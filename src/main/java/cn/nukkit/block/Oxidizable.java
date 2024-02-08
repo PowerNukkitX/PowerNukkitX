@@ -8,6 +8,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.particle.ScrapeParticle;
+import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -90,7 +91,7 @@ public interface Oxidizable {
         return type;
     }
 
-    default boolean onActivate(@NotNull Item item, @Nullable Player player) {
+    default boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (!item.isAxe()) {
             return false;
         }

@@ -59,7 +59,7 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { // BoneMeal
             if (player != null && !player.isCreative()) {
                 item.count--;

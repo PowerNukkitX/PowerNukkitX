@@ -2568,7 +2568,6 @@ public class Level implements Metadatable {
         if (target.isAir()) {
             return null;
         }
-        int touchStatus = 0;
         if (player != null) {
             PlayerInteractEvent ev = new PlayerInteractEvent(player, item, target, face, target.isAir() ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
             //                                handle spawn protect
@@ -2579,8 +2578,7 @@ public class Level implements Metadatable {
             this.server.getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
                 target.onTouch(vector, item, face, fx, fy, fz, player, ev.getAction());
-                if (((!player.isSneaking() && !player.isFlySneaking()) || player.getInventory().getItemInHand().isNull())
-                        && target.canBeActivated() && target.onActivate(item, player)) {
+                if (ev.getAction() == Action.RIGHT_CLICK_BLOCK && target.canBeActivated() && target.onActivate(item, player, face, fx, fy, fz)) {
                     if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
                         addSound(player, Sound.RANDOM_BREAK);
                         item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
@@ -2604,7 +2602,7 @@ public class Level implements Metadatable {
             if ((item instanceof ItemBucket itemBucket) && itemBucket.isWater()) {
                 player.getLevel().sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
             }
-        } else if (target.canBeActivated() && target.onActivate(item, player)) {
+        } else if (target.canBeActivated() && target.onActivate(item, player, face, fx, fy, fz)) {
             if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
                 item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
             }
