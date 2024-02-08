@@ -3,6 +3,7 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
+import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.entity.item.EntityMinecartAbstract;
 import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.event.player.*;
@@ -183,8 +184,17 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
         }
         Location clientLoc = Location.fromObject(clientPosition, player.level, yaw, pitch, headYaw);
         // Proper player.isPassenger() check may be needed
-        if (playerHandle.player.riding instanceof EntityMinecartAbstract entityMinecartAbstract) {
-            entityMinecartAbstract.setCurrentSpeed(pk.getMotion().getY());
+        if (player.riding instanceof EntityMinecartAbstract entityMinecartAbstract) {
+            double inputY = pk.getMotion().getY();
+            if (inputY >= -1.001 && inputY <= 1.001) {
+                entityMinecartAbstract.setCurrentSpeed(inputY);
+            }
+        } else if (player.riding instanceof EntityBoat boat && pk.getInputData().contains(AuthInputAction.IN_CLIENT_PREDICTED_IN_VEHICLE)) {
+            if (player.riding.getId() == pk.getPredictedVehicle() && player.riding.isControlling(player)) {
+                if (player.temporalVector.setComponents(pk.getPosition().getX(), pk.getPosition().getY(), pk.getPosition().getZ()).distanceSquared(player.riding) < 100) {
+                    boat.onInput(pk.getPosition().getX(), pk.getPosition().getY(), pk.getPosition().getZ(), pk.getHeadYaw());
+                }
+            }
         } else if (playerHandle.player.riding instanceof EntityHorse entityHorse) {
             //为了保证玩家和马位置同步，骑马时不使用移动队列处理
             var distance = clientLoc.distanceSquared(player);

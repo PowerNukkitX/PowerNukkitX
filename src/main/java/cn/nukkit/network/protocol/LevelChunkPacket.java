@@ -22,6 +22,10 @@ public class LevelChunkPacket extends DataPacket {
     public int subChunkLimit;
     public long[] blobIds;
     public byte[] data;
+    /**
+     * @since v649
+     */
+    private int dimension;
 
     @Override
     public void decode() {
@@ -33,6 +37,7 @@ public class LevelChunkPacket extends DataPacket {
         this.reset();
         this.putVarInt(this.chunkX);
         this.putVarInt(this.chunkZ);
+        this.putVarInt(this.dimension);
         if (!this.requestSubChunks) {
             this.putUnsignedVarInt(this.subChunkCount);
         } else if (this.subChunkLimit < 0) {
