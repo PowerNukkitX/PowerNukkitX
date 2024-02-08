@@ -43,6 +43,7 @@ public class PlayerListPacket extends DataPacket {
                 this.putSkin(entry.skin);
                 this.putBoolean(entry.isTeacher);
                 this.putBoolean(entry.isHost);
+                this.putBoolean(entry.subClient);
             }
 
             for (Entry entry : this.entries) {
@@ -73,7 +74,7 @@ public class PlayerListPacket extends DataPacket {
         public Skin skin;
         public boolean isTeacher;
         public boolean isHost;
-
+        private boolean subClient;
 
         public boolean trustedSkin;
 

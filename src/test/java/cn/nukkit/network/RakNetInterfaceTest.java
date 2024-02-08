@@ -25,6 +25,7 @@ import org.cloudburstmc.netty.channel.raknet.RakConstants;
 import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
 import org.cloudburstmc.netty.channel.raknet.packet.RakMessage;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.net.InetSocketAddress;
@@ -41,7 +42,8 @@ public class RakNetInterfaceTest {
                 .option(RakChannelOption.RAK_ORDERING_CHANNELS, 1);
     }
 
-    @Test
+    @Test()
+    @Timeout(10)
     void test(GameMockExtension gameMockExtension) {
         int mtu = RakConstants.MAXIMUM_MTU_SIZE;
         System.out.println("Testing client with MTU " + mtu);

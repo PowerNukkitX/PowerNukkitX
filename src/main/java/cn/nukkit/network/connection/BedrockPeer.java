@@ -35,7 +35,9 @@ import javax.crypto.SecretKey;
 import java.net.SocketAddress;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -137,9 +139,9 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
     public void sendPacketImmediatelyAndCallBack(int senderClientId, int targetClientId, DataPacket packet, Runnable callback) {
         ChannelFuture channelFuture = this.channel.writeAndFlush(new BedrockPacketWrapper(0, senderClientId, targetClientId, packet, null));
         try {
-            channelFuture.sync();
+            channelFuture.get(10, TimeUnit.SECONDS);
             callback.run();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }

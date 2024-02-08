@@ -1,19 +1,13 @@
 package cn.nukkit.registry;
 
+import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BinaryStream;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -54,14 +48,11 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
     @Override
     public void init() {
         if (isLoad.getAndSet(true)) return;
-        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("runtime_item_states.json")) {
+        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("item_data.nbt")) {
             assert stream != null;
-            Gson gson = new GsonBuilder().setObjectToNumberStrategy(JsonReader::nextInt).create();
-            TypeToken<List<Map<String, Object>>> typeToken = new TypeToken<>() {
-            };
-            List<Map<String, Object>> list = gson.fromJson(new InputStreamReader(stream), typeToken.getType());
-            for (var v : list) {
-                register0(v.get("name").toString(), Integer.parseInt(v.get("id").toString()));
+            CompoundTag compoundTag = NBTIO.readCompressed(stream);
+            for (var tag : compoundTag.getList("item", CompoundTag.class).getAll()) {
+                register0(tag.getString("name"), tag.getShort("id"));
             }
             trim();
             generatePalette();

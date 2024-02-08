@@ -37,8 +37,12 @@ public class PlayerAuthInputPacket extends DataPacket {
      */
     private ItemStackRequest itemStackRequest;
     private final Map<PlayerActionType, PlayerBlockActionData> blockActionData = new EnumMap<>(PlayerActionType.class);
-
     private Vector2f analogMoveVector;
+    /**
+     * @since 649
+     */
+    private long predictedVehicle;
+
 
     @Override
     public int pid() {
@@ -92,6 +96,11 @@ public class PlayerAuthInputPacket extends DataPacket {
                 }
             }
         }
+
+        if (this.inputData.contains(AuthInputAction.IN_CLIENT_PREDICTED_IN_VEHICLE)) {
+            this.predictedVehicle = this.getVarLong();
+        }
+
         // since 1.19.70-r1, v575
         this.analogMoveVector = this.getVector2f();
     }
