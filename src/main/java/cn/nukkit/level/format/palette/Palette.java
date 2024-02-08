@@ -1,6 +1,6 @@
 package cn.nukkit.level.format.palette;
 
-import cn.nukkit.level.updater.BlockStateUpdaters;
+import cn.nukkit.level.updater.block.BlockStateUpdaters;
 import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.bitarray.BitArray;
