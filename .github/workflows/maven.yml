@@ -42,7 +42,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
-          token: ${{ secrets.ACTION }}
 
       - uses: actions/setup-java@v4
         with:
