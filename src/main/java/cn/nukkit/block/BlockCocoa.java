@@ -35,7 +35,8 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
     protected static final Object2ObjectArrayMap<BlockFace, AxisAlignedBB[]> ALL = new Object2ObjectArrayMap<>(4);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -84,24 +85,34 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
 
     private AxisAlignedBB getRelativeBoundingBox() {
         BlockFace face = getBlockFace();
-        AxisAlignedBB boundingBox = ALL.get(face)[getAge()];
-        if (boundingBox != null) return boundingBox;
+        AxisAlignedBB[] axisAlignedBBS = ALL.get(face);
+        if (axisAlignedBBS != null) {
+            return axisAlignedBBS[getAge()];
+        }
         AxisAlignedBB[] bbs = switch (face) {
             case EAST -> EAST;
             case SOUTH -> SOUTH;
             case WEST -> WEST;
             default -> NORTH;
         };
-        AxisAlignedBB[] aabbs = ALL.put(face, bbs);
-        assert aabbs != null;
-        return aabbs[getAge()];
+        ALL.put(face, bbs);
+        return bbs[getAge()];
     }
+
+    static final int[] faces = new int[]{
+            0,
+            0,
+            0,
+            2,
+            3,
+            1,
+    };
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (target instanceof BlockWood wood && wood.getWoodType() == WoodType.JUNGLE) {
+        if (target instanceof BlockJungleLog || target instanceof BlockWood wood && wood.getWoodType() == WoodType.JUNGLE) {
             if (face != BlockFace.DOWN && face != BlockFace.UP) {
-                setBlockFace(face);
+                setPropertyValue(DIRECTION, faces[face.getIndex()]);
                 this.level.setBlock(block, this, true, true);
                 return true;
             }
@@ -109,16 +120,15 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
         return false;
     }
 
+    static final int[] faces2 = new int[]{
+            3, 4, 2, 5, 3, 4, 2, 5, 3, 4, 2, 5
+    };
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            int[] faces = new int[]{
-                    3, 4, 2, 5, 3, 4, 2, 5, 3, 4, 2, 5
-            };
-
-
-            Block side = this.getSide(getBlockFace());
-            if (!(side instanceof BlockWood wood) || wood.getWoodType() != WoodType.JUNGLE) {
+            Block side = this.getSide(BlockFace.fromIndex(faces2[getPropertyValue(DIRECTION)]));
+            if (!((side instanceof BlockWood wood && wood.getWoodType() == WoodType.JUNGLE) || side instanceof BlockJungleLog)) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -196,7 +206,8 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
     }
 
     @Override
-    @NotNull public String getItemId() {
+    @NotNull
+    public String getItemId() {
         return ItemID.COCOA_BEANS;
     }
 
