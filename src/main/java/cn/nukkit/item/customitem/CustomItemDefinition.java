@@ -1,9 +1,9 @@
 package cn.nukkit.item.customitem;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.customitem.data.DigProperty;
 import cn.nukkit.item.customitem.data.CreativeCategory;
 import cn.nukkit.item.customitem.data.CreativeGroup;
+import cn.nukkit.item.customitem.data.DigProperty;
 import cn.nukkit.item.customitem.data.RenderOffsets;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -17,7 +17,11 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -94,7 +98,11 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
     }
 
     public String getTexture() {
-        return this.nbt.getCompound("components").getCompound("item_properties").getCompound("minecraft:icon").getString("texture");
+        return this.nbt.getCompound("components")
+                .getCompound("item_properties")
+                .getCompound("minecraft:icon")
+                .getCompound("textures")
+                .getString("default");
     }
 
     public int getRuntimeId() {
@@ -283,7 +291,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
                     .getCompound("minecraft:icon")
-                    .putString("texture", texture);
+                    .putCompound("textures", new CompoundTag().putString("default", texture));
 
             if (name != null) {
                 //定义显示名
