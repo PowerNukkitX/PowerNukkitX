@@ -833,7 +833,7 @@ public class Server {
                 LevelConfig levelConfig = new LevelConfig(this.getConfig().get("level-settings.default-format", "leveldb"), generatorConfig);
                 this.generateLevel(levelFolder, levelConfig);
             }
-            this.setDefaultLevel(this.getLevelByName(levelFolder + " Dim0"));
+            this.setDefaultLevel(this.getLevelByName(levelFolder));
         }
 
         this.getTickingAreaManager().loadAllTickingArea();
@@ -2420,13 +2420,12 @@ public class Server {
         }
         Map<Integer, LevelConfig.GeneratorConfig> generators = levelConfig.generators();
         for (var entry : generators.entrySet()) {
-            String levelName = name + " Dim" + entry.getKey();
-            if (this.isLevelLoaded(levelName)) {
+            if (this.isLevelLoaded(name)) {
                 return true;
             }
             Level level;
             try {
-                level = new Level(this, levelName, path, generators.size(), provider, entry.getValue());
+                level = new Level(this, name, path, generators.size(), provider, entry.getValue());
             } catch (Exception e) {
                 log.error(this.getLanguage().tr("nukkit.level.loadError", name, e.getMessage()), e);
                 return false;
@@ -2484,12 +2483,11 @@ public class Server {
             Level level;
             try {
                 provider.getMethod("generate", String.class, String.class, LevelConfig.GeneratorConfig.class).invoke(null, path, name, generatorConfig);
-                String levelName = name + " Dim" + entry.getKey();
-                if (this.isLevelLoaded(levelName)) {
-                    log.warn("level {} has already been loaded!", levelName);
+                if (this.isLevelLoaded(name)) {
+                    log.warn("level {} has already been loaded!", name);
                     continue;
                 }
-                level = new Level(this, levelName, path, levelConfig.generators().size(), provider, generatorConfig);
+                level = new Level(this, name, path, levelConfig.generators().size(), provider, generatorConfig);
                 this.levels.put(level.getId(), level);
                 level.initLevel();
                 level.setTickRate(this.baseTickRate);
