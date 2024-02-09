@@ -35,7 +35,13 @@ public class WorldCommand extends VanillaCommand {
             case "list" -> {
                 var strBuilder = new StringBuilder();
                 Server.getInstance().getLevels().values().forEach(level -> {
+                    strBuilder.append(TextFormat.GREEN);
                     strBuilder.append(level.getName());
+                    strBuilder.append(TextFormat.GRAY);
+                    strBuilder.append(" (");
+                    strBuilder.append(level.getDimensionData().getDimensionName());
+                    strBuilder.append(")");
+                    strBuilder.append(TextFormat.WHITE);
                     strBuilder.append(", ");
                 });
                 log.addMessage(TextFormat.WHITE + "%nukkit.command.world.availableLevels", strBuilder.toString()).output();
