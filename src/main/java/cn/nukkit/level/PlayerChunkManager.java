@@ -3,7 +3,6 @@ package cn.nukkit.level;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.player.PlayerChunkRequestEvent;
-import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.protocol.NetworkChunkPublisherUpdatePacket;
@@ -14,6 +13,11 @@ import it.unimi.dsi.fastutil.longs.LongComparator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.ApiStatus;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Slf4j
 public final class PlayerChunkManager {
@@ -36,18 +40,23 @@ public final class PlayerChunkManager {
     };
     private final Player player;
     //保存着上tick已经发送的全部区块hash值
-    private final LongOpenHashSet sentChunks = new LongOpenHashSet();
+    private final LongOpenHashSet sentChunks;
     //保存着这tick将要发送的全部区块hash值
-    private final LongOpenHashSet inRadiusChunks = new LongOpenHashSet();
+    private final LongOpenHashSet inRadiusChunks;
     private final int chunkTrySendCountPerTick;
     private final LongArrayFIFOQueue chunkSendQueue;
+    private final Long2ObjectOpenHashMap<CompletableFuture<IChunk>> chunkLoadingQueue;
+    private final Long2ObjectOpenHashMap<IChunk> chunkReadyToSend;
     private long lastLoaderChunkPosHashed = -1;
-
 
     public PlayerChunkManager(Player player) {
         this.player = player;
+        this.sentChunks = new LongOpenHashSet();
+        this.inRadiusChunks = new LongOpenHashSet();
         this.chunkSendQueue = new LongArrayFIFOQueue(player.getViewDistance() * player.getViewDistance());
+        this.chunkLoadingQueue = new Long2ObjectOpenHashMap<>(player.getViewDistance() * player.getViewDistance());
         this.chunkTrySendCountPerTick = player.getChunkSendCountPerTick();
+        this.chunkReadyToSend = new Long2ObjectOpenHashMap<>();
     }
 
     public void tick() {
@@ -60,7 +69,8 @@ public final class PlayerChunkManager {
             removeOutOfRadiusChunks();
             updateChunkSendingQueue();
         }
-        loadAndSendQueuedChunks();
+        loadQueuedChunks();
+        sendChunk();
     }
 
     @ApiStatus.Internal
@@ -114,59 +124,50 @@ public final class PlayerChunkManager {
         difference.stream().sorted(chunkDistanceComparator).forEachOrdered(v -> chunkSendQueue.enqueue(v.longValue()));
     }
 
-    private void loadAndSendQueuedChunks() {
+    private void loadQueuedChunks() {
         if (chunkSendQueue.isEmpty()) return;
-        var chunkReadyToSend = new Long2ObjectOpenHashMap<IChunk>();
         int triedSendChunkCount = 0;
         do {
             triedSendChunkCount++;
             long chunkHash = chunkSendQueue.dequeueLong();
             int chunkX = Level.getHashX(chunkHash);
             int chunkZ = Level.getHashZ(chunkHash);
-            var chunk = player.getLevel().getChunk(chunkX, chunkZ);
-            if (chunk == null || !chunk.getChunkState().canSend()) {
-                player.level.generateChunk(chunkX, chunkZ);
+            var chunkTask = chunkLoadingQueue.computeIfAbsent(chunkHash, (hash) -> player.getLevel().getChunkAsync(chunkX, chunkZ));
+            if (chunkTask.isDone()) {
+                try {
+                    IChunk chunk = chunkTask.get(10, TimeUnit.MICROSECONDS);
+                    if (chunk == null || !chunk.getChunkState().canSend()) {
+                        player.level.generateChunk(chunkX, chunkZ);
+                        chunkSendQueue.enqueue(chunkHash);
+                        continue;
+                    }
+                    chunkLoadingQueue.remove(chunkHash);
+                    player.level.registerChunkLoader(player, chunkX, chunkZ, false);
+                    chunkReadyToSend.put(chunkHash, chunk);
+                } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
+                }
+            } else {
                 chunkSendQueue.enqueue(chunkHash);
-                continue;
             }
-            player.level.registerChunkLoader(player, chunkX, chunkZ, false);
-            chunkReadyToSend.put(chunkHash, chunk);
         } while (!chunkSendQueue.isEmpty() && triedSendChunkCount < chunkTrySendCountPerTick);
+    }
 
+    private void sendChunk() {
         if (!chunkReadyToSend.isEmpty()) {
             NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
             packet.position = player.asBlockVector3();
             packet.radius = player.getViewDistance() << 4;
             player.dataPacket(packet);
-            if (true) {
-                for (var e : chunkReadyToSend.long2ObjectEntrySet()) {
-                    int chunkX = Level.getHashX(e.getLongKey());
-                    int chunkZ = Level.getHashZ(e.getLongKey());
-                    PlayerChunkRequestEvent ev = new PlayerChunkRequestEvent(player, chunkX, chunkZ);
-                    player.getServer().getPluginManager().callEvent(ev);
-                    player.level.requestChunk(chunkX, chunkZ, player);
-                }
-                sentChunks.addAll(chunkReadyToSend.keySet());
-            } else {
-                /*// 1. Encode all lcps
-                List<LevelChunkPacket> lcps;
-                Stream<IChunk> lcpStream;
-                if (true) {
-                    lcpStream = chunkReadyToSend.values().parallelStream();
-                } else {
-                    lcpStream = chunkReadyToSend.values().stream();
-                }
-                player.
-                lcps = lcpStream.map(chunk.createFullLevelChunkPacketChunk()).toList();
-                // 2. Send lcps to client
-                for (var lcp : lcps) {
-                    chunkLoader.sendLevelChunkPacket(lcp);
-                }
-                sentChunks.addAll(chunkReadyToSend.keySet());
-                // 3. Call onChunkInRangeSent()
-                chunkReadyToSend.values().forEach(chunkLoader::onChunkInRangeSent);*/
+            for (var e : chunkReadyToSend.long2ObjectEntrySet()) {
+                int chunkX = Level.getHashX(e.getLongKey());
+                int chunkZ = Level.getHashZ(e.getLongKey());
+                PlayerChunkRequestEvent ev = new PlayerChunkRequestEvent(player, chunkX, chunkZ);
+                player.getServer().getPluginManager().callEvent(ev);
+                player.level.requestChunk(chunkX, chunkZ, player);
             }
+            sentChunks.addAll(chunkReadyToSend.keySet());
         }
+        chunkReadyToSend.clear();
     }
 
     private boolean ifChunkNotInRadius(int chunkX, int chunkZ, int radius) {

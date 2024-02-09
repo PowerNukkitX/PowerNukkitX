@@ -63,6 +63,8 @@ public class Nukkit {
     public static List<String> JS_DEBUG_LIST = new LinkedList<>();
 
     public static void main(String[] args) {
+        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
+
         AtomicBoolean disableSentry = new AtomicBoolean(false);
         disableSentry.set(Boolean.parseBoolean(System.getProperty("disableSentry", "false")));
 

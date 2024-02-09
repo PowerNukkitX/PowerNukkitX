@@ -3423,6 +3423,26 @@ public class Level implements Metadatable {
         return chunk;
     }
 
+    public CompletableFuture<IChunk> getChunkAsync(int chunkX, int chunkZ) {
+        return this.getChunkAsync(chunkX, chunkZ, false);
+    }
+
+    public CompletableFuture<IChunk> getChunkAsync(@NotNull ChunkVector2 pos) {
+        return getChunkAsync(pos.getX(), pos.getZ(), false);
+    }
+
+    public CompletableFuture<IChunk> getChunkAsync(int chunkX, int chunkZ, boolean create) {
+        return CompletableFuture.supplyAsync(() -> {
+            long index = Level.chunkHash(chunkX, chunkZ);
+            IChunk chunk = this.requireProvider().getLoadedChunk(index);
+            if (chunk == null) {
+                chunk = this.forceLoadChunk(index, chunkX, chunkZ, create);
+            }
+            return chunk;
+        }, Server.getInstance().getComputeThreadPool());
+    }
+
+
     public boolean loadChunk(int x, int z) {
         return this.loadChunk(x, z, true);
     }

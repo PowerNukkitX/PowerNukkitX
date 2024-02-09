@@ -102,9 +102,6 @@ public class ItemBucket extends Item {
     }
 
     public @Nullable String getFishEntityId() {
-        if (!Objects.equals(getId(), BUCKET)) {
-            return null;
-        }
         return switch (this.getBucketType()) {
             case 2 -> "Cod";
             case 3 -> "Salmon";
@@ -319,10 +316,6 @@ public class ItemBucket extends Item {
     }
 
     protected void afterUse(Level level, Block block) {
-        if (!Objects.equals(getId(), BUCKET)) {
-            return;
-        }
-
         if (this.getBucketType() == 10) {
             level.addSound(block, Sound.BUCKET_EMPTY_LAVA);
         } else {
