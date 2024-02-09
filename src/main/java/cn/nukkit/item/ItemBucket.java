@@ -10,6 +10,7 @@ import cn.nukkit.block.BlockLava;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.block.BlockPowderSnow;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.event.player.PlayerBucketEmptyEvent;
 import cn.nukkit.event.player.PlayerBucketFillEvent;
 import cn.nukkit.event.player.PlayerItemConsumeEvent;
@@ -103,12 +104,12 @@ public class ItemBucket extends Item {
 
     public @Nullable String getFishEntityId() {
         return switch (this.getBucketType()) {
-            case 2 -> "Cod";
-            case 3 -> "Salmon";
-            case 4 -> "TropicalFish";
-            case 5 -> "Pufferfish";
-            case 12 -> "Axolotl";
-            case 13 -> "Tadpole";
+            case 2 -> EntityID.COD;
+            case 3 -> EntityID.SALMON;
+            case 4 -> EntityID.TROPICALFISH;
+            case 5 -> EntityID.PUFFERFISH;
+            case 12 -> EntityID.AXOLOTL;
+            case 13 -> EntityID.TADPOLE;
             default -> null;
         };
     }
