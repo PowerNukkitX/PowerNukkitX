@@ -24,6 +24,7 @@ public abstract class LegacyTreeGenerator {
                     tree = new LegacyBirchTree();
                 }
             }
+            case DARK_OAK -> tree = new LegacyDarkOakTree(6, 3);
             case JUNGLE -> tree = new LegacyJungleTree();
             default -> tree = new LegacyOakTree();
 
