@@ -8,7 +8,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
+@ToString
 public class ZlibCompression implements BatchCompression {
     private final CompressionProvider zlib;
 

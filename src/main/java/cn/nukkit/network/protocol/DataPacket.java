@@ -11,13 +11,6 @@ public abstract class DataPacket extends BinaryStream {
 
     public abstract int pid();
 
-    /**
-     * @return The protocol version of the packet. If it is lower than CURRENT_PROTOCOL, pnx will try to translate it.
-     */
-    public int getProtocolUsed() {
-        return ProtocolInfo.CURRENT_PROTOCOL;
-    }
-
     public abstract void decode();
 
     public abstract void encode();

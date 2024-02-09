@@ -4,6 +4,7 @@ import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.NetworkSettingsPacket;
+import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.RequestNetworkSettingsPacket;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
@@ -13,10 +14,22 @@ public class RequestNetworkSettingsProcessor extends DataPacketProcessor<Request
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull RequestNetworkSettingsPacket pk) {
         var player = playerHandle.player;
+        int protocolVersion = pk.protocolVersion;
+
+        String message;
+        if (protocolVersion < ProtocolInfo.CURRENT_PROTOCOL) {
+            message = "disconnectionScreen.outdatedClient";
+            player.close("", message, true);
+            return;
+        } else if (protocolVersion > ProtocolInfo.CURRENT_PROTOCOL) {
+            message = "disconnectionScreen.outdatedServer";
+            player.close("", message, true);
+            return;
+        }
+
         if (player.loggedIn) {
             return;
         }
-        var protocolVersion = pk.protocolVersion;
         var settingsPacket = new NetworkSettingsPacket();
         PacketCompressionAlgorithm algorithm;
         if (Server.getInstance().isEnableSnappy()) {
@@ -29,16 +42,7 @@ public class RequestNetworkSettingsProcessor extends DataPacketProcessor<Request
         //In raknet version 11, the client does not enable packet compression by default,but the server will tell client what the
         //compression algorithm through NetworkSettingsPacket
         player.getNetworkSession().sendPacketImmediatelyAndCallBack(settingsPacket, () -> {
-            String message;
             playerHandle.getNetworkSession().setCompression(algorithm);//so send the NetworkSettingsPacket packet before set the session compression
-            if (!ProtocolInfo.SUPPORTED_PROTOCOLS.contains(protocolVersion)) {
-                if (protocolVersion < ProtocolInfo.CURRENT_PROTOCOL) {
-                    message = "disconnectionScreen.outdatedClient";
-                } else {
-                    message = "disconnectionScreen.outdatedServer";
-                }
-                player.close("", message, true);
-            }
         });
     }
 

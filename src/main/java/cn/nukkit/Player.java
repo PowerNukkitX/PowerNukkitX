@@ -3071,7 +3071,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
             log.trace("Inbound {}: {}", this.getName(), packet);
         }
-        if (dataPacketManager.canProcess(packet.getProtocolUsed(), packet.pid())) {
+        if (dataPacketManager.canProcess( packet.pid())) {
             dataPacketManager.processPacket(this.playerHandle, packet);
         }
     }
@@ -3623,7 +3623,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             this.connected = false;
             PlayerQuitEvent ev = null;
-            if (!this.getName().isEmpty()) {
+            if (this.name!=null && !this.getName().isEmpty()) {
                 this.server.getPluginManager().callEvent(ev = new PlayerQuitEvent(this, message, true, reason));
                 if (this.fishing != null) {
                     this.stopFishing(false);

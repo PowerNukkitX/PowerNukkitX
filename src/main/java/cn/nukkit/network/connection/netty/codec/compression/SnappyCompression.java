@@ -5,9 +5,10 @@ import cn.nukkit.network.protocol.types.CompressionAlgorithm;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.ToString;
 
+@ToString
 public class SnappyCompression implements BatchCompression {
-    public static final String NAME = "compression-codec";
 
     @Override
     public ByteBuf encode(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {

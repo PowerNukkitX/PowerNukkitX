@@ -1,8 +1,6 @@
 package cn.nukkit.network.protocol;
 
-
 import lombok.ToString;
-
 
 @ToString
 public class RequestNetworkSettingsPacket extends DataPacket {

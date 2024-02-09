@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  */
 @SuppressWarnings("rawtypes")
 public final class DataPacketManager {
-    private final Int2ObjectOpenHashMap<DataPacketProcessor> CURRENT_PROTOCOL_PROCESSORS = new Int2ObjectOpenHashMap<>(300);
+    private final Int2ObjectOpenHashMap<DataPacketProcessor> PROCESSORS = new Int2ObjectOpenHashMap<>(300);
 
     public DataPacketManager() {
         registerDefaultProcessors();
@@ -20,28 +20,17 @@ public final class DataPacketManager {
 
     public void registerProcessor(@NotNull DataPacketProcessor... processors) {
         for (var processor : processors) {
-            if (processor.getProtocol() != ProtocolInfo.CURRENT_PROTOCOL) {
-                throw new IllegalArgumentException("Processor protocol " + processor.getProtocol() + " does not match current protocol " + ProtocolInfo.CURRENT_PROTOCOL
-                        + ". Multi-version support is not implemented yet.");
-            }
-            CURRENT_PROTOCOL_PROCESSORS.put(processor.getPacketId(), processor);
+            PROCESSORS.put(processor.getPacketId(), processor);
         }
-        CURRENT_PROTOCOL_PROCESSORS.trim();
+        PROCESSORS.trim();
     }
 
-    public boolean canProcess(int protocol, int packetId) {
-        if (protocol != ProtocolInfo.CURRENT_PROTOCOL) {
-            return false;
-        }
-        return CURRENT_PROTOCOL_PROCESSORS.containsKey(packetId);
+    public boolean canProcess(int packetId) {
+        return PROCESSORS.containsKey(packetId);
     }
 
     public void processPacket(@NotNull PlayerHandle playerHandle, @NotNull DataPacket packet) {
-        if (packet.getProtocolUsed() != ProtocolInfo.CURRENT_PROTOCOL) {
-            throw new IllegalArgumentException("Packet protocol " + packet.getProtocolUsed() + " does not match current protocol " + ProtocolInfo.CURRENT_PROTOCOL
-                    + ". Multi-version support is not implemented yet.");
-        }
-        var processor = CURRENT_PROTOCOL_PROCESSORS.get(packet.pid());
+        var processor = PROCESSORS.get(packet.pid());
         if (processor != null) {
             //noinspection unchecked
             processor.handle(playerHandle, packet);
