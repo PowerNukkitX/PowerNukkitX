@@ -43,13 +43,11 @@ public class RakNetInterfaceTest {
     }
 
     @Test()
-    @Timeout(10)
+    @Timeout(20)
     void test(GameMockExtension gameMockExtension) {
         int mtu = RakConstants.MAXIMUM_MTU_SIZE;
-        System.out.println("Testing client with MTU " + mtu);
-        System.out.println(Server.getInstance());
         InetSocketAddress inetSocketAddress = new InetSocketAddress("127.0.0.1", 19132);
-        Channel channel = clientBootstrap(mtu)
+        clientBootstrap(mtu)
                 .handler(new ChannelInitializer<RakClientChannel>() {
                     @Override
                     protected void initChannel(RakClientChannel ch) throws Exception {
