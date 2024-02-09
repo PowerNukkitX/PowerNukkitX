@@ -25,7 +25,7 @@ public class LevelChunkPacket extends DataPacket {
     /**
      * @since v649
      */
-    private int dimension;
+    public int dimension;
 
     @Override
     public void decode() {

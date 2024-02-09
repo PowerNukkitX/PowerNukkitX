@@ -292,11 +292,11 @@ public class Level implements Metadatable {
     private long levelCurrentTick = 0;
     private final Map<Long, Map<Integer, Object>> lightQueue = new ConcurrentHashMap<>(8, 0.9f, 1);
     private Iterator<cn.nukkit.utils.collection.nb.LongObjectEntry<Long>> lastUsingUnloadingIter;
-    private final int dimSum;
+    private final int dimensionCount;
 
     public Level(Server server, String name, String path, int dimSum, Class<? extends LevelProvider> provider, LevelConfig.GeneratorConfig generatorConfig) {
         this.levelId = levelIdCounter++;
-        this.dimSum = dimSum;
+        this.dimensionCount = dimSum;
         this.blockMetadata = new BlockMetadataStore(this);
         this.server = server;
         this.autoSave = server.getAutoSave();
@@ -3317,7 +3317,7 @@ public class Level implements Metadatable {
 
         for (Player player : this.chunkSendQueue.get(index).values()) {
             if (player.isConnected() && player.getUsedChunks().contains(index)) {
-                player.sendChunk(x, z, subChunkCount, payload);
+                player.sendChunk(x, z, getDimension(), subChunkCount, payload);
             }
         }
 
@@ -4139,6 +4139,10 @@ public class Level implements Metadatable {
         return getDimensionData().getDimensionId();
     }
 
+    public int getDimensionCount() {
+        return dimensionCount;
+    }
+
     public final boolean isOverWorld() {
         return getDimension() == 0;
     }
@@ -4565,9 +4569,5 @@ public class Level implements Metadatable {
         @NotNull
         private Block block;
         private BlockFace neighbor;
-    }
-
-    public int getDimSum() {
-        return dimSum;
     }
 }

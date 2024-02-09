@@ -69,7 +69,7 @@ public class LevelDBProvider implements LevelProvider {
     public LevelDBProvider(Level level, String path) throws IOException {
         this.storage = CACHE.computeIfAbsent(path, p -> {
             try {
-                return new LevelDBStorage(level.getDimSum(), p, new Options()
+                return new LevelDBStorage(level.getDimensionCount(), p, new Options()
                         .createIfMissing(true)
                         .compressionType(CompressionType.ZLIB_RAW)
                         .blockSize(64 * 1024));
@@ -239,43 +239,25 @@ public class LevelDBProvider implements LevelProvider {
         chunk.batchProcess(unsafeChunk -> {
             final var byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
             try {
-
-                ChunkSection[] sections = unsafeChunk.getSections();
-
-                boolean first = true;
-                int firstExist = -1;
-                int r = -1;
-                int l;
+                final ChunkSection[] sections = unsafeChunk.getSections();
                 int subChunkCount = unsafeChunk.getDimensionData().getChunkSectionCount() - 1;
-                while (subChunkCount >= 0) {
+                while (subChunkCount-- != 0) {
                     if (sections[subChunkCount] != null) {
-                        if (first) {
-                            firstExist = subChunkCount;
-                            r = subChunkCount;
-                            first = false;
-                        }
-                        l = subChunkCount;
-                        if (r - l == 1) {
-                            r = l;
-                        } else if (r - l > 1) {
-                            for (int i = l + 1; i < r; i++) {
-                                unsafeChunk.setSection(i + getDimensionData().getMinSectionY(), new ChunkSection((byte) (i + getDimensionData().getMinSectionY())));
-                            }
-                            r = l;
-                        }
+                        break;
                     }
-                    subChunkCount--;
                 }
-                firstExist++;
-                sections = unsafeChunk.getSections();
+                int total = subChunkCount + 1;
                 //write block
-                for (int i = 0; i < firstExist; i++) {
+                for (int i = 0; i < total; i++) {
+                    if (sections[i] == null) {
+                        sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
+                    }
                     assert sections[i] != null;
                     sections[i].writeToBuf(byteBuf);
                 }
                 // Write biomes
                 Palette<Integer> lastBiomes = null;
-                for (int i = 0; i < firstExist; i++) {
+                for (int i = 0; i < total; i++) {
                     sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue, lastBiomes);
                     lastBiomes = sections[i].biomes();
                 }
@@ -298,7 +280,7 @@ public class LevelDBProvider implements LevelProvider {
                     throw new RuntimeException(e);
                 }
                 byte[] data = Utils.convertByteBuf2Array(byteBuf);
-                callback.accept(data, firstExist);
+                callback.accept(data, total);
             } finally {
                 byteBuf.release();
             }

@@ -2391,10 +2391,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-    public void sendChunk(int x, int z, int subChunkCount, byte[] payload) {
+    public void sendChunk(int x, int z, int dim, int subChunkCount, byte[] payload) {
         LevelChunkPacket pk = new LevelChunkPacket();
         pk.chunkX = x;
         pk.chunkZ = z;
+        pk.dimension = dim;
         pk.subChunkCount = subChunkCount;
         pk.data = payload;
         this.sendChunk(x, z, pk);
@@ -3071,7 +3072,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
             log.trace("Inbound {}: {}", this.getName(), packet);
         }
-        if (dataPacketManager.canProcess( packet.pid())) {
+        if (dataPacketManager.canProcess(packet.pid())) {
             dataPacketManager.processPacket(this.playerHandle, packet);
         }
     }
@@ -3623,7 +3624,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             this.connected = false;
             PlayerQuitEvent ev = null;
-            if (this.name!=null && !this.getName().isEmpty()) {
+            if (this.name != null && !this.getName().isEmpty()) {
                 this.server.getPluginManager().callEvent(ev = new PlayerQuitEvent(this, message, true, reason));
                 if (this.fishing != null) {
                     this.stopFishing(false);
