@@ -61,12 +61,18 @@ public class HudCommand extends VanillaCommand {
             default -> null;
         };
 
+        if(visibility == null || element == null) {
+            return 0;
+        }
+
 
         for (Player player : players) {
             SetHudPacket packet = new SetHudPacket();
             packet.elements.add(element);
             packet.visibility = visibility;
             player.dataPacket(packet);
+            
+            return 1;
         }
 
         return 0;
