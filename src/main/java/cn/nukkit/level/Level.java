@@ -2602,13 +2602,19 @@ public class Level implements Metadatable {
             if ((item instanceof ItemBucket itemBucket) && itemBucket.isWater()) {
                 player.getLevel().sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
             }
-        } else if (target.canBeActivated() && target.onActivate(item, player, face, fx, fy, fz)) {
+        } else if (!target.isAir() && target.canBeActivated() && target.onActivate(item, null, face, fx, fy, fz)) {
             if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
                 item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
             }
             return item;
         }
 
+        item = placeBlock(item, face, fx, fy, fz, player, playSound, block, target);
+        return item;
+    }
+
+    @Nullable
+    private Item placeBlock(Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound, Block block, Block target) {
         Block hand;
         if (item.canBePlaced()) {
             hand = item.getBlock();
@@ -2727,7 +2733,6 @@ public class Level implements Metadatable {
         }
 
         this.getVibrationManager().callVibrationEvent(new VibrationEvent(player, block.add(0.5, 0.5, 0.5), VibrationType.BLOCK_PLACE));
-
         return item;
     }
 

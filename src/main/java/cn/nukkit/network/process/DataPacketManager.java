@@ -73,7 +73,6 @@ public final class DataPacketManager {
                 new BlockEntityDataProcessor(),
                 new RequestChunkRadiusProcessor(),
                 new SetPlayerGameTypeProcessor(),
-                new ItemFrameDropItemProcessor(),
                 new LecternUpdateProcessor(),
                 new MapInfoRequestProcessor(),
                 new LevelSoundEventProcessor(),

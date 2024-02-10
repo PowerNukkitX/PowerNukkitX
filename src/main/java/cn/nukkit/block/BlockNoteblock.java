@@ -29,7 +29,8 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     public static final BlockProperties PROPERTIES = new BlockProperties(NOTEBLOCK);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -52,12 +53,14 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityMusic> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityMusic> getBlockEntityClass() {
         return BlockEntityMusic.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.MUSIC;
     }
 
@@ -73,6 +76,16 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
 
     @Override
     public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        if (player != null && player.isSneaking()) {
+            return false;
+        }
+        this.increaseStrength();
+        this.emitSound(player);
         return true;
     }
 
@@ -173,13 +186,6 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
         pk.case1 = instrument.ordinal();
         pk.case2 = this.getStrength();
         this.getLevel().addChunkPacket(this.getFloorX() >> 4, this.getFloorZ() >> 4, pk);
-    }
-
-    @Override
-    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        this.increaseStrength();
-        this.emitSound(player);
-        return true;
     }
 
     @Override

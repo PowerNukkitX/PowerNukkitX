@@ -31,6 +31,7 @@ import cn.nukkit.recipe.descriptor.MolangDescriptor;
 import cn.nukkit.registry.Registries;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.ByteBufInputStream;
 import io.netty.util.internal.EmptyArrays;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -475,14 +476,14 @@ public class BinaryStream {
         byte[] bytes = getByteArray();
         ByteBuf buf = ByteBufAllocator.DEFAULT.ioBuffer(bytes.length);
         buf.writeBytes(bytes);
-        try (LittleEndianByteBufInputStream stream = new LittleEndianByteBufInputStream(buf)) {
+        try (ByteBufInputStream stream = new ByteBufInputStream(buf)) {
             int nbtSize = stream.readShort();
             if (nbtSize > 0) {
-                compoundTag = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN);
+                compoundTag = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN, false);
             } else if (nbtSize == -1) {
                 int tagCount = stream.readUnsignedByte();
                 if (tagCount != 1) throw new IllegalArgumentException("Expected 1 tag but got " + tagCount);
-                compoundTag = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN);
+                compoundTag = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN, false);
             }
 
             canPlace = new String[stream.readInt()];

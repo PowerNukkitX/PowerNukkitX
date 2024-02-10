@@ -114,12 +114,18 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @org.jetbrains.annotations.Nullable Player player, PlayerInteractEvent.@NotNull Action action) {
         onUpdate(Level.BLOCK_UPDATE_TOUCH);
         if (player != null && action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
-            getOrCreateBlockEntity().dropItem(player);
+            BlockEntityItemFrame blockEntity = getOrCreateBlockEntity();
+            if (player.isCreative()) {
+                blockEntity.setItem(Item.AIR);
+            } else {
+                blockEntity.dropItem(player);
+            }
         }
     }
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        if (player != null && player.isSneaking()) return false;
         BlockEntityItemFrame itemFrame = getOrCreateBlockEntity();
         if (itemFrame.getItem().isNull()) {
             Item itemOnFrame = item.clone();
@@ -153,7 +159,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if ((!(target.isSolid() || target instanceof BlockWallBase) && !target.equals(block) || (block.isSolid() && !block.canBeReplaced()))) {
+        if ((!(target.isSolid() || target instanceof BlockWallBase) && !target.equals(block) || target instanceof BlockFrame ||  (block.isSolid() && !block.canBeReplaced()))) {
             return false;
         }
 
@@ -175,9 +181,11 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
                 nbt.put(e.getKey(), e.getValue());
             }
         }
-        BlockEntityItemFrame frame = BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt);
+        level.setBlock(block, this, true, true);
+        BlockFrame levelBlock = (BlockFrame) block.getLevelBlock();
+        BlockEntityItemFrame frame = levelBlock.getBlockEntity();
         if (frame == null) {
-            return false;
+            frame = levelBlock.createBlockEntity(nbt);
         }
 
         this.getLevel().addSound(this, Sound.BLOCK_ITEMFRAME_PLACE);
