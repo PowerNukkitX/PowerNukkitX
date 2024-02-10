@@ -54,13 +54,17 @@ public class BlockHayBlock extends BlockSolid {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (face.getIndex() == 2 || face.getIndex() == 3) {
-            setPropertyValue(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Z);
-        } else if (face.getIndex() == 4 || face.getIndex() == 5) {
-            setPropertyValue(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y);
-        }
+        this.setPillarAxis(face.getAxis());
         this.getLevel().setBlock(block, this, true);
         return true;
+    }
+
+    public BlockFace.Axis getPillarAxis() {
+        return getPropertyValue(CommonBlockProperties.PILLAR_AXIS);
+    }
+
+    public void setPillarAxis(BlockFace.Axis axis) {
+        setPropertyValue(CommonBlockProperties.PILLAR_AXIS, axis);
     }
 
     @Override

@@ -80,7 +80,7 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getHorizontalIndex()) : BlockFace.SOUTH);
+        setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH);
 
         CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>());
 
