@@ -1259,7 +1259,7 @@ public abstract class Item implements Cloneable, ItemID {
             if (this.getDamage() != item.getDamage()) return false;
         }
         if (checkCompound && this.hasCompoundTag() && item.hasCompoundTag()) {
-            return Arrays.equals(this.getCompoundTag(), item.getCompoundTag());
+            return Objects.equals(this.getNamedTag(), item.getNamedTag());
         }
         return true;
     }
