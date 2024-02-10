@@ -45,6 +45,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.ToLongFunction;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -859,6 +860,17 @@ public class BinaryStream {
             deque.add(function.apply(this));
         }
         return deque.toArray((T[]) Array.newInstance(clazz, 0));
+    }
+
+    public <T> void getArray(Collection<T> array, Function<BinaryStream, T> function) {
+        getArray(array, BinaryStream::getUnsignedVarInt, function);
+    }
+
+    public <T> void getArray(Collection<T> array, ToLongFunction<BinaryStream> lengthReader, Function<BinaryStream, T> function) {
+        long length = lengthReader.applyAsLong(this);
+        for (int i = 0; i < length; i++) {
+            array.add(function.apply(this));
+        }
     }
 
     public boolean feof() {
