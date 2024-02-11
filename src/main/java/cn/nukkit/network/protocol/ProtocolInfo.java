@@ -294,4 +294,6 @@ public interface ProtocolInfo {
     int TOGGLE_CRAFTER_SLOT_REQUEST = 306;
 
     int SET_PLAYER_INVENTORY_OPTIONS_PACKET = 307;
+
+    int SET_HUD = 308;
 }
