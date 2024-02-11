@@ -580,7 +580,6 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                 this.nbt.getCompound("components").getCompound("item_properties")
                         .putString("enchantable_slot", "pickaxe");
                 this.tag("minecraft:is_pickaxe");
-//                this.isWeapon();
             } else if (item.isAxe()) {
                 this.blockTags.addAll(List.of("'wood'", "'pumpkin'", "'plant'"));
                 type = ItemTags.IS_AXE;

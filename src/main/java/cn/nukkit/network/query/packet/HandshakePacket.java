@@ -1,7 +1,7 @@
-package cn.nukkit.network.newquery.packet;
+package cn.nukkit.network.query.packet;
 
-import cn.nukkit.network.newquery.QueryPacket;
-import cn.nukkit.network.newquery.QueryUtil;
+import cn.nukkit.network.query.QueryPacket;
+import cn.nukkit.network.query.QueryUtil;
 import io.netty.buffer.ByteBuf;
 
 public class HandshakePacket implements QueryPacket {

@@ -1,9 +1,9 @@
-package cn.nukkit.network.newquery.codec;
+package cn.nukkit.network.query.codec;
 
-import cn.nukkit.network.newquery.QueryPacket;
-import cn.nukkit.network.newquery.enveloped.DirectAddressedQueryPacket;
-import cn.nukkit.network.newquery.packet.HandshakePacket;
-import cn.nukkit.network.newquery.packet.StatisticsPacket;
+import cn.nukkit.network.query.QueryPacket;
+import cn.nukkit.network.query.enveloped.DirectAddressedQueryPacket;
+import cn.nukkit.network.query.packet.HandshakePacket;
+import cn.nukkit.network.query.packet.StatisticsPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;

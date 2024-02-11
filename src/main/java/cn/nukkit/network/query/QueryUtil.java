@@ -1,4 +1,4 @@
-package cn.nukkit.network.newquery;
+package cn.nukkit.network.query;
 
 import io.netty.buffer.ByteBuf;
 import lombok.experimental.UtilityClass;

@@ -1,6 +1,6 @@
-package cn.nukkit.network.newquery.packet;
+package cn.nukkit.network.query.packet;
 
-import cn.nukkit.network.newquery.QueryPacket;
+import cn.nukkit.network.query.QueryPacket;
 import io.netty.buffer.ByteBuf;
 
 public class StatisticsPacket implements QueryPacket {

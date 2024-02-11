@@ -8,9 +8,9 @@ import cn.nukkit.network.connection.BedrockPeer;
 import cn.nukkit.network.connection.BedrockPong;
 import cn.nukkit.network.connection.BedrockServerSession;
 import cn.nukkit.network.connection.netty.initializer.BedrockServerInitializer;
-import cn.nukkit.network.newquery.codec.QueryPacketCodec;
-import cn.nukkit.network.newquery.handler.QueryPacketHandler;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.network.query.codec.QueryPacketCodec;
+import cn.nukkit.network.query.handler.QueryPacketHandler;
 import cn.nukkit.utils.Utils;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -35,8 +35,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadFactory;
-
-import static cn.nukkit.utils.Utils.dynamic;
 
 @Slf4j
 public class RakNetInterface implements SourceInterface {

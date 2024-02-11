@@ -1,10 +1,10 @@
-package cn.nukkit.network.newquery.handler;
+package cn.nukkit.network.query.handler;
 
 import cn.nukkit.event.server.QueryRegenerateEvent;
-import cn.nukkit.network.newquery.QueryEventListener;
-import cn.nukkit.network.newquery.enveloped.DirectAddressedQueryPacket;
-import cn.nukkit.network.newquery.packet.HandshakePacket;
-import cn.nukkit.network.newquery.packet.StatisticsPacket;
+import cn.nukkit.network.query.QueryEventListener;
+import cn.nukkit.network.query.enveloped.DirectAddressedQueryPacket;
+import cn.nukkit.network.query.packet.HandshakePacket;
+import cn.nukkit.network.query.packet.StatisticsPacket;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 

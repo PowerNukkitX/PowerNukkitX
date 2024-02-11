@@ -1,4 +1,4 @@
-package cn.nukkit.network.newquery;
+package cn.nukkit.network.query;
 
 import cn.nukkit.event.server.QueryRegenerateEvent;
 

@@ -1,7 +1,7 @@
-package cn.nukkit.network.newquery.enveloped;
+package cn.nukkit.network.query.enveloped;
 
 
-import cn.nukkit.network.newquery.QueryPacket;
+import cn.nukkit.network.query.QueryPacket;
 import io.netty.channel.DefaultAddressedEnvelope;
 
 import java.net.InetSocketAddress;
