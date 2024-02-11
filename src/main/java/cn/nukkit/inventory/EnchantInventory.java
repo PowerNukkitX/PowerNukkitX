@@ -4,6 +4,10 @@ import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityEnchantTable;
 import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import com.google.common.collect.BiMap;
+
+import java.util.Map;
 
 
 /**
@@ -13,6 +17,22 @@ public class EnchantInventory extends ContainerInventory implements BlockEntityI
 
     public EnchantInventory(BlockEntityEnchantTable table) {
         super(table, InventoryType.ENCHANTMENT, 2);
+    }
+
+    @Override
+    public BiMap<Integer, Integer> networkSlotMap() {
+        BiMap<Integer, Integer> map = super.networkSlotMap();
+        map.put(0, 14);//INPUT
+        map.put(1, 15);//MATERIAL
+        return map;
+    }
+
+    @Override
+    public Map<Integer, ContainerSlotType> slotTypeMap() {
+        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        map.put(0, ContainerSlotType.ENCHANTING_INPUT);
+        map.put(1, ContainerSlotType.ENCHANTING_MATERIAL);
+        return map;
     }
 
     @Override

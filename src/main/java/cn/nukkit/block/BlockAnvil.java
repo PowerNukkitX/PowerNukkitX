@@ -88,7 +88,7 @@ public class BlockAnvil extends BlockFallable implements Faceable, BlockInventor
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        setBlockFace(player != null ? player.getDirection().rotateY() : BlockFace.SOUTH);
+        setBlockFace(player != null ? player.getDirection().rotateYCCW() : BlockFace.SOUTH);
         this.getLevel().setBlock(this, this, true);
         if (player == null) {
             this.getLevel().addSound(this, Sound.RANDOM_ANVIL_LAND, 1, 0.8F);

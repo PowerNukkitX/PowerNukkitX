@@ -7,22 +7,42 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import com.google.common.collect.BiMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
 
-public class GrindstoneInventory extends ContainerInventory implements CraftTypeInventory{
+public class GrindstoneInventory extends ContainerInventory implements CraftTypeInventory {
     private static final int SLOT_FIRST_ITEM = 0;
     private static final int SLOT_SECOND_ITEM = 1;
     private static final int SLOT_RESULT = 2;
     private int resultExperience;
 
-
     public GrindstoneInventory(BlockGrindstone blockGrindstone) {
         super(blockGrindstone, InventoryType.GRINDSTONE, 3);
+    }
+
+    @Override
+    public BiMap<Integer, Integer> networkSlotMap() {
+        BiMap<Integer, Integer> map = super.networkSlotMap();
+        map.put(0, 16);//INPUT
+        map.put(1, 17);//ADDITIONAL
+        map.put(2, 18);//RESULT
+        return map;
+    }
+
+    @Override
+    public Map<Integer, ContainerSlotType> slotTypeMap() {
+        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        map.put(0, ContainerSlotType.GRINDSTONE_INPUT);
+        map.put(1, ContainerSlotType.GRINDSTONE_ADDITIONAL);
+        map.put(2, ContainerSlotType.GRINDSTONE_RESULT);
+        return map;
     }
 
     @Override

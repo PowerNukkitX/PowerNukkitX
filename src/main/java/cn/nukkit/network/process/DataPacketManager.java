@@ -82,7 +82,6 @@ public final class DataPacketManager {
                 new ServerSettingsRequestProcessor(),
                 new RespawnProcessor(),
                 new BookEditProcessor(),
-                new FilterTextProcessor(),
                 new SetDifficultyProcessor(),
                 new PositionTrackingDBClientRequestProcessor(),
                 new ShowCreditsProcessor(),
