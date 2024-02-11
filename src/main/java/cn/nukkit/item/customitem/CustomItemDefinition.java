@@ -1,5 +1,6 @@
 package cn.nukkit.item.customitem;
 
+import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.customitem.data.CreativeCategory;
 import cn.nukkit.item.customitem.data.CreativeGroup;
@@ -8,7 +9,7 @@ import cn.nukkit.item.customitem.data.RenderOffsets;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.registry.Registries;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.Identifier;
 import com.google.common.base.Preconditions;
@@ -32,7 +33,7 @@ import java.util.function.Consumer;
  */
 
 
-public record CustomItemDefinition(String identifier, CompoundTag nbt) {
+public record CustomItemDefinition(String identifier, CompoundTag nbt) implements BlockID {
     private static final Object2IntOpenHashMap<String> INTERNAL_ALLOCATION_ID_MAP = new Object2IntOpenHashMap<>();
     private static final AtomicInteger nextRuntimeId = new AtomicInteger(10000);
 
@@ -291,7 +292,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
                     .getCompound("minecraft:icon")
-                    .putCompound("textures", new CompoundTag().putString("default", texture));
+                    .putCompound("textures", new CompoundTag()
+                            .putString("default", texture)
+                    );
 
             if (name != null) {
                 //定义显示名
@@ -302,7 +305,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             var result = new CustomItemDefinition(identifier, nbt);
             int id;
             if (!INTERNAL_ALLOCATION_ID_MAP.containsKey(result.identifier())) {
-                while (Registries.ITEM_RUNTIMEID.getIdentifier(id = nextRuntimeId.getAndIncrement()) != null) {
+                while (INTERNAL_ALLOCATION_ID_MAP.containsValue(id = nextRuntimeId.getAndIncrement())) {
                 }
                 INTERNAL_ALLOCATION_ID_MAP.put(result.identifier(), id);
             } else {
@@ -368,9 +371,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         private final ItemCustomTool item;
         private final List<CompoundTag> blocks = new ArrayList<>();
         private final List<String> blockTags = new ArrayList<>();
-        private final CompoundTag diggerRoot = new CompoundTag().putCompound("minecraft:digger", new CompoundTag()
+        private final CompoundTag diggerRoot = new CompoundTag()
                 .putBoolean("use_efficiency", true)
-                .putList("destroy_speeds", new ListTag<>()));
+                .putList("destroy_speeds", new ListTag<>(Tag.TAG_Compound));
         private Integer speed = null;
 
         public static Map<String, Map<String, DigProperty>> toolBlocks = new HashMap<>();
@@ -381,27 +384,27 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             var shovelBlocks = new Object2ObjectOpenHashMap<String, DigProperty>();
             var hoeBlocks = new Object2ObjectOpenHashMap<String, DigProperty>();
             var swordBlocks = new Object2ObjectOpenHashMap<String, DigProperty>();
-            for (var name : List.of("minecraft:ice", "minecraft:undyed_shulker_box", "minecraft:shulker_box", "minecraft:prismarine", "minecraft:stone_slab4", "minecraft:prismarine_bricks_stairs", "minecraft:prismarine_stairs", "minecraft:dark_prismarine_stairs", "minecraft:anvil", "minecraft:bone_block", "minecraft:iron_trapdoor", "minecraft:nether_brick_fence", "minecraft:crying_obsidian", "minecraft:magma", "minecraft:smoker", "minecraft:lit_smoker", "minecraft:hopper", "minecraft:redstone_block", "minecraft:mob_spawner", "minecraft:netherite_block", "minecraft:smooth_stone", "minecraft:diamond_block", "minecraft:lapis_block", "minecraft:emerald_block", "minecraft:enchanting_table", "minecraft:end_bricks", "minecraft:cracked_polished_blackstone_bricks", "minecraft:nether_brick", "minecraft:cracked_nether_bricks", "minecraft:purpur_block", "minecraft:purpur_stairs", "minecraft:end_brick_stairs", "minecraft:stone_slab", "minecraft:stone_slab2", "minecraft:stone_slab3", "minecraft:stone_brick_stairs", "minecraft:mossy_stone_brick_stairs", "minecraft:polished_blackstone_bricks", "minecraft:polished_blackstone_stairs", "minecraft:blackstone_wall", "minecraft:blackstone_wall", "minecraft:polished_blackstone_wall", "minecraft:sandstone", "minecraft:grindstone", "minecraft:smooth_stone", "minecraft:brewing_stand", "minecraft:chain", "minecraft:lantern", "minecraft:soul_lantern", "minecraft:ancient_debris", "minecraft:quartz_ore", "minecraft:netherrack", "minecraft:basalt", "minecraft:polished_basalt", "minecraft:stonebrick", "minecraft:warped_nylium", "minecraft:crimson_nylium", "minecraft:end_stone", "minecraft:ender_chest", "minecraft:quartz_block", "minecraft:quartz_stairs", "minecraft:quartz_bricks", "minecraft:quartz_stairs", "minecraft:nether_gold_ore", "minecraft:furnace", "minecraft:blast_furnace", "minecraft:lit_furnace", "minecraft:blast_furnace", "minecraft:blackstone", "minecraft:concrete", "minecraft:deepslate_copper_ore", "minecraft:deepslate_lapis_ore", "minecraft:chiseled_deepslate", "minecraft:cobbled_deepslate", "minecraft:cobbled_deepslate_double_slab", "minecraft:cobbled_deepslate_slab", "minecraft:cobbled_deepslate_stairs", "minecraft:cobbled_deepslate_wall", "minecraft:cracked_deepslate_bricks", "minecraft:cracked_deepslate_tiles", "minecraft:deepslate", "minecraft:deepslate_brick_double_slab", "minecraft:deepslate_brick_slab", "minecraft:deepslate_brick_stairs", "minecraft:deepslate_brick_wall", "minecraft:deepslate_bricks", "minecraft:deepslate_tile_double_slab", "minecraft:deepslate_tile_slab", "minecraft:deepslate_tile_stairs", "minecraft:deepslate_tile_wall", "minecraft:deepslate_tiles", "minecraft:infested_deepslate", "minecraft:polished_deepslate", "minecraft:polished_deepslate_double_slab", "minecraft:polished_deepslate_slab", "minecraft:polished_deepslate_stairs", "minecraft:polished_deepslate_wall", "minecraft:calcite", "minecraft:amethyst_block", "minecraft:amethyst_cluster", "minecraft:budding_amethyst", "minecraft:raw_copper_block", "minecraft:raw_gold_block", "minecraft:raw_iron_block", "minecraft:copper_ore", "minecraft:copper_block", "minecraft:cut_copper", "minecraft:cut_copper_slab", "minecraft:cut_copper_stairs", "minecraft:double_cut_copper_slab", "minecraft:exposed_copper", "minecraft:exposed_cut_copper", "minecraft:exposed_cut_copper_slab", "minecraft:exposed_cut_copper_stairs", "minecraft:exposed_double_cut_copper_slab", "minecraft:oxidized_copper", "minecraft:oxidized_cut_copper", "minecraft:oxidized_cut_copper_slab", "minecraft:oxidized_cut_copper_stairs", "minecraft:oxidized_double_cut_copper_slab", "minecraft:weathered_copper", "minecraft:weathered_cut_copper", "minecraft:weathered_cut_copper_slab", "minecraft:weathered_cut_copper_stairs", "minecraft:weathered_double_cut_copper_slab", "minecraft:waxed_copper", "minecraft:waxed_cut_copper", "minecraft:waxed_cut_copper_slab", "minecraft:waxed_cut_copper_stairs", "minecraft:waxed_double_cut_copper_slab", "minecraft:waxed_exposed_copper", "minecraft:waxed_exposed_cut_copper", "minecraft:waxed_exposed_cut_copper_slab", "minecraft:waxed_exposed_cut_copper_stairs", "minecraft:waxed_exposed_double_cut_copper_slab", "minecraft:waxed_oxidized_copper", "minecraft:waxed_oxidized_cut_copper", "minecraft:waxed_oxidized_cut_copper_slab", "minecraft:waxed_oxidized_cut_copper_stairs", "minecraft:waxed_oxidized_double_cut_copper_slab", "minecraft:waxed_weathered_copper", "minecraft:waxed_weathered_cut_copper", "minecraft:waxed_weathered_cut_copper_slab", "minecraft:waxed_weathered_cut_copper_stairs", "minecraft:waxed_weathered_double_cut_copper_slab", "minecraft:dripstone_block", "minecraft:pointed_dripstone", "minecraft:lightning_rod", "minecraft:basalt", "minecraft:tuff", "minecraft:double_stone_slab", "minecraft:double_stone_slab2", "minecraft:double_stone_slab3", "minecraft:double_stone_slab4", "minecraft:blackstone_double_slab", "minecraft:polished_blackstone_brick_double_slab", "minecraft:polished_blackstone_double_slab", "minecraft:mossy_cobblestone_stairs", "minecraft:stonecutter", "minecraft:stonecutter_block", "minecraft:red_nether_brick", "minecraft:red_nether_brick_stairs", "minecraft:normal_stone_stairs", "minecraft:smooth_basalt", "minecraft:stone", "minecraft:cobblestone", "minecraft:mossy_cobblestone", "minecraft:dripstone_block", "minecraft:brick_block", "minecraft:stone_stairs", "minecraft:stone_block_slab", "minecraft:stone_block_slab2", "minecraft:stone_block_slab3", "minecraft:stone_block_slab4", "minecraft:cobblestone_wall", "minecraft:gold_block", "minecraft:iron_block", "minecraft:cauldron", "minecraft:iron_bars", "minecraft:obsidian", "minecraft:coal_ore", "minecraft:deepslate_coal_ore", "minecraft:deepslate_diamond_ore", "minecraft:deepslate_emerald_ore", "minecraft:deepslate_gold_ore", "minecraft:deepslate_iron_ore", "minecraft:deepslate_redstone_ore", "minecraft:lit_deepslate_redstone_ore", "minecraft:diamond_ore", "minecraft:emerald_ore", "minecraft:gold_ore", "minecraft:iron_ore", "minecraft:lapis_ore", "minecraft:redstone_ore", "minecraft:lit_redstone_ore", "minecraft:raw_iron_block", "minecraft:raw_gold_block", "minecraft:raw_copper_block", "minecraft:mud_brick_double_slab", "minecraft:mud_brick_slab", "minecraft:mud_brick_stairs", "minecraft:mud_brick_wall", "minecraft:mud_bricks", "minecraft:hardened_clay", "minecraft:stained_hardened_clay", "minecraft:polished_diorite_stairs", "minecraft:andesite_stairs", "minecraft:polished_andesite_stairs", "minecraft:granite_stairs", "minecraft:polished_granite_stairs", "minecraft:polished_blackstone", "minecraft:chiseled_polished_blackstone", "minecraft:polished_blackstone_brick_stairs", "minecraft:blackstone_stairs", "minecraft:polished_blackstone_brick_wall", "minecraft:gilded_blackstone", "minecraft:coal_block")) {
+            for (var name : List.of(ICE, BLUE_ICE, UNDYED_SHULKER_BOX, BLUE_SHULKER_BOX, RED_SHULKER_BOX, BLACK_SHULKER_BOX, CYAN_SHULKER_BOX, BROWN_SHULKER_BOX, LIME_SHULKER_BOX, GRAY_SHULKER_BOX, GREEN_SHULKER_BOX, LIGHT_BLUE_SHULKER_BOX, LIGHT_GRAY_SHULKER_BOX, MAGENTA_SHULKER_BOX, ORANGE_SHULKER_BOX, WHITE_SHULKER_BOX, YELLOW_SHULKER_BOX, PINK_SHULKER_BOX, PURPLE_SHULKER_BOX, PRISMARINE, PRISMARINE_BRICKS_STAIRS, PRISMARINE_STAIRS, STONE_BLOCK_SLAB4, DARK_PRISMARINE_STAIRS, ANVIL, BONE_BLOCK, IRON_TRAPDOOR, NETHER_BRICK_FENCE, CRYING_OBSIDIAN, MAGMA, SMOKER, LIT_SMOKER, HOPPER, REDSTONE_BLOCK, MOB_SPAWNER, NETHERITE_BLOCK, SMOOTH_STONE, DIAMOND_BLOCK, LAPIS_BLOCK, EMERALD_BLOCK, ENCHANTING_TABLE, END_BRICKS, CRACKED_POLISHED_BLACKSTONE_BRICKS, NETHER_BRICK, CRACKED_NETHER_BRICKS, PURPUR_BLOCK, PURPUR_STAIRS, END_BRICK_STAIRS, STONE_BLOCK_SLAB, STONE_BLOCK_SLAB2, STONE_BLOCK_SLAB3, STONE_BRICK_STAIRS, MOSSY_STONE_BRICK_STAIRS, POLISHED_BLACKSTONE_BRICKS, POLISHED_BLACKSTONE_STAIRS, BLACKSTONE_WALL, BLACKSTONE_WALL, POLISHED_BLACKSTONE_WALL, SANDSTONE, GRINDSTONE, SMOOTH_STONE, BREWING_STAND, CHAIN, LANTERN, SOUL_LANTERN, ANCIENT_DEBRIS, QUARTZ_ORE, NETHERRACK, BASALT, POLISHED_BASALT, STONEBRICK, WARPED_NYLIUM, CRIMSON_NYLIUM, END_STONE, ENDER_CHEST, QUARTZ_BLOCK, QUARTZ_STAIRS, QUARTZ_BRICKS, QUARTZ_STAIRS, NETHER_GOLD_ORE, FURNACE, BLAST_FURNACE, LIT_FURNACE, BLAST_FURNACE, BLACKSTONE, BLACK_CONCRETE, BLUE_CONCRETE, BROWN_CONCRETE, CYAN_CONCRETE, GRAY_CONCRETE, GREEN_CONCRETE, LIGHT_BLUE_CONCRETE, LIME_CONCRETE, MAGENTA_CONCRETE, ORANGE_CONCRETE, PINK_CONCRETE, PURPLE_CONCRETE, RED_CONCRETE, LIGHT_GRAY_CONCRETE, WHITE_CONCRETE, YELLOW_CONCRETE, DEEPSLATE_COPPER_ORE, DEEPSLATE_LAPIS_ORE, CHISELED_DEEPSLATE, COBBLED_DEEPSLATE, COBBLED_DEEPSLATE_DOUBLE_SLAB, COBBLED_DEEPSLATE_SLAB, COBBLED_DEEPSLATE_STAIRS, COBBLED_DEEPSLATE_WALL, CRACKED_DEEPSLATE_BRICKS, CRACKED_DEEPSLATE_TILES, DEEPSLATE, DEEPSLATE_BRICK_DOUBLE_SLAB, DEEPSLATE_BRICK_SLAB, DEEPSLATE_BRICK_STAIRS, DEEPSLATE_BRICK_WALL, DEEPSLATE_BRICKS, DEEPSLATE_TILE_DOUBLE_SLAB, DEEPSLATE_TILE_SLAB, DEEPSLATE_TILE_STAIRS, DEEPSLATE_TILE_WALL, DEEPSLATE_TILES, INFESTED_DEEPSLATE, POLISHED_DEEPSLATE, POLISHED_DEEPSLATE_DOUBLE_SLAB, POLISHED_DEEPSLATE_SLAB, POLISHED_DEEPSLATE_STAIRS, POLISHED_DEEPSLATE_WALL, CALCITE, AMETHYST_BLOCK, AMETHYST_CLUSTER, BUDDING_AMETHYST, RAW_COPPER_BLOCK, RAW_GOLD_BLOCK, RAW_IRON_BLOCK, COPPER_ORE, COPPER_BLOCK, CUT_COPPER, CUT_COPPER_SLAB, CUT_COPPER_STAIRS, DOUBLE_CUT_COPPER_SLAB, EXPOSED_COPPER, EXPOSED_CUT_COPPER, EXPOSED_CUT_COPPER_SLAB, EXPOSED_CUT_COPPER_STAIRS, EXPOSED_DOUBLE_CUT_COPPER_SLAB, OXIDIZED_COPPER, OXIDIZED_CUT_COPPER, OXIDIZED_CUT_COPPER_SLAB, OXIDIZED_CUT_COPPER_STAIRS, OXIDIZED_DOUBLE_CUT_COPPER_SLAB, WEATHERED_COPPER, WEATHERED_CUT_COPPER, WEATHERED_CUT_COPPER_SLAB, WEATHERED_CUT_COPPER_STAIRS, WEATHERED_DOUBLE_CUT_COPPER_SLAB, WAXED_COPPER, WAXED_CUT_COPPER, WAXED_CUT_COPPER_SLAB, WAXED_CUT_COPPER_STAIRS, WAXED_DOUBLE_CUT_COPPER_SLAB, WAXED_EXPOSED_COPPER, WAXED_EXPOSED_CUT_COPPER, WAXED_EXPOSED_CUT_COPPER_SLAB, WAXED_EXPOSED_CUT_COPPER_STAIRS, WAXED_EXPOSED_DOUBLE_CUT_COPPER_SLAB, WAXED_OXIDIZED_COPPER, WAXED_OXIDIZED_CUT_COPPER, WAXED_OXIDIZED_CUT_COPPER_SLAB, WAXED_OXIDIZED_CUT_COPPER_STAIRS, WAXED_OXIDIZED_DOUBLE_CUT_COPPER_SLAB, WAXED_WEATHERED_COPPER, WAXED_WEATHERED_CUT_COPPER, WAXED_WEATHERED_CUT_COPPER_SLAB, WAXED_WEATHERED_CUT_COPPER_STAIRS, WAXED_WEATHERED_DOUBLE_CUT_COPPER_SLAB, DRIPSTONE_BLOCK, POINTED_DRIPSTONE, LIGHTNING_ROD, BASALT, TUFF, DOUBLE_STONE_BLOCK_SLAB, DOUBLE_STONE_BLOCK_SLAB2, DOUBLE_STONE_BLOCK_SLAB3, DOUBLE_STONE_BLOCK_SLAB4, BLACKSTONE_DOUBLE_SLAB, POLISHED_BLACKSTONE_BRICK_DOUBLE_SLAB, POLISHED_BLACKSTONE_DOUBLE_SLAB, MOSSY_COBBLESTONE_STAIRS, STONECUTTER, STONECUTTER_BLOCK, RED_NETHER_BRICK, RED_NETHER_BRICK_STAIRS, NORMAL_STONE_STAIRS, SMOOTH_BASALT, STONE, COBBLESTONE, MOSSY_COBBLESTONE, DRIPSTONE_BLOCK, BRICK_BLOCK, STONE_STAIRS, STONE_BLOCK_SLAB, STONE_BLOCK_SLAB2, STONE_BLOCK_SLAB3, STONE_BLOCK_SLAB4, COBBLESTONE_WALL, GOLD_BLOCK, IRON_BLOCK, CAULDRON, IRON_BARS, OBSIDIAN, COAL_ORE, DEEPSLATE_COAL_ORE, DEEPSLATE_DIAMOND_ORE, DEEPSLATE_EMERALD_ORE, DEEPSLATE_GOLD_ORE, DEEPSLATE_IRON_ORE, DEEPSLATE_REDSTONE_ORE, LIT_DEEPSLATE_REDSTONE_ORE, DIAMOND_ORE, EMERALD_ORE, GOLD_ORE, IRON_ORE, LAPIS_ORE, REDSTONE_ORE, LIT_REDSTONE_ORE, RAW_IRON_BLOCK, RAW_GOLD_BLOCK, RAW_COPPER_BLOCK, MUD_BRICK_DOUBLE_SLAB, MUD_BRICK_SLAB, MUD_BRICK_STAIRS, MUD_BRICK_WALL, MUD_BRICKS, HARDENED_CLAY, BLACK_TERRACOTTA, BLUE_TERRACOTTA, BROWN_TERRACOTTA, CYAN_TERRACOTTA, GRAY_TERRACOTTA, GREEN_TERRACOTTA, LIGHT_BLUE_TERRACOTTA, LIME_TERRACOTTA, MAGENTA_TERRACOTTA, ORANGE_TERRACOTTA, PINK_TERRACOTTA, PURPLE_TERRACOTTA, RED_TERRACOTTA, LIGHT_GRAY_TERRACOTTA, WHITE_TERRACOTTA, YELLOW_TERRACOTTA, POLISHED_DIORITE_STAIRS, ANDESITE_STAIRS, POLISHED_ANDESITE_STAIRS, GRANITE_STAIRS, POLISHED_GRANITE_STAIRS, POLISHED_BLACKSTONE, CHISELED_POLISHED_BLACKSTONE, POLISHED_BLACKSTONE_BRICK_STAIRS, BLACKSTONE_STAIRS, POLISHED_BLACKSTONE_BRICK_WALL, GILDED_BLACKSTONE, COAL_BLOCK)) {
                 pickaxeBlocks.put(name, new DigProperty());
             }
             toolBlocks.put(ItemTags.IS_PICKAXE, pickaxeBlocks);
 
-            for (var name : List.of("minecraft:chest", "minecraft:bookshelf", "minecraft:melon_block", "minecraft:warped_stem", "minecraft:crimson_stem", "minecraft:warped_stem", "minecraft:crimson_stem", "minecraft:crafting_table", "minecraft:crimson_planks", "minecraft:warped_planks", "minecraft:warped_stairs", "minecraft:warped_trapdoor", "minecraft:crimson_stairs", "minecraft:crimson_trapdoor", "minecraft:crimson_door", "minecraft:crimson_double_slab", "minecraft:warped_door", "minecraft:warped_double_slab", "minecraft:crafting_table", "minecraft:composter", "minecraft:cartography_table", "minecraft:lectern", "minecraft:stripped_crimson_stem", "minecraft:stripped_warped_stem", "minecraft:trapdoor", "minecraft:spruce_trapdoor", "minecraft:birch_trapdoor", "minecraft:jungle_trapdoor", "minecraft:acacia_trapdoor", "minecraft:dark_oak_trapdoor", "minecraft:wooden_door", "minecraft:spruce_door", "minecraft:birch_door", "minecraft:jungle_door", "minecraft:acacia_door", "minecraft:dark_oak_door", "minecraft:fence", "minecraft:fence_gate", "minecraft:spruce_fence_gate", "minecraft:birch_fence_gate", "minecraft:jungle_fence_gate", "minecraft:acacia_fence_gate", "minecraft:dark_oak_fence_gate", "minecraft:log", "minecraft:log2", "minecraft:wood", "minecraft:planks", "minecraft:wooden_slab", "minecraft:double_wooden_slab", "minecraft:oak_stairs", "minecraft:spruce_stairs", "minecraft:birch_stairs", "minecraft:jungle_stairs", "minecraft:acacia_stairs", "minecraft:dark_oak_stairs", "minecraft:wall_sign", "minecraft:spruce_wall_sign", "minecraft:birch_wall_sign", "minecraft:jungle_wall_sign", "minecraft:acacia_wall_sign", "minecraft:darkoak_wall_sign", "minecraft:wooden_pressure_plate", "minecraft:spruce_pressure_plate", "minecraft:birch_pressure_plate", "minecraft:jungle_pressure_plate", "minecraft:acacia_pressure_plate", "minecraft:dark_oak_pressure_plate", "minecraft:smithing_table", "minecraft:fletching_table", "minecraft:barrel", "minecraft:beehive", "minecraft:bee_nest", "minecraft:ladder", "minecraft:pumpkin", "minecraft:carved_pumpkin", "minecraft:lit_pumpkin", "minecraft:mangrove_door", "minecraft:mangrove_double_slab", "minecraft:mangrove_fence", "minecraft:mangrove_fence_gate", "minecraft:mangrove_log", "minecraft:mangrove_planks", "minecraft:mangrove_pressure_plate", "minecraft:mangrove_slab", "minecraft:mangrove_stairs", "minecraft:mangrove_wall_sign", "minecraft:mangrove_wood", "minecraft:wooden_button", "minecraft:spruce_button", "minecraft:birch_button", "minecraft:jungle_button", "minecraft:acacia_button", "minecraft:dark_oak_button", "minecraft:mangrove_button", "minecraft:stripped_oak_wood", "minecraft:stripped_spruce_wood", "minecraft:stripped_birch_wood", "minecraft:stripped_jungle_wood", "minecraft:stripped_acacia_wood", "minecraft:stripped_dark_oak_wood", "minecraft:stripped_mangrove_wood", "minecraft:stripped_oak_log", "minecraft:stripped_spruce_log", "minecraft:stripped_birch_log", "minecraft:stripped_jungle_log", "minecraft:stripped_acacia_log", "minecraft:stripped_dark_oak_log", "minecraft:stripped_mangrove_log", "minecraft:standing_sign", "minecraft:spruce_standing_sign", "minecraft:birch_standing_sign", "minecraft:jungle_standing_sign", "minecraft:acacia_standing_sign", "minecraft:darkoak_standing_sign", "minecraft:mangrove_standing_sign", "minecraft:mangrove_trapdoor", "minecraft:warped_standing_sign", "minecraft:warped_wall_sign", "minecraft:crimson_standing_sign", "minecraft:crimson_wall_sign", "minecraft:mangrove_roots")) {
+            for (var name : List.of(CHEST, BOOKSHELF, MELON_BLOCK, WARPED_STEM, CRIMSON_STEM, WARPED_STEM, CRIMSON_STEM, CRAFTING_TABLE, CRIMSON_PLANKS, WARPED_PLANKS, WARPED_STAIRS, WARPED_TRAPDOOR, CRIMSON_STAIRS, CRIMSON_TRAPDOOR, CRIMSON_DOOR, CRIMSON_DOUBLE_SLAB, WARPED_DOOR, WARPED_DOUBLE_SLAB, CRAFTING_TABLE, COMPOSTER, CARTOGRAPHY_TABLE, LECTERN, STRIPPED_CRIMSON_STEM, STRIPPED_WARPED_STEM, TRAPDOOR, SPRUCE_TRAPDOOR, BIRCH_TRAPDOOR, JUNGLE_TRAPDOOR, ACACIA_TRAPDOOR, DARK_OAK_TRAPDOOR, WOODEN_DOOR, SPRUCE_DOOR, BIRCH_DOOR, JUNGLE_DOOR, ACACIA_DOOR, DARK_OAK_DOOR, ACACIA_FENCE, DARK_OAK_FENCE, BAMBOO_FENCE, MANGROVE_FENCE, NETHER_BRICK_FENCE, OAK_FENCE, CRIMSON_FENCE, JUNGLE_FENCE, CHERRY_FENCE, BIRCH_FENCE, WARPED_FENCE, SPRUCE_FENCE, FENCE_GATE, SPRUCE_FENCE_GATE, BIRCH_FENCE_GATE, JUNGLE_FENCE_GATE, ACACIA_FENCE_GATE, DARK_OAK_FENCE_GATE, MANGROVE_LOG, OAK_LOG, JUNGLE_LOG, SPRUCE_LOG, DARK_OAK_LOG, CHERRY_LOG, ACACIA_LOG, BIRCH_LOG, WOOD, ACACIA_PLANKS, BAMBOO_PLANKS, CRIMSON_PLANKS, BIRCH_PLANKS, DARK_OAK_PLANKS, CHERRY_PLANKS, WARPED_PLANKS, OAK_PLANKS, SPRUCE_PLANKS, MANGROVE_PLANKS, JUNGLE_PLANKS, WOODEN_SLAB, DOUBLE_WOODEN_SLAB, OAK_STAIRS, SPRUCE_STAIRS, BIRCH_STAIRS, JUNGLE_STAIRS, ACACIA_STAIRS, DARK_OAK_STAIRS, WALL_SIGN, SPRUCE_WALL_SIGN, BIRCH_WALL_SIGN, JUNGLE_WALL_SIGN, ACACIA_WALL_SIGN, DARKOAK_WALL_SIGN, WOODEN_PRESSURE_PLATE, SPRUCE_PRESSURE_PLATE, BIRCH_PRESSURE_PLATE, JUNGLE_PRESSURE_PLATE, ACACIA_PRESSURE_PLATE, DARK_OAK_PRESSURE_PLATE, SMITHING_TABLE, FLETCHING_TABLE, BARREL, BEEHIVE, BEE_NEST, LADDER, PUMPKIN, CARVED_PUMPKIN, LIT_PUMPKIN, MANGROVE_DOOR, MANGROVE_DOUBLE_SLAB, MANGROVE_FENCE, MANGROVE_FENCE_GATE, MANGROVE_LOG, MANGROVE_PLANKS, MANGROVE_PRESSURE_PLATE, MANGROVE_SLAB, MANGROVE_STAIRS, MANGROVE_WALL_SIGN, MANGROVE_WOOD, WOODEN_BUTTON, SPRUCE_BUTTON, BIRCH_BUTTON, JUNGLE_BUTTON, ACACIA_BUTTON, DARK_OAK_BUTTON, MANGROVE_BUTTON, STRIPPED_OAK_LOG, STRIPPED_SPRUCE_LOG, STRIPPED_BIRCH_LOG, STRIPPED_JUNGLE_LOG, STRIPPED_ACACIA_LOG, STRIPPED_DARK_OAK_LOG, STRIPPED_MANGROVE_WOOD, STRIPPED_OAK_LOG, STRIPPED_SPRUCE_LOG, STRIPPED_BIRCH_LOG, STRIPPED_JUNGLE_LOG, STRIPPED_ACACIA_LOG, STRIPPED_DARK_OAK_LOG, STRIPPED_MANGROVE_LOG, STANDING_SIGN, SPRUCE_STANDING_SIGN, BIRCH_STANDING_SIGN, JUNGLE_STANDING_SIGN, ACACIA_STANDING_SIGN, DARKOAK_STANDING_SIGN, MANGROVE_STANDING_SIGN, MANGROVE_TRAPDOOR, WARPED_STANDING_SIGN, WARPED_WALL_SIGN, CRIMSON_STANDING_SIGN, CRIMSON_WALL_SIGN, MANGROVE_ROOTS)) {
                 axeBlocks.put(name, new DigProperty());
             }
             toolBlocks.put(ItemTags.IS_AXE, axeBlocks);
 
-            for (var name : List.of("minecraft:soul_sand", "minecraft:soul_soil", "minecraft:dirt_with_roots", "minecraft:mycelium", "minecraft:podzol", "minecraft:dirt", "minecraft:farmland", "minecraft:sand", "minecraft:gravel", "minecraft:grass", "minecraft:grass_path", "minecraft:snow", "minecraft:mud", "minecraft:packed_mud", "minecraft:clay")) {
+            for (var name : List.of(SOUL_SAND, SOUL_SOIL, DIRT_WITH_ROOTS, MYCELIUM, PODZOL, DIRT, FARMLAND, SAND, GRAVEL, GRASS, GRASS_PATH, SNOW, MUD, PACKED_MUD, CLAY)) {
                 shovelBlocks.put(name, new DigProperty());
             }
             toolBlocks.put(ItemTags.IS_SHOVEL, shovelBlocks);
 
-            for (var name : List.of("minecraft:nether_wart_block", "minecraft:hay_block", "minecraft:target", "minecraft:shroomlight", "minecraft:leaves", "minecraft:leaves2", "minecraft:azalea_leaves_flowered", "minecraft:azalea_leaves", "minecraft:warped_wart_block")) {
+            for (var name : List.of(NETHER_WART_BLOCK, HAY_BLOCK, TARGET, SHROOMLIGHT, LEAVES, LEAVES2, AZALEA_LEAVES_FLOWERED, AZALEA_LEAVES, WARPED_WART_BLOCK)) {
                 hoeBlocks.put(name, new DigProperty());
             }
             toolBlocks.put(ItemTags.IS_HOE, hoeBlocks);
 
-            for (var name : List.of("minecraft:web", "minecraft:bamboo")) {
+            for (var name : List.of(WEB, BAMBOO)) {
                 swordBlocks.put(name, new DigProperty());
             }
             toolBlocks.put(ItemTags.IS_SWORD, swordBlocks);
@@ -533,21 +536,6 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
-         * 物品的攻击力必须大于0才能生效<p>
-         * 标记这个物品是否为武器，如果是，会在物品描述中提示{@code "+X 攻击伤害"}的信息
-         * <p>
-         * The item's attack damage must be greater than 0<p>
-         * define the item is a weapon or not, and if so, it will prompt {@code "+X attack damage"} in the item description
-         */
-
-        public ToolBuilder isWeapon() {
-            if (this.item.getAttackDamage() > 0 && !this.nbt.getCompound("components").containsCompound("minecraft:weapon")) {
-                this.nbt.getCompound("components").putCompound("minecraft:weapon", new CompoundTag());
-            }
-            return this;
-        }
-
-        /**
          * 给工具添加可挖掘的一类方块，用blockTag描述，挖掘它们的速度为{@link #speed(int)}的速度，如果没定义则为工具TIER对应的速度
          * <p>
          * Add a class of block to the tool that can be mined, described by blockTag, and the speed to mine them is the speed of {@link #speed(int)}, or the speed corresponding to the tool TIER if it is not defined
@@ -592,32 +580,28 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                 this.nbt.getCompound("components").getCompound("item_properties")
                         .putString("enchantable_slot", "pickaxe");
                 this.tag("minecraft:is_pickaxe");
-                this.isWeapon();
+//                this.isWeapon();
             } else if (item.isAxe()) {
                 this.blockTags.addAll(List.of("'wood'", "'pumpkin'", "'plant'"));
                 type = ItemTags.IS_AXE;
                 this.nbt.getCompound("components").getCompound("item_properties")
                         .putString("enchantable_slot", "axe");
                 this.tag("minecraft:is_axe");
-                this.isWeapon();
             } else if (item.isShovel()) {
                 this.blockTags.addAll(List.of("'sand'", "'dirt'", "'gravel'", "'grass'", "'snow'"));
                 type = ItemTags.IS_SHOVEL;
                 this.nbt.getCompound("components").getCompound("item_properties")
                         .putString("enchantable_slot", "shovel");
                 this.tag("minecraft:is_shovel");
-                this.isWeapon();
             } else if (item.isHoe()) {
                 this.nbt.getCompound("components").getCompound("item_properties")
                         .putString("enchantable_slot", "hoe");
                 type = ItemTags.IS_HOE;
                 this.tag("minecraft:is_hoe");
-                this.isWeapon();
             } else if (item.isSword()) {
                 this.nbt.getCompound("components").getCompound("item_properties")
                         .putString("enchantable_slot", "sword");
                 type = ItemTags.IS_SWORD;
-                this.isWeapon();
             } else {
                 if (this.nbt.getCompound("components").contains("item_tags")) {
                     var list = this.nbt.getCompound("components").getList("item_tags", StringTag.class).getAll();
@@ -657,10 +641,15 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                 this.nbt.getCompound("components")
                         .putCompound("minecraft:digger", this.diggerRoot);
             }
-
-            //添加可挖掘的方块
-            for (var k : this.blocks) {
-                this.diggerRoot.getList("destroy_speeds", CompoundTag.class).add(k);
+            if (!this.blocks.isEmpty()) {
+                //添加可挖掘的方块
+                for (var k : this.blocks) {
+                    this.diggerRoot.getList("destroy_speeds", CompoundTag.class).add(k);
+                }
+                if (!this.nbt.getCompound("components").containsCompound("minecraft:digger")) {
+                    this.nbt.getCompound("components")
+                            .putCompound("minecraft:digger", this.diggerRoot);
+                }
             }
             return calculateID();
         }

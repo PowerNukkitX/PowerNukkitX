@@ -1,11 +1,5 @@
 package cn.nukkit.nbt.tag;
 
-import cn.nukkit.nbt.stream.NBTInputStream;
-import cn.nukkit.nbt.stream.NBTOutputStream;
-import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
-import java.io.PrintStream;
 import java.util.Objects;
 
 public abstract class Tag {
@@ -86,5 +80,35 @@ public abstract class Tag {
             case TAG_Compound -> "TAG_Compound";
             default -> "UNKNOWN";
         };
+    }
+
+    public static int getTagType(Class<?> type) {
+        if (type == ListTag.class) {
+            return TAG_List;
+        } else if (type == CompoundTag.class) {
+            return TAG_Compound;
+        } else if (type == EndTag.class) {
+            return TAG_End;
+        } else if (type == ByteTag.class) {
+            return TAG_Byte;
+        } else if (type == ShortTag.class) {
+            return TAG_Short;
+        } else if (type == IntTag.class) {
+            return TAG_Int;
+        } else if (type == FloatTag.class) {
+            return TAG_Float;
+        } else if (type == LongTag.class) {
+            return TAG_Long;
+        } else if (type == DoubleTag.class) {
+            return TAG_Double;
+        } else if (type == ByteArrayTag.class) {
+            return TAG_Byte_Array;
+        } else if (type == IntArrayTag.class) {
+            return TAG_Int_Array;
+        } else if (type == StringTag.class) {
+            return TAG_Int_Array;
+        } else {
+            throw new IllegalArgumentException("Unknown tag type " + type.getSimpleName());
+        }
     }
 }

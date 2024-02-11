@@ -16,6 +16,10 @@ public class ListTag<T extends Tag> extends Tag {
     public ListTag() {
     }
 
+    public ListTag(int type) {
+        this.type = (byte) type;
+    }
+
     public ListTag(Collection<T> tags) {
         Optional<T> first = tags.stream().findFirst();
         if (first.isEmpty()) throw new IllegalArgumentException("tags cannot be empty");

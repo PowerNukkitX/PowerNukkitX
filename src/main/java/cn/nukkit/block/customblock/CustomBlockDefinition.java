@@ -1,18 +1,24 @@
 package cn.nukkit.block.customblock;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.customblock.data.*;
+import cn.nukkit.block.customblock.data.Geometry;
+import cn.nukkit.block.customblock.data.Materials;
+import cn.nukkit.block.customblock.data.Permutation;
+import cn.nukkit.block.customblock.data.Transformation;
 import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.block.property.type.BooleanPropertyType;
 import cn.nukkit.block.property.type.EnumPropertyType;
 import cn.nukkit.block.property.type.IntPropertyType;
-import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.item.customitem.data.CreativeCategory;
 import cn.nukkit.item.customitem.data.CreativeGroup;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
-import cn.nukkit.nbt.tag.*;
-import cn.nukkit.registry.Registries;
+import cn.nukkit.nbt.tag.ByteTag;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.IntTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.jetbrains.annotations.NotNull;
@@ -105,7 +111,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
 
             int block_id;
             if (!INTERNAL_ALLOCATION_ID_MAP.containsKey(identifier)) {
-                while (Registries.ITEM_RUNTIMEID.getIdentifier(block_id = CUSTOM_BLOCK_RUNTIMEID.getAndIncrement()) != null) {
+                while (INTERNAL_ALLOCATION_ID_MAP.containsValue(block_id = CUSTOM_BLOCK_RUNTIMEID.getAndIncrement())) {
                 }
                 INTERNAL_ALLOCATION_ID_MAP.put(identifier, block_id);
             } else {
