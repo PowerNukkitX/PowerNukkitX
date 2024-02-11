@@ -1,5 +1,6 @@
 package cn.nukkit.registry;
 
+import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BinaryStream;
@@ -8,6 +9,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -31,15 +33,24 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
 
     private void generatePalette() {
         BinaryStream paletteBuffer = new BinaryStream();
+        HashMap<Integer, Boolean> verify = new HashMap<>();
         paletteBuffer.putUnsignedVarInt(REGISTRY.size() + CUSTOM_REGISTRY.size());
         for (var entry : REGISTRY.object2IntEntrySet()) {
             paletteBuffer.putString(entry.getKey());
-            paletteBuffer.putLShort(entry.getIntValue());
+            int rid = entry.getIntValue();
+            paletteBuffer.putLShort(rid);
+            if (verify.putIfAbsent(rid, true) != null) {
+                throw new IllegalArgumentException("Runtime ID is already registered: " + rid);
+            }
             paletteBuffer.putBoolean(false); //Vanilla Item doesnt component item
         }
         for (var entry : CUSTOM_REGISTRY.object2ObjectEntrySet()) {
             paletteBuffer.putString(entry.getKey());
-            paletteBuffer.putLShort(entry.getValue().runtimeId());
+            int rid = entry.getValue().runtimeId();
+            paletteBuffer.putLShort(rid);
+            if (verify.putIfAbsent(rid, true) != null) {
+                throw new IllegalArgumentException("Runtime ID is already registered: " + rid);
+            }
             paletteBuffer.putBoolean(entry.getValue().isComponent());
         }
         itemPalette = paletteBuffer.getBuffer();
@@ -55,7 +66,6 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
                 register0(tag.getString("name"), tag.getShort("id"));
             }
             trim();
-            generatePalette();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -622,9 +622,10 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
                 String key = customItem.getDefinition().identifier();
                 if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) == null) {
                     CUSTOM_ITEM_DEFINITIONS.put(key, customItem.getDefinition());
-
                     Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(key, customItem.getDefinition().getRuntimeId(), true));
-                    Registries.CREATIVE.addCreativeItem((Item) customItem);
+                    Item ci = (Item) customItem;
+                    ci.setNetId(null);
+                    Registries.CREATIVE.addCreativeItem(ci);
                 } else {
                     throw new RegisterException("This item has already been registered with the identifier: " + key);
                 }

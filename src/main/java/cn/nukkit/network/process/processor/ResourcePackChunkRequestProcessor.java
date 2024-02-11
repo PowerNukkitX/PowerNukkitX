@@ -27,7 +27,7 @@ public class ResourcePackChunkRequestProcessor extends DataPacketProcessor<Resou
         dataPacket.chunkIndex = pk.chunkIndex;
         dataPacket.data = resourcePack.getPackChunk(maxChunkSize * pk.chunkIndex, maxChunkSize);
         dataPacket.progress = maxChunkSize * (long) pk.chunkIndex;
-        player.dataResourcePacket(dataPacket);
+        player.dataPacket(dataPacket);
     }
 
     @Override

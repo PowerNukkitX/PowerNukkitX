@@ -6,17 +6,21 @@ import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.block.property.type.BooleanPropertyType;
 import cn.nukkit.block.property.type.EnumPropertyType;
 import cn.nukkit.block.property.type.IntPropertyType;
+import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.item.customitem.data.CreativeCategory;
 import cn.nukkit.item.customitem.data.CreativeGroup;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.*;
+import cn.nukkit.registry.Registries;
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -27,10 +31,21 @@ import java.util.function.Consumer;
 
 
 public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
+    private static final Object2IntOpenHashMap<String> INTERNAL_ALLOCATION_ID_MAP = new Object2IntOpenHashMap<>();
+    private static final AtomicInteger CUSTOM_BLOCK_RUNTIMEID = new AtomicInteger(10000);
+
+    public int getRuntimeId() {
+        return CustomBlockDefinition.INTERNAL_ALLOCATION_ID_MAP.getInt(identifier);
+    }
+
+    public static int getRuntimeId(String identifier) {
+        return CustomBlockDefinition.INTERNAL_ALLOCATION_ID_MAP.getInt(identifier);
+    }
+
     /**
      * Builder custom block definition.
      *
-     * @param customBlock           the custom block
+     * @param customBlock the custom block
      * @return the custom block definition builder.
      */
     public static CustomBlockDefinition.Builder builder(@NotNull CustomBlock customBlock) {
@@ -47,12 +62,12 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         protected Builder(CustomBlock customBlock) {
             this.identifier = customBlock.getId();
             this.customBlock = customBlock;
-
+            var b = (Block) customBlock;
             var components = this.nbt.getCompound("components");
 
             //设置一些与PNX内部对应的方块属性
             components.putCompound("minecraft:friction", new CompoundTag()
-                            .putFloat("value", (float) (1 - Block.DEFAULT_FRICTION_FACTOR)))
+                            .putFloat("value", (float) Math.min(0.9, Math.max(0, b.getFrictionFactor()))))
                     .putCompound("minecraft:destructible_by_explosion", new CompoundTag()
                             .putInt("explosion_resistance", (int) customBlock.getResistance()))
                     .putCompound("minecraft:light_dampening", new CompoundTag()
@@ -65,24 +80,50 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             components.putCompound("minecraft:material_instances", new CompoundTag()
                     .putCompound("mappings", new CompoundTag())
                     .putCompound("materials", new CompoundTag()));
+
             //默认单位立方体方块
             components.putCompound("minecraft:unit_cube", new CompoundTag());
+            //设置默认单位立方体方块的几何模型
+            components.putCompound("minecraft:geometry", new CompoundTag()
+                    .putString("identifier", "minecraft:geometry.full_block")
+                    .putString("culling", "")
+                    .putCompound("bone_visibility", new CompoundTag())
+            );
+
             //设置方块在创造栏的分类
             this.nbt.putCompound("menu_category", new CompoundTag()
-                    .putString("category", CreativeCategory.NONE.name())
+                    .putString("category", CreativeCategory.NATURE.name())
                     .putString("group", CreativeGroup.NONE.getGroupName()));
             //molang版本
-            this.nbt.putInt("molangVersion", 6);
+            this.nbt.putInt("molangVersion", 9);
 
             //设置方块的properties
             var propertiesNBT = getPropertiesNBT();
             if (propertiesNBT != null) {
                 nbt.putList("properties", propertiesNBT);
             }
+
+            int block_id;
+            if (!INTERNAL_ALLOCATION_ID_MAP.containsKey(identifier)) {
+                while (Registries.ITEM_RUNTIMEID.getIdentifier(block_id = CUSTOM_BLOCK_RUNTIMEID.getAndIncrement()) != null) {
+                }
+                INTERNAL_ALLOCATION_ID_MAP.put(identifier, block_id);
+            } else {
+                block_id = INTERNAL_ALLOCATION_ID_MAP.getInt(identifier);
+            }
+            nbt.putCompound("vanilla_block_data", new CompoundTag().putInt("block_id", block_id)
+                    /*.putString("material", "")*/); //todo Figure what is dirt, maybe that corresponds to https://wiki.bedrock.dev/documentation/materials.html
         }
 
         public Builder texture(String texture) {
             this.materials(Materials.builder().any(Materials.RenderMethod.OPAQUE, texture));
+            return this;
+        }
+
+        public Builder name(String name) {
+            Preconditions.checkArgument(!name.isBlank(), "name is blank");
+            this.nbt.getCompound("components").putCompound("minecraft:display_name", new CompoundTag()
+                    .putString("value", name));
             return this;
         }
 
@@ -298,23 +339,6 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
-         * 客户端摩擦系数，用于控制玩家在自定义方块上行走的速度，值越大，移动越快。
-         * <p>
-         * the client friction, which is used to control the speed at which the player walks on the custom block.The larger the value, the faster the movement.
-         */
-
-        public Builder clientFriction(float friction) {
-            this.nbt.getCompound("components")
-                    .putCompound("minecraft:friction", new CompoundTag()
-                            .putFloat("value", friction));
-            return this;
-        }
-
-        /**
-         * PNX无法准确提供三个以上属性方块的属性解析,如果出现地图异常,请制作一个该方块相同属性的行为包,利用proxypass和bds抓包获取准确的属性解析。
-         * <p>
-         * PNX can not provide accurate properties analysis for more than three properties block, if there is a level exception to block error, please make a behavior_pack of the same properties of the block, and use proxypass and bds to get the packet to accurate get properties.
-         *
          * @return Block Properties in NBT Tag format
          */
         @Nullable
@@ -330,8 +354,8 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                     if (each instanceof BooleanPropertyType booleanBlockProperty) {
                         nbtList.add(new CompoundTag().putString("name", booleanBlockProperty.getName())
                                 .putList("enum", new ListTag<>()
-                                        .add(new IntTag(0))
-                                        .add(new IntTag(1))));
+                                        .add(new ByteTag(0))
+                                        .add(new ByteTag(1))));
                     } else if (each instanceof IntPropertyType intBlockProperty) {
                         var enumList = new ListTag<IntTag>();
                         for (int i = intBlockProperty.getMin(); i <= intBlockProperty.getMax(); i++) {

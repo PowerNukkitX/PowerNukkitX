@@ -780,7 +780,7 @@ public abstract class Item implements Cloneable, ItemID {
             if (netId < 0)
                 throw new IllegalArgumentException("stack network id cannot be negative");
             this.netId = netId;
-        }
+        } else this.netId = netId;
     }
 
     @ApiStatus.Internal

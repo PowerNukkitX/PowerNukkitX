@@ -35,7 +35,6 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Block>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
     private static final Object2ObjectOpenHashMap<String, BlockProperties> PROPERTIES = new Object2ObjectOpenHashMap<>();
     private static final List<CustomBlockDefinition> CUSTOM_BLOCK_DEFINITIONS = new ArrayList<>();
-    private static final AtomicInteger CUSTOM_BLOCK_RUNTIMEID = new AtomicInteger(10000);
 
     @Override
     public void init() {
@@ -1130,10 +1129,13 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
                 if (CustomBlock.class.isAssignableFrom(value)) {
                     CustomBlock customBlock = (CustomBlock) c.invoke((Object) null);
                     CUSTOM_BLOCK_DEFINITIONS.add(customBlock.getDefinition());
-                    int rid = 255 - CUSTOM_BLOCK_RUNTIMEID.getAndIncrement();
+                    int rid = 255 - CustomBlockDefinition.getRuntimeId(customBlock.getId());
                     Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(customBlock.getId(), rid, false));
                     if (customBlock.shouldBeRegisteredInCreative()) {
-                        Registries.CREATIVE.addCreativeItem(new ItemBlock(customBlock.toBlock()));
+//                        Registries.CREATIVE.addCreativeItem(new ItemBlock(customBlock.toBlock()));
+                        ItemBlock itemBlock = new ItemBlock(customBlock.toBlock());
+                        itemBlock.setNetId(null);
+                        Registries.CREATIVE.addCreativeItem(itemBlock);
                     }
                 }
                 KEYSET.add(key);

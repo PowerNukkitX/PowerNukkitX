@@ -300,13 +300,16 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             }
 
             var result = new CustomItemDefinition(identifier, nbt);
+            int id;
             if (!INTERNAL_ALLOCATION_ID_MAP.containsKey(result.identifier())) {
-                while (Registries.ITEM_RUNTIMEID.getIdentifier(nextRuntimeId.incrementAndGet()) != null) {
+                while (Registries.ITEM_RUNTIMEID.getIdentifier(id = nextRuntimeId.getAndIncrement()) != null) {
                 }
-                INTERNAL_ALLOCATION_ID_MAP.put(result.identifier(), nextRuntimeId.get());
-                result.nbt.putString("name", result.identifier());
-                result.nbt.putInt("id", nextRuntimeId.get());
+                INTERNAL_ALLOCATION_ID_MAP.put(result.identifier(), id);
+            } else {
+                id = INTERNAL_ALLOCATION_ID_MAP.getInt(result.identifier());
             }
+            result.nbt.putString("name", result.identifier());
+            result.nbt.putInt("id", id);
             return result;
         }
 

@@ -16,12 +16,9 @@ import javax.annotation.Nullable;
 
 public interface CustomBlock {
     /**
-     * 覆写该方法设置自定义方块的摩擦因数。<br>
-     * 警告：如果你想要让玩家在你的自定义方块上的摩擦不同，请覆写{@link CustomBlockDefinition.Builder#clientFriction(float)}方法。
+     * 覆写该方法设置自定义方块的摩擦因数。
      * <p>
-     * {@code @Override} this method to set the friction factor of the custom block.<br>
-     * Warning: If you want to make the friction of the player on your custom block different,
-     * please override the {@link CustomBlockDefinition.Builder#clientFriction(float)} method.
+     * {@code @Override} this method to set the friction factor of the custom block.
      */
     double getFrictionFactor();
 
@@ -68,9 +65,6 @@ public interface CustomBlock {
      * This method sets the definition of custom block
      */
     CustomBlockDefinition getDefinition();
-
-    /* 下面两个方法需要被手动覆写,请使用接口的定义 */
-
 
     /**
      * Plugins do not need {@code @Override}

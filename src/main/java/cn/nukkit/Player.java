@@ -5447,23 +5447,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
-
-    public boolean dataResourcePacket(DataPacket packet) {
-        if (!this.connected) {
-            return false;
-        }
-        DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
-        this.server.getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
-            return false;
-        }
-        if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
-            log.trace("Resource Outbound {}: {}", this.getName(), packet);
-        }
-        this.dataPacket(packet);
-        return true;
-    }
-
     /**
      * 玩家屏幕振动效果
      * <p>

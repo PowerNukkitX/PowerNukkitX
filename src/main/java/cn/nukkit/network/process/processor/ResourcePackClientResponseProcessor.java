@@ -34,7 +34,7 @@ public class ResourcePackClientResponseProcessor extends DataPacketProcessor<Res
                     dataInfoPacket.chunkCount = (int) Math.ceil(resourcePack.getPackSize() / (double) dataInfoPacket.maxChunkSize);
                     dataInfoPacket.compressedPackSize = resourcePack.getPackSize();
                     dataInfoPacket.sha256 = resourcePack.getSha256();
-                    player.dataResourcePacket(dataInfoPacket);
+                    player.dataPacket(dataInfoPacket);
                 }
             }
             case ResourcePackClientResponsePacket.STATUS_HAVE_ALL_PACKS -> {
@@ -59,7 +59,7 @@ public class ResourcePackClientResponseProcessor extends DataPacketProcessor<Res
                 stackPacket.experiments.add(
                         new ResourcePackStackPacket.ExperimentData("cameras", true)
                 );
-                player.dataResourcePacket(stackPacket);
+                player.dataPacket(stackPacket);
             }
             case ResourcePackClientResponsePacket.STATUS_COMPLETED -> {
                 playerHandle.setShouldLogin(true);

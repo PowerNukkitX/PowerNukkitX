@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class Geometry implements NBTData {
     private final String geometryName;
+    private String culling = "";
     private final Map<String, String> boneVisibilities = new LinkedHashMap<>();
 
     public Geometry(@NotNull String name) {
@@ -26,7 +27,7 @@ public class Geometry implements NBTData {
     public Geometry boneVisibility(@NotNull String boneName, boolean isVisibility) {
         Preconditions.checkNotNull(boneName);
         Preconditions.checkArgument(!boneName.isBlank());
-        this.boneVisibilities.put(boneName, isVisibility ? "true" : "false");
+        this.boneVisibilities.put(boneName, isVisibility ? "1.000000" : "0.000000");
         return this;
     }
 
@@ -42,17 +43,25 @@ public class Geometry implements NBTData {
         return this;
     }
 
+    public Geometry culling(@NotNull String cullingName) {
+        Preconditions.checkNotNull(cullingName);
+        this.culling = cullingName;
+        return this;
+    }
+
     @Override
     public CompoundTag toCompoundTag() {
         var boneVisibility = new CompoundTag();
         for (var entry : boneVisibilities.entrySet()) {
-            boneVisibility.putString(entry.getKey(), entry.getValue());
+            boneVisibility.putCompound(entry.getKey(), new CompoundTag()
+                    .putString("expression", entry.getValue())
+                    .putInt("version", 1)
+            );
         }
         CompoundTag compoundTag = new CompoundTag()
                 .putString("identifier", geometryName)
-                .putByte("legacyBlockLightAbsorption", 0)
-                .putByte("legacyTopRotation", 0);
-        if (boneVisibilities.size() > 0) {
+                .putString("culling", culling);
+        if (!boneVisibilities.isEmpty()) {
             compoundTag.putCompound("bone_visibility", boneVisibility);
         }
         return compoundTag;
