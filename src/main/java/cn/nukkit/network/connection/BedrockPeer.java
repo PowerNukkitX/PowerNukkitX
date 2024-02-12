@@ -24,7 +24,6 @@ import org.cloudburstmc.netty.channel.raknet.RakDisconnectReason;
 import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
 import cn.nukkit.network.connection.netty.codec.FrameIdCodec;
 import cn.nukkit.network.connection.netty.codec.batch.BedrockBatchDecoder;
-import cn.nukkit.network.connection.netty.codec.compression.SnappyCompression;
 import cn.nukkit.network.connection.netty.codec.encryption.BedrockEncryptionDecoder;
 import cn.nukkit.network.connection.netty.codec.encryption.BedrockEncryptionEncoder;
 import cn.nukkit.network.connection.util.EncryptionUtils;
@@ -87,6 +86,10 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
             return;
         }
 
+        this.flushSendQueue();
+    }
+
+    public void flushSendQueue() {
         if (!this.packetQueue.isEmpty()) {
             BedrockPacketWrapper packet;
             while ((packet = this.packetQueue.poll()) != null) {

@@ -1,15 +1,14 @@
 package cn.nukkit.network.connection;
 
 import cn.nukkit.Player;
+import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
+import cn.nukkit.network.process.NetworkSession;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import io.netty.util.internal.PlatformDependent;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
-import org.apache.logging.log4j.message.FormattedMessage;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
-import org.cloudburstmc.netty.handler.codec.raknet.common.RakSessionCodec;
 
 import javax.crypto.SecretKey;
 import java.net.SocketAddress;
@@ -26,6 +25,7 @@ public abstract class BedrockSession {
     protected String disconnectReason;
     private final Queue<DataPacket> inbound = PlatformDependent.newSpscQueue();
     private Player player;
+    private NetworkSession session;
 
     public BedrockSession(BedrockPeer peer, int subClientId) {
         this.peer = peer;
@@ -51,6 +51,10 @@ public abstract class BedrockSession {
     public void sendPacketImmediatelyAndCallBack(@NonNull DataPacket packet, Runnable runnable) {
         this.peer.sendPacketImmediatelyAndCallBack(this.subClientId, 0, packet, runnable);
         this.logOutbound(packet);
+    }
+
+    public void flushSendBuffer() {
+        this.peer.flushSendQueue();
     }
 
     public BedrockPeer getPeer() {
@@ -98,6 +102,13 @@ public abstract class BedrockSession {
         DataPacket packet;
         while ((packet = this.inbound.poll()) != null) {
             try {
+                var hdr = this.session.getPacketHandler();
+                if (hdr != null) {
+                    var method = hdr.getClass().getMethod("handle", packet.getClass());
+                    if (method != null) {
+                        method.invoke(hdr, packet);
+                    }
+                }
                 this.player.handleDataPacket(packet);
             } catch (Exception e) {
                 log.error("An error occurred whilst handling {} for {}", new Object[]{packet.getClass().getSimpleName(), this.player.getName()}, e);
@@ -161,6 +172,14 @@ public abstract class BedrockSession {
 
     public void setPlayer(Player player) {
         this.player = player;
+    }
+
+    public NetworkSession getSession() {
+        return session;
+    }
+
+    public void setSession(NetworkSession session) {
+        this.session = session;
     }
 
     public long getPing() {

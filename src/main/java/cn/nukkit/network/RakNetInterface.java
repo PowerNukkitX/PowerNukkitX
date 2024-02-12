@@ -8,6 +8,7 @@ import cn.nukkit.network.connection.BedrockPeer;
 import cn.nukkit.network.connection.BedrockPong;
 import cn.nukkit.network.connection.BedrockServerSession;
 import cn.nukkit.network.connection.netty.initializer.BedrockServerInitializer;
+import cn.nukkit.network.process.NetworkSession;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.query.codec.QueryPacketCodec;
 import cn.nukkit.network.query.handler.QueryPacketHandler;
@@ -98,6 +99,8 @@ public class RakNetInterface implements SourceInterface {
                             Player player = constructor.newInstance(RakNetInterface.this, subClientId, event.getSocketAddress());
                             RakNetInterface.this.server.addPlayer(address, player);
                             session.setPlayer(player);
+                            var nsession = new NetworkSession(session, player);
+                            session.setSession(nsession);
                         } catch (Exception e) {
                             log.error("Failed to create player", e);
                             session.disconnect("Internal error");

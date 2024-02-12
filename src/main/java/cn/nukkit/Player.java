@@ -338,6 +338,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * The entity that the player is attacked last.
      */
     protected Entity lastBeAttackEntity = null;
+    @Getter
     private final @NotNull PlayerHandle playerHandle = new PlayerHandle(this);
     protected final PlayerChunkManager playerChunkManager;
     private boolean needDimensionChangeACK = false;
@@ -2442,11 +2443,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
         this.networkSession.sendPacket(packet);
         return true;
-    }
-
-
-    public void forceDataPacket(DataPacket packet) {
-        this.networkSession.sendPacketImmediately(packet);
     }
 
     /**
