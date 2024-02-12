@@ -1086,7 +1086,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     /**
      * 处理LOGIN_PACKET中执行
      */
-    protected void processLogin() {
+    public void processLogin() {
         if (!this.server.isWhitelisted((this.getName()).toLowerCase())) {
             this.kick(PlayerKickEvent.Reason.NOT_WHITELISTED, "Server is white-listed");
 
@@ -1234,11 +1234,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (!this.server.isCheckMovement()) {
             this.checkMovement = false;
         }
-
-        ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
-        infoPacket.resourcePackEntries = this.server.getResourcePackManager().getResourceStack();
-        infoPacket.mustAccept = this.server.getForceResources();
-        this.dataPacket(infoPacket);
     }
 
     /**

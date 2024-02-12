@@ -105,9 +105,7 @@ public abstract class BedrockSession {
                 var hdr = this.session.getPacketHandler();
                 if (hdr != null) {
                     var method = hdr.getClass().getMethod("handle", packet.getClass());
-                    if (method != null) {
-                        method.invoke(hdr, packet);
-                    }
+                    method.invoke(hdr, packet);
                 }
                 this.player.handleDataPacket(packet);
             } catch (Exception e) {

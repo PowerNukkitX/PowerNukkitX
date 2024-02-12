@@ -1,24 +1,32 @@
-package cn.nukkit.network.process.processor;
+package cn.nukkit.network.process.handler;
 
-import cn.nukkit.Player;
-import cn.nukkit.PlayerHandle;
-import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.network.process.NetworkSession;
+import cn.nukkit.network.protocol.ResourcePackChunkDataPacket;
+import cn.nukkit.network.protocol.ResourcePackChunkRequestPacket;
 import cn.nukkit.network.protocol.ResourcePackClientResponsePacket;
 import cn.nukkit.network.protocol.ResourcePackDataInfoPacket;
 import cn.nukkit.network.protocol.ResourcePackStackPacket;
+import cn.nukkit.network.protocol.ResourcePacksInfoPacket;
 import cn.nukkit.resourcepacks.ResourcePack;
-import org.jetbrains.annotations.NotNull;
 import cn.nukkit.utils.version.Version;
 
-public class ResourcePackClientResponseProcessor extends DataPacketProcessor<ResourcePackClientResponsePacket> {
+public class ResourcePackHandler extends NetworkSessionPacketHandler {
+
+    private final Runnable completionCallback;
+
+    public ResourcePackHandler(NetworkSession session, Runnable completionCallback) {
+        super(session);
+        ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
+        infoPacket.resourcePackEntries = session.getServer().getResourcePackManager().getResourceStack();
+        infoPacket.mustAccept = session.getServer().getForceResources();
+        session.sendDataPacket(infoPacket);
+        this.completionCallback = completionCallback;
+    }
+
     @Override
-    public void handle(@NotNull PlayerHandle playerHandle, @NotNull ResourcePackClientResponsePacket pk) {
-        Player player = playerHandle.player;
+    public void handle(ResourcePackClientResponsePacket pk) {
         switch (pk.responseStatus) {
-            case ResourcePackClientResponsePacket.STATUS_REFUSED -> {
-                player.close("", "disconnectionScreen.noReason");
-            }
+            case ResourcePackClientResponsePacket.STATUS_REFUSED -> player.close("", "disconnectionScreen.noReason");
             case ResourcePackClientResponsePacket.STATUS_SEND_PACKS -> {
                 for (ResourcePackClientResponsePacket.Entry entry : pk.packEntries) {
                     ResourcePack resourcePack = player.getServer().getResourcePackManager().getPackById(entry.uuid);
@@ -34,7 +42,7 @@ public class ResourcePackClientResponseProcessor extends DataPacketProcessor<Res
                     dataInfoPacket.chunkCount = (int) Math.ceil(resourcePack.getPackSize() / (double) dataInfoPacket.maxChunkSize);
                     dataInfoPacket.compressedPackSize = resourcePack.getPackSize();
                     dataInfoPacket.sha256 = resourcePack.getSha256();
-                    player.dataPacket(dataInfoPacket);
+                    session.sendDataPacket(dataInfoPacket);
                 }
             }
             case ResourcePackClientResponsePacket.STATUS_HAVE_ALL_PACKS -> {
@@ -59,19 +67,27 @@ public class ResourcePackClientResponseProcessor extends DataPacketProcessor<Res
                 stackPacket.experiments.add(
                         new ResourcePackStackPacket.ExperimentData("cameras", true)
                 );
-                player.dataPacket(stackPacket);
+                session.sendDataPacket(stackPacket);
             }
-            case ResourcePackClientResponsePacket.STATUS_COMPLETED -> {
-                playerHandle.setShouldLogin(true);
-                if (playerHandle.getPreLoginEventTask().isFinished()) {
-                    playerHandle.getPreLoginEventTask().onCompletion(player.getServer());
-                }
-            }
+            case ResourcePackClientResponsePacket.STATUS_COMPLETED -> this.completionCallback.run();
         }
     }
 
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET;
+    public void handle(ResourcePackChunkRequestPacket pk) {
+        // TODO: Pack version check
+        ResourcePack resourcePack = player.getServer().getResourcePackManager().getPackById(pk.getPackId());
+        if (resourcePack == null) {
+            player.close("", "disconnectionScreen.resourcePack");
+            return;
+        }
+        int maxChunkSize = player.getServer().getResourcePackManager().getMaxChunkSize();
+        ResourcePackChunkDataPacket dataPacket = new ResourcePackChunkDataPacket();
+        dataPacket.setPackId(resourcePack.getPackId());
+        dataPacket.setPackVersion(new Version(resourcePack.getPackVersion()));
+        dataPacket.chunkIndex = pk.chunkIndex;
+        dataPacket.data = resourcePack.getPackChunk(maxChunkSize * pk.chunkIndex, maxChunkSize);
+        dataPacket.progress = maxChunkSize * (long) pk.chunkIndex;
+        session.sendDataPacket(dataPacket);
     }
 }

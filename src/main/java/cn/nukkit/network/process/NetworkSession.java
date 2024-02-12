@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.network.connection.BedrockServerSession;
 import cn.nukkit.network.process.handler.LoginHandler;
+import cn.nukkit.network.process.handler.ResourcePackHandler;
 import cn.nukkit.network.process.handler.SessionStartHandler;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
@@ -16,7 +17,7 @@ import javax.annotation.Nullable;
 
 @Slf4j
 public class NetworkSession {
-
+    @Getter
     private final Server server = Server.getInstance();
     @Getter
     private final Player player;
@@ -78,6 +79,15 @@ public class NetworkSession {
 
     private void onServerLoginSuccess() {
         log.debug("Login completed");
-        player.getPlayerHandle().processLogin();
+
+        player.processLogin();
+        log.debug("Initiating resource packs phase");
+        this.setPacketHandler(new ResourcePackHandler(this, () -> {
+            var playerHandle = player.getPlayerHandle();
+            playerHandle.setShouldLogin(true);
+            if (playerHandle.getPreLoginEventTask().isFinished()) {
+                playerHandle.getPreLoginEventTask().onCompletion(player.getServer());
+            }
+        }));
     }
 }

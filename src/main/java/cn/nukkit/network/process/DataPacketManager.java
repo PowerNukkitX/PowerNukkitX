@@ -40,10 +40,7 @@ public final class DataPacketManager {
 
     public void registerDefaultProcessors() {
         registerProcessor(
-                new RequestNetworkSettingsProcessor(),
                 new InventoryTransactionProcessor(),
-                new ResourcePackClientResponseProcessor(),
-                new ResourcePackChunkRequestProcessor(),
                 new SetLocalPlayerAsInitializedProcessor(),
                 new PlayerSkinProcessor(),
                 new PacketViolationWarningProcessor(),
