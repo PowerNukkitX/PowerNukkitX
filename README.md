@@ -16,5 +16,23 @@ chmod +x start.sh
 3. gradle/tasks/alpha build/buildFast - Only build `jar`, skip test
 4. gradle/tasks/alpha build/clean - clean all build products
 
+
+### Concise Guide to start PNX from sources for newbies
+```shell
+#make sure you have a proper JDK 17 or above environment 
+java -version
+
+# preview changes
+./gradlew buildFast
+
+# copy dependencies .....
+./gradlew buildSkipChores
+
+cd build
+
+# window users see start.bat
+# for linux or macOS users
+bash start.sh
+```
 ### Code coverage too low? 
 Feel free to submit more tests for PNX!
