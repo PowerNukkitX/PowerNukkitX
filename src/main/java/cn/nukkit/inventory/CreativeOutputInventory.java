@@ -59,6 +59,10 @@ public class CreativeOutputInventory implements Inventory {
         return true;
     }
 
+    public boolean setItem(@NotNull Item item) {
+        return setItem(0, item, true);
+    }
+
     @Override
     public Item[] addItem(@NotNull Item... slots) {
         Preconditions.checkNotNull(slots[0]);

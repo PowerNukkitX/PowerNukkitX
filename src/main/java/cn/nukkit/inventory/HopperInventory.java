@@ -1,6 +1,9 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.blockentity.BlockEntityHopper;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+
+import java.util.Map;
 
 /**
  * @author CreeperFace
@@ -10,6 +13,14 @@ public class HopperInventory extends ContainerInventory {
 
     public HopperInventory(BlockEntityHopper hopper) {
         super(hopper, InventoryType.HOPPER, 5);
+    }
+
+    @Override
+    public void init() {
+        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        for (int i = 0; i < getSize(); i++) {
+            map.put(i, ContainerSlotType.LEVEL_ENTITY);
+        }
     }
 
     @Override
