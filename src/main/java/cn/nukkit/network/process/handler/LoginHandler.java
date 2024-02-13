@@ -106,7 +106,6 @@ public class LoginHandler extends NetworkSessionPacketHandler {
             player.close("", playerPreLoginEvent.getKickMessage());
             return;
         }
-        handle.setVerified(true);
         handle.setPreLoginEventTask(new AsyncTask() {
             private PlayerAsyncPreLoginEvent event;
 

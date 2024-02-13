@@ -310,7 +310,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected static final int NO_SHIELD_DELAY = 10;
     protected PlayerBlockActionData lastBlockAction;
     protected AsyncTask preLoginEventTask = null;
-    protected boolean verified = false;
     protected LoginChainData loginChainData;
     /**
      * 玩家升级时播放音乐的时间

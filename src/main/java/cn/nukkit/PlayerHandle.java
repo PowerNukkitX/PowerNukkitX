@@ -331,14 +331,6 @@ public final class PlayerHandle {
         return player.loginChainData;
     }
 
-    public boolean isVerified() {
-        return player.verified;
-    }
-
-    public void setVerified(boolean verified) {
-        player.verified = verified;
-    }
-
     public AsyncTask getPreLoginEventTask() {
         return player.preLoginEventTask;
     }

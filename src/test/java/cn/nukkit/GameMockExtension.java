@@ -189,7 +189,6 @@ public class GameMockExtension extends MockitoExtension {
         doNothing().when(serverSession).sendPacket(any());
         player = new Player(sourceInterface, 0, new InetSocketAddress("1.1.1.1", 55555));
         player.loggedIn = true;
-        player.verified = true;
         player.username = "test";
         player.iusername = "test";
         player.setInventories(new Inventory[]{
