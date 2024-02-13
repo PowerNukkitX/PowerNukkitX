@@ -141,30 +141,6 @@ public class Network {
         return hardWareNetworkInterfaces;
     }
 
-
-    /**
-     * Process packets obtained from batch packets
-     * Required to perform additional analyses and filter unnecessary packets
-     *
-     * @param packets
-     */
-    public void processPackets(Player player, List<DataPacket> packets) {
-        if (packets.isEmpty()) return;
-        packets.forEach(p -> {
-            try {
-                player.handleDataPacket(p);
-            } catch (Exception e) {
-                if (log.isWarnEnabled()) {
-                    log.warn("Error whilst processing the packet {}:{} for {} (full data: {})",
-                            p.pid(), p.getClass().getSimpleName(),
-                            player.getName(), p.toString(),
-                            e
-                    );
-                }
-            }
-        });
-    }
-
     public void blockAddress(InetAddress address) {
         for (SourceInterface sourceInterface : this.interfaces) {
             sourceInterface.blockAddress(address);

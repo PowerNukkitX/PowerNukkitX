@@ -1,8 +1,8 @@
 package cn.nukkit.network.process.handler;
 
 import cn.nukkit.Server;
-import cn.nukkit.network.process.NetworkSessionState;
 import cn.nukkit.network.process.NetworkSession;
+import cn.nukkit.network.process.NetworkSessionState;
 import cn.nukkit.network.protocol.NetworkSettingsPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -40,7 +40,7 @@ public class SessionStartHandler extends NetworkSessionPacketHandler {
         //In raknet version 11, the client does not enable packet compression by default,but the server will tell client what the
         //compression algorithm through NetworkSettingsPacket
         player.getNetworkSession().sendPacketImmediatelyAndCallBack(settingsPacket, () -> {
-            player.getPlayerHandle().getNetworkSession().setCompression(algorithm);//so send the NetworkSettingsPacket packet before set the session compression
+            session.getSession().setCompression(algorithm);//so send the NetworkSettingsPacket packet before set the session compression
             this.session.getMachine().fire(NetworkSessionState.LOGIN);
         });
     }

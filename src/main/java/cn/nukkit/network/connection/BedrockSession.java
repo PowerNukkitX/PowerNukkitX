@@ -8,6 +8,7 @@ import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import io.netty.util.internal.PlatformDependent;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
+import lombok.SneakyThrows;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.crypto.SecretKey;
@@ -98,32 +99,29 @@ public abstract class BedrockSession {
         inbound.add(packet);
     }
 
+    @SneakyThrows
     public void serverTick() {
         DataPacket packet;
         while ((packet = this.inbound.poll()) != null) {
             try {
-                var hdr = this.session.getPacketHandler();
-                if (hdr != null) {
-                    var method = hdr.getClass().getMethod("handle", packet.getClass());
-                    method.invoke(hdr, packet);
-                }
-                this.player.handleDataPacket(packet);
+                this.session.handleDataPacket(packet);
             } catch (Exception e) {
-                log.error("An error occurred whilst handling {} for {}", new Object[]{packet.getClass().getSimpleName(), this.player.getName()}, e);
+                log.error("An error occurred whilst handling {} for {}", new Object[]{packet.getClass().getSimpleName(), this.player.getName()});
+                log.error(e);
             }
         }
     }
 
-    protected void logOutbound(DataPacket packet) {
+    protected void logOutbound(DataPacket packet) {/*
         if (log.isTraceEnabled() && this.logging) {
             log.trace("Outbound {}{}: {}", this.getSocketAddress(), this.subClientId, packet);
-        }
+        }*/
     }
 
-    protected void logInbound(DataPacket packet) {
+    protected void logInbound(DataPacket packet) {/*
         if (log.isTraceEnabled() && this.logging) {
             log.trace("Inbound {}{}: {}", this.getSocketAddress(), this.subClientId, packet);
-        }
+        }*/
     }
 
     public SocketAddress getSocketAddress() {

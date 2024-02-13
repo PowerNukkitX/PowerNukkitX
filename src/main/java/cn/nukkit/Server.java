@@ -2154,7 +2154,6 @@ public class Server {
                 break;
             }
         }
-        player.dataPacketManager = null;
     }
 
     /**

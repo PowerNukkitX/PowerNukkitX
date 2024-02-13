@@ -9,9 +9,7 @@ public enum NetworkSessionState {
 
     ENCRYPTION(),
 
-    SPAWN_SEQUENCE(),
-
-    SPAWN(),
+    PRE_SPAWN(),
 
     IN_GAME(),
 

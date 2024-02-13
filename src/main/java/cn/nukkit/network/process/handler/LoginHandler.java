@@ -8,8 +8,8 @@ import cn.nukkit.event.player.PlayerAsyncPreLoginEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.event.player.PlayerPreLoginEvent;
 import cn.nukkit.network.connection.util.PrepareEncryptionTask;
-import cn.nukkit.network.process.NetworkSessionState;
 import cn.nukkit.network.process.NetworkSession;
+import cn.nukkit.network.process.NetworkSessionState;
 import cn.nukkit.network.protocol.LoginPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.network.protocol.ServerToClientHandshakePacket;
@@ -34,9 +34,8 @@ public class LoginHandler extends NetworkSessionPacketHandler {
 
     @Override
     public void handle(LoginPacket pk) {
-        var playerHandle = player.getPlayerHandle();
         var server = player.getServer();
-        /*if (playerHandle.player.loggedIn) {
+        /*if (handle.player.loggedIn) {
             return;
         }*/
         //check the player login time
@@ -48,18 +47,18 @@ public class LoginHandler extends NetworkSessionPacketHandler {
         }
 
         //set user name
-        playerHandle.setUsername(TextFormat.clean(pk.username));
-        playerHandle.setDisplayName(playerHandle.getUsername());
-        playerHandle.setIusername(playerHandle.getUsername().toLowerCase());
+        handle.setUsername(TextFormat.clean(pk.username));
+        handle.setDisplayName(handle.getUsername());
+        handle.setIusername(handle.getUsername().toLowerCase());
 
         //set user name data flag
-        player.setDataProperty(new StringEntityData(Entity.DATA_NAMETAG, playerHandle.getUsername()), false);
+        player.setDataProperty(new StringEntityData(Entity.DATA_NAMETAG, handle.getUsername()), false);
 
         //set login chain data of player
-        playerHandle.setLoginChainData(ClientChainData.read(pk));
+        handle.setLoginChainData(ClientChainData.read(pk));
 
         //verify the player if enable the xbox-auth
-        if (!playerHandle.getLoginChainData().isXboxAuthed() && server.getPropertyBoolean("xbox-auth")) {
+        if (!handle.getLoginChainData().isXboxAuthed() && server.getPropertyBoolean("xbox-auth")) {
             player.close("", "disconnectionScreen.notAuthenticated");
             return;
         }
@@ -71,8 +70,8 @@ public class LoginHandler extends NetworkSessionPacketHandler {
         }
 
         //set proxy ip
-        if (server.isWaterdogCapable() && playerHandle.getLoginChainData().getWaterdogIP() != null) {
-            playerHandle.setSocketAddress(new InetSocketAddress(playerHandle.getLoginChainData().getWaterdogIP(), player.getRawPort()));
+        if (server.isWaterdogCapable() && handle.getLoginChainData().getWaterdogIP() != null) {
+            handle.setSocketAddress(new InetSocketAddress(handle.getLoginChainData().getWaterdogIP(), player.getRawPort()));
         }
 
         player.setUniqueId(pk.clientUUID);
@@ -84,8 +83,8 @@ public class LoginHandler extends NetworkSessionPacketHandler {
             valid = false;
         }
 
-        if (!valid || Objects.equals(playerHandle.getIusername(), "rcon")
-                || Objects.equals(playerHandle.getIusername(), "console")) {
+        if (!valid || Objects.equals(handle.getIusername(), "rcon")
+                || Objects.equals(handle.getIusername(), "console")) {
             player.close("", "disconnectionScreen.invalidName");
             return;
         }
@@ -107,13 +106,13 @@ public class LoginHandler extends NetworkSessionPacketHandler {
             player.close("", playerPreLoginEvent.getKickMessage());
             return;
         }
-        playerHandle.setVerified(true);
-        playerHandle.setPreLoginEventTask(new AsyncTask() {
+        handle.setVerified(true);
+        handle.setPreLoginEventTask(new AsyncTask() {
             private PlayerAsyncPreLoginEvent event;
 
             @Override
             public void onRun() {
-                event = new PlayerAsyncPreLoginEvent(playerHandle.getUsername(), player.getUniqueId(), playerHandle.getLoginChainData(), player.getSkin(), player.getRawAddress(), player.getRawPort());
+                event = new PlayerAsyncPreLoginEvent(handle.getUsername(), player.getUniqueId(), handle.getLoginChainData(), player.getSkin(), player.getRawAddress(), player.getRawPort());
                 server.getPluginManager().callEvent(event);
             }
 
@@ -125,9 +124,8 @@ public class LoginHandler extends NetworkSessionPacketHandler {
 
                 if (event.getLoginResult() == PlayerAsyncPreLoginEvent.LoginResult.KICK) {
                     player.close(event.getKickMessage(), event.getKickMessage());
-                } else if (playerHandle.isShouldLogin()) {
+                } else if (handle.isShouldLogin()) {
                     player.setSkin(event.getSkin());
-                    playerHandle.completeLoginSequence();
                     for (Consumer<Server> action : event.getScheduledActions()) {
                         action.accept(server);
                     }
@@ -135,29 +133,33 @@ public class LoginHandler extends NetworkSessionPacketHandler {
             }
         });
 
-        server.getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, playerHandle.getPreLoginEventTask());
+        server.getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, handle.getPreLoginEventTask());
 
         if (server.enabledNetworkEncryption) {
-            server.getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new PrepareEncryptionTask(player) {
-                @Override
-                public void onCompletion(Server server) {
-                    if (!player.isConnected()) {
-                        return;
-                    }
-                    if (this.getHandshakeJwt() == null || this.getEncryptionKey() == null) {
-                        player.close("", "Network Encryption error");
-                        return;
-                    }
-                    ServerToClientHandshakePacket pk = new ServerToClientHandshakePacket();
-                    pk.setJwt(this.getHandshakeJwt());
-                    session.sendPacketImmediately(pk);
-                    session.getSession().enableEncryption(this.getEncryptionKey());
-
-                    session.getMachine().fire(NetworkSessionState.ENCRYPTION);
-                }
-            });
+            this.enableEncryption();
         } else {
             session.getMachine().fire(NetworkSessionState.RESOURCE_PACK);
         }
+    }
+
+    private void enableEncryption() {
+        Server.getInstance().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new PrepareEncryptionTask(player) {
+            @Override
+            public void onCompletion(Server server) {
+                if (!player.isConnected()) {
+                    return;
+                }
+                if (this.getHandshakeJwt() == null || this.getEncryptionKey() == null) {
+                    player.close("", "Network Encryption error");
+                    return;
+                }
+                ServerToClientHandshakePacket pk = new ServerToClientHandshakePacket();
+                pk.setJwt(this.getHandshakeJwt());
+                session.sendPacketImmediately(pk);
+                session.getSession().enableEncryption(this.getEncryptionKey());
+
+                session.getMachine().fire(NetworkSessionState.ENCRYPTION);
+            }
+        });
     }
 }

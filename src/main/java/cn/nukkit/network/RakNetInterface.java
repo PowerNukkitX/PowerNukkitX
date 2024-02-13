@@ -1,6 +1,7 @@
 package cn.nukkit.network;
 
 import cn.nukkit.Player;
+import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.event.player.PlayerAsyncCreationEvent;
 import cn.nukkit.event.server.QueryRegenerateEvent;
@@ -99,7 +100,7 @@ public class RakNetInterface implements SourceInterface {
                             Player player = constructor.newInstance(RakNetInterface.this, subClientId, event.getSocketAddress());
                             RakNetInterface.this.server.addPlayer(address, player);
                             session.setPlayer(player);
-                            var nsession = new NetworkSession(session, player);
+                            var nsession = new NetworkSession(session, player, new PlayerHandle(player));
                             session.setSession(nsession);
                         } catch (Exception e) {
                             log.error("Failed to create player", e);

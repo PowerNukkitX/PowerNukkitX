@@ -1,7 +1,7 @@
 package cn.nukkit.network.process.handler;
 
-import cn.nukkit.network.process.NetworkSessionState;
 import cn.nukkit.network.process.NetworkSession;
+import cn.nukkit.network.process.NetworkSessionState;
 import cn.nukkit.network.protocol.ResourcePackChunkDataPacket;
 import cn.nukkit.network.protocol.ResourcePackChunkRequestPacket;
 import cn.nukkit.network.protocol.ResourcePackClientResponsePacket;
@@ -67,9 +67,8 @@ public class ResourcePackHandler extends NetworkSessionPacketHandler {
                 );
                 session.sendDataPacket(stackPacket);
             }
-            case ResourcePackClientResponsePacket.STATUS_COMPLETED -> {
-                this.session.getMachine().fire(NetworkSessionState.SPAWN_SEQUENCE);
-            }
+            case ResourcePackClientResponsePacket.STATUS_COMPLETED ->
+                    this.session.getMachine().fire(NetworkSessionState.PRE_SPAWN);
         }
     }
 

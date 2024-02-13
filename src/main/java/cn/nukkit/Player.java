@@ -338,7 +338,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * The entity that the player is attacked last.
      */
     protected Entity lastBeAttackEntity = null;
-    @Getter
     private final @NotNull PlayerHandle playerHandle = new PlayerHandle(this);
     protected final PlayerChunkManager playerChunkManager;
     private boolean needDimensionChangeACK = false;
@@ -360,9 +359,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected PlayerCursorInventory playerCursorInventory;
     protected CreativeOutputInventory creativeOutputInventory;
     protected boolean inventoryOpen;
-    ///
-    /// network system
-    protected DataPacketManager dataPacketManager;
 
     ///
     @UsedByReflection
@@ -390,7 +386,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.rawUUID = null;
         this.playerChunkManager = new PlayerChunkManager(this);
         this.creationTime = System.currentTimeMillis();
-        this.dataPacketManager = new DataPacketManager();
     }
 
     private static InetSocketAddress uncheckedNewInetSocketAddress(String ip, int port) {
@@ -3021,10 +3016,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.nextChunkOrderRun-- <= 0 || this.chunk == null) {
             playerChunkManager.tick();
         }
-
-        if (this.chunkLoadCount >= this.spawnThreshold && !this.spawned && loggedIn) {
-            this.doFirstSpawn();
-        }
     }
 
     public boolean canInteract(Vector3 pos, double maxDistance) {
@@ -3040,40 +3031,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         double dot = dV.dot(new Vector2(this.x, this.z));
         double dot1 = dV.dot(new Vector2(pos.x, pos.z));
         return (dot1 - dot) >= -maxDiff;
-    }
-
-    public void handleDataPacket(DataPacket packet) {
-        if (!connected) {
-            return;
-        }
-
-        if (!verified && packet.pid() != ProtocolInfo.LOGIN_PACKET && packet.pid() != ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET) {
-            log.warn("Ignoring {} from {} due to player not verified yet", packet.getClass().getSimpleName(), getAddress());
-            if (unverifiedPackets++ > 100) {
-                this.close("", "Too many failed login attempts");
-            }
-            return;
-        }
-
-        DataPacketReceiveEvent ev = new DataPacketReceiveEvent(this, packet);
-        this.server.getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
-            return;
-        }
-        if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
-            log.trace("Inbound {}: {}", this.getName(), packet);
-        }
-        if (dataPacketManager.canProcess(packet.pid())) {
-            dataPacketManager.processPacket(this.playerHandle, packet);
-        }
-    }
-
-
-    /**
-     * Gets data packet manager,responsible for processing packets received by the player.
-     */
-    public DataPacketManager getDataPacketManager() {
-        return this.dataPacketManager;
     }
 
     /**
