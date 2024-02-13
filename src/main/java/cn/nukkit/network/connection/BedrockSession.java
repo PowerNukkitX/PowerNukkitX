@@ -1,18 +1,17 @@
 package cn.nukkit.network.connection;
 
-import cn.nukkit.Player;
 import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
-import cn.nukkit.network.process.NetworkSession;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import io.netty.util.internal.PlatformDependent;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
-import lombok.SneakyThrows;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.crypto.SecretKey;
 import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -25,8 +24,6 @@ public abstract class BedrockSession {
     protected boolean logging;
     protected String disconnectReason;
     private final Queue<DataPacket> inbound = PlatformDependent.newSpscQueue();
-    private Player player;
-    private NetworkSession session;
 
     public BedrockSession(BedrockPeer peer, int subClientId) {
         this.peer = peer;
@@ -99,17 +96,14 @@ public abstract class BedrockSession {
         inbound.add(packet);
     }
 
-    @SneakyThrows
-    public void serverTick() {
+    public List<DataPacket> readPackets() {
         DataPacket packet;
+        var list = new ArrayList<DataPacket>(this.inbound.size());
         while ((packet = this.inbound.poll()) != null) {
-            try {
-                this.session.handleDataPacket(packet);
-            } catch (Exception e) {
-                log.error("An error occurred whilst handling {} for {}", new Object[]{packet.getClass().getSimpleName(), this.player.getName()});
-                log.error(e);
-            }
+            list.add(packet);
         }
+        this.inbound.clear();
+        return list;
     }
 
     protected void logOutbound(DataPacket packet) {/*
@@ -160,22 +154,6 @@ public abstract class BedrockSession {
 
     public boolean isConnected() {
         return !this.closed.get();
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
-
-    public NetworkSession getSession() {
-        return session;
-    }
-
-    public void setSession(NetworkSession session) {
-        this.session = session;
     }
 
     public long getPing() {

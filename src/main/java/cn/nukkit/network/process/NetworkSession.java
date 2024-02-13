@@ -3,6 +3,7 @@ package cn.nukkit.network.process;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
+import cn.nukkit.event.player.PlayerCreationEvent;
 import cn.nukkit.event.player.PlayerLocallyInitializedEvent;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
@@ -21,29 +22,40 @@ import com.github.oxo42.stateless4j.StateMachineConfig;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.InetSocketAddress;
 
 @Slf4j
 public class NetworkSession {
     @Getter
-    private final Server server = Server.getInstance();
+    private final @NotNull BedrockServerSession session;
     @Getter
-    private final Player player;
+    private final @NotNull Server server = Server.getInstance();
     @Getter
-    private final BedrockServerSession session;
+    private Player player;
     @Getter
-    private final StateMachine<NetworkSessionState, NetworkSessionState> machine;
+    private PlayerHandle handle;
     @Getter
-    private final PlayerHandle handle;
+    private final @NotNull StateMachine<NetworkSessionState, NetworkSessionState> machine;
+
     @Setter
     protected @Nullable PacketHandler packetHandler;
+    protected boolean disconnected = false;
+    private final InetSocketAddress address;
 
-    public NetworkSession(BedrockServerSession session, Player player, PlayerHandle handle) {
-        this.session = session;
+    public void onPlayerCreated(@NotNull Player player) {
         this.player = player;
-        this.handle = handle;
+        this.handle = new PlayerHandle(player);
+        this.server.addPlayer(address, player);
+    }
+
+    public NetworkSession(BedrockServerSession session) {
+        this.session = session;
+        this.address = (InetSocketAddress) this.session.getSocketAddress();
         log.debug("creating session {}", session.getPeer().getSocketAddress().toString());
         var cfg = new StateMachineConfig<NetworkSessionState, NetworkSessionState>();
 
@@ -132,6 +144,27 @@ public class NetworkSession {
 
     public void onSessionStartSuccess() {
         log.debug("Waiting for login packet");
+        log.debug("Creating player");
+
+        var player = createPlayer();
+        if (player == null) {
+            this.disconnect("Failed to crate player");
+            return;
+        }
+        this.onPlayerCreated(player);
+    }
+
+    private @Nullable Player createPlayer() {
+        try {
+            PlayerCreationEvent event = new PlayerCreationEvent(Player.class);
+            this.server.getPluginManager().callEvent(event);
+
+            Constructor<? extends Player> constructor = event.getPlayerClass().getConstructor(NetworkSession.class);
+            return constructor.newInstance(this);
+        } catch (Exception e) {
+            log.error("Failed to create player", e);
+        }
+        return null;
     }
 
     private void onServerLoginSuccess() {
@@ -184,5 +217,45 @@ public class NetworkSession {
                 method.invoke(this.packetHandler, packet);
             }
         }
+    }
+
+    public void tick() {
+        for (var packet : this.session.readPackets()) {
+            try {
+                this.handleDataPacket(packet);
+            } catch (Exception e) {
+                log.error("An error occurred whilst handling {} for {}", packet.getClass().getSimpleName(), this.session.getSocketAddress().toString(), e);
+                this.disconnect("packet handling error");
+            }
+        }
+        this.session.readPackets();
+        if (this.session.getDisconnectReason() != null) {
+            this.disconnect(this.session.getDisconnectReason());
+        }
+    }
+
+    public boolean isDisconnected() {
+        return disconnected;
+    }
+
+    public void disconnect(String reason) {
+        if (this.disconnected || this.player == null) {
+            return;
+        }
+        this.setPacketHandler(null);
+        this.disconnected = true;
+        this.player.close(reason);
+    }
+
+    public InetSocketAddress getAddress() {
+        return address;
+    }
+
+    public long getPing() {
+        return this.session.getPing();
+    }
+
+    public void sendPacketImmediatelyAndCallBack(DataPacket packet, Runnable callback) {
+        this.session.sendPacketImmediatelyAndCallBack(packet, callback);
     }
 }

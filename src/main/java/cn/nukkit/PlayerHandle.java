@@ -14,6 +14,7 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.connection.BedrockServerSession;
+import cn.nukkit.network.process.NetworkSession;
 import cn.nukkit.network.protocol.PlayerFogPacket;
 import cn.nukkit.network.protocol.types.PlayerBlockActionData;
 import cn.nukkit.scheduler.AsyncTask;
@@ -39,7 +40,7 @@ public final class PlayerHandle {
         this.player = player;
     }
 
-    public BedrockServerSession getNetworkSession() {
+    public NetworkSession getNetworkSession() {
         return player.networkSession;
     }
 
@@ -77,10 +78,6 @@ public final class PlayerHandle {
 
     public void setBlockBreakProgress(double blockBreakProgress) {
         player.blockBreakProgress = blockBreakProgress;
-    }
-
-    public SourceInterface getInterfaz() {
-        return player.interfaz;
     }
 
     public Map<UUID, Player> getHiddenPlayers() {
@@ -145,10 +142,6 @@ public final class PlayerHandle {
 
     public void setSleeping(Vector3 sleeping) {
         player.sleeping = sleeping;
-    }
-
-    public Integer getSubClientId() {
-        return player.subClientId;
     }
 
     public int getChunkLoadCount() {

@@ -108,6 +108,7 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.connection.BedrockServerSession;
 import cn.nukkit.network.process.DataPacketManager;
+import cn.nukkit.network.process.NetworkSession;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.CommandOriginData;
 import cn.nukkit.network.protocol.types.CommandOutputType;
@@ -221,8 +222,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public long lastSkinChange;
     protected long breakingBlockTime = 0;
     protected double blockBreakProgress = 0;
-    protected final SourceInterface interfaz;
-    protected final BedrockServerSession networkSession;
+    protected final NetworkSession networkSession;
     protected final InetSocketAddress rawSocketAddress;
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
     protected final int chunksPerTick;
@@ -244,7 +244,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected String displayName;
     protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
     protected Vector3 sleeping = null;
-    protected Integer subClientId;
+
     protected int chunkLoadCount = 0;
     protected int nextChunkOrderRun = 1;
     protected Vector3 newPosition = null;
@@ -360,16 +360,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     ///
     @UsedByReflection
-    public Player(SourceInterface interfaz, Integer clientID, InetSocketAddress socketAddress) {
+    public Player(NetworkSession session) {
         super(null, new CompoundTag());
-        this.interfaz = interfaz;
-        this.networkSession = interfaz.getSession(socketAddress);
+        this.networkSession = session;
         this.perm = new PermissibleBase(this);
         this.server = Server.getInstance();
         this.lastBreak = -1;
+        this.socketAddress = this.networkSession.getAddress();
         this.rawSocketAddress = socketAddress;
-        this.socketAddress = socketAddress;
-        this.subClientId = clientID;
         this.loaderId = Level.generateChunkLoaderId(this);
         this.chunksPerTick = this.server.getConfig("chunk-sending.per-tick", 8);
         this.spawnThreshold = this.server.getConfig("chunk-sending.spawn-threshold", 56);
@@ -2410,27 +2408,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
-     * 0 is true
-     * -1 is false
-     * other is identifer
-     *
      * @param packet 发送的数据包<br>packet to send
-     * @return 数据包是否成功发送<br>packet successfully sent
      */
-    public boolean dataPacket(DataPacket packet) {
-        if (!this.connected) {
-            return false;
-        }
-        DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
-        this.server.getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
-            return false;
-        }
-        if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
-            log.trace("Outbound {}: {}", this.getName(), packet);
-        }
-        this.networkSession.sendPacket(packet);
-        return true;
+    public void dataPacket(DataPacket packet) {
+        this.networkSession.sendDataPacket(packet);
     }
 
     /**
@@ -2438,10 +2419,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * <p>
      * Get the network latency of the player.
      *
-     * @return int
+     * @return long
      */
-    public int getPing() {
-        return this.interfaz.getNetworkLatency(this);
+    public long getPing() {
+        return this.networkSession.getPing();
     }
 
     public boolean sleepOn(Vector3 pos) {
@@ -3611,7 +3592,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             super.close();
 
-            this.interfaz.close(this, notify ? reason : "");
+            this.networkSession.disconnect(reason);
 
             if (this.loggedIn) {
                 this.server.removeOnlinePlayer(this);
@@ -5290,7 +5271,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.timeSinceRest = timeSinceRest;
     }
 
-    public BedrockServerSession getNetworkSession() {
+    public NetworkSession getNetworkSession() {
         return this.networkSession;
     }
 

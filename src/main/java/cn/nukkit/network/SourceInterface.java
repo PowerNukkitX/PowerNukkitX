@@ -2,6 +2,7 @@ package cn.nukkit.network;
 
 import cn.nukkit.Player;
 import cn.nukkit.network.connection.BedrockServerSession;
+import cn.nukkit.network.process.NetworkSession;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -21,7 +22,7 @@ public interface SourceInterface {
 
     void setNetwork(Network network);
 
-    BedrockServerSession getSession(InetSocketAddress address);
+    NetworkSession getSession(InetSocketAddress address);
 
     void close(Player player);
 

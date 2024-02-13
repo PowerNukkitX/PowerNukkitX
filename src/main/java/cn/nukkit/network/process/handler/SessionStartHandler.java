@@ -39,7 +39,7 @@ public class SessionStartHandler extends NetworkSessionPacketHandler {
         settingsPacket.compressionThreshold = 1; // compress everything
         //In raknet version 11, the client does not enable packet compression by default,but the server will tell client what the
         //compression algorithm through NetworkSettingsPacket
-        player.getNetworkSession().sendPacketImmediatelyAndCallBack(settingsPacket, () -> {
+        session.sendPacketImmediatelyAndCallBack(settingsPacket, () -> {
             session.getSession().setCompression(algorithm);//so send the NetworkSettingsPacket packet before set the session compression
             this.session.getMachine().fire(NetworkSessionState.LOGIN);
         });

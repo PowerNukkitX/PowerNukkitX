@@ -24,6 +24,7 @@ import cn.nukkit.network.Network;
 import cn.nukkit.network.RakNetInterface;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.connection.BedrockServerSession;
+import cn.nukkit.network.process.NetworkSession;
 import cn.nukkit.permission.BanList;
 import cn.nukkit.plugin.JavaPluginLoader;
 import cn.nukkit.plugin.PluginManager;
@@ -183,10 +184,10 @@ public class GameMockExtension extends MockitoExtension {
     //mock player
     static {
         SourceInterface sourceInterface = mock(SourceInterface.class);
-        BedrockServerSession serverSession = mock(BedrockServerSession.class);
+        NetworkSession serverSession = mock(NetworkSession.class);
         when(sourceInterface.getSession(any())).thenReturn(serverSession);
         doNothing().when(serverSession).sendPacketImmediately(any());
-        doNothing().when(serverSession).sendPacket(any());
+        doNothing().when(serverSession).sendDataPacket(any());
         player = new Player(sourceInterface, 0, new InetSocketAddress("1.1.1.1", 55555));
         player.loggedIn = true;
         player.username = "test";
