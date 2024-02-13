@@ -22,7 +22,7 @@ public class EnchantmentDamageAll extends EnchantmentDamage {
     }
 
     @Override
-    public int getMaxEnchantableLevel() {
+    public int getMaxLevel() {
         return 4;
     }
 

@@ -2,7 +2,6 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityBeacon;
-import cn.nukkit.blockentity.BlockEntityInventoryHolder;
 import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.item.Item;
 

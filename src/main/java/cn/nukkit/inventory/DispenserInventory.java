@@ -2,7 +2,6 @@ package cn.nukkit.inventory;
 
 
 import cn.nukkit.blockentity.BlockEntityDispenser;
-import cn.nukkit.blockentity.BlockEntityInventoryHolder;
 import cn.nukkit.blockentity.BlockEntityNameable;
 
 

@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.random.NukkitRandomSource;
+import cn.nukkit.utils.random.NukkitRandom;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockRedMushroomBlock extends BlockSolid {
@@ -39,7 +39,7 @@ public class BlockRedMushroomBlock extends BlockSolid {
 
     @Override
     public Item[] getDrops(Item item) {
-        if (new NukkitRandomSource().nextInt(1, 20) == 1) {
+        if (new NukkitRandom().nextInt(1, 20) == 1) {
             return new Item[]{
                     Item.get(RED_MUSHROOM_BLOCK)
             };

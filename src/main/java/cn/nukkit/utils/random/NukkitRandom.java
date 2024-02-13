@@ -1,30 +1,25 @@
 package cn.nukkit.utils.random;
 
-import cn.nukkit.math.NukkitMath;
 import org.apache.commons.rng.RestorableUniformRandomProvider;
 import org.apache.commons.rng.sampling.distribution.ContinuousSampler;
 import org.apache.commons.rng.sampling.distribution.GaussianSampler;
 import org.apache.commons.rng.sampling.distribution.ZigguratSampler;
 import org.apache.commons.rng.simple.RandomSource;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.zip.CRC32;
-
 /**
  * @author Angelic47 (Nukkit Project)
  */
-public class NukkitRandomSource implements RandomSourceProvider {
+public class NukkitRandom implements RandomSourceProvider {
     final RestorableUniformRandomProvider provider;
     final ContinuousSampler sampler;
 
-    public NukkitRandomSource() {
+    public NukkitRandom() {
         provider = RandomSource.MT.create();
         sampler = GaussianSampler.of(ZigguratSampler.NormalizedGaussian.of(RandomSource.ISAAC.create()),
                 0, 0.33333);
     }
 
-    public NukkitRandomSource(long seeds) {
+    public NukkitRandom(long seeds) {
         provider = RandomSource.MT.create(seeds);
         sampler = GaussianSampler.of(ZigguratSampler.NormalizedGaussian.of(RandomSource.ISAAC.create()),
                 0, 0.33333);
@@ -32,12 +27,20 @@ public class NukkitRandomSource implements RandomSourceProvider {
 
     @Override
     public RandomSourceProvider fork() {
-        return new NukkitRandomSource(nextLong());
+        return new NukkitRandom(nextLong());
     }
 
     @Override
     public int nextInt(int min, int max) {
         return provider.nextInt(min, max + 1);
+    }
+
+    public int nextRange(int min, int max) {
+        return nextInt(min, max + 1);
+    }
+
+    public int nextBoundedInt(int bound) {
+        return nextInt(bound);
     }
 
     @Override

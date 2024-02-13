@@ -1,7 +1,13 @@
 package cn.nukkit.item.enchantment;
 
 import cn.nukkit.block.BlockCarvedPumpkin;
-import cn.nukkit.item.*;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemArmor;
+import cn.nukkit.item.ItemBow;
+import cn.nukkit.item.ItemCrossbow;
+import cn.nukkit.item.ItemFishingRod;
+import cn.nukkit.item.ItemSkull;
+import cn.nukkit.item.ItemTrident;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -28,46 +34,34 @@ public enum EnchantmentType {
         if (this == ALL) {
             return true;
 
-        } else if (this == BREAKABLE && item.getMaxDurability() >= 0) {
+        }
+        if (this == BREAKABLE && item.getMaxDurability() >= 0) {
             return true;
+        }
 
-        } else if (item instanceof ItemArmor) {
-            if (this == WEARABLE || (this == ARMOR && item.isArmor())) {
+        if (item instanceof ItemArmor) {
+            if (this == WEARABLE || this == ARMOR && item.isArmor()) {
                 return true;
             }
 
-            switch (this) {
-                case ARMOR_HEAD:
-                    return item.isHelmet();
-                case ARMOR_TORSO:
-                    return item.isChestplate();
-                case ARMOR_LEGS:
-                    return item.isLeggings();
-                case ARMOR_FEET:
-                    return item.isBoots();
-                default:
-                    return false;
-            }
-
-        } else {
-            switch (this) {
-                case SWORD:
-                    return item.isSword() && !(item instanceof ItemTrident);
-                case DIGGER:
-                    return item.isPickaxe() || item.isShovel() || item.isAxe() || item.isHoe();
-                case BOW:
-                    return item instanceof ItemBow;
-                case FISHING_ROD:
-                    return item instanceof ItemFishingRod;
-                case WEARABLE:
-                    return item instanceof ItemSkull || item.getBlock() instanceof BlockCarvedPumpkin;
-                case TRIDENT:
-                    return item instanceof ItemTrident;
-                case CROSSBOW:
-                    return item instanceof ItemCrossbow;
-                default:
-                    return false;
-            }
+            return switch (this) {
+                case ARMOR_HEAD -> item.isHelmet();
+                case ARMOR_TORSO -> item.isChestplate();
+                case ARMOR_LEGS -> item.isLeggings();
+                case ARMOR_FEET -> item.isBoots();
+                default -> false;
+            };
         }
+
+        return switch (this) {
+            case SWORD -> item.isSword() && !(item instanceof ItemTrident);
+            case DIGGER -> item.isPickaxe() || item.isShovel() || item.isAxe() || item.isHoe();
+            case BOW -> item instanceof ItemBow;
+            case FISHING_ROD -> item instanceof ItemFishingRod;
+            case WEARABLE -> item instanceof ItemSkull || item.getBlock() instanceof BlockCarvedPumpkin;
+            case TRIDENT -> item instanceof ItemTrident;
+            case CROSSBOW -> item instanceof ItemCrossbow;
+            default -> false;
+        };
     }
 }

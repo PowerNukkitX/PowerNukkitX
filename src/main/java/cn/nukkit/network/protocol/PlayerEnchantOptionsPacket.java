@@ -1,17 +1,21 @@
 package cn.nukkit.network.protocol;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import cn.nukkit.item.enchantment.Enchantment;
 import lombok.ToString;
-import lombok.Value;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 @ToString
 public class PlayerEnchantOptionsPacket extends DataPacket {
+    public static final ConcurrentHashMap<Integer, EnchantOptionData> RECIPE_MAP = new ConcurrentHashMap<>();
     public static final int NETWORK_ID = ProtocolInfo.PLAYER_ENCHANT_OPTIONS_PACKET;
-    public final List<EnchantOptionData> options = new ArrayList<>();
+    public static final int ENCH_RECIPEID = 100000;
+    public List<EnchantOptionData> options = new ArrayList<>();
+    private static final AtomicInteger ENCH_RECIPE_NETID = new AtomicInteger(ENCH_RECIPEID);
 
     @Override
     public int pid() {
@@ -20,36 +24,7 @@ public class PlayerEnchantOptionsPacket extends DataPacket {
 
     @Override
     public void decode() {
-        int size = (int) this.getUnsignedVarInt();
-        for (int i = 0; i < size; i++) {
-            int minLevel = this.getVarInt();
-            int slot = this.getInt();
-
-            int eSize = (int) this.getUnsignedVarInt();
-            List<EnchantData> list1 = new ObjectArrayList<>();
-            for (int j = 0; j < eSize; j++) {
-                EnchantData data = new EnchantData(this.getByte(), this.getByte());
-                list1.add(data);
-            }
-
-            eSize = (int) this.getUnsignedVarInt();
-            List<EnchantData> list2 = new ObjectArrayList<>();
-            for (int j = 0; j < eSize; j++) {
-                EnchantData data = new EnchantData(this.getByte(), this.getByte());
-                list2.add(data);
-            }
-
-            eSize = (int) this.getUnsignedVarInt();
-            List<EnchantData> list3 = new ObjectArrayList<>();
-            for (int j = 0; j < eSize; j++) {
-                EnchantData data = new EnchantData(this.getByte(), this.getByte());
-                list3.add(data);
-            }
-            String enchantName = this.getString();
-            int eNetId = (int) this.getUnsignedVarInt();
-            this.options.add(new EnchantOptionData(minLevel, slot, list1, list2, list3, enchantName, eNetId));
-        }
-
+        //client bound
     }
 
     @Override
@@ -57,43 +32,24 @@ public class PlayerEnchantOptionsPacket extends DataPacket {
         this.reset();
         this.putUnsignedVarInt(this.options.size());
         for (EnchantOptionData option : this.options) {
-            this.putVarInt(option.getMinLevel());
-            this.putInt(option.getPrimarySlot());
-            this.putUnsignedVarInt(option.getEnchants0().size());
-            for (EnchantData data : option.getEnchants0()) {
-                this.putByte((byte) data.getType());
+            this.putVarInt(option.minLevel());
+            this.putInt(0);
+            this.putUnsignedVarInt(option.enchantments.size());
+            for (Enchantment data : option.enchantments) {
+                this.putByte((byte) data.getId());
                 this.putByte((byte) data.getLevel());
             }
-            this.putUnsignedVarInt(option.getEnchants1().size());
-            for (EnchantData data : option.getEnchants1()) {
-                this.putByte((byte) data.getType());
-                this.putByte((byte) data.getLevel());
-            }
-            this.putUnsignedVarInt(option.getEnchants2().size());
-            for (EnchantData data : option.getEnchants2()) {
-                this.putByte((byte) data.getType());
-                this.putByte((byte) data.getLevel());
-            }
-            this.putString(option.getEnchantName());
-            this.putUnsignedVarInt(option.getEnchantNetId());
+            this.putUnsignedVarInt(0);
+            this.putUnsignedVarInt(0);
+            this.putString(option.enchantName);
+            int netid = ENCH_RECIPE_NETID.getAndIncrement();
+            this.putUnsignedVarInt(netid);
+            RECIPE_MAP.put(netid, option);
         }
-
     }
 
-    @Value
-    public class EnchantOptionData {
-        private final int minLevel;
-        private final int primarySlot;
-        private final List<EnchantData> enchants0;
-        private final List<EnchantData> enchants1;
-        private final List<EnchantData> enchants2;
-        private final String enchantName;
-        private final int enchantNetId;
-    }
-
-    @Value
-    public class EnchantData {
-        private final int type;
-        private final int level;
+    public record EnchantOptionData(
+            int minLevel, String enchantName, List<Enchantment> enchantments
+    ) {
     }
 }

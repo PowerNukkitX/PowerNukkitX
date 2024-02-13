@@ -1,6 +1,5 @@
 package cn.nukkit.item.enchantment.damage;
 
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.EnchantmentType;
@@ -15,15 +14,7 @@ public abstract class EnchantmentDamage extends Enchantment {
         SMITE,
         ARTHROPODS
     }
-
     protected final TYPE damageType;
-
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit", 
-            reason = "The signature was changed and it doesn't exists anymore in Cloudburst Nukkit",
-            replaceWith = "EnchantmentDamage(int id, String name, Rarity rarity, TYPE type)")
-    protected EnchantmentDamage(int id, String name, int weight, TYPE type) {
-        this(id, name, Rarity.fromWeight(weight), type);
-    }
 
     protected EnchantmentDamage(int id, String name, Rarity rarity, TYPE type) {
         super(id, name, rarity, EnchantmentType.SWORD);

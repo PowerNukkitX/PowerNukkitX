@@ -68,14 +68,7 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
                         break;
                     }
                     for (var container : response.containers()) {
-                        responseContainerMap.compute(container.getContainer(), (key, oldValue) -> {
-                            if (oldValue == null) {
-                                return container;
-                            } else {
-                                oldValue.getItems().addAll(container.getItems());
-                                return oldValue;
-                            }
-                        });
+                        responseContainerMap.compute(container.getContainer(), (key, oldValue) -> container);
                     }
                 }
             }

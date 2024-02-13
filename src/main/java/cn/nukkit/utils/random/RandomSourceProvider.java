@@ -3,11 +3,11 @@ package cn.nukkit.utils.random;
 
 public interface RandomSourceProvider {
     static RandomSourceProvider create() {
-        return new NukkitRandomSource();
+        return new NukkitRandom();
     }
 
     static RandomSourceProvider create(long seed) {
-        return new NukkitRandomSource(seed);
+        return new NukkitRandom(seed);
     }
 
     /**

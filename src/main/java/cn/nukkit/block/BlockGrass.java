@@ -13,8 +13,8 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.legacytree.LegacyTallGrass;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.random.NukkitRandomSource;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.utils.random.NukkitRandom;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -81,7 +81,7 @@ public class BlockGrass extends BlockDirt {
             }
             this.level.addParticle(new BoneMealParticle(this));
             BlockManager blockManager = new BlockManager(this.level);
-            LegacyTallGrass.growGrass(blockManager, this, new NukkitRandomSource());
+            LegacyTallGrass.growGrass(blockManager, this, new NukkitRandom());
             blockManager.applyBlockUpdate();
             return true;
         } else if (item.isHoe()) {

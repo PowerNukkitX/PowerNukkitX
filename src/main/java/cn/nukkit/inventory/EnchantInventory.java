@@ -3,10 +3,14 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityEnchantTable;
 import cn.nukkit.blockentity.BlockEntityNameable;
+import cn.nukkit.event.player.PlayerEnchantOptionsRequestEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.EnchantmentHelper;
+import cn.nukkit.network.protocol.PlayerEnchantOptionsPacket;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -14,7 +18,6 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EnchantInventory extends ContainerInventory implements BlockEntityInventoryNameable, CraftTypeInventory {
-
     public EnchantInventory(BlockEntityEnchantTable table) {
         super(table, InventoryType.ENCHANTMENT, 2);
     }
@@ -33,6 +36,29 @@ public class EnchantInventory extends ContainerInventory implements BlockEntityI
         map.put(0, ContainerSlotType.ENCHANTING_INPUT);
         map.put(1, ContainerSlotType.ENCHANTING_MATERIAL);
         return map;
+    }
+
+    @Override
+    public void onSlotChange(int index, Item before, boolean send) {
+        if (index == 0) {
+            if (before.isNull()) {
+                for (final Player viewer : this.getViewers()) {
+                    List<PlayerEnchantOptionsPacket.EnchantOptionData> options = EnchantmentHelper.getEnchantOptions(this.getHolder(), this.getFirst(), viewer.getEnchantmentSeed());
+                    PlayerEnchantOptionsRequestEvent event = new PlayerEnchantOptionsRequestEvent(viewer, this, options);
+                    if (!event.isCancelled() && !event.getOptions().isEmpty()) {
+                        PlayerEnchantOptionsPacket pk = new PlayerEnchantOptionsPacket();
+                        pk.options = event.getOptions();
+                        viewer.dataPacket(pk);
+                    }
+                }
+            } else {
+                for (final Player viewer : this.getViewers()) {
+                    PlayerEnchantOptionsPacket pk = new PlayerEnchantOptionsPacket();
+                    viewer.dataPacket(pk);
+                }
+            }
+        }
+        super.onSlotChange(index, before, false);
     }
 
     @Override
@@ -56,11 +82,9 @@ public class EnchantInventory extends ContainerInventory implements BlockEntityI
         who.resetCraftingGridType();
     }
 
-
     public Item getFirst() {
         return this.getItem(0);
     }
-
 
     public Item getSecond() {
         return this.getItem(1);

@@ -2,17 +2,21 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityCommandBlock;
-import cn.nukkit.blockentity.BlockEntityInventoryHolder;
 import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 //implement the command block's ui
 public class CommandBlockInventory implements Inventory, BlockEntityInventoryNameable {

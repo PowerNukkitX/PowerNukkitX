@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.legacytree.LegacyCrimsonTree;
-import cn.nukkit.utils.random.NukkitRandomSource;
+import cn.nukkit.utils.random.NukkitRandom;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -47,7 +47,7 @@ public class BlockCrimsonFungus extends BlockFungus {
 
     @Override
     public boolean grow(@Nullable Player cause) {
-        NukkitRandomSource nukkitRandom = new NukkitRandomSource();
+        NukkitRandom nukkitRandom = new NukkitRandom();
         BlockManager blockManager = new BlockManager(this.getLevel());
         this.feature.placeObject(blockManager, this.getFloorX(), this.getFloorY(), this.getFloorZ(), nukkitRandom);
         StructureGrowEvent ev = new StructureGrowEvent(this, blockManager.getBlocks());

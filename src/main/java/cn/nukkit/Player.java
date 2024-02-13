@@ -293,6 +293,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private int hash;
     private int exp = 0;
     private int expLevel = 0;
+    private int enchSeed;
     private final int loaderId;
     private BlockVector3 lastBreakPosition = new BlockVector3();
     private boolean hasSeenCredits;
@@ -1205,6 +1206,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (this.isSpectator()) {
             this.onGround = false;
+        }
+
+        if (this.namedTag.contains("enchSeed")) {
+            this.enchSeed = this.namedTag.getInt("enchSeed");
+        } else {
+            this.regenerateEnchantmentSeed();
+            this.namedTag.putInt("enchSeed", this.enchSeed);
         }
 
         if (!this.namedTag.contains("TimeSinceRest")) {
@@ -3018,8 +3026,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 // nothing to log here!
             }
         }
-
         return entity;
+    }
+
+    public int getEnchantmentSeed() {
+        return this.enchSeed;
+    }
+
+    public void setEnchantmentSeed(int seed) {
+        this.enchSeed = seed;
+    }
+
+    public void regenerateEnchantmentSeed() {
+        this.enchSeed = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
     }
 
     public void checkNetwork() {
@@ -3764,17 +3783,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
 
             this.namedTag.putCompound("Achievements", achievements);
-
             this.namedTag.putInt("playerGameType", this.gamemode);
             this.namedTag.putLong("lastPlayed", System.currentTimeMillis() / 1000);
-
             this.namedTag.putString("lastIP", this.getAddress());
-
             this.namedTag.putInt("EXP", this.getExperience());
             this.namedTag.putInt("expLevel", this.getExperienceLevel());
-
             this.namedTag.putInt("foodLevel", this.getFoodData().getFood());
             this.namedTag.putFloat("foodSaturationLevel", this.getFoodData().getSaturation());
+            this.namedTag.putInt("enchSeed", this.enchSeed);
 
             var fogIdentifiers = new ListTag<StringTag>();
             var userProvidedFogIds = new ListTag<StringTag>();

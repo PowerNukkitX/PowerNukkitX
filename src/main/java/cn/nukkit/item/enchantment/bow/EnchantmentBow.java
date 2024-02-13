@@ -1,6 +1,5 @@
 package cn.nukkit.item.enchantment.bow;
 
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.item.ItemBow;
@@ -11,14 +10,6 @@ import cn.nukkit.item.enchantment.EnchantmentType;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class EnchantmentBow extends Enchantment {
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
-            reason = "The signature was changed and it doesn't exists anymore in Cloudburst Nukkit",
-            replaceWith = "EnchantmentBow(int id, String name, Rarity rarity)")
-    protected EnchantmentBow(int id, String name, int weight) {
-        this(id, name, Rarity.fromWeight(weight));
-    }
-
     protected EnchantmentBow(int id, String name, Rarity rarity) {
         super(id, name, rarity, EnchantmentType.BOW);
     }

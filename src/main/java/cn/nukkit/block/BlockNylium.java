@@ -8,7 +8,7 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectNyliumVegetation;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.random.NukkitRandomSource;
+import cn.nukkit.utils.random.NukkitRandom;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -58,7 +58,7 @@ public abstract class BlockNylium extends BlockSolid {
 
     public boolean grow() {
         BlockManager blockManager = new BlockManager(this.level);
-        ObjectNyliumVegetation.growVegetation(blockManager, this, new NukkitRandomSource());
+        ObjectNyliumVegetation.growVegetation(blockManager, this, new NukkitRandom());
         blockManager.applySubChunkUpdate();
         return true;
     }

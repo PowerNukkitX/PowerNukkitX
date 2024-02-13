@@ -1,7 +1,6 @@
 package cn.nukkit.item;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.nbt.tag.ByteTag;
@@ -54,7 +53,8 @@ public abstract class ItemTool extends Item implements ItemDurable {
     public static final int DURABILITY_WARPED_FUNGUS_ON_A_STICK = dynamic(101);
     public static final int DURABILITY_SHIELD = dynamic(337);
 
-    @NotNull public static Item getBestTool(int toolType) {
+    @NotNull
+    public static Item getBestTool(int toolType) {
         switch (toolType) {
             case TYPE_NONE, TYPE_PICKAXE -> {
                 return Item.get(ItemID.NETHERITE_PICKAXE);
@@ -117,7 +117,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
                 block.getToolType() == ItemTool.TYPE_HOE && this.isHoe() ||
                 block.getToolType() == ItemTool.TYPE_SWORD && this.isSword() ||
                 block.getToolType() == ItemTool.TYPE_SHEARS && this.isShears()
-                ) {
+        ) {
             this.meta++;
         } else if (!this.isShears() && block.calculateBreakTime(this) > 0) {
             this.meta += 2;
@@ -203,7 +203,10 @@ public abstract class ItemTool extends Item implements ItemDurable {
             case TIER_STONE -> {
                 return 5;
             }
-            case TIER_WOODEN, TIER_DIAMOND -> {
+            case TIER_WOODEN, TIER_NETHERITE -> {
+                return 15;
+            }
+            case TIER_DIAMOND -> {
                 return 10;
             }
             case TIER_GOLD -> {
@@ -212,16 +215,15 @@ public abstract class ItemTool extends Item implements ItemDurable {
             case TIER_IRON -> {
                 return 14;
             }
+            default -> {
+                return 0;
+            }
         }
-
-        if (tier == TIER_NETHERITE) {
-            return 15;
-        }
-        return 0;
     }
 
     /**
      * No damage to item when it's used to attack entities
+     *
      * @return whether the item should take damage when used to attack entities
      */
     public boolean noDamageOnAttack() {
@@ -230,6 +232,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
 
     /**
      * No damage to item when it's used to break blocks
+     *
      * @return whether the item should take damage when used to break blocks
      */
     public boolean noDamageOnBreak() {
