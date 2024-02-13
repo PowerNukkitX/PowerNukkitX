@@ -1,10 +1,10 @@
 package cn.nukkit.level.format.palette;
 
-import cn.nukkit.level.updater.block.BlockStateUpdaters;
-import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.bitarray.BitArray;
 import cn.nukkit.level.format.bitarray.BitArrayVersion;
+import cn.nukkit.level.updater.block.BlockStateUpdaters;
+import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -58,18 +58,18 @@ public final class Palette<V> {
      * @param byteBuf    the byte buf
      * @param serializer the serializer
      */
-    public void writeToNetwork(ByteBuf byteBuf, cn.nukkit.level.format.palette.RuntimeDataSerializer<V> serializer) {
+    public void writeToNetwork(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer) {
         writeWords(byteBuf, serializer);
     }
 
-    public void writeToNetwork(ByteBuf byteBuf, cn.nukkit.level.format.palette.RuntimeDataSerializer<V> serializer, Palette<V> last) {
+    public void writeToNetwork(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer, Palette<V> last) {
         if (writeLast(byteBuf, last)) return;
         if (writeEmpty(byteBuf, serializer)) return;
 
         writeWords(byteBuf, serializer);
     }
 
-    public void readFromNetwork(ByteBuf byteBuf, cn.nukkit.level.format.palette.RuntimeDataDeserializer<V> deserializer) {
+    public void readFromNetwork(ByteBuf byteBuf, RuntimeDataDeserializer<V> deserializer) {
         readWords(byteBuf, readBitArrayVersion(byteBuf));
 
         final int size = this.bitArray.readSizeFromNetwork(byteBuf);
@@ -89,7 +89,7 @@ public final class Palette<V> {
         }
     }
 
-    public void readFromStoragePersistent(ByteBuf byteBuf, cn.nukkit.level.format.palette.RuntimeDataDeserializer<V> deserializer) {
+    public void readFromStoragePersistent(ByteBuf byteBuf, RuntimeDataDeserializer<V> deserializer) {
         try (final ByteBufInputStream bufInputStream = new ByteBufInputStream(byteBuf);
              NBTInputStream nbtInputStream = new NBTInputStream(bufInputStream, ByteOrder.LITTLE_ENDIAN)) {
             final BitArrayVersion bversion = readBitArrayVersion(byteBuf);
@@ -129,7 +129,7 @@ public final class Palette<V> {
         }
     }
 
-    public void writeToStorageRuntime(ByteBuf byteBuf, cn.nukkit.level.format.palette.RuntimeDataSerializer<V> serializer, Palette<V> last) {
+    public void writeToStorageRuntime(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer, Palette<V> last) {
         if (writeLast(byteBuf, last)) return;
         if (writeEmpty(byteBuf, serializer)) return;
 
@@ -139,7 +139,7 @@ public final class Palette<V> {
         for (V value : this.palette) byteBuf.writeIntLE(serializer.serialize(value));
     }
 
-    public void readFromStorageRuntime(ByteBuf byteBuf, cn.nukkit.level.format.palette.RuntimeDataDeserializer<V> deserializer, Palette<V> last) {
+    public void readFromStorageRuntime(ByteBuf byteBuf, RuntimeDataDeserializer<V> deserializer, Palette<V> last) {
         final short header = byteBuf.readUnsignedByte();
 
         if (Palette.hasCopyLastFlag(header)) {
@@ -195,7 +195,7 @@ public final class Palette<V> {
         palette.palette.addAll(this.palette);
     }
 
-    private boolean writeEmpty(ByteBuf byteBuf, cn.nukkit.level.format.palette.RuntimeDataSerializer<V> serializer) {
+    private boolean writeEmpty(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer) {
         if (this.isEmpty()) {
             byteBuf.writeByte(Palette.getPaletteHeader(BitArrayVersion.V0, true));
             byteBuf.writeIntLE(serializer.serialize(this.palette.get(0)));
@@ -212,7 +212,7 @@ public final class Palette<V> {
         return false;
     }
 
-    private void writeWords(ByteBuf byteBuf, cn.nukkit.level.format.palette.RuntimeDataSerializer<V> serializer) {
+    private void writeWords(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer) {
         byteBuf.writeByte(getPaletteHeader(this.bitArray.version(), true));
 
         for (int word : this.bitArray.words()) byteBuf.writeIntLE(word);

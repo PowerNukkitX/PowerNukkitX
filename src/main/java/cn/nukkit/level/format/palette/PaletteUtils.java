@@ -5,7 +5,6 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.SemVersion;
-import cn.nukkit.utils.VarInt;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.Pair;
 
@@ -66,7 +65,9 @@ public class PaletteUtils {
                         input.skipBytes(input.readUnsignedShort());//UTF
                         deserialize(input, byteBuf, nbtType, maxDepth - 1);//Value
                         input.skipBytes(1);//end tag
-                        return Pair.of(HashUtils.fnv1a_32(result), null);
+                        int i = HashUtils.fnv1a_32(result);
+                        if (i == 147887818) i = -2;//minecraft:unknown
+                        return Pair.of(i, null);
                     }
                     deserialize(input, byteBuf, nbtType, maxDepth - 1);
                 }
