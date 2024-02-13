@@ -1,5 +1,6 @@
 package cn.nukkit.network.process.handler;
 
+import cn.nukkit.network.process.NetworkSessionState;
 import cn.nukkit.network.process.NetworkSession;
 import cn.nukkit.network.protocol.ResourcePackChunkDataPacket;
 import cn.nukkit.network.protocol.ResourcePackChunkRequestPacket;
@@ -12,15 +13,12 @@ import cn.nukkit.utils.version.Version;
 
 public class ResourcePackHandler extends NetworkSessionPacketHandler {
 
-    private final Runnable completionCallback;
-
-    public ResourcePackHandler(NetworkSession session, Runnable completionCallback) {
+    public ResourcePackHandler(NetworkSession session) {
         super(session);
         ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
         infoPacket.resourcePackEntries = session.getServer().getResourcePackManager().getResourceStack();
         infoPacket.mustAccept = session.getServer().getForceResources();
         session.sendDataPacket(infoPacket);
-        this.completionCallback = completionCallback;
     }
 
     @Override
@@ -69,7 +67,9 @@ public class ResourcePackHandler extends NetworkSessionPacketHandler {
                 );
                 session.sendDataPacket(stackPacket);
             }
-            case ResourcePackClientResponsePacket.STATUS_COMPLETED -> this.completionCallback.run();
+            case ResourcePackClientResponsePacket.STATUS_COMPLETED -> {
+                this.session.getMachine().fire(NetworkSessionState.SPAWN_SEQUENCE);
+            }
         }
     }
 

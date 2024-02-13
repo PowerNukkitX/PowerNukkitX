@@ -38,6 +38,7 @@ dependencies {
     api(libs.fastutil)
     api(libs.leveldbjni)
     api(libs.snakeyaml)
+    api(libs.stateless4j)
 
 
     compileOnly(libs.lombok)

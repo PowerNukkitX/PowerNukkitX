@@ -4,11 +4,14 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.network.connection.BedrockServerSession;
+import cn.nukkit.network.process.handler.HandshakePacketHandler;
 import cn.nukkit.network.process.handler.LoginHandler;
 import cn.nukkit.network.process.handler.ResourcePackHandler;
 import cn.nukkit.network.process.handler.SessionStartHandler;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
+import com.github.oxo42.stateless4j.StateMachine;
+import com.github.oxo42.stateless4j.StateMachineConfig;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,8 @@ public class NetworkSession {
     @Getter
     private final BedrockServerSession session;
     @Getter
+    private final StateMachine<NetworkSessionState, NetworkSessionState> machine;
+    @Getter
     @Setter
     protected @Nullable PacketHandler packetHandler;
 
@@ -31,7 +36,53 @@ public class NetworkSession {
         this.session = session;
         this.player = player;
         log.debug("creating session {}", session.getPeer().getSocketAddress().toString());
-        this.setPacketHandler(new SessionStartHandler(this, this::onSessionStartSuccess));
+        var cfg = new StateMachineConfig<NetworkSessionState, NetworkSessionState>();
+
+        cfg.configure(NetworkSessionState.START)
+                .onExit(this::onSessionStartSuccess)
+                .permit(NetworkSessionState.LOGIN, NetworkSessionState.LOGIN);
+
+        cfg.configure(NetworkSessionState.LOGIN)
+                .onEntry(() -> this.setPacketHandler(new LoginHandler(this)))
+                .onExit(this::onServerLoginSuccess)
+                .permitIf(NetworkSessionState.ENCRYPTION, NetworkSessionState.ENCRYPTION, () -> Server.getInstance().enabledNetworkEncryption)
+                .permit(NetworkSessionState.RESOURCE_PACK, NetworkSessionState.RESOURCE_PACK);
+
+        cfg.configure(NetworkSessionState.ENCRYPTION)
+                .onEntry(() -> this.setPacketHandler(new HandshakePacketHandler(this)))
+                .onExit(this::onServerLoginCompletion)
+                .permit(NetworkSessionState.RESOURCE_PACK, NetworkSessionState.RESOURCE_PACK);
+
+        cfg.configure(NetworkSessionState.RESOURCE_PACK)
+                .onEntry(() -> this.setPacketHandler(new ResourcePackHandler(this)))
+                .onExit(this::onServerLoginCompletion)
+                .permit(NetworkSessionState.SPAWN_SEQUENCE, NetworkSessionState.SPAWN_SEQUENCE);
+
+        cfg.configure(NetworkSessionState.SPAWN_SEQUENCE)
+                //.onEntry(()->this.setPacketHandler(new PrespawnHandler()))
+                .onExit(this::onServerSpawnSequenceCompletion)
+                .permit(NetworkSessionState.RESOURCE_PACK, NetworkSessionState.RESOURCE_PACK);
+
+        cfg.configure(NetworkSessionState.SPAWN)
+                //.onEntry(()->this.setPacketHandler(new SpawnResponseHandler()))
+                .onExit(this::onClientSpawnResponse)
+                .permit(NetworkSessionState.SPAWN_SEQUENCE, NetworkSessionState.SPAWN_SEQUENCE);
+
+        cfg.configure(NetworkSessionState.IN_GAME)
+                //.onEntry(()->this.setPacketHandler(new InGameHandler()))
+                .onExit(this::onServerDeath)
+                .permit(NetworkSessionState.DEATH, NetworkSessionState.DEATH)
+                .permit(NetworkSessionState.SPAWN, NetworkSessionState.SPAWN);
+
+        cfg.configure(NetworkSessionState.DEATH)
+                //.onEntry(()->this.setPacketHandler(new DeathHandler()))
+                .onExit(this::onClientRespawn)
+                .permit(NetworkSessionState.SPAWN, NetworkSessionState.SPAWN)
+                .permit(NetworkSessionState.IN_GAME, NetworkSessionState.IN_GAME);
+
+
+        machine = new StateMachine<>(NetworkSessionState.START, cfg);
+        this.setPacketHandler(new SessionStartHandler(this));
     }
 
     public void flushSendBuffer() {
@@ -74,20 +125,35 @@ public class NetworkSession {
 
     public void onSessionStartSuccess() {
         log.debug("Waiting for login packet");
-        this.setPacketHandler(new LoginHandler(this, this::onServerLoginSuccess));
     }
 
     private void onServerLoginSuccess() {
         log.debug("Login completed");
-
         player.processLogin();
-        log.debug("Initiating resource packs phase");
-        this.setPacketHandler(new ResourcePackHandler(this, () -> {
-            var playerHandle = player.getPlayerHandle();
-            playerHandle.setShouldLogin(true);
-            if (playerHandle.getPreLoginEventTask().isFinished()) {
-                playerHandle.getPreLoginEventTask().onCompletion(player.getServer());
-            }
-        }));
+    }
+
+    private void onServerLoginCompletion() {
+        var playerHandle = player.getPlayerHandle();
+        playerHandle.setShouldLogin(true);
+        if (playerHandle.getPreLoginEventTask().isFinished()) {
+            playerHandle.getPreLoginEventTask().onCompletion(player.getServer());
+        }
+    }
+
+    private void onServerSpawnSequenceCompletion() {
+        log.debug("StartGamePacket sent");
+    }
+
+    private void onClientSpawnResponse() {
+
+    }
+
+    private void onServerDeath() {
+
+    }
+
+
+    private void onClientRespawn() {
+
     }
 }

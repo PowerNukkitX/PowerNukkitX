@@ -1,21 +1,17 @@
 package cn.nukkit.network.process.handler;
 
 import cn.nukkit.Server;
+import cn.nukkit.network.process.NetworkSessionState;
 import cn.nukkit.network.process.NetworkSession;
 import cn.nukkit.network.protocol.NetworkSettingsPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.RequestNetworkSettingsPacket;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
-import lombok.extern.slf4j.Slf4j;
 
 public class SessionStartHandler extends NetworkSessionPacketHandler {
-
-    private final Runnable onSuccess;
-
-    public SessionStartHandler(NetworkSession session, Runnable onSuccess) {
+    public SessionStartHandler(NetworkSession session) {
         super(session);
-        this.onSuccess = onSuccess;
     }
 
     @Override
@@ -45,7 +41,7 @@ public class SessionStartHandler extends NetworkSessionPacketHandler {
         //compression algorithm through NetworkSettingsPacket
         player.getNetworkSession().sendPacketImmediatelyAndCallBack(settingsPacket, () -> {
             player.getPlayerHandle().getNetworkSession().setCompression(algorithm);//so send the NetworkSettingsPacket packet before set the session compression
-            this.onSuccess.run();
+            this.session.getMachine().fire(NetworkSessionState.LOGIN);
         });
     }
 }

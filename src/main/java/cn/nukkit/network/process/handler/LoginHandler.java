@@ -8,6 +8,7 @@ import cn.nukkit.event.player.PlayerAsyncPreLoginEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.event.player.PlayerPreLoginEvent;
 import cn.nukkit.network.connection.util.PrepareEncryptionTask;
+import cn.nukkit.network.process.NetworkSessionState;
 import cn.nukkit.network.process.NetworkSession;
 import cn.nukkit.network.protocol.LoginPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
@@ -25,12 +26,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LoginHandler extends NetworkSessionPacketHandler {
-
-    private final Runnable onSuccess;
-
-    public LoginHandler(NetworkSession session, Runnable onSuccess) {
+    public LoginHandler(NetworkSession session) {
         super(session);
-        this.onSuccess = onSuccess;
     }
 
     private static final Pattern playerNamePattern = Pattern.compile("^(?! )([a-zA-Z0-9_ ]{2,15}[a-zA-Z0-9_])(?<! )$");
@@ -155,11 +152,12 @@ public class LoginHandler extends NetworkSessionPacketHandler {
                     pk.setJwt(this.getHandshakeJwt());
                     session.sendPacketImmediately(pk);
                     session.getSession().enableEncryption(this.getEncryptionKey());
-                    session.setPacketHandler(new HandshakePacketHandler(session, LoginHandler.this.onSuccess));
+
+                    session.getMachine().fire(NetworkSessionState.ENCRYPTION);
                 }
             });
         } else {
-            this.onSuccess.run();
+            session.getMachine().fire(NetworkSessionState.RESOURCE_PACK);
         }
     }
 }
