@@ -195,7 +195,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public boolean playedBefore;
     public boolean spawned = false;
     public boolean loggedIn = false;
-    public boolean locallyInitialized = false;
     public int gamemode;
     public long lastBreak;
     /**

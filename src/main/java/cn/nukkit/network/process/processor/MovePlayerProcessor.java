@@ -14,7 +14,7 @@ public class MovePlayerProcessor extends DataPacketProcessor<MovePlayerPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull MovePlayerPacket pk) {
         Player player = playerHandle.player;
-        if (!player.locallyInitialized || Server.getInstance().getServerAuthoritativeMovement() > 0) {
+        if (/*!player.locallyInitialized || */Server.getInstance().getServerAuthoritativeMovement() > 0) {
             return;
         }
         Vector3 newPos = new Vector3(pk.x, pk.y - playerHandle.getBaseOffset(), pk.z);

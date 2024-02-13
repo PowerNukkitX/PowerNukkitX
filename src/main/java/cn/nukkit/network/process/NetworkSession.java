@@ -150,8 +150,8 @@ public class NetworkSession {
         /*
         if (handle.player.locallyInitialized) {
             return;
-        }*/
-        handle.player.locallyInitialized = true;
+        }
+        handle.player.locallyInitialized = true;*/
         handle.onPlayerLocallyInitialized();
         PlayerLocallyInitializedEvent locallyInitializedEvent = new PlayerLocallyInitializedEvent(handle.player);
         handle.player.getServer().getPluginManager().callEvent(locallyInitializedEvent);

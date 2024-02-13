@@ -23,7 +23,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerAuthInputPacket pk) {
         Player player = playerHandle.player;
-        if (!player.locallyInitialized) return;
+        /*if (!player.locallyInitialized) return;*/
         if (!pk.getBlockActionData().isEmpty()) {
             for (PlayerBlockActionData action : pk.getBlockActionData().values()) {
                 //hack 自从1.19.70开始，创造模式剑客户端不会发送PREDICT_DESTROY_BLOCK，但仍然发送START_DESTROY_BLOCK，过滤掉
