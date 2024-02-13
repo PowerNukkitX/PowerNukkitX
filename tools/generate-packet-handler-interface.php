@@ -13,7 +13,10 @@ $suffix = 'Packet.java';
 foreach ($dir as $n => $file) {
 	if (str_ends_with($file, $suffix)) {
 		$qualifiedName = substr($file, 0, -strlen($suffix)) . 'Packet';
-		if($qualifiedName === 'DataPacket'){
+		if(
+		    $qualifiedName === 'DataPacket' ||
+		    $qualifiedName === 'AbstractResourcePackDataPacket'
+		){
 			continue;
 		}
 		fwrite($fd, "\tdefault void handle($qualifiedName pk) {\n\t}");

@@ -3,9 +3,6 @@ package cn.nukkit.network.process;
 import cn.nukkit.network.protocol.*;
 
 public interface PacketHandler {
-	default void handle(AbstractResourcePackDataPacket pk) {
-	}
-
 	default void handle(AddBehaviorTreePacket pk) {
 	}
 
