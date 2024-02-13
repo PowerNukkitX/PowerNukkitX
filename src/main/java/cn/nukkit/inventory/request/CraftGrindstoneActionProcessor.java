@@ -91,13 +91,14 @@ public class CraftGrindstoneActionProcessor implements ItemStackRequestActionPro
             }
             return resultPair;
         }
-
+        int resultExperience = recalculateResultExperience(inventory);
         Item result = firstItem.clone();
         CompoundTag tag = result.getNamedTag();
         if (tag == null) tag = new CompoundTag();
         tag.remove("ench");
-
+        tag.remove("custom_ench");
         result.setCompoundTag(tag);
+
         if (!secondItem.isNull() && firstItem.getMaxDurability() > 0) {
             int first = firstItem.getMaxDurability() - firstItem.getDamage();
             int second = secondItem.getMaxDurability() - secondItem.getDamage();
@@ -106,7 +107,7 @@ public class CraftGrindstoneActionProcessor implements ItemStackRequestActionPro
             result.setDamage(resultingDamage);
         }
         resultPair.left(result);
-        resultPair.right(recalculateResultExperience(inventory));
+        resultPair.right(resultExperience);
         return resultPair;
     }
 

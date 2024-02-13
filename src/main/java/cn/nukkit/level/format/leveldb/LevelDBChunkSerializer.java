@@ -3,6 +3,7 @@ package cn.nukkit.level.format.leveldb;
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
@@ -139,7 +140,7 @@ public class LevelDBChunkSerializer {
                                     BlockState blockState = Registries.BLOCKSTATE.get(hash);
                                     if (blockState == null) {
                                         log.error("missing block hash: " + hash);
-                                        return BlockAir.STATE;
+                                        return BlockUnknown.PROPERTIES.getDefaultState();
                                     }
                                     return blockState;
                                 });

@@ -3455,7 +3455,7 @@ public class Level implements Metadatable {
         return forceLoadChunk(index, x, z, generate) != null;
     }
 
-    private synchronized IChunk forceLoadChunk(long index, int x, int z, boolean generate) {
+    private IChunk forceLoadChunk(long index, int x, int z, boolean generate) {
         IChunk chunk = this.requireProvider().getChunk(x, z, generate);
         if (chunk == null) {
             if (generate) {
