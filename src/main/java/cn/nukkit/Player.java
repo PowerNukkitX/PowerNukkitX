@@ -57,7 +57,6 @@ import cn.nukkit.event.inventory.InventoryPickupTridentEvent;
 import cn.nukkit.event.player.*;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.inventory.CraftTypeInventory;
@@ -105,9 +104,6 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.network.SourceInterface;
-import cn.nukkit.network.connection.BedrockServerSession;
-import cn.nukkit.network.process.DataPacketManager;
 import cn.nukkit.network.process.NetworkSession;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.CommandOriginData;
@@ -118,6 +114,7 @@ import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
 import cn.nukkit.permission.PermissionAttachmentInfo;
+import cn.nukkit.player.info.PlayerInfo;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.registry.Registries;
@@ -130,6 +127,7 @@ import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
+import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.BlockIterator;
 import cn.nukkit.utils.BossBarColor;
 import cn.nukkit.utils.DummyBossBar;
@@ -357,11 +355,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected PlayerCursorInventory playerCursorInventory;
     protected CreativeOutputInventory creativeOutputInventory;
     protected boolean inventoryOpen;
+    private final PlayerHandle handle = new PlayerHandle(this);
+    private final PlayerInfo info;
+
+    public PlayerInfo getPlayerInfo() {
+        return this.info;
+    }
 
     ///
     @UsedByReflection
-    public Player(NetworkSession session) {
+    public Player(NetworkSession session, PlayerInfo info) {
         super(null, new CompoundTag());
+        this.info = info;
+
         this.networkSession = session;
         this.perm = new PermissibleBase(this);
         this.server = Server.getInstance();
@@ -382,6 +388,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.rawUUID = null;
         this.playerChunkManager = new PlayerChunkManager(this);
         this.creationTime = System.currentTimeMillis();
+
+
+        handle.setUsername(info.getUsername());
+        handle.setDisplayName(info.getUsername());
+        handle.setIusername(info.getUsername().toLowerCase());
+
+        //set user name data flag
+        this.setDataProperty(new StringEntityData(Entity.DATA_NAMETAG, info.getUsername()), false);
+
+        //set login chain data of player
+        handle.setLoginChainData(info.getData());
+        this.setUniqueId(info.getUniqueId());
+        this.setRawUniqueId(Binary.writeUUID(info.getUniqueId()));
+        this.setSkin(info.getSkin());
     }
 
     private static InetSocketAddress uncheckedNewInetSocketAddress(String ip, int port) {
@@ -787,12 +807,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         final Position newPos = EnumLevel.moveToTheEnd(this);
                         if (newPos != null) {
                             if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
-                                if (teleport(newPos, PlayerTeleportEvent.TeleportCause.END_PORTAL)) {
+                                if (teleport(newPos, TeleportCause.END_PORTAL)) {
                                     server.getScheduler().scheduleDelayedTask(new Task() {
                                         @Override
                                         public void onRun(int currentTick) {
                                             // dirty hack to make sure chunks are loaded and generated before spawning player
-                                            teleport(newPos, PlayerTeleportEvent.TeleportCause.END_PORTAL);
+                                            teleport(newPos, TeleportCause.END_PORTAL);
                                             BlockEndPortal.spawnObsidianPlatform(newPos);
                                         }
                                     }, 5);

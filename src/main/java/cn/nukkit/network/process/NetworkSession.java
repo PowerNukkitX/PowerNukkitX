@@ -17,6 +17,7 @@ import cn.nukkit.network.process.handler.SessionStartHandler;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.DisconnectPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
+import cn.nukkit.player.info.PlayerInfo;
 import com.github.oxo42.stateless4j.StateMachine;
 import com.github.oxo42.stateless4j.StateMachineConfig;
 import lombok.Getter;
@@ -39,13 +40,14 @@ public class NetworkSession {
     private Player player;
     @Getter
     private PlayerHandle handle;
+    private PlayerInfo info;
     @Getter
     private final @NotNull StateMachine<NetworkSessionState, NetworkSessionState> machine;
 
     @Setter
     protected @Nullable PacketHandler packetHandler;
     protected boolean disconnected = false;
-    private final InetSocketAddress address;
+    private InetSocketAddress address;
 
     public void onPlayerCreated(@NotNull Player player) {
         this.player = player;
@@ -63,8 +65,17 @@ public class NetworkSession {
                 .onExit(this::onSessionStartSuccess)
                 .permit(NetworkSessionState.LOGIN, NetworkSessionState.LOGIN);
 
-        cfg.configure(NetworkSessionState.LOGIN)
-                .onEntry(() -> this.setPacketHandler(new LoginHandler(this)))
+        cfg.configure(NetworkSessionState.LOGIN).onEntry(() -> this.setPacketHandler(new LoginHandler(this, (info) -> {
+                    this.info = info;
+                    log.debug("Creating player");
+
+                    var player = this.createPlayer();
+                    if (player == null) {
+                        this.disconnect("Failed to crate player");
+                        return;
+                    }
+                    this.onPlayerCreated(player);
+                })))
                 .onExit(this::onServerLoginSuccess)
                 .permitIf(NetworkSessionState.ENCRYPTION, NetworkSessionState.ENCRYPTION, () -> Server.getInstance().enabledNetworkEncryption)
                 .permit(NetworkSessionState.RESOURCE_PACK, NetworkSessionState.RESOURCE_PACK);
@@ -144,14 +155,6 @@ public class NetworkSession {
 
     public void onSessionStartSuccess() {
         log.debug("Waiting for login packet");
-        log.debug("Creating player");
-
-        var player = createPlayer();
-        if (player == null) {
-            this.disconnect("Failed to crate player");
-            return;
-        }
-        this.onPlayerCreated(player);
     }
 
     private @Nullable Player createPlayer() {
@@ -159,8 +162,8 @@ public class NetworkSession {
             PlayerCreationEvent event = new PlayerCreationEvent(Player.class);
             this.server.getPluginManager().callEvent(event);
 
-            Constructor<? extends Player> constructor = event.getPlayerClass().getConstructor(NetworkSession.class);
-            return constructor.newInstance(this);
+            Constructor<? extends Player> constructor = event.getPlayerClass().getConstructor(NetworkSession.class, PlayerInfo.class);
+            return constructor.newInstance(this, this.info);
         } catch (Exception e) {
             log.error("Failed to create player", e);
         }
@@ -249,6 +252,10 @@ public class NetworkSession {
 
     public InetSocketAddress getAddress() {
         return address;
+    }
+
+    public void setAddress(InetSocketAddress address) {
+        this.address = address;
     }
 
     public long getPing() {

@@ -1,11 +1,8 @@
 package cn.nukkit.network.process.handler;
 
 import cn.nukkit.Server;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.Skin;
-import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.event.player.PlayerAsyncPreLoginEvent;
-import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.event.player.PlayerPreLoginEvent;
 import cn.nukkit.network.connection.util.PrepareEncryptionTask;
 import cn.nukkit.network.process.NetworkSession;
@@ -13,11 +10,11 @@ import cn.nukkit.network.process.NetworkSessionState;
 import cn.nukkit.network.protocol.LoginPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.network.protocol.ServerToClientHandshakePacket;
+import cn.nukkit.player.info.PlayerInfo;
+import cn.nukkit.player.info.XboxLivePlayerInfo;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.scheduler.AsyncTask;
-import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.ClientChainData;
-import cn.nukkit.utils.TextFormat;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;
@@ -26,15 +23,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LoginHandler extends NetworkSessionPacketHandler {
-    public LoginHandler(NetworkSession session) {
+
+    private final Consumer<PlayerInfo> consumer;
+
+    public LoginHandler(NetworkSession session, Consumer<PlayerInfo> consumer) {
         super(session);
+        this.consumer = consumer;
     }
 
     private static final Pattern playerNamePattern = Pattern.compile("^(?! )([a-zA-Z0-9_ ]{2,15}[a-zA-Z0-9_])(?<! )$");
 
     @Override
     public void handle(LoginPacket pk) {
-        var server = player.getServer();
+        var server = this.session.getServer();
         /*if (handle.player.loggedIn) {
             return;
         }*/
@@ -42,64 +43,70 @@ public class LoginHandler extends NetworkSessionPacketHandler {
         if (pk.issueUnixTime != -1 && Server.getInstance().checkLoginTime && System.currentTimeMillis() - pk.issueUnixTime > 20000) {
             var message = "disconnectionScreen.noReason";
             session.sendPlayStatus(PlayStatusPacket.LOGIN_FAILED_CLIENT, true);
-            player.close("", message, false);
+            session.disconnect(message);
             return;
         }
 
-        //set user name
-        handle.setUsername(TextFormat.clean(pk.username));
-        handle.setDisplayName(handle.getUsername());
-        handle.setIusername(handle.getUsername().toLowerCase());
-
-        //set user name data flag
-        player.setDataProperty(new StringEntityData(Entity.DATA_NAMETAG, handle.getUsername()), false);
-
-        //set login chain data of player
-        handle.setLoginChainData(ClientChainData.read(pk));
+        var chainData = ClientChainData.read(pk);
 
         //verify the player if enable the xbox-auth
-        if (!handle.getLoginChainData().isXboxAuthed() && server.getPropertyBoolean("xbox-auth")) {
-            player.close("", "disconnectionScreen.notAuthenticated");
+        if (!chainData.isXboxAuthed() && server.getPropertyBoolean("xbox-auth")) {
+            session.disconnect("disconnectionScreen.notAuthenticated");
             return;
         }
 
         //Verify the number of server player
-        if (server.getOnlinePlayers().size() >= server.getMaxPlayers()
-                && player.kick(PlayerKickEvent.Reason.SERVER_FULL, "disconnectionScreen.serverFull", false)) {
-            return;
+        if (server.getOnlinePlayers().size() >= server.getMaxPlayers()) {
+            session.disconnect("disconnectionScreen.serverFull");
         }
 
         //set proxy ip
-        if (server.isWaterdogCapable() && handle.getLoginChainData().getWaterdogIP() != null) {
-            handle.setSocketAddress(new InetSocketAddress(handle.getLoginChainData().getWaterdogIP(), player.getRawPort()));
+        if (server.isWaterdogCapable() && chainData.getWaterdogIP() != null) {
+            session.setAddress(new InetSocketAddress(chainData.getWaterdogIP(), session.getAddress().getPort()));
         }
 
-        player.setUniqueId(pk.clientUUID);
-        player.setRawUniqueId(Binary.writeUUID(player.getUniqueId()));
+        var uniqueId = pk.clientUUID;
 
-        boolean valid = true;
-        Matcher usernameMatcher = playerNamePattern.matcher(pk.username);
-        if (!usernameMatcher.matches()) {
-            valid = false;
-        }
+        var username = pk.username;
+        Matcher usernameMatcher = playerNamePattern.matcher(username);
 
-        if (!valid || Objects.equals(handle.getIusername(), "rcon")
-                || Objects.equals(handle.getIusername(), "console")) {
-            player.close("", "disconnectionScreen.invalidName");
+        if (!usernameMatcher.matches() || Objects.equals(username, "rcon")
+                || Objects.equals(username, "console")) {
+            session.disconnect("disconnectionScreen.invalidName");
             return;
         }
 
         if (!pk.skin.isValid()) {
-            player.close("", "disconnectionScreen.invalidSkin");
+            session.disconnect("disconnectionScreen.invalidSkin");
             return;
-        } else {
-            Skin skin = pk.skin;
-            if (server.isForceSkinTrusted()) {
-                skin.setTrusted(true);
-            }
-            player.setSkin(skin);
         }
 
+        Skin skin = pk.skin;
+        if (server.isForceSkinTrusted()) {
+            skin.setTrusted(true);
+        }
+
+        var info = new PlayerInfo(
+                username,
+                uniqueId,
+                skin,
+                chainData
+        );
+
+        if (chainData.isXboxAuthed()) {
+            info = new XboxLivePlayerInfo(
+                    username,
+                    uniqueId,
+                    skin,
+                    chainData,
+                    chainData.getXUID()
+            );
+        }
+
+        this.consumer.accept(info);
+
+        var handle = session.getHandle();
+        var player = session.getPlayer();
         PlayerPreLoginEvent playerPreLoginEvent;
         server.getPluginManager().callEvent(playerPreLoginEvent = new PlayerPreLoginEvent(player, "Plugin reason"));
         if (playerPreLoginEvent.isCancelled()) {
@@ -142,6 +149,8 @@ public class LoginHandler extends NetworkSessionPacketHandler {
     }
 
     private void enableEncryption() {
+        var handle = session.getHandle();
+        var player = session.getPlayer();
         Server.getInstance().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new PrepareEncryptionTask(player) {
             @Override
             public void onCompletion(Server server) {
