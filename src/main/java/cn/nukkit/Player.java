@@ -235,10 +235,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     protected boolean removeFormat = true;
     protected String username;
-    /**
-     * Player name in lower case
-     */
-    protected String iusername;
     protected String displayName;
     protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
     protected Vector3 sleeping = null;
@@ -384,23 +380,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.chunkRadius = viewDistance;
         this.boundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
         this.lastSkinChange = -1;
-        this.uuid = null;
-        this.rawUUID = null;
         this.playerChunkManager = new PlayerChunkManager(this);
         this.creationTime = System.currentTimeMillis();
 
+        this.username = info.getUsername();
+        this.displayName = info.getUsername();
 
-        handle.setUsername(info.getUsername());
-        handle.setDisplayName(info.getUsername());
-        handle.setIusername(info.getUsername().toLowerCase());
+        this.loginChainData = info.getData();
+        this.uuid = info.getUniqueId();
+        this.rawUUID = Binary.writeUUID(info.getUniqueId());
 
         //set user name data flag
         this.setDataProperty(new StringEntityData(Entity.DATA_NAMETAG, info.getUsername()), false);
-
-        //set login chain data of player
-        handle.setLoginChainData(info.getData());
-        this.setUniqueId(info.getUniqueId());
-        this.setRawUniqueId(Binary.writeUUID(info.getUniqueId()));
         this.setSkin(info.getSkin());
     }
 

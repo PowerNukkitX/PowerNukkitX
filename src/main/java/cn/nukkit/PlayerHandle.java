@@ -12,8 +12,6 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.SourceInterface;
-import cn.nukkit.network.connection.BedrockServerSession;
 import cn.nukkit.network.process.NetworkSession;
 import cn.nukkit.network.protocol.PlayerFogPacket;
 import cn.nukkit.network.protocol.types.PlayerBlockActionData;
@@ -113,19 +111,7 @@ public final class PlayerHandle {
     }
 
     public String getUsername() {
-        return player.username;
-    }
-
-    public void setUsername(String username) {
-        player.username = username;
-    }
-
-    public String getIusername() {
-        return player.iusername;
-    }
-
-    public void setIusername(String iusername) {
-        player.iusername = iusername;
+        return player.getName();
     }
 
     public String getDisplayName() {
@@ -314,10 +300,6 @@ public final class PlayerHandle {
 
     public void setLastBeAttackEntity(Entity lastBeAttackEntity) {
         player.lastBeAttackEntity = lastBeAttackEntity;
-    }
-
-    public void setLoginChainData(LoginChainData loginChainData) {
-        player.loginChainData = loginChainData;
     }
 
     public LoginChainData getLoginChainData() {
