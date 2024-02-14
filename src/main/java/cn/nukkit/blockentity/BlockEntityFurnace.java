@@ -11,8 +11,7 @@ import cn.nukkit.inventory.InventorySlice;
 import cn.nukkit.inventory.RecipeInventoryHolder;
 import cn.nukkit.inventory.SmeltingInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
-import cn.nukkit.item.ItemBucket;
+import cn.nukkit.item.ItemLavaBucket;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
@@ -28,7 +27,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX
  */
 public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeInventoryHolder, BlockEntityInventoryHolder {
-
     protected SmeltingInventory inventory;
 
     protected int burnTime;
@@ -36,7 +34,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     protected int cookTime;
     protected int maxTime;
     protected float storedXP;
-
     private int crackledTime;
 
     public BlockEntityFurnace(IChunk chunk, CompoundTag nbt) {
@@ -194,7 +191,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     public Item getItem(int index) {
         int i = this.getSlotIndex(index);
         if (i < 0) {
-            return new ItemBlock(Block.get(BlockID.AIR), 0, 0);
+            return Item.AIR;
         } else {
             CompoundTag data = (CompoundTag) this.namedTag.getList("Items").get(i);
             return NBTIO.getItemHelper(data);
@@ -232,10 +229,10 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
 
     protected void setBurning(boolean burning) {
         if (burning) {
-            if (this.getBlock().getId() == getIdleBlockId()) {
+            if (this.getBlock().getId().equals(getIdleBlockId())) {
                 this.getLevel().setBlock(this, Block.getWithState(getBurningBlockId(), this.getBlock().getBlockState()), true);
             }
-        } else if (this.getBlock().getId() == getBurningBlockId()) {
+        } else if (this.getBlock().getId().equals(getBurningBlockId())) {
             this.getLevel().setBlock(this, Block.getWithState(getIdleBlockId(), this.getBlock().getBlockState()), true);
         }
     }
@@ -255,11 +252,11 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
         if (burnTime > 0 && ev.isBurning()) {
             fuel.setCount(fuel.getCount() - 1);
             if (fuel.getCount() == 0) {
-                if (fuel.getId() == Item.BUCKET && ((ItemBucket) fuel).isLava()) {
+                if (fuel instanceof ItemLavaBucket) {
                     fuel.setDamage(0);
                     fuel.setCount(1);
                 } else {
-                    fuel = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
+                    fuel = Item.AIR;
                 }
             }
             this.inventory.setFuel(fuel);
@@ -322,7 +319,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
                         this.inventory.setResult(ev.getResult());
                         raw.setCount(raw.getCount() - 1);
                         if (raw.getCount() == 0) {
-                            raw = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
+                            raw = Item.AIR;
                         }
                         this.storedXP += ev.getXp();
                         this.inventory.setSmelting(raw);
@@ -368,11 +365,8 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag c = new CompoundTag()
-                .putString("id", getClientName())
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+        CompoundTag c = super.getSpawnCompound()
+                .putBoolean("isMovable", this.isMovable())
                 .putShort("BurnDuration", burnDuration)
                 .putShort("BurnTime", burnTime)
                 .putShort("CookTime", cookTime)
@@ -380,7 +374,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
         if (this.hasName()) {
             c.put("CustomName", this.namedTag.get("CustomName"));
         }
-
         return c;
     }
 

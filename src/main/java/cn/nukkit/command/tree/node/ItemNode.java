@@ -12,6 +12,9 @@ import cn.nukkit.item.Item;
 public class ItemNode extends ParamNode<Item> {
     @Override
     public void fill(String arg) {
+        if (arg.indexOf(':') == -1) {
+            arg = "minecraft:" + arg;
+        }
         Item item = Item.get(arg);
         if (item.isNull()) {
             error();

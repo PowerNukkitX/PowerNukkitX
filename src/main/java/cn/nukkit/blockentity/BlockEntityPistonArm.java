@@ -235,10 +235,10 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     }
 
     public CompoundTag getSpawnCompound() {
-        return getDefaultCompound(this, PISTON_ARM)
+        return super.getSpawnCompound()
+                .putBoolean("isMovable", this.movable)
                 .putFloat("Progress", this.progress)
                 .putFloat("LastProgress", this.lastProgress)
-                .putBoolean("isMovable", this.movable)
                 .putList("AttachedBlocks", getAttachedBlocks())
                 .putList("BreakBlocks", new ListTag<>())
                 .putBoolean("Sticky", this.sticky)

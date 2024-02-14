@@ -12,7 +12,6 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventorySlice;
 import cn.nukkit.inventory.RecipeInventoryHolder;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
@@ -144,7 +143,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     public Item getItem(int index) {
         int i = this.getSlotIndex(index);
         if (i < 0) {
-            return new ItemBlock(Block.get(BlockID.AIR), 0, 0);
+            return Item.AIR;
         } else {
             CompoundTag data = (CompoundTag) this.namedTag.getList("Items").get(i);
             return NBTIO.getItemHelper(data);
@@ -373,11 +372,8 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag nbt = new CompoundTag()
-                .putString("id", BlockEntity.BREWING_STAND)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+        CompoundTag nbt = super.getSpawnCompound()
+                .putBoolean("isMovable", this.isMovable())
                 .putShort("FuelTotal", this.fuelTotal)
                 .putShort("FuelAmount", this.fuelAmount);
 

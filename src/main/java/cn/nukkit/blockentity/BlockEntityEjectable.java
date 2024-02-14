@@ -2,7 +2,6 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.inventory.EjectableInventory;
-import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
@@ -85,11 +84,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag c = new CompoundTag()
-                .putString("id", getBlockEntityName())
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+        CompoundTag c = super.getSpawnCompound();
 
         if (this.hasName()) {
             c.put("CustomName", this.namedTag.get("CustomName"));

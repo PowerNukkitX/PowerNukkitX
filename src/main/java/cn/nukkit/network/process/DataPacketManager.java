@@ -3,7 +3,6 @@ package cn.nukkit.network.process;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.network.process.processor.*;
 import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,7 +53,6 @@ public final class DataPacketManager {
                 new PlayerInputProcessor(),
                 new MovePlayerProcessor(),
                 new PlayerAuthInputProcessor(),
-                new MoveEntityAbsoluteProcessor(),
                 new RequestAbilityProcessor(),
                 new MobEquipmentProcessor(),
                 new PlayerActionProcessor(),

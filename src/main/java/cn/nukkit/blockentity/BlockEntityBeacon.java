@@ -2,16 +2,13 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
+import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.inventory.BeaconInventory;
-import cn.nukkit.inventory.EnchantInventory;
-import cn.nukkit.inventory.Inventory;
-import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.entity.effect.Effect;
 
 import java.util.Map;
 
@@ -60,11 +57,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
 
     @Override
     public CompoundTag getSpawnCompound() {
-        return new CompoundTag()
-                .putString("id", BlockEntity.BEACON)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+        return super.getSpawnCompound()
                 .putString("Lock", this.namedTag.getString("Lock"))
                 .putInt("Levels", this.namedTag.getInt("Levels"))
                 .putInt("primary", this.namedTag.getInt("Primary"))
@@ -259,7 +252,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
 
         BeaconInventory inv = getInventory();
 
-        inv.setItem(0, new ItemBlock(Block.get(BlockID.AIR), 0, 0));
+        inv.setItem(0, Item.AIR);
         return true;
     }
 

@@ -1,7 +1,7 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.*;
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFlowingWater;
 import cn.nukkit.entity.Entity;
@@ -45,7 +45,8 @@ import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
 public class EntityBoat extends EntityVehicle {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return BOAT;
     }
 
@@ -130,7 +131,6 @@ public class EntityBoat extends EntityVehicle {
         return 0.375F;
     }
 
-    
 
     @Override
     public String getInteractButtonText(Player player) {
@@ -205,7 +205,7 @@ public class EntityBoat extends EntityVehicle {
 
         boolean hasUpdate = this.entityBaseTick(tickDiff);
 
-        if (this.isAlive()) {
+        if (this.isAlive() && this.passengers.isEmpty()) {
             hasUpdate = this.updateBoat(tickDiff) || hasUpdate;
         }
 
@@ -435,10 +435,10 @@ public class EntityBoat extends EntityVehicle {
 
     @Override
     public boolean mountEntity(Entity entity) {
-        boolean player = this.passengers.size() >= 1 && this.passengers.get(0) instanceof Player;
+        boolean player = !this.passengers.isEmpty() && this.passengers.get(0) instanceof Player;
         byte mode = SetEntityLinkPacket.TYPE_PASSENGER;
 
-        if (!player && (entity instanceof Player || this.passengers.size() == 0)) {
+        if (!player && (entity instanceof Player || this.passengers.isEmpty())) {
             mode = SetEntityLinkPacket.TYPE_RIDE;
         }
 
@@ -548,7 +548,7 @@ public class EntityBoat extends EntityVehicle {
         return false;
     }
 
-    
+
     @Override
     public void kill() {
         if (!isAlive()) {
@@ -593,7 +593,10 @@ public class EntityBoat extends EntityVehicle {
         return "Boat";
     }
 
-    public void onInput(double x, double y, double z, double yaw) {
-        this.setPositionAndRotation(this.temporalVector.setComponents(x, y - this.getBaseOffset(), z), yaw % 360, 0);
+    public void onInput(Location loc) {
+        this.move(loc.x - this.x, loc.y - this.y, loc.z - this.z);
+        this.yaw = loc.yaw;
+        this.headYaw = loc.headYaw;
+        broadcastMovement();
     }
 }
