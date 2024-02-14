@@ -109,7 +109,7 @@ public class AvailableCommandsPacket extends DataPacket {
 
             for (CommandParameter[] overload : data.getOverloads().values().stream().map(o -> o.getInput().getParameters()).toList()) {
                 for (CommandParameter parameter : overload) {
-                    CommandEnum commandEnumData = parameter.enumData;
+                    CommandEnum commandEnumData = parameter.getEnumData();
                     if (commandEnumData != null) {
                         if (commandEnumData.isSoft()) {
                             softEnumsSet.add(commandEnumData);
@@ -119,7 +119,7 @@ public class AvailableCommandsPacket extends DataPacket {
                         }
                     }
 
-                    String postfix = parameter.postFix;
+                    String postfix = parameter.getPostFix();
                     if (postfix != null) {
                         postfixSet.add(postfix);
                     }
@@ -252,29 +252,29 @@ public class AvailableCommandsPacket extends DataPacket {
     }
 
     private void writeParameter(CommandParameter param, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes) {
-        this.putString(param.name);
+        this.putString(param.getName());
 
         int index;
-        if (param.postFix != null) {
-            index = postFixes.indexOf(param.postFix) | ARG_FLAG_POSTFIX;
-        } else if (param.enumData != null) {
-            if (param.enumData.isSoft()) {
-                index = softEnums.indexOf(param.enumData) | ARG_FLAG_SOFT_ENUM | ARG_FLAG_VALID;
+        if (param.getPostFix() != null) {
+            index = postFixes.indexOf(param.getPostFix()) | ARG_FLAG_POSTFIX;
+        } else if (param.getEnumData() != null) {
+            if (param.getEnumData().isSoft()) {
+                index = softEnums.indexOf(param.getEnumData()) | ARG_FLAG_SOFT_ENUM | ARG_FLAG_VALID;
             } else {
-                index = enums.indexOf(param.enumData) | ARG_FLAG_ENUM | ARG_FLAG_VALID;
+                index = enums.indexOf(param.getEnumData()) | ARG_FLAG_ENUM | ARG_FLAG_VALID;
             }
-        } else if (param.type != null) {
-            index = param.type.getId() | ARG_FLAG_VALID;
+        } else if (param.getType() != null) {
+            index = param.getType().getId() | ARG_FLAG_VALID;
         } else {
             throw new IllegalStateException("No param type specified: " + param);
         }
 
         this.putLInt(index);
-        this.putBoolean(param.optional);
+        this.putBoolean(param.isOptional());
 
         byte options = 0;
-        if (param.paramOptions != null) {
-            for (CommandParamOption option : param.paramOptions) {
+        if (param.getParamOptions() != null) {
+            for (CommandParamOption option : param.getParamOptions()) {
                 options |= 1 << option.ordinal();
             }
         }

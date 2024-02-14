@@ -282,17 +282,17 @@ public abstract class Command implements GenericParameter {
             CommandParameter[] commandParameters = this.getCommandParameters().get(form);
             builder.append("- /" + this.getName());
             for (CommandParameter commandParameter : commandParameters) {
-                if (!commandParameter.optional) {
-                    if (commandParameter.enumData == null) {
-                        builder.append(" <").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append(">");
+                if (!commandParameter.isOptional()) {
+                    if (commandParameter.getEnumData() == null) {
+                        builder.append(" <").append(commandParameter.getName() + ": " + commandParameter.getType().name().toLowerCase()).append(">");
                     } else {
-                        builder.append(" <").append(commandParameter.enumData.getValues().subList(0, Math.min(commandParameter.enumData.getValues().size(), 10)).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append(">");
+                        builder.append(" <").append(commandParameter.getEnumData().getValues().subList(0, Math.min(commandParameter.getEnumData().getValues().size(), 10)).stream().collect(Collectors.joining("|"))).append(commandParameter.getEnumData().getValues().size() > 10 ? "|..." : "").append(">");
                     }
                 } else {
-                    if (commandParameter.enumData == null) {
-                        builder.append(" [").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append("]");
+                    if (commandParameter.getEnumData() == null) {
+                        builder.append(" [").append(commandParameter.getName() + ": " + commandParameter.getType().name().toLowerCase()).append("]");
                     } else {
-                        builder.append(" [").append(commandParameter.enumData.getValues().subList(0, Math.min(commandParameter.enumData.getValues().size(), 10)).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append("]");
+                        builder.append(" [").append(commandParameter.getEnumData().getValues().subList(0, Math.min(commandParameter.getEnumData().getValues().size(), 10)).stream().collect(Collectors.joining("|"))).append(commandParameter.getEnumData().getValues().size() > 10 ? "|..." : "").append("]");
                     }
                 }
             }

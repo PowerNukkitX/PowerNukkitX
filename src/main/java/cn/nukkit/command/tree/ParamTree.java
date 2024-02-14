@@ -52,10 +52,10 @@ public class ParamTree {
             final var paramList = new ParamList(this);
             for (CommandParameter parameter : entry.getValue()) {
                 IParamNode<?> node;
-                if (parameter.paramNode != null) {
-                    node = parameter.paramNode;
-                } else if (parameter.enumData == null) {
-                    node = switch (parameter.type) {
+                if (parameter.getParamNode() != null) {
+                    node = parameter.getParamNode();
+                } else if (parameter.getEnumData() == null) {
+                    node = switch (parameter.getType()) {
                         case INT -> new IntNode();
                         case WILDCARD_INT -> new WildcardIntNode();
                         case FLOAT -> new FloatNode();
@@ -74,17 +74,17 @@ public class ParamTree {
                         default -> new VoidNode();
                     };
                 } else {
-                    if (parameter.enumData.equals(CommandEnum.BOOLEAN)) {
+                    if (parameter.getEnumData().equals(CommandEnum.BOOLEAN)) {
                         node = new BooleanNode();
-                    } else if (parameter.enumData.equals(CommandEnum.ITEM)) {
+                    } else if (parameter.getEnumData().equals(CommandEnum.ITEM)) {
                         node = new ItemNode();
-                    } else if (parameter.enumData.equals(CommandEnum.BLOCK)) {
+                    } else if (parameter.getEnumData().equals(CommandEnum.BLOCK)) {
                         node = new BlockNode();
-                    } else if (parameter.enumData.equals(CommandEnum.ENTITY)) {
+                    } else if (parameter.getEnumData().equals(CommandEnum.ENTITY)) {
                         node = new StringNode();
                     } else node = new EnumNode();
                 }
-                paramList.add(node.init(paramList, parameter.name, parameter.optional, parameter.type, parameter.enumData, parameter.postFix));
+                paramList.add(node.init(paramList, parameter.getName(), parameter.isOptional(), parameter.getType(), parameter.getEnumData(), parameter.getPostFix()));
             }
             root.put(entry.getKey(), paramList);
         }

@@ -10,13 +10,13 @@ import java.util.List;
 public class CommandParameter {
     public static final CommandParameter[] EMPTY_ARRAY = new CommandParameter[0];
 
-    public String name;
-    public CommandParamType type;
-    public boolean optional;
-    public List<CommandParamOption> paramOptions;
-    public CommandEnum enumData;
-    public String postFix;
-    public IParamNode<?> paramNode;
+    private String name;
+    private CommandParamType type;
+    private boolean optional;
+    private List<CommandParamOption> paramOptions;
+    private CommandEnum enumData;
+    private String postFix;
+    private IParamNode<?> paramNode;
 
     private CommandParameter(String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
         this(name, optional, type, enumData, postFix, null);
@@ -28,6 +28,62 @@ public class CommandParameter {
         this.type = type;
         this.enumData = enumData;
         this.postFix = postFix;
+        this.paramNode = paramNode;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public CommandParamType getType() {
+        return type;
+    }
+
+    public void setType(CommandParamType type) {
+        this.type = type;
+    }
+
+    public boolean isOptional() {
+        return optional;
+    }
+
+    public void setOptional(boolean optional) {
+        this.optional = optional;
+    }
+
+    public List<CommandParamOption> getParamOptions() {
+        return paramOptions;
+    }
+
+    public void setParamOptions(List<CommandParamOption> paramOptions) {
+        this.paramOptions = paramOptions;
+    }
+
+    public CommandEnum getEnumData() {
+        return enumData;
+    }
+
+    public void setEnumData(CommandEnum enumData) {
+        this.enumData = enumData;
+    }
+
+    public String getPostFix() {
+        return postFix;
+    }
+
+    public void setPostFix(String postFix) {
+        this.postFix = postFix;
+    }
+
+    public IParamNode<?> getParamNode() {
+        return paramNode;
+    }
+
+    public void setParamNode(IParamNode<?> paramNode) {
         this.paramNode = paramNode;
     }
 
@@ -111,8 +167,8 @@ public class CommandParameter {
     /**
      * @see #newEnum(String name, boolean optional, CommandEnum data)
      */
-    public static CommandParameter newEnum(String name, boolean optional, String[] values, boolean isSoft) {
-        return newEnum(name, optional, new CommandEnum(name + "Enums", Arrays.asList(values), isSoft));
+    public static CommandParameter newEnum(String name, boolean optional, String[] values, boolean soft) {
+        return newEnum(name, optional, new CommandEnum(name + "Enums", Arrays.asList(values), soft));
     }
 
     /**
@@ -189,35 +245,5 @@ public class CommandParameter {
             result.paramOptions = Lists.newArrayList(options);
         }
         return result;
-    }
-
-    //此方法使用不当会崩溃客户端，请谨慎使用！
-    //todo 注释掉创建Postfix的方法直到能够稳定运行
-    /*
-    public static CommandParameter newPostfix(String name, String postfix) {
-        return newPostfix(name, false, postfix);
-    }
-
-    //此方法使用不当会崩溃客户端，请谨慎使用！
-
-    public static CommandParameter newPostfix(String name, boolean optional, String postfix) {
-        return new CommandParameter(name, optional, null, null, postfix);
-    }*/
-
-    protected static CommandParamType fromString(String param) {
-        switch (param) {
-            case "string":
-            case "stringenum":
-                return CommandParamType.STRING;
-            case "target":
-                return CommandParamType.TARGET;
-            case "blockpos":
-                return CommandParamType.POSITION;
-            case "rawtext":
-                return CommandParamType.RAWTEXT;
-            case "int":
-                return CommandParamType.INT;
-        }
-        return CommandParamType.RAWTEXT;
     }
 }
