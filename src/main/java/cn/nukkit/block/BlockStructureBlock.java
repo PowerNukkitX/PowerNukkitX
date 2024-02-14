@@ -16,7 +16,8 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
     public static final BlockProperties PROPERTIES = new BlockProperties(STRUCTURE_BLOCK, STRUCTURE_BLOCK_TYPE);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -83,7 +84,7 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
 
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
-        return false;
+        return player != null && player.isCreative();
     }
 
     @Override
@@ -97,12 +98,14 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityStructBlock> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityStructBlock> getBlockEntityClass() {
         return BlockEntityStructBlock.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.STRUCTURE_BLOCK;
     }
 }
