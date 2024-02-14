@@ -23,20 +23,21 @@ public class ResourcePackHandler extends NetworkSessionPacketHandler {
 
     @Override
     public void handle(ResourcePackClientResponsePacket pk) {
+        var server = session.getServer();
         switch (pk.responseStatus) {
-            case ResourcePackClientResponsePacket.STATUS_REFUSED -> player.close("", "disconnectionScreen.noReason");
+            case ResourcePackClientResponsePacket.STATUS_REFUSED -> session.disconnect("disconnectionScreen.noReason");
             case ResourcePackClientResponsePacket.STATUS_SEND_PACKS -> {
                 for (ResourcePackClientResponsePacket.Entry entry : pk.packEntries) {
-                    ResourcePack resourcePack = player.getServer().getResourcePackManager().getPackById(entry.uuid);
+                    ResourcePack resourcePack = server.getResourcePackManager().getPackById(entry.uuid);
                     if (resourcePack == null) {
-                        player.close("", "disconnectionScreen.resourcePack");
+                        session.disconnect("disconnectionScreen.resourcePack");
                         return;
                     }
 
                     ResourcePackDataInfoPacket dataInfoPacket = new ResourcePackDataInfoPacket();
                     dataInfoPacket.packId = resourcePack.getPackId();
                     dataInfoPacket.setPackVersion(new Version(resourcePack.getPackVersion()));
-                    dataInfoPacket.maxChunkSize = player.getServer().getResourcePackManager().getMaxChunkSize();
+                    dataInfoPacket.maxChunkSize = server.getResourcePackManager().getMaxChunkSize();
                     dataInfoPacket.chunkCount = (int) Math.ceil(resourcePack.getPackSize() / (double) dataInfoPacket.maxChunkSize);
                     dataInfoPacket.compressedPackSize = resourcePack.getPackSize();
                     dataInfoPacket.sha256 = resourcePack.getSha256();
@@ -45,8 +46,8 @@ public class ResourcePackHandler extends NetworkSessionPacketHandler {
             }
             case ResourcePackClientResponsePacket.STATUS_HAVE_ALL_PACKS -> {
                 ResourcePackStackPacket stackPacket = new ResourcePackStackPacket();
-                stackPacket.mustAccept = player.getServer().getForceResources() && !player.getServer().getForceResourcesAllowOwnPacks();
-                stackPacket.resourcePackStack = player.getServer().getResourcePackManager().getResourceStack();
+                stackPacket.mustAccept = server.getForceResources() && !server.getForceResourcesAllowOwnPacks();
+                stackPacket.resourcePackStack = server.getResourcePackManager().getResourceStack();
                 stackPacket.experiments.add(
                         new ResourcePackStackPacket.ExperimentData("data_driven_items", true)
                 );
@@ -75,12 +76,13 @@ public class ResourcePackHandler extends NetworkSessionPacketHandler {
     @Override
     public void handle(ResourcePackChunkRequestPacket pk) {
         // TODO: Pack version check
-        ResourcePack resourcePack = player.getServer().getResourcePackManager().getPackById(pk.getPackId());
+        var mgr = session.getServer().getResourcePackManager();
+        ResourcePack resourcePack = mgr.getPackById(pk.getPackId());
         if (resourcePack == null) {
-            player.close("", "disconnectionScreen.resourcePack");
+            session.disconnect("disconnectionScreen.resourcePack");
             return;
         }
-        int maxChunkSize = player.getServer().getResourcePackManager().getMaxChunkSize();
+        int maxChunkSize = mgr.getMaxChunkSize();
         ResourcePackChunkDataPacket dataPacket = new ResourcePackChunkDataPacket();
         dataPacket.setPackId(resourcePack.getPackId());
         dataPacket.setPackVersion(new Version(resourcePack.getPackVersion()));

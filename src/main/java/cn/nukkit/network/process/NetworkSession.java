@@ -176,10 +176,7 @@ public class NetworkSession {
     }
 
     private void onServerLoginCompletion() {
-        handle.setShouldLogin(true);
-        if (handle.getPreLoginEventTask().isFinished()) {
-            handle.getPreLoginEventTask().onCompletion(player.getServer());
-        }
+
     }
 
     private void onClientSpawned() {

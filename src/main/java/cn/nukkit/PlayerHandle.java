@@ -249,15 +249,6 @@ public final class PlayerHandle {
     public void setDummyBossBars(Map<Long, DummyBossBar> dummyBossBars) {
         player.dummyBossBars = dummyBossBars;
     }
-
-    public boolean isShouldLogin() {
-        return player.shouldLogin;
-    }
-
-    public void setShouldLogin(boolean shouldLogin) {
-        player.shouldLogin = shouldLogin;
-    }
-
     public double getLastRightClickTime() {
         return player.lastRightClickTime;
     }

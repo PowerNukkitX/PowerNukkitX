@@ -1,8 +1,8 @@
 package cn.nukkit.network.connection.util;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.scheduler.AsyncTask;
+import cn.nukkit.utils.ClientChainData;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.SecretKey;
@@ -10,19 +10,19 @@ import javax.crypto.SecretKey;
 @Slf4j
 public class PrepareEncryptionTask extends AsyncTask {
 
-    private final Player player;
+    private final ClientChainData data;
 
     private String handshakeJwt;
     private SecretKey encryptionKey;
 
-    public PrepareEncryptionTask(Player player) {
-        this.player = player;
+    public PrepareEncryptionTask(ClientChainData player) {
+        this.data = player;
     }
 
     @Override
     public void onRun() {
         try {
-            var clientKey = EncryptionUtils.parseKey(player.getLoginChainData().getIdentityPublicKey());
+            var clientKey = EncryptionUtils.parseKey(data.getIdentityPublicKey());
             var encryptionKeyPair = EncryptionUtils.createKeyPair();
             var encryptionToken = EncryptionUtils.generateRandomToken();
             encryptionKey = EncryptionUtils.getSecretKey(
