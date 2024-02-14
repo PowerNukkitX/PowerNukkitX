@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public abstract class Command implements GenericParameter {
+public abstract class Command {
 
     private final String name;
 

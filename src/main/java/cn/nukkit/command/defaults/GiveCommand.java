@@ -5,6 +5,7 @@ import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.data.GenericParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.tree.node.RemainStringNode;
@@ -28,7 +29,7 @@ public class GiveCommand extends VanillaCommand {
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET, new PlayersNode()),
-                ITEM_NAME.get(false),
+                GenericParameter.ITEM_NAME.get(false),
                 CommandParameter.newType("amount", true, CommandParamType.INT),
                 CommandParameter.newType("data", true, CommandParamType.INT),
                 CommandParameter.newType("components", true, CommandParamType.JSON, new RemainStringNode())
