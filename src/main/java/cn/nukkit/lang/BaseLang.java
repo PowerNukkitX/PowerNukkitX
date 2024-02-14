@@ -1,13 +1,18 @@
 package cn.nukkit.lang;
 
-import cn.nukkit.api.DeprecationDetails;
 import com.google.gson.Gson;
 import io.netty.util.internal.EmptyArrays;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,7 +69,8 @@ public class BaseLang {
                 throw new RuntimeException(e);
             }
         } else {
-            this.lang = this.loadLang(path + this.langName + "/lang.json");
+
+            this.lang = this.loadLang(Path.of(path).resolve(this.langName + "/lang.json").toString());
             if (useFallback) this.fallbackLang = this.loadLang(path + fallback + "/lang.json");
         }
         if (this.fallbackLang == null) this.fallbackLang = this.lang;
@@ -247,18 +253,13 @@ public class BaseLang {
     }
 
     protected String parseLanguageText(String str) {
-        StringBuilder builder = new StringBuilder();
         String result = internalGet(str);
-        if (result == null) {
+        if (result != null) {
+            return result;
+        } else {
             var matcher = split.matcher(str);
-            result = matcher.replaceAll(m -> this.get(m.group().substring(1)));
+            return matcher.replaceAll(m -> this.get(m.group().substring(1)));
         }
-        String[] comments = result.trim().split("\n");
-        for (int i = 0; i < comments.length - 1; i++) {
-            builder.append(comments[i]).append(System.lineSeparator());
-        }
-        builder.append(comments[comments.length - 1]);
-        return builder.toString();
     }
 
     protected String parseLanguageText(String str, String prefix, boolean mode) {

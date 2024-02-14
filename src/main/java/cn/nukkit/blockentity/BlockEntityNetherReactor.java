@@ -74,11 +74,7 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
     @Override
     public CompoundTag getSpawnCompound() {
         NetherReactorState reactorState = getReactorState();
-        return new CompoundTag()
-                .putString("id", BlockEntity.NETHER_REACTOR)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+        return super.getSpawnCompound()
                 .putShort("Progress", getProgress())
                 .putBoolean("HasFinished", reactorState == NetherReactorState.FINISHED)
                 .putBoolean("IsInitialized", reactorState == NetherReactorState.INITIALIZED);

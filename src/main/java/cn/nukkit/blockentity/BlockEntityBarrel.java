@@ -20,11 +20,7 @@ public class BlockEntityBarrel extends BlockEntitySpawnableContainer{
 
     @Override
     public CompoundTag getSpawnCompound() {
-        return new CompoundTag()
-                .putString("id", BlockEntity.BARREL)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+        return super.getSpawnCompound()
                 .putBoolean("isMovable", this.isMovable())
                 .putBoolean("Findable", false);
     }

@@ -22,7 +22,11 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.permission.*;
+import cn.nukkit.permission.Permissible;
+import cn.nukkit.permission.PermissibleBase;
+import cn.nukkit.permission.Permission;
+import cn.nukkit.permission.PermissionAttachment;
+import cn.nukkit.permission.PermissionAttachmentInfo;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.TextFormat;
@@ -194,7 +198,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag nbt = getDefaultCompound(this, BlockEntity.COMMAND_BLOCK)
+        CompoundTag nbt = super.getSpawnCompound()
                 .putBoolean(TAG_CONDITIONAL_MODE, this.conditionalMode)
                 .putBoolean(TAG_AUTO, this.auto)
                 .putLong(TAG_LAST_EXECUTION, this.lastExecution)

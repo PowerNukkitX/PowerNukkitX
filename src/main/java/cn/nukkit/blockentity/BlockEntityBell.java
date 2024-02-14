@@ -13,7 +13,6 @@ import java.util.List;
 
 
 public class BlockEntityBell extends BlockEntitySpawnable {
-
     private boolean ringing;
     private int direction;
     private int ticks;
@@ -127,15 +126,11 @@ public class BlockEntityBell extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag tag = new CompoundTag()
-                .putString("id", BlockEntity.BELL)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+        return super.getSpawnCompound()
+                .putBoolean("isMovable", this.isMovable())
                 .putBoolean("Ringing", this.ringing)
                 .putInt("Direction", this.direction)
                 .putInt("Ticks", this.ticks);
-        return tag;
     }
 
     @Override

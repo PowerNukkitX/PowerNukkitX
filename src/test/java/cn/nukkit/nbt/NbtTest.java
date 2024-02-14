@@ -5,7 +5,6 @@ import cn.nukkit.registry.CreativeItemRegistry;
 import cn.nukkit.utils.Utils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
@@ -14,10 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.nio.ByteOrder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -168,6 +164,26 @@ public class NbtTest {
         inputStream.close();
         Assertions.assertEquals(1, read.getInt("test1"));
     }
+
+    @Test
+    @SneakyThrows
+    void testWriteByteBufOutputStream() {
+        var write = new LinkedCompoundTag()
+                .putInt("test1", 1)
+                .putString("test2", "hahaha")
+                .putBoolean("test3", false)
+                .putByte("test4", 12)
+                .putFloat("test5", (float) 1.22)
+                .putDouble("test6", 2.333);
+        ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
+        ByteBufOutputStream stream = new ByteBufOutputStream(byteBuf);
+        NBTIO.write(write, stream, ByteOrder.LITTLE_ENDIAN, true);
+        stream.close();
+        byte[] data = Utils.convertByteBuf2Array(byteBuf);
+        CompoundTag read = NBTIO.read(data, ByteOrder.LITTLE_ENDIAN, true);
+        Assertions.assertEquals(write, read);
+    }
+
     @Test
     @SneakyThrows
     void testWriteReadGzipPlayerNbt() {

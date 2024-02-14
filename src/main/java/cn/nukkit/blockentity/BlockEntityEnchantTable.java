@@ -2,7 +2,6 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.inventory.EnchantInventory;
-import cn.nukkit.inventory.Inventory;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -44,11 +43,8 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag c = new CompoundTag()
-                .putString("id", BlockEntity.ENCHANT_TABLE)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+        CompoundTag c = super.getSpawnCompound()
+                .putBoolean("isMovable", false);
 
         if (this.hasName()) {
             c.put("CustomName", this.namedTag.get("CustomName"));

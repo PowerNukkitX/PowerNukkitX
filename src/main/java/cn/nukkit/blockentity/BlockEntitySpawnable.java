@@ -28,7 +28,11 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
      * This method cannot call any chunk-related and level-related methods, otherwise it will cause a deadlock
      */
     public CompoundTag getSpawnCompound() {
-        return this.namedTag;
+        return new CompoundTag()
+                .putString("id", namedTag.getString("id"))
+                .putInt("x", (int) x)
+                .putInt("y", (int) y)
+                .putInt("z", (int) z);
     }
 
     public void spawnTo(Player player) {
