@@ -27,7 +27,7 @@ public class IPlayersNode extends ParamNode<List<IPlayer>> {
             List<Entity> entities;
             List<IPlayer> result;
             try {
-                entities = EntitySelectorAPI.getAPI().matchEntities(this.parent.parent.getSender(), arg);
+                entities = EntitySelectorAPI.getAPI().matchEntities(parent.getParent().getSender(), arg);
             } catch (SelectorSyntaxException exception) {
                 error(exception.getMessage());
                 return;

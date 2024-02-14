@@ -2,7 +2,6 @@ package cn.nukkit.command;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.*;
 import cn.nukkit.blockentity.ICommandBlock;
 import cn.nukkit.command.data.*;
 import cn.nukkit.command.tree.ParamList;
@@ -154,16 +153,6 @@ public abstract class Command implements GenericParameter {
         return this.commandData.overloads;
     }
 
-    protected double parseTilde(String arg, double pos) {
-        if (arg.equals("~")) {
-            return pos;
-        } else if (!arg.startsWith("~")) {
-            return Double.parseDouble(arg);
-        } else {
-            return pos + Double.parseDouble(arg.substring(1));
-        }
-    }
-
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         throw new UnsupportedOperationException();
     }
@@ -200,7 +189,7 @@ public abstract class Command implements GenericParameter {
 
         if (this.permissionMessage == null) {
             target.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", this.name));
-        } else if (!this.permissionMessage.equals("")) {
+        } else if (!this.permissionMessage.isEmpty()) {
             target.sendMessage(this.permissionMessage.replace("<permission>", this.permission));
         }
 
@@ -208,7 +197,7 @@ public abstract class Command implements GenericParameter {
     }
 
     public boolean testPermissionSilent(CommandSender target) {
-        if (this.permission == null || this.permission.equals("")) {
+        if (this.permission == null || this.permission.isEmpty()) {
             return true;
         }
 
@@ -291,13 +280,13 @@ public abstract class Command implements GenericParameter {
                     if (commandParameter.enumData == null) {
                         builder.append(" <").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append(">");
                     } else {
-                        builder.append(" <").append(commandParameter.enumData.getValues().subList(0, commandParameter.enumData.getValues().size() > 10 ? 10 : commandParameter.enumData.getValues().size()).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append(">");
+                        builder.append(" <").append(commandParameter.enumData.getValues().subList(0, Math.min(commandParameter.enumData.getValues().size(), 10)).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append(">");
                     }
                 } else {
                     if (commandParameter.enumData == null) {
                         builder.append(" [").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append("]");
                     } else {
-                        builder.append(" [").append(commandParameter.enumData.getValues().subList(0, commandParameter.enumData.getValues().size() > 10 ? 10 : commandParameter.enumData.getValues().size()).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append("]");
+                        builder.append(" [").append(commandParameter.enumData.getValues().subList(0, Math.min(commandParameter.enumData.getValues().size(), 10)).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append("]");
                     }
                 }
             }
@@ -340,15 +329,6 @@ public abstract class Command implements GenericParameter {
         return paramTree;
     }
 
-    @Deprecated
-    @DeprecationDetails(
-            by = "PowerNukkit",
-            since = "1.5.2.0-PN",
-            reason = "Unused and always throws an exception even in Cloudburst Nukkit")
-    public static CommandData generateDefaultData() {
-        throw new UnsupportedOperationException();
-    }
-
     public static void broadcastCommandMessage(CommandSender source, String message) {
         broadcastCommandMessage(source, message, true);
     }
@@ -365,11 +345,11 @@ public abstract class Command implements GenericParameter {
         }
 
         for (Permissible user : users) {
-            if (user instanceof CommandSender) {
-                if (user instanceof ConsoleCommandSender) {
-                    ((ConsoleCommandSender) user).sendMessage(result);
+            if (user instanceof CommandSender sender) {
+                if (user instanceof ConsoleCommandSender consoleSender) {
+                    consoleSender.sendMessage(result);
                 } else if (!user.equals(source)) {
-                    ((CommandSender) user).sendMessage(colored);
+                    sender.sendMessage(colored);
                 }
             }
         }
@@ -402,11 +382,11 @@ public abstract class Command implements GenericParameter {
         }
 
         for (Permissible user : users) {
-            if (user instanceof CommandSender) {
-                if (user instanceof ConsoleCommandSender) {
-                    ((ConsoleCommandSender) user).sendMessage(result);
+            if (user instanceof CommandSender sender) {
+                if (user instanceof ConsoleCommandSender consoleSender) {
+                    consoleSender.sendMessage(result);
                 } else if (!user.equals(source)) {
-                    ((CommandSender) user).sendMessage(colored);
+                    sender.sendMessage(colored);
                 }
             }
         }

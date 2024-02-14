@@ -11,7 +11,7 @@ public class ParamList extends ArrayList<IParamNode<?>> {
     private int error = Integer.MIN_VALUE;
     private int index = 0;
     private final CommandOutputContainer messageContainer;
-    public final ParamTree parent;
+    private final ParamTree parent;
 
     public ParamList(ParamTree parent) {
         this.parent = parent;

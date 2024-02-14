@@ -10,8 +10,6 @@ import java.util.Set;
  * <p>
  * 所有命令枚举{@link cn.nukkit.command.data.CommandEnum#ENUM_BOOLEAN ENUM_BOOLEAN}如果没有手动指定{@link IParamNode},则会默认使用这个解析
  */
-
-
 public class BooleanNode extends ParamNode<Boolean> {
     private final static Set<String> ENUM_BOOLEAN = Sets.newHashSet(CommandEnum.ENUM_BOOLEAN.getValues());
 

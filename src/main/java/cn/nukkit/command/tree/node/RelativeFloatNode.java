@@ -5,8 +5,6 @@ package cn.nukkit.command.tree.node;
  * Date: 2023/6/11 <br>
  * PowerNukkitX Project <br>
  */
-
-
 public class RelativeFloatNode extends RelativeNumberNode<Float> {
     @Override
     public void fill(String arg) {
