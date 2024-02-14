@@ -26,10 +26,10 @@ public class EffectCommand extends Command {
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET),
-                CommandParameter.newEnum("effect", CommandEnum.ENUM_EFFECT),
+                CommandParameter.newEnum("effect", CommandEnum.EFFECT),
                 CommandParameter.newType("seconds", true, CommandParamType.INT),
                 CommandParameter.newType("amplifier", true, CommandParamType.INT),
-                CommandParameter.newEnum("hideParticle", true, CommandEnum.ENUM_BOOLEAN)
+                CommandParameter.newEnum("hideParticle", true, CommandEnum.BOOLEAN)
         });
         this.commandParameters.put("clear", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET),

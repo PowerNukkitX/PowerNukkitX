@@ -1,7 +1,6 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockState;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -12,7 +11,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 
 public class TestForBlockCommand extends VanillaCommand {
@@ -23,7 +21,7 @@ public class TestForBlockCommand extends VanillaCommand {
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
                 CommandParameter.newType("position", false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
+                CommandParameter.newEnum("tileName", false, CommandEnum.BLOCK),
                 CommandParameter.newType("dataValue", true, CommandParamType.INT)
         });
         this.enableParamTree();

@@ -1,7 +1,6 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockState;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -22,7 +21,7 @@ public class SetBlockCommand extends VanillaCommand {
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("position", CommandParamType.POSITION),
-                CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
+                CommandParameter.newEnum("tileName", false, CommandEnum.BLOCK),
                 CommandParameter.newType("tileData", true, CommandParamType.INT),
                 CommandParameter.newEnum("oldBlockHandling", true, new String[]{"destroy", "keep", "replace"})
         });

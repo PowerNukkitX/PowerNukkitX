@@ -33,7 +33,7 @@ public class EnchantCommand extends VanillaCommand {
         });
         this.commandParameters.put("byName", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET),
-                CommandParameter.newEnum("enchantmentName", CommandEnum.ENUM_ENCHANTMENT),
+                CommandParameter.newEnum("enchantmentName", CommandEnum.ENCHANTMENT),
                 CommandParameter.newType("level", true, CommandParamType.INT)
         });
         this.enableParamTree();

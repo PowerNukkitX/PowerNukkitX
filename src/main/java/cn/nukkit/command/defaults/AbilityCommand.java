@@ -24,7 +24,7 @@ public class AbilityCommand extends VanillaCommand {
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("player", false, CommandParamType.TARGET, new PlayersNode()),
                 CommandParameter.newEnum("ability", false, new String[]{"mayfly", "mute", "worldbuilder"}),
-                CommandParameter.newEnum("value", true, CommandEnum.ENUM_BOOLEAN, new BooleanNode())
+                CommandParameter.newEnum("value", true, CommandEnum.BOOLEAN, new BooleanNode())
         });
         this.enableParamTree();
     }

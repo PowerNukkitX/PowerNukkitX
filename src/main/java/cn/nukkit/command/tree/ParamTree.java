@@ -74,13 +74,13 @@ public class ParamTree {
                         default -> new VoidNode();
                     };
                 } else {
-                    if (parameter.enumData.equals(CommandEnum.ENUM_BOOLEAN)) {
+                    if (parameter.enumData.equals(CommandEnum.BOOLEAN)) {
                         node = new BooleanNode();
-                    } else if (parameter.enumData.equals(CommandEnum.ENUM_ITEM)) {
+                    } else if (parameter.enumData.equals(CommandEnum.ITEM)) {
                         node = new ItemNode();
-                    } else if (parameter.enumData.equals(CommandEnum.ENUM_BLOCK)) {
+                    } else if (parameter.enumData.equals(CommandEnum.BLOCK)) {
                         node = new BlockNode();
-                    } else if (parameter.enumData.equals(CommandEnum.ENUM_ENTITY)) {
+                    } else if (parameter.enumData.equals(CommandEnum.ENTITY)) {
                         node = new StringNode();
                     } else node = new EnumNode();
                 }

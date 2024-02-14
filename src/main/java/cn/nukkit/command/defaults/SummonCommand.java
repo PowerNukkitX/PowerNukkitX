@@ -9,7 +9,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Position;
-import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.registry.Registries;
 
 import java.util.ArrayList;
@@ -32,7 +31,7 @@ public class SummonCommand extends VanillaCommand {
                 CommandParameter.newEnum("entityType", false, entity_key.toArray(new String[0]), true),
                 CommandParameter.newType("spawnPos", true, CommandParamType.POSITION),
                 CommandParameter.newType("nameTag", true, CommandParamType.STRING),
-                CommandParameter.newEnum("nameTagAlwaysVisible", true, CommandEnum.ENUM_BOOLEAN)
+                CommandParameter.newEnum("nameTagAlwaysVisible", true, CommandEnum.BOOLEAN)
         });
         this.enableParamTree();
     }
