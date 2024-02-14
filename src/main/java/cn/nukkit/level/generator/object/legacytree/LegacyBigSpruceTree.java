@@ -43,7 +43,7 @@ public class LegacyBigSpruceTree extends LegacySpruceTree {
         for (int yy = 0; yy < trunkHeight; ++yy) {
             for (int xx = 0; xx < radius; xx++) {
                 for (int zz = 0; zz < radius; zz++) {
-                    String blockId = level.getBlockIdAt(x, y + yy, z);
+                    String blockId = level.getBlockIdAt(x + xx, y + yy, z + zz);
                     if (this.overridable(blockId)) {
                         level.setBlockStateAt(x + xx, y + yy, z + zz, getTrunkBlockState());
                     }

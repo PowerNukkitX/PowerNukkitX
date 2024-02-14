@@ -8,7 +8,13 @@ import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.generator.object.*;
+import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.HugeTreesGenerator;
+import cn.nukkit.level.generator.object.NewJungleTree;
+import cn.nukkit.level.generator.object.ObjectDarkOakTree;
+import cn.nukkit.level.generator.object.ObjectGenerator;
+import cn.nukkit.level.generator.object.ObjectJungleBigTree;
+import cn.nukkit.level.generator.object.ObjectSavannaTree;
 import cn.nukkit.level.generator.object.legacytree.LegacyBigSpruceTree;
 import cn.nukkit.level.generator.object.legacytree.LegacyTreeGenerator;
 import cn.nukkit.level.particle.BoneMealParticle;
@@ -136,7 +142,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
                 if ((vector2 = this.findSaplings(WoodType.JUNGLE)) != null) {
                     vector3 = this.add(vector2.getFloorX(), 0, vector2.getFloorY());
                     generator = new ObjectJungleBigTree(10, 20,
-                            BlockJungleLog.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE, WoodType.JUNGLE),
+                            BlockJungleLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y),
                             BlockLeaves.PROPERTIES.getBlockState(CommonBlockProperties.OLD_LEAF_TYPE, OldLeafType.JUNGLE)
                     );
                     bigTree = true;
