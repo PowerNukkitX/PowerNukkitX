@@ -1462,12 +1462,6 @@ public class Server {
         return recipients.size();
     }
 
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "use Server#executeCommand")
-    public boolean dispatchCommand(CommandSender sender, String commandLine) throws ServerException {
-        return this.executeCommand(sender, commandLine) > 0;
-    }
-
     /**
      * 以sender身份执行一行命令
      * <p>
