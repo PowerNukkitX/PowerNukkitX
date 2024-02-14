@@ -261,7 +261,7 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         this.sessions.put(0, this.sessionFactory.createSession(this, 0));
-        this.tickFuture = this.channel.eventLoop().scheduleAtFixedRate(this::onTick, 0, 10, TimeUnit.MILLISECONDS);
+        this.tickFuture = this.channel.eventLoop().scheduleAtFixedRate(this::onTick, 10, 10, TimeUnit.MILLISECONDS);
     }
 
     @Override
