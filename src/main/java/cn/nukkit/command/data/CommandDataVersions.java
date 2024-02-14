@@ -6,6 +6,9 @@ import java.util.List;
 public class CommandDataVersions {
 
     //size 1
-    public List<CommandData> versions = new ArrayList<>();
+    private final List<CommandData> versions = new ArrayList<>();
 
+    public List<CommandData> getVersions() {
+        return versions;
+    }
 }

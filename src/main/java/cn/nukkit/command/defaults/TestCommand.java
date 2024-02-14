@@ -25,6 +25,6 @@ public abstract class TestCommand extends Command {
     public TestCommand(String name, String description, String usageMessage, String[] aliases) {
         super(name, description, usageMessage, aliases);
         //标记为测试命令（客户端显示为蓝色）
-        this.commandData.flags.add(CommandData.Flag.TEST_USAGE);
+        this.commandData.getFlags().add(CommandData.Flag.TEST_USAGE);
     }
 }

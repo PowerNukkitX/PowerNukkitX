@@ -115,7 +115,9 @@ public abstract class Command implements GenericParameter {
         if (!this.testPermission(player)) {
             return null;
         }
+
         var plugin = this instanceof PluginCommand<?> pluginCommand ? pluginCommand.getPlugin() : InternalPlugin.INSTANCE;
+
         CommandData customData = this.commandData.clone();
 
         if (getAliases().length > 0) {
@@ -124,33 +126,37 @@ public abstract class Command implements GenericParameter {
                 aliases.add(this.name);
             }
 
-            customData.aliases = new CommandEnum(this.name + "Aliases", aliases);
+            customData.setAliases(new CommandEnum(this.name + "Aliases", aliases));
         }
 
         if (plugin == InternalPlugin.INSTANCE) {
-            customData.description = player.getServer().getLanguage().tr(this.getDescription(), CommandOutputContainer.EMPTY_STRING, "commands.", false);
+            customData.setDescription(player.getServer().getLanguage().tr(this.getDescription(), CommandOutputContainer.EMPTY_STRING, "commands.", false));
         } else if (plugin instanceof PluginBase pluginBase) {
             var i18n = PluginI18nManager.getI18n(pluginBase);
             if (i18n != null) {
-                customData.description = i18n.tr(player.getLanguageCode(), this.getDescription());
+                customData.setDescription(i18n.tr(player.getLanguageCode(), this.getDescription()));
             } else {
-                customData.description = player.getServer().getLanguage().tr(this.getDescription());
+                customData.setDescription(player.getServer().getLanguage().tr(this.getDescription()));
             }
         }
 
         this.commandParameters.forEach((key, par) -> {
             CommandOverload overload = new CommandOverload();
-            overload.input.parameters = par;
-            customData.overloads.put(key, overload);
+            overload.getInput().setParameters(par);
+            customData.getOverloads().put(key, overload);
         });
-        if (customData.overloads.size() == 0) customData.overloads.put("default", new CommandOverload());
+
+        if (customData.getOverloads().isEmpty()) {
+            customData.getOverloads().put("default", new CommandOverload());
+        }
+
         CommandDataVersions versions = new CommandDataVersions();
-        versions.versions.add(customData);
+        versions.getVersions().add(customData);
         return versions;
     }
 
     public Map<String, CommandOverload> getOverloads() {
-        return this.commandData.overloads;
+        return commandData.getOverloads();
     }
 
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {

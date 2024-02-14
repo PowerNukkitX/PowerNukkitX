@@ -84,13 +84,13 @@ public class AvailableCommandsPacket extends DataPacket {
 
         // Get all enum values
         for (var entry : commands.entrySet()) {
-            var data = entry.getValue().versions.get(0);
-            if (data.aliases != null) {
-                enumValuesSet.addAll(data.aliases.getValues());
-                enumsSet.add(data.aliases);
+            var data = entry.getValue().getVersions().get(0);
+            if (data.getAliases() != null) {
+                enumValuesSet.addAll(data.getAliases().getValues());
+                enumsSet.add(data.getAliases());
             }
 
-            for (ChainedSubCommandData subcommand : data.subcommands) {
+            for (ChainedSubCommandData subcommand : data.getSubcommands()) {
                 if (subCommandData.contains(subcommand)) {
                     continue;
                 }
@@ -107,7 +107,7 @@ public class AvailableCommandsPacket extends DataPacket {
                 }
             }
 
-            for (CommandParameter[] overload : data.overloads.values().stream().map(o -> o.input.parameters).toList()) {
+            for (CommandParameter[] overload : data.getOverloads().values().stream().map(o -> o.getInput().getParameters()).toList()) {
                 for (CommandParameter parameter : overload) {
                     CommandEnum commandEnumData = parameter.enumData;
                     if (commandEnumData != null) {
@@ -221,18 +221,17 @@ public class AvailableCommandsPacket extends DataPacket {
     }
 
     private void writeCommand(Map.Entry<String, CommandDataVersions> commandEntry, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes, List<ChainedSubCommandData> subCommands) {
-        var commandData = commandEntry.getValue().versions.get(0);
+        var commandData = commandEntry.getValue().getVersions().get(0);
         this.putString(commandEntry.getKey());
-        this.putString(commandData.description);
+        this.putString(commandData.getDescription());
         int flags = 0;
-        for (CommandData.Flag flag : commandData.flags) {
-            flags |= flag.bit;
+        for (CommandData.Flag flag : commandData.getFlags()) {
+            flags |= flag.getBit();
         }
         this.putLShort(flags);
-        this.putByte((byte) commandData.permission);
+        this.putByte((byte) commandData.getPermission());
 
-        CommandEnum aliases = commandData.aliases;
-        this.putLInt(commandData.aliases == null ? -1 : enums.indexOf(commandData.aliases));
+        this.putLInt(commandData.getAliases() == null ? -1 : enums.indexOf(commandData.getAliases()));
 
         this.putUnsignedVarInt(subCommands.size());
         for (ChainedSubCommandData subcommand : subCommands) {
@@ -241,12 +240,12 @@ public class AvailableCommandsPacket extends DataPacket {
             this.putLShort(index);
         }
 
-        Collection<CommandOverload> overloads = commandData.overloads.values();
+        Collection<CommandOverload> overloads = commandData.getOverloads().values();
         this.putUnsignedVarInt(overloads.size());
         for (CommandOverload overload : overloads) {
-            this.putBoolean(overload.chaining);
-            this.putUnsignedVarInt(overload.input.parameters.length);
-            for (CommandParameter param : overload.input.parameters) {
+            this.putBoolean(overload.isChaining());
+            this.putUnsignedVarInt(overload.getInput().getParameters().length);
+            for (CommandParameter param : overload.getInput().getParameters()) {
                 this.writeParameter(param, enums, softEnums, postFixes);
             }
         }

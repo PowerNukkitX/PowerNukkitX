@@ -2,9 +2,23 @@ package cn.nukkit.command.data;
 
 public class CommandOverload {
 
-    public CommandInput input = new CommandInput();
-    public CommandOutput output = new CommandOutput();//???
+    private CommandInput input = new CommandInput();
 
-    public boolean chaining;
+    private boolean chaining;
 
+    public CommandInput getInput() {
+        return input;
+    }
+
+    public void setInput(CommandInput input) {
+        this.input = input;
+    }
+
+    public boolean isChaining() {
+        return chaining;
+    }
+
+    public void setChaining(boolean chaining) {
+        this.chaining = chaining;
+    }
 }
