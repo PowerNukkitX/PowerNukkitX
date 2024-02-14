@@ -611,6 +611,7 @@ public class LevelDBProvider implements LevelProvider {
                     .time(d.getLong("Time"))
                     .worldVersion(d.getInt("WorldVersion"))
                     .XBLBroadcastIntent(d.getInt("XBLBroadcastIntent"))
+                    .gameRules(gameRules)
                     .abilities(LevelDat.Abilities.builder()
                             .attackMobs(abilities.getBoolean("attackmobs"))
                             .attackPlayers(abilities.getBoolean("attackplayers"))

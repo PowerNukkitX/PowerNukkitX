@@ -3643,7 +3643,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             this.connected = false;
             PlayerQuitEvent ev = null;
-            if (this.name != null && !this.getName().isEmpty()) {
+            if (this.username != null && !this.getName().isEmpty()) {
                 this.server.getPluginManager().callEvent(ev = new PlayerQuitEvent(this, message, true, reason));
                 if (this.fishing != null) {
                     this.stopFishing(false);

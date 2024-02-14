@@ -19,7 +19,7 @@ public class NetworkMapping {
                     new InventorySlice(player.getInventory(), HumanInventory.ARMORS_INDEX, player.getInventory().getSize());
             case BARREL,
                     BREWING_RESULT, BREWING_FUEL, BREWING_INPUT,
-                    FURNACE_FUEL, FURNACE_INGREDIENT, FURNACE_RESULT, BLAST_FURNACE_INGREDIENT,
+                    FURNACE_FUEL, FURNACE_INGREDIENT, FURNACE_RESULT, SMOKER_INGREDIENT, BLAST_FURNACE_INGREDIENT,
                     ENCHANTING_INPUT, ENCHANTING_MATERIAL,
                     SMITHING_TABLE_INPUT, SMITHING_TABLE_MATERIAL, SMITHING_TABLE_RESULT,
                     ANVIL_INPUT, ANVIL_MATERIAL, ANVIL_RESULT,

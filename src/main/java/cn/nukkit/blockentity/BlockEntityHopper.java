@@ -9,7 +9,12 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.HopperSearchItemEvent;
 import cn.nukkit.event.inventory.InventoryMoveItemEvent;
-import cn.nukkit.inventory.*;
+import cn.nukkit.inventory.BrewingInventory;
+import cn.nukkit.inventory.HopperInventory;
+import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.InventoryHolder;
+import cn.nukkit.inventory.RecipeInventoryHolder;
+import cn.nukkit.inventory.SmeltingInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemPotion;
@@ -377,7 +382,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
 
         //Fix for furnace inputs
         if (be instanceof BlockEntityFurnace furnace) {
-            FurnaceTypeInventory inventory = furnace.getInventory();
+            SmeltingInventory inventory = furnace.getInventory();
             if (inventory.isFull()) {
                 return false;
             }

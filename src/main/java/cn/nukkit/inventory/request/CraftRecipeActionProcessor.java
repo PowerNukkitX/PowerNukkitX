@@ -25,6 +25,7 @@ import java.util.List;
 @Slf4j
 public class CraftRecipeActionProcessor implements ItemStackRequestActionProcessor<CraftRecipeAction> {
     public static final String RECIPE_DATA_KEY = "recipe";
+    public static final String ENCH_RECIPE_KEY = "ench_recipe";
 
     @Override
     public ActionResponse handle(CraftRecipeAction action, Player player, ItemStackRequestContext context) {
@@ -47,6 +48,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             player.getCreativeOutputInventory().setItem(item);
             PlayerEnchantOptionsPacket.RECIPE_MAP.remove(action.getRecipeNetworkId());
             player.regenerateEnchantmentSeed();
+            context.put(ENCH_RECIPE_KEY, true);
             return null;
         }
 

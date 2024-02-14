@@ -1,7 +1,8 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.inventory.InventoryType;
+import cn.nukkit.inventory.BlastFurnaceInventory;
+import cn.nukkit.inventory.SmeltingInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -40,16 +41,14 @@ public class BlockEntityBlastFurnace extends BlockEntityFurnace {
 
 
     @Override
-    protected InventoryType getInventoryType() {
-        return InventoryType.BLAST_FURNACE;
+    protected SmeltingInventory createInventory() {
+        return new BlastFurnaceInventory(this);
     }
-
 
     @Override
     protected SmeltingRecipe matchRecipe(Item raw) {
         return this.server.getRecipeRegistry().findBlastFurnaceRecipe(raw);
     }
-
 
     @Override
     protected int getSpeedMultiplier() {

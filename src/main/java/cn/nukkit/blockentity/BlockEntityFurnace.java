@@ -8,8 +8,8 @@ import cn.nukkit.event.inventory.FurnaceSmeltEvent;
 import cn.nukkit.inventory.FurnaceTypeInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventorySlice;
-import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.inventory.RecipeInventoryHolder;
+import cn.nukkit.inventory.SmeltingInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemBucket;
@@ -29,7 +29,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeInventoryHolder, BlockEntityInventoryHolder {
 
-    protected FurnaceTypeInventory inventory;
+    protected SmeltingInventory inventory;
 
     protected int burnTime;
     protected int burnDuration;
@@ -43,8 +43,8 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
         super(chunk, nbt);
     }
 
-    protected InventoryType getInventoryType() {
-        return InventoryType.FURNACE;
+    protected SmeltingInventory createInventory() {
+        return new FurnaceTypeInventory(this);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     @Override
     public void loadNBT() {
         super.loadNBT();
-        this.inventory = new FurnaceTypeInventory(this, getInventoryType());
+        this.inventory = createInventory();
 
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
             this.namedTag.putList("Items", new ListTag<CompoundTag>());
@@ -218,7 +218,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     }
 
     @Override
-    public FurnaceTypeInventory getInventory() {
+    public SmeltingInventory getInventory() {
         return inventory;
     }
 
