@@ -60,6 +60,10 @@ public class ParamList extends ArrayList<IParamNode<?>> {
         return this.get(index).get();
     }
 
+    public <E> E getResult(int index, E defaultValue) {
+        return this.hasResult(index) ? this.getResult(index) : defaultValue;
+    }
+
     public CommandOutputContainer getMessageContainer() {
         return messageContainer;
     }
