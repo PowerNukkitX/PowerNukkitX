@@ -9,6 +9,7 @@ import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamOption;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.data.GenericParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
@@ -41,70 +42,70 @@ public class ExecuteCommand extends VanillaCommand {
         this.getCommandParameters().clear();
         this.addCommandParameters("as", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_As", "as")),
-                ORIGIN.get(false),
-                CHAINED_COMMAND.get(false)
+                GenericParameter.ORIGIN.get(false),
+                GenericParameter.CHAINED_COMMAND.get(false)
         });
         this.addCommandParameters("at", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_At", "at")),
-                ORIGIN.get(false),
-                CHAINED_COMMAND.get(false)
+                GenericParameter.ORIGIN.get(false),
+                GenericParameter.CHAINED_COMMAND.get(false)
         });
         this.addCommandParameters("in", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_In", "in")),
                 CommandParameter.newType("dimension", CommandParamType.STRING),
-                CHAINED_COMMAND.get(false)
+                GenericParameter.CHAINED_COMMAND.get(false)
         });
         this.addCommandParameters("facing", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_Facing", "facing")),
                 CommandParameter.newType("pos", CommandParamType.POSITION),
-                CHAINED_COMMAND.get(false)
+                GenericParameter.CHAINED_COMMAND.get(false)
         });
         this.addCommandParameters("facing-entity", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_Facing", "facing")),
                 CommandParameter.newEnum("secondary subcommand", false, new CommandEnum("Option_Entity", "entity")),
                 CommandParameter.newType("targets", CommandParamType.TARGET),
                 CommandParameter.newEnum("anchor", new String[]{"eyes", "feet"}),
-                CHAINED_COMMAND.get(false)
+                GenericParameter.CHAINED_COMMAND.get(false)
         });
         this.addCommandParameters("rotated", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_Rotated", "rotated")),
                 CommandParameter.newType("yaw", false, CommandParamType.VALUE),
                 CommandParameter.newType("pitch", false, CommandParamType.VALUE),
-                CHAINED_COMMAND.get(false)
+                GenericParameter.CHAINED_COMMAND.get(false)
         });
         this.addCommandParameters("rotated as", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_Rotated", "rotated")),
                 CommandParameter.newEnum("secondary subcommand", false, new CommandEnum("Option_As", "as")),
                 CommandParameter.newType("targets", CommandParamType.TARGET),
-                CHAINED_COMMAND.get(false)
+                GenericParameter.CHAINED_COMMAND.get(false)
         });
         this.addCommandParameters("align", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_Align", "align")),
                 CommandParameter.newType("axes", CommandParamType.STRING),
-                CHAINED_COMMAND.get(false)
+                GenericParameter.CHAINED_COMMAND.get(false)
         });
         this.addCommandParameters("anchored", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_Anchored", "anchored")),
                 CommandParameter.newEnum("anchor", new String[]{"eyes", "feet"}),
-                CHAINED_COMMAND.get(false)
+                GenericParameter.CHAINED_COMMAND.get(false)
         });
         this.addCommandParameters("positioned", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_Positioned", "positioned")),
                 CommandParameter.newType("position", CommandParamType.POSITION),
-                CHAINED_COMMAND.get(false)
+                GenericParameter.CHAINED_COMMAND.get(false)
         });
         this.addCommandParameters("positioned as", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_Positioned", "positioned")),
                 CommandParameter.newEnum("secondary subcommand", false, new CommandEnum("Option_As", "as")),
-                ORIGIN.get(false),
-                CHAINED_COMMAND.get(false)
+                GenericParameter.ORIGIN.get(false),
+                GenericParameter.CHAINED_COMMAND.get(false)
         });
         this.addCommandParameters("if-unless-block", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_If_Unless", "if", "unless")),
                 CommandParameter.newEnum("secondary subcommand", false, new CommandEnum("Option_Block", "block")),
                 CommandParameter.newType("position", CommandParamType.BLOCK_POSITION),
                 CommandParameter.newEnum("block", false, CommandEnum.ENUM_BLOCK),
-                CHAINED_COMMAND.get(true)
+                GenericParameter.CHAINED_COMMAND.get(true)
         });
         /*todo 暂时没实现，因为我也不知道这个blockStates填什么
         this.addCommandParameters("if-unless-block-blockStates", new CommandParameter[]{
@@ -121,7 +122,7 @@ public class ExecuteCommand extends VanillaCommand {
                 CommandParameter.newType("position", CommandParamType.BLOCK_POSITION),
                 CommandParameter.newEnum("block", false, CommandEnum.ENUM_BLOCK),
                 CommandParameter.newType("data", CommandParamType.INT),
-                CHAINED_COMMAND.get(true)
+                GenericParameter.CHAINED_COMMAND.get(true)
         });
         this.addCommandParameters("if-unless-blocks", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_If_Unless", "if", "unless")),
@@ -130,13 +131,13 @@ public class ExecuteCommand extends VanillaCommand {
                 CommandParameter.newType("end", CommandParamType.BLOCK_POSITION),
                 CommandParameter.newType("destination", CommandParamType.BLOCK_POSITION),
                 CommandParameter.newEnum("scan mode", true, new String[]{"all", "masked"}),
-                CHAINED_COMMAND.get(true)
+                GenericParameter.CHAINED_COMMAND.get(true)
         });
         this.addCommandParameters("if-unless-entity", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_If_Unless", "if", "unless")),
                 CommandParameter.newEnum("secondary subcommand", false, new CommandEnum("Option_Entity", "entity")),
                 CommandParameter.newType("target", CommandParamType.TARGET),
-                CHAINED_COMMAND.get(true)
+                GenericParameter.CHAINED_COMMAND.get(true)
         });
         this.addCommandParameters("if-unless-score", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_If_Unless", "if", "unless")),
@@ -146,7 +147,7 @@ public class ExecuteCommand extends VanillaCommand {
                 CommandParameter.newType("operation", CommandParamType.COMPARE_OPERATOR),
                 CommandParameter.newType("source", CommandParamType.TARGET),
                 CommandParameter.newEnum("objective", false, new CommandEnum("ScoreboardObjectives", List.of(), true)),
-                CHAINED_COMMAND.get(true)
+                GenericParameter.CHAINED_COMMAND.get(true)
         });
         this.addCommandParameters("if-unless-score-matches", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_If_Unless", "if", "unless")),
@@ -155,7 +156,7 @@ public class ExecuteCommand extends VanillaCommand {
                 CommandParameter.newEnum("objective", false, new CommandEnum("ScoreboardObjectives", List.of(), true)),
                 CommandParameter.newEnum("matches", new String[]{"matches"}),
                 CommandParameter.newType("range", CommandParamType.STRING),
-                CHAINED_COMMAND.get(true)
+                GenericParameter.CHAINED_COMMAND.get(true)
         });
         this.addCommandParameters("run", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_Run", "run")),

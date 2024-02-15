@@ -5,8 +5,6 @@ package cn.nukkit.command.tree.node;
  * Date: 2023/6/11 <br>
  * PowerNukkitX Project <br>
  */
-
-
 public abstract class RelativeNumberNode<T extends Number> extends ParamNode<T> {
     @Override
     public <E> E get() {

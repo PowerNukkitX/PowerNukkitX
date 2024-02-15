@@ -9,7 +9,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Position;
-import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.registry.Registries;
 
 import java.util.ArrayList;

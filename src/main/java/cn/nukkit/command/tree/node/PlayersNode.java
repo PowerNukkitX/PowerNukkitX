@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
  * <p>
  * 不会默认使用，需要手动指定
  */
-
-
 public class PlayersNode extends TargetNode<Player> {
     //todo 支持uuid 或者 xuid
     @Override
@@ -27,7 +25,7 @@ public class PlayersNode extends TargetNode<Player> {
             List<Entity> entities;
             List<Player> result;
             try {
-                entities = EntitySelectorAPI.getAPI().matchEntities(this.parent.parent.getSender(), arg);
+                entities = EntitySelectorAPI.getAPI().matchEntities(parent.getParent().getSender(), arg);
             } catch (SelectorSyntaxException exception) {
                 error(exception.getMessage());
                 return;

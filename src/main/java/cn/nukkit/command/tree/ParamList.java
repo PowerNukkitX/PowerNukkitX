@@ -11,7 +11,7 @@ public class ParamList extends ArrayList<IParamNode<?>> {
     private int error = Integer.MIN_VALUE;
     private int index = 0;
     private final CommandOutputContainer messageContainer;
-    public final ParamTree parent;
+    private final ParamTree parent;
 
     public ParamList(ParamTree parent) {
         this.parent = parent;
@@ -58,6 +58,10 @@ public class ParamList extends ArrayList<IParamNode<?>> {
      */
     public <E> E getResult(int index) {
         return this.get(index).get();
+    }
+
+    public <E> E getResult(int index, E defaultValue) {
+        return this.hasResult(index) ? this.getResult(index) : defaultValue;
     }
 
     public CommandOutputContainer getMessageContainer() {

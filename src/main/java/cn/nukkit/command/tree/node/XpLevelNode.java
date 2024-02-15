@@ -5,8 +5,6 @@ package cn.nukkit.command.tree.node;
  * <p>
  * 不会默认使用，需要手动指定
  */
-
-
 public class XpLevelNode extends ParamNode<Integer> {
     @Override
     public void fill(String arg) {

@@ -231,7 +231,6 @@ public class AvailableCommandsPacket extends DataPacket {
         this.putLShort(flags);
         this.putByte((byte) commandData.permission);
 
-        CommandEnum aliases = commandData.aliases;
         this.putLInt(commandData.aliases == null ? -1 : enums.indexOf(commandData.aliases));
 
         this.putUnsignedVarInt(subCommands.size());

@@ -45,7 +45,6 @@ public class ParamTree {
      * @param command the command
      */
     //todo 优化建树和遍历
-    @SuppressWarnings("RedundantLabeledSwitchRuleCodeBlock")
     public ParamTree(Command command) {
         this.command = command;
         final var root = new HashMap<String, ParamList>();
@@ -56,54 +55,24 @@ public class ParamTree {
                 if (parameter.paramNode != null) {
                     node = parameter.paramNode;
                 } else if (parameter.enumData == null) {
-                    switch (parameter.type) {
-                        case INT -> {
-                            node = new IntNode();
-                        }
-                        case WILDCARD_INT -> {
-                            node = new WildcardIntNode();
-                        }
-                        case FLOAT -> {
-                            node = new FloatNode();
-                        }
-                        case VALUE -> {
-                            node = new DoubleNode();
-                        }
-                        case POSITION -> {//(?<=\s|^)([~^]?-?\d+\.?\d*(?=\s|$))
-                            node = new FloatPositionNode();
-                        }
-                        case BLOCK_POSITION -> {
-                            node = new IntPositionNode();
-                        }
-                        case TARGET -> {
-                            node = new EntitiesNode();
-                        }
-                        case WILDCARD_TARGET -> {
-                            node = new WildcardTargetStringNode();
-                        }
-                        case STRING, TEXT, FILE_PATH -> {
-                            node = new StringNode();
-                        }
-                        case COMMAND -> {
-                            node = new CommandNode();
-                        }
-                        case OPERATOR -> {
-                            node = new OperatorStringNode();
-                        }
-                        case COMPARE_OPERATOR -> {
-                            node = new CompareOperatorStringNode();
-                        }
-                        case MESSAGE -> {
-                            node = new MessageStringNode();
-                        }
-                        case JSON -> {
-                            node = new RemainStringNode();
-                        }
-                        case RAWTEXT -> {
-                            node = new RawTextNode();
-                        }
-                        default -> node = new VoidNode();
-                    }
+                    node = switch (parameter.type) {
+                        case INT -> new IntNode();
+                        case WILDCARD_INT -> new WildcardIntNode();
+                        case FLOAT -> new FloatNode();
+                        case VALUE -> new DoubleNode();
+                        case POSITION -> new FloatPositionNode();
+                        case BLOCK_POSITION -> new IntPositionNode();
+                        case TARGET -> new EntitiesNode();
+                        case WILDCARD_TARGET -> new WildcardTargetStringNode();
+                        case STRING, TEXT, FILE_PATH -> new StringNode();
+                        case COMMAND -> new CommandNode();
+                        case OPERATOR -> new OperatorStringNode();
+                        case COMPARE_OPERATOR -> new CompareOperatorStringNode();
+                        case MESSAGE -> new MessageStringNode();
+                        case JSON -> new RemainStringNode();
+                        case RAWTEXT -> new RawTextNode();
+                        default -> new VoidNode();
+                    };
                 } else {
                     if (parameter.enumData.equals(CommandEnum.ENUM_BOOLEAN)) {
                         node = new BooleanNode();

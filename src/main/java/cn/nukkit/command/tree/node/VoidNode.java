@@ -5,8 +5,6 @@ import cn.nukkit.command.tree.ParamList;
 /**
  * 一个用来占位的空参数节点
  */
-
-
 public class VoidNode implements IParamNode<Void> {
     @Override
     public void fill(String arg) {

@@ -9,8 +9,6 @@ import cn.nukkit.network.protocol.types.CommandOutputMessage;
 /**
  * 代表一个抽象的命令节点，类型T对应节点解析结果类型<br>
  */
-
-
 public interface IParamNode<T> {
 
     /**

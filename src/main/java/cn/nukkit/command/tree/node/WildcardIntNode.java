@@ -7,8 +7,6 @@ package cn.nukkit.command.tree.node;
  * <p>
  * {@code defaultV = Integer.MIN_VALUE}
  */
-
-
 public class WildcardIntNode extends ParamNode<Integer> {
     private final int defaultV;
 
