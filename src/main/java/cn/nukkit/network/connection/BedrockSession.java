@@ -57,7 +57,7 @@ public abstract class BedrockSession {
         this.logOutbound(packet);
     }
 
-    public void sendUncompressedImmediately(@NonNull DataPacket pk) {
+    public void sendNetworkSettingsPacket(@NonNull NetworkSettingsPacket pk) {
         //TODO WTF
         ByteBufAllocator alloc = this.peer.channel.alloc();
         ByteBuf buf1 = alloc.buffer(16);

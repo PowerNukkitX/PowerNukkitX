@@ -265,7 +265,7 @@ public class NetworkSession {
         return this.session.getPing();
     }
 
-    public void sendUncompressedImmediately(@NonNull DataPacket pk) {
-        this.session.sendUncompressedImmediately(pk);
+    public void sendNetworkSettingsPacket(@NonNull NetworkSettingsPacket pk) {
+        this.session.sendNetworkSettingsPacket(pk);
     }
 }
