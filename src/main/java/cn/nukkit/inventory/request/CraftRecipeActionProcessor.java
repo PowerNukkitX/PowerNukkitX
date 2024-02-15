@@ -1,6 +1,7 @@
 package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
+import cn.nukkit.event.inventory.CraftItemEvent;
 import cn.nukkit.inventory.EnchantInventory;
 import cn.nukkit.inventory.InputInventory;
 import cn.nukkit.item.Item;
@@ -60,6 +61,18 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         }
         var recipe = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetworkId());
         Input input = craft.getInput();
+        Item[][] data = input.getData();
+        ArrayList<Item> items = new ArrayList<>();
+        for (var d : data) {
+            for (var r : d) {
+                items.add(r);
+            }
+        }
+        CraftItemEvent craftItemEvent = new CraftItemEvent(player, items.toArray(Item.EMPTY_ARRAY), recipe);
+        player.getServer().getPluginManager().callEvent(craftItemEvent);
+        if (craftItemEvent.isCancelled()) {
+            return context.error();
+        }
         var matched = recipe.match(input);
         if (!matched) {
             log.warn("Mismatched recipe! Network id: {},Recipe name: {},Recipe type: {}", action.getRecipeNetworkId(), recipe.getRecipeId(), recipe.getType());
