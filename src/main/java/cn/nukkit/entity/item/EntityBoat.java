@@ -27,7 +27,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.SetEntityLinkPacket;
 import cn.nukkit.network.protocol.types.EntityLink;
 import org.jetbrains.annotations.NotNull;
 
@@ -183,7 +182,7 @@ public class EntityBoat extends EntityVehicle {
 
         addEntity.links = new EntityLink[this.passengers.size()];
         for (int i = 0; i < addEntity.links.length; i++) {
-            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.TYPE_RIDER : TYPE_PASSENGER, false, false);
+            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, false, false);
         }
 
         return addEntity;
@@ -367,7 +366,7 @@ public class EntityBoat extends EntityVehicle {
             super.updatePassengerPosition(ent);
 
             if (sendLinks) {
-                broadcastLinkPacket(ent, SetEntityLinkPacket.TYPE_RIDE);
+                broadcastLinkPacket(ent, EntityLink.Type.RIDER);
             }
         } else if (passengers.size() == 2) {
             if (!((ent = passengers.get(0)) instanceof Player)) { //swap
@@ -384,7 +383,7 @@ public class EntityBoat extends EntityVehicle {
             ent.setSeatPosition(getMountedOffset(ent).add(RIDER_PASSENGER_OFFSET));
             super.updatePassengerPosition(ent);
             if (sendLinks) {
-                broadcastLinkPacket(ent, SetEntityLinkPacket.TYPE_RIDE);
+                broadcastLinkPacket(ent, EntityLink.Type.RIDER);
             }
 
             (ent = this.passengers.get(1)).setSeatPosition(getMountedOffset(ent).add(PASSENGER_OFFSET));
@@ -392,7 +391,7 @@ public class EntityBoat extends EntityVehicle {
             super.updatePassengerPosition(ent);
 
             if (sendLinks) {
-                broadcastLinkPacket(ent, SetEntityLinkPacket.TYPE_PASSENGER);
+                broadcastLinkPacket(ent, EntityLink.Type.PASSENGER);
             }
 
             //float yawDiff = ent.getId() % 2 == 0 ? 90 : 270;
@@ -436,17 +435,17 @@ public class EntityBoat extends EntityVehicle {
     @Override
     public boolean mountEntity(Entity entity) {
         boolean player = !this.passengers.isEmpty() && this.passengers.get(0) instanceof Player;
-        byte mode = SetEntityLinkPacket.TYPE_PASSENGER;
+        EntityLink.Type mode = EntityLink.Type.PASSENGER;
 
         if (!player && (entity instanceof Player || this.passengers.isEmpty())) {
-            mode = SetEntityLinkPacket.TYPE_RIDE;
+            mode = EntityLink.Type.RIDER;
         }
 
         return super.mountEntity(entity, mode);
     }
 
     @Override
-    public boolean mountEntity(Entity entity, byte mode) {
+    public boolean mountEntity(Entity entity, EntityLink.Type mode) {
         boolean r = super.mountEntity(entity, mode);
         if (entity.riding == this) {
             updatePassengers(true);

@@ -12,6 +12,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddPlayerPacket;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
+import cn.nukkit.network.protocol.types.EntityLink;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -184,7 +186,7 @@ public class EntityHuman extends EntityHumanType {
                 SetEntityLinkPacket pkk = new SetEntityLinkPacket();
                 pkk.vehicleUniqueId = this.riding.getId();
                 pkk.riderUniqueId = this.getId();
-                pkk.type = 1;
+                pkk.type = EntityLink.Type.RIDER;
                 pkk.immediate = 1;
 
                 player.dataPacket(pkk);
