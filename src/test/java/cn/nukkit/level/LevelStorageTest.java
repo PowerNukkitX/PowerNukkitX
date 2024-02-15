@@ -4,6 +4,7 @@ import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockOakLog;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockWoodenButton;
+import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.leveldb.LevelDBProvider;
 import cn.nukkit.level.format.palette.Palette;
@@ -115,6 +116,18 @@ public class LevelStorageTest {
         IChunk newChunk = levelDBProvider.getChunk(0, 0);
         Assertions.assertNotNull(newChunk);
         Assertions.assertEquals("minecraft:wooden_button", chunk.getBlockState(0, 100, 0).getIdentifier());
+    }
+
+    @SneakyThrows
+    @Test
+    void testSaveAndReadChunkBiome() {
+        IChunk chunk = levelDBProvider.getChunk(0, 0);
+        Assertions.assertEquals(BiomeID.SAVANNA_MUTATED, chunk.getBiomeId(6, 0, 8));
+        chunk.setBiomeId(6, 0, 8, BiomeID.BASALT_DELTAS);
+        levelDBProvider.saveChunk(0, 0, chunk);
+        IChunk newChunk = levelDBProvider.getChunk(0, 0);
+        Assertions.assertNotNull(newChunk);
+        Assertions.assertEquals(BiomeID.BASALT_DELTAS, chunk.getBiomeId(6, 0, 8));
     }
 
     @Test

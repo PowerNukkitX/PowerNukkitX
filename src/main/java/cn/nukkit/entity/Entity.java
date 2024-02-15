@@ -21,11 +21,12 @@ import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.entity.data.property.FloatEntityProperty;
 import cn.nukkit.entity.data.property.IntEntityProperty;
+import cn.nukkit.entity.effect.Effect;
+import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.item.EntityArmorStand;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.mob.EntityEnderDragon;
 import cn.nukkit.entity.projectile.EntityProjectile;
-import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.block.FarmLandDecayEvent;
 import cn.nukkit.event.entity.*;
@@ -68,7 +69,6 @@ import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.PropertySyncData;
 import cn.nukkit.plugin.Plugin;
-import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.tags.ItemTags;
@@ -81,8 +81,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiPredicate;
@@ -1306,7 +1306,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public void saveNBT() {
         if (!(this instanceof Player)) {
             this.namedTag.putString("identifier", this.getIdentifier());
-            if (!this.getNameTag().equals("")) {
+            if (!this.getNameTag().isEmpty()) {
                 this.namedTag.putString("CustomName", this.getNameTag());
                 this.namedTag.putBoolean("CustomNameVisible", this.isNameTagVisible());
                 this.namedTag.putBoolean("CustomNameAlwaysVisible", this.isNameTagAlwaysVisible());

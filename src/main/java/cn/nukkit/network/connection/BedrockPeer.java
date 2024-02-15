@@ -13,7 +13,6 @@ import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -36,9 +35,7 @@ import javax.crypto.SecretKey;
 import java.net.SocketAddress;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -130,19 +127,8 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
         this.channel.writeAndFlush(new BedrockPacketWrapper(0, senderClientId, targetClientId, packet, null));
     }
 
-
-    /**
-     * Send packet immediately and call back.
-     * Note that this method is executed synchronously
-     */
-    public void sendPacketImmediatelyAndCallBack(int senderClientId, int targetClientId, DataPacket packet, Runnable callback) {
-        ChannelFuture channelFuture = this.channel.writeAndFlush(new BedrockPacketWrapper(0, senderClientId, targetClientId, packet, null));
-        try {
-            channelFuture.get(10, TimeUnit.SECONDS);
-            callback.run();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+    public void flush() {
+        this.channel.flush();
     }
 
     public void enableEncryption(@NonNull SecretKey secretKey) {

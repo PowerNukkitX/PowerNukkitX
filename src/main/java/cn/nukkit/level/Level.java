@@ -3438,7 +3438,7 @@ public class Level implements Metadatable {
                 chunk = this.forceLoadChunk(index, chunkX, chunkZ, create);
             }
             return chunk;
-        }, Server.getInstance().getComputeThreadPool());
+        }, Server.getInstance().getScheduler().getAsyncPool());
     }
 
 
@@ -3907,6 +3907,9 @@ public class Level implements Metadatable {
             for (int i = 0; i < maxIterations; i++) {
                 if (!iter.hasNext()) {
                     iter = this.unloadQueue.fastEntrySet().iterator();
+                }
+                if (!iter.hasNext()) {
+                    break;
                 }
                 var entry = iter.next();
 
