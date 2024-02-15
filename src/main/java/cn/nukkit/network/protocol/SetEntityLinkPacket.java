@@ -34,10 +34,6 @@ public class SetEntityLinkPacket extends DataPacket {
     private byte immediate;
     private boolean riderInitiated = false;
 
-    public SetEntityLinkPacket() {
-
-    }
-
     private SetEntityLinkPacket(long vehicleUniqueId, long riderUniqueId, EntityLink.Type type, byte immediate, boolean riderInitiated) {
         this.vehicleUniqueId = vehicleUniqueId; //from
         this.riderUniqueId = riderUniqueId; //to
