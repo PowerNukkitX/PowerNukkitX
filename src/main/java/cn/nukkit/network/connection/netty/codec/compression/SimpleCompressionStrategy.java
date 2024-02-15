@@ -52,4 +52,11 @@ public class SimpleCompressionStrategy implements CompressionStrategy {
     public BatchCompression getDefaultCompression() {
         return this.compression;
     }
+
+    @Override
+    public String toString() {
+        return "SimpleCompressionStrategy{" +
+                "compression=" + compression +
+                '}';
+    }
 }

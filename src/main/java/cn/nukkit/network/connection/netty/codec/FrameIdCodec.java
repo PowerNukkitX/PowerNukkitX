@@ -6,12 +6,14 @@ import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
+import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.netty.channel.raknet.RakReliability;
 import org.cloudburstmc.netty.channel.raknet.packet.RakMessage;
 
 import java.util.List;
 
 @Sharable
+@Slf4j
 public class FrameIdCodec extends MessageToMessageCodec<RakMessage, BedrockBatchWrapper> {
     public static final String NAME = "frame-id-codec";
     private final int frameId;
@@ -23,6 +25,7 @@ public class FrameIdCodec extends MessageToMessageCodec<RakMessage, BedrockBatch
     @Override
     protected void encode(ChannelHandlerContext ctx, BedrockBatchWrapper msg, List<Object> out) throws Exception {
         if (msg.getCompressed() == null) {
+            log.error("Bedrock batch was not compressed!");
             throw new IllegalStateException("Bedrock batch was not compressed");
         }
 

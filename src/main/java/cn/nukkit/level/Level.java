@@ -3908,6 +3908,9 @@ public class Level implements Metadatable {
                 if (!iter.hasNext()) {
                     iter = this.unloadQueue.fastEntrySet().iterator();
                 }
+                if (!iter.hasNext()) {
+                    break;
+                }
                 var entry = iter.next();
 
                 long index = entry.getLongKey();
