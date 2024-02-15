@@ -54,7 +54,7 @@ public class NetworkSession {
     public void onPlayerCreated(@NotNull Player player) {
         this.player = player;
         this.handle = new PlayerHandle(player);
-        this.server.addPlayer(address, player);
+        this.server.onPlayerLogin(address, player);
     }
 
     public NetworkSession(BedrockServerSession session) {
@@ -69,14 +69,6 @@ public class NetworkSession {
 
         cfg.configure(NetworkSessionState.LOGIN).onEntry(() -> this.setPacketHandler(new LoginHandler(this, (info) -> {
                     this.info = info;
-                    log.debug("Creating player");
-
-                    var player = this.createPlayer();
-                    if (player == null) {
-                        this.disconnect("Failed to crate player");
-                        return;
-                    }
-                    this.onPlayerCreated(player);
                 })))
                 .onExit(this::onServerLoginSuccess)
                 .permitIf(NetworkSessionState.ENCRYPTION, NetworkSessionState.ENCRYPTION, () -> Server.getInstance().enabledNetworkEncryption)
@@ -174,11 +166,19 @@ public class NetworkSession {
 
     private void onServerLoginSuccess() {
         log.debug("Login completed");
-        player.processLogin();
+        this.sendPlayStatus(PlayStatusPacket.LOGIN_SUCCESS, false);
     }
 
     private void onServerLoginCompletion() {
+        log.debug("Creating player");
 
+        var player = this.createPlayer();
+        if (player == null) {
+            this.disconnect("Failed to crate player");
+            return;
+        }
+        this.onPlayerCreated(player);
+        player.processLogin();
     }
 
     private void onClientSpawned() {
@@ -222,18 +222,18 @@ public class NetworkSession {
     }
 
     public void tick() {
-        for (var packet : this.session.readPackets()) {
-            try {
-                this.handleDataPacket(packet);
-            } catch (Exception e) {
-                log.error("An error occurred whilst handling {} for {}", packet.getClass().getSimpleName(), this.session.getSocketAddress().toString(), e);
-                this.disconnect("packet handling error");
-            }
-        }
-        this.session.readPackets();
-        if (this.session.getDisconnectReason() != null) {
+        if (this.session.isDisconnected()) {
             this.disconnect(this.session.getDisconnectReason());
+            return;
         }
+        this.session.pollPackets((pk) -> {
+            try {
+                this.handleDataPacket(pk);
+            } catch (Exception e) {
+                log.error("An error occurred whilst handling {} for {}", pk.getClass().getSimpleName(), this.session.getSocketAddress().toString(), e);
+                this.disconnect("packet processing error");
+            }
+        });
     }
 
     public boolean isDisconnected() {

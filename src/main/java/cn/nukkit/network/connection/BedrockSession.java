@@ -17,10 +17,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.crypto.SecretKey;
 import java.net.SocketAddress;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 public abstract class BedrockSession {
     private static final InternalLogger log = InternalLoggerFactory.getInstance(BedrockSession.class);
@@ -130,14 +129,11 @@ public abstract class BedrockSession {
         inbound.add(packet);
     }
 
-    public List<DataPacket> readPackets() {
+    public void pollPackets(Consumer<DataPacket> c) {
         DataPacket packet;
-        var list = new ArrayList<DataPacket>(this.inbound.size());
         while ((packet = this.inbound.poll()) != null) {
-            list.add(packet);
+            c.accept(packet);
         }
-        this.inbound.clear();
-        return list;
     }
 
     protected void logOutbound(DataPacket packet) {/*
@@ -172,8 +168,8 @@ public abstract class BedrockSession {
         return disconnectReason;
     }
 
-    public void setDisconnectReason(String disconnectReason) {
-        this.disconnectReason = disconnectReason;
+    public boolean isDisconnected() {
+        return this.closed.get();
     }
 
     public final void disconnect() {

@@ -18,6 +18,7 @@ import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
+import cn.nukkit.event.player.PlayerLoginEvent;
 import cn.nukkit.event.server.QueryRegenerateEvent;
 import cn.nukkit.event.server.ServerStartedEvent;
 import cn.nukkit.event.server.ServerStopEvent;
@@ -1687,14 +1688,18 @@ public class Server {
         this.sendFullPlayerListData(player);
     }
 
-    public void onPlayerLogin(Player player) {
+    public void onPlayerLogin(InetSocketAddress socketAddress, Player player) {
+        PlayerLoginEvent ev;
+        this.getPluginManager().callEvent(ev = new PlayerLoginEvent(player, "Plugin reason"));
+        if (ev.isCancelled()) {
+            player.close(player.getLeaveMessage(), ev.getKickMessage());
+            return;
+        }
+
+        this.players.put(socketAddress, player);
         if (this.sendUsageTicker > 0) {
             this.uniquePlayers.add(player.getUniqueId());
         }
-    }
-
-    public void addPlayer(InetSocketAddress socketAddress, Player player) {
-        this.players.put(socketAddress, player);
     }
 
     public void addOnlinePlayer(Player player) {

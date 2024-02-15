@@ -1175,9 +1175,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.server.saveOfflinePlayerData(this.uuid, nbt, true);
         }
 
-        this.sendPlayStatus(PlayStatusPacket.LOGIN_SUCCESS);
-        this.server.onPlayerLogin(this);
-
         ListTag<DoubleTag> posList = nbt.getList("Pos", DoubleTag.class);
 
         super.init(this.level.getChunk((int) posList.get(0).data >> 4, (int) posList.get(2).data >> 4, true), nbt);
@@ -1235,13 +1232,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * 异步登录任务成功完成后执行
      */
     protected void completeLoginSequence() {
-        PlayerLoginEvent ev;
-        this.server.getPluginManager().callEvent(ev = new PlayerLoginEvent(this, "Plugin reason"));
-        if (ev.isCancelled()) {
-            this.close(this.getLeaveMessage(), ev.getKickMessage());
-            return;
-        }
-
         Level level = null;
         if (this.namedTag.containsString("SpawnLevel")) {
             level = this.server.getLevelByName(this.namedTag.getString("SpawnLevel"));
