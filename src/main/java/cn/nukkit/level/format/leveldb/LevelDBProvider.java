@@ -64,7 +64,7 @@ public class LevelDBProvider implements LevelProvider {
     protected final LevelDat levelDat;
     protected final LevelDBStorage storage;
     protected final Level level;
-    protected final Path path;
+    protected final String path;
 
     public LevelDBProvider(Level level, String path) throws IOException {
         this.storage = CACHE.computeIfAbsent(path, p -> {
@@ -77,7 +77,7 @@ public class LevelDBProvider implements LevelProvider {
                 throw new RuntimeException(e);
             }
         });
-        this.path = Path.of(path);
+        this.path = path;
         this.level = level;
         var levelDat = readLevelDat();
         if (levelDat == null) {
@@ -100,7 +100,7 @@ public class LevelDBProvider implements LevelProvider {
                 .name(name)
                 .lastPlayed(System.currentTimeMillis() / 1000)
                 .build();
-        writeLevelDat(Path.of(path), generatorConfig.dimensionData(), levelData);
+        writeLevelDat(path, generatorConfig.dimensionData(), levelData);
     }
 
     @UsedByReflection
@@ -122,7 +122,8 @@ public class LevelDBProvider implements LevelProvider {
         return isValid;
     }
 
-    public static void writeLevelDat(Path path, DimensionData dimensionData, LevelDat levelDat) {
+    public static void writeLevelDat(String pathName, DimensionData dimensionData, LevelDat levelDat) {
+        Path path = Path.of(pathName);
         String levelDatName = "level.dat";
         if (dimensionData.getDimensionId() != 0) {
             levelDatName = "level_Dim%s.dat".formatted(dimensionData.getDimensionId());
@@ -398,7 +399,7 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
-    public synchronized void saveChunk(int X, int Z) {
+    public void saveChunk(int X, int Z) {
         IChunk chunk = this.getChunk(X, Z);
         if (chunk != null) {
             try {
@@ -532,6 +533,7 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public void close() {
+        CACHE.remove(path);
         storage.close();
     }
 
@@ -541,7 +543,7 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     public synchronized LevelDat readLevelDat() throws IOException {
-        File levelDat = path.resolve("level.dat").toFile();
+        File levelDat = Path.of(path).resolve("level.dat").toFile();
         if (!levelDat.exists()) return null;
         try (var input = new FileInputStream(levelDat)) {
             //The first 8 bytes are magic number
