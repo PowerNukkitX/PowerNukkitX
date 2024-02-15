@@ -1108,7 +1108,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (oldPlayer != null) {
             oldPlayer.saveNBT();
             nbt = oldPlayer.namedTag;
-            oldPlayer.close("", "disconnectionScreen.loggedinOtherLocation");
+            oldPlayer.close("disconnectionScreen.loggedinOtherLocation");
         } else {
             boolean existData = Server.getInstance().hasOfflinePlayerData(uuid);
             if (existData) {
@@ -3485,44 +3485,23 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     /**
      * {@code notify=true}
      *
-     * @see #close(TextContainer, String, boolean)
+     * @see #close(TextContainer, String)
      */
-    public void close(String message) {
-        this.close(message, "generic");
+    public void close(String reason) {
+        this.close(this.getLeaveMessage(), reason);
     }
 
-    /**
-     * {@code notify=true}
-     *
-     * @see #close(TextContainer, String, boolean)
-     */
     public void close(String message, String reason) {
-        this.close(message, reason, true);
-    }
-
-    /**
-     * @see #close(TextContainer, String, boolean)
-     */
-    public void close(String message, String reason, boolean notify) {
-        this.close(new TextContainer(message), reason, notify);
+        this.close(new TextContainer(message), reason);
     }
 
     /**
      * {@code reason="generic",notify=true}
      *
-     * @see #close(TextContainer, String, boolean)
+     * @see #close(TextContainer, String)
      */
     public void close(TextContainer message) {
         this.close(message, "generic");
-    }
-
-    /**
-     * notify=true
-     *
-     * @see #close(TextContainer, String, boolean)
-     */
-    public void close(TextContainer message, String reason) {
-        this.close(message, reason, true);
     }
 
     /**
@@ -3532,9 +3511,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @param message PlayerQuitEvent事件消息<br>PlayerQuitEvent message
      * @param reason  登出原因<br>Reason for logout
-     * @param notify  是否显示登出画面通知<br>Whether to display the logout screen notification
      */
-    public void close(TextContainer message, String reason, boolean notify) {
+    public void close(TextContainer message, String reason) {
         if (this.connected && !this.closed) {
             //这里必须在玩家离线之前调用，否则无法将包发过去
             var scoreboardManager = this.getServer().getScoreboardManager();
@@ -3543,7 +3521,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 scoreboardManager.beforePlayerQuit(this);
             }
 
-            if (notify && !reason.isEmpty()) {
+            if (!reason.isEmpty()) {
                 DisconnectPacket pk = new DisconnectPacket();
                 pk.message = reason;
                 this.dataPacketImmediately(pk);
@@ -3607,7 +3585,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.server.getPluginManager().unsubscribeFromPermission(Server.BROADCAST_CHANNEL_USERS, this);
             this.spawned = false;
             log.info(this.getServer().getLanguage().tr("nukkit.player.logOut",
-                    TextFormat.AQUA + (this.getName() == null ? "" : this.getName()) + TextFormat.WHITE,
+                    TextFormat.AQUA + this.getName() + TextFormat.WHITE,
                     this.getAddress(),
                     String.valueOf(this.getPort()),
                     this.getServer().getLanguage().tr(reason)));
