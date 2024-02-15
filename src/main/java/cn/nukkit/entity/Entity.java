@@ -2125,19 +2125,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @param entity The target Entity
      * @return {@code true} if the mounting successful
      */
-    @Deprecated(forRemoval = true)
-    @DeprecationDetails(since = "PNX2.0", by = "PowerNukkitX",
-            reason = "replace byte to EntityLink.Type", replaceWith = "mountEntity(Entity, EntityLink.Type)")
-    public boolean mountEntity(Entity entity, byte mode) {
-        return mountEntity(entity, EntityLink.Type.values()[mode]);
-    }
-
-    /**
-     * Mount an Entity from a/into vehicle
-     *
-     * @param entity The target Entity
-     * @return {@code true} if the mounting successful
-     */
     public boolean mountEntity(Entity entity, EntityLink.Type mode) {
         Objects.requireNonNull(entity, "The target of the mounting entity can't be null");
 
