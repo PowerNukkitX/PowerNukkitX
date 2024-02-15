@@ -1,5 +1,8 @@
 package cn.nukkit.item;
 
+import cn.nukkit.entity.EntityID;
+import cn.nukkit.registry.Registries;
+
 public class ItemZombieSpawnEgg extends ItemSpawnEgg {
     public ItemZombieSpawnEgg() {
         super(ZOMBIE_SPAWN_EGG);
@@ -7,11 +10,10 @@ public class ItemZombieSpawnEgg extends ItemSpawnEgg {
 
     @Override
     public int getEntityNetworkId() {
-        return 44;
+        return Registries.ENTITY.getEntityNetworkId(EntityID.ZOMBIE);
     }
 
     @Override
     public void setDamage(int meta) {
-
     }
 }

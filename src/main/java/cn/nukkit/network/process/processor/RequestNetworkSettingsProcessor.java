@@ -4,12 +4,13 @@ import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.NetworkSettingsPacket;
-import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.RequestNetworkSettingsPacket;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
+@Slf4j
 public class RequestNetworkSettingsProcessor extends DataPacketProcessor<RequestNetworkSettingsPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull RequestNetworkSettingsPacket pk) {
@@ -28,6 +29,7 @@ public class RequestNetworkSettingsProcessor extends DataPacketProcessor<Request
         }
 
         if (player.loggedIn) {
+            log.warn("the player {} has been loggedIn,Processor RequestNetworkSettingsProcessor", player.getName());
             return;
         }
         var settingsPacket = new NetworkSettingsPacket();
@@ -41,9 +43,9 @@ public class RequestNetworkSettingsProcessor extends DataPacketProcessor<Request
         settingsPacket.compressionThreshold = 1; // compress everything
         //In raknet version 11, the client does not enable packet compression by default,but the server will tell client what the
         //compression algorithm through NetworkSettingsPacket
-        player.getNetworkSession().sendPacketImmediatelyAndCallBack(settingsPacket, () -> {
-            playerHandle.getNetworkSession().setCompression(algorithm);//so send the NetworkSettingsPacket packet before set the session compression
-        });
+        player.getNetworkSession().flush();
+        playerHandle.getNetworkSession().setCompression(algorithm);
+        player.getNetworkSession().sendNetWorkSettingsPacket(settingsPacket);
     }
 
     @Override
