@@ -23,9 +23,9 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.RakNetInterface;
 import cn.nukkit.network.SourceInterface;
-import cn.nukkit.network.connection.BedrockServerSession;
 import cn.nukkit.network.process.NetworkSession;
 import cn.nukkit.permission.BanList;
+import cn.nukkit.player.info.PlayerInfo;
 import cn.nukkit.plugin.JavaPluginLoader;
 import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.registry.BlockRegistry;
@@ -34,6 +34,7 @@ import cn.nukkit.scheduler.ServerScheduler;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.tags.ItemTags;
+import cn.nukkit.utils.ClientChainData;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.collection.FreezableArrayManager;
 import org.apache.commons.io.FileUtils;
@@ -46,10 +47,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.UUID;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.LockSupport;
@@ -183,13 +184,18 @@ public class GameMockExtension extends MockitoExtension {
     static {
         SourceInterface sourceInterface = mock(SourceInterface.class);
         NetworkSession serverSession = mock(NetworkSession.class);
+        PlayerInfo info = new PlayerInfo(
+                "test",
+                UUID.randomUUID(),
+                null,
+                mock(ClientChainData.class)
+        );
         when(sourceInterface.getSession(any())).thenReturn(serverSession);
         doNothing().when(serverSession).sendPacketImmediately(any());
         doNothing().when(serverSession).sendDataPacket(any());
-        player = new Player(sourceInterface, 0, new InetSocketAddress("1.1.1.1", 55555));
+        player = new Player(serverSession, info);
         player.loggedIn = true;
         player.username = "test";
-        player.iusername = "test";
         player.setInventories(new Inventory[]{
                 new HumanInventory(player),
                 new HumanOffHandInventory(player),
