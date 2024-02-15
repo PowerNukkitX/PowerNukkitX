@@ -2,34 +2,18 @@ package cn.nukkit.network;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.*;
-import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
-import cn.nukkit.network.process.DataPacketManager;
-import cn.nukkit.network.protocol.*;
-import cn.nukkit.utils.*;
-import cn.powernukkitx.libdeflate.CompressionType;
-import cn.powernukkitx.libdeflate.LibdeflateCompressor;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
-import io.netty.buffer.Unpooled;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import oshi.SystemInfo;
 import oshi.hardware.NetworkIF;
 
-import javax.annotation.Nonnegative;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.ProtocolException;
-import java.util.*;
-import java.util.zip.DataFormatException;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -41,7 +25,6 @@ public class Network {
     private final LinkedList<NetWorkStatisticData> netWorkStatisticDataList = new LinkedList<>();
     private String name;
     private String subName;
-
     @Nullable
     private final List<NetworkIF> hardWareNetworkInterfaces;
 
@@ -69,8 +52,8 @@ public class Network {
     }
 
     public void resetStatistics() {
-        var upload = 0;
-        var download = 0;
+        long upload = 0;
+        long download = 0;
         if (netWorkStatisticDataList.size() > 1) {
             netWorkStatisticDataList.removeFirst();
         }

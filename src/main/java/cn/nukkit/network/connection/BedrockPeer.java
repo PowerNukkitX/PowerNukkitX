@@ -1,8 +1,14 @@
 package cn.nukkit.network.connection;
 
+import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
+import cn.nukkit.network.connection.netty.codec.FrameIdCodec;
+import cn.nukkit.network.connection.netty.codec.batch.BedrockBatchDecoder;
 import cn.nukkit.network.connection.netty.codec.compression.CompressionCodec;
 import cn.nukkit.network.connection.netty.codec.compression.CompressionStrategy;
+import cn.nukkit.network.connection.netty.codec.encryption.BedrockEncryptionDecoder;
+import cn.nukkit.network.connection.netty.codec.encryption.BedrockEncryptionEncoder;
 import cn.nukkit.network.connection.netty.initializer.BedrockChannelInitializer;
+import cn.nukkit.network.connection.util.EncryptionUtils;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
@@ -20,14 +26,9 @@ import io.netty.util.internal.logging.InternalLoggerFactory;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.cloudburstmc.netty.channel.raknet.RakChildChannel;
 import org.cloudburstmc.netty.channel.raknet.RakDisconnectReason;
-import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
-import cn.nukkit.network.connection.netty.codec.FrameIdCodec;
-import cn.nukkit.network.connection.netty.codec.batch.BedrockBatchDecoder;
-import cn.nukkit.network.connection.netty.codec.compression.SnappyCompression;
-import cn.nukkit.network.connection.netty.codec.encryption.BedrockEncryptionDecoder;
-import cn.nukkit.network.connection.netty.codec.encryption.BedrockEncryptionEncoder;
-import cn.nukkit.network.connection.util.EncryptionUtils;
+import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
 import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
 import org.cloudburstmc.netty.handler.codec.raknet.common.RakSessionCodec;
 
@@ -45,9 +46,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * It can hold one or more {@link BedrockSession}s.
  */
 public class BedrockPeer extends ChannelInboundHandlerAdapter {
-
     public static final String NAME = "bedrock-peer";
-
     private static final InternalLogger log = InternalLoggerFactory.getInstance(BedrockPeer.class);
 
     protected final Int2ObjectMap<BedrockSession> sessions = new Int2ObjectOpenHashMap<>();
@@ -286,7 +285,9 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
     }
 
     public long getPing() {
-        RakSessionCodec rakSessionCodec = this.channel.pipeline().get(RakSessionCodec.class);
+        RakServerChannel rakServerChannel = (RakServerChannel) this.channel.parent();
+        RakChildChannel childChannel = rakServerChannel.getChildChannel(getSocketAddress());
+        RakSessionCodec rakSessionCodec = childChannel.rakPipeline().get(RakSessionCodec.class);
         return rakSessionCodec.getPing();
     }
 }

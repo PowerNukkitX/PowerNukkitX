@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.DirtType;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
@@ -15,7 +14,6 @@ import javax.annotation.Nullable;
 /**
  * @author MagicDroidX (Nukkit Project), kvetinac97
  */
-
 public class BlockDirt extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(DIRT, CommonBlockProperties.DIRT_TYPE);
 
@@ -28,23 +26,25 @@ public class BlockDirt extends BlockSolid {
     }
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    @NotNull public DirtType getDirtType() {
+    @NotNull
+    public DirtType getDirtType() {
         return getPropertyValue(CommonBlockProperties.DIRT_TYPE);
     }
 
     public void setDirtType(@Nullable DirtType dirtType) throws Exception {
         setPropertyValue(CommonBlockProperties.DIRT_TYPE, dirtType);
     }
-    
+
     @Override
     public boolean canBeActivated() {
         return true;
     }
-    
+
     @Override
     public double getResistance() {
         return 2.5;
@@ -93,6 +93,6 @@ public class BlockDirt extends BlockSolid {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{new ItemBlock(Block.get(BlockID.DIRT))};
+        return new Item[]{toItem()};
     }
 }

@@ -3127,6 +3127,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         for (String msg : message.split("\n")) {
             if (!msg.trim().isEmpty() && msg.length() <= 512 && this.messageLimitCounter-- > 0) {
                 PlayerChatEvent chatEvent = new PlayerChatEvent(this, msg);
+                System.out.println(getPing());
                 this.server.getPluginManager().callEvent(chatEvent);
                 if (!chatEvent.isCancelled()) {
                     this.server.broadcastMessage(this.getServer().getLanguage().tr(chatEvent.getFormat(), new String[]{chatEvent.getPlayer().getDisplayName(), chatEvent.getMessage()}), chatEvent.getRecipients());
@@ -5073,11 +5074,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (near) {
             Inventory inventory = this.inventory;
-            if (entity instanceof EntityArrow && ((EntityArrow) entity).hadCollision) {
+            if (entity instanceof EntityArrow entityArrow && entityArrow.hadCollision) {
                 ItemArrow item = new ItemArrow();
                 if (!this.isCreative()) {
                     // Should only collect to the offhand slot if the item matches what is already there
-                    if (this.offhandInventory.getItem(0).getId() == item.getId() && this.offhandInventory.canAddItem(item)) {
+                    if (Objects.equals(this.offhandInventory.getItem(0).getId(), item.getId()) && this.offhandInventory.canAddItem(item)) {
                         inventory = this.offhandInventory;
                     } else if (!inventory.canAddItem(item)) {
                         return false;
@@ -5155,9 +5156,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
                 entity.close();
                 return true;
-            } else if (entity instanceof EntityItem) {
-                if (((EntityItem) entity).getPickupDelay() <= 0) {
-                    Item item = ((EntityItem) entity).getItem();
+            } else if (entity instanceof EntityItem entityItem) {
+                if (entityItem.getPickupDelay() <= 0) {
+                    Item item = entityItem.getItem();
 
                     if (item != null) {
                         if (!this.isCreative() && !this.inventory.canAddItem(item)) {
@@ -5165,7 +5166,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         }
 
                         InventoryPickupItemEvent ev;
-                        this.server.getPluginManager().callEvent(ev = new InventoryPickupItemEvent(inventory, (EntityItem) entity));
+                        this.server.getPluginManager().callEvent(ev = new InventoryPickupItemEvent(inventory, entityItem));
                         if (ev.isCancelled()) {
                             return false;
                         }

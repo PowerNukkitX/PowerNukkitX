@@ -25,6 +25,7 @@ import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.netty.channel.raknet.RakChannelFactory;
+import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
 import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
 
 import java.lang.reflect.Constructor;
@@ -40,7 +41,7 @@ import java.util.concurrent.ThreadFactory;
 public class RakNetInterface implements SourceInterface {
     private final Map<InetSocketAddress, BedrockServerSession> serverSessionMap = new ConcurrentHashMap<>();
     private final Map<InetAddress, Long> blockIpMap = new HashMap<>();
-    private final Channel channel;
+    private final RakServerChannel channel;
     private final Server server;
     private BedrockPong pong;
     private Network network;
@@ -72,7 +73,7 @@ public class RakNetInterface implements SourceInterface {
             eventloopgroup = new NioEventLoopGroup(nettyThreadNumber, threadFactory);
         }
         InetSocketAddress bindAddress = new InetSocketAddress(Strings.isNullOrEmpty(this.server.getIp()) ? "0.0.0.0" : this.server.getIp(), this.server.getPort());
-        this.channel = new ServerBootstrap()
+        this.channel = (RakServerChannel) new ServerBootstrap()
                 .channelFactory(RakChannelFactory.server(oclass))
                 .option(RakChannelOption.RAK_ADVERTISEMENT, pong.toByteBuf())
                 .group(eventloopgroup)
@@ -86,9 +87,19 @@ public class RakNetInterface implements SourceInterface {
                     }
 
                     @Override
+                    protected BedrockPeer createPeer(Channel channel) {
+                        return super.createPeer(channel);
+                    }
+
+                    @Override
                     public BedrockServerSession createSession0(BedrockPeer peer, int subClientId) {
                         BedrockServerSession session = new BedrockServerSession(peer, subClientId);
                         InetSocketAddress address = (InetSocketAddress) session.getSocketAddress();
+                        if (blockIpMap.containsKey(address.getAddress())) {
+                            session.disconnect("Your IP address has been blocked by this server!");
+                            RakNetInterface.this.serverSessionMap.remove(address);
+                            return session;
+                        }
                         try {
                             PlayerAsyncCreationEvent event = new PlayerAsyncCreationEvent(RakNetInterface.this, Player.class, Player.class, address);
                             RakNetInterface.this.server.getPluginManager().callEvent(event);
@@ -185,7 +196,7 @@ public class RakNetInterface implements SourceInterface {
         while (iterator.hasNext()) {
             BedrockServerSession nukkitSession = iterator.next();
             Player player = nukkitSession.getPlayer();
-            if (player!=null && player.loggedIn && nukkitSession.getDisconnectReason() != null) {
+            if (player != null && player.loggedIn && nukkitSession.getDisconnectReason() != null) {
                 player.close(player.getLeaveMessage(), nukkitSession.getDisconnectReason(), false);
                 iterator.remove();
             } else {

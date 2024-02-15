@@ -1,15 +1,13 @@
 package cn.nukkit.network.connection;
 
 import cn.nukkit.Player;
+import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import io.netty.util.internal.PlatformDependent;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
-import org.apache.logging.log4j.message.FormattedMessage;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
-import org.cloudburstmc.netty.handler.codec.raknet.common.RakSessionCodec;
 
 import javax.crypto.SecretKey;
 import java.net.SocketAddress;
