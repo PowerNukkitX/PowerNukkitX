@@ -56,8 +56,6 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
-
 /**
  * @author PikyCZ
  */
@@ -378,7 +376,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     @Override
     public boolean mountEntity(Entity entity) {
         this.getMemoryStorage().put(CoreMemoryTypes.RIDER_NAME, entity.getName());
-        super.mountEntity(entity, SetEntityLinkPacket.TYPE_RIDE);
+        super.mountEntity(entity, EntityLink.Type.RIDER);
         return true;
     }
 
@@ -516,7 +514,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         addEntity.attributes = this.attributeMap.values().toArray(Attribute.EMPTY_ARRAY);
         addEntity.links = new EntityLink[this.passengers.size()];
         for (int i = 0; i < addEntity.links.length; i++) {
-            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.TYPE_RIDER : TYPE_PASSENGER, false, false);
+            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, false, false);
         }
 
         return addEntity;

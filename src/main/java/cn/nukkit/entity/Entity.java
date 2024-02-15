@@ -87,9 +87,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiPredicate;
 
-import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
-import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_REMOVE;
-import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_RIDE;
 import static cn.nukkit.utils.Utils.dynamic;
 
 /**
@@ -1428,7 +1425,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             SetEntityLinkPacket pkk = new SetEntityLinkPacket();
             pkk.vehicleUniqueId = this.riding.getId();
             pkk.riderUniqueId = this.getId();
-            pkk.type = 1;
+            pkk.type = EntityLink.Type.RIDER;
             pkk.immediate = 1;
 
             player.dataPacket(pkk);
@@ -1456,7 +1453,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         addEntity.links = new EntityLink[this.passengers.size()];
         for (int i = 0; i < addEntity.links.length; i++) {
-            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.TYPE_RIDER : TYPE_PASSENGER, false, false);
+            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, false, false);
         }
 
         return addEntity;
@@ -2119,7 +2116,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public boolean mountEntity(Entity entity) {
-        return mountEntity(entity, TYPE_RIDE);
+        return mountEntity(entity, EntityLink.Type.RIDER);
     }
 
     /**
@@ -2128,7 +2125,18 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @param entity The target Entity
      * @return {@code true} if the mounting successful
      */
+    @Deprecated(forRemoval = true)
     public boolean mountEntity(Entity entity, byte mode) {
+        return mountEntity(entity, EntityLink.Type.values()[mode]);
+    }
+
+    /**
+     * Mount an Entity from a/into vehicle
+     *
+     * @param entity The target Entity
+     * @return {@code true} if the mounting successful
+     */
+    public boolean mountEntity(Entity entity, EntityLink.Type mode) {
         Objects.requireNonNull(entity, "The target of the mounting entity can't be null");
 
         if (isPassenger(entity) || entity.riding != null && !entity.riding.dismountEntity(entity, false)) {
@@ -2165,15 +2173,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (ev.isCancelled()) {
             int seatIndex = this.passengers.indexOf(entity);
             if (seatIndex == 0) {
-                this.broadcastLinkPacket(entity, TYPE_RIDE);
+                this.broadcastLinkPacket(entity, EntityLink.Type.RIDER);
             } else if (seatIndex != -1) {
-                this.broadcastLinkPacket(entity, TYPE_PASSENGER);
+                this.broadcastLinkPacket(entity, EntityLink.Type.PASSENGER);
             }
             return false;
         }
 
         if (sendLinks) {
-            broadcastLinkPacket(entity, TYPE_REMOVE);
+            broadcastLinkPacket(entity, EntityLink.Type.REMOVE);
         }
 
         // Refurbish the entity
@@ -2187,12 +2195,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return true;
     }
 
-    protected void broadcastLinkPacket(Entity rider, byte type) {
+    protected void broadcastLinkPacket(Entity rider, EntityLink.Type type) {
         SetEntityLinkPacket pk = new SetEntityLinkPacket();
         pk.vehicleUniqueId = getId();         // To the?
         pk.riderUniqueId = rider.getId(); // From who?
         pk.type = type;
-        pk.riderInitiated = type > 0;
+        pk.riderInitiated = type != EntityLink.Type.REMOVE;
         Server.broadcastPacket(this.hasSpawned.values(), pk);
     }
 
