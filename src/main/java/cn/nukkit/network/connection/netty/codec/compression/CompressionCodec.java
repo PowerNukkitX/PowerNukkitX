@@ -129,4 +129,9 @@ public class CompressionCodec extends MessageToMessageCodec<BedrockBatchWrapper,
     public CompressionStrategy getStrategy() {
         return this.strategy;
     }
+
+    @Override
+    public String toString() {
+        return strategy.toString();
+    }
 }

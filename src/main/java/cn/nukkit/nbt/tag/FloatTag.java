@@ -1,13 +1,13 @@
 package cn.nukkit.nbt.tag;
 
-import cn.nukkit.nbt.stream.NBTInputStream;
-import cn.nukkit.nbt.stream.NBTOutputStream;
-
-import java.io.IOException;
-
 public class FloatTag extends NumberTag<Float> {
     public float data;
+
     public FloatTag() {
+    }
+
+    public FloatTag(double data) {
+        this.data = (float) data;
     }
 
     public FloatTag(float data) {
@@ -36,7 +36,7 @@ public class FloatTag extends NumberTag<Float> {
 
     @Override
     public String toString() {
-        return "FloatTag " +  " (data: " + data + ")";
+        return "FloatTag " + " (data: " + data + ")";
     }
 
     @Override
