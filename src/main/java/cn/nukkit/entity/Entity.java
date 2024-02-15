@@ -2120,6 +2120,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @return {@code true} if the mounting successful
      */
     @Deprecated(forRemoval = true)
+    @DeprecationDetails(since = "PNX2.0", by = "PowerNukkitX",
+            reason = "replace byte to EntityLink.Type", replaceWith = "mountEntity(Entity, EntityLink.Type)")
     public boolean mountEntity(Entity entity, byte mode) {
         return mountEntity(entity, EntityLink.Type.values()[mode]);
     }
