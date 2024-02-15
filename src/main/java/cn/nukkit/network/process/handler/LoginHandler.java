@@ -102,6 +102,18 @@ public class LoginHandler extends NetworkSessionPacketHandler {
 
         this.consumer.accept(info);
 
+        if (!server.isWhitelisted((info.getUsername()).toLowerCase())) {
+            session.disconnect("Server is white-listed");
+            return;
+        }
+
+        var entry = server.getNameBans().getEntires().get(info.getUsername().toLowerCase());
+        if (entry != null) {
+            String reason = entry.getReason();
+            session.disconnect(!reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
+            return;
+        }
+
         if (server.enabledNetworkEncryption) {
             this.enableEncryption(chainData);
         } else {

@@ -251,6 +251,10 @@ public class NetworkSession {
         return address;
     }
 
+    public String getAddressString() {
+        return address.getAddress().getHostAddress();
+    }
+
     public void setAddress(InetSocketAddress address) {
         this.address = address;
     }

@@ -59,6 +59,8 @@ import cn.nukkit.permission.BanEntry;
 import cn.nukkit.permission.BanList;
 import cn.nukkit.permission.DefaultPermissions;
 import cn.nukkit.permission.Permissible;
+import cn.nukkit.player.info.PlayerInfo;
+import cn.nukkit.player.info.XboxLivePlayerInfo;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.JSPluginLoader;
 import cn.nukkit.plugin.JavaPluginLoader;
@@ -1862,20 +1864,23 @@ public class Server {
      * <p>
      * Update the UUID of the specified player name in the database, or add it if it does not exist.
      *
-     * @param player the player
+     * @param info the player info
      */
-    void updateName(Player player) {
-        byte[] nameBytes = player.getName().toLowerCase().getBytes(StandardCharsets.UTF_8);
+    void updateName(PlayerInfo info) {
+        var uniqueId = info.getUniqueId();
+        var name = info.getUsername();
+
+        byte[] nameBytes = name.toLowerCase().getBytes(StandardCharsets.UTF_8);
 
         ByteBuffer buffer = ByteBuffer.allocate(16);
-        buffer.putLong(player.getUniqueId().getMostSignificantBits());
-        buffer.putLong(player.getUniqueId().getLeastSignificantBits());
+        buffer.putLong(uniqueId.getMostSignificantBits());
+        buffer.putLong(uniqueId.getLeastSignificantBits());
         byte[] array = buffer.array();
         byte[] bytes = playerDataDB.get(array);
         if (bytes == null) {
             playerDataDB.put(nameBytes, array);
         }
-        if (player.getLoginChainData().isXboxAuthed() && this.getPropertyBoolean("xbox-auth") || !this.getPropertyBoolean("xbox-auth")) {//update
+        if (info instanceof XboxLivePlayerInfo && this.getPropertyBoolean("xbox-auth") || !this.getPropertyBoolean("xbox-auth")) {//update
             playerDataDB.put(nameBytes, array);
         }
     }
