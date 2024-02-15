@@ -1422,13 +1422,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (this.riding != null) {
             this.riding.spawnTo(player);
 
-            SetEntityLinkPacket pkk = new SetEntityLinkPacket();
-            pkk.vehicleUniqueId = this.riding.getId();
-            pkk.riderUniqueId = this.getId();
-            pkk.type = EntityLink.Type.RIDER;
-            pkk.immediate = 1;
-
-            player.dataPacket(pkk);
+            player.dataPacket(SetEntityLinkPacket.Buildeur.rider(this.riding.getId(), this.getId()));
         }
     }
 
@@ -2196,11 +2190,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     protected void broadcastLinkPacket(Entity rider, EntityLink.Type type) {
-        SetEntityLinkPacket pk = new SetEntityLinkPacket();
-        pk.vehicleUniqueId = getId();         // To the?
-        pk.riderUniqueId = rider.getId(); // From who?
-        pk.type = type;
-        pk.riderInitiated = type != EntityLink.Type.REMOVE;
+        SetEntityLinkPacket pk = SetEntityLinkPacket.Buildeur.build(getId(), rider.getId(), type, type != EntityLink.Type.REMOVE);
         Server.broadcastPacket(this.hasSpawned.values(), pk);
     }
 

@@ -8,14 +8,43 @@ import lombok.ToString;
  */
 @ToString
 public class SetEntityLinkPacket extends DataPacket {
+    public static final class Buildeur {
+        public static SetEntityLinkPacket rider(long vehicleUniqueId, long riderUniqueId) {
+            return rider(vehicleUniqueId, riderUniqueId, false);
+        }
+
+        public static SetEntityLinkPacket rider(long vehicleUniqueId, long riderUniqueId, boolean riderInitiated) {
+            return build(vehicleUniqueId, riderUniqueId, EntityLink.Type.RIDER, (byte) 1, riderInitiated);
+        }
+
+        public static SetEntityLinkPacket build(long vehicleUniqueId, long riderUniqueId, EntityLink.Type type, boolean riderInitiated) {
+            return build(vehicleUniqueId, riderUniqueId, type, (byte) 0, riderInitiated);
+        }
+
+        public static SetEntityLinkPacket build(long vehicleUniqueId, long riderUniqueId, EntityLink.Type type, byte immediate, boolean riderInitiated) {
+            return new SetEntityLinkPacket(vehicleUniqueId, riderUniqueId, type, immediate, riderInitiated);
+        }
+    }
 
     public static final int NETWORK_ID = ProtocolInfo.SET_ENTITY_LINK_PACKET;
 
-    public long vehicleUniqueId; //from
-    public long riderUniqueId; //to
-    public EntityLink.Type type;
-    public byte immediate;
-    public boolean riderInitiated = false;
+    private long vehicleUniqueId; //from
+    private long riderUniqueId; //to
+    private EntityLink.Type type;
+    private byte immediate;
+    private boolean riderInitiated = false;
+
+    public SetEntityLinkPacket() {
+
+    }
+
+    private SetEntityLinkPacket(long vehicleUniqueId, long riderUniqueId, EntityLink.Type type, byte immediate, boolean riderInitiated) {
+        this.vehicleUniqueId = vehicleUniqueId; //from
+        this.riderUniqueId = riderUniqueId; //to
+        this.type = type;
+        this.immediate = immediate;
+        this.riderInitiated = riderInitiated;
+    }
 
     @Override
     public void decode() {
