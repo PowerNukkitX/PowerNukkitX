@@ -12,8 +12,6 @@ import java.util.regex.Pattern;
 /**
  * 坐标节点基类
  */
-
-
 public abstract class PositionNode extends ParamNode<Position> {
     private final Pattern pattern;
     protected final double[] coordinate = new double[3];
@@ -27,12 +25,12 @@ public abstract class PositionNode extends ParamNode<Position> {
 
     @Override
     public <E> E get() {
-        return this.get(this.parent.parent.getSender().getPosition());
+        return this.get(parent.getParent().getSender().getPosition());
     }
 
     @SuppressWarnings("unchecked")
     public <E> E get(Position basePos) {
-        if (value == null) return null;
+        if (this.value == null) return null;
         if (this.getRelative(0)) {
             this.value.setX(this.value.x + basePos.getX());
         }
@@ -59,7 +57,7 @@ public abstract class PositionNode extends ParamNode<Position> {
         else {
             //parse
             try {
-                Location loc = this.parent.parent.getSender().getLocation();
+                Location loc = parent.getParent().getSender().getLocation();
                 for (String s : TMP) {
                     if (s.charAt(0) == '~') {
                         this.setRelative(index);
@@ -134,8 +132,6 @@ public abstract class PositionNode extends ParamNode<Position> {
             case 0 -> this.relative |= 0b0001;
             case 1 -> this.relative |= 0b0010;
             case 2 -> this.relative |= 0b0100;
-            default -> {
-            }
         }
     }
 

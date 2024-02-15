@@ -7,7 +7,7 @@ import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
-import cn.nukkit.utils.random.NukkitRandomSource;
+import cn.nukkit.utils.random.NukkitRandom;
 
 /**
  * @author Leonidius20
@@ -50,7 +50,7 @@ public class ItemChorusFruit extends ItemFood {
         if (level == null) return false;
         if (player.isInsideOfWater()) return false;
 
-        NukkitRandomSource random = new NukkitRandomSource();
+        NukkitRandom random = new NukkitRandom();
         for (int attempts = 0; attempts < 128; attempts++) {
             int x = random.nextInt(minX, maxX);
             int y = random.nextInt(minY, maxY);

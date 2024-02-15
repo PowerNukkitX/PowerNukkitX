@@ -7,7 +7,6 @@ public class CommandData implements Cloneable {
     public String description = "description";
     public CommandEnum aliases = null;
     public Map<String, CommandOverload> overloads = new HashMap<>();
-    //默认带一个NOT_CHEAT标签
     public EnumSet<Flag> flags = EnumSet.of(Flag.NOT_CHEAT);
     public int permission;
 
@@ -22,9 +21,6 @@ public class CommandData implements Cloneable {
             return new CommandData();
         }
     }
-
-    // Bit flags
-
 
     public enum Flag {
         NONE(0x00),

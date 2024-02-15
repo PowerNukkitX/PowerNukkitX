@@ -10,13 +10,13 @@ import java.util.List;
 public class CommandParameter {
     public static final CommandParameter[] EMPTY_ARRAY = new CommandParameter[0];
 
-    public String name;
-    public CommandParamType type;
-    public boolean optional;
+    public final String name;
+    public final boolean optional;
+    public final CommandParamType type;
     public List<CommandParamOption> paramOptions;
-    public CommandEnum enumData;
-    public String postFix;
-    public IParamNode<?> paramNode;
+    public final CommandEnum enumData;
+    public final String postFix;
+    public final IParamNode<?> paramNode;
 
     private CommandParameter(String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
         this(name, optional, type, enumData, postFix, null);
@@ -36,7 +36,6 @@ public class CommandParameter {
      *
      * @see #newType(String name, boolean, CommandParamType type)
      */
-
     public static CommandParameter newType(String name, CommandParamType type) {
         return newType(name, false, type);
     }
@@ -55,7 +54,6 @@ public class CommandParameter {
      *
      * @see #newType(String, boolean, CommandParamType, IParamNode, CommandParamOption...)
      */
-
     public static CommandParameter newType(String name, boolean optional, CommandParamType type) {
         return newType(name, optional, type, null, new CommandParamOption[]{});
     }
@@ -92,7 +90,6 @@ public class CommandParameter {
      *
      * @see #newEnum(String name, boolean optional, String[] values)
      */
-
     public static CommandParameter newEnum(String name, String[] values) {
         return newEnum(name, false, values);
     }
@@ -103,7 +100,6 @@ public class CommandParameter {
      *
      * @see #newEnum(String name, boolean optional, CommandEnum data)
      */
-
     public static CommandParameter newEnum(String name, boolean optional, String[] values) {
         return newEnum(name, optional, new CommandEnum(name + "Enums", values));
     }
@@ -111,8 +107,8 @@ public class CommandParameter {
     /**
      * @see #newEnum(String name, boolean optional, CommandEnum data)
      */
-    public static CommandParameter newEnum(String name, boolean optional, String[] values, boolean isSoft) {
-        return newEnum(name, optional, new CommandEnum(name + "Enums", Arrays.asList(values), isSoft));
+    public static CommandParameter newEnum(String name, boolean optional, String[] values, boolean soft) {
+        return newEnum(name, optional, new CommandEnum(name + "Enums", Arrays.asList(values), soft));
     }
 
     /**
@@ -120,7 +116,6 @@ public class CommandParameter {
      *
      * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
      */
-
     public static CommandParameter newEnum(String name, String type) {
         return newEnum(name, false, type);
     }
@@ -130,7 +125,6 @@ public class CommandParameter {
      *
      * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
      */
-
     public static CommandParameter newEnum(String name, boolean optional, String type) {
         return newEnum(name, optional, new CommandEnum(type, new ArrayList<>()));
     }
@@ -140,7 +134,6 @@ public class CommandParameter {
      *
      * @see #newEnum(String, boolean, CommandEnum)
      */
-
     public static CommandParameter newEnum(String name, CommandEnum data) {
         return newEnum(name, false, data);
     }
@@ -150,7 +143,6 @@ public class CommandParameter {
      *
      * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
      */
-
     public static CommandParameter newEnum(String name, boolean optional, CommandEnum data) {
         return new CommandParameter(name, optional, null, data, null);
     }
@@ -189,35 +181,5 @@ public class CommandParameter {
             result.paramOptions = Lists.newArrayList(options);
         }
         return result;
-    }
-
-    //此方法使用不当会崩溃客户端，请谨慎使用！
-    //todo 注释掉创建Postfix的方法直到能够稳定运行
-    /*
-    public static CommandParameter newPostfix(String name, String postfix) {
-        return newPostfix(name, false, postfix);
-    }
-
-    //此方法使用不当会崩溃客户端，请谨慎使用！
-
-    public static CommandParameter newPostfix(String name, boolean optional, String postfix) {
-        return new CommandParameter(name, optional, null, null, postfix);
-    }*/
-
-    protected static CommandParamType fromString(String param) {
-        switch (param) {
-            case "string":
-            case "stringenum":
-                return CommandParamType.STRING;
-            case "target":
-                return CommandParamType.TARGET;
-            case "blockpos":
-                return CommandParamType.POSITION;
-            case "rawtext":
-                return CommandParamType.RAWTEXT;
-            case "int":
-                return CommandParamType.INT;
-        }
-        return CommandParamType.RAWTEXT;
     }
 }

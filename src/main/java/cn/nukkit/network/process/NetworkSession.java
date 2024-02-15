@@ -16,6 +16,7 @@ import cn.nukkit.network.process.handler.ResourcePackHandler;
 import cn.nukkit.network.process.handler.SessionStartHandler;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.DisconnectPacket;
+import cn.nukkit.network.protocol.NetworkSettingsPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.player.info.PlayerInfo;
 import com.github.oxo42.stateless4j.StateMachine;
@@ -23,6 +24,7 @@ import com.github.oxo42.stateless4j.StateMachineConfig;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -263,7 +265,7 @@ public class NetworkSession {
         return this.session.getPing();
     }
 
-    public void sendPacketImmediatelyAndCallBack(DataPacket packet, Runnable callback) {
-        this.session.sendPacketImmediatelyAndCallBack(packet, callback);
+    public void sendUncompressedImmediately(@NonNull DataPacket pk) {
+        this.session.sendUncompressedImmediately(pk);
     }
 }

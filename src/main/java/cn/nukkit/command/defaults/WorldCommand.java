@@ -2,16 +2,18 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
+import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
+import cn.nukkit.level.Level;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.Map;
 
 
 public class WorldCommand extends VanillaCommand {
+    public static final CommandEnum WORLD_NAME_ENUM = new CommandEnum("world", () -> Server.getInstance().getLevels().values().stream().map(Level::getName).toList());
 
     public WorldCommand(String name) {
         super(name, "nukkit.command.world.description");
@@ -20,7 +22,7 @@ public class WorldCommand extends VanillaCommand {
         this.commandParameters.put("tp",
                 new CommandParameter[]{
                         CommandParameter.newEnum("tp", new String[]{"tp"}),
-                        CommandParameter.newType("world", CommandParamType.STRING)
+                        CommandParameter.newEnum("world", false, WORLD_NAME_ENUM)
                 });
         this.commandParameters.put("list",
                 new CommandParameter[]{

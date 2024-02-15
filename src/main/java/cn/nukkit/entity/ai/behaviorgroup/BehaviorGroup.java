@@ -11,6 +11,7 @@ import cn.nukkit.entity.ai.route.RouteFindingManager;
 import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.entity.ai.route.finder.SimpleRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
+import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import lombok.Builder;
@@ -18,7 +19,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -330,9 +338,16 @@ public class BehaviorGroup implements IBehaviorGroup {
      *
      * @return (chunkX | chunkSectionY | chunkZ)
      */
-
     protected Set<ChunkSectionVector> calPassByChunkSections(Collection<Vector3> nodes, Level level) {
-        return nodes.stream().map(vector3 -> new ChunkSectionVector(vector3.getChunkX(), ((int) vector3.y - level.getMinHeight()) >> 4, vector3.getChunkZ())).collect(Collectors.toSet());
+        return nodes.stream()
+                .map(vector3 -> {
+                    final DimensionData dimensionData = level.getDimensionData();
+                    final int chunkX = vector3.getChunkX();
+                    final int y = Math.min(dimensionData.getMaxHeight(), Math.max(dimensionData.getMinHeight(), vector3.getFloorY() - level.getMinHeight()));
+                    final int chunkZ = vector3.getChunkZ();
+                    return new ChunkSectionVector(chunkX, y >> 4, chunkZ);
+                })
+                .collect(Collectors.toSet());
     }
 
     @Override

@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+import static cn.nukkit.inventory.request.CraftRecipeActionProcessor.ENCH_RECIPE_KEY;
+
 /**
  * Allay Project 2023/12/1
  *
@@ -49,6 +51,9 @@ public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<C
         } else {
             sourceContainer.clear(slot, false);
             item = sourceContainer.getItem(slot);
+        }
+        if (context.has(ENCH_RECIPE_KEY) && (Boolean) context.get(ENCH_RECIPE_KEY) && action.getSource().getContainer() == ContainerSlotType.ENCHANTING_INPUT) {
+            return null;
         }
         return context.success(List.of(
                 new ItemStackResponseContainer(

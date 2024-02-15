@@ -1,7 +1,5 @@
 package cn.nukkit.command;
 
-import cn.nukkit.api.DeprecationDetails;
-
 import java.util.List;
 
 /**
@@ -42,20 +40,6 @@ public interface CommandMap {
      * @param object the object
      */
     void registerSimpleCommands(Object object);
-
-
-    /**
-     * 执行命令
-     *
-     * @param sender  the sender
-     * @param cmdLine the cmd line
-     * @return the int
-     */
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "use CommandMap#executeCommand")
-    default boolean dispatch(CommandSender sender, String cmdLine) {
-        return executeCommand(sender, cmdLine) > 0;
-    }
 
     /**
      * 执行命令

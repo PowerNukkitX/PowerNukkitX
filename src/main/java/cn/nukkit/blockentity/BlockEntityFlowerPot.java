@@ -21,11 +21,7 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag tag = new CompoundTag()
-                .putString("id", BlockEntity.FLOWER_POT)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+        CompoundTag tag = super.getSpawnCompound();
 
         if (namedTag.containsCompound("PlantBlock"))
             tag.putCompound("PlantBlock", namedTag.getCompound("PlantBlock"));

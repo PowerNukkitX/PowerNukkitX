@@ -67,12 +67,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag compoundTag = new CompoundTag()
-                .putString("id", BlockEntity.BARREL)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
-                .putBoolean("isMovable", this.isMovable());
+        CompoundTag compoundTag = super.getSpawnCompound().putBoolean("isMovable", this.isMovable());
         addBookshelfNbt(compoundTag);
         return compoundTag;
     }

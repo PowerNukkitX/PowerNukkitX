@@ -1,7 +1,7 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.OptionalBoolean;
 import cn.nukkit.utils.Rail;
@@ -9,12 +9,14 @@ import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DATA_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DIRECTION_6;
 
 public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
-    public static final BlockProperties PROPERTIES = new BlockProperties(GOLDEN_RAIL, RAIL_DATA_BIT, CommonBlockProperties.RAIL_DIRECTION_6);
+    public static final BlockProperties PROPERTIES = new BlockProperties(GOLDEN_RAIL, RAIL_DATA_BIT, RAIL_DIRECTION_6);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -54,9 +56,9 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
             // Avoid Block mistake
             if (wasPowered != isPowered) {
                 setActive(isPowered);
-                RedstoneComponent.updateAroundRedstone(down());
+                RedstoneComponent.updateAroundRedstone(down(), BlockFace.UP, BlockFace.DOWN);
                 if (getOrientation().isAscending()) {
-                    RedstoneComponent.updateAroundRedstone(up());
+                    RedstoneComponent.updateAroundRedstone(up(), BlockFace.UP, BlockFace.DOWN);
                 }
             }
             return type;
@@ -189,6 +191,21 @@ public class BlockGoldenRail extends BlockRail implements RedstoneComponent {
                 && base != Rail.Orientation.ASCENDING_WEST)
                 && (block.isGettingPower() || checkSurrounding(pos, relative, power + 1));
 
+    }
+
+    @Override
+    public void setRailDirection(Rail.Orientation orientation) {
+        setPropertyValue(RAIL_DIRECTION_6, orientation.metadata());
+    }
+
+    public Rail.Orientation getOrientation() {
+        return Rail.Orientation.byMetadata(getPropertyValue(RAIL_DIRECTION_6));
+    }
+
+    @Override
+    public void setActive(boolean active) {
+        setRailActive(active);
+        level.setBlock(this, this, true, true);
     }
 
     @Override

@@ -20,7 +20,7 @@ public class MessageStringNode extends ParamNode<String> {
 
     @Override
     public void fill(String arg) {
-        if (this.parent.getIndex() != this.parent.parent.getArgs().length) TMP.add(arg);
+        if (this.parent.getIndex() != parent.getParent().getArgs().length) TMP.add(arg);
         else {
             TMP.add(arg);
 
@@ -41,7 +41,7 @@ public class MessageStringNode extends ParamNode<String> {
                 if (EntitySelectorAPI.getAPI().checkValid(m)) {
                     StringJoiner join = new StringJoiner(", ");
                     try {
-                        for (Entity entity : EntitySelectorAPI.getAPI().matchEntities(this.parent.parent.getSender(), m)) {
+                        for (Entity entity : EntitySelectorAPI.getAPI().matchEntities(parent.getParent().getSender(), m)) {
                             var name = entity.getName();
                             if (name.isBlank()) name = entity.getOriginalName();
                             join.add(name);
@@ -50,7 +50,9 @@ public class MessageStringNode extends ParamNode<String> {
                         error(e.getMessage());
                     }
                     return join.toString();
-                } else return m;
+                } else {
+                    return m;
+                }
             });
         }
     }

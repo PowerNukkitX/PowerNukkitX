@@ -3,6 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.mob.EntityMob;
 import cn.nukkit.event.block.ConduitActivateEvent;
@@ -14,11 +15,8 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.tags.BlockTags;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -358,13 +356,9 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag tag = new CompoundTag()
-                .putString("id", BlockEntity.CONDUIT)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
-                .putBoolean("Active", this.active)
-                .putBoolean("isMovable", isMovable());
+        CompoundTag tag = super.getSpawnCompound()
+                .putBoolean("isMovable", this.isMovable())
+                .putBoolean("Active", this.active);
         Entity targetEntity = this.targetEntity;
         tag.putLong("Target", targetEntity != null ? targetEntity.getId() : -1);
         return tag;

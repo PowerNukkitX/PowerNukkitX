@@ -26,7 +26,6 @@ import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.Options;
@@ -44,6 +43,7 @@ import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,7 +64,7 @@ public class LevelDBProvider implements LevelProvider {
     protected final LevelDat levelDat;
     protected final LevelDBStorage storage;
     protected final Level level;
-    protected final Path path;
+    protected final String path;
 
     public LevelDBProvider(Level level, String path) throws IOException {
         this.storage = CACHE.computeIfAbsent(path, p -> {
@@ -77,7 +77,7 @@ public class LevelDBProvider implements LevelProvider {
                 throw new RuntimeException(e);
             }
         });
-        this.path = Path.of(path);
+        this.path = path;
         this.level = level;
         var levelDat = readLevelDat();
         if (levelDat == null) {
@@ -100,7 +100,7 @@ public class LevelDBProvider implements LevelProvider {
                 .name(name)
                 .lastPlayed(System.currentTimeMillis() / 1000)
                 .build();
-        writeLevelDat(Path.of(path), generatorConfig.dimensionData(), levelData);
+        writeLevelDat(path, generatorConfig.dimensionData(), levelData);
     }
 
     @UsedByReflection
@@ -122,7 +122,8 @@ public class LevelDBProvider implements LevelProvider {
         return isValid;
     }
 
-    public static void writeLevelDat(Path path, DimensionData dimensionData, LevelDat levelDat) {
+    public static void writeLevelDat(String pathName, DimensionData dimensionData, LevelDat levelDat) {
+        Path path = Path.of(pathName);
         String levelDatName = "level.dat";
         if (dimensionData.getDimensionId() != 0) {
             levelDatName = "level_Dim%s.dat".formatted(dimensionData.getDimensionId());
@@ -266,7 +267,7 @@ public class LevelDBProvider implements LevelProvider {
 
                 // Block entities
                 final Collection<BlockEntity> tiles = unsafeChunk.getBlockEntities().values();
-                final List<CompoundTag> tagList = new ObjectArrayList<>();
+                final List<CompoundTag> tagList = new ArrayList<>();
                 for (BlockEntity blockEntity : tiles) {
                     if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
                         tagList.add(blockEntitySpawnable.getSpawnCompound());
@@ -398,7 +399,7 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
-    public synchronized void saveChunk(int X, int Z) {
+    public void saveChunk(int X, int Z) {
         IChunk chunk = this.getChunk(X, Z);
         if (chunk != null) {
             try {
@@ -532,6 +533,7 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public void close() {
+        CACHE.remove(path);
         storage.close();
     }
 
@@ -541,7 +543,7 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     public synchronized LevelDat readLevelDat() throws IOException {
-        File levelDat = path.resolve("level.dat").toFile();
+        File levelDat = Path.of(path).resolve("level.dat").toFile();
         if (!levelDat.exists()) return null;
         try (var input = new FileInputStream(levelDat)) {
             //The first 8 bytes are magic number
@@ -611,6 +613,7 @@ public class LevelDBProvider implements LevelProvider {
                     .time(d.getLong("Time"))
                     .worldVersion(d.getInt("WorldVersion"))
                     .XBLBroadcastIntent(d.getInt("XBLBroadcastIntent"))
+                    .gameRules(gameRules)
                     .abilities(LevelDat.Abilities.builder()
                             .attackMobs(abilities.getBoolean("attackmobs"))
                             .attackPlayers(abilities.getBoolean("attackplayers"))

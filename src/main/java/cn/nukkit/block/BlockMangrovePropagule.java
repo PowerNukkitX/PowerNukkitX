@@ -8,13 +8,14 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectMangroveTree;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.random.NukkitRandomSource;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.utils.random.NukkitRandom;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.block.property.CommonBlockProperties.*;
+import static cn.nukkit.block.property.CommonBlockProperties.HANGING;
+import static cn.nukkit.block.property.CommonBlockProperties.PROPAGULE_STAGE;
 
 public class BlockMangrovePropagule extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
 
@@ -94,7 +95,7 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
         BlockManager chunkManager = new BlockManager(this.level);
         Vector3 vector3 = new Vector3(this.x, this.y - 1, this.z);
         var objectMangroveTree = new ObjectMangroveTree();
-        objectMangroveTree.generate(chunkManager, new NukkitRandomSource(), this);
+        objectMangroveTree.generate(chunkManager, new NukkitRandom(), this);
         StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
         this.level.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {

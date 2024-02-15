@@ -47,7 +47,6 @@ public final class DataPacketManager {
                 new PlayerInputProcessor(),
                 new MovePlayerProcessor(),
                 new PlayerAuthInputProcessor(),
-                new MoveEntityAbsoluteProcessor(),
                 new RequestAbilityProcessor(),
                 new MobEquipmentProcessor(),
                 new PlayerActionProcessor(),

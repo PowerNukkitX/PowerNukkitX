@@ -6,8 +6,6 @@ package cn.nukkit.command.tree.node;
  * <p>
  * 所有命令参数类型为{@link cn.nukkit.command.data.CommandParamType#WILDCARD_TARGET WILDCARD_TARGET}如果没有手动指定{@link IParamNode},则会默认使用这个解析
  */
-
-
 public class WildcardTargetStringNode extends StringNode {
 
     @Override

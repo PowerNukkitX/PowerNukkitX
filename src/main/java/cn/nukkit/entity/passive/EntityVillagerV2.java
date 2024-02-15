@@ -10,7 +10,7 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.FluctuateController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
-import cn.nukkit.entity.ai.executor.*;
+import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.data.IntEntityData;
@@ -24,7 +24,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.utils.random.NukkitRandomSource;
+import cn.nukkit.utils.random.NukkitRandom;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -153,7 +153,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             this.setDataProperty(new IntEntityData(DATA_VARIANT, profession));
         }
         if (!this.namedTag.contains("tradeSeed")) {
-            this.setTradeSeed(new NukkitRandomSource().nextInt(Integer.MAX_VALUE));
+            this.setTradeSeed(new NukkitRandom().nextInt(Integer.MAX_VALUE));
         } else {
             this.tradeSeed = this.namedTag.getInt("tradeSeed");
         }
@@ -380,7 +380,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                             if (id == profession.getBlockID()) {
                                 professionFound = true;
                                 if (this.profession != profession.getIndex()) {
-                                    this.setTradeSeed(new NukkitRandomSource().nextInt(Integer.MAX_VALUE));
+                                    this.setTradeSeed(new NukkitRandom().nextInt(Integer.MAX_VALUE));
                                     this.setProfession(profession.getIndex());
                                     this.applyProfession(profession);
 

@@ -45,9 +45,19 @@ public class GrindstoneInventory extends ContainerInventory implements CraftType
     @Override
     public void onClose(Player who) {
         super.onClose(who);
-        who.resetCraftingGridType();
+
+        Item[] drops = new Item[]{getFirstItem(), getSecondItem()};
+        drops = who.getInventory().addItem(drops);
+        for (Item drop : drops) {
+            if (!who.dropItem(drop)) {
+                this.getHolder().getLevel().dropItem(this.getHolder().getVector3().add(0.5, 0.5, 0.5), drop);
+            }
+        }
+
         clear(SLOT_FIRST_ITEM);
         clear(SLOT_SECOND_ITEM);
+
+        who.resetCraftingGridType();
     }
 
     public Item getFirstItem() {

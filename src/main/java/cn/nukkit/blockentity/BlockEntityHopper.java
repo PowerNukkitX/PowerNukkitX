@@ -9,9 +9,13 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.HopperSearchItemEvent;
 import cn.nukkit.event.inventory.InventoryMoveItemEvent;
-import cn.nukkit.inventory.*;
+import cn.nukkit.inventory.BrewingInventory;
+import cn.nukkit.inventory.HopperInventory;
+import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.InventoryHolder;
+import cn.nukkit.inventory.RecipeInventoryHolder;
+import cn.nukkit.inventory.SmeltingInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemPotion;
 import cn.nukkit.item.ItemSplashPotion;
 import cn.nukkit.level.Position;
@@ -160,7 +164,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
     public Item getItem(int index) {
         int i = this.getSlotIndex(index);
         if (i < 0) {
-            return new ItemBlock(Block.get(BlockID.AIR), 0, 0);
+            return Item.AIR;
         } else {
             CompoundTag data = (CompoundTag) this.namedTag.getList("Items").get(i);
             return NBTIO.getItemHelper(data);
@@ -377,7 +381,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
 
         //Fix for furnace inputs
         if (be instanceof BlockEntityFurnace furnace) {
-            FurnaceTypeInventory inventory = furnace.getInventory();
+            SmeltingInventory inventory = furnace.getInventory();
             if (inventory.isFull()) {
                 return false;
             }
@@ -567,11 +571,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag c = new CompoundTag()
-                .putString("id", BlockEntity.HOPPER)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+        CompoundTag c = super.getSpawnCompound().putBoolean("isMovable", this.isMovable());
 
         if (this.hasName()) {
             c.put("CustomName", this.namedTag.get("CustomName"));

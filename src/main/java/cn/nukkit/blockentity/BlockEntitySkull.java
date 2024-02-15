@@ -105,12 +105,8 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        return new CompoundTag()
-                .putString("id", BlockEntity.SKULL)
+        return super.getSpawnCompound()
                 .put("SkullType", this.namedTag.get("SkullType"))
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
                 .put("Rot", this.namedTag.get("Rot"))
                 .putBoolean("MouthMoving", this.mouthMoving)
                 .putInt("MouthTickCount", mouthTickCount);

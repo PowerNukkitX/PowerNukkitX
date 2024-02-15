@@ -2,6 +2,7 @@ package cn.nukkit.level.format.leveldb;
 
 import cn.nukkit.level.GameRules;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.types.GameType;
 import cn.nukkit.utils.SemVersion;
 import lombok.AccessLevel;
@@ -31,7 +32,7 @@ public class LevelDat {
     @Builder.Default
     int generator = 1;
     @Builder.Default
-    String inventoryVersion = "1.20.40";
+    String inventoryVersion = "1.20.60";
     @Builder.Default
     boolean LANBroadcast = true;
     @Builder.Default
@@ -57,7 +58,7 @@ public class LevelDat {
     @Builder.Default
     int netherScale = 8;
     @Builder.Default
-    int networkVersion = 622;
+    int networkVersion = ProtocolInfo.CURRENT_PROTOCOL;
     @Builder.Default
     int platform = 2;
     @Builder.Default

@@ -26,7 +26,7 @@ public class CommandNode extends ParamNode<String> {
             this.error("commands.generic.unknown", arg);
             return;
         }
-        if (this.parent.getIndex() != this.parent.parent.getArgs().length) {
+        if (this.parent.getIndex() != this.parent.getParent().getArgs().length) {
             first = false;
             TMP.add(arg);
         } else {

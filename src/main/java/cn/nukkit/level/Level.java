@@ -33,7 +33,6 @@ import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.weather.LightningStrikeEvent;
 import cn.nukkit.inventory.BlockInventoryHolder;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemBucket;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.ChunkSection;
@@ -2353,7 +2352,7 @@ public class Level implements Metadatable {
         int dropExp = target.getDropExp();
 
         if (item == null) {
-            item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
+            item = Item.AIR;
         }
 
         if (!target.isBreakable(vector, layer, face, item, player)) {
@@ -2581,14 +2580,14 @@ public class Level implements Metadatable {
                 if (ev.getAction() == Action.RIGHT_CLICK_BLOCK && target.canBeActivated() && target.onActivate(item, player, face, fx, fy, fz)) {
                     if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
                         addSound(player, Sound.RANDOM_BREAK);
-                        item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
+                        item = Item.AIR;
                     }
                     return item;
                 }
 
                 if (item.canBeActivated() && item.onActivate(this, player, block, target, face, fx, fy, fz)) {
                     if (item.getCount() <= 0) {
-                        item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
+                        item = Item.AIR;
                         return item;
                     }
                 }
@@ -2604,7 +2603,7 @@ public class Level implements Metadatable {
             }
         } else if (!target.isAir() && target.canBeActivated() && target.onActivate(item, null, face, fx, fy, fz)) {
             if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
-                item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
+                item = Item.AIR;
             }
             return item;
         }
@@ -2724,7 +2723,7 @@ public class Level implements Metadatable {
         }
 
         if (item.getCount() <= 0) {
-            item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
+            item = Item.AIR;
         }
 
         this.getVibrationManager().callVibrationEvent(new VibrationEvent(player, block.add(0.5, 0.5, 0.5), VibrationType.BLOCK_PLACE));
@@ -3439,7 +3438,7 @@ public class Level implements Metadatable {
                 chunk = this.forceLoadChunk(index, chunkX, chunkZ, create);
             }
             return chunk;
-        }, Server.getInstance().getComputeThreadPool());
+        }, Server.getInstance().getScheduler().getAsyncPool());
     }
 
 
@@ -3455,7 +3454,7 @@ public class Level implements Metadatable {
         return forceLoadChunk(index, x, z, generate) != null;
     }
 
-    private synchronized IChunk forceLoadChunk(long index, int x, int z, boolean generate) {
+    private IChunk forceLoadChunk(long index, int x, int z, boolean generate) {
         IChunk chunk = this.requireProvider().getChunk(x, z, generate);
         if (chunk == null) {
             if (generate) {
@@ -3908,6 +3907,9 @@ public class Level implements Metadatable {
             for (int i = 0; i < maxIterations; i++) {
                 if (!iter.hasNext()) {
                     iter = this.unloadQueue.fastEntrySet().iterator();
+                }
+                if (!iter.hasNext()) {
+                    break;
                 }
                 var entry = iter.next();
 

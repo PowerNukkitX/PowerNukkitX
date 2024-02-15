@@ -1,8 +1,6 @@
 package cn.nukkit.inventory;
 
-
 import cn.nukkit.blockentity.BlockEntityBrewingStand;
-import cn.nukkit.blockentity.BlockEntityInventoryHolder;
 import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.item.Item;
 

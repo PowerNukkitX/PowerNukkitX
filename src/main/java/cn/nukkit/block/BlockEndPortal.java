@@ -58,7 +58,7 @@ public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<B
 
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
-        return false;
+        return player != null && player.isCreative();
     }
 
     @Override

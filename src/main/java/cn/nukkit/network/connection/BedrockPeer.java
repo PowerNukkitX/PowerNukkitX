@@ -1,13 +1,18 @@
 package cn.nukkit.network.connection;
 
+import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
+import cn.nukkit.network.connection.netty.codec.FrameIdCodec;
+import cn.nukkit.network.connection.netty.codec.batch.BedrockBatchDecoder;
 import cn.nukkit.network.connection.netty.codec.compression.CompressionCodec;
 import cn.nukkit.network.connection.netty.codec.compression.CompressionStrategy;
+import cn.nukkit.network.connection.netty.codec.encryption.BedrockEncryptionDecoder;
+import cn.nukkit.network.connection.netty.codec.encryption.BedrockEncryptionEncoder;
 import cn.nukkit.network.connection.netty.initializer.BedrockChannelInitializer;
+import cn.nukkit.network.connection.util.EncryptionUtils;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -20,13 +25,9 @@ import io.netty.util.internal.logging.InternalLoggerFactory;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.cloudburstmc.netty.channel.raknet.RakChildChannel;
 import org.cloudburstmc.netty.channel.raknet.RakDisconnectReason;
-import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
-import cn.nukkit.network.connection.netty.codec.FrameIdCodec;
-import cn.nukkit.network.connection.netty.codec.batch.BedrockBatchDecoder;
-import cn.nukkit.network.connection.netty.codec.encryption.BedrockEncryptionDecoder;
-import cn.nukkit.network.connection.netty.codec.encryption.BedrockEncryptionEncoder;
-import cn.nukkit.network.connection.util.EncryptionUtils;
+import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
 import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
 import org.cloudburstmc.netty.handler.codec.raknet.common.RakSessionCodec;
 
@@ -34,9 +35,7 @@ import javax.crypto.SecretKey;
 import java.net.SocketAddress;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -44,9 +43,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * It can hold one or more {@link BedrockSession}s.
  */
 public class BedrockPeer extends ChannelInboundHandlerAdapter {
-
     public static final String NAME = "bedrock-peer";
-
     private static final InternalLogger log = InternalLoggerFactory.getInstance(BedrockPeer.class);
 
 
@@ -135,19 +132,8 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
         this.channel.writeAndFlush(new BedrockPacketWrapper(0, senderClientId, targetClientId, packet, null));
     }
 
-
-    /**
-     * Send packet immediately and call back.
-     * Note that this method is executed synchronously
-     */
-    public void sendPacketImmediatelyAndCallBack(int senderClientId, int targetClientId, DataPacket packet, Runnable callback) {
-        ChannelFuture channelFuture = this.channel.writeAndFlush(new BedrockPacketWrapper(0, senderClientId, targetClientId, packet, null));
-        try {
-            channelFuture.get(10, TimeUnit.SECONDS);
-            callback.run();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+    public void flush() {
+        this.channel.flush();
     }
 
     public void enableEncryption(@NonNull SecretKey secretKey) {
@@ -290,7 +276,9 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
     }
 
     public long getPing() {
-        RakSessionCodec rakSessionCodec = this.channel.pipeline().get(RakSessionCodec.class);
+        RakServerChannel rakServerChannel = (RakServerChannel) this.channel.parent();
+        RakChildChannel childChannel = rakServerChannel.getChildChannel(getSocketAddress());
+        RakSessionCodec rakSessionCodec = childChannel.rakPipeline().get(RakSessionCodec.class);
         return rakSessionCodec.getPing();
     }
 }

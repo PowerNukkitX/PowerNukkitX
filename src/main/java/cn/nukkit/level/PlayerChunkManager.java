@@ -144,7 +144,9 @@ public final class PlayerChunkManager {
                     chunkLoadingQueue.remove(chunkHash);
                     player.level.registerChunkLoader(player, chunkX, chunkZ, false);
                     chunkReadyToSend.put(chunkHash, chunk);
-                } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
+                } catch (InterruptedException | ExecutionException ignore) {
+                } catch (TimeoutException e) {
+                    log.warn("read chunk timeout {} {}", chunkX, chunkZ);
                 }
             } else {
                 chunkSendQueue.enqueue(chunkHash);

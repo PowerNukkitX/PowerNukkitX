@@ -9,8 +9,6 @@ import java.util.HashSet;
  * <p>
  * 所有命令参数类型为{@link cn.nukkit.command.data.CommandParamType#OPERATOR OPERATOR}如果没有手动指定{@link IParamNode},则会默认使用这个解析
  */
-
-
 public class OperatorStringNode extends StringNode {
     private static final HashSet<String> OPERATOR = Sets.newHashSet("+=", "-=", "*=", "/=", "%=", "=", "<", ">", "><");
 

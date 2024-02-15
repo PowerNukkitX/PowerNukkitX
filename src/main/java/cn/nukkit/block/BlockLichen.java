@@ -6,7 +6,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.random.NukkitRandomSource;
+import cn.nukkit.utils.random.NukkitRandom;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 
 public abstract class BlockLichen extends BlockTransparent {
-    public static final NukkitRandomSource RANDOM = new NukkitRandomSource();
+    public static final NukkitRandom RANDOM = new NukkitRandom();
 
     public BlockLichen(BlockState blockState) {
         super(blockState);

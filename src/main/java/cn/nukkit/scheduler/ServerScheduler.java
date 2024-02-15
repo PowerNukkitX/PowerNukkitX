@@ -5,6 +5,7 @@ import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.PluginException;
 import cn.nukkit.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayDeque;
 import java.util.Map;
@@ -18,9 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Slf4j
 public class ServerScheduler {
-
     public static int WORKERS = 4;
-
     private final AsyncPool asyncPool;
 
     private final Queue<TaskHandler> pending;
@@ -400,5 +399,10 @@ public class ServerScheduler {
 
     public void close() {
         this.asyncPool.shutdownNow();
+    }
+
+    @ApiStatus.Internal
+    public AsyncPool getAsyncPool() {
+        return asyncPool;
     }
 }

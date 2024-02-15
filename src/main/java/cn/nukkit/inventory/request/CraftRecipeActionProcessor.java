@@ -1,7 +1,12 @@
 package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
+import cn.nukkit.event.inventory.CraftItemEvent;
+import cn.nukkit.inventory.EnchantInventory;
 import cn.nukkit.inventory.InputInventory;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.network.protocol.PlayerEnchantOptionsPacket;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ConsumeAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.CraftRecipeAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestAction;
@@ -16,14 +21,38 @@ import java.util.List;
 /**
  * Allay Project 2023/12/1
  *
- * @author daoge_cmd
+ * @author daoge_cmd | Cool_Loong
  */
 @Slf4j
 public class CraftRecipeActionProcessor implements ItemStackRequestActionProcessor<CraftRecipeAction> {
     public static final String RECIPE_DATA_KEY = "recipe";
+    public static final String ENCH_RECIPE_KEY = "ench_recipe";
 
     @Override
     public ActionResponse handle(CraftRecipeAction action, Player player, ItemStackRequestContext context) {
+        //handle ench recipe
+        if (action.getRecipeNetworkId() >= PlayerEnchantOptionsPacket.ENCH_RECIPEID) {
+            EnchantInventory inventory = (EnchantInventory) player.getTopWindow().get();
+            PlayerEnchantOptionsPacket.EnchantOptionData enchantOptionData = PlayerEnchantOptionsPacket.RECIPE_MAP.get(action.getRecipeNetworkId());
+            if (enchantOptionData == null) {
+                log.error("cant find enchant recipe from netId " + action.getRecipeNetworkId());
+                return context.error();
+            }
+            Item first = inventory.getFirst();
+            if (first.isNull()) {
+                log.error("cant find enchant input!");
+                return context.error();
+            }
+            Item item = first.clone().autoAssignStackNetworkId();
+            List<Enchantment> enchantments = enchantOptionData.enchantments();
+            item.addEnchantment(enchantments.toArray(Enchantment.EMPTY_ARRAY));
+            player.getCreativeOutputInventory().setItem(item);
+            PlayerEnchantOptionsPacket.RECIPE_MAP.remove(action.getRecipeNetworkId());
+            player.regenerateEnchantmentSeed();
+            context.put(ENCH_RECIPE_KEY, true);
+            return null;
+        }
+
         InputInventory craft;
         if (player.getTopWindow().isPresent() && player.getTopWindow().get() instanceof InputInventory input) {
             craft = input;
@@ -32,6 +61,18 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         }
         var recipe = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetworkId());
         Input input = craft.getInput();
+        Item[][] data = input.getData();
+        ArrayList<Item> items = new ArrayList<>();
+        for (var d : data) {
+            for (var r : d) {
+                items.add(r);
+            }
+        }
+        CraftItemEvent craftItemEvent = new CraftItemEvent(player, items.toArray(Item.EMPTY_ARRAY), recipe);
+        player.getServer().getPluginManager().callEvent(craftItemEvent);
+        if (craftItemEvent.isCancelled()) {
+            return context.error();
+        }
         var matched = recipe.match(input);
         if (!matched) {
             log.warn("Mismatched recipe! Network id: {},Recipe name: {},Recipe type: {}", action.getRecipeNetworkId(), recipe.getRecipeId(), recipe.getType());

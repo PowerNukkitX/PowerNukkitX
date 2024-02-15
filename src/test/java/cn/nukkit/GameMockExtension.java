@@ -14,10 +14,10 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.level.DimensionEnum;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.updater.Updater;
 import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.leveldb.LevelDBProvider;
+import cn.nukkit.level.updater.Updater;
 import cn.nukkit.level.updater.block.BlockStateUpdaterBase;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.Network;
@@ -56,7 +56,6 @@ import java.util.concurrent.locks.LockSupport;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -118,11 +117,10 @@ public class GameMockExtension extends MockitoExtension {
 
         when(banList.getEntires()).thenReturn(new LinkedHashMap<>());
         when(server.getIPBans()).thenReturn(banList);
-        when(server.getLanguage()).thenReturn(baseLang);
+        BaseLang lang = new BaseLang("eng", "src/main/resources/language");
+        when(server.getLanguage()).thenReturn(lang);
         when(server.getApiVersion()).thenReturn("1.0.0");
 
-        doCallRealMethod().when(baseLang).tr(anyString());
-        when(baseLang.tr(anyString(), anyString())).thenAnswer(t -> "mock tr " + t.getArgument(0));
         when(simpleCommandMap.getCommands()).thenReturn(Collections.EMPTY_MAP);
         pluginManager = new PluginManager(server, simpleCommandMap);
         pluginManager.registerInterface(JavaPluginLoader.class);

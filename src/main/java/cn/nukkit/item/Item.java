@@ -1176,10 +1176,6 @@ public abstract class Item implements Cloneable, ItemID {
                 + (this.hasCompoundTag() ? " tags:0x" + Binary.bytesToHexString(this.getCompoundTag()) : "");
     }
 
-    public int getDestroySpeed(Block block, Player player) {
-        return 1;
-    }
-
     /**
      * 玩家使用一个物品交互时会调用这个方法
      * <p>
@@ -1233,7 +1229,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return equal
      */
     public final boolean equalsExact(Item other) {
-        return this.equals(other, true, true) && this.count == other.count;
+        return this.equals(other, true, true, true) && this.count == other.count;
     }
 
     @Override
@@ -1245,18 +1241,26 @@ public abstract class Item implements Cloneable, ItemID {
         return equals(item, checkDamage, true);
     }
 
+    public final boolean equals(Item item, boolean checkDamage, boolean checkCompound) {
+        return equals(item, checkDamage, true, checkCompound);
+    }
+
     /**
-     * 判断两个物品是否相等
+     * if two items are equal
      *
-     * @param item          要比较的物品
-     * @param checkDamage   是否检查数据值
-     * @param checkCompound 是否检查NBT
+     * @param item          the item
+     * @param checkDamage   Whether to check the data values
+     * @param checkBlock    Whether to check the item blockstate
+     * @param checkCompound Whether to check the NBT
      * @return the boolean
      */
-    public final boolean equals(Item item, boolean checkDamage, boolean checkCompound) {
+    public final boolean equals(Item item, boolean checkDamage, boolean checkBlock, boolean checkCompound) {
         if (!Objects.equals(this.getId(), item.getId())) return false;
-        if (checkDamage && this.hasMeta && item.hasMeta) {
+        if (checkDamage && this.hasMeta() && item.hasMeta()) {
             if (this.getDamage() != item.getDamage()) return false;
+        }
+        if (checkBlock && this.isBlock() && item.isBlock()) {
+            if (this.getBlockUnsafe().getBlockState() != item.getBlockUnsafe().getBlockState()) return false;
         }
         if (checkCompound && this.hasCompoundTag() && item.hasCompoundTag()) {
             return Objects.equals(this.getNamedTag(), item.getNamedTag());

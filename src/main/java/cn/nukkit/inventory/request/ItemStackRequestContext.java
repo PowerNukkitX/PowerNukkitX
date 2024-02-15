@@ -26,6 +26,10 @@ public class ItemStackRequestContext {
         extraData.put(key, value);
     }
 
+    public boolean has(String key) {
+        return extraData.containsKey(key);
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T get(String key) {
         return (T) extraData.get(key);

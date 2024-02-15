@@ -1,12 +1,12 @@
 package cn.nukkit;
 
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.BlockComposter;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.ConsoleCommandSender;
 import cn.nukkit.command.PluginIdentifiableCommand;
 import cn.nukkit.command.SimpleCommandMap;
+import cn.nukkit.command.defaults.WorldCommand;
 import cn.nukkit.command.function.FunctionManager;
 import cn.nukkit.compression.ZlibChooser;
 import cn.nukkit.console.NukkitConsole;
@@ -29,7 +29,6 @@ import cn.nukkit.level.DimensionEnum;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.updater.Updater;
 import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.LevelProviderManager;
@@ -37,6 +36,7 @@ import cn.nukkit.level.format.leveldb.LevelDBProvider;
 import cn.nukkit.level.tickingarea.manager.SimpleTickingAreaManager;
 import cn.nukkit.level.tickingarea.manager.TickingAreaManager;
 import cn.nukkit.level.tickingarea.storage.JSONTickingAreaStorage;
+import cn.nukkit.level.updater.Updater;
 import cn.nukkit.level.updater.block.BlockStateUpdaterBase;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.metadata.EntityMetadataStore;
@@ -83,7 +83,6 @@ import cn.nukkit.scheduler.Task;
 import cn.nukkit.scoreboard.manager.IScoreboardManager;
 import cn.nukkit.scoreboard.manager.ScoreboardManager;
 import cn.nukkit.scoreboard.storage.JSONScoreboardStorage;
-import cn.nukkit.utils.SparkInstaller;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.tags.ItemTags;
@@ -152,7 +151,6 @@ import java.util.stream.Stream;
  */
 @Slf4j
 public class Server {
-
     public static final String BROADCAST_CHANNEL_ADMINISTRATIVE = "nukkit.broadcast.admin";
     public static final String BROADCAST_CHANNEL_USERS = "nukkit.broadcast.user";
 
@@ -801,6 +799,41 @@ public class Server {
 
         LevelProviderManager.addProvider("leveldb", LevelDBProvider.class);
 
+        loadLevels();
+
+        this.getTickingAreaManager().loadAllTickingArea();
+
+        this.properties.save(true);
+
+        if (this.getDefaultLevel() == null) {
+            log.error(this.getLanguage().tr("nukkit.level.defaultError"));
+            this.forceShutdown();
+
+            return;
+        }
+
+        if (this.getConfig("ticks-per.autosave", 6000) > 0) {
+            this.autoSaveTicks = this.getConfig("ticks-per.autosave", 6000);
+        }
+
+        this.enablePlugins(PluginLoadOrder.POSTWORLD);
+
+        EntityProperty.buildPacket();
+        EntityProperty.buildPlayerProperty();
+
+        if (this.getConfig("settings.download-spark", false)) {
+            SparkInstaller.initSpark(this);
+        }
+
+        if (/*Nukkit.DEBUG < 2 && */!Boolean.parseBoolean(System.getProperty("disableWatchdog", "false"))) {
+            this.watchdog = new Watchdog(this, 60000);
+            this.watchdog.start();
+        }
+        System.runFinalization();
+        this.start();
+    }
+
+    private void loadLevels() {
         File file = new File(this.getDataPath() + "/worlds");
         if (!file.isDirectory()) throw new RuntimeException("worlds isn't directory");
         //load all world from `worlds` folder
@@ -837,37 +870,6 @@ public class Server {
             }
             this.setDefaultLevel(this.getLevelByName(levelFolder + " Dim0"));
         }
-
-        this.getTickingAreaManager().loadAllTickingArea();
-
-        this.properties.save(true);
-
-        if (this.getDefaultLevel() == null) {
-            log.error(this.getLanguage().tr("nukkit.level.defaultError"));
-            this.forceShutdown();
-
-            return;
-        }
-
-        if (this.getConfig("ticks-per.autosave", 6000) > 0) {
-            this.autoSaveTicks = this.getConfig("ticks-per.autosave", 6000);
-        }
-
-        this.enablePlugins(PluginLoadOrder.POSTWORLD);
-
-        EntityProperty.buildPacket();
-        EntityProperty.buildPlayerProperty();
-
-        if (this.getConfig("settings.download-spark", false)) {
-            SparkInstaller.initSpark(this);
-        }
-
-        if (/*Nukkit.DEBUG < 2 && */!Boolean.parseBoolean(System.getProperty("disableWatchdog", "false"))) {
-            this.watchdog = new Watchdog(this, 60000);
-            this.watchdog.start();
-        }
-        System.runFinalization();
-        this.start();
     }
 
     // region lifecycle & ticking - 生命周期与游戏刻
@@ -1462,12 +1464,6 @@ public class Server {
         }
 
         return recipients.size();
-    }
-
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "use Server#executeCommand")
-    public boolean dispatchCommand(CommandSender sender, String commandLine) throws ServerException {
-        return this.executeCommand(sender, commandLine) > 0;
     }
 
     /**
@@ -2439,6 +2435,9 @@ public class Server {
             level.initLevel();
             this.getPluginManager().callEvent(new LevelLoadEvent(level));
             level.setTickRate(this.baseTickRate);
+        }
+        if (tickCounter != 0) {
+            WorldCommand.WORLD_NAME_ENUM.updateSoftEnum();
         }
         return true;
     }

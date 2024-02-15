@@ -156,12 +156,8 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag compoundTag = new CompoundTag()
-                .putString("id", BlockEntity.CAULDRON)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
-                .putBoolean("isMovable", isMovable())
+        CompoundTag compoundTag = super.getSpawnCompound()
+                .putBoolean("isMovable", this.isMovable())
                 .putList("Items", new ListTag<>())
                 .putShort("PotionId", (short) namedTag.getShort("PotionId"))
                 .putShort("PotionType", (short) namedTag.getShort("PotionType"));

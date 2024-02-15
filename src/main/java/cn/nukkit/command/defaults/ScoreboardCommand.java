@@ -7,6 +7,7 @@ import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamOption;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.data.GenericParameter;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.command.tree.ParamList;
@@ -37,7 +38,7 @@ public class ScoreboardCommand extends VanillaCommand {
         this.commandParameters.put("objectives-add", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardObjectivesCategory", List.of("objectives"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardAddAction", List.of("add"), false)),
-                OBJECTIVES.get(false),
+                GenericParameter.OBJECTIVES.get(false),
                 CommandParameter.newEnum("criteria", false, new CommandEnum("ScoreboardCriteria", List.of("dummy"), false)),
                 CommandParameter.newType("displayName", true, CommandParamType.STRING)
         });
@@ -48,26 +49,26 @@ public class ScoreboardCommand extends VanillaCommand {
         this.commandParameters.put("objectives-remove", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardObjectivesCategory", List.of("objectives"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardRemoveAction", List.of("remove"), false)),
-                OBJECTIVES.get(false),
+                GenericParameter.OBJECTIVES.get(false),
         });
         this.commandParameters.put("objectives-setdisplay-list-sidebar", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardObjectivesCategory", List.of("objectives"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardSetDisplayAction", List.of("setdisplay"), false)),
                 CommandParameter.newEnum("displaySlot", false, new CommandEnum("ScoreboardDisplaySlotSortable", List.of("list", "sidebar"), false), CommandParamOption.SUPPRESS_ENUM_AUTOCOMPLETION),
-                OBJECTIVES.get(true),
+                GenericParameter.OBJECTIVES.get(true),
                 CommandParameter.newEnum("sortOrder", true, new CommandEnum("ScoreboardSortOrder", List.of("ascending", "descending"), false), CommandParamOption.SUPPRESS_ENUM_AUTOCOMPLETION),
         });
         this.commandParameters.put("objectives-setdisplay-belowname", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardObjectivesCategory", List.of("objectives"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardSetDisplayAction", List.of("setdisplay"), false)),
                 CommandParameter.newEnum("displaySlot", false, new CommandEnum("ScoreboardDisplaySlotNonSortable", List.of("belowname"), false)),
-                OBJECTIVES.get(true)
+                GenericParameter.OBJECTIVES.get(true)
         });
         this.commandParameters.put("players-add-remove-set", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardPlayersCategory", List.of("players"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardPlayersNumAction", List.of("add", "remove", "set"), false)),
                 CommandParameter.newType("player", false, CommandParamType.WILDCARD_TARGET),//allow *
-                TARGET_OBJECTIVES.get(false),
+                GenericParameter.TARGET_OBJECTIVES.get(false),
                 CommandParameter.newType("count", CommandParamType.INT)
         });
         this.commandParameters.put("players-list", new CommandParameter[]{
@@ -79,16 +80,16 @@ public class ScoreboardCommand extends VanillaCommand {
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardPlayersCategory", List.of("players"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardOperationAction", List.of("operation"), false)),
                 CommandParameter.newType("targetName", CommandParamType.WILDCARD_TARGET),//allow *
-                TARGET_OBJECTIVES.get(false),
+                GenericParameter.TARGET_OBJECTIVES.get(false),
                 CommandParameter.newType("operation", CommandParamType.OPERATOR),
                 CommandParameter.newType("selector", CommandParamType.WILDCARD_TARGET),
-                OBJECTIVES.get(false),
+                GenericParameter.OBJECTIVES.get(false),
         });
         this.commandParameters.put("players-random", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardPlayersCategory", List.of("players"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardRandomAction", List.of("random"), false)),
                 CommandParameter.newType("player", false, CommandParamType.WILDCARD_TARGET),//allow *
-                OBJECTIVES.get(false),
+                GenericParameter.OBJECTIVES.get(false),
                 CommandParameter.newType("min", false, CommandParamType.WILDCARD_INT, new WildcardIntNode(Integer.MIN_VALUE)),
                 CommandParameter.newType("max", false, CommandParamType.WILDCARD_INT, new WildcardIntNode(Integer.MAX_VALUE))
         });
@@ -96,13 +97,13 @@ public class ScoreboardCommand extends VanillaCommand {
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardPlayersCategory", List.of("players"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardResetAction", List.of("reset"), false)),
                 CommandParameter.newType("player", false, CommandParamType.WILDCARD_TARGET),//allow *
-                OBJECTIVES.get(true),
+                GenericParameter.OBJECTIVES.get(true),
         });
         this.commandParameters.put("players-test", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardPlayersCategory", List.of("players"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardTestAction", List.of("test"), false)),
                 CommandParameter.newType("player", false, CommandParamType.WILDCARD_TARGET),//allow *
-                OBJECTIVES.get(false),
+                GenericParameter.OBJECTIVES.get(false),
                 CommandParameter.newType("min", false, CommandParamType.WILDCARD_INT, new WildcardIntNode(Integer.MIN_VALUE)),
                 CommandParameter.newType("max", true, CommandParamType.WILDCARD_INT, new WildcardIntNode(Integer.MAX_VALUE))
         });

@@ -1,7 +1,8 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.inventory.InventoryType;
+import cn.nukkit.inventory.SmeltingInventory;
+import cn.nukkit.inventory.SmokerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -35,8 +36,8 @@ public class BlockEntitySmoker extends BlockEntityFurnace {
     }
 
     @Override
-    protected InventoryType getInventoryType() {
-        return InventoryType.SMOKER;
+    protected SmeltingInventory createInventory() {
+        return new SmokerInventory(this);
     }
 
     @Override

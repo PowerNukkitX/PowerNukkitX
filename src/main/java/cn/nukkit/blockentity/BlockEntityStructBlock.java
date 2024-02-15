@@ -136,7 +136,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
 
     @Override
     public CompoundTag getSpawnCompound() {
-        return getDefaultCompound(this, BlockEntity.STRUCTURE_BLOCK)
+        return super.getSpawnCompound()
                 .putByte(TAG_ANIMATION_MODE, this.animationMode.ordinal())
                 .putFloat(TAG_ANIMATION_SECONDS, this.animationSeconds)
                 .putInt(TAG_DATA, this.data.ordinal())

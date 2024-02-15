@@ -1,7 +1,7 @@
 package cn.nukkit.lang;
 
 import cn.nukkit.GameMockExtension;
-import cn.nukkit.plugin.InternalPlugin;
+import cn.nukkit.Server;
 import cn.nukkit.plugin.PluginBase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,5 +27,6 @@ public class LangTest {
         Assertions.assertEquals("hhdaosidhja", i18n.tr(LangCode.en_US, "test1", "hhdaosidhja"));
         Assertions.assertEquals("hello \n world", i18n.tr(LangCode.en_US, "test2"));
         Assertions.assertEquals("你好 \n 世界", i18n.tr(LangCode.zh_CN, "test2"));
+        Assertions.assertEquals("Hello \n World", Server.getInstance().getLanguage().tr("Hello \n World"));
     }
 }

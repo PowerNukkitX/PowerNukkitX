@@ -60,7 +60,7 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
 
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
-        return false;
+        return player != null && player.isCreative();
     }
 
     @Override

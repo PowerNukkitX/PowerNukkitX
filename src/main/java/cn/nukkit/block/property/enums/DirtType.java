@@ -9,5 +9,4 @@ package cn.nukkit.block.property.enums;
 public enum DirtType {
     NORMAL,
     COARSE
-
 }

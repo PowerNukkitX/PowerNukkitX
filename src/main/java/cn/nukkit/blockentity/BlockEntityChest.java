@@ -3,8 +3,8 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.inventory.BaseInventory;
-import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.ChestInventory;
+import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.DoubleChestInventory;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
@@ -161,29 +161,17 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag c;
+        CompoundTag spawnCompound = super.getSpawnCompound()
+                .putBoolean("isMovable", this.isMovable());
         if (this.isPaired()) {
-            c = new CompoundTag()
-                    .putString("id", BlockEntity.CHEST)
-                    .putInt("x", (int) this.x)
-                    .putInt("y", (int) this.y)
-                    .putInt("z", (int) this.z)
-                    .putBoolean("pairlead", this.namedTag.getBoolean("pairlead"))
+            spawnCompound.putBoolean("pairlead", this.namedTag.getBoolean("pairlead"))
                     .putInt("pairx", this.namedTag.getInt("pairx"))
                     .putInt("pairz", this.namedTag.getInt("pairz"));
-        } else {
-            c = new CompoundTag()
-                    .putString("id", BlockEntity.CHEST)
-                    .putInt("x", (int) this.x)
-                    .putInt("y", (int) this.y)
-                    .putInt("z", (int) this.z);
         }
-
         if (this.hasName()) {
-            c.put("CustomName", this.namedTag.get("CustomName"));
+            spawnCompound.put("CustomName", this.namedTag.get("CustomName"));
         }
-
-        return c;
+        return spawnCompound;
     }
 
     @Override

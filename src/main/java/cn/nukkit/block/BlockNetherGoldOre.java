@@ -4,7 +4,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.utils.random.NukkitRandomSource;
+import cn.nukkit.utils.random.NukkitRandom;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -47,7 +47,7 @@ public class BlockNetherGoldOre extends BlockGoldOre {
             fortune = enchantment.getLevel();
         }
 
-        NukkitRandomSource nukkitRandom = new NukkitRandomSource();
+        NukkitRandom nukkitRandom = new NukkitRandom();
         int count = nukkitRandom.nextInt(2, 6);
         switch (fortune) {
             case 0 -> {

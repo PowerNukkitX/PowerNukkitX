@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.item.Item;
@@ -21,7 +22,6 @@ import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
-import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.BlockColor;
@@ -154,7 +154,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @NotNull
     public static Block getWithState(String id, BlockState blockState) {
-        Block block = get(blockState);
+        Block block = get(id);
         block.setPropertyValues(blockState.getBlockPropertyValues());
         return block;
     }

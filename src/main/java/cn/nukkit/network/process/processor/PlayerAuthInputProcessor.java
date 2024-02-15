@@ -6,7 +6,13 @@ import cn.nukkit.PlayerHandle;
 import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.entity.item.EntityMinecartAbstract;
 import cn.nukkit.entity.passive.EntityHorse;
-import cn.nukkit.event.player.*;
+import cn.nukkit.event.player.PlayerJumpEvent;
+import cn.nukkit.event.player.PlayerKickEvent;
+import cn.nukkit.event.player.PlayerToggleFlightEvent;
+import cn.nukkit.event.player.PlayerToggleGlideEvent;
+import cn.nukkit.event.player.PlayerToggleSneakEvent;
+import cn.nukkit.event.player.PlayerToggleSprintEvent;
+import cn.nukkit.event.player.PlayerToggleSwimEvent;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
@@ -105,7 +111,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.setSneaking(false);
             }
         }
-        if(player.getAdventureSettings().get(AdventureSettings.Type.FLYING)) {
+        if (player.getAdventureSettings().get(AdventureSettings.Type.FLYING)) {
             if (pk.getInputData().contains(AuthInputAction.SNEAKING)) {
                 player.setFlySneaking(true);
             } else player.setFlySneaking(false);
@@ -191,12 +197,19 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             }
         } else if (player.riding instanceof EntityBoat boat && pk.getInputData().contains(AuthInputAction.IN_CLIENT_PREDICTED_IN_VEHICLE)) {
             if (player.riding.getId() == pk.getPredictedVehicle() && player.riding.isControlling(player)) {
-                if (player.temporalVector.setComponents(pk.getPosition().getX(), pk.getPosition().getY(), pk.getPosition().getZ()).distanceSquared(player.riding) < 100) {
-                    boat.onInput(pk.getPosition().getX(), pk.getPosition().getY(), pk.getPosition().getZ(), pk.getHeadYaw());
+                var distance = clientLoc.distanceSquared(player);
+                var updatePosition = (float) Math.sqrt(distance) > 0.1f;
+                var updateRotation = (float) Math.abs(player.getPitch() - clientLoc.pitch) > 1
+                        || (float) Math.abs(player.getYaw() - clientLoc.yaw) > 1
+                        || (float) Math.abs(player.getHeadYaw() - clientLoc.headYaw) > 1;
+                if (updatePosition || updateRotation) {
+                    Location boatLoc = clientLoc.add(0, playerHandle.getBaseOffset(), 0);
+                    boat.onInput(boatLoc);
+                    playerHandle.handleMovement(clientLoc);
                 }
+                return;
             }
         } else if (playerHandle.player.riding instanceof EntityHorse entityHorse) {
-            //为了保证玩家和马位置同步，骑马时不使用移动队列处理
             var distance = clientLoc.distanceSquared(player);
             var updatePosition = (float) Math.sqrt(distance) > 0.1f;
             var updateRotation = (float) Math.abs(player.getPitch() - clientLoc.pitch) > 1

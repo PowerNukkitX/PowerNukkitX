@@ -38,4 +38,9 @@ public class ItemTurtleHelmet extends Item {
     public int getToughness() {
         return 2;
     }
+
+    @Override
+    public int getEnchantAbility() {
+        return 9;
+    }
 }

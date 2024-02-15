@@ -1,10 +1,8 @@
 package cn.nukkit.item.enchantment;
 
-import cn.nukkit.api.*;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.enchantment.bow.EnchantmentBowFlame;
 import cn.nukkit.item.enchantment.bow.EnchantmentBowInfinity;
 import cn.nukkit.item.enchantment.bow.EnchantmentBowKnockback;
@@ -18,7 +16,11 @@ import cn.nukkit.item.enchantment.damage.EnchantmentDamageSmite;
 import cn.nukkit.item.enchantment.loot.EnchantmentLootDigging;
 import cn.nukkit.item.enchantment.loot.EnchantmentLootFishing;
 import cn.nukkit.item.enchantment.loot.EnchantmentLootWeapon;
-import cn.nukkit.item.enchantment.protection.*;
+import cn.nukkit.item.enchantment.protection.EnchantmentProtectionAll;
+import cn.nukkit.item.enchantment.protection.EnchantmentProtectionExplosion;
+import cn.nukkit.item.enchantment.protection.EnchantmentProtectionFall;
+import cn.nukkit.item.enchantment.protection.EnchantmentProtectionFire;
+import cn.nukkit.item.enchantment.protection.EnchantmentProtectionProjectile;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentChanneling;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentImpaling;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentLoyalty;
@@ -43,13 +45,23 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.rmi.registry.Registry;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import static cn.nukkit.utils.Utils.dynamic;
-import static org.objectweb.asm.Opcodes.*;
+import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
+import static org.objectweb.asm.Opcodes.ACC_SUPER;
+import static org.objectweb.asm.Opcodes.ALOAD;
+import static org.objectweb.asm.Opcodes.INVOKESPECIAL;
+import static org.objectweb.asm.Opcodes.PUTFIELD;
+import static org.objectweb.asm.Opcodes.RETURN;
+import static org.objectweb.asm.Opcodes.V17;
 
 /**
  * An enchantment that can be to applied to an item.
@@ -61,7 +73,7 @@ public abstract class Enchantment implements Cloneable {
     public static final Enchantment[] EMPTY_ARRAY = new Enchantment[0];
     public static final int CUSTOM_ENCHANTMENT_ID = dynamic(256);
     protected static Enchantment[] enchantments;
-    protected static Map<Identifier, Enchantment> customEnchantments = new Object2ObjectLinkedOpenHashMap<>();
+    protected static Map<Identifier, Enchantment> namedEnchantments = new Object2ObjectLinkedOpenHashMap<>();
 
     public static final int ID_PROTECTION_ALL = 0;
     public static final String NAME_PROTECTION_ALL = "protection";
@@ -181,44 +193,44 @@ public abstract class Enchantment implements Cloneable {
         enchantments[ID_SOUL_SPEED] = new EnchantmentSoulSpeed();
         enchantments[ID_SWIFT_SNEAK] = new EnchantmentSwiftSneak();
         //custom
-        customEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_ALL), enchantments[0]);
-        customEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_FIRE), enchantments[1]);
-        customEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_FALL), enchantments[2]);
-        customEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_EXPLOSION), enchantments[3]);
-        customEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_PROJECTILE), enchantments[4]);
-        customEnchantments.put(new Identifier("minecraft", NAME_THORNS), enchantments[5]);
-        customEnchantments.put(new Identifier("minecraft", NAME_WATER_BREATHING), enchantments[6]);
-        customEnchantments.put(new Identifier("minecraft", NAME_WATER_WORKER), enchantments[7]);
-        customEnchantments.put(new Identifier("minecraft", NAME_WATER_WALKER), enchantments[8]);
-        customEnchantments.put(new Identifier("minecraft", NAME_DAMAGE_ALL), enchantments[9]);
-        customEnchantments.put(new Identifier("minecraft", NAME_DAMAGE_SMITE), enchantments[10]);
-        customEnchantments.put(new Identifier("minecraft", NAME_DAMAGE_ARTHROPODS), enchantments[11]);
-        customEnchantments.put(new Identifier("minecraft", NAME_KNOCKBACK), enchantments[12]);
-        customEnchantments.put(new Identifier("minecraft", NAME_FIRE_ASPECT), enchantments[13]);
-        customEnchantments.put(new Identifier("minecraft", NAME_LOOTING), enchantments[14]);
-        customEnchantments.put(new Identifier("minecraft", NAME_EFFICIENCY), enchantments[15]);
-        customEnchantments.put(new Identifier("minecraft", NAME_SILK_TOUCH), enchantments[16]);
-        customEnchantments.put(new Identifier("minecraft", NAME_DURABILITY), enchantments[17]);
-        customEnchantments.put(new Identifier("minecraft", NAME_FORTUNE_DIGGING), enchantments[18]);
-        customEnchantments.put(new Identifier("minecraft", NAME_BOW_POWER), enchantments[19]);
-        customEnchantments.put(new Identifier("minecraft", NAME_BOW_KNOCKBACK), enchantments[20]);
-        customEnchantments.put(new Identifier("minecraft", NAME_BOW_FLAME), enchantments[21]);
-        customEnchantments.put(new Identifier("minecraft", NAME_BOW_INFINITY), enchantments[22]);
-        customEnchantments.put(new Identifier("minecraft", NAME_FORTUNE_FISHING), enchantments[23]);
-        customEnchantments.put(new Identifier("minecraft", NAME_LURE), enchantments[24]);
-        customEnchantments.put(new Identifier("minecraft", NAME_FROST_WALKER), enchantments[25]);
-        customEnchantments.put(new Identifier("minecraft", NAME_MENDING), enchantments[26]);
-        customEnchantments.put(new Identifier("minecraft", NAME_BINDING_CURSE), enchantments[27]);
-        customEnchantments.put(new Identifier("minecraft", NAME_VANISHING_CURSE), enchantments[28]);
-        customEnchantments.put(new Identifier("minecraft", NAME_TRIDENT_IMPALING), enchantments[29]);
-        customEnchantments.put(new Identifier("minecraft", NAME_TRIDENT_RIPTIDE), enchantments[30]);
-        customEnchantments.put(new Identifier("minecraft", NAME_TRIDENT_LOYALTY), enchantments[31]);
-        customEnchantments.put(new Identifier("minecraft", NAME_TRIDENT_CHANNELING), enchantments[32]);
-        customEnchantments.put(new Identifier("minecraft", NAME_CROSSBOW_MULTISHOT), enchantments[33]);
-        customEnchantments.put(new Identifier("minecraft", NAME_CROSSBOW_PIERCING), enchantments[34]);
-        customEnchantments.put(new Identifier("minecraft", NAME_CROSSBOW_QUICK_CHARGE), enchantments[35]);
-        customEnchantments.put(new Identifier("minecraft", NAME_SOUL_SPEED), enchantments[36]);
-        customEnchantments.put(new Identifier("minecraft", NAME_SWIFT_SNEAK), enchantments[37]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_ALL), enchantments[0]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_FIRE), enchantments[1]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_FALL), enchantments[2]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_EXPLOSION), enchantments[3]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_PROJECTILE), enchantments[4]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_THORNS), enchantments[5]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_WATER_BREATHING), enchantments[6]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_WATER_WORKER), enchantments[7]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_WATER_WALKER), enchantments[8]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_DAMAGE_ALL), enchantments[9]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_DAMAGE_SMITE), enchantments[10]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_DAMAGE_ARTHROPODS), enchantments[11]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_KNOCKBACK), enchantments[12]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_FIRE_ASPECT), enchantments[13]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_LOOTING), enchantments[14]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_EFFICIENCY), enchantments[15]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_SILK_TOUCH), enchantments[16]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_DURABILITY), enchantments[17]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_FORTUNE_DIGGING), enchantments[18]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_BOW_POWER), enchantments[19]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_BOW_KNOCKBACK), enchantments[20]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_BOW_FLAME), enchantments[21]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_BOW_INFINITY), enchantments[22]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_FORTUNE_FISHING), enchantments[23]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_LURE), enchantments[24]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_FROST_WALKER), enchantments[25]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_MENDING), enchantments[26]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_BINDING_CURSE), enchantments[27]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_VANISHING_CURSE), enchantments[28]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_TRIDENT_IMPALING), enchantments[29]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_TRIDENT_RIPTIDE), enchantments[30]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_TRIDENT_LOYALTY), enchantments[31]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_TRIDENT_CHANNELING), enchantments[32]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_CROSSBOW_MULTISHOT), enchantments[33]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_CROSSBOW_PIERCING), enchantments[34]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_CROSSBOW_QUICK_CHARGE), enchantments[35]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_SOUL_SPEED), enchantments[36]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_SWIFT_SNEAK), enchantments[37]);
     }
 
     private static String getLevelString(int level) {
@@ -240,13 +252,13 @@ public abstract class Enchantment implements Cloneable {
     public static OK<?> register(Enchantment enchantment, boolean registerItem) {
         Objects.requireNonNull(enchantment);
         Objects.requireNonNull(enchantment.getIdentifier());
-        if (customEnchantments.containsKey(enchantment.getIdentifier())) {
+        if (namedEnchantments.containsKey(enchantment.getIdentifier())) {
             return new OK<>(false, "This identifier already exists,register custom enchantment failed!");
         }
         if (enchantment.getIdentifier().getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
             return new OK<>(false, "Please do not use the reserved namespace `minecraft` !");
         }
-        customEnchantments.put(enchantment.getIdentifier(), enchantment);
+        namedEnchantments.put(enchantment.getIdentifier(), enchantment);
         if (registerItem) {
             return registerCustomEnchantBook(enchantment);
         }
@@ -382,12 +394,12 @@ public abstract class Enchantment implements Cloneable {
      */
     public static Enchantment getEnchantment(String name) {
         if (Identifier.isValid(name)) {
-            return customEnchantments.get(Identifier.tryParse(name)).clone();
-        } else return customEnchantments.get(new Identifier(Identifier.DEFAULT_NAMESPACE, name)).clone();
+            return namedEnchantments.get(Identifier.tryParse(name)).clone();
+        } else return namedEnchantments.get(new Identifier(Identifier.DEFAULT_NAMESPACE, name)).clone();
     }
 
     public static Enchantment getEnchantment(@NotNull Identifier name) {
-        return customEnchantments.get(name).clone();
+        return namedEnchantments.get(name).clone();
     }
 
     /**
@@ -397,7 +409,7 @@ public abstract class Enchantment implements Cloneable {
      * @return An array with the enchantment objects, the array may contain null objects but is very unlikely.
      */
     public static Enchantment[] getEnchantments() {
-        return customEnchantments.values().toArray(EMPTY_ARRAY);
+        return namedEnchantments.values().toArray(EMPTY_ARRAY);
     }
 
     /**
@@ -406,11 +418,11 @@ public abstract class Enchantment implements Cloneable {
      * @return The objects can be modified without affecting the registry and the collection will not have null values.
      */
     public static Collection<Enchantment> getRegisteredEnchantments() {
-        return new ArrayList<>(customEnchantments.values());
+        return new ArrayList<>(namedEnchantments.values());
     }
 
     public static Map<String, Integer> getEnchantmentName2IDMap() {
-        return customEnchantments.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().getId()));
+        return namedEnchantments.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().getId()));
     }
 
     /**
@@ -418,28 +430,23 @@ public abstract class Enchantment implements Cloneable {
      */
     public final int id;
     private final Rarity rarity;
-
     /**
      * The group of objects that this enchantment can be applied.
      */
     @NotNull
     public EnchantmentType type;
-
     /**
      * The level of this enchantment. Starting from {@code 1}.
      */
     protected int level = 1;
-
     /**
      * The name visible by the player, this is used in conjunction with {@link #getName()},
      * unless modified with an override, the getter will automatically add
      * "%enchantment." as prefix to grab the translation key
      */
     protected final String name;
-
     @Nullable
     protected final Identifier identifier;
-
 
     /**
      * Constructs this instance using the given data and with level 1.
@@ -449,7 +456,6 @@ public abstract class Enchantment implements Cloneable {
      * @param rarity How rare this enchantment is
      * @param type   Where the enchantment can be applied
      */
-
     protected Enchantment(int id, String name, Rarity rarity, @NotNull EnchantmentType type) {
         this.identifier = null;
         this.id = id;
@@ -457,7 +463,6 @@ public abstract class Enchantment implements Cloneable {
         this.type = type;
         this.name = name;
     }
-
     /**
      * 自定义附魔使用的构造函数
      *
@@ -564,13 +569,6 @@ public abstract class Enchantment implements Cloneable {
      */
     public int getMaxLevel() {
         return 1;
-    }
-
-    /**
-     * The maximum level that can be obtained using an enchanting table.
-     */
-    public int getMaxEnchantableLevel() {
-        return getMaxLevel();
     }
 
     /**

@@ -1,8 +1,15 @@
 package cn.nukkit.network.connection;
 
+import cn.nukkit.network.connection.netty.BedrockBatchWrapper;
 import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
+import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec;
 import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.NetworkSettingsPacket;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
+import cn.nukkit.utils.ByteBufVarInt;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.CompositeByteBuf;
 import io.netty.util.internal.PlatformDependent;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
@@ -36,6 +43,10 @@ public abstract class BedrockSession {
         }
     }
 
+    public void flush() {
+        this.peer.flush();
+    }
+
     public void sendPacket(@NonNull DataPacket packet) {
         this.peer.sendPacket(this.subClientId, 0, packet);
         this.logOutbound(packet);
@@ -46,9 +57,32 @@ public abstract class BedrockSession {
         this.logOutbound(packet);
     }
 
-    public void sendPacketImmediatelyAndCallBack(@NonNull DataPacket packet, Runnable runnable) {
-        this.peer.sendPacketImmediatelyAndCallBack(this.subClientId, 0, packet, runnable);
-        this.logOutbound(packet);
+    public void sendUncompressedImmediately(@NonNull DataPacket pk) {
+        //TODO WTF
+        ByteBufAllocator alloc = this.peer.channel.alloc();
+        ByteBuf buf1 = alloc.buffer(16);
+        ByteBuf header = alloc.ioBuffer(5);
+        BedrockPacketWrapper msg = new BedrockPacketWrapper(0, subClientId, 0, pk, null);
+        try {
+            BedrockPacketCodec bedrockPacketCodec = this.peer.channel.pipeline().get(BedrockPacketCodec.class);
+            DataPacket packet = msg.getPacket();
+            msg.setPacketId(packet.pid());
+            bedrockPacketCodec.encodeHeader(buf1, msg);
+            packet.tryEncode();
+            buf1.writeBytes(packet.getBuffer());
+
+            BedrockBatchWrapper batch = BedrockBatchWrapper.newInstance();
+            CompositeByteBuf buf2 = alloc.compositeDirectBuffer(2);
+            ByteBufVarInt.writeUnsignedInt(header, buf1.readableBytes());
+            buf2.addComponent(true, header);
+            buf2.addComponent(true, buf1);
+            batch.setCompressed(buf2);
+            this.peer.channel.writeAndFlush(batch);
+        } catch (Throwable t) {
+            log.error("Error send", t);
+        } finally {
+            msg.release();
+        }
     }
 
     public void flushSendBuffer() {
