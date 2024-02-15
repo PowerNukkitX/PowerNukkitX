@@ -19,6 +19,7 @@ import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.ClientChainData;
 import cn.nukkit.utils.TextFormat;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.InetSocketAddress;
@@ -27,6 +28,7 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
     /**
      * Regular expression for validating player name. Allows only: Number nicknames, letter nicknames, number and letters nicknames, nicknames with underscores, nicknames with space in the middle
@@ -37,6 +39,7 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull LoginPacket pk) {
         Server server = playerHandle.player.getServer();
         if (playerHandle.player.loggedIn) {
+            log.warn("the player {} has been loggedIn,Processor LoginProcessor", playerHandle.player.getName());
             return;
         }
 

@@ -35,8 +35,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
-
 /**
  * @author yescallop
  * @since 2016/2/13

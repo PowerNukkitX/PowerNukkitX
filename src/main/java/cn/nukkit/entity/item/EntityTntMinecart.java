@@ -16,6 +16,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.utils.MinecartType;
 import org.jetbrains.annotations.NotNull;
 
@@ -154,7 +155,7 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
     }
 
     @Override
-    public boolean mountEntity(Entity entity, byte mode) {
+    public boolean mountEntity(Entity entity, EntityLink.Type mode) {
         return false;
     }
 }
