@@ -10,13 +10,13 @@ import java.util.List;
 public class CommandParameter {
     public static final CommandParameter[] EMPTY_ARRAY = new CommandParameter[0];
 
-    private final String name;
-    private final boolean optional;
-    private final CommandParamType type;
-    private List<CommandParamOption> paramOptions;
-    private final CommandEnum enumData;
-    private final String postFix;
-    private final IParamNode<?> paramNode;
+    public final String name;
+    public final boolean optional;
+    public final CommandParamType type;
+    public List<CommandParamOption> paramOptions;
+    public final CommandEnum enumData;
+    public final String postFix;
+    public final IParamNode<?> paramNode;
 
     private CommandParameter(String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
         this(name, optional, type, enumData, postFix, null);
@@ -31,40 +31,11 @@ public class CommandParameter {
         this.paramNode = paramNode;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public CommandParamType getType() {
-        return type;
-    }
-
-    public boolean isOptional() {
-        return optional;
-    }
-
-    public List<CommandParamOption> getParamOptions() {
-        return paramOptions;
-    }
-
-    public CommandEnum getEnumData() {
-        return enumData;
-    }
-
-    public String getPostFix() {
-        return postFix;
-    }
-
-    public IParamNode<?> getParamNode() {
-        return paramNode;
-    }
-
     /**
      * optional = false
      *
      * @see #newType(String name, boolean, CommandParamType type)
      */
-
     public static CommandParameter newType(String name, CommandParamType type) {
         return newType(name, false, type);
     }
@@ -83,7 +54,6 @@ public class CommandParameter {
      *
      * @see #newType(String, boolean, CommandParamType, IParamNode, CommandParamOption...)
      */
-
     public static CommandParameter newType(String name, boolean optional, CommandParamType type) {
         return newType(name, optional, type, null, new CommandParamOption[]{});
     }
@@ -120,7 +90,6 @@ public class CommandParameter {
      *
      * @see #newEnum(String name, boolean optional, String[] values)
      */
-
     public static CommandParameter newEnum(String name, String[] values) {
         return newEnum(name, false, values);
     }
@@ -131,7 +100,6 @@ public class CommandParameter {
      *
      * @see #newEnum(String name, boolean optional, CommandEnum data)
      */
-
     public static CommandParameter newEnum(String name, boolean optional, String[] values) {
         return newEnum(name, optional, new CommandEnum(name + "Enums", values));
     }
@@ -148,7 +116,6 @@ public class CommandParameter {
      *
      * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
      */
-
     public static CommandParameter newEnum(String name, String type) {
         return newEnum(name, false, type);
     }
@@ -158,7 +125,6 @@ public class CommandParameter {
      *
      * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
      */
-
     public static CommandParameter newEnum(String name, boolean optional, String type) {
         return newEnum(name, optional, new CommandEnum(type, new ArrayList<>()));
     }
@@ -168,7 +134,6 @@ public class CommandParameter {
      *
      * @see #newEnum(String, boolean, CommandEnum)
      */
-
     public static CommandParameter newEnum(String name, CommandEnum data) {
         return newEnum(name, false, data);
     }
@@ -178,7 +143,6 @@ public class CommandParameter {
      *
      * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
      */
-
     public static CommandParameter newEnum(String name, boolean optional, CommandEnum data) {
         return new CommandParameter(name, optional, null, data, null);
     }

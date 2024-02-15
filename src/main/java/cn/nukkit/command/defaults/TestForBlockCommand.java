@@ -21,7 +21,7 @@ public class TestForBlockCommand extends VanillaCommand {
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
                 CommandParameter.newType("position", false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("tileName", false, CommandEnum.BLOCK),
+                CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
                 CommandParameter.newType("dataValue", true, CommandParamType.INT)
         });
         this.enableParamTree();

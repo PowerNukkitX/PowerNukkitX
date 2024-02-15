@@ -25,7 +25,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         this.commandParameters.put("entity", new CommandParameter[]{
                 CommandParameter.newEnum("entity", new String[]{"entity"}),
                 CommandParameter.newEnum("option", Arrays.stream(EntityAI.DebugOption.values()).map(option -> option.name().toLowerCase()).toList().toArray(new String[0])),
-                CommandParameter.newEnum("value", false, CommandEnum.BOOLEAN)
+                CommandParameter.newEnum("value", false, CommandEnum.ENUM_BOOLEAN)
         });
         this.commandParameters.put("rendermap", new CommandParameter[]{
                 CommandParameter.newEnum("rendermap", new String[]{"rendermap"}),

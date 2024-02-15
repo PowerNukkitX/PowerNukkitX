@@ -84,13 +84,13 @@ public class AvailableCommandsPacket extends DataPacket {
 
         // Get all enum values
         for (var entry : commands.entrySet()) {
-            var data = entry.getValue().getVersions().get(0);
-            if (data.getAliases() != null) {
-                enumValuesSet.addAll(data.getAliases().getValues());
-                enumsSet.add(data.getAliases());
+            var data = entry.getValue().versions.get(0);
+            if (data.aliases != null) {
+                enumValuesSet.addAll(data.aliases.getValues());
+                enumsSet.add(data.aliases);
             }
 
-            for (ChainedSubCommandData subcommand : data.getSubcommands()) {
+            for (ChainedSubCommandData subcommand : data.subcommands) {
                 if (subCommandData.contains(subcommand)) {
                     continue;
                 }
@@ -107,9 +107,9 @@ public class AvailableCommandsPacket extends DataPacket {
                 }
             }
 
-            for (CommandParameter[] overload : data.getOverloads().values().stream().map(o -> o.getInput().getParameters()).toList()) {
+            for (CommandParameter[] overload : data.overloads.values().stream().map(o -> o.input.parameters).toList()) {
                 for (CommandParameter parameter : overload) {
-                    CommandEnum commandEnumData = parameter.getEnumData();
+                    CommandEnum commandEnumData = parameter.enumData;
                     if (commandEnumData != null) {
                         if (commandEnumData.isSoft()) {
                             softEnumsSet.add(commandEnumData);
@@ -119,7 +119,7 @@ public class AvailableCommandsPacket extends DataPacket {
                         }
                     }
 
-                    String postfix = parameter.getPostFix();
+                    String postfix = parameter.postFix;
                     if (postfix != null) {
                         postfixSet.add(postfix);
                     }
@@ -221,17 +221,17 @@ public class AvailableCommandsPacket extends DataPacket {
     }
 
     private void writeCommand(Map.Entry<String, CommandDataVersions> commandEntry, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes, List<ChainedSubCommandData> subCommands) {
-        var commandData = commandEntry.getValue().getVersions().get(0);
+        var commandData = commandEntry.getValue().versions.get(0);
         this.putString(commandEntry.getKey());
-        this.putString(commandData.getDescription());
+        this.putString(commandData.description);
         int flags = 0;
-        for (CommandData.Flag flag : commandData.getFlags()) {
-            flags |= flag.getBit();
+        for (CommandData.Flag flag : commandData.flags) {
+            flags |= flag.bit;
         }
         this.putLShort(flags);
-        this.putByte((byte) commandData.getPermission());
+        this.putByte((byte) commandData.permission);
 
-        this.putLInt(commandData.getAliases() == null ? -1 : enums.indexOf(commandData.getAliases()));
+        this.putLInt(commandData.aliases == null ? -1 : enums.indexOf(commandData.aliases));
 
         this.putUnsignedVarInt(subCommands.size());
         for (ChainedSubCommandData subcommand : subCommands) {
@@ -240,41 +240,41 @@ public class AvailableCommandsPacket extends DataPacket {
             this.putLShort(index);
         }
 
-        Collection<CommandOverload> overloads = commandData.getOverloads().values();
+        Collection<CommandOverload> overloads = commandData.overloads.values();
         this.putUnsignedVarInt(overloads.size());
         for (CommandOverload overload : overloads) {
-            this.putBoolean(overload.isChaining());
-            this.putUnsignedVarInt(overload.getInput().getParameters().length);
-            for (CommandParameter param : overload.getInput().getParameters()) {
+            this.putBoolean(overload.chaining);
+            this.putUnsignedVarInt(overload.input.parameters.length);
+            for (CommandParameter param : overload.input.parameters) {
                 this.writeParameter(param, enums, softEnums, postFixes);
             }
         }
     }
 
     private void writeParameter(CommandParameter param, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes) {
-        this.putString(param.getName());
+        this.putString(param.name);
 
         int index;
-        if (param.getPostFix() != null) {
-            index = postFixes.indexOf(param.getPostFix()) | ARG_FLAG_POSTFIX;
-        } else if (param.getEnumData() != null) {
-            if (param.getEnumData().isSoft()) {
-                index = softEnums.indexOf(param.getEnumData()) | ARG_FLAG_SOFT_ENUM | ARG_FLAG_VALID;
+        if (param.postFix != null) {
+            index = postFixes.indexOf(param.postFix) | ARG_FLAG_POSTFIX;
+        } else if (param.enumData != null) {
+            if (param.enumData.isSoft()) {
+                index = softEnums.indexOf(param.enumData) | ARG_FLAG_SOFT_ENUM | ARG_FLAG_VALID;
             } else {
-                index = enums.indexOf(param.getEnumData()) | ARG_FLAG_ENUM | ARG_FLAG_VALID;
+                index = enums.indexOf(param.enumData) | ARG_FLAG_ENUM | ARG_FLAG_VALID;
             }
-        } else if (param.getType() != null) {
-            index = param.getType().getId() | ARG_FLAG_VALID;
+        } else if (param.type != null) {
+            index = param.type.getId() | ARG_FLAG_VALID;
         } else {
             throw new IllegalStateException("No param type specified: " + param);
         }
 
         this.putLInt(index);
-        this.putBoolean(param.isOptional());
+        this.putBoolean(param.optional);
 
         byte options = 0;
-        if (param.getParamOptions() != null) {
-            for (CommandParamOption option : param.getParamOptions()) {
+        if (param.paramOptions != null) {
+            for (CommandParamOption option : param.paramOptions) {
                 options |= 1 << option.ordinal();
             }
         }

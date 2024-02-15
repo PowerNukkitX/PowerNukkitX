@@ -250,27 +250,27 @@ public final class JSEventManager {
         }
 
         public CommandBuilder addEnumBlockParameter(String name, boolean optional) {
-            currentCommandParameterList.add(CommandParameter.newEnum(name, optional, CommandEnum.BLOCK));
+            currentCommandParameterList.add(CommandParameter.newEnum(name, optional, CommandEnum.ENUM_BLOCK));
             return this;
         }
 
         public CommandBuilder addEnumEntityParameter(String name, boolean optional) {
-            currentCommandParameterList.add(CommandParameter.newEnum(name, optional, CommandEnum.ENTITY));
+            currentCommandParameterList.add(CommandParameter.newEnum(name, optional, CommandEnum.ENUM_ENTITY));
             return this;
         }
 
         public CommandBuilder addEnumItemParameter(String name, boolean optional) {
-            currentCommandParameterList.add(CommandParameter.newEnum(name, optional, CommandEnum.ITEM));
+            currentCommandParameterList.add(CommandParameter.newEnum(name, optional, CommandEnum.ENUM_ITEM));
             return this;
         }
 
         public CommandBuilder addEnumBooleanParameter(String name, boolean optional) {
-            currentCommandParameterList.add(CommandParameter.newEnum(name, optional, CommandEnum.BOOLEAN));
+            currentCommandParameterList.add(CommandParameter.newEnum(name, optional, CommandEnum.ENUM_BOOLEAN));
             return this;
         }
 
         public CommandBuilder addEnumGameModeParameter(String name, boolean optional) {
-            currentCommandParameterList.add(CommandParameter.newEnum(name, optional, CommandEnum.GAMEMODE));
+            currentCommandParameterList.add(CommandParameter.newEnum(name, optional, CommandEnum.ENUM_GAMEMODE));
             return this;
         }
 

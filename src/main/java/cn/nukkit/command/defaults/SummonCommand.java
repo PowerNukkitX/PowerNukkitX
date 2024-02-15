@@ -31,7 +31,7 @@ public class SummonCommand extends VanillaCommand {
                 CommandParameter.newEnum("entityType", false, entity_key.toArray(new String[0]), true),
                 CommandParameter.newType("spawnPos", true, CommandParamType.POSITION),
                 CommandParameter.newType("nameTag", true, CommandParamType.STRING),
-                CommandParameter.newEnum("nameTagAlwaysVisible", true, CommandEnum.BOOLEAN)
+                CommandParameter.newEnum("nameTagAlwaysVisible", true, CommandEnum.ENUM_BOOLEAN)
         });
         this.enableParamTree();
     }

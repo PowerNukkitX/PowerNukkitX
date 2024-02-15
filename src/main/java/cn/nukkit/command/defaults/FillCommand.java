@@ -29,17 +29,17 @@ public class FillCommand extends VanillaCommand {
         this.addCommandParameters("default", new CommandParameter[]{
                 CommandParameter.newType("from", false, CommandParamType.BLOCK_POSITION),
                 CommandParameter.newType("to", false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("tileName", false, CommandEnum.BLOCK),
+                CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
                 CommandParameter.newType("tileData", true, CommandParamType.INT),
                 CommandParameter.newEnum("oldBlockHandling", true, new String[]{"destroy", "hollow", "keep", "outline", "replace"}),
         });
         this.addCommandParameters("replace", new CommandParameter[]{
                 CommandParameter.newType("from", false, CommandParamType.BLOCK_POSITION),
                 CommandParameter.newType("to", false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("tileName", false, CommandEnum.BLOCK),
+                CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
                 CommandParameter.newType("tileData", false, CommandParamType.INT),
                 CommandParameter.newEnum("oldBlockHandling", false, new String[]{"replace"}),
-                CommandParameter.newEnum("replaceTileName", false, CommandEnum.BLOCK),
+                CommandParameter.newEnum("replaceTileName", false, CommandEnum.ENUM_BLOCK),
                 CommandParameter.newType("replaceDataValue", true, CommandParamType.INT)
         });
         this.enableParamTree();

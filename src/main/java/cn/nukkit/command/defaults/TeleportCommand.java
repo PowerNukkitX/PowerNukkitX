@@ -27,51 +27,51 @@ public class TeleportCommand extends VanillaCommand {
         this.commandParameters.clear();
         this.commandParameters.put("->Entity", new CommandParameter[]{
                 CommandParameter.newType("destination", CommandParamType.TARGET),
-                CommandParameter.newEnum("checkForBlocks", true, CommandEnum.BOOLEAN)
+                CommandParameter.newEnum("checkForBlocks", true, CommandEnum.ENUM_BOOLEAN)
         });
         this.commandParameters.put("Entity->Entity", new CommandParameter[]{
                 CommandParameter.newType("victim", CommandParamType.TARGET),
                 CommandParameter.newType("destination", CommandParamType.TARGET),
-                CommandParameter.newEnum("checkForBlocks", true, CommandEnum.BOOLEAN)
+                CommandParameter.newEnum("checkForBlocks", true, CommandEnum.ENUM_BOOLEAN)
         });
         this.commandParameters.put("Entity->Pos", new CommandParameter[]{
                 CommandParameter.newType("victim", CommandParamType.TARGET),
                 CommandParameter.newType("destination", CommandParamType.POSITION),
                 CommandParameter.newType("yRot", true, CommandParamType.VALUE),
                 CommandParameter.newType("xRot", true, CommandParamType.VALUE),
-                CommandParameter.newEnum("checkForBlocks", true, CommandEnum.BOOLEAN)
+                CommandParameter.newEnum("checkForBlocks", true, CommandEnum.ENUM_BOOLEAN)
         });
         this.commandParameters.put("Entity->Pos(FacingPos)", new CommandParameter[]{
                 CommandParameter.newType("victim", CommandParamType.TARGET),
                 CommandParameter.newType("destination", CommandParamType.POSITION),
                 CommandParameter.newEnum("facing", false, new String[]{"facing"}),
                 CommandParameter.newType("lookAtPosition", CommandParamType.POSITION),
-                CommandParameter.newEnum("checkForBlocks", true, CommandEnum.BOOLEAN)
+                CommandParameter.newEnum("checkForBlocks", true, CommandEnum.ENUM_BOOLEAN)
         });
         this.commandParameters.put("Entity->Pos(FacingEntity)", new CommandParameter[]{
                 CommandParameter.newType("victim", CommandParamType.TARGET),
                 CommandParameter.newType("destination", CommandParamType.POSITION),
                 CommandParameter.newEnum("facing", false, new String[]{"facing"}),
                 CommandParameter.newType("lookAtEntity", CommandParamType.TARGET),
-                CommandParameter.newEnum("checkForBlocks", true, CommandEnum.BOOLEAN)
+                CommandParameter.newEnum("checkForBlocks", true, CommandEnum.ENUM_BOOLEAN)
         });
         this.commandParameters.put("->Pos", new CommandParameter[]{
                 CommandParameter.newType("destination", CommandParamType.POSITION),
                 CommandParameter.newType("yRot", true, CommandParamType.VALUE),
                 CommandParameter.newType("xRot", true, CommandParamType.VALUE),
-                CommandParameter.newEnum("checkForBlocks", true, CommandEnum.BOOLEAN)
+                CommandParameter.newEnum("checkForBlocks", true, CommandEnum.ENUM_BOOLEAN)
         });
         this.commandParameters.put("->Pos(FacingPos)", new CommandParameter[]{
                 CommandParameter.newType("destination", CommandParamType.POSITION),
                 CommandParameter.newEnum("facing", false, new String[]{"facing"}),
                 CommandParameter.newType("lookAtPosition", CommandParamType.POSITION),
-                CommandParameter.newEnum("checkForBlocks", true, CommandEnum.BOOLEAN)
+                CommandParameter.newEnum("checkForBlocks", true, CommandEnum.ENUM_BOOLEAN)
         });
         this.commandParameters.put("->Pos(FacingEntity)", new CommandParameter[]{
                 CommandParameter.newType("destination", CommandParamType.POSITION),
                 CommandParameter.newEnum("facing", false, new String[]{"facing"}),
                 CommandParameter.newType("lookAtEntity", CommandParamType.TARGET),
-                CommandParameter.newEnum("checkForBlocks", true, CommandEnum.BOOLEAN)
+                CommandParameter.newEnum("checkForBlocks", true, CommandEnum.ENUM_BOOLEAN)
         });
         this.enableParamTree();
     }

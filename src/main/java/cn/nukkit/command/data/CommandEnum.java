@@ -16,11 +16,11 @@ import java.util.function.Supplier;
  */
 public class CommandEnum {
 
-    public static final CommandEnum ENCHANTMENT = new CommandEnum("enchantmentName", () -> Enchantment.getEnchantmentName2IDMap().keySet().stream()
+    public static final CommandEnum ENUM_ENCHANTMENT = new CommandEnum("enchantmentName", () -> Enchantment.getEnchantmentName2IDMap().keySet().stream()
             .map(name -> name.startsWith(Identifier.DEFAULT_NAMESPACE) ? name.substring(10) : name)
             .toList());
 
-    public static final CommandEnum EFFECT = new CommandEnum("Effect", () -> Registries.EFFECT.getEffectStringId2TypeMap()
+    public static final CommandEnum ENUM_EFFECT = new CommandEnum("Effect", () -> Registries.EFFECT.getEffectStringId2TypeMap()
             .keySet()
             .stream()
             .toList());
@@ -31,17 +31,17 @@ public class CommandEnum {
 
     public static final CommandEnum CAMERA_PRESETS = new CommandEnum("preset", () -> CameraPreset.getPresets().keySet());
 
-    public static final CommandEnum CHAINED_COMMAND = new CommandEnum("ExecuteChainedOption_0", "run", "as", "at", "positioned", "if", "unless", "in", "align", "anchored", "rotated", "facing");
+    public static final CommandEnum CHAINED_COMMAND_ENUM = new CommandEnum("ExecuteChainedOption_0", "run", "as", "at", "positioned", "if", "unless", "in", "align", "anchored", "rotated", "facing");
 
-    public static final CommandEnum BOOLEAN = new CommandEnum("Boolean", ImmutableList.of("true", "false"));
+    public static final CommandEnum ENUM_BOOLEAN = new CommandEnum("Boolean", ImmutableList.of("true", "false"));
 
-    public static final CommandEnum GAMEMODE = new CommandEnum("GameMode", ImmutableList.of("survival", "creative", "s", "c", "adventure", "a", "spectator", "view", "v", "spc"));
+    public static final CommandEnum ENUM_GAMEMODE = new CommandEnum("GameMode", ImmutableList.of("survival", "creative", "s", "c", "adventure", "a", "spectator", "view", "v", "spc"));
 
-    public static final CommandEnum BLOCK = new CommandEnum("Block", Collections.emptyList());
+    public static final CommandEnum ENUM_BLOCK = new CommandEnum("Block", Collections.emptyList());
 
-    public static final CommandEnum ITEM = new CommandEnum("Item", Collections.emptyList());
+    public static final CommandEnum ENUM_ITEM = new CommandEnum("Item", Collections.emptyList());
 
-    public static final CommandEnum ENTITY = new CommandEnum("Entity", Collections.emptyList());
+    public static final CommandEnum ENUM_ENTITY = new CommandEnum("Entity", Collections.emptyList());
 
     private final String name;
     private final List<String> values;

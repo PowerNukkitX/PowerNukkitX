@@ -104,7 +104,7 @@ public class ExecuteCommand extends VanillaCommand {
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_If_Unless", "if", "unless")),
                 CommandParameter.newEnum("secondary subcommand", false, new CommandEnum("Option_Block", "block")),
                 CommandParameter.newType("position", CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("block", false, CommandEnum.BLOCK),
+                CommandParameter.newEnum("block", false, CommandEnum.ENUM_BLOCK),
                 GenericParameter.CHAINED_COMMAND.get(true)
         });
         /*todo 暂时没实现，因为我也不知道这个blockStates填什么
@@ -120,7 +120,7 @@ public class ExecuteCommand extends VanillaCommand {
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_If_Unless", "if", "unless")),
                 CommandParameter.newEnum("secondary subcommand", false, new CommandEnum("Option_Block", "block")),
                 CommandParameter.newType("position", CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("block", false, CommandEnum.BLOCK),
+                CommandParameter.newEnum("block", false, CommandEnum.ENUM_BLOCK),
                 CommandParameter.newType("data", CommandParamType.INT),
                 GenericParameter.CHAINED_COMMAND.get(true)
         });

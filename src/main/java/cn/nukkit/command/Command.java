@@ -126,37 +126,37 @@ public abstract class Command {
                 aliases.add(this.name);
             }
 
-            customData.setAliases(new CommandEnum(this.name + "Aliases", aliases));
+            customData.aliases = new CommandEnum(this.name + "Aliases", aliases);
         }
 
         if (plugin == InternalPlugin.INSTANCE) {
-            customData.setDescription(player.getServer().getLanguage().tr(this.getDescription(), CommandOutputContainer.EMPTY_STRING, "commands.", false));
+            customData.description = player.getServer().getLanguage().tr(this.getDescription(), CommandOutputContainer.EMPTY_STRING, "commands.", false);
         } else if (plugin instanceof PluginBase pluginBase) {
             var i18n = PluginI18nManager.getI18n(pluginBase);
             if (i18n != null) {
-                customData.setDescription(i18n.tr(player.getLanguageCode(), this.getDescription()));
+                customData.description = i18n.tr(player.getLanguageCode(), this.getDescription());
             } else {
-                customData.setDescription(player.getServer().getLanguage().tr(this.getDescription()));
+                customData.description = player.getServer().getLanguage().tr(this.getDescription());
             }
         }
 
-        this.commandParameters.forEach((key, par) -> {
+        this.commandParameters.forEach((key, params) -> {
             CommandOverload overload = new CommandOverload();
-            overload.getInput().setParameters(par);
-            customData.getOverloads().put(key, overload);
+            overload.input.parameters = params;
+            customData.overloads.put(key, overload);
         });
 
-        if (customData.getOverloads().isEmpty()) {
-            customData.getOverloads().put("default", new CommandOverload());
+        if (customData.overloads.isEmpty()) {
+            customData.overloads.put("default", new CommandOverload());
         }
 
         CommandDataVersions versions = new CommandDataVersions();
-        versions.getVersions().add(customData);
+        versions.versions.add(customData);
         return versions;
     }
 
     public Map<String, CommandOverload> getOverloads() {
-        return commandData.getOverloads();
+        return commandData.overloads;
     }
 
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
@@ -282,17 +282,17 @@ public abstract class Command {
             CommandParameter[] commandParameters = this.getCommandParameters().get(form);
             builder.append("- /" + this.getName());
             for (CommandParameter commandParameter : commandParameters) {
-                if (!commandParameter.isOptional()) {
-                    if (commandParameter.getEnumData() == null) {
-                        builder.append(" <").append(commandParameter.getName() + ": " + commandParameter.getType().name().toLowerCase()).append(">");
+                if (!commandParameter.optional) {
+                    if (commandParameter.enumData == null) {
+                        builder.append(" <").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append(">");
                     } else {
-                        builder.append(" <").append(commandParameter.getEnumData().getValues().subList(0, Math.min(commandParameter.getEnumData().getValues().size(), 10)).stream().collect(Collectors.joining("|"))).append(commandParameter.getEnumData().getValues().size() > 10 ? "|..." : "").append(">");
+                        builder.append(" <").append(commandParameter.enumData.getValues().subList(0, Math.min(commandParameter.enumData.getValues().size(), 10)).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append(">");
                     }
                 } else {
-                    if (commandParameter.getEnumData() == null) {
-                        builder.append(" [").append(commandParameter.getName() + ": " + commandParameter.getType().name().toLowerCase()).append("]");
+                    if (commandParameter.enumData == null) {
+                        builder.append(" [").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append("]");
                     } else {
-                        builder.append(" [").append(commandParameter.getEnumData().getValues().subList(0, Math.min(commandParameter.getEnumData().getValues().size(), 10)).stream().collect(Collectors.joining("|"))).append(commandParameter.getEnumData().getValues().size() > 10 ? "|..." : "").append("]");
+                        builder.append(" [").append(commandParameter.enumData.getValues().subList(0, Math.min(commandParameter.enumData.getValues().size(), 10)).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append("]");
                     }
                 }
             }

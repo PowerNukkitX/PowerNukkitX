@@ -39,7 +39,7 @@ public class GameruleCommand extends VanillaCommand {
         if (!boolGameRules.isEmpty()) {
             this.commandParameters.put("boolGameRules", new CommandParameter[]{
                     CommandParameter.newEnum("rule", new CommandEnum("BoolGameRule", boolGameRules)),
-                    CommandParameter.newEnum("value", true, CommandEnum.BOOLEAN)
+                    CommandParameter.newEnum("value", true, CommandEnum.ENUM_BOOLEAN)
             });
         }
         if (!intGameRules.isEmpty()) {

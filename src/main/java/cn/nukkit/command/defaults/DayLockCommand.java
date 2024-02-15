@@ -19,7 +19,7 @@ public class DayLockCommand extends VanillaCommand {
         this.setPermission("nukkit.command.daylock");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newEnum("lock", true, CommandEnum.BOOLEAN)
+                CommandParameter.newEnum("lock", true, CommandEnum.ENUM_BOOLEAN)
         });
         this.enableParamTree();
     }
