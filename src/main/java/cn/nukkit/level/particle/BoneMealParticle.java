@@ -10,8 +10,6 @@ import cn.nukkit.network.protocol.LevelEventPacket;
  */
 public class BoneMealParticle extends Particle {
 
-    private Vector3 position;
-
     public BoneMealParticle(Vector3 pos) {
         super(pos.x, pos.y, pos.z);
     }

@@ -1,7 +1,6 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.entity.EntityAgeable;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -12,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  */
 
 
-public class EntityZoglin extends EntityMob implements EntityWalkable, EntityAgeable {
+public class EntityZoglin extends EntityMob implements EntityWalkable {
 
     @Override
     @NotNull public String getIdentifier() {

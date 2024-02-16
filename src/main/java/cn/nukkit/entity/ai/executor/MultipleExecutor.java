@@ -23,7 +23,7 @@ public class MultipleExecutor implements IBehaviorExecutor {
 
     @Override
     public boolean execute(EntityIntelligent entity) {
-        var tasks = new ArrayList<CompletableFuture>();
+        var tasks = new ArrayList<CompletableFuture<?>>();
         for (IBehaviorExecutor executor : executors) {
             tasks.add(CompletableFuture.supplyAsync(() -> executor.execute(entity)));
         }

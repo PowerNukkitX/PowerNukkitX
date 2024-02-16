@@ -5,7 +5,6 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.EnchantInventory;
 import cn.nukkit.item.Item;
-import lombok.Getter;
 
 
 public class EnchantItemEvent extends InventoryEvent implements Cancellable {

@@ -1,6 +1,7 @@
 package cn.nukkit.entity.ai.memory;
 
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.ai.memory.codec.IMemoryCodec;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -27,12 +28,10 @@ public class MemoryStorage implements IMemoryStorage {
 
     @Override
     public <D> void put(MemoryType<D> type, D data) {
-        if (type.getCodec() != null) {
-            type.getCodec().init(data, entity);
-            memoryMap.put(type, data != null ? data : EMPTY_VALUE);
-        } else {
-            memoryMap.put(type, data != null ? data : EMPTY_VALUE);
+        if (type.getCodec() instanceof IMemoryCodec<D> codec) {
+            codec.init(data, entity);
         }
+        memoryMap.put(type, data != null ? data : EMPTY_VALUE);
     }
 
     @Override

@@ -18,11 +18,9 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.UpdateBlockPacket;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import com.google.common.collect.Lists;
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -33,7 +31,6 @@ import java.util.stream.Collectors;
 /**
  * @author CreeperFace
  */
-@Slf4j
 public abstract class BlockPistonBase extends BlockTransparent implements Faceable, RedstoneComponent, BlockEntityHolder<BlockEntityPistonArm> {
     public boolean sticky = false;
 
@@ -298,7 +295,11 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 nbtList.add(nbt);
             }
         }
-        this.getBlockEntity().preMove(extending, toMoveBlockVec);
+        BlockEntityPistonArm blockEntity = this.getBlockEntity();
+        if (blockEntity == null) {
+            return false;
+        }
+        blockEntity.preMove(extending, toMoveBlockVec);
         //生成moving_block
         if (!oldPosList.isEmpty()) {
             for (int i = 0; i < oldPosList.size(); i++) {
@@ -323,7 +324,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
             }
         }
         //开始移动
-        this.getBlockEntity().move();
+        blockEntity.move();
         return true;
     }
 

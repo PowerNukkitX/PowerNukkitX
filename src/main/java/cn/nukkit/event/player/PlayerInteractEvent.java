@@ -8,7 +8,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
 /**

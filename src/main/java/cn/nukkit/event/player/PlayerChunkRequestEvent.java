@@ -2,7 +2,6 @@ package cn.nukkit.event.player;
 
 import cn.nukkit.Player;
 import cn.nukkit.event.HandlerList;
-import lombok.Getter;
 
 public class PlayerChunkRequestEvent extends PlayerEvent {
     private static final HandlerList handlers = new HandlerList();

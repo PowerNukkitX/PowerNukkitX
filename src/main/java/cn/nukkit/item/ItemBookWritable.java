@@ -192,7 +192,7 @@ public abstract class ItemBookWritable extends Item {
     /**
      * Returns an list containing all pages of this book.
      */
-    public List getPages() {
+    public List<Object> getPages() {
         CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
         ListTag<CompoundTag> pages;
         if (!tag.contains("pages") || !(tag.get("pages") instanceof ListTag)) {

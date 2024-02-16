@@ -6,7 +6,6 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
-import lombok.Getter;
 
 /**
  * @author CreeperFace

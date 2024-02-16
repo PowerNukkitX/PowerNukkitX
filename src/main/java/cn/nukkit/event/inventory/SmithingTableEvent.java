@@ -23,7 +23,6 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.SmithingInventory;
 import cn.nukkit.item.Item;
-import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 /**

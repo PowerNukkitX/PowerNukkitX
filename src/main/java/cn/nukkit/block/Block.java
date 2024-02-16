@@ -43,7 +43,7 @@ import java.util.function.Predicate;
  * @author MagicDroidX (Nukkit Project)
  */
 @Slf4j
-public abstract class Block extends Position implements Metadatable, Cloneable, AxisAlignedBB, BlockID {
+public abstract class Block extends Position implements Metadatable, AxisAlignedBB, BlockID {
     public static final Block[] EMPTY_ARRAY = new Block[0];
     public static final double DEFAULT_FRICTION_FACTOR = 0.6;
     public static final double DEFAULT_AIR_FLUID_FRICTION = 0.95;

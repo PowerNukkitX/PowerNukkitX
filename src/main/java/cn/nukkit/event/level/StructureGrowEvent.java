@@ -3,7 +3,6 @@ package cn.nukkit.event.level;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import lombok.Getter;
 
 import java.util.List;
 import java.util.Objects;

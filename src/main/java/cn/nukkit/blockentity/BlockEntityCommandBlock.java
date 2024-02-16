@@ -38,6 +38,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 @Getter
 public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICommandBlock, BlockEntityInventoryHolder {
     protected boolean conditionalMode;
@@ -121,7 +124,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         }
 
         if (this.namedTag.contains(TAG_LAST_OUTPUT_PARAMS)) {
-            this.lastOutputParams = (ListTag<StringTag>) this.namedTag.getList(TAG_LAST_OUTPUT_PARAMS);
+            this.lastOutputParams = this.namedTag.getList(TAG_LAST_OUTPUT_PARAMS, StringTag.class);
         } else {
             this.lastOutputParams = new ListTag<>();
         }
@@ -382,12 +385,11 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public boolean setConditionMet() {
-        Block block;
-        if (this.isConditional() && (block = this.getLevelBlock()) instanceof BlockCommandBlock) {
-            Block next = block.getSide(((Faceable) block).getBlockFace().getOpposite());
-            if (next instanceof BlockCommandBlock) {
-                BlockEntityCommandBlock commandBlock = ((BlockCommandBlock) next).getBlockEntity();
-                this.conditionMet = commandBlock.getSuccessCount() > 0;
+        if (this.isConditional() && this.getLevelBlock() instanceof BlockCommandBlock block) {
+            if (block.getSide(block.getBlockFace().getOpposite()) instanceof BlockCommandBlock next) {
+                if (next.getBlockEntity() instanceof BlockEntityCommandBlock commandBlock) {
+                    this.conditionMet = commandBlock.getSuccessCount() > 0;
+                }
             } else {
                 this.conditionMet = false;
             }

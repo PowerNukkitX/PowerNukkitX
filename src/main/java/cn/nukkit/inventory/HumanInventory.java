@@ -403,7 +403,7 @@ public class HumanInventory extends BaseInventory {
     }
 
     @Override
-    public void sendContents(Player[] players) {
+    public void sendContents(Player... players) {
         InventoryContentPacket pk = new InventoryContentPacket();
         int inventoryAndHotBarSize = this.getSize() - 4;
         pk.slots = new Item[inventoryAndHotBarSize];

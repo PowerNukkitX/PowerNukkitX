@@ -110,15 +110,14 @@ public abstract class LegacyTreeGenerator {
 
     protected BlockState getTrunkBlockState() {
         EnumPropertyType<BlockFace.Axis>.EnumPropertyValue pillarAxisValue = CommonBlockProperties.PILLAR_AXIS.createValue(BlockFace.Axis.Y);
-        BlockState log = BlockOakLog.PROPERTIES.getBlockState(pillarAxisValue);
-        switch (getType()) {
-            case JUNGLE -> log = BlockJungleLog.PROPERTIES.getBlockState(pillarAxisValue);
-            case DARK_OAK -> log = BlockDarkOakLog.PROPERTIES.getBlockState(pillarAxisValue);
-            case SPRUCE -> log = BlockSpruceLog.PROPERTIES.getBlockState(pillarAxisValue);
-            case ACACIA -> log = BlockAcaciaLog.PROPERTIES.getBlockState(pillarAxisValue);
-            case BIRCH -> log = BlockBirchLog.PROPERTIES.getBlockState(pillarAxisValue);
-        }
-        return log;
+        return switch (getType()) {
+            case JUNGLE -> BlockJungleLog.PROPERTIES.getBlockState(pillarAxisValue);
+            case DARK_OAK -> BlockDarkOakLog.PROPERTIES.getBlockState(pillarAxisValue);
+            case SPRUCE -> BlockSpruceLog.PROPERTIES.getBlockState(pillarAxisValue);
+            case ACACIA -> BlockAcaciaLog.PROPERTIES.getBlockState(pillarAxisValue);
+            case BIRCH -> BlockBirchLog.PROPERTIES.getBlockState(pillarAxisValue);
+            case OAK -> BlockOakLog.PROPERTIES.getBlockState(pillarAxisValue);
+        };
     }
 
     protected BlockState getLeafBlockState() {

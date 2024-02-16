@@ -6,8 +6,6 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.RecipeBuildUtils;
 
-import java.util.Random;
-
 public class ProfessionCleric extends Profession {
 
     public ProfessionCleric() {
@@ -17,9 +15,8 @@ public class ProfessionCleric extends Profession {
     @Override
     public ListTag<Tag> buildTrades(int seed) {
         ListTag<Tag> recipes = new ListTag<>();
-        Random random = new Random(seed);
 
-            recipes.add(RecipeBuildUtils.of(Item.get(Item.ROTTEN_FLESH,0,32), Item.get(Item.EMERALD, 0 , 2))
+        recipes.add(RecipeBuildUtils.of(Item.get(Item.ROTTEN_FLESH,0,32), Item.get(Item.EMERALD, 0 , 2))
                         .setMaxUses(16)
                         .setRewardExp((byte) 1)
                         .setTier(1)
@@ -85,7 +82,7 @@ public class ProfessionCleric extends Profession {
                         .setTier(5)
                         .setTraderExp(0)
                         .build());
-            return recipes;
+        return recipes;
     }
 
 }

@@ -1,14 +1,12 @@
 package cn.nukkit.level.updater.item;
 
 import cn.nukkit.level.updater.Updater;
-import cn.nukkit.level.updater.block.*;
 import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.experimental.UtilityClass;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @UtilityClass
 public class ItemUpdaters {

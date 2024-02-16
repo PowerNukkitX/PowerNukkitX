@@ -4,7 +4,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.entity.effect.Effect;
-import lombok.Getter;
 
 
 public class EntityEffectRemoveEvent extends EntityEvent implements Cancellable {

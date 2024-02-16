@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;

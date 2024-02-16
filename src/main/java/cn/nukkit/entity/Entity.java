@@ -76,7 +76,6 @@ import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.TextFormat;
 import com.google.common.collect.Iterables;
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -95,7 +94,6 @@ import static cn.nukkit.utils.Utils.dynamic;
 /**
  * @author MagicDroidX
  */
-@Slf4j
 public abstract class Entity extends Location implements Metadatable, EntityID {
     public static final Entity[] EMPTY_ARRAY = new Entity[0];
     //region data
@@ -3253,11 +3251,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         }
     }
 
-    public boolean setDataProperty(EntityData data) {
+    public boolean setDataProperty(EntityData<?> data) {
         return setDataProperty(data, true);
     }
 
-    public boolean setDataProperty(EntityData data, boolean send) {
+    public boolean setDataProperty(EntityData<?> data, boolean send) {
         if (Objects.equals(data, this.getDataProperties().get(data.getId()))) {
             return false;
         }
@@ -3278,7 +3276,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return this.dataProperties;
     }
 
-    public EntityData getDataProperty(int id) {
+    public EntityData<?> getDataProperty(int id) {
         return this.getDataProperties().get(id);
     }
 
@@ -3568,10 +3566,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         pk.encode();
         Server.broadcastPacket(players, pk);
     }
-
-    private record OldStringClass(String key, Class<? extends Entity> value) {
-    }
-
 
     private boolean validateAndSetIntProperty(String identifier, int value) {
         if (!intProperties.containsKey(identifier)) return false;

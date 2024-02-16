@@ -2,14 +2,12 @@ package cn.nukkit.level.generator;
 
 import cn.nukkit.Server;
 import cn.nukkit.level.DimensionData;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@Slf4j
 public class Flat extends Generator {
     public Flat(DimensionData dimensionData, Map<String, Object> options) {
         super(dimensionData, options);

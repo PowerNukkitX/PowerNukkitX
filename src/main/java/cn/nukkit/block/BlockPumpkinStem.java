@@ -3,10 +3,9 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockPumpkinStem extends BlockCropsStem implements Faceable {
+public class BlockPumpkinStem extends BlockCropsStem {
     public static final BlockProperties PROPERTIES = new BlockProperties(PUMPKIN_STEM, CommonBlockProperties.FACING_DIRECTION, CommonBlockProperties.GROWTH);
 
     @Override

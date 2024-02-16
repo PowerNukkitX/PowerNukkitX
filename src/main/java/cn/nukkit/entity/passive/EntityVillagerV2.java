@@ -2,7 +2,6 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.entity.EntityAgeable;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -30,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-public class EntityVillagerV2 extends EntityIntelligent implements InventoryHolder, IEntityNPC, EntityAgeable {
+public class EntityVillagerV2 extends EntityIntelligent implements InventoryHolder, IEntityNPC {
     @Override
     @NotNull
     public String getIdentifier() {

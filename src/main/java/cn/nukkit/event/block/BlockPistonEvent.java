@@ -5,11 +5,9 @@ import cn.nukkit.block.BlockPistonBase;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.math.BlockFace;
-import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class BlockPistonEvent extends BlockEvent implements Cancellable {
 

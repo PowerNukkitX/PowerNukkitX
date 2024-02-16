@@ -78,12 +78,16 @@ public class AnvilInventory extends ContainerInventory implements CraftTypeInven
         return setItem(MATERIAL, item, send);
     }
 
-    public boolean setOutputSlot(Item item) {
-        return setItem(OUTPUT, item, true);
+    public boolean setMaterialSlot(Item item) {
+        return setMaterialSlot(item, true);
     }
 
-    private boolean setOutputSlot(Item item, boolean send) {
+    public boolean setOutputSlot(Item item, boolean send) {
         return setItem(OUTPUT, item, send);
+    }
+
+    public boolean setOutputSlot(Item item) {
+        return setOutputSlot(item, true);
     }
 
     @Override

@@ -5,7 +5,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
-import lombok.Getter;
 
 public class PlayerBucketFillEvent extends PlayerBucketEvent {
     private static final HandlerList handlers = new HandlerList();

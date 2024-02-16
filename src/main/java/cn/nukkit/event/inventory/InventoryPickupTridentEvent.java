@@ -4,7 +4,6 @@ import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.Inventory;
-import lombok.Getter;
 
 
 public class InventoryPickupTridentEvent extends InventoryEvent implements Cancellable {

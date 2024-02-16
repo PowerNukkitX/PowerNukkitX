@@ -3,7 +3,7 @@ package cn.nukkit.event.server;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import lombok.Getter;
+
 
 /**
  * @author MagicDroidX (Nukkit Project)

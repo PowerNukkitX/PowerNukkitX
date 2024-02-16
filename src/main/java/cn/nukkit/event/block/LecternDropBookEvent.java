@@ -5,7 +5,6 @@ import cn.nukkit.blockentity.BlockEntityLectern;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
-import lombok.Getter;
 
 
 public class LecternDropBookEvent extends BlockEvent implements Cancellable {

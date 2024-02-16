@@ -2,13 +2,9 @@ package cn.nukkit.event.player;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.utils.ClientChainData;
 import cn.nukkit.utils.LoginChainData;
-import io.netty.util.internal.EmptyArrays;
-import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;

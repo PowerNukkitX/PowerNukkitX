@@ -5,7 +5,6 @@ import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
-import lombok.Getter;
 
 /**
  * @author CreeperFace

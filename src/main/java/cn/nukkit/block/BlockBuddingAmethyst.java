@@ -58,7 +58,6 @@ public class BlockBuddingAmethyst extends BlockSolid {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (RANDOM.nextInt(5) == 1) {
-                final Block side = this.getSide(BlockFace.fromIndex(RANDOM.nextInt(6)));
                 tryGrow(0);
             }
             return type;

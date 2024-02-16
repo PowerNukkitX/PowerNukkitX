@@ -6,7 +6,6 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
-import lombok.Getter;
 
 /**
  * @author MagicDroidX (Nukkit Project)

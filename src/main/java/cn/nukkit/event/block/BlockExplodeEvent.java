@@ -22,7 +22,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.Position;
-import lombok.Getter;
 
 import java.util.Set;
 

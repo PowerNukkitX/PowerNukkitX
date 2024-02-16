@@ -3,7 +3,6 @@ package cn.nukkit.event.plugin;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.plugin.Plugin;
-import lombok.Getter;
 
 /**
  * @author MagicDroidX (Nukkit Project)

@@ -71,7 +71,7 @@ public class GrindstoneInventory extends ContainerInventory implements CraftType
 
 
     public Item getResult() {
-        return getItem(2);
+        return getItem(SLOT_RESULT);
     }
 
 
@@ -96,7 +96,7 @@ public class GrindstoneInventory extends ContainerInventory implements CraftType
 
 
     public boolean setResult(Item item, boolean send) {
-        return setItem(2, item, send);
+        return setItem(SLOT_RESULT, item, send);
     }
 
 

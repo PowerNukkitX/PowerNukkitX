@@ -2,8 +2,6 @@ package cn.nukkit.event.scoreboard;
 
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;
-import lombok.Getter;
-
 
 public class ScoreboardObjectiveChangeEvent extends ScoreboardEvent{
 

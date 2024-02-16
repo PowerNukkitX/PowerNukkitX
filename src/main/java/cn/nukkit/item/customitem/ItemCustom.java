@@ -3,7 +3,6 @@ package cn.nukkit.item.customitem;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 
 /**
  * 继承这个类实现自定义物品,重写{@link Item}中的方法控制方块属性

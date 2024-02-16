@@ -285,7 +285,6 @@ public class PluginI18n {
     }
 
     private Map<String, String> parseLang(BufferedReader reader) throws IOException {
-        Map<String, String> d = new Object2ObjectOpenHashMap<>();
         return (Map<String, String>) new Gson().fromJson(reader, Map.class);
     }
 }

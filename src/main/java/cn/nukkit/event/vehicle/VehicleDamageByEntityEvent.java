@@ -2,9 +2,7 @@ package cn.nukkit.event.vehicle;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityVehicle;
-import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import lombok.Getter;
 
 /**
  * Is called when an entity damages a vehicle
@@ -13,7 +11,7 @@ import lombok.Getter;
  * @since 09.09.2019
  */
 
-public final class VehicleDamageByEntityEvent extends VehicleDamageEvent implements Cancellable {
+public final class VehicleDamageByEntityEvent extends VehicleDamageEvent {
 
     private static final HandlerList handlers = new HandlerList();
 
