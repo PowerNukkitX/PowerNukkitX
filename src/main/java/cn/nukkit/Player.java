@@ -150,9 +150,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import javax.annotation.Nullable;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -220,7 +220,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public long lastSkinChange;
     protected long breakingBlockTime = 0;
     protected double blockBreakProgress = 0;
-    protected final NetworkSession networkSession;
+    protected @Nullable NetworkSession networkSession;
     protected final InetSocketAddress rawSocketAddress;
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
     protected final int chunksPerTick;
@@ -352,15 +352,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected CreativeOutputInventory creativeOutputInventory;
     protected boolean inventoryOpen;
     private final PlayerHandle handle = new PlayerHandle(this);
-    private final PlayerInfo info;
+    private final @NotNull PlayerInfo info;
 
-    public PlayerInfo getPlayerInfo() {
+    public @NotNull PlayerInfo getPlayerInfo() {
         return this.info;
     }
 
     ///
     @UsedByReflection
-    public Player(NetworkSession session, PlayerInfo info) {
+    public Player(@NotNull NetworkSession session,@NotNull PlayerInfo info) {
         super(null, new CompoundTag());
         this.info = info;
 
@@ -368,7 +368,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.perm = new PermissibleBase(this);
         this.server = Server.getInstance();
         this.lastBreak = -1;
-        this.socketAddress = this.networkSession.getAddress();
+        this.socketAddress = this.getNetworkSession().getAddress();
         this.rawSocketAddress = socketAddress;
         this.loaderId = Level.generateChunkLoaderId(this);
         this.chunksPerTick = this.server.getConfig("chunk-sending.per-tick", 8);
@@ -401,6 +401,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         } catch (UnknownHostException exception) {
             throw new IllegalArgumentException(exception);
         }
+    }
+
+    public @NotNull NetworkSession getNetworkSession() {
+        if(this.networkSession == null){
+            throw new RuntimeException("Player is not connected");
+        }
+        return this.networkSession;
     }
 
     /**
@@ -1948,7 +1955,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.server.getPluginManager().subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this);
         }
 
-        if (this.isEnableClientCommand() && spawned) this.sendCommandData();
+        if (this.isEnableClientCommand() && spawned) {
+            this.getNetworkSession().syncAvailableCommands();
+        }
     }
 
     public boolean isEnableClientCommand() {
@@ -1960,28 +1969,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         SetCommandsEnabledPacket pk = new SetCommandsEnabledPacket();
         pk.enabled = enable;
         this.dataPacket(pk);
-        if (enable) this.sendCommandData();
-    }
-
-    public void sendCommandData() {
-        if (!spawned) {
-            return;
-        }
-        AvailableCommandsPacket pk = new AvailableCommandsPacket();
-        Map<String, CommandDataVersions> data = new HashMap<>();
-        int count = 0;
-        for (Command command : this.server.getCommandMap().getCommands().values()) {
-            if (!command.testPermissionSilent(this) || !command.isRegistered() || command.isServerSideOnly()) {
-                continue;
-            }
-            ++count;
-            CommandDataVersions data0 = command.generateCustomCommandData(this);
-            data.put(command.getName(), data0);
-        }
-        if (count > 0) {
-            //TODO: structure checking
-            pk.commands = data;
-            this.dataPacket(pk);
+        if (enable) {
+            this.getNetworkSession().syncAvailableCommands();
         }
     }
 
@@ -2399,7 +2388,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param packet 发送的数据包<br>packet to send
      */
     public void dataPacket(DataPacket packet) {
-        this.networkSession.sendDataPacket(packet);
+        this.getNetworkSession().sendDataPacket(packet);
     }
 
     /**
@@ -2410,7 +2399,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return long
      */
     public long getPing() {
-        return this.networkSession.getPing();
+        return this.getNetworkSession().getPing();
     }
 
     public boolean sleepOn(Vector3 pos) {
@@ -3570,7 +3559,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             super.close();
 
-            this.networkSession.disconnect(reason);
+            this.getNetworkSession().disconnect(reason);
 
             if (this.loggedIn) {
                 this.server.removeOnlinePlayer(this);
@@ -5244,10 +5233,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public void setTimeSinceRest(int timeSinceRest) {
         this.timeSinceRest = timeSinceRest;
-    }
-
-    public NetworkSession getNetworkSession() {
-        return this.networkSession;
     }
 
     // TODO: Support Translation Parameters

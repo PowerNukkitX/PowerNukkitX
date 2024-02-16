@@ -2530,7 +2530,7 @@ public class Server {
             player.recalculatePermissions();
             player.getAdventureSettings().onOpChange(true);
             player.getAdventureSettings().update();
-            player.sendCommandData();
+            player.getNetworkSession().syncAvailableCommands();
         }
         this.operators.save(true);
     }
@@ -2542,7 +2542,7 @@ public class Server {
             player.recalculatePermissions();
             player.getAdventureSettings().onOpChange(false);
             player.getAdventureSettings().update();
-            player.sendCommandData();
+            player.getNetworkSession().syncAvailableCommands();
         }
         this.operators.save();
     }

@@ -3,6 +3,8 @@ package cn.nukkit.network.process;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
+import cn.nukkit.command.Command;
+import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.event.player.PlayerCreationEvent;
 import cn.nukkit.event.player.PlayerLocallyInitializedEvent;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
@@ -14,6 +16,7 @@ import cn.nukkit.network.process.handler.LoginHandler;
 import cn.nukkit.network.process.handler.PrespawnHandler;
 import cn.nukkit.network.process.handler.ResourcePackHandler;
 import cn.nukkit.network.process.handler.SessionStartHandler;
+import cn.nukkit.network.protocol.AvailableCommandsPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.DisconnectPacket;
 import cn.nukkit.network.protocol.NetworkSettingsPacket;
@@ -25,12 +28,15 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 public class NetworkSession {
@@ -241,12 +247,14 @@ public class NetworkSession {
     }
 
     public void disconnect(String reason) {
-        if (this.disconnected || this.player == null) {
+        if (this.disconnected) {
             return;
         }
         this.setPacketHandler(null);
         this.disconnected = true;
-        this.player.close(reason);
+        if (this.player != null) {
+            this.player.close(reason);
+        }
     }
 
     public InetSocketAddress getAddress() {
@@ -265,7 +273,31 @@ public class NetworkSession {
         return this.session.getPing();
     }
 
+    @ApiStatus.Internal
     public void sendNetworkSettingsPacket(@NonNull NetworkSettingsPacket pk) {
         this.session.sendNetworkSettingsPacket(pk);
     }
+
+    public void syncAvailableCommands() {
+        /*if (!spawned) {
+            return;
+        }*/
+        AvailableCommandsPacket pk = new AvailableCommandsPacket();
+        Map<String, CommandDataVersions> data = new HashMap<>();
+        int count = 0;
+        for (Command command : this.server.getCommandMap().getCommands().values()) {
+            if (!command.testPermissionSilent(this.player) || !command.isRegistered() || command.isServerSideOnly()) {
+                continue;
+            }
+            ++count;
+            CommandDataVersions data0 = command.generateCustomCommandData(this.player);
+            data.put(command.getName(), data0);
+        }
+        if (count > 0) {
+            //TODO: structure checking
+            pk.commands = data;
+            this.sendDataPacket(pk);
+        }
+    }
+
 }
