@@ -1,9 +1,7 @@
 package cn.nukkit.registry;
 
-import cn.nukkit.level.generator.Flat;
 import cn.nukkit.level.generator.GenerateStage;
 import cn.nukkit.level.generator.GenerateStages;
-import cn.nukkit.level.generator.Generator;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.util.Locale;

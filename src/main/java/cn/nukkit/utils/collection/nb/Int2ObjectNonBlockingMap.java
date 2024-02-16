@@ -509,7 +509,7 @@ public class Int2ObjectNonBlockingMap<TypeV>
     // The control structure for the Long2ObjectNonBlockingMap
     private static final class CHM implements Serializable {
         // Back-pointer to top-level structure
-        final Int2ObjectNonBlockingMap _nbhml;
+        final Int2ObjectNonBlockingMap<?> _nbhml;
 
         // Size in active K,V pairs
         private ConcurrentAutoIntTable _size;
@@ -582,7 +582,7 @@ public class Int2ObjectNonBlockingMap<TypeV>
         final Object[] _vals;
 
         // Simple constructor
-        CHM(final Int2ObjectNonBlockingMap nbhml, ConcurrentAutoIntTable size, final int logsize) {
+        CHM(final Int2ObjectNonBlockingMap<?> nbhml, ConcurrentAutoIntTable size, final int logsize) {
             _nbhml = nbhml;
             _size = size;
             _slots = new ConcurrentAutoIntTable();

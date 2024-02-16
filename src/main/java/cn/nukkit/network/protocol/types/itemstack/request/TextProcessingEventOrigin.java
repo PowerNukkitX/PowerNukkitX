@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol.types.itemstack.request;
 
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 
 public enum TextProcessingEventOrigin {

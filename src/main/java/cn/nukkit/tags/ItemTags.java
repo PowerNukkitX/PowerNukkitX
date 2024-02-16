@@ -1,7 +1,6 @@
 package cn.nukkit.tags;
 
 import cn.nukkit.Server;
-import cn.nukkit.utils.Config;
 import cn.nukkit.utils.Identifier;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -12,7 +11,6 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 public final class ItemTags {

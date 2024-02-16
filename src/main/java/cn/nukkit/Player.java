@@ -65,7 +65,6 @@ import cn.nukkit.inventory.CraftingGridInventory;
 import cn.nukkit.inventory.CreativeOutputInventory;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.Inventory;
-import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.PlayerCursorInventory;
 import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.item.Item;
@@ -172,7 +171,7 @@ import java.util.stream.Collectors;
  * @author MagicDroidX &amp; Box (Nukkit Project)
  */
 @Slf4j
-public class Player extends EntityHuman implements CommandSender, InventoryHolder, ChunkLoader, IPlayer, IScoreboardViewer {
+public class Player extends EntityHuman implements CommandSender, ChunkLoader, IPlayer, IScoreboardViewer {
     /**
      * 一个承载玩家的空数组静态常量
      * <p>

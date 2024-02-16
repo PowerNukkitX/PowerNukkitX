@@ -16,13 +16,8 @@
  */
 package cn.nukkit.utils.version;
 
-import cn.nukkit.utils.version.Version;
-import cn.nukkit.utils.version.VersionStringComparator;
-
 import javax.annotation.Nonnull;
 import java.lang.ref.WeakReference;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 

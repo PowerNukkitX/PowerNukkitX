@@ -71,8 +71,8 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
 
     @Override
     public boolean containsValue(Object value) {
-        Function uncheckedConverter = converter;
-        Object converted = uncheckedConverter.apply(value);
+        Function<V1, V2> uncheckedConverter = converter;
+        Object converted = uncheckedConverter.apply((V1) value);
         return proxied.containsValue(converted);
     }
 
@@ -110,8 +110,8 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
 
     @Override
     public boolean remove(Object key, Object value) {
-        Function uncheckedConverter = converter;
-        Object converted = uncheckedConverter.apply(value);
+        Function<V1, V2> uncheckedConverter = converter;
+        Object converted = uncheckedConverter.apply((V1) value);
         return proxied.remove(key, converted);
     }
 
