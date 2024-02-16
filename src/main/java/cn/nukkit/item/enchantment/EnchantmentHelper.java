@@ -5,11 +5,13 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.PlayerEnchantOptionsPacket;
+import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.random.NukkitRandom;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -117,8 +119,10 @@ public final class EnchantmentHelper {
         for (Enchantment enchantment : getPrimaryEnchantmentsForItem(item)) {
             for (int lvl = enchantment.getMaxLevel(); lvl > 0; lvl--) {
                 if (enchantingPower >= enchantment.getMinEnchantAbility(lvl) && enchantingPower <= enchantment.getMaxEnchantAbility(lvl)) {
-                    list.add(enchantment.setLevel(lvl));
-                    break;
+                    if(!enchantment.getIdentifier().equals(new Identifier("minecraft", "mending"))) {
+                        list.add(enchantment.setLevel(lvl));
+                        break;
+                    }
                 }
             }
         }
