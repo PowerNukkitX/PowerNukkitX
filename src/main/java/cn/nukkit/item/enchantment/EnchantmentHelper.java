@@ -119,7 +119,7 @@ public final class EnchantmentHelper {
         for (Enchantment enchantment : getPrimaryEnchantmentsForItem(item)) {
             for (int lvl = enchantment.getMaxLevel(); lvl > 0; lvl--) {
                 if (enchantingPower >= enchantment.getMinEnchantAbility(lvl) && enchantingPower <= enchantment.getMaxEnchantAbility(lvl)) {
-                    if(!(enchantment.getId() == 26)) {
+                    if(!(enchantment.getId() == Enchantment.ID_MENDING)) {
                         list.add(enchantment.setLevel(lvl));
                         break;
                     }
