@@ -696,10 +696,6 @@ public class Server {
             Registries.ENTITY.init();
             Profession.init();
             Registries.BLOCKENTITY.init();
-            /**String a = BlockTags.ACACIA;
-            String b = ItemTags.ARROW;
-            String c = BiomeTags.WARM;
-            Updater d = BlockStateUpdaterBase.INSTANCE;*/
             Registries.BLOCKSTATE_ITEMMETA.init();
             Registries.ITEM_RUNTIMEID.init();
             Registries.BLOCK.init();
@@ -1562,7 +1558,7 @@ public class Server {
         Object section = this.getConfig("aliases");
         Map<String, List<String>> result = new LinkedHashMap<>();
         if (section instanceof Map) {
-            for (Map.Entry entry : (Set<Map.Entry>) ((Map) section).entrySet()) {
+            for (Map.Entry<?, ?> entry : (Set<Map.Entry<?, ?>>) ((Map) section).entrySet()) {
                 List<String> commands = new ArrayList<>();
                 String key = (String) entry.getKey();
                 Object value = entry.getValue();

@@ -480,6 +480,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
      *
      * @param end 列表尾节点
      */
+    @SuppressWarnings("null")
     protected List<Node> getPathRoute(@Nullable Node end) {
         List<Node> nodes = new ArrayList<>();
         if (end == null)

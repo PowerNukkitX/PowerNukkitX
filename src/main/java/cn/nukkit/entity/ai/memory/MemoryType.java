@@ -95,11 +95,7 @@ public final class MemoryType<Data> {
     }
 
     public @Nullable Data decode(Entity entity) {
-        if (codec != null) {
-            var tag = entity.namedTag;
-            return codec.decode(tag);
-        }
-        return null;
+        return codec != null ? codec.decode(entity.namedTag) : null;
     }
 
     @Override

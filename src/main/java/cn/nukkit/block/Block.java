@@ -1375,6 +1375,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @param update 是否需要更新克隆的方块
      * @return 是否克隆成功
      */
+    @SuppressWarnings("null")
     public boolean cloneTo(Position pos, boolean update) {
         //清除旧方块
         level.setBlock(pos, this.layer, Block.get(Block.AIR), false, false);
