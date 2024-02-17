@@ -5,7 +5,6 @@ import cn.nukkit.Server;
 import cn.nukkit.plugin.PluginBase;
 import com.google.gson.Gson;
 import io.netty.util.internal.EmptyArrays;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;

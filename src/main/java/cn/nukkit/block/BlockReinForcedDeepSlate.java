@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 
-import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockReinForcedDeepSlate extends BlockSolid {

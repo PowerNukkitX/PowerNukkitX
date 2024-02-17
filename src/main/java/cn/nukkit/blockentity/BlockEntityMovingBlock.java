@@ -12,7 +12,6 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.HashUtils;
 
 import javax.annotation.Nullable;
-import java.util.TreeMap;
 
 /**
  * @author CreeperFace

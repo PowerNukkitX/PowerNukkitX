@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 
 import static cn.nukkit.level.GameRule.*;
 
-@SuppressWarnings({"unchecked"})
+
 public class GameRules {
     private final @Nonnull EnumMap<GameRule, Value<?>> gameRules = new EnumMap<>(GameRule.class);
     private boolean stale;
@@ -80,28 +80,24 @@ public class GameRules {
         stale = false;
     }
 
-    public void setGameRule(GameRule gameRule, boolean value) {
+    public <V> void setGameRule(GameRule gameRule, V value, Type type) {
         if (!gameRules.containsKey(gameRule)) {
             throw new IllegalArgumentException("Gamerule does not exist");
         }
-        gameRules.get(gameRule).setValue(value, Type.BOOLEAN);
+        gameRules.get(gameRule).setValue(value, type);
         stale = true;
+    }
+
+    public void setGameRule(GameRule gameRule, boolean value) {
+        setGameRule(gameRule, value, Type.BOOLEAN);
     }
 
     public void setGameRule(GameRule gameRule, int value) {
-        if (!gameRules.containsKey(gameRule)) {
-            throw new IllegalArgumentException("Gamerule does not exist");
-        }
-        gameRules.get(gameRule).setValue(value, Type.INTEGER);
-        stale = true;
+        setGameRule(gameRule, value, Type.INTEGER);
     }
 
     public void setGameRule(GameRule gameRule, float value) {
-        if (!gameRules.containsKey(gameRule)) {
-            throw new IllegalArgumentException("Gamerule does not exist");
-        }
-        gameRules.get(gameRule).setValue(value, Type.FLOAT);
-        stale = true;
+        setGameRule(gameRule, value, Type.FLOAT);
     }
 
     public void setGameRules(GameRule gameRule, String value) throws IllegalArgumentException {

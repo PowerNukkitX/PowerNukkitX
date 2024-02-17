@@ -68,8 +68,9 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
         BlockSmallDripleafBlock dripleaf = new BlockSmallDripleafBlock();
         BlockSmallDripleafBlock dripleafTop = new BlockSmallDripleafBlock();
         dripleafTop.setUpperBlock(true);
-        dripleaf.setBlockFace(player.getDirection().getOpposite());
-        dripleafTop.setBlockFace(player.getDirection().getOpposite());
+        BlockFace direction = player != null ? player.getDirection().getOpposite() : BlockFace.SOUTH;
+        dripleaf.setBlockFace(direction);
+        dripleafTop.setBlockFace(direction);
         if (canKeepAlive(block)) {
             this.level.setBlock(block, dripleaf, true, true);
             this.level.setBlock(block.getSide(BlockFace.UP), dripleafTop, true, true);
@@ -123,8 +124,9 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
 
             BlockBigDripleaf blockBigDripleafDown = new BlockBigDripleaf();
             BlockBigDripleaf blockBigDripleafHead = new BlockBigDripleaf();
-            blockBigDripleafDown.setBlockFace(player.getDirection().getOpposite());
-            blockBigDripleafHead.setBlockFace(player.getDirection().getOpposite());
+            BlockFace direction = player != null ? player.getDirection().getOpposite() : BlockFace.SOUTH;
+            blockBigDripleafDown.setBlockFace(direction);
+            blockBigDripleafHead.setBlockFace(direction);
             blockBigDripleafHead.setHead(true);
 
             Block buttom = this.clone();

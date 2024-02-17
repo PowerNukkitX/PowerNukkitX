@@ -19,6 +19,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.annotation.Nonnull;
+
 @Slf4j
 public final class PlayerChunkManager {
     private final LongComparator chunkDistanceComparator = new LongComparator() {
@@ -40,9 +42,9 @@ public final class PlayerChunkManager {
     };
     private final Player player;
     //保存着上tick已经发送的全部区块hash值
-    private final LongOpenHashSet sentChunks;
+    private final @Nonnull LongOpenHashSet sentChunks;
     //保存着这tick将要发送的全部区块hash值
-    private final LongOpenHashSet inRadiusChunks;
+    private final @Nonnull LongOpenHashSet inRadiusChunks;
     private final int chunkTrySendCountPerTick;
     private final LongArrayFIFOQueue chunkSendQueue;
     private final Long2ObjectOpenHashMap<CompletableFuture<IChunk>> chunkLoadingQueue;

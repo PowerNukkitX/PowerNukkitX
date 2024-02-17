@@ -26,7 +26,6 @@ public class CreativeItemTest {
                 compoundTag.getTags().forEach((key, value) -> tagTreeMap.put(Integer.parseInt(key), value));
 
                 for (var entry : tagTreeMap.entrySet()) {
-                    int index = entry.getKey();
                     CompoundTag tag = (CompoundTag) entry.getValue();
                     int damage = tag.getInt("damage");
                     if (tag.containsInt("blockStateHash")) {

@@ -6,7 +6,6 @@ import cn.nukkit.block.BlockBedrock;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityEnderPearl;
-import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
@@ -14,8 +13,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.BlockEventPacket;
-
-import static cn.nukkit.block.BlockID.BEDROCK;
 
 /**
  * @author GoodLucky777
@@ -57,7 +54,7 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
             ListTag<IntTag> exitPortalList = this.namedTag.getList("ExitPortal", IntTag.class);
             this.exitPortal = new BlockVector3(exitPortalList.get(0).data, exitPortalList.get(1).data, exitPortalList.get(2).data);
         } else {
-            this.exitPortal = this.defaultExitPortal.clone();
+            this.exitPortal = defaultExitPortal.clone();
         }
 
         this.teleportCooldown = 0;
@@ -112,10 +109,10 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
 
     public void teleportEntity(Entity entity) {
         if (exitPortal != null) {
-            if (entity instanceof EntityEnderPearl) {
-                if (((EntityProjectile) entity).shootingEntity != null) {
-                    ((EntityProjectile) entity).shootingEntity.teleport(getSafeExitPortal().asVector3().add(0.5, 0, 0.5), TeleportCause.END_GATEWAY);
-                    entity.close();
+            if (entity instanceof EntityEnderPearl enderPearl) {
+                if (enderPearl.shootingEntity != null) {
+                    enderPearl.shootingEntity.teleport(getSafeExitPortal().asVector3().add(0.5, 0, 0.5), TeleportCause.END_GATEWAY);
+                    enderPearl.close();
                 } else {
                     entity.teleport(getSafeExitPortal().asVector3().add(0.5, 0, 0.5), TeleportCause.END_GATEWAY);
                 }

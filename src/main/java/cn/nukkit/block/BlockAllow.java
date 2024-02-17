@@ -7,10 +7,6 @@ import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
-
-@ParametersAreNonnullByDefault
 public class BlockAllow extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(ALLOW);
 

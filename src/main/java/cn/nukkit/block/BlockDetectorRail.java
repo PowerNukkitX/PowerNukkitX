@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.block.property.CommonBlockProperties.ACTIVE;
 import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DATA_BIT;
 
 public class BlockDetectorRail extends BlockRail implements RedstoneComponent {

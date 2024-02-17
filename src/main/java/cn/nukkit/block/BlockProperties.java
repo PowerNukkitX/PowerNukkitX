@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.type.BlockPropertyType;
-import cn.nukkit.block.property.type.EnumPropertyType;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.HashUtils;
