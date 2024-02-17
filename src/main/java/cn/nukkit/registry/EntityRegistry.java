@@ -166,7 +166,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(TADPOLE, "", 133, true, true), EntityTadpole.class);
         registerInternal(new EntityDefinition(ALLAY, "", 134, true, true), EntityAllay.class);
         registerInternal(new EntityDefinition(CAMEL, "", 138, true, true), EntityCamel.class);
-//        registerInternal(new EntityDefinition(SNIFFER, "", 139, true, true), EntitySniffer.class);
+        registerInternal(new EntityDefinition(SNIFFER, "", 139, true, true), EntitySniffer.class);
         registerInternal(new EntityDefinition(TRADER_LLAMA, "", 157, true, true), EntityTraderLlama.class);
         registerInternal(new EntityDefinition(CHEST_BOAT, "", 218, false, true), EntityChestBoat.class);
     }
