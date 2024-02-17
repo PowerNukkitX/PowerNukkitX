@@ -28,7 +28,8 @@ public class MemoryStorage implements IMemoryStorage {
 
     @Override
     public <D> void put(MemoryType<D> type, D data) {
-        if (type.getCodec() instanceof IMemoryCodec<D> codec) {
+        IMemoryCodec<D> codec = type.getCodec();
+        if (codec != null) {
             codec.init(data, entity);
         }
         memoryMap.put(type, data != null ? data : EMPTY_VALUE);

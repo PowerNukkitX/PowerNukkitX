@@ -36,8 +36,6 @@ import cn.nukkit.level.format.leveldb.LevelDBProvider;
 import cn.nukkit.level.tickingarea.manager.SimpleTickingAreaManager;
 import cn.nukkit.level.tickingarea.manager.TickingAreaManager;
 import cn.nukkit.level.tickingarea.storage.JSONTickingAreaStorage;
-import cn.nukkit.level.updater.Updater;
-import cn.nukkit.level.updater.block.BlockStateUpdaterBase;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.metadata.EntityMetadataStore;
 import cn.nukkit.metadata.LevelMetadataStore;
@@ -81,9 +79,6 @@ import cn.nukkit.scheduler.Task;
 import cn.nukkit.scoreboard.manager.IScoreboardManager;
 import cn.nukkit.scoreboard.manager.ScoreboardManager;
 import cn.nukkit.scoreboard.storage.JSONScoreboardStorage;
-import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.tags.BlockTags;
-import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.bugreport.ExceptionHandler;
 import cn.nukkit.utils.collection.FreezableArrayManager;
@@ -701,10 +696,10 @@ public class Server {
             Registries.ENTITY.init();
             Profession.init();
             Registries.BLOCKENTITY.init();
-            String a = BlockTags.ACACIA;
+            /**String a = BlockTags.ACACIA;
             String b = ItemTags.ARROW;
             String c = BiomeTags.WARM;
-            Updater d = BlockStateUpdaterBase.INSTANCE;
+            Updater d = BlockStateUpdaterBase.INSTANCE;*/
             Registries.BLOCKSTATE_ITEMMETA.init();
             Registries.ITEM_RUNTIMEID.init();
             Registries.BLOCK.init();
@@ -862,7 +857,7 @@ public class Server {
                     seed = seedString.hashCode();
                 }
                 //todo nether the_end overworld
-                generatorConfig.put(0, new LevelConfig.GeneratorConfig("flat", seed, DimensionEnum.OVERWORLD.getDimensionData(), Collections.EMPTY_MAP));
+                generatorConfig.put(0, new LevelConfig.GeneratorConfig("flat", seed, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
                 LevelConfig levelConfig = new LevelConfig(this.getConfig().get("level-settings.default-format", "leveldb"), generatorConfig);
                 this.generateLevel(levelFolder, levelConfig);
             }
@@ -2400,7 +2395,7 @@ public class Server {
         } else {
             Map<Integer, LevelConfig.GeneratorConfig> map = new HashMap<>();
             //todo nether the_end overworld
-            map.put(0, new LevelConfig.GeneratorConfig("flat", System.currentTimeMillis(), DimensionEnum.OVERWORLD.getDimensionData(), Collections.EMPTY_MAP));
+            map.put(0, new LevelConfig.GeneratorConfig("flat", System.currentTimeMillis(), DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
             levelConfig = new LevelConfig(LevelProviderManager.getProviderName(provider), map);
             try {
                 config.createNewFile();

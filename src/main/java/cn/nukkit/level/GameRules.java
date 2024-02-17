@@ -84,7 +84,7 @@ public class GameRules {
         if (!gameRules.containsKey(gameRule)) {
             throw new IllegalArgumentException("Gamerule does not exist");
         }
-        gameRules.get(gameRule).setValue(value, type);
+        ((Value<V>) gameRules.get(gameRule)).setValue(value, type);
         stale = true;
     }
 
