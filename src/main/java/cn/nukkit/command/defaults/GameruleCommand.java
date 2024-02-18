@@ -105,7 +105,7 @@ public class GameruleCommand extends VanillaCommand {
             }
             case "unknownGameRules" -> {
                 String value = list.getResult(1);
-                rules.setGameRules(optionalRule.get(), value);
+                rules.setGameRule(optionalRule.get(), value);
             }
         }
         var str = list.getResult(1);

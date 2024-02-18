@@ -100,7 +100,7 @@ public class GameRules {
         setGameRule(gameRule, value, Type.FLOAT);
     }
 
-    public void setGameRules(GameRule gameRule, String value) throws IllegalArgumentException {
+    public void setGameRule(GameRule gameRule, String value) throws IllegalArgumentException {
         Preconditions.checkNotNull(gameRule, "gameRule");
         Preconditions.checkNotNull(value, "value");
 
@@ -170,7 +170,7 @@ public class GameRules {
                 continue;
             }
 
-            setGameRules(gameRule.get(), nbt.getString(key));
+            setGameRule(gameRule.get(), nbt.getString(key));
         }
     }
 
