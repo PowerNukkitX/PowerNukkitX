@@ -169,14 +169,12 @@ public class LevelDBChunkSerializer {
             for (short height : chunk.getHeightMapArray()) {
                 heightAndBiomesBuffer.writeShortLE(height);
             }
-            Palette<Integer> last = null;
             Palette<Integer> biomePalette;
             for (int ySection = chunk.getProvider().getDimensionData().getMinSectionY(); ySection <= chunk.getProvider().getDimensionData().getMaxSectionY(); ySection++) {
                 ChunkSection section = chunk.getSection(ySection);
                 if (section == null) continue;
                 biomePalette = section.biomes();
-                biomePalette.writeToStorageRuntime(heightAndBiomesBuffer, Integer::intValue, last);
-                last = biomePalette;
+                biomePalette.writeToStorageRuntime(heightAndBiomesBuffer, Integer::intValue);
             }
             if (heightAndBiomesBuffer.readableBytes() > 0) {
                 writeBatch.put(LevelDBKeyUtil.DATA_3D.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData()), Utils.convertByteBuf2Array(heightAndBiomesBuffer));
@@ -199,15 +197,13 @@ public class LevelDBChunkSerializer {
                     heights[i] = heightAndBiomesBuffer.readShortLE();
                 }
                 builder.heightMap(heights);
-                Palette<Integer> last = null;
                 Palette<Integer> biomePalette;
                 var minSectionY = builder.getDimensionData().getMinSectionY();
                 for (int y = minSectionY; y <= builder.getDimensionData().getMaxSectionY(); y++) {
                     ChunkSection section = builder.getSections()[y - minSectionY];
                     if (section == null) continue;
                     biomePalette = section.biomes();
-                    biomePalette.readFromStorageRuntime(heightAndBiomesBuffer, Integer::valueOf, last);
-                    last = biomePalette;
+                    biomePalette.readFromStorageRuntime(heightAndBiomesBuffer, Integer::valueOf);
                 }
             } else {
                 byte[] bytes2D = db.get(LevelDBKeyUtil.DATA_2D.getKey(builder.getChunkX(), builder.getChunkZ(), dimensionInfo));

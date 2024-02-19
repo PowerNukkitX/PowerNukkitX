@@ -2,6 +2,7 @@ package cn.nukkit.registry;
 
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.LinkedCompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
@@ -86,7 +87,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
     }
 
     public byte[] getBiomeDefinitionListPacketData() {
-        TreeMapCompoundTag compoundTag = new TreeMapCompoundTag();
+        LinkedCompoundTag compoundTag = new LinkedCompoundTag();
         for (var r : REGISTRY) {
             compoundTag.putCompound(r.getString("name_hash"), r);
         }
