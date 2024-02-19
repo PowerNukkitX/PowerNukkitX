@@ -42,7 +42,7 @@ public final class BooleanPropertyType extends BaseBlockPropertyType<Boolean> {
         throw new IllegalArgumentException("Invalid value for boolean property type: " + value);
     }
 
-    public final class BooleanPropertyValue extends BlockPropertyValue<Boolean, BooleanPropertyType, Byte> {
+    public final class BooleanPropertyValue extends BlockPropertyType.BlockPropertyValue<Boolean, BooleanPropertyType, Byte> {
 
         private final int index;
 

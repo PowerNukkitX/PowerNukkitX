@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.item.Item;
@@ -14,6 +13,8 @@ import cn.nukkit.nbt.tag.Tag;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 
 public class BlockTrappedChest extends BlockChest {
@@ -40,7 +41,7 @@ public class BlockTrappedChest extends BlockChest {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH);
 
         BlockEntityChest chest = null;

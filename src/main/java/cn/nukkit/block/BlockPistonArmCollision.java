@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
@@ -53,10 +54,11 @@ public class BlockPistonArmCollision extends BlockTransparent implements Faceabl
         this.level.setBlock(this, Block.get(BlockID.AIR), true, true);
         Block side = getSide(getBlockFace().getOpposite());
 
-        if (side instanceof BlockPistonBase piston && ((BlockPistonBase) side).getBlockFace() == this.getBlockFace()) {
+        if (side instanceof BlockPistonBase piston && piston.getBlockFace() == this.getBlockFace()) {
             piston.onBreak(item);
 
-            if (piston.getBlockEntity() != null) piston.getBlockEntity().close();
+            BlockEntityPistonArm entity = piston.getBlockEntity();
+            if (entity != null) entity.close();
         }
         return true;
     }

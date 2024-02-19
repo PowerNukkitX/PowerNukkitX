@@ -31,8 +31,8 @@ public class XblUtils {
         }
     }
 
-    public static CompletableFuture test() throws IOException {
-        CompletableFuture future = new CompletableFuture();
+    public static CompletableFuture<Object> test() throws IOException {
+        CompletableFuture<?> future = new CompletableFuture<>();
         ForkJoinPool.commonPool().execute(() -> {
             try {
                 HttpURLConnection connection = (HttpURLConnection) TOKEN_URL.openConnection();
@@ -55,7 +55,6 @@ public class XblUtils {
         });
 
         return CompletableFuture.supplyAsync(() -> {
-
             return null;
         });
     }

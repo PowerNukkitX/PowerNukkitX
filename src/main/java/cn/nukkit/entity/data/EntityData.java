@@ -61,14 +61,14 @@ public abstract class EntityData<T> {
         return id;
     }
 
-    public EntityData setId(int id) {
+    public EntityData<T> setId(int id) {
         this.id = id;
         return this;
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof EntityData && ((EntityData) obj).getId() == this.getId() && Objects.equals(((EntityData) obj).getData(), this.getData());
+        return obj instanceof EntityData data && data.getId() == this.getId() && Objects.equals(data.getData(), this.getData());
     }
 
     private SortedSet<String> readFlags(int offset, long flags) {

@@ -7,7 +7,7 @@ package cn.nukkit.lang;
  *
  * @author MagicDroidX (Nukkit Project)
  */
-public class TranslationContainer extends TextContainer implements Cloneable {
+public class TranslationContainer extends TextContainer {
 
     /**
      * 将参数数组每个下标的参数插入对应占位符{@code {%0,%1,%2...}}

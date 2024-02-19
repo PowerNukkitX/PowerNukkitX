@@ -3,7 +3,6 @@ package cn.nukkit.event.level;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.Level;
-import lombok.Getter;
 
 /**
  * @author funcraft (Nukkit Project)

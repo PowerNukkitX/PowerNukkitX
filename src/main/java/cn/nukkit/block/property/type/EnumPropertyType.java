@@ -51,7 +51,7 @@ public final class EnumPropertyType<T extends Enum<T>> extends BaseBlockProperty
         throw new IllegalArgumentException("Invalid value for enum property type: " + value);
     }
 
-    public final class EnumPropertyValue extends BlockPropertyValue<T, EnumPropertyType<T>, String> {
+    public final class EnumPropertyValue extends BlockPropertyType.BlockPropertyValue<T, EnumPropertyType<T>, String> {
 
         private final String serializedValue;
 

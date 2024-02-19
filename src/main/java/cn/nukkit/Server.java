@@ -862,7 +862,7 @@ public class Server {
                     seed = seedString.hashCode();
                 }
                 //todo nether the_end overworld
-                generatorConfig.put(0, new LevelConfig.GeneratorConfig("flat", seed, DimensionEnum.OVERWORLD.getDimensionData(), Collections.EMPTY_MAP));
+                generatorConfig.put(0, new LevelConfig.GeneratorConfig("flat", seed, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
                 LevelConfig levelConfig = new LevelConfig(this.getConfig().get("level-settings.default-format", "leveldb"), generatorConfig);
                 this.generateLevel(levelFolder, levelConfig);
             }
@@ -1567,7 +1567,7 @@ public class Server {
         Object section = this.getConfig("aliases");
         Map<String, List<String>> result = new LinkedHashMap<>();
         if (section instanceof Map) {
-            for (Map.Entry entry : (Set<Map.Entry>) ((Map) section).entrySet()) {
+            for (Map.Entry<?, ?> entry : (Set<Map.Entry<?, ?>>) ((Map) section).entrySet()) {
                 List<String> commands = new ArrayList<>();
                 String key = (String) entry.getKey();
                 Object value = entry.getValue();
@@ -2400,7 +2400,7 @@ public class Server {
         } else {
             Map<Integer, LevelConfig.GeneratorConfig> map = new HashMap<>();
             //todo nether the_end overworld
-            map.put(0, new LevelConfig.GeneratorConfig("flat", System.currentTimeMillis(), DimensionEnum.OVERWORLD.getDimensionData(), Collections.EMPTY_MAP));
+            map.put(0, new LevelConfig.GeneratorConfig("flat", System.currentTimeMillis(), DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
             levelConfig = new LevelConfig(LevelProviderManager.getProviderName(provider), map);
             try {
                 config.createNewFile();

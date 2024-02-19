@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.level.Level;
 import org.jetbrains.annotations.NotNull;
 

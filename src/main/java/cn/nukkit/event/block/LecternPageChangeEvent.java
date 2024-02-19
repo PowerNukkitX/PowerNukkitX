@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityLectern;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import lombok.Getter;
 
 
 public class LecternPageChangeEvent extends BlockEvent implements Cancellable {

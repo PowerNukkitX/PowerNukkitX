@@ -1,9 +1,6 @@
 package cn.nukkit.event.level;
 
-
 import cn.nukkit.event.HandlerList;
-import lombok.Getter;
-
 
 public class VibrationOccurEvent extends VibrationEvent{
 

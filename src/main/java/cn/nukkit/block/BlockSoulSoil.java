@@ -3,9 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.block.property.CommonBlockProperties.TORCH_FACING_DIRECTION;
-
-
 public class BlockSoulSoil extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(SOUL_SOIL);
 

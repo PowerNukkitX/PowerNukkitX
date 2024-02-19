@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.projectile.SlenderProjectile;
 import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;

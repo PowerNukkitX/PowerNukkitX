@@ -1,6 +1,5 @@
 package cn.nukkit.registry;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.custom.CustomEntity;

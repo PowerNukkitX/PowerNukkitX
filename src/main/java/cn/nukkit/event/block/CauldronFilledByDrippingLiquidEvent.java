@@ -4,8 +4,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.property.enums.CauldronLiquid;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import lombok.Getter;
-
 
 public class CauldronFilledByDrippingLiquidEvent extends BlockEvent implements Cancellable {
 

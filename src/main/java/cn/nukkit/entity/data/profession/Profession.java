@@ -13,6 +13,7 @@ public abstract class Profession {
         knownProfessions.put(profession.getIndex(), profession);
     }
 
+    @SuppressWarnings("unchecked")
     public static HashMap<Integer, Profession> getProfessions() {
         return (HashMap<Integer, Profession>) knownProfessions.clone();
     }

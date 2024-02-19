@@ -11,5 +11,5 @@ public abstract class RelativeNumberNode<T extends Number> extends ParamNode<T> 
         throw new UnsupportedOperationException();
     }
 
-    public abstract <E> E get(T base);
+    public abstract T get(T base);
 }

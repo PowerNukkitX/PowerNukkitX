@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import lombok.Getter;
 
 public class PlayerBedEnterEvent extends PlayerEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();

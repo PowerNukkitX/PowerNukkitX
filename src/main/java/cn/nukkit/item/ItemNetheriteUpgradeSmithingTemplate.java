@@ -1,6 +1,4 @@
-package cn.nukkit.item;
-
-import cn.nukkit.item.Item;
+package cn.nukkit.item;;
 
 public class ItemNetheriteUpgradeSmithingTemplate extends Item {
     public ItemNetheriteUpgradeSmithingTemplate() {

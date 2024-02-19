@@ -1,12 +1,8 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.plugin.InternalPlugin;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ItemGoatHorn extends Item {
     protected int coolDownTick = 140;

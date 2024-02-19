@@ -4,8 +4,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
-import lombok.Getter;
-
 
 public class BlockHarvestEvent extends BlockEvent implements Cancellable {
 

@@ -1,8 +1,6 @@
 package cn.nukkit.network.protocol.types.itemstack.request.action;
 
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
-import lombok.Getter;
 
 public enum ItemStackRequestActionType {
     TAKE(0),

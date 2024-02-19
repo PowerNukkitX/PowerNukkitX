@@ -8,7 +8,6 @@ import cn.nukkit.utils.Rail;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.block.property.CommonBlockProperties.ACTIVE;
 import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DATA_BIT;
 
 public class BlockActivatorRail extends BlockRail implements RedstoneComponent {

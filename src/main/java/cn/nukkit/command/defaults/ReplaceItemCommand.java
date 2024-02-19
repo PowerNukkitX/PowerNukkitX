@@ -94,14 +94,12 @@ public class ReplaceItemCommand extends VanillaCommand {
                 Position pos = list.getResult(1);
                 Block block = pos.getLevelBlock();
                 InventoryHolder holder = null;
-                boolean isHolder = false;
                 if (block instanceof BlockEntityHolder<?> h) {
                     if (h.getBlockEntity() instanceof InventoryHolder ct) {
                         holder = ct;
-                        isHolder = true;
                     }
                 }
-                if (!isHolder) {
+                if (holder == null) {
                     log.addError("commands.replaceitem.noContainer", block.asBlockVector3().toString()).output();
                     return 0;
                 }

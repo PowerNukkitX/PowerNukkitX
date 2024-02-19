@@ -5,7 +5,6 @@ import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
-import lombok.Getter;
 
 /**
  * @author GoodLucky777, Superice666

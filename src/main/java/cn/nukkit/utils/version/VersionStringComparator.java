@@ -16,8 +16,6 @@
  */
 package cn.nukkit.utils.version;
 
-import cn.nukkit.utils.version.Version;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Comparator;
@@ -43,7 +41,7 @@ public class VersionStringComparator implements Comparator<String> {
      */
     @Override
     public int compare(@Nonnull String o1, @Nonnull String o2) {
-        return new cn.nukkit.utils.version.Version(o1).compareTo(new Version(o2));
+        return new Version(o1).compareTo(new Version(o2));
     }
 
     /**
@@ -51,6 +49,7 @@ public class VersionStringComparator implements Comparator<String> {
      * @return The common instance, creates it on first call 
      * @since 0.1.0
      */
+    @SuppressWarnings("null")
     public static @Nonnull VersionStringComparator getInstance() {
         if (instance == null) {
             instance = new VersionStringComparator();

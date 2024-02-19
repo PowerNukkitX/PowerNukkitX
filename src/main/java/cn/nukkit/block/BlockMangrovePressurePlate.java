@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.item.ItemTool;
-import cn.nukkit.math.AxisAlignedBB;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockMangrovePressurePlate extends BlockWoodenPressurePlate {

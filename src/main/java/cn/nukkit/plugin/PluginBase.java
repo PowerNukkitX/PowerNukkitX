@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.LinkedHashMap;
 
 /**
  * 一般的Nukkit插件需要继承的类。<br>

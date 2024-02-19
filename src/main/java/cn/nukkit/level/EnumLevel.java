@@ -1,9 +1,6 @@
 package cn.nukkit.level;
 
-import cn.nukkit.Server;
-import cn.nukkit.level.generator.Generator;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.registry.Registries;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

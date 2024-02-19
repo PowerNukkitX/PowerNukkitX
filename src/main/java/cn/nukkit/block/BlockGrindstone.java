@@ -154,26 +154,12 @@ public class BlockGrindstone extends BlockTransparent implements Faceable, Block
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean checkSupport() {
-        switch (getAttachmentType()) {
-            case STANDING -> {
-                if (checkSupport(down())) {
-                    return true;
-                }
-            }
-            case HANGING -> {
-                if (checkSupport(up())) {
-                    return true;
-                }
-            }
-            case SIDE -> {
-                BlockFace blockFace = getBlockFace();
-                if (checkSupport(getSide(blockFace.getOpposite()))) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return switch (getAttachmentType()) {
+            case STANDING -> checkSupport(down());
+            case HANGING -> checkSupport(up());
+            case SIDE -> checkSupport(getSide(getBlockFace().getOpposite()));
+            default -> false;
+        };
     }
 
     private boolean checkSupport(Block support) {

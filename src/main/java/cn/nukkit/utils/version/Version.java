@@ -54,6 +54,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @return An immutable list containing a mix of {@link Integer} and {@link String} objects
      * @since 0.1.0
      */
+    @SuppressWarnings("null")
     public @Nonnull List<Comparable<?>> getParts() {
         if (list == null) {
             list = parse(original);
@@ -140,6 +141,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @return An immutable list containing {@link Integer} and {@link String} objects
      * @since 0.1.0
      */
+    @SuppressWarnings("null")
     private static @Nonnull List<Comparable<?>> parse(@Nonnull String version) {
         ArrayList<Comparable<?>> parts = new ArrayList<>(5);
         int len = version.length();

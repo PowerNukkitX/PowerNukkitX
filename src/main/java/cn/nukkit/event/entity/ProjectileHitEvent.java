@@ -4,7 +4,6 @@ import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.MovingObjectPosition;
-import lombok.Getter;
 
 /**
  * @author MagicDroidX (Nukkit Project)

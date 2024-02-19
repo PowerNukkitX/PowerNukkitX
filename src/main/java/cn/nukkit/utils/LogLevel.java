@@ -7,7 +7,7 @@ import java.util.function.BiConsumer;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public enum LogLevel implements Comparable<LogLevel> {
+public enum LogLevel {
     NONE((logger, message) -> {
     }, (mainLogger, s, throwable) -> {
     }),

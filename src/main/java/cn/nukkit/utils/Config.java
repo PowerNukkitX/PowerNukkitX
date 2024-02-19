@@ -252,7 +252,7 @@ public class Config {
                     break;
                 case Config.ENUM:
                     for (Object o : this.config.entrySet()) {
-                        Map.Entry entry = (Map.Entry) o;
+                        Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
                         content.append(entry.getKey()).append("\r\n");
                     }
                     break;
@@ -364,11 +364,11 @@ public class Config {
         return config.isBoolean(key);
     }
 
-    public List getList(String key) {
+    public List<?> getList(String key) {
         return this.getList(key, null);
     }
 
-    public List getList(String key, List defaultList) {
+    public List<?> getList(String key, List<?> defaultList) {
         return this.correct ? this.config.getList(key, defaultList) : defaultList;
     }
 
@@ -412,7 +412,7 @@ public class Config {
         return config.getShortList(key);
     }
 
-    public List<Map> getMapList(String key) {
+    public List<Map<?, ?>> getMapList(String key) {
         return config.getMapList(key);
     }
 
@@ -481,7 +481,7 @@ public class Config {
     private String writeProperties() {
         StringBuilder content = new StringBuilder("#Properties Config file\r\n#" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()) + "\r\n");
         for (Object o : this.config.entrySet()) {
-            Map.Entry entry = (Map.Entry) o;
+            Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
             Object v = entry.getValue();
             Object k = entry.getKey();
             if (v instanceof Boolean) {

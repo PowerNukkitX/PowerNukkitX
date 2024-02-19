@@ -2,7 +2,6 @@ package cn.nukkit.network.connection.netty.codec.batch;
 
 import cn.nukkit.network.connection.netty.BedrockBatchWrapper;
 import cn.nukkit.utils.ByteBufVarInt;
-import cn.nukkit.utils.VarInt;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;

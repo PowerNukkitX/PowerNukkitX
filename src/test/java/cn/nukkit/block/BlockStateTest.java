@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.type.BlockPropertyType;
 import lombok.SneakyThrows;

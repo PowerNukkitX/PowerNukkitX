@@ -4,7 +4,6 @@ import cn.nukkit.block.BlockHopper;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.HandlerList;
-import lombok.Getter;
 
 
 public class HopperSearchItemEvent extends Event implements Cancellable {

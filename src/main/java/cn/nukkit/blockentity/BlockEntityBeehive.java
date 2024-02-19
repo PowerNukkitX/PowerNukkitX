@@ -59,7 +59,6 @@ public class BlockEntityBeehive extends BlockEntity {
 
         // Backward compatibility
         if (this.namedTag.contains("HoneyLevel")) {
-            int faceHorizontalIndex = 0;
             Block block = getBlock();
             if (block instanceof BlockBeehive beehive) {
                 int honeyLevel = this.namedTag.getByte("HoneyLevel");

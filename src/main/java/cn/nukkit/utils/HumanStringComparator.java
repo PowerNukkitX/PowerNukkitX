@@ -126,6 +126,7 @@ public class HumanStringComparator implements Comparator<String> {
         return Integer.compare(len1, len2);
     }
 
+    @SuppressWarnings("null")
     private boolean detectOmittedNumber(List<String> l1, int len1, int i, String str2, int strLen2, int minStrLen, String commonPart1) {
         String combined;
         String comparingWith;

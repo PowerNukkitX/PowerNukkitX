@@ -47,6 +47,7 @@ public enum OptionalBoolean {
         return EMPTY;
     }
 
+    @SuppressWarnings("null")
     public boolean getAsBoolean() {
         if (value == null) {
             throw new NoSuchElementException("No value present");

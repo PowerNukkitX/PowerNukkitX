@@ -17,7 +17,6 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
@@ -99,12 +98,10 @@ public class BlockSkull extends BlockTransparent implements RedstoneComponent, B
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        switch (face) {
-            case NORTH, SOUTH, EAST, WEST, UP -> setBlockFace(face);
-            default -> {
-                return false;
-            }
+        if (face == BlockFace.DOWN) {
+            return false;
         }
+        setBlockFace(face);
         CompoundTag nbt = new CompoundTag()
                 .putByte("SkullType", item.getDamage())
                 .putByte("Rot", (int) Math.floor((player.yaw * 16 / 360) + 0.5) & 0x0f);

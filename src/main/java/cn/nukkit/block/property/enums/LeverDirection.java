@@ -1,6 +1,5 @@
 package cn.nukkit.block.property.enums;
 
-import cn.nukkit.block.BlockLever;
 import cn.nukkit.math.BlockFace;
 
 /**

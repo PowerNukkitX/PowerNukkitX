@@ -13,6 +13,7 @@ import it.unimi.dsi.fastutil.longs.LongComparator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -40,9 +41,9 @@ public final class PlayerChunkManager {
     };
     private final Player player;
     //保存着上tick已经发送的全部区块hash值
-    private final LongOpenHashSet sentChunks;
+    private final @NotNull LongOpenHashSet sentChunks;
     //保存着这tick将要发送的全部区块hash值
-    private final LongOpenHashSet inRadiusChunks;
+    private final @NotNull LongOpenHashSet inRadiusChunks;
     private final int chunkTrySendCountPerTick;
     private final LongArrayFIFOQueue chunkSendQueue;
     private final Long2ObjectOpenHashMap<CompletableFuture<IChunk>> chunkLoadingQueue;

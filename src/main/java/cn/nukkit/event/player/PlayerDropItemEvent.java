@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
-import lombok.Getter;
 
 public class PlayerDropItemEvent extends PlayerEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();

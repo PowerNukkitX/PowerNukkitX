@@ -60,8 +60,8 @@ public class ConvertingSetWrapper<V1, V2> extends AbstractSet<V1> {
 
     @Override
     public boolean contains(Object o) {
-        Function uncheckedConverter = converter;
-        Object converted = uncheckedConverter.apply(o);
+        Function<V1, V2> uncheckedConverter = converter;
+        Object converted = uncheckedConverter.apply((V1) o);
         return proxied.contains(converted);
     }
 
@@ -72,8 +72,8 @@ public class ConvertingSetWrapper<V1, V2> extends AbstractSet<V1> {
 
     @Override
     public boolean remove(Object o) {
-        Function uncheckedConverter = converter;
-        Object converted = uncheckedConverter.apply(o);
+        Function<V1, V2> uncheckedConverter = converter;
+        Object converted = uncheckedConverter.apply((V1) o);
         return proxied.remove(converted);
     }
 

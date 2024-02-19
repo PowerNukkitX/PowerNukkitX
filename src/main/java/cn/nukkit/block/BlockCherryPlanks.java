@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCherryPlanks extends BlockPlanks {
