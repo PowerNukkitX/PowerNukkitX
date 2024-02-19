@@ -20,6 +20,7 @@ import cn.nukkit.item.ItemTurtleHelmet;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.FloatTag;
@@ -387,7 +388,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
      * @param speed 速度大小<br>Speed value
      */
     public void setMovementSpeed(float speed) {
-        this.movementSpeed = speed;
+        this.movementSpeed = (float) NukkitMath.round(speed,2);
     }
 
     public int getAirTicks() {

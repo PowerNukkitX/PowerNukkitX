@@ -684,8 +684,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         //Weather
         this.getLevel().sendWeather(this);
 
-        this.setMovementSpeed(DEFAULT_SPEED);
-
         //FoodLevel
         PlayerFood food = this.getFoodData();
         if (food.isHungry()) {

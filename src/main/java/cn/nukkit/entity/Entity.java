@@ -819,7 +819,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return 0;
     }
 
-
     public int getFrostbiteInjury() {
         return 1;
     }
