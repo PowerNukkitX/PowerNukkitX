@@ -48,7 +48,7 @@ public final class PlayerChunkManager {
     private final LongArrayFIFOQueue chunkSendQueue;
     private final Long2ObjectOpenHashMap<CompletableFuture<IChunk>> chunkLoadingQueue;
     private final Long2ObjectOpenHashMap<IChunk> chunkReadyToSend;
-    private long lastLoaderChunkPosHashed = -1;
+    private long lastLoaderChunkPosHashed = Long.MAX_VALUE;
 
     public PlayerChunkManager(Player player) {
         this.player = player;
