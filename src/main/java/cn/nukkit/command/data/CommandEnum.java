@@ -20,7 +20,7 @@ public class CommandEnum {
             .map(name -> name.startsWith(Identifier.DEFAULT_NAMESPACE) ? name.substring(10) : name)
             .toList());
 
-    public static final CommandEnum ENUM_EFFECT = new CommandEnum("Effect", () -> Registries.EFFECT.getEffectStringId2TypeMap()
+    public static final CommandEnum ENUM_EFFECT = new CommandEnum("Effect", Registries.EFFECT.getEffectStringId2TypeMap()
             .keySet()
             .stream()
             .toList());
