@@ -16,18 +16,19 @@ public class SessionStartHandler extends NetworkSessionPacketHandler {
 
     @Override
     public void handle(RequestNetworkSettingsPacket pk) {
-        var server = session.getServer();
-        if (server.getIPBans().isBanned(session.getAddressString())) {
-            String reason = server.getIPBans().getEntires().get(session.getAddressString()).getReason();
-            session.disconnect(!reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
-            return;
-        }
-
         int protocol = pk.protocolVersion;
         if (protocol != ProtocolInfo.CURRENT_PROTOCOL) {
             session.sendPlayStatus(protocol < ProtocolInfo.CURRENT_PROTOCOL ? PlayStatusPacket.LOGIN_FAILED_CLIENT : PlayStatusPacket.LOGIN_FAILED_SERVER, true);
             var message = protocol < ProtocolInfo.CURRENT_PROTOCOL ? "disconnectionScreen.outdatedClient" : "disconnectionScreen.outdatedServer";
             session.disconnect(message);
+            return;
+        }
+
+        var server = session.getServer();
+        if (server.getIPBans().isBanned(session.getAddressString())) {
+            String reason = server.getIPBans().getEntires().get(session.getAddressString()).getReason();
+            session.disconnect(!reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
+            return;
         }
 /*
         if (player.loggedIn) {

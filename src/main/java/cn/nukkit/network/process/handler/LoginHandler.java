@@ -55,6 +55,7 @@ public class LoginHandler extends NetworkSessionPacketHandler {
         //Verify the number of server player
         if (server.getOnlinePlayers().size() >= server.getMaxPlayers()) {
             session.disconnect("disconnectionScreen.serverFull");
+            return;
         }
 
         //set proxy ip
