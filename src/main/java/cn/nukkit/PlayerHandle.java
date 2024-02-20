@@ -38,22 +38,6 @@ public final class PlayerHandle {
         this.player = player;
     }
 
-    public NetworkSession getNetworkSession() {
-        return player.networkSession;
-    }
-
-    public void sendPlayStatus(int status) {
-        player.sendPlayStatus(status);
-    }
-
-    public void sendPlayStatus(int status, boolean immediate) {
-        player.sendPlayStatus(status, immediate);
-    }
-
-    public void forceSendEmptyChunks() {
-        player.forceSendEmptyChunks();
-    }
-
     public void removeWindow(Inventory inventory) {
         player.removeWindow(inventory);
     }
@@ -355,12 +339,6 @@ public final class PlayerHandle {
 
     public void offerMovementTask(Location newPosition) {
         player.offerMovementTask(newPosition);
-    }
-
-    @DeprecationDetails(since = "1.19.60-r1", reason = "use handleMovement")
-    @Deprecated
-    public void processMovement(int tickDiff) {
-        player.processMovement(tickDiff);
     }
 
     public void handleLogicInMove(boolean invalidMotion, double distance) {
