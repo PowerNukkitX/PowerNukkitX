@@ -2969,6 +2969,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             foodData.sendFood();
         }
 
+        if(tickDiff%4==0){
+            int biomeId = getChunk().getBiomeId(getFloorX() & 15, getFloorY() - 1, getFloorZ() & 15);
+            sendPopup("BiomeId: " + biomeId);
+        }
+
         return true;
     }
 

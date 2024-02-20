@@ -42,6 +42,10 @@ public final class Palette<V> {
         this.palette.add(first);
     }
 
+    private static int getCopyLastFlagHeader() {
+        return (0x7F << 1) | 1;
+    }
+
     public V get(int index) {
         return this.palette.get(this.bitArray.get(index));
     }
@@ -59,6 +63,26 @@ public final class Palette<V> {
      */
     public void writeToNetwork(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer) {
         writeWords(byteBuf, serializer);
+    }
+
+    public void writeToNetwork(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer, Palette<V> last) {
+        if (last != null && last.palette.equals(this.palette)) {
+            byteBuf.writeByte(Palette.getCopyLastFlagHeader());
+            return;
+        }
+
+        if (this.isEmpty()) {
+            byteBuf.writeByte(Palette.getPaletteHeader(BitArrayVersion.V0, true));
+            byteBuf.writeIntLE(serializer.serialize(this.palette.get(0)));
+            return;
+        }
+
+        byteBuf.writeByte(getPaletteHeader(this.bitArray.version(), true));
+
+        for (int word : this.bitArray.words()) byteBuf.writeIntLE(word);
+
+        this.bitArray.writeSizeToNetwork(byteBuf, this.palette.size());
+        for (V value : this.palette) ByteBufVarInt.writeInt(byteBuf, serializer.serialize(value));
     }
 
     public void readFromNetwork(ByteBuf byteBuf, RuntimeDataDeserializer<V> deserializer) {
@@ -163,13 +187,13 @@ public final class Palette<V> {
     }
 
     public boolean isEmpty() {
-        boolean result = this.palette.size() <= 1;
-        for (int word : this.bitArray.words())
-            if (Integer.toUnsignedLong(word) != 0L) {
-                result = false;
-                break;
-            }
-        return result;
+        if(this.palette.size() == 1) return true;
+
+        for(int word : this.bitArray.words())
+            if(Integer.toUnsignedLong(word) != 0L)
+                return false;
+
+        return true;
     }
 
     private void writeWords(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer) {

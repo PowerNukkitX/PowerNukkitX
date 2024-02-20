@@ -258,10 +258,12 @@ public class LevelDBProvider implements LevelProvider {
                 }
                 // Write biomes
                 Palette<Integer> lastBiomes = null;
-                for (int i = 0; i < total; i++) {
-                    sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue);
+                int last = total - 1;
+                for (int i = 0; i < last; i++) {
+                    sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue, lastBiomes);
                     lastBiomes = sections[i].biomes();
                 }
+                lastBiomes.writeToNetwork(byteBuf, Integer::intValue);
 
                 byteBuf.writeByte(0); // edu- border blocks
 

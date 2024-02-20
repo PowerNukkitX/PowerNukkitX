@@ -2,7 +2,6 @@ package cn.nukkit.registry;
 
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.LinkedCompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
@@ -15,9 +14,15 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.ByteOrder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefinition, BiomeRegistry.BiomeDefinition> {
@@ -87,12 +92,10 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
     }
 
     public byte[] getBiomeDefinitionListPacketData() {
-        LinkedCompoundTag compoundTag = new LinkedCompoundTag();
-        for (var r : REGISTRY) {
-            compoundTag.putCompound(r.getString("name_hash"), r);
-        }
-        try {
-            return NBTIO.write(compoundTag, ByteOrder.BIG_ENDIAN, true);
+        //todo Figure out the mapping of custom biomes
+        try (InputStream resourceAsStream = BiomeRegistry.class.getClassLoader().getResourceAsStream("biome_definitions_vanilla.nbt")){
+            assert resourceAsStream != null;
+            return resourceAsStream.readAllBytes();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
