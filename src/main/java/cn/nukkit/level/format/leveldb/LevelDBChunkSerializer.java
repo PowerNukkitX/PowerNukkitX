@@ -7,7 +7,6 @@ import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
-import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
@@ -214,7 +213,6 @@ public class LevelDBChunkSerializer {
                         heights[i] = heightAndBiomesBuffer.readShortLE();
                     }
                     builder.heightMap(heights);
-                    Palette<Integer> biomePalette = new Palette<>(BiomeID.PLAINS);
                     byte[] biomes = new byte[256];
                     heightAndBiomesBuffer.readBytes(biomes);
 
@@ -222,7 +220,7 @@ public class LevelDBChunkSerializer {
                     for (int y = minSectionY; y <= builder.getDimensionData().getMaxSectionY(); y++) {
                         ChunkSection section = builder.getSections()[y - minSectionY];
                         if (section == null) continue;
-                        biomePalette = section.biomes();
+                        final Palette<Integer> biomePalette = section.biomes();
                         for (int x = 0; x < 16; x++) {
                             for (int z = 0; z < 16; z++) {
                                 for (int sy = 0; sy < 16; sy++) {
