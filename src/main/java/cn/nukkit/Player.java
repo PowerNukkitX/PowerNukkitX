@@ -4521,7 +4521,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
         //state update
         this.positionChanged = true;
+
         this.nextChunkOrderRun = 0;
+        this.playerChunkManager.handleTeleport();
+
         //DummyBossBar
         this.getDummyBossBars().values().forEach(DummyBossBar::reshow);
         //Weather
