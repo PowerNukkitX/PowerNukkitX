@@ -12,7 +12,6 @@ import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
-import cn.nukkit.level.format.palette.Palette;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
@@ -257,13 +256,10 @@ public class LevelDBProvider implements LevelProvider {
                     sections[i].writeToBuf(byteBuf);
                 }
                 // Write biomes
-                Palette<Integer> lastBiomes = null;
                 int last = total - 1;
                 for (int i = 0; i < last; i++) {
-                    sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue, lastBiomes);
-                    lastBiomes = sections[i].biomes();
+                    sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue);
                 }
-                lastBiomes.writeToNetwork(byteBuf, Integer::intValue);
 
                 byteBuf.writeByte(0); // edu- border blocks
 
