@@ -653,7 +653,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected void doFirstSpawn() {
         this.spawned = true;
 
-        syncInventory();
+        this.getNetworkSession().syncInventory();
 
         this.setEnableClientCommand(true);
 
@@ -729,15 +729,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.getHealth() < 1) {
             this.setHealth(0);
         }
-    }
-
-    private void syncInventory() {
-        this.inventory.sendHeldItem(this);
-
-        this.inventory.sendContents(this);
-        this.inventory.sendArmorContents(this);
-        this.getCursorInventory().sendContents(this);
-        this.offhandInventory.sendContents(this);
     }
 
     @Override
@@ -1867,12 +1858,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public void setEnableClientCommand(boolean enable) {
         this.enableClientCommand = enable;
-        SetCommandsEnabledPacket pk = new SetCommandsEnabledPacket();
-        pk.enabled = enable;
-        this.dataPacket(pk);
-        if (enable) {
-            this.getNetworkSession().syncAvailableCommands();
-        }
+        this.getNetworkSession().setEnableClientCommand(enable);
     }
 
     @Override

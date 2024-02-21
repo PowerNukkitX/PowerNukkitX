@@ -23,6 +23,7 @@ import cn.nukkit.network.protocol.DisconnectPacket;
 import cn.nukkit.network.protocol.NetworkSettingsPacket;
 import cn.nukkit.network.protocol.PacketHandler;
 import cn.nukkit.network.protocol.PlayStatusPacket;
+import cn.nukkit.network.protocol.SetCommandsEnabledPacket;
 import cn.nukkit.player.info.PlayerInfo;
 import cn.nukkit.registry.Registries;
 import com.github.oxo42.stateless4j.StateMachine;
@@ -89,7 +90,6 @@ public class NetworkSession {
 
         cfg.configure(NetworkSessionState.RESOURCE_PACK)
                 .onEntry(() -> this.setPacketHandler(new ResourcePackHandler(this)))
-                .onExit(this::onServerLoginCompletion)
                 .permit(NetworkSessionState.PRE_SPAWN, NetworkSessionState.PRE_SPAWN);
 
         cfg.configure(NetworkSessionState.PRE_SPAWN)
@@ -105,7 +105,7 @@ public class NetworkSession {
                     player.processLogin();
                     this.setPacketHandler(new SpawnResponseHandler(this));
                     // The reason why teleport player to their position is for gracefully client-side spawn,
-                    // although we need some hacks, It definitely worth it.
+                    // although we need some hacks, It definitely a fairly trade.
                     player.setImmobile(true); //TODO: HACK: fix client-side falling pre-spawn
                     handle.doFirstSpawn();
                 })
@@ -185,10 +185,6 @@ public class NetworkSession {
     private void onServerLoginSuccess() {
         log.debug("Login completed");
         this.sendPlayStatus(PlayStatusPacket.LOGIN_SUCCESS, false);
-    }
-
-    private void onServerLoginCompletion() {
-
     }
 
     private void onClientSpawned() {
@@ -311,5 +307,24 @@ public class NetworkSession {
         var pk = new CreativeContentPacket();
         pk.entries = Registries.CREATIVE.getCreativeItems();
         this.sendDataPacket(pk);
+    }
+
+    public void syncInventory() {
+        player.getInventory().sendHeldItem(player);
+
+        player.getInventory().sendContents(player);
+        player.getInventory().sendArmorContents(player);
+        player.getCursorInventory().sendContents(player);
+        player.getOffhandInventory().sendContents(player);
+        player.getEnderChestInventory().sendContents(player);
+    }
+
+    public void setEnableClientCommand(boolean enable) {
+        var pk = new SetCommandsEnabledPacket();
+        pk.enabled = enable;
+        this.sendDataPacket(pk);
+        if (enable) {
+            this.syncAvailableCommands();
+        }
     }
 }

@@ -7,7 +7,6 @@ import cn.nukkit.network.process.NetworkSessionState;
 import cn.nukkit.network.protocol.AvailableEntityIdentifiersPacket;
 import cn.nukkit.network.protocol.BiomeDefinitionListPacket;
 import cn.nukkit.network.protocol.ItemComponentPacket;
-import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.network.protocol.RequestChunkRadiusPacket;
 import cn.nukkit.network.protocol.SetLocalPlayerAsInitializedPacket;
 import cn.nukkit.network.protocol.StartGamePacket;
@@ -79,6 +78,9 @@ public class SpawnResponseHandler extends NetworkSessionPacketHandler {
 
         log.debug("Sending actor metadata");
         player.sendData(player);
+
+        log.debug("Sending inventory");
+        this.session.syncInventory();
 
         log.debug("Sending creative content");
         this.session.syncCreativeContent();
