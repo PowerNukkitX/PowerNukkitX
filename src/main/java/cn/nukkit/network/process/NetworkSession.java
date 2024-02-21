@@ -6,7 +6,6 @@ import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.event.player.PlayerCreationEvent;
-import cn.nukkit.event.player.PlayerLocallyInitializedEvent;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.network.connection.BedrockServerSession;
@@ -192,8 +191,6 @@ public class NetworkSession {
         player.setImmobile(false); //TODO: HACK: we set this during the spawn sequence to prevent the client sending junk movements
 
         handle.onPlayerLocallyInitialized();
-        PlayerLocallyInitializedEvent locallyInitializedEvent = new PlayerLocallyInitializedEvent(handle.player);
-        handle.player.getServer().getPluginManager().callEvent(locallyInitializedEvent);
     }
 
     private void onServerDeath() {
