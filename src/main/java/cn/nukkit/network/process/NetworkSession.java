@@ -117,6 +117,10 @@ public class NetworkSession {
                     }
                     this.onPlayerCreated(player);
                     player.processLogin();
+                    this.setPacketHandler(new SpawnResponseHandler(this));
+                    // The reason why teleport player to their position is for gracefully client-side spawn,
+                    // although we need some hacks, It is definitely a fairly worthy trade.
+                    this.player.setImmobile(true); //TODO: HACK: fix client-side falling pre-spawn
                 })
                 .onExit(this::onClientSpawned)
                 .permit(NetworkSessionState.IN_GAME, NetworkSessionState.IN_GAME);
@@ -141,10 +145,6 @@ public class NetworkSession {
         if (!state.equals(NetworkSessionState.PRE_SPAWN)) {
             throw new IllegalStateException("attempt to notifyTerrainReady when the state is " + state.name());
         }
-        this.setPacketHandler(new SpawnResponseHandler(this));
-        // The reason why teleport player to their position is for gracefully client-side spawn,
-        // although we need some hacks, It is definitely a fairly worthy trade.
-        this.player.setImmobile(true); //TODO: HACK: fix client-side falling pre-spawn
         handle.doFirstSpawn();
     }
 
