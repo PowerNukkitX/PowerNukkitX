@@ -1301,6 +1301,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return false;
     }
 
+    @Override
+    public boolean isBanned() {
+        return this.server.getNameBans().isBanned(this.getName());
+    }
+
     protected void respawn() {
         //the player cant respawn if the server is hardcore
         if (this.server.isHardcore()) {
@@ -2283,10 +2288,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * <p>
      * Get the network latency of the player.
      *
-     * @return long
+     * @return int
      */
-    public long getPing() {
-        return this.getNetworkSession().getPing();
+    public int getPing() {
+        return (int) this.getNetworkSession().getPing();
     }
 
     public boolean sleepOn(Vector3 pos) {
@@ -5374,9 +5379,5 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public int getChunkSendCountPerTick() {
         return chunksPerTick;
-    }
-
-    public void sendCreativeContents() {
-
     }
 }

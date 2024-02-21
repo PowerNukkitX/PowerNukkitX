@@ -36,6 +36,10 @@ public final class PlayerHandle {
         this.player = player;
     }
 
+    public void forceSendEmptyChunks() {
+        player.forceSendEmptyChunks();
+    }
+
     public void removeWindow(Inventory inventory) {
         player.removeWindow(inventory);
     }

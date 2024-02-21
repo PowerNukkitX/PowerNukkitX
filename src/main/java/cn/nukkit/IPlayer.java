@@ -45,11 +45,22 @@ public interface IPlayer extends ServerOperator, Metadatable {
     UUID getUniqueId();
 
     /**
+     * 返回这个玩家是否被封禁(ban)。<br>
+     * Returns if this player is banned.
+     *
+     * @return 这个玩家的名称。<br>The name of this player.
+     * @see #setBanned
+     * @since Nukkit 1.0 | Nukkit API 1.0.0
+     */
+    boolean isBanned();
+
+    /**
      * 设置这个玩家是否被封禁(ban)。<br>
      * Sets this player to be banned or to be pardoned.
      *
      * @param value 如果为{@code true}，封禁这个玩家。如果为{@code false}，解封这个玩家。<br>
      *              {@code true} for ban and {@code false} for pardon.
+     * @see #isBanned
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     void setBanned(boolean value);
