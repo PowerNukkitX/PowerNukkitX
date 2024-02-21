@@ -91,7 +91,9 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
         if (!this.packetQueue.isEmpty()) {
             BedrockPacketWrapper packet;
             while ((packet = this.packetQueue.poll()) != null) {
-                this.channel.write(packet);
+                if (this.isConnected()) {
+                    this.channel.write(packet);
+                }
             }
             this.channel.flush();
         }

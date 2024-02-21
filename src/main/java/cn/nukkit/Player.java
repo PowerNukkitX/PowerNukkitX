@@ -2875,6 +2875,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.nextChunkOrderRun-- <= 0 || this.chunk == null) {
             playerChunkManager.tick();
         }
+
+        if (this.chunkLoadCount >= this.spawnThreshold && !this.spawned && loggedIn) {
+            this.getNetworkSession().notifyTerrainReady();
+        }
     }
 
     public boolean canInteract(Vector3 pos, double maxDistance) {
