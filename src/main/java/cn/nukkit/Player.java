@@ -116,6 +116,7 @@ import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
 import cn.nukkit.permission.PermissionAttachmentInfo;
+import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.registry.Registries;
@@ -1478,7 +1479,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.setDataProperty(new ShortEntityData(Player.DATA_AIR, 400), false);
         this.fireTicks = 0;
         this.collisionBlocks = null;
-        this.deadTicks = 0;
         this.noDamageTicks = 60;
 
         this.removeAllEffects();
@@ -2824,10 +2824,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.despawnFromAll();
                 return true;
             }
-            ++this.deadTicks;
-            if (this.deadTicks >= 10) {
-                this.despawnFromAll();
-            }
+            server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, this::despawnFromAll, 10);
             return true;
         }
 

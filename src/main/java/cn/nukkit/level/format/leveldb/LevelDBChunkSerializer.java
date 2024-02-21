@@ -276,46 +276,42 @@ public class LevelDBChunkSerializer {
     private void serializeTileAndEntity(WriteBatch writeBatch, IChunk chunk) {
         //Write blockEntities
         Collection<BlockEntity> blockEntities = chunk.getBlockEntities().values();
-        if (!blockEntities.isEmpty()) {
-            ByteBuf tileBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
-            try (var bufStream = new ByteBufOutputStream(tileBuffer)) {
-                byte[] key = LevelDBKeyUtil.BLOCK_ENTITIES.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData());
-                if (blockEntities.isEmpty()) writeBatch.delete(key);
-                else {
-                    for (BlockEntity blockEntity : blockEntities) {
-                        blockEntity.saveNBT();
-                        NBTIO.write(blockEntity.namedTag, bufStream, ByteOrder.LITTLE_ENDIAN);
-                    }
-                    writeBatch.put(key, Utils.convertByteBuf2Array(tileBuffer));
+        ByteBuf tileBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
+        try (var bufStream = new ByteBufOutputStream(tileBuffer)) {
+            byte[] key = LevelDBKeyUtil.BLOCK_ENTITIES.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData());
+            if (blockEntities.isEmpty()) writeBatch.delete(key);
+            else {
+                for (BlockEntity blockEntity : blockEntities) {
+                    blockEntity.saveNBT();
+                    NBTIO.write(blockEntity.namedTag, bufStream, ByteOrder.LITTLE_ENDIAN);
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } finally {
-                tileBuffer.release();
+                writeBatch.put(key, Utils.convertByteBuf2Array(tileBuffer));
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            tileBuffer.release();
         }
 
         Collection<Entity> entities = chunk.getEntities().values();
-        if (!entities.isEmpty()) {
-            ByteBuf entityBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
-            try (var bufStream = new ByteBufOutputStream(entityBuffer)) {
-                byte[] key = LevelDBKeyUtil.ENTITIES.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData());
-                if (entities.isEmpty()) {
-                    writeBatch.delete(key);
-                } else {
-                    for (Entity e : entities) {
-                        if (!(e instanceof Player) && !e.closed && e.canBeSavedWithChunk()) {
-                            e.saveNBT();
-                            NBTIO.write(e.namedTag, bufStream, ByteOrder.LITTLE_ENDIAN);
-                        }
+        ByteBuf entityBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
+        try (var bufStream = new ByteBufOutputStream(entityBuffer)) {
+            byte[] key = LevelDBKeyUtil.ENTITIES.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData());
+            if (entities.isEmpty()) {
+                writeBatch.delete(key);
+            } else {
+                for (Entity e : entities) {
+                    if (!(e instanceof Player) && !e.closed && e.canBeSavedWithChunk()) {
+                        e.saveNBT();
+                        NBTIO.write(e.namedTag, bufStream, ByteOrder.LITTLE_ENDIAN);
                     }
-                    writeBatch.put(key, Utils.convertByteBuf2Array(entityBuffer));
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } finally {
-                entityBuffer.release();
+                writeBatch.put(key, Utils.convertByteBuf2Array(entityBuffer));
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            entityBuffer.release();
         }
     }
 }
