@@ -1,6 +1,5 @@
 package cn.nukkit;
 
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.Entity;
@@ -12,7 +11,6 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.process.NetworkSession;
 import cn.nukkit.network.protocol.PlayerFogPacket;
 import cn.nukkit.network.protocol.types.PlayerBlockActionData;
 import cn.nukkit.scheduler.AsyncTask;
@@ -287,10 +285,6 @@ public final class PlayerHandle {
 
     public void setPreLoginEventTask(AsyncTask preLoginEventTask) {
         player.preLoginEventTask = preLoginEventTask;
-    }
-
-    public void completeLoginSequence() {
-        player.completeLoginSequence();
     }
 
     public void onPlayerLocallyInitialized() {

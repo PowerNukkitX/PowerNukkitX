@@ -18,9 +18,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.camera.data.CameraPreset;
-import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.command.utils.RawText;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.Attribute;
@@ -35,7 +33,6 @@ import cn.nukkit.entity.data.ShortEntityData;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.entity.data.Vector3fEntityData;
-import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.entity.item.EntityItem;
@@ -417,7 +414,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param gamemode 服务端侧游戏模式
      * @return 网络层游戏模式ID
      */
-    private static int toNetworkGamemode(int gamemode) {
+    public static int toNetworkGamemode(int gamemode) {
         return gamemode != SPECTATOR ? gamemode : GameType.SPECTATOR.ordinal();
     }
 
@@ -628,6 +625,27 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Override
     protected void initEntity() {
         super.initEntity();
+        Level level = null;
+        if (this.namedTag.containsString("SpawnLevel")) {
+            level = this.server.getLevelByName(this.namedTag.getString("SpawnLevel"));
+        }
+        if (this.namedTag.containsString("SpawnBlockLevel")) {
+            level = this.server.getLevelByName(this.namedTag.getString("SpawnBlockLevel"));
+        }
+        if (level != null) {
+            if (this.namedTag.containsInt("SpawnX") && this.namedTag.containsInt("SpawnY") && this.namedTag.containsInt("SpawnZ")) {
+                this.spawnPosition = new Position(this.namedTag.getInt("SpawnX"), this.namedTag.getInt("SpawnY"), this.namedTag.getInt("SpawnZ"), level);
+            } else {
+                this.spawnPosition = null;
+            }
+            if (this.namedTag.containsInt("SpawnBlockPositionX") && this.namedTag.containsInt("SpawnBlockPositionY")
+                    && this.namedTag.containsInt("SpawnBlockPositionZ")) {
+                this.spawnBlockPosition = new Position(namedTag.getInt("SpawnBlockPositionX"), namedTag.getInt("SpawnBlockPositionY"), namedTag.getInt("SpawnBlockPositionZ"), level);
+            } else {
+                this.spawnBlockPosition = null;
+            }
+        }
+        this.loggedIn = true;
         this.addDefaultWindows();
     }
 
@@ -1235,122 +1253,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-    /**
-     * 异步登录任务成功完成后执行
-     */
-    protected void completeLoginSequence() {
-        Level level = null;
-        if (this.namedTag.containsString("SpawnLevel")) {
-            level = this.server.getLevelByName(this.namedTag.getString("SpawnLevel"));
-        }
-        if (this.namedTag.containsString("SpawnBlockLevel")) {
-            level = this.server.getLevelByName(this.namedTag.getString("SpawnBlockLevel"));
-        }
-        if (level != null) {
-            if (this.namedTag.containsInt("SpawnX") && this.namedTag.containsInt("SpawnY") && this.namedTag.containsInt("SpawnZ")) {
-                this.spawnPosition = new Position(this.namedTag.getInt("SpawnX"), this.namedTag.getInt("SpawnY"), this.namedTag.getInt("SpawnZ"), level);
-            } else {
-                this.spawnPosition = null;
-            }
-            if (this.namedTag.containsInt("SpawnBlockPositionX") && this.namedTag.containsInt("SpawnBlockPositionY")
-                    && this.namedTag.containsInt("SpawnBlockPositionZ")) {
-                this.spawnBlockPosition = new Position(namedTag.getInt("SpawnBlockPositionX"), namedTag.getInt("SpawnBlockPositionY"), namedTag.getInt("SpawnBlockPositionZ"), level);
-            } else {
-                this.spawnBlockPosition = null;
-            }
-        }
+    public Vector3 getSafeSpawn() {
         Vector3 worldSpawnPoint;
-        if (this.spawnPosition == null) worldSpawnPoint = this.server.getDefaultLevel().getSafeSpawn();
-        else worldSpawnPoint = spawnPosition;
-
-        StartGamePacket startGamePacket = new StartGamePacket();
-        startGamePacket.entityUniqueId = this.id;
-        startGamePacket.entityRuntimeId = this.id;
-        startGamePacket.playerGamemode = toNetworkGamemode(this.gamemode);
-        startGamePacket.x = (float) this.x;
-        startGamePacket.y = (float) (isOnGround() ? this.y + this.getEyeHeight() : this.y);//防止在地上生成容易陷进地里
-        startGamePacket.z = (float) this.z;
-        startGamePacket.yaw = (float) this.yaw;
-        startGamePacket.pitch = (float) this.pitch;
-        startGamePacket.seed = -1L;
-        startGamePacket.dimension = (byte) (this.level.getDimension() & 0xff);
-        startGamePacket.worldGamemode = toNetworkGamemode(getServer().getDefaultGamemode());
-        startGamePacket.difficulty = this.server.getDifficulty();
-        startGamePacket.spawnX = worldSpawnPoint.getFloorX();
-        startGamePacket.spawnY = worldSpawnPoint.getFloorY();
-        startGamePacket.spawnZ = worldSpawnPoint.getFloorZ();
-        startGamePacket.hasAchievementsDisabled = true;
-        startGamePacket.dayCycleStopTime = -1;
-        startGamePacket.rainLevel = 0;
-        startGamePacket.lightningLevel = 0;
-        startGamePacket.commandsEnabled = this.isEnableClientCommand();
-        startGamePacket.gameRules = getLevel().getGameRules();
-        startGamePacket.levelId = "";
-        startGamePacket.worldName = this.getServer().getNetwork().getName();
-        startGamePacket.generator = (byte) ((this.level.getDimension() + 1) & 0xff); //0 旧世界, 1 主世界, 2 下界, 3末地
-        startGamePacket.serverAuthoritativeMovement = getServer().getServerAuthoritativeMovement();
-        startGamePacket.isInventoryServerAuthoritative = true;//enable item stack request packet
-        startGamePacket.blockNetworkIdsHashed = true;//enable blockhash
-        //写入自定义方块数据
-        startGamePacket.blockProperties.addAll(Registries.BLOCK.getCustomBlockDefinitionList());
-        startGamePacket.playerPropertyData = EntityProperty.getPlayerPropertyCache();
-        this.dataPacketImmediately(startGamePacket);
-        this.loggedIn = true;
-
-        //注册实体属性
-        for (SyncEntityPropertyPacket pk : EntityProperty.getPacketCache()) {
-            this.dataPacket(pk);
+        if (this.spawnPosition == null) {
+            worldSpawnPoint = this.server.getDefaultLevel().getSafeSpawn();
+        } else {
+            worldSpawnPoint = spawnPosition;
         }
-        //写入自定义物品数据
-        ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
-        if (!Registries.ITEM.getCustomItemDefinition().isEmpty()) {
-            Int2ObjectOpenHashMap<ItemComponentPacket.Entry> entries = new Int2ObjectOpenHashMap<>();
-            int i = 0;
-            for (var entry : Registries.ITEM.getCustomItemDefinition().entrySet()) {
-                try {
-                    entries.put(i, new ItemComponentPacket.Entry(entry.getKey(), entry.getValue().nbt()));
-                    i++;
-                } catch (Exception e) {
-                    log.error("ItemComponentPacket encoding error", e);
-                }
-            }
-            itemComponentPacket.setEntries(entries.values().toArray(ItemComponentPacket.Entry.EMPTY_ARRAY));
-        }
-        this.dataPacket(itemComponentPacket);
-
-        this.dataPacket(new BiomeDefinitionListPacket());
-        this.dataPacket(new AvailableEntityIdentifiersPacket());
-        this.sendCreativeContents();
-        //发送玩家权限列表
-        server.getOnlinePlayers().values().forEach(player -> {
-            if (player != this) {
-                player.adventureSettings.sendAbilities(Collections.singleton(this));
-            }
-        });
-
-        this.sendPotionEffects(this);
-        this.sendData(this);
-        this.syncAttributes();
-        this.setNameTagVisible(true);
-        this.setNameTagAlwaysVisible(true);
-        this.setCanClimb(true);
-
-        log.info(this.getServer().getLanguage().tr("nukkit.player.logIn",
-                TextFormat.AQUA + this.username + TextFormat.WHITE,
-                this.getAddress(),
-                String.valueOf(this.getPort()),
-                String.valueOf(this.id),
-                this.level.getName(),
-                String.valueOf(NukkitMath.round(this.x, 4)),
-                String.valueOf(NukkitMath.round(this.y, 4)),
-                String.valueOf(NukkitMath.round(this.z, 4))));
-
-        if (this.isOp() || this.hasPermission("nukkit.textcolor")) {
-            this.setRemoveFormat(false);
-        }
-
-        this.server.addOnlinePlayer(this);
-        this.server.onPlayerCompleteLoginSequence(this);
+        return worldSpawnPoint;
     }
 
     /**

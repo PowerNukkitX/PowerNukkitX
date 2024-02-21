@@ -91,8 +91,16 @@ public class NetworkSession {
 
         cfg.configure(NetworkSessionState.PRE_SPAWN)
                 .onEntry(() -> {
+                    log.debug("Creating player");
+
+                    var player = this.createPlayer();
+                    if (player == null) {
+                        this.disconnect("Failed to crate player");
+                        return;
+                    }
+                    this.onPlayerCreated(player);
+                    player.processLogin();
                     this.setPacketHandler(new PrespawnHandler(this));
-                    handle.completeLoginSequence();
                     log.info("start game");
                     handle.doFirstSpawn();
                     log.info("first spawn");
@@ -176,15 +184,7 @@ public class NetworkSession {
     }
 
     private void onServerLoginCompletion() {
-        log.debug("Creating player");
 
-        var player = this.createPlayer();
-        if (player == null) {
-            this.disconnect("Failed to crate player");
-            return;
-        }
-        this.onPlayerCreated(player);
-        player.processLogin();
     }
 
     private void onClientSpawned() {
