@@ -45,4 +45,8 @@ public class AddItemEntityPacket extends DataPacket {
         this.put(Binary.writeMetadata(metadata));
         this.putBoolean(this.isFromFishing);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

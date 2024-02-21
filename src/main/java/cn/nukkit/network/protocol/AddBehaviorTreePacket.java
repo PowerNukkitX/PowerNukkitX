@@ -22,4 +22,8 @@ public class AddBehaviorTreePacket extends DataPacket {
         this.reset();
         this.putString(unknown);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

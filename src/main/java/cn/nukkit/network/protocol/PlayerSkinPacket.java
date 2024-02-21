@@ -39,4 +39,8 @@ public class PlayerSkinPacket extends DataPacket {
         putString(oldSkinName);
         putBoolean(skin.isTrusted() || Server.getInstance().isForceSkinTrusted());
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

@@ -40,4 +40,8 @@ public class EmotePacket extends DataPacket {
         this.putString(this.platformId);
         this.putByte(flags);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

@@ -24,4 +24,8 @@ public class SetCommandsEnabledPacket extends DataPacket {
         this.reset();
         this.putBoolean(this.enabled);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

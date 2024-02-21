@@ -37,4 +37,8 @@ public class ScriptMessagePacket extends DataPacket {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

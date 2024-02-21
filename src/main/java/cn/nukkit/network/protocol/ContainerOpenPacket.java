@@ -41,4 +41,8 @@ public class ContainerOpenPacket extends DataPacket {
         this.putBlockVector3(this.x, this.y, this.z);
         this.putEntityUniqueId(this.entityId);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

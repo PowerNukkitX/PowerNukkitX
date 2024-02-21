@@ -46,4 +46,8 @@ public class CompletedUsingItemPacket extends DataPacket {
         this.putLShort(itemId);
         this.putLInt(action);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

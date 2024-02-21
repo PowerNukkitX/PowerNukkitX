@@ -26,4 +26,8 @@ public class TransferPacket extends DataPacket {
     public int pid() {
         return ProtocolInfo.TRANSFER_PACKET;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

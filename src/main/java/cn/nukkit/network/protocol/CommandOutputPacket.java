@@ -55,4 +55,8 @@ public class CommandOutputPacket extends DataPacket {
             putString(this.data);// unknown
         }
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

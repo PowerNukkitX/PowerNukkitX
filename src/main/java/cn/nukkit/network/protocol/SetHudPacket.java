@@ -31,4 +31,8 @@ public class SetHudPacket extends DataPacket {
         this.putArray(this.elements, (buf, element) -> this.putUnsignedVarInt(element.ordinal()));
         this.putByte((byte) this.visibility.ordinal());
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

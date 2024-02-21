@@ -26,4 +26,8 @@ public class CodeBuilderPacket extends DataPacket {
         this.putString(url);
         this.putBoolean(isOpening);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

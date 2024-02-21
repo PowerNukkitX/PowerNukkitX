@@ -20,4 +20,8 @@ public class ClientCacheStatusPacket extends DataPacket {
         this.reset();
         this.putBoolean(this.supported);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

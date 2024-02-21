@@ -266,4 +266,8 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(this.blockNetworkIdsHashed); // blockIdsAreHashed
         this.putBoolean(this.isSoundsServerAuthoritative); // serverAuthSounds
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

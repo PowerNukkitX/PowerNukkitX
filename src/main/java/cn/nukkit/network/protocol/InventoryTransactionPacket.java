@@ -185,4 +185,8 @@ public class InventoryTransactionPacket extends DataPacket {
                 throw new RuntimeException("Unknown transaction type " + this.transactionType);
         }
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

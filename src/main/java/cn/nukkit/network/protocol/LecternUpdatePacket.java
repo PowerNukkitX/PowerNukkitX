@@ -29,4 +29,8 @@ public class LecternUpdatePacket extends DataPacket {
     @Override
     public void encode() {
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

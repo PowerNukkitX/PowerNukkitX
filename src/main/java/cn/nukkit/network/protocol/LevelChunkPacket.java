@@ -56,4 +56,8 @@ public class LevelChunkPacket extends DataPacket {
         }
         this.putByteArray(this.data);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

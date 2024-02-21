@@ -33,4 +33,8 @@ public class InventorySlotPacket extends DataPacket {
         this.putUnsignedVarInt(this.slot);
         this.putSlot(this.item);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

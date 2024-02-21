@@ -38,4 +38,8 @@ public class PlayerStartItemCoolDownPacket extends DataPacket {
     public void setCoolDownDuration(int coolDownDuration) {
         this.coolDownDuration = coolDownDuration;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

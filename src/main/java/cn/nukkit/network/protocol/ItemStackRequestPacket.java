@@ -31,4 +31,8 @@ public class ItemStackRequestPacket extends DataPacket {
     public void encode() {
         //non server bound
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

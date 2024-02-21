@@ -109,4 +109,8 @@ public class PlayerAuthInputPacket extends DataPacket {
     public void encode() {
         // Noop
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

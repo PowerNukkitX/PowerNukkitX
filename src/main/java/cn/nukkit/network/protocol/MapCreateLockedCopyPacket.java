@@ -22,4 +22,8 @@ public class MapCreateLockedCopyPacket extends DataPacket {
         this.putVarLong(this.originalMapId);
         this.putVarLong(this.newMapId);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

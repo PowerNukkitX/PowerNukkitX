@@ -69,4 +69,8 @@ public class SimulationTypePacket extends DataPacket {
         EDITOR,
         TEST
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

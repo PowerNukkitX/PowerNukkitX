@@ -29,4 +29,8 @@ public class VideoStreamConnectPacket extends DataPacket {
         this.putLFloat(screenshotFrequency);
         this.putByte(action);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

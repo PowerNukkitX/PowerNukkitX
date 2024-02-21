@@ -29,4 +29,8 @@ public class ContainerClosePacket extends DataPacket {
         this.putByte((byte) this.windowId);
         this.putBoolean(this.wasServerInitiated);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

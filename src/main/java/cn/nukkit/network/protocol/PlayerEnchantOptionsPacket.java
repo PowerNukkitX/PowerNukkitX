@@ -52,4 +52,8 @@ public class PlayerEnchantOptionsPacket extends DataPacket {
             int minLevel, String enchantName, List<Enchantment> enchantments
     ) {
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

@@ -3,7 +3,7 @@ package cn.nukkit.network.process.handler;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.network.process.NetworkSession;
-import cn.nukkit.network.process.PacketHandler;
+import cn.nukkit.network.protocol.PacketHandler;
 
 public class NetworkSessionPacketHandler implements PacketHandler {
     protected final Player player;

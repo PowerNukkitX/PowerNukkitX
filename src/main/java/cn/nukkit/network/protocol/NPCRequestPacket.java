@@ -97,4 +97,8 @@ public class NPCRequestPacket extends DataPacket {
         this.putByte((byte) this.skinType);
         this.putString(this.sceneName);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

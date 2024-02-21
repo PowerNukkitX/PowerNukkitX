@@ -39,4 +39,7 @@ public class PlayStatusPacket extends DataPacket {
         this.putInt(this.status);
     }
 
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

@@ -21,4 +21,6 @@ public abstract class DataPacket extends BinaryStream {
             this.encode();
         }
     }
+
+    public abstract void handle(PacketHandler handler);
 }

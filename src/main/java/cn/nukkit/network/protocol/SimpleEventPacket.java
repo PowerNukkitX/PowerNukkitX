@@ -22,4 +22,8 @@ public class SimpleEventPacket extends DataPacket {
         this.reset();
         this.putShort(this.unknown);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

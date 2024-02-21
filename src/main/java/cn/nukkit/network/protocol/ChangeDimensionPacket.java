@@ -36,4 +36,8 @@ public class ChangeDimensionPacket extends DataPacket {
     public int pid() {
         return NETWORK_ID;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

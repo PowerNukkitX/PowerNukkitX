@@ -48,4 +48,8 @@ public class PlayerArmorDamagePacket extends DataPacket {
         LEGGINGS,
         BOOTS
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

@@ -65,4 +65,8 @@ public class MoveEntityAbsolutePacket extends DataPacket {
         this.putByte((byte) (this.headYaw / (360d / 256d)));
         this.putByte((byte) (this.yaw / (360d / 256d)));
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

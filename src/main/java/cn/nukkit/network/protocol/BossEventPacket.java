@@ -102,4 +102,8 @@ public class BossEventPacket extends DataPacket {
                 break;
         }
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

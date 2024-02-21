@@ -22,4 +22,8 @@ public class SetLocalPlayerAsInitializedPacket extends DataPacket {
     public void encode() {
         this.putUnsignedVarLong(eid);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

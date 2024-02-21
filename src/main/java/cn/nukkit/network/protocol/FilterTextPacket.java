@@ -72,4 +72,8 @@ public class FilterTextPacket extends DataPacket {
     public void setFromServer(boolean fromServer) {
         this.fromServer = fromServer;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

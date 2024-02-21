@@ -32,4 +32,8 @@ public class RequestAbilityPacket extends DataPacket {
     public int pid() {
         return ProtocolInfo.REQUEST_ABILITY_PACKET;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

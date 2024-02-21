@@ -42,4 +42,8 @@ public class CameraPresetsPacket extends DataPacket {
         putNotNull(preset.getListener(), (l) -> putByte((byte) l.ordinal()));
         putOptional(preset.getPlayEffect(), this::putBoolean);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

@@ -171,4 +171,8 @@ public class ClientboundMapItemDataPacket extends DataPacket {
             BLOCK
         }
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

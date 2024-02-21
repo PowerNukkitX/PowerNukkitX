@@ -31,4 +31,8 @@ public class UpdateEquipmentPacket extends DataPacket {
         this.putEntityUniqueId(this.eid);
         this.put(this.namedtag);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

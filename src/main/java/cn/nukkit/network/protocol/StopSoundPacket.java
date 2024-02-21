@@ -26,4 +26,8 @@ public class StopSoundPacket extends DataPacket {
         this.putString(this.name);
         this.putBoolean(this.stopAll);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

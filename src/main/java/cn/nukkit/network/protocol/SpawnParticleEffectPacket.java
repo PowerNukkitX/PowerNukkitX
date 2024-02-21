@@ -37,4 +37,8 @@ public class SpawnParticleEffectPacket extends DataPacket {
         this.putBoolean(molangVariablesJson.isPresent());
         molangVariablesJson.ifPresent(this::putString);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

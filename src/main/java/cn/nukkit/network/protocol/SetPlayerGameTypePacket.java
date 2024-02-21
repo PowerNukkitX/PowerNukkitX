@@ -26,4 +26,8 @@ public class SetPlayerGameTypePacket extends DataPacket {
         this.reset();
         this.putVarInt(this.gamemode);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

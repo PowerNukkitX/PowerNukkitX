@@ -27,4 +27,8 @@ public class NetworkChunkPublisherUpdatePacket extends DataPacket {
         this.putUnsignedVarInt(radius);
         this.putInt(0); // Saved chunks
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

@@ -21,4 +21,8 @@ public class RequestNetworkSettingsPacket extends DataPacket {
     public void decode() {
         this.protocolVersion = this.getInt();
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

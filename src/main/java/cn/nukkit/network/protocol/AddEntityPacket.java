@@ -81,4 +81,8 @@ public class AddEntityPacket extends DataPacket {
 
     public AddEntityPacket() {
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

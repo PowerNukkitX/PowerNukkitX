@@ -23,4 +23,8 @@ public class ServerPostMovePositionPacket extends DataPacket {
         this.reset();
         this.putVector3f(this.position);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

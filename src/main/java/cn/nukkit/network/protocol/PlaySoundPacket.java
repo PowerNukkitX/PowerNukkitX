@@ -32,4 +32,8 @@ public class PlaySoundPacket extends DataPacket {
         this.putLFloat(this.volume);
         this.putLFloat(this.pitch);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

@@ -41,4 +41,8 @@ public class SetScoreboardIdentityPacket extends DataPacket {
         public long scoreboardId;
         public UUID uuid;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

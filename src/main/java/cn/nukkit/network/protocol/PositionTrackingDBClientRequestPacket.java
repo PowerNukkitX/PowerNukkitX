@@ -53,4 +53,8 @@ public class PositionTrackingDBClientRequestPacket extends DataPacket {
 
         QUERY
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

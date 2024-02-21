@@ -19,4 +19,8 @@ public class SubClientLoginPacket extends DataPacket {
     public void encode() {
         //TODO
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

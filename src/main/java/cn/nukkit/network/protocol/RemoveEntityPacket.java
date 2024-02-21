@@ -26,4 +26,8 @@ public class RemoveEntityPacket extends DataPacket {
         this.reset();
         this.putEntityUniqueId(this.eid);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

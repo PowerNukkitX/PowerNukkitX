@@ -189,4 +189,8 @@ public class LevelEventPacket extends DataPacket {
         this.putVector3f(this.x, this.y, this.z);
         this.putVarInt(this.data);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

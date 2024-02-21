@@ -31,4 +31,8 @@ public class AgentActionEventPacket extends DataPacket {
         putByte((byte) actionType.ordinal());
         putString(responseJson);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

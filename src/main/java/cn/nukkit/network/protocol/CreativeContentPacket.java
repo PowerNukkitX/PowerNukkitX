@@ -30,4 +30,8 @@ public class CreativeContentPacket extends DataPacket {
             this.putSlot(entries[i], true);
         }
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

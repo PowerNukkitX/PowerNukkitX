@@ -30,4 +30,8 @@ public class RiderJumpPacket extends DataPacket {
         this.reset();
         this.putVarInt(this.unknown);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

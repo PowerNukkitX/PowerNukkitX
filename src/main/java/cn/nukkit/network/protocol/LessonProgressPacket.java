@@ -31,4 +31,8 @@ public class LessonProgressPacket extends DataPacket {
         this.putVarInt(score);
         this.putString(activityId);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

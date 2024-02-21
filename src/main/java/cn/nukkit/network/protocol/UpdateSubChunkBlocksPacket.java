@@ -94,4 +94,8 @@ public class UpdateSubChunkBlocksPacket extends DataPacket {
     public String toString() {
         return "UpdateSubChunkBlocksPacket(chunkX=" + this.chunkX + ", chunkY=" + this.chunkY + ", chunkZ=" + this.chunkZ + ", standardBlocks=" + this.standardBlocks + ", extraBlocks=" + this.extraBlocks + ")";
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

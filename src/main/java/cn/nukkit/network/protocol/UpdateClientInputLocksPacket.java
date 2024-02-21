@@ -30,4 +30,8 @@ public class UpdateClientInputLocksPacket extends DataPacket {
         this.putVarInt(lockComponentData);
         this.putVector3f(serverPosition);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

@@ -25,4 +25,8 @@ public class ToastRequestPacket extends DataPacket{
         this.putString(this.title);
         this.putString(this.content);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

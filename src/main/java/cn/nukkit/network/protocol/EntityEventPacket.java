@@ -120,4 +120,8 @@ public class EntityEventPacket extends DataPacket {
         this.putByte((byte) this.event);
         this.putVarInt(this.data);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

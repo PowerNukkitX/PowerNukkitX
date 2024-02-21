@@ -1,4 +1,4 @@
-package cn.nukkit.network.process;
+package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.protocol.*;
 
@@ -542,5 +542,4 @@ public interface PacketHandler {
 
 	default void handle(VideoStreamConnectPacket pk) {
 	}
-
 }

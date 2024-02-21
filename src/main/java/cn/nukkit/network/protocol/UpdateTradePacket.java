@@ -52,4 +52,8 @@ public class UpdateTradePacket extends DataPacket {
             System.out.println(e.getMessage());
         }
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

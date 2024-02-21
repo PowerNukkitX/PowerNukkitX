@@ -36,4 +36,7 @@ public class DisconnectPacket extends DataPacket {
         }
     }
 
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

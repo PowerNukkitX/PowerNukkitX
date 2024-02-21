@@ -24,4 +24,8 @@ public class PhotoInfoRequestPacket extends DataPacket {
         this.reset();
         this.putEntityUniqueId(photoId);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

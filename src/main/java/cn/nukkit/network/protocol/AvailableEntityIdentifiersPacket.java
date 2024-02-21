@@ -54,4 +54,8 @@ public class AvailableEntityIdentifiersPacket extends DataPacket {
         this.reset();
         this.put(this.tag);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

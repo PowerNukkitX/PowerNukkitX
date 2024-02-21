@@ -83,4 +83,8 @@ public class UpdateAbilitiesPacket extends DataPacket {
     public int pid() {
         return ProtocolInfo.UPDATE_ABILITIES_PACKET;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

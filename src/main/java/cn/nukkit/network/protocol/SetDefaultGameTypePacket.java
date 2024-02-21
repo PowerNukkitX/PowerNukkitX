@@ -21,4 +21,8 @@ public class SetDefaultGameTypePacket extends DataPacket {
         this.reset();
         this.putUnsignedVarInt(this.gamemode);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

@@ -21,6 +21,7 @@ import cn.nukkit.network.protocol.CreativeContentPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.DisconnectPacket;
 import cn.nukkit.network.protocol.NetworkSettingsPacket;
+import cn.nukkit.network.protocol.PacketHandler;
 import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.player.info.PlayerInfo;
 import cn.nukkit.registry.Registries;
@@ -222,9 +223,10 @@ public class NetworkSession {
             if (this.packetHandler instanceof InGamePacketHandler i) {
                 i.managerHandle(packet);
             } else {
-                var method = this.packetHandler.getClass().getMethod("handle", packet.getClass());
+                /*var method = this.packetHandler.getClass().getMethod("handle", packet.getClass());
                 method.setAccessible(true);
-                method.invoke(this.packetHandler, packet);
+                method.invoke(this.packetHandler, packet);*/
+                packet.handle(this.packetHandler);
             }
         }
     }

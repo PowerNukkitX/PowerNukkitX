@@ -152,4 +152,8 @@ public class AnimateEntityPacket extends DataPacket {
         @Builder.Default
         private int stopExpressionVersion = DEFAULT_STOP_EXPRESSION_VERSION;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

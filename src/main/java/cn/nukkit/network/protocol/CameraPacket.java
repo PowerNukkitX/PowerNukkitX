@@ -25,4 +25,8 @@ public class CameraPacket extends DataPacket {
         this.putEntityUniqueId(this.cameraUniqueId);
         this.putEntityUniqueId(this.playerUniqueId);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

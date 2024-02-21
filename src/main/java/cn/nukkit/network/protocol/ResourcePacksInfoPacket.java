@@ -117,4 +117,8 @@ public class ResourcePacksInfoPacket extends DataPacket {
         private final String packId;
         private final String remoteUrl;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }
