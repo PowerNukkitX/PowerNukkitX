@@ -7,7 +7,6 @@ import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
-import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
@@ -214,7 +213,6 @@ public class LevelDBChunkSerializer {
                         heights[i] = heightAndBiomesBuffer.readShortLE();
                     }
                     builder.heightMap(heights);
-                    Palette<Integer> biomePalette = new Palette<>(BiomeID.PLAINS);
                     byte[] biomes = new byte[256];
                     heightAndBiomesBuffer.readBytes(biomes);
 
@@ -222,7 +220,7 @@ public class LevelDBChunkSerializer {
                     for (int y = minSectionY; y <= builder.getDimensionData().getMaxSectionY(); y++) {
                         ChunkSection section = builder.getSections()[y - minSectionY];
                         if (section == null) continue;
-                        biomePalette = section.biomes();
+                        final Palette<Integer> biomePalette = section.biomes();
                         for (int x = 0; x < 16; x++) {
                             for (int z = 0; z < 16; z++) {
                                 for (int sy = 0; sy < 16; sy++) {
@@ -278,46 +276,42 @@ public class LevelDBChunkSerializer {
     private void serializeTileAndEntity(WriteBatch writeBatch, IChunk chunk) {
         //Write blockEntities
         Collection<BlockEntity> blockEntities = chunk.getBlockEntities().values();
-        if (!blockEntities.isEmpty()) {
-            ByteBuf tileBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
-            try (var bufStream = new ByteBufOutputStream(tileBuffer)) {
-                byte[] key = LevelDBKeyUtil.BLOCK_ENTITIES.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData());
-                if (blockEntities.isEmpty()) writeBatch.delete(key);
-                else {
-                    for (BlockEntity blockEntity : blockEntities) {
-                        blockEntity.saveNBT();
-                        NBTIO.write(blockEntity.namedTag, bufStream, ByteOrder.LITTLE_ENDIAN);
-                    }
-                    writeBatch.put(key, Utils.convertByteBuf2Array(tileBuffer));
+        ByteBuf tileBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
+        try (var bufStream = new ByteBufOutputStream(tileBuffer)) {
+            byte[] key = LevelDBKeyUtil.BLOCK_ENTITIES.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData());
+            if (blockEntities.isEmpty()) writeBatch.delete(key);
+            else {
+                for (BlockEntity blockEntity : blockEntities) {
+                    blockEntity.saveNBT();
+                    NBTIO.write(blockEntity.namedTag, bufStream, ByteOrder.LITTLE_ENDIAN);
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } finally {
-                tileBuffer.release();
+                writeBatch.put(key, Utils.convertByteBuf2Array(tileBuffer));
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            tileBuffer.release();
         }
 
         Collection<Entity> entities = chunk.getEntities().values();
-        if (!entities.isEmpty()) {
-            ByteBuf entityBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
-            try (var bufStream = new ByteBufOutputStream(entityBuffer)) {
-                byte[] key = LevelDBKeyUtil.ENTITIES.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData());
-                if (entities.isEmpty()) {
-                    writeBatch.delete(key);
-                } else {
-                    for (Entity e : entities) {
-                        if (!(e instanceof Player) && !e.closed && e.canBeSavedWithChunk()) {
-                            e.saveNBT();
-                            NBTIO.write(e.namedTag, bufStream, ByteOrder.LITTLE_ENDIAN);
-                        }
+        ByteBuf entityBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
+        try (var bufStream = new ByteBufOutputStream(entityBuffer)) {
+            byte[] key = LevelDBKeyUtil.ENTITIES.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData());
+            if (entities.isEmpty()) {
+                writeBatch.delete(key);
+            } else {
+                for (Entity e : entities) {
+                    if (!(e instanceof Player) && !e.closed && e.canBeSavedWithChunk()) {
+                        e.saveNBT();
+                        NBTIO.write(e.namedTag, bufStream, ByteOrder.LITTLE_ENDIAN);
                     }
-                    writeBatch.put(key, Utils.convertByteBuf2Array(entityBuffer));
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } finally {
-                entityBuffer.release();
+                writeBatch.put(key, Utils.convertByteBuf2Array(entityBuffer));
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            entityBuffer.release();
         }
     }
 }

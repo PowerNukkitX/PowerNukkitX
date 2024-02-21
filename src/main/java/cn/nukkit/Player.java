@@ -116,6 +116,7 @@ import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
 import cn.nukkit.permission.PermissionAttachmentInfo;
+import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.registry.Registries;
@@ -1478,7 +1479,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.setDataProperty(new ShortEntityData(Player.DATA_AIR, 400), false);
         this.fireTicks = 0;
         this.collisionBlocks = null;
-        this.deadTicks = 0;
         this.noDamageTicks = 60;
 
         this.removeAllEffects();
@@ -2824,10 +2824,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.despawnFromAll();
                 return true;
             }
-            ++this.deadTicks;
-            if (this.deadTicks >= 10) {
-                this.despawnFromAll();
-            }
+            server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, this::despawnFromAll, 10);
             return true;
         }
 
@@ -2967,11 +2964,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         PlayerFood foodData = getFoodData();
         if (this.ticksLived % 40 == 0 && foodData != null) {
             foodData.sendFood();
-        }
-
-        if(tickDiff%4==0){
-            int biomeId = getChunk().getBiomeId(getFloorX() & 15, getFloorY() - 1, getFloorZ() & 15);
-            sendPopup("BiomeId: " + biomeId);
         }
 
         return true;
@@ -4521,7 +4513,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
         //state update
         this.positionChanged = true;
+
         this.nextChunkOrderRun = 0;
+        this.playerChunkManager.handleTeleport();
+        final int dis = this.getViewDistance();
+        //refresh chunks for client
+        this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+            this.setViewDistance(4);
+            this.setViewDistance(dis);
+        }, 10);
         //DummyBossBar
         this.getDummyBossBars().values().forEach(DummyBossBar::reshow);
         //Weather

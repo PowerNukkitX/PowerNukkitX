@@ -68,6 +68,7 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.PropertySyncData;
+import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.Task;
@@ -524,7 +525,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public boolean inBlock = false;
     public boolean positionChanged;
     public boolean motionChanged;
-    public int deadTicks = 0;
     /**
      * Player do not use
      */
@@ -1215,8 +1215,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         if (oldEffect != null && (
                 Math.abs(effect.getAmplifier()) < Math.abs(oldEffect.getAmplifier()) ||
-                (Math.abs(effect.getAmplifier()) == Math.abs(oldEffect.getAmplifier()) &&
-                effect.getDuration() < oldEffect.getDuration())
+                        (Math.abs(effect.getAmplifier()) == Math.abs(oldEffect.getAmplifier()) &&
+                                effect.getDuration() < oldEffect.getDuration())
         )) {
             return;
         }
@@ -1813,18 +1813,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         }
         this.justCreated = false;
 
-        if (!this.isAlive()) {
-            this.removeAllEffects();
-            this.despawnFromAll();
-            if (!this.isPlayer) {
-                this.close();
-            }
-            return false;
+        if (riding != null && !riding.isAlive() && riding instanceof EntityRideable entityRideable) {
+            entityRideable.dismountEntity(this);
         }
-        if (riding != null && !riding.isAlive() && riding instanceof EntityRideable) {
-            ((EntityRideable) riding).dismountEntity(this);
-        }
-
         updatePassengers();
 
         if (!this.effects.isEmpty()) {
@@ -2067,12 +2058,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         }
 
         if (!this.isAlive()) {
-            ++this.deadTicks;
-            if (this.deadTicks >= 15) {
-                //apply death smoke cloud only if it is a creature
-                if (this instanceof EntityCreature) {
-                    //通过碰撞箱大小动态添加 death smoke cloud
-                    var aabb = this.getBoundingBox();
+            //apply death smoke cloud only if it is a creature
+            if (this instanceof EntityCreature) {
+                //通过碰撞箱大小动态添加 death smoke cloud
+                server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+                    final var aabb = this.getBoundingBox();
                     for (double x = aabb.getMinX(); x <= aabb.getMaxX(); x += 0.5) {
                         for (double z = aabb.getMinZ(); z <= aabb.getMaxZ(); z += 0.5) {
                             for (double y = aabb.getMinY(); y <= aabb.getMaxY(); y += 0.5) {
@@ -2080,19 +2070,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                             }
                         }
                     }
-                    //使用DEATH_SMOKE_CLOUD会导致两次死亡音效
-//                    EntityEventPacket pk = new EntityEventPacket();
-//                    pk.eid = this.getId();
-//                    pk.event = EntityEventPacket.DEATH_SMOKE_CLOUD;
-//
-//                    Server.broadcastPacket(this.hasSpawned.values(), pk);
-                }
-                this.despawnFromAll();
-                if (!this.isPlayer) {
-                    this.close();
-                }
+                }, 10);
             }
-            return this.deadTicks < 10;
+            if (!this.isPlayer) {
+                this.close();
+            }
+            return false;
         }
 
         int tickDiff = currentTick - this.lastUpdate;
