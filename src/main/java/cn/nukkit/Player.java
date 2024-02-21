@@ -114,7 +114,6 @@ import cn.nukkit.permission.PermissionAttachmentInfo;
 import cn.nukkit.player.info.PlayerInfo;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.positiontracking.PositionTrackingService;
-import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.scheduler.TaskHandler;
@@ -678,14 +677,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.server.getPluginManager().callEvent(playerJoinEvent);
 
-        if (playerJoinEvent.getJoinMessage().toString().trim().length() > 0) {
+        if (!playerJoinEvent.getJoinMessage().toString().trim().isEmpty()) {
             this.server.broadcastMessage(playerJoinEvent.getJoinMessage());
         }
 
         this.noDamageTicks = 60;
-
-        this.getServer().sendRecipeList(this);
-
 
         for (long index : playerChunkManager.getUsedChunks()) {
             int chunkX = Level.getHashX(index);
@@ -2933,7 +2929,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         for (String msg : message.split("\n")) {
             if (!msg.trim().isEmpty() && msg.length() <= 512 && this.messageLimitCounter-- > 0) {
                 PlayerChatEvent chatEvent = new PlayerChatEvent(this, msg);
-                System.out.println(getPing());
                 this.server.getPluginManager().callEvent(chatEvent);
                 if (!chatEvent.isCancelled()) {
                     this.server.broadcastMessage(this.getServer().getLanguage().tr(chatEvent.getFormat(), new String[]{chatEvent.getPlayer().getDisplayName(), chatEvent.getMessage()}), chatEvent.getRecipients());
@@ -4644,7 +4639,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 drops.addAll(value.getContents().values());
             }
             for (Item drop : drops) {
-                this.dropItem(drop);
+                if (!drop.isNull()) {
+                    this.dropItem(drop);
+                }
             }
         }
     }
@@ -5398,8 +5395,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void sendCreativeContents() {
-        CreativeContentPacket pk = new CreativeContentPacket();
-        pk.entries = Registries.CREATIVE.getCreativeItems();
-        this.dataPacket(pk);
+
     }
 }

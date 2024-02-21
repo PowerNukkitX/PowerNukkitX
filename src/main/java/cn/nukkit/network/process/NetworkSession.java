@@ -17,11 +17,13 @@ import cn.nukkit.network.process.handler.PrespawnHandler;
 import cn.nukkit.network.process.handler.ResourcePackHandler;
 import cn.nukkit.network.process.handler.SessionStartHandler;
 import cn.nukkit.network.protocol.AvailableCommandsPacket;
+import cn.nukkit.network.protocol.CreativeContentPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.DisconnectPacket;
 import cn.nukkit.network.protocol.NetworkSettingsPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.player.info.PlayerInfo;
+import cn.nukkit.registry.Registries;
 import com.github.oxo42.stateless4j.StateMachine;
 import com.github.oxo42.stateless4j.StateMachineConfig;
 import lombok.Getter;
@@ -300,4 +302,13 @@ public class NetworkSession {
         }
     }
 
+    public void syncCraftingData() {
+        this.sendDataPacket(Registries.RECIPE.getCraftingPacket());
+    }
+
+    public void syncCreativeContent() {
+        var pk = new CreativeContentPacket();
+        pk.entries = Registries.CREATIVE.getCreativeItems();
+        this.sendDataPacket(pk);
+    }
 }

@@ -27,16 +27,14 @@ public class PrespawnHandler extends NetworkSessionPacketHandler {
 
         this.startGame();
 
-        //注册实体属性
-        for (SyncEntityPropertyPacket pk : EntityProperty.getPacketCache()) {
-            player.dataPacket(pk);
-        }
+        this.session.syncCraftingData();
 
         //写入自定义物品数据
-        ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
+        log.debug("Sending component items");
+        var itemComponentPacket = new ItemComponentPacket();
         if (!Registries.ITEM.getCustomItemDefinition().isEmpty()) {
-            Int2ObjectOpenHashMap<ItemComponentPacket.Entry> entries = new Int2ObjectOpenHashMap<>();
-            int i = 0;
+            var entries = new Int2ObjectOpenHashMap<ItemComponentPacket.Entry>();
+            var i = 0;
             for (var entry : Registries.ITEM.getCustomItemDefinition().entrySet()) {
                 try {
                     entries.put(i, new ItemComponentPacket.Entry(entry.getKey(), entry.getValue().nbt()));
@@ -49,24 +47,53 @@ public class PrespawnHandler extends NetworkSessionPacketHandler {
         }
         player.dataPacket(itemComponentPacket);
 
-        player.dataPacket(new BiomeDefinitionListPacket());
+        log.debug("Sending actor identifiers");
         player.dataPacket(new AvailableEntityIdentifiersPacket());
-        player.sendCreativeContents();
+
+        //注册实体属性
+        log.debug("Sending actor properties");
+        for (SyncEntityPropertyPacket pk : EntityProperty.getPacketCache()) {
+            player.dataPacket(pk);
+        }
+
+        log.debug("Sending biome definitions");
+        player.dataPacket(new BiomeDefinitionListPacket());
+
+        log.debug("Sending attributes");
+        player.syncAttributes();
+
+        log.debug("Sending available commands");
+        this.session.syncAvailableCommands();
 
         //发送玩家权限列表
+        log.debug("Sending abilities");
         var col = Collections.singleton(player);
         server.getOnlinePlayers().values().forEach(p -> {
             if (p != player) {
                 p.getAdventureSettings().sendAbilities(col);
+                p.getAdventureSettings().updateAdventureSettings();
             }
         });
 
+        log.debug("Sending effects");
         player.sendPotionEffects(player);
+
+        log.debug("Sending actor metadata");
         player.sendData(player);
-        player.syncAttributes();
+
+        log.debug("Sending creative content");
+        this.session.syncCreativeContent();
+
+        log.debug("Sending crafting data");
+        this.session.syncCraftingData();
+
         player.setNameTagVisible(true);
         player.setNameTagAlwaysVisible(true);
         player.setCanClimb(true);
+
+        log.debug("Sending player list");
+        server.addOnlinePlayer(player);
+        server.onPlayerCompleteLoginSequence(player);
 
         log.info(server.getLanguage().tr("nukkit.player.logIn",
                 TextFormat.AQUA + player.getName() + TextFormat.WHITE,
@@ -81,9 +108,6 @@ public class PrespawnHandler extends NetworkSessionPacketHandler {
         if (player.isOp() || player.hasPermission("nukkit.textcolor")) {
             player.setRemoveFormat(false);
         }
-
-        server.addOnlinePlayer(player);
-        server.onPlayerCompleteLoginSequence(player);
     }
 
     private void startGame() {
