@@ -653,12 +653,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected void doFirstSpawn() {
         this.spawned = true;
 
-        this.inventory.sendHeldItem(this);
-
-        this.inventory.sendContents(this);
-        this.inventory.sendArmorContents(this);
-        this.getCursorInventory().sendContents(this);
-        this.offhandInventory.sendContents(this);
+        syncInventory();
 
         this.setEnableClientCommand(true);
 
@@ -667,18 +662,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(setTimePacket);
 
         this.sendPlayStatus(PlayStatusPacket.PLAYER_SPAWN);
-
-        PlayerJoinEvent playerJoinEvent = new PlayerJoinEvent(this,
-                new TranslationContainer(TextFormat.YELLOW + "%multiplayer.player.joined", new String[]{
-                        this.getDisplayName()
-                })
-        );
-
-        this.server.getPluginManager().callEvent(playerJoinEvent);
-
-        if (!playerJoinEvent.getJoinMessage().toString().trim().isEmpty()) {
-            this.server.broadcastMessage(playerJoinEvent.getJoinMessage());
-        }
 
         this.noDamageTicks = 60;
 
@@ -729,11 +712,32 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.dimension = this.level.getDimension();
         this.dataPacket(pk);
 
+        //客户端初始化完毕再传送玩家，避免下落 (x)
+        //已经设置immobile了所以不用管下落了
+        Location pos;
+        if (this.server.isSafeSpawn() && (this.gamemode & 0x01) == 0) {
+            pos = this.level.getSafeSpawn(this).getLocation();
+            pos.yaw = this.yaw;
+            pos.pitch = this.pitch;
+        } else {
+            pos = new Location(this.x, this.y, this.z, this.yaw, this.pitch, this.level);
+        }
+        this.teleport(pos, TeleportCause.PLAYER_SPAWN);
+
         this.sendFogStack();
         this.sendCameraPresets();
         if (this.getHealth() < 1) {
             this.setHealth(0);
         }
+    }
+
+    private void syncInventory() {
+        this.inventory.sendHeldItem(this);
+
+        this.inventory.sendContents(this);
+        this.inventory.sendArmorContents(this);
+        this.getCursorInventory().sendContents(this);
+        this.offhandInventory.sendContents(this);
     }
 
     @Override
@@ -1262,32 +1266,24 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * 玩家客户端初始化完成后调用
      */
     protected void onPlayerLocallyInitialized() {
+        PlayerJoinEvent playerJoinEvent = new PlayerJoinEvent(this,
+                new TranslationContainer(TextFormat.YELLOW + "%multiplayer.player.joined", new String[]{
+                        this.getDisplayName()
+                })
+        );
+
+        this.server.getPluginManager().callEvent(playerJoinEvent);
+
+        if (!playerJoinEvent.getJoinMessage().toString().trim().isEmpty()) {
+            this.server.broadcastMessage(playerJoinEvent.getJoinMessage());
+        }
+
         /*
           我们在玩家客户端初始化后才发送游戏模式，以解决观察者模式疾跑速度不正确的问题
           只有在玩家客户端进入游戏显示后再设置观察者模式，疾跑速度才正常
           强制更新游戏模式以确保客户端会收到模式更新包
          */
         this.setGamemode(this.gamemode, false, null, true);
-        //客户端初始化完毕再传送玩家，避免下落
-        Location pos;
-        if (this.server.isSafeSpawn() && (this.gamemode & 0x01) == 0) {
-            pos = this.level.getSafeSpawn(this).getLocation();
-            pos.yaw = this.yaw;
-            pos.pitch = this.pitch;
-        } else {
-            pos = new Location(this.x, this.y, this.z, this.yaw, this.pitch, this.level);
-        }
-        PlayerRespawnEvent respawnEvent = new PlayerRespawnEvent(this, pos, true);
-        this.server.getPluginManager().callEvent(respawnEvent);
-        Position fromEvent = respawnEvent.getRespawnPosition();
-        if (fromEvent instanceof Location) {
-            pos = fromEvent.getLocation();
-        } else {
-            pos = fromEvent.getLocation();
-            pos.yaw = this.yaw;
-            pos.pitch = this.pitch;
-        }
-        this.teleport(pos, TeleportCause.PLAYER_SPAWN);
         this.spawnToAll();
     }
 

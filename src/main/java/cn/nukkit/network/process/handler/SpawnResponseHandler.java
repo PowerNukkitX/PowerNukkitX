@@ -7,6 +7,7 @@ import cn.nukkit.network.process.NetworkSessionState;
 import cn.nukkit.network.protocol.AvailableEntityIdentifiersPacket;
 import cn.nukkit.network.protocol.BiomeDefinitionListPacket;
 import cn.nukkit.network.protocol.ItemComponentPacket;
+import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.network.protocol.RequestChunkRadiusPacket;
 import cn.nukkit.network.protocol.SetLocalPlayerAsInitializedPacket;
 import cn.nukkit.network.protocol.StartGamePacket;
@@ -18,8 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Collections;
 
 @Slf4j
-public class PrespawnHandler extends NetworkSessionPacketHandler {
-    public PrespawnHandler(NetworkSession session) {
+public class SpawnResponseHandler extends NetworkSessionPacketHandler {
+    public SpawnResponseHandler(NetworkSession session) {
         super(session);
         var server = player.getServer();
 

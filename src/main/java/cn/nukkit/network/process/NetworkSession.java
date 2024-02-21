@@ -13,9 +13,9 @@ import cn.nukkit.network.connection.BedrockServerSession;
 import cn.nukkit.network.process.handler.HandshakePacketHandler;
 import cn.nukkit.network.process.handler.InGamePacketHandler;
 import cn.nukkit.network.process.handler.LoginHandler;
-import cn.nukkit.network.process.handler.PrespawnHandler;
 import cn.nukkit.network.process.handler.ResourcePackHandler;
 import cn.nukkit.network.process.handler.SessionStartHandler;
+import cn.nukkit.network.process.handler.SpawnResponseHandler;
 import cn.nukkit.network.protocol.AvailableCommandsPacket;
 import cn.nukkit.network.protocol.CreativeContentPacket;
 import cn.nukkit.network.protocol.DataPacket;
@@ -103,10 +103,11 @@ public class NetworkSession {
                     }
                     this.onPlayerCreated(player);
                     player.processLogin();
-                    this.setPacketHandler(new PrespawnHandler(this));
-                    log.info("start game");
+                    this.setPacketHandler(new SpawnResponseHandler(this));
+                    // The reason why teleport player to their position is for gracefully client-side spawn,
+                    // although we need some hacks, It definitely worth it.
+                    player.setImmobile(true); //TODO: HACK: fix client-side falling pre-spawn
                     handle.doFirstSpawn();
-                    log.info("first spawn");
                 })
                 .onExit(this::onClientSpawned)
                 .permit(NetworkSessionState.IN_GAME, NetworkSessionState.IN_GAME);
@@ -191,11 +192,9 @@ public class NetworkSession {
     }
 
     private void onClientSpawned() {
-        /*
-        if (handle.player.locallyInitialized) {
-            return;
-        }
-        handle.player.locallyInitialized = true;*/
+        log.debug("Received spawn response, entering in-game phase");
+        player.setImmobile(false); //TODO: HACK: we set this during the spawn sequence to prevent the client sending junk movements
+
         handle.onPlayerLocallyInitialized();
         PlayerLocallyInitializedEvent locallyInitializedEvent = new PlayerLocallyInitializedEvent(handle.player);
         handle.player.getServer().getPluginManager().callEvent(locallyInitializedEvent);
