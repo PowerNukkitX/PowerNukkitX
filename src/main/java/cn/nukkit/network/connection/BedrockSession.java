@@ -19,6 +19,7 @@ import javax.crypto.SecretKey;
 import java.net.SocketAddress;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 public abstract class BedrockSession {
@@ -30,10 +31,24 @@ public abstract class BedrockSession {
     protected boolean logging;
     protected String disconnectReason;
     private final Queue<DataPacket> inbound = PlatformDependent.newSpscQueue();
+    private final AtomicBoolean nettyThreadOwned = new AtomicBoolean(false);
+    private final AtomicReference<Consumer<DataPacket>> consumer = new AtomicReference<>(null);
 
     public BedrockSession(BedrockPeer peer, int subClientId) {
         this.peer = peer;
         this.subClientId = subClientId;
+    }
+
+    public void setNettyThreadOwned(boolean immediatelyHandle) {
+        this.nettyThreadOwned.set(immediatelyHandle);
+    }
+
+    public boolean isNettyThreadOwned() {
+        return this.nettyThreadOwned.get();
+    }
+
+    public void setPacketConsumer(Consumer<DataPacket> consumer) {
+        this.consumer.set(consumer);
     }
 
     protected void checkForClosed() {
@@ -126,13 +141,23 @@ public abstract class BedrockSession {
 
     protected void onPacket(BedrockPacketWrapper wrapper) {
         DataPacket packet = wrapper.getPacket();
-        inbound.add(packet);
+        if (this.nettyThreadOwned.get()) {
+            var c = this.consumer.get();
+            if (c != null) {
+                c.accept(packet);
+            }
+        } else {
+            inbound.add(packet);
+        }
     }
 
-    public void pollPackets(Consumer<DataPacket> c) {
+    public void tick() {
         DataPacket packet;
+        var c = this.consumer.get();
         while ((packet = this.inbound.poll()) != null) {
-            c.accept(packet);
+            if (c != null) {
+                c.accept(packet);
+            }
         }
     }
 

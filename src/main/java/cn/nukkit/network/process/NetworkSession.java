@@ -36,10 +36,10 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 public class NetworkSession {
@@ -57,7 +57,7 @@ public class NetworkSession {
 
     @Setter
     protected @Nullable PacketHandler packetHandler;
-    protected boolean disconnected = false;
+    protected AtomicBoolean disconnected = new AtomicBoolean(false);
     private InetSocketAddress address;
 
     public void onPlayerCreated(@NotNull Player player) {
@@ -68,6 +68,18 @@ public class NetworkSession {
 
     public NetworkSession(BedrockServerSession session) {
         this.session = session;
+        // from session start to login sequence complete, netty threads own the session
+        this.session.setNettyThreadOwned(true);
+
+        this.session.setPacketConsumer((pk) -> {
+            try {
+                this.handleDataPacket(pk);
+            } catch (Exception e) {
+                log.error("An error occurred whilst handling {} for {}", pk.getClass().getSimpleName(), this.session.getSocketAddress().toString(), e);
+                this.disconnect("packet processing error");
+            }
+        });
+
         this.address = (InetSocketAddress) this.session.getSocketAddress();
         log.debug("creating session {}", session.getPeer().getSocketAddress().toString());
         var cfg = new StateMachineConfig<NetworkSessionState, NetworkSessionState>();
@@ -93,6 +105,9 @@ public class NetworkSession {
 
         cfg.configure(NetworkSessionState.PRE_SPAWN)
                 .onEntry(() -> {
+                    // now the main thread owns the session
+                    this.session.setNettyThreadOwned(false);
+
                     log.debug("Creating player");
 
                     var player = this.createPlayer();
@@ -104,7 +119,7 @@ public class NetworkSession {
                     player.processLogin();
                     this.setPacketHandler(new SpawnResponseHandler(this));
                     // The reason why teleport player to their position is for gracefully client-side spawn,
-                    // although we need some hacks, It definitely a fairly trade.
+                    // although we need some hacks, It is definitely a fairly trade.
                     player.setImmobile(true); //TODO: HACK: fix client-side falling pre-spawn
                     handle.doFirstSpawn();
                 })
@@ -201,7 +216,7 @@ public class NetworkSession {
 
     }
 
-    public void handleDataPacket(DataPacket packet) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void handleDataPacket(DataPacket packet) {
         if (packet instanceof DisconnectPacket d) {
             this.session.close(d.message);
             return;
@@ -228,26 +243,18 @@ public class NetworkSession {
             this.disconnect(this.session.getDisconnectReason());
             return;
         }
-        this.session.pollPackets((pk) -> {
-            try {
-                this.handleDataPacket(pk);
-            } catch (Exception e) {
-                log.error("An error occurred whilst handling {} for {}", pk.getClass().getSimpleName(), this.session.getSocketAddress().toString(), e);
-                this.disconnect("packet processing error");
-            }
-        });
+        this.session.tick();
     }
 
     public boolean isDisconnected() {
-        return disconnected;
+        return disconnected.get();
     }
 
-    public void disconnect(String reason) {
-        if (this.disconnected) {
+    public synchronized void disconnect(String reason) {
+        if (!this.disconnected.compareAndExchange(false, true)) {
             return;
         }
         this.setPacketHandler(null);
-        this.disconnected = true;
         if (this.player != null) {
             this.player.close(reason);
         }

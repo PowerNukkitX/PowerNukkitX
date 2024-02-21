@@ -2,7 +2,7 @@ package cn.nukkit.network.process.handler;
 
 import cn.nukkit.Server;
 import cn.nukkit.entity.data.Skin;
-import cn.nukkit.network.connection.util.PrepareEncryptionTask;
+import cn.nukkit.network.connection.util.EncryptionUtils;
 import cn.nukkit.network.process.NetworkSession;
 import cn.nukkit.network.process.NetworkSessionState;
 import cn.nukkit.network.protocol.LoginPacket;
@@ -10,8 +10,9 @@ import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.network.protocol.ServerToClientHandshakePacket;
 import cn.nukkit.player.info.PlayerInfo;
 import cn.nukkit.player.info.XboxLivePlayerInfo;
-import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.utils.ClientChainData;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;
@@ -19,6 +20,7 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class LoginHandler extends NetworkSessionPacketHandler {
 
     private final Consumer<PlayerInfo> consumer;
@@ -31,6 +33,7 @@ public class LoginHandler extends NetworkSessionPacketHandler {
     private static final Pattern playerNamePattern = Pattern.compile("^(?! )([a-zA-Z0-9_ ]{2,15}[a-zA-Z0-9_])(?<! )$");
 
     @Override
+    @SneakyThrows
     public void handle(LoginPacket pk) {
         var server = this.session.getServer();
         /*if (handle.player.loggedIn) {
@@ -123,23 +126,28 @@ public class LoginHandler extends NetworkSessionPacketHandler {
     }
 
     private void enableEncryption(ClientChainData data) {
-        Server.getInstance().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new PrepareEncryptionTask(data) {
-            @Override
-            public void onCompletion(Server server) {
-                if (session.isDisconnected()) {
-                    return;
-                }
-                if (this.getHandshakeJwt() == null || this.getEncryptionKey() == null) {
-                    session.disconnect("Network Encryption error");
-                    return;
-                }
-                ServerToClientHandshakePacket pk = new ServerToClientHandshakePacket();
-                pk.setJwt(this.getHandshakeJwt());
-                session.sendPacketImmediately(pk);
-                session.getSession().enableEncryption(this.getEncryptionKey());
-
-                session.getMachine().fire(NetworkSessionState.ENCRYPTION);
+        try {
+            var clientKey = EncryptionUtils.parseKey(data.getIdentityPublicKey());
+            var encryptionKeyPair = EncryptionUtils.createKeyPair();
+            var encryptionToken = EncryptionUtils.generateRandomToken();
+            var encryptionKey = EncryptionUtils.getSecretKey(
+                    encryptionKeyPair.getPrivate(), clientKey,
+                    encryptionToken
+            );
+            var handshakeJwt = EncryptionUtils.createHandshakeJwt(encryptionKeyPair, encryptionToken);
+            // WTF
+            if (session.isDisconnected()) {
+                return;
             }
-        });
+            var pk = new ServerToClientHandshakePacket();
+            pk.setJwt(handshakeJwt);
+            session.sendPacketImmediately(pk);
+            session.getSession().enableEncryption(encryptionKey);
+
+            session.getMachine().fire(NetworkSessionState.ENCRYPTION);
+        } catch (Exception e) {
+            log.error("Failed to prepare encryption", e);
+            session.disconnect("encryption error");
+        }
     }
 }
