@@ -11,7 +11,8 @@ com-google-code-gson-gson = "2.10.1"
 com-google-guava-guava = "33.0.0-jre"
 com-lmax-disruptor = "3.4.4"
 commons-io-commons-io = "2.15.1"
-io-netty-netty-transport-classes-epoll = "4.1.101.Final"
+io-netty-netty-transport-classes-epoll = "4.1.107.Final"
+io-netty-netty-transport-classes-kqueue = "4.1.107.Final"
 io-sentry-sentry = "7.1.0"
 io-sentry-sentry-log4j2 = "7.1.0"
 it-unimi-dsi-fastutil = "8.5.12"
@@ -68,6 +69,7 @@ log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "or
 log4j-slf4j2-impl = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "org-apache-logging-log4j-log4j-slf4j2-impl" }
 jose4j = { module = "org.bitbucket.b_c:jose4j", version.ref = "org-bitbucket-b-c-jose4j" }
 netty-epoll = { module = "io.netty:netty-transport-classes-epoll", version.ref = "io-netty-netty-transport-classes-epoll" }
+netty-kqueue = { module = "io.netty:netty-transport-classes-kqueue", version.ref = "io-netty-netty-transport-classes-kqueue" }
 netty-raknet = { module = "org.cloudburstmc.netty:netty-transport-raknet", version.ref = "org-cloudburstmc-netty-netty-transport-raknet" }
 graalvm-js = { module = "org.graalvm.js:js", version.ref = "org-graalvm-js-js" }
 graalvm-js-scriptengine = { module = "org.graalvm.js:js-scriptengine", version.ref = "org-graalvm-js-js-scriptengine" }
@@ -88,7 +90,7 @@ rng-simple = { module = "org.apache.commons:commons-rng-simple", version.ref = "
 rng-sampling = { module = "org.apache.commons:commons-rng-sampling", version.ref = "commons-rng" }
 
 [bundles]
-netty = ["netty-raknet", "netty-epoll"]
+netty = ["netty-raknet", "netty-epoll", "netty-kqueue"]
 graalvm-runtime = ["graalvm-js", "graalvm-chromeinspector", "graalvm-profiler"]
 graalvm = ["graalvm-js-scriptengine", "graalsdk"]
 terminal = ["jline-reader", "jline-terminal", "jline-terminaljna", "terminalconsoleappender"]
