@@ -1696,6 +1696,16 @@ public class Server {
             return;
         }
 
+        log.info(this.getLanguage().tr("nukkit.player.logIn",
+                TextFormat.AQUA + player.getName() + TextFormat.WHITE,
+                player.getAddress(),
+                String.valueOf(player.getPort()),
+                String.valueOf(player.getId()),
+                player.level.getName(),
+                String.valueOf(NukkitMath.round(player.x, 4)),
+                String.valueOf(NukkitMath.round(player.y, 4)),
+                String.valueOf(NukkitMath.round(player.z, 4))));
+
         this.players.put(socketAddress, player);
         if (this.sendUsageTicker > 0) {
             this.uniquePlayers.add(player.getUniqueId());

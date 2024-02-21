@@ -347,7 +347,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected PlayerCursorInventory playerCursorInventory;
     protected CreativeOutputInventory creativeOutputInventory;
     protected boolean inventoryOpen;
-    private final PlayerHandle handle = new PlayerHandle(this);
     private final @NotNull PlayerInfo info;
 
     public @NotNull PlayerInfo getPlayerInfo() {

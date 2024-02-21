@@ -2,7 +2,6 @@ package cn.nukkit.network.process.handler;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.data.property.EntityProperty;
-import cn.nukkit.math.NukkitMath;
 import cn.nukkit.network.process.NetworkSession;
 import cn.nukkit.network.process.NetworkSessionState;
 import cn.nukkit.network.protocol.AvailableEntityIdentifiersPacket;
@@ -13,7 +12,6 @@ import cn.nukkit.network.protocol.SetLocalPlayerAsInitializedPacket;
 import cn.nukkit.network.protocol.StartGamePacket;
 import cn.nukkit.network.protocol.SyncEntityPropertyPacket;
 import cn.nukkit.registry.Registries;
-import cn.nukkit.utils.TextFormat;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 
@@ -94,16 +92,6 @@ public class PrespawnHandler extends NetworkSessionPacketHandler {
         log.debug("Sending player list");
         server.addOnlinePlayer(player);
         server.onPlayerCompleteLoginSequence(player);
-
-        log.info(server.getLanguage().tr("nukkit.player.logIn",
-                TextFormat.AQUA + player.getName() + TextFormat.WHITE,
-                player.getAddress(),
-                String.valueOf(player.getPort()),
-                String.valueOf(player.getId()),
-                player.level.getName(),
-                String.valueOf(NukkitMath.round(player.x, 4)),
-                String.valueOf(NukkitMath.round(player.y, 4)),
-                String.valueOf(NukkitMath.round(player.z, 4))));
 
         if (player.isOp() || player.hasPermission("nukkit.textcolor")) {
             player.setRemoveFormat(false);
