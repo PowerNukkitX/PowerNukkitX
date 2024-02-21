@@ -4516,7 +4516,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.nextChunkOrderRun = 0;
         this.playerChunkManager.handleTeleport();
-
+        final int dis = this.getViewDistance();
+        //refresh chunks for client
+        this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+            this.setViewDistance(4);
+            this.setViewDistance(dis);
+        }, 10);
         //DummyBossBar
         this.getDummyBossBars().values().forEach(DummyBossBar::reshow);
         //Weather
