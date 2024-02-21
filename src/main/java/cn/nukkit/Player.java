@@ -3488,6 +3488,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.chunk = null;
 
         this.server.removePlayer(this);
+        this.networkSession = null;
     }
 
     public void save() {
