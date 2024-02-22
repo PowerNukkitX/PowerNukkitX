@@ -19,9 +19,7 @@ import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.leveldb.LevelDBProvider;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.Network;
-import cn.nukkit.network.RakNetInterface;
-import cn.nukkit.network.SourceInterface;
-import cn.nukkit.network.process.NetworkSession;
+import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.permission.BanList;
 import cn.nukkit.player.info.PlayerInfo;
 import cn.nukkit.plugin.JavaPluginLoader;
@@ -67,7 +65,6 @@ public class GameMockExtension extends MockitoExtension {
     static FreezableArrayManager freezableArrayManager;
     static Network network;
     static QueryRegenerateEvent queryRegenerateEvent;
-    static RakNetInterface rakNetInterface;
     static MockedStatic<Server> serverMockedStatic;
     final static GameMockExtension gameMockExtension;
     final static BlockRegistry BLOCK_REGISTRY;
@@ -159,10 +156,7 @@ public class GameMockExtension extends MockitoExtension {
             FieldUtils.writeDeclaredField(server, "tickAverage", new float[]{20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20}, true);
             FieldUtils.writeDeclaredField(server, "useAverage", new float[]{20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20}, true);
             network = new Network(server);
-            network.setName("PNX");
-            network.setSubName("TEST MOCK");
-            rakNetInterface = new RakNetInterface(server);
-            network.registerInterface(rakNetInterface);
+            network.setPong("PNX");
             FieldUtils.writeDeclaredField(server, "network", network, true);
             FieldUtils.writeDeclaredStaticField(Server.class, "instance", server, true);
         } catch (IllegalAccessException e) {
@@ -173,15 +167,13 @@ public class GameMockExtension extends MockitoExtension {
 
     //mock player
     static {
-        SourceInterface sourceInterface = mock(SourceInterface.class);
-        NetworkSession serverSession = mock(NetworkSession.class);
+        BedrockSession serverSession = mock(BedrockSession.class);
         PlayerInfo info = new PlayerInfo(
                 "test",
                 UUID.randomUUID(),
                 null,
                 mock(ClientChainData.class)
         );
-        when(sourceInterface.getSession(any())).thenReturn(serverSession);
         doNothing().when(serverSession).sendPacketImmediately(any());
         doNothing().when(serverSession).sendDataPacket(any());
         player = new Player(serverSession, info);
@@ -260,11 +252,9 @@ public class GameMockExtension extends MockitoExtension {
         final Thread main = Thread.currentThread();
         Thread t = new Thread(() -> {
             while (running.get()) {
-                for (SourceInterface interfaz : network.getInterfaces()) {
-                    try {
-                        interfaz.process();
-                    } catch (Exception ignore) {
-                    }
+                try {
+                    network.process();
+                } catch (Exception ignore) {
                 }
                 try {
                     Thread.sleep(50);

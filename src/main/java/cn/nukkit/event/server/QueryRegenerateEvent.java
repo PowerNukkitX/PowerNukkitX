@@ -53,11 +53,11 @@ public class QueryRegenerateEvent extends ServerEvent {
         this.timeout = timeout;
         this.serverName = server.getMotd();
         this.listPlugins = server.getConfig("settings.query-plugins", true);
-        this.plugins = server.getPluginManager().getPlugins().values().toArray(Plugin.EMPTY_ARRAY);
+        this.plugins = server.getPluginManager() == null ? Plugin.EMPTY_ARRAY : server.getPluginManager().getPlugins().values().toArray(Plugin.EMPTY_ARRAY);
         this.players = server.getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY);
         this.gameType = (server.getGamemode() & 0x01) == 0 ? "SMP" : "CMP";
         this.version = ProtocolInfo.MINECRAFT_VERSION_NETWORK;
-        this.server_engine = server.getName() + " " + server.getNukkitVersion() + " ("+server.getGitCommit()+")";
+        this.server_engine = server.getName() + " " + server.getNukkitVersion() + " (" + server.getGitCommit() + ")";
         this.map = server.getDefaultLevel() == null ? "unknown" : server.getDefaultLevel().getName();
         this.numPlayers = this.players.length;
         this.maxPlayers = server.getMaxPlayers();

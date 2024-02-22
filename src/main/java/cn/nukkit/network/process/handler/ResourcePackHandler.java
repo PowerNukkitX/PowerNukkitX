@@ -1,7 +1,7 @@
 package cn.nukkit.network.process.handler;
 
-import cn.nukkit.network.process.NetworkSession;
-import cn.nukkit.network.process.NetworkSessionState;
+import cn.nukkit.network.connection.BedrockSession;
+import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.protocol.ResourcePackChunkDataPacket;
 import cn.nukkit.network.protocol.ResourcePackChunkRequestPacket;
 import cn.nukkit.network.protocol.ResourcePackClientResponsePacket;
@@ -11,9 +11,9 @@ import cn.nukkit.network.protocol.ResourcePacksInfoPacket;
 import cn.nukkit.resourcepacks.ResourcePack;
 import cn.nukkit.utils.version.Version;
 
-public class ResourcePackHandler extends NetworkSessionPacketHandler {
+public class ResourcePackHandler extends BedrockSessionPacketHandler {
 
-    public ResourcePackHandler(NetworkSession session) {
+    public ResourcePackHandler(BedrockSession session) {
         super(session);
         ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
         infoPacket.resourcePackEntries = session.getServer().getResourcePackManager().getResourceStack();
@@ -25,12 +25,12 @@ public class ResourcePackHandler extends NetworkSessionPacketHandler {
     public void handle(ResourcePackClientResponsePacket pk) {
         var server = session.getServer();
         switch (pk.responseStatus) {
-            case ResourcePackClientResponsePacket.STATUS_REFUSED -> session.disconnect("disconnectionScreen.noReason");
+            case ResourcePackClientResponsePacket.STATUS_REFUSED -> this.session.close("disconnectionScreen.noReason");
             case ResourcePackClientResponsePacket.STATUS_SEND_PACKS -> {
                 for (ResourcePackClientResponsePacket.Entry entry : pk.packEntries) {
                     ResourcePack resourcePack = server.getResourcePackManager().getPackById(entry.uuid);
                     if (resourcePack == null) {
-                        session.disconnect("disconnectionScreen.resourcePack");
+                        this.session.close("disconnectionScreen.resourcePack");
                         return;
                     }
 
@@ -69,7 +69,7 @@ public class ResourcePackHandler extends NetworkSessionPacketHandler {
                 session.sendDataPacket(stackPacket);
             }
             case ResourcePackClientResponsePacket.STATUS_COMPLETED ->
-                    this.session.getMachine().fire(NetworkSessionState.PRE_SPAWN);
+                    this.session.getMachine().fire(SessionState.PRE_SPAWN);
         }
     }
 
@@ -79,7 +79,7 @@ public class ResourcePackHandler extends NetworkSessionPacketHandler {
         var mgr = session.getServer().getResourcePackManager();
         ResourcePack resourcePack = mgr.getPackById(pk.getPackId());
         if (resourcePack == null) {
-            session.disconnect("disconnectionScreen.resourcePack");
+            this.session.close("disconnectionScreen.resourcePack");
             return;
         }
         int maxChunkSize = mgr.getMaxChunkSize();

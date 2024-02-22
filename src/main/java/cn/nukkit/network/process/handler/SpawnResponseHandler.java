@@ -2,8 +2,8 @@ package cn.nukkit.network.process.handler;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.data.property.EntityProperty;
-import cn.nukkit.network.process.NetworkSession;
-import cn.nukkit.network.process.NetworkSessionState;
+import cn.nukkit.network.connection.BedrockSession;
+import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.protocol.AvailableEntityIdentifiersPacket;
 import cn.nukkit.network.protocol.BiomeDefinitionListPacket;
 import cn.nukkit.network.protocol.ItemComponentPacket;
@@ -18,8 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Collections;
 
 @Slf4j
-public class SpawnResponseHandler extends NetworkSessionPacketHandler {
-    public SpawnResponseHandler(NetworkSession session) {
+public class SpawnResponseHandler extends BedrockSessionPacketHandler {
+    public SpawnResponseHandler(BedrockSession session) {
         super(session);
         var server = player.getServer();
 
@@ -129,7 +129,7 @@ public class SpawnResponseHandler extends NetworkSessionPacketHandler {
         startPk.commandsEnabled = player.isEnableClientCommand();
         startPk.gameRules = player.getLevel().getGameRules();
         startPk.levelId = "";
-        startPk.worldName = server.getNetwork().getName();
+        startPk.worldName = player.getLevelName();
         startPk.generator = (byte) ((player.getLevel().getDimension() + 1) & 0xff); //0 旧世界, 1 主世界, 2 下界, 3末地
         startPk.serverAuthoritativeMovement = server.getServerAuthoritativeMovement();
         startPk.isInventoryServerAuthoritative = true;//enable item stack request packet
@@ -147,6 +147,6 @@ public class SpawnResponseHandler extends NetworkSessionPacketHandler {
 
     @Override
     public void handle(SetLocalPlayerAsInitializedPacket pk) {
-        this.session.getMachine().fire(NetworkSessionState.IN_GAME);
+        this.session.getMachine().fire(SessionState.IN_GAME);
     }
 }

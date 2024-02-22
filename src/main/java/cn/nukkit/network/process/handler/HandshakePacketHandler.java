@@ -1,16 +1,16 @@
 package cn.nukkit.network.process.handler;
 
-import cn.nukkit.network.process.NetworkSessionState;
-import cn.nukkit.network.process.NetworkSession;
+import cn.nukkit.network.connection.BedrockSession;
+import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.protocol.ClientToServerHandshakePacket;
 
-public class HandshakePacketHandler extends NetworkSessionPacketHandler {
-    public HandshakePacketHandler(NetworkSession session) {
+public class HandshakePacketHandler extends BedrockSessionPacketHandler {
+    public HandshakePacketHandler(BedrockSession session) {
         super(session);
     }
 
     @Override
     public void handle(ClientToServerHandshakePacket pk) {
-        session.getMachine().fire(NetworkSessionState.RESOURCE_PACK);
+        session.getMachine().fire(SessionState.RESOURCE_PACK);
     }
 }

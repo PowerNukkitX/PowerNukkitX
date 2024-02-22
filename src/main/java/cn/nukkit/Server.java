@@ -50,8 +50,6 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.Network;
-import cn.nukkit.network.RakNetInterface;
-import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.PlayerListPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -687,9 +685,9 @@ public class Server {
         log.info(this.getLanguage().tr("nukkit.server.networkStart", new String[]{this.getIp().equals("") ? "*" : this.getIp(), String.valueOf(this.getPort())}));
         this.serverID = UUID.randomUUID();
 
+        this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5);
         this.network = new Network(this);
-        this.network.setName(this.getMotd());
-        this.network.setSubName(this.getSubMotd());
+        this.network.setPong(this.getMotd());
 
         log.info(this.getLanguage().tr("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + " (" + this.getGitCommit() + ")" + TextFormat.WHITE, this.getApiVersion()));
         log.info(this.getLanguage().tr("nukkit.server.license"));
@@ -764,10 +762,6 @@ public class Server {
 
         this.pluginManager.registerInterface(JavaPluginLoader.class);
         this.pluginManager.registerInterface(JSPluginLoader.class);
-
-        this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5);
-
-        this.network.registerInterface(new RakNetInterface(this));
 
         try {
             log.debug("Loading position tracking service");
@@ -993,11 +987,7 @@ public class Server {
             this.consoleThread.interrupt();
 
             log.debug("Stopping network interfaces");
-            for (SourceInterface interfaz : this.network.getInterfaces()) {
-                interfaz.shutdown();
-                this.network.unregisterInterface(interfaz);
-            }
-
+            network.shutdown();
             playerDataDB.close();
             //close watchdog and metrics
             if (this.watchdog != null) {
@@ -1201,8 +1191,6 @@ public class Server {
                     log.error("", e);
                 }
             }
-
-            this.getNetwork().updateName();
         }
 
         if (this.autoSave && ++this.autoSaveTicker >= this.autoSaveTicks) {
@@ -2541,7 +2529,7 @@ public class Server {
             player.recalculatePermissions();
             player.getAdventureSettings().onOpChange(true);
             player.getAdventureSettings().update();
-            player.getNetworkSession().syncAvailableCommands();
+            player.getSession().syncAvailableCommands();
         }
         this.operators.save(true);
     }
@@ -2553,7 +2541,7 @@ public class Server {
             player.recalculatePermissions();
             player.getAdventureSettings().onOpChange(false);
             player.getAdventureSettings().update();
-            player.getNetworkSession().syncAvailableCommands();
+            player.getSession().syncAvailableCommands();
         }
         this.operators.save();
     }

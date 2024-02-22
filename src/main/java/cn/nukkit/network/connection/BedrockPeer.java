@@ -30,6 +30,7 @@ import org.cloudburstmc.netty.channel.raknet.RakDisconnectReason;
 import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
 import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
 import org.cloudburstmc.netty.handler.codec.raknet.common.RakSessionCodec;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.crypto.SecretKey;
 import java.net.SocketAddress;
@@ -104,6 +105,7 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
         for (BedrockSession session : this.sessions.values()) {
             session.disconnectReason = disconnectReason;
         }
+        this.channel.disconnect();
     }
 
     private void free() {
@@ -186,6 +188,7 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
         return ((CompressionCodec) handler).getStrategy();
     }
 
+    @ApiStatus.Internal
     public void close(String reason) {
         for (BedrockSession session : this.sessions.values()) {
             session.disconnectReason = reason;
@@ -199,6 +202,14 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
             return;
         }
 
+        for (BedrockSession session : this.sessions.values()) {
+            try {
+                session.onClose();
+            } catch (Exception e) {
+                log.error("Exception whilst closing session", e);
+            }
+        }
+
         if (!this.closed.compareAndSet(false, true)) {
             return;
         }
@@ -207,13 +218,6 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
             this.tickFuture.cancel(false);
             this.tickFuture = null;
         }
-
-        for (BedrockSession session : this.sessions.values())
-            try {
-                session.onClose();
-            } catch (Exception e) {
-                log.error("Exception whilst closing session", e);
-            }
 
         this.free();
     }

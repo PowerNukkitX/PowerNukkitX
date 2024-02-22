@@ -100,7 +100,7 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.network.process.NetworkSession;
+import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.CommandOriginData;
 import cn.nukkit.network.protocol.types.CommandOutputType;
@@ -216,7 +216,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public long lastSkinChange;
     protected long breakingBlockTime = 0;
     protected double blockBreakProgress = 0;
-    protected @Nullable NetworkSession networkSession;
+    protected @Nullable BedrockSession session;
     protected final InetSocketAddress rawSocketAddress;
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
     protected final int chunksPerTick;
@@ -355,15 +355,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     ///
     @UsedByReflection
-    public Player(@NotNull NetworkSession session,@NotNull PlayerInfo info) {
+    public Player(@NotNull BedrockSession session, @NotNull PlayerInfo info) {
         super(null, new CompoundTag());
         this.info = info;
 
-        this.networkSession = session;
+        this.session = session;
         this.perm = new PermissibleBase(this);
         this.server = Server.getInstance();
         this.lastBreak = -1;
-        this.socketAddress = this.getNetworkSession().getAddress();
+        this.socketAddress = this.getSession().getAddress();
         this.rawSocketAddress = socketAddress;
         this.loaderId = Level.generateChunkLoaderId(this);
         this.chunksPerTick = this.server.getConfig("chunk-sending.per-tick", 8);
@@ -398,11 +398,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-    public @NotNull NetworkSession getNetworkSession() {
-        if(this.networkSession == null){
+    public @NotNull BedrockSession getSession() {
+        if (this.session == null) {
             throw new RuntimeException("Player is not connected");
         }
-        return this.networkSession;
+        return this.session;
     }
 
     /**
@@ -653,7 +653,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected void doFirstSpawn() {
         this.spawned = true;
 
-        this.getNetworkSession().syncInventory();
+        this.getSession().syncInventory();
 
         this.setEnableClientCommand(true);
 
@@ -1850,7 +1850,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (this.isEnableClientCommand() && spawned) {
-            this.getNetworkSession().syncAvailableCommands();
+            this.getSession().syncAvailableCommands();
         }
     }
 
@@ -1860,7 +1860,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     public void setEnableClientCommand(boolean enable) {
         this.enableClientCommand = enable;
-        this.getNetworkSession().setEnableClientCommand(enable);
+        this.getSession().setEnableClientCommand(enable);
     }
 
     @Override
@@ -2277,7 +2277,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param packet 发送的数据包<br>packet to send
      */
     public void dataPacket(DataPacket packet) {
-        this.getNetworkSession().sendDataPacket(packet);
+        this.getSession().sendDataPacket(packet);
     }
 
     /**
@@ -2288,7 +2288,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return int
      */
     public int getPing() {
-        return (int) this.getNetworkSession().getPing();
+        return (int) this.getSession().getPing();
     }
 
     public boolean sleepOn(Vector3 pos) {
@@ -2871,7 +2871,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (this.chunkLoadCount >= this.spawnThreshold && !this.spawned && loggedIn) {
-            this.getNetworkSession().notifyTerrainReady();
+            this.getSession().notifyTerrainReady();
         }
     }
 
@@ -3399,12 +3399,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 scoreboardManager.beforePlayerQuit(this);
             }
 
-            if (!reason.isEmpty()) {
-                DisconnectPacket pk = new DisconnectPacket();
-                pk.message = reason;
-                this.dataPacketImmediately(pk);
-            }
-
             this.connected = false;
             PlayerQuitEvent ev = null;
             if (this.username != null && !this.getName().isEmpty()) {
@@ -3447,9 +3441,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
 
             super.close();
-
-            this.getNetworkSession().disconnect(reason);
-
+            this.server.getNetwork().onSessionDisconnect(getSocketAddress());
             if (this.loggedIn) {
                 this.server.removeOnlinePlayer(this);
             }
@@ -3459,8 +3451,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             if (ev != null && !Objects.equals(this.username, "") && this.spawned && !Objects.equals(ev.getQuitMessage().toString(), "")) {
                 this.server.broadcastMessage(ev.getQuitMessage());
             }
-
             this.server.getPluginManager().unsubscribeFromPermission(Server.BROADCAST_CHANNEL_USERS, this);
+            this.server.getPluginManager().unsubscribeFromPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this);
             this.spawned = false;
             log.info(this.getServer().getLanguage().tr("nukkit.player.logOut",
                     TextFormat.AQUA + this.getName() + TextFormat.WHITE,
@@ -3491,7 +3483,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.chunk = null;
 
         this.server.removePlayer(this);
-        this.networkSession = null;
+        this.session = null;
     }
 
     public void save() {
@@ -5230,7 +5222,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
             log.trace("Immediate Outbound {}: {}", this.getName(), packet);
         }
-        this.getNetworkSession().sendPacketImmediately(packet);
+        this.getSession().sendPacketImmediately(packet);
         return true;
     }
 

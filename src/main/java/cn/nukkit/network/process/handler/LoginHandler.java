@@ -2,9 +2,9 @@ package cn.nukkit.network.process.handler;
 
 import cn.nukkit.Server;
 import cn.nukkit.entity.data.Skin;
+import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.connection.util.EncryptionUtils;
-import cn.nukkit.network.process.NetworkSession;
-import cn.nukkit.network.process.NetworkSessionState;
+import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.protocol.LoginPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.network.protocol.ServerToClientHandshakePacket;
@@ -21,11 +21,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
-public class LoginHandler extends NetworkSessionPacketHandler {
+public class LoginHandler extends BedrockSessionPacketHandler {
 
     private final Consumer<PlayerInfo> consumer;
 
-    public LoginHandler(NetworkSession session, Consumer<PlayerInfo> consumer) {
+    public LoginHandler(BedrockSession session, Consumer<PlayerInfo> consumer) {
         super(session);
         this.consumer = consumer;
     }
@@ -41,7 +41,7 @@ public class LoginHandler extends NetworkSessionPacketHandler {
         if (pk.issueUnixTime != -1 && Server.getInstance().checkLoginTime && System.currentTimeMillis() - pk.issueUnixTime > 20000) {
             var message = "disconnectionScreen.noReason";
             session.sendPlayStatus(PlayStatusPacket.LOGIN_FAILED_CLIENT, true);
-            session.disconnect(message);
+            session.close(message);
             return;
         }
 
@@ -49,13 +49,13 @@ public class LoginHandler extends NetworkSessionPacketHandler {
 
         //verify the player if enable the xbox-auth
         if (!chainData.isXboxAuthed() && server.getPropertyBoolean("xbox-auth")) {
-            session.disconnect("disconnectionScreen.notAuthenticated");
+            session.close("disconnectionScreen.notAuthenticated");
             return;
         }
 
         //Verify the number of server player
         if (server.getOnlinePlayers().size() >= server.getMaxPlayers()) {
-            session.disconnect("disconnectionScreen.serverFull");
+            session.close("disconnectionScreen.serverFull");
             return;
         }
 
@@ -71,12 +71,12 @@ public class LoginHandler extends NetworkSessionPacketHandler {
 
         if (!usernameMatcher.matches() || Objects.equals(username, "rcon")
                 || Objects.equals(username, "console")) {
-            session.disconnect("disconnectionScreen.invalidName");
+            session.close("disconnectionScreen.invalidName");
             return;
         }
 
         if (!pk.skin.isValid()) {
-            session.disconnect("disconnectionScreen.invalidSkin");
+            session.close("disconnectionScreen.invalidSkin");
             return;
         }
 
@@ -105,21 +105,21 @@ public class LoginHandler extends NetworkSessionPacketHandler {
         this.consumer.accept(info);
 
         if (!server.isWhitelisted((info.getUsername()).toLowerCase())) {
-            session.disconnect("Server is white-listed");
+            session.close("Server is white-listed");
             return;
         }
 
         var entry = server.getNameBans().getEntires().get(info.getUsername().toLowerCase());
         if (entry != null) {
             String reason = entry.getReason();
-            session.disconnect(!reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
+            session.close(!reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
             return;
         }
 
         if (server.enabledNetworkEncryption) {
             this.enableEncryption(chainData);
         } else {
-            session.getMachine().fire(NetworkSessionState.RESOURCE_PACK);
+            session.getMachine().fire(SessionState.RESOURCE_PACK);
         }
     }
 
@@ -140,12 +140,12 @@ public class LoginHandler extends NetworkSessionPacketHandler {
             var pk = new ServerToClientHandshakePacket();
             pk.setJwt(handshakeJwt);
             session.sendPacketImmediately(pk);
-            session.getSession().enableEncryption(encryptionKey);
+            session.enableEncryption(encryptionKey);
 
-            session.getMachine().fire(NetworkSessionState.ENCRYPTION);
+            session.getMachine().fire(SessionState.ENCRYPTION);
         } catch (Exception e) {
             log.error("Failed to prepare encryption", e);
-            session.disconnect("encryption error");
+            session.close("encryption error");
         }
     }
 }

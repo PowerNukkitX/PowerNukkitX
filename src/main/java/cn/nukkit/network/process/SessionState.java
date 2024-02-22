@@ -1,6 +1,6 @@
 package cn.nukkit.network.process;
 
-public enum NetworkSessionState {
+public enum SessionState {
     START(),
 
     LOGIN(),
