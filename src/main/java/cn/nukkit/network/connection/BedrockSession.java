@@ -141,6 +141,7 @@ public abstract class BedrockSession {
 
     protected void onPacket(BedrockPacketWrapper wrapper) {
         DataPacket packet = wrapper.getPacket();
+        this.logInbound(packet);
         if (this.nettyThreadOwned.get()) {
             var c = this.consumer.get();
             if (c != null) {
@@ -163,16 +164,16 @@ public abstract class BedrockSession {
         }
     }
 
-    protected void logOutbound(DataPacket packet) {/*
+    protected void logOutbound(DataPacket packet) {
         if (log.isTraceEnabled() && this.logging) {
             log.trace("Outbound {}{}: {}", this.getSocketAddress(), this.subClientId, packet);
-        }*/
+        }
     }
 
-    protected void logInbound(DataPacket packet) {/*
+    protected void logInbound(DataPacket packet) {
         if (log.isTraceEnabled() && this.logging) {
             log.trace("Inbound {}{}: {}", this.getSocketAddress(), this.subClientId, packet);
-        }*/
+        }
     }
 
     public SocketAddress getSocketAddress() {

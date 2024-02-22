@@ -164,9 +164,6 @@ public class NetworkSession {
         if (ev.isCancelled()) {
             return;
         }
-        if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
-            log.trace("Outbound {}: {}", this.player == null ? this.getAddressString() : this.player.getName(), packet);
-        }
         this.session.sendPacket(packet);
     }
 
@@ -230,9 +227,6 @@ public class NetworkSession {
             if (this.packetHandler instanceof InGamePacketHandler i) {
                 i.managerHandle(packet);
             } else {
-                /*var method = this.packetHandler.getClass().getMethod("handle", packet.getClass());
-                method.setAccessible(true);
-                method.invoke(this.packetHandler, packet);*/
                 packet.handle(this.packetHandler);
             }
         }

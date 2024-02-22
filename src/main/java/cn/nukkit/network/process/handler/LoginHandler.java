@@ -36,9 +36,7 @@ public class LoginHandler extends NetworkSessionPacketHandler {
     @SneakyThrows
     public void handle(LoginPacket pk) {
         var server = this.session.getServer();
-        /*if (handle.player.loggedIn) {
-            return;
-        }*/
+
         //check the player login time
         if (pk.issueUnixTime != -1 && Server.getInstance().checkLoginTime && System.currentTimeMillis() - pk.issueUnixTime > 20000) {
             var message = "disconnectionScreen.noReason";

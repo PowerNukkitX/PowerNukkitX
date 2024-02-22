@@ -30,11 +30,7 @@ public class SessionStartHandler extends NetworkSessionPacketHandler {
             session.disconnect(!reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
             return;
         }
-/*
-        if (player.loggedIn) {
-            return;
-        }
-*/
+
         var settingsPacket = new NetworkSettingsPacket();
         //FIXME there is no way out there to disable compression
         PacketCompressionAlgorithm algorithm;
