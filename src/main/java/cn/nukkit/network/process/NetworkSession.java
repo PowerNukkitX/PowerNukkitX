@@ -31,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
@@ -164,7 +165,7 @@ public class NetworkSession {
             return;
         }
         if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
-            log.trace("Outbound {}: {}", this.player.getName(), packet);
+            log.trace("Outbound {}: {}", this.player == null ? this.getAddressString() : this.player.getName(), packet);
         }
         this.session.sendPacket(packet);
     }
