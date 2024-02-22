@@ -169,10 +169,10 @@ public class NetworkSession {
         this.server.getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             return;
-        }/*
+        }
         if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
             log.trace("Outbound {}: {}", this.player.getName(), packet);
-        }*/
+        }
         this.session.sendPacket(packet);
     }
 
@@ -257,7 +257,7 @@ public class NetworkSession {
         return disconnected.get();
     }
 
-    public synchronized void disconnect(String reason) {
+    public void disconnect(String reason) {
         if (!this.disconnected.compareAndExchange(false, true)) {
             return;
         }

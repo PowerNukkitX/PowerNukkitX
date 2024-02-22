@@ -154,10 +154,12 @@ public abstract class BedrockSession {
     public void tick() {
         DataPacket packet;
         var c = this.consumer.get();
-        while ((packet = this.inbound.poll()) != null) {
-            if (c != null) {
+        if (c != null) {
+            while ((packet = this.inbound.poll()) != null) {
                 c.accept(packet);
             }
+        } else {
+            this.inbound.clear();
         }
     }
 
