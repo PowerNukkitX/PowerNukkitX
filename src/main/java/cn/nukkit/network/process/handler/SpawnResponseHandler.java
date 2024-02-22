@@ -91,7 +91,7 @@ public class SpawnResponseHandler extends NetworkSessionPacketHandler {
         player.setNameTagVisible(true);
         player.setNameTagAlwaysVisible(true);
         player.setCanClimb(true);
-
+        player.sendMovementSpeed(player.getMovementSpeed());
         log.debug("Sending player list");
         server.addOnlinePlayer(player);
         server.onPlayerCompleteLoginSequence(player);
