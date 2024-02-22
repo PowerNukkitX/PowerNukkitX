@@ -27,13 +27,10 @@ import cn.nukkit.player.info.PlayerInfo;
 import cn.nukkit.registry.Registries;
 import com.github.oxo42.stateless4j.StateMachine;
 import com.github.oxo42.stateless4j.StateMachineConfig;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
@@ -43,20 +40,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 public class NetworkSession {
-    @Getter
     private final @NotNull BedrockServerSession session;
-    @Getter
+
     private final @NotNull Server server = Server.getInstance();
-    @Getter
     private Player player;
-    @Getter
     private PlayerHandle handle;
     private PlayerInfo info;
-    @Getter
-    private final @NotNull StateMachine<NetworkSessionState, NetworkSessionState> machine;
 
-    @Setter
+    private final @NotNull StateMachine<NetworkSessionState, NetworkSessionState> machine;
     protected @Nullable PacketHandler packetHandler;
+
     protected AtomicBoolean disconnected = new AtomicBoolean(false);
     private InetSocketAddress address;
 
@@ -194,7 +187,6 @@ public class NetworkSession {
         try {
             PlayerCreationEvent event = new PlayerCreationEvent(Player.class);
             this.server.getPluginManager().callEvent(event);
-
             Constructor<? extends Player> constructor = event.getPlayerClass().getConstructor(NetworkSession.class, PlayerInfo.class);
             return constructor.newInstance(this, this.info);
         } catch (Exception e) {
@@ -337,5 +329,30 @@ public class NetworkSession {
         if (enable) {
             this.syncAvailableCommands();
         }
+    }
+
+
+    public @NotNull BedrockServerSession getSession() {
+        return this.session;
+    }
+
+    public @NotNull Server getServer() {
+        return this.server;
+    }
+
+    public Player getPlayer() {
+        return this.player;
+    }
+
+    public PlayerHandle getHandle() {
+        return this.handle;
+    }
+
+    public @NotNull StateMachine<NetworkSessionState, NetworkSessionState> getMachine() {
+        return this.machine;
+    }
+
+    public void setPacketHandler(@Nullable final PacketHandler packetHandler) {
+        this.packetHandler = packetHandler;
     }
 }
