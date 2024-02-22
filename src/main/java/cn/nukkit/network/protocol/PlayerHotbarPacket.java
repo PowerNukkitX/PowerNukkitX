@@ -30,4 +30,8 @@ public class PlayerHotbarPacket extends DataPacket {
         this.putByte((byte) this.windowId);
         this.putBoolean(this.selectHotbarSlot);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

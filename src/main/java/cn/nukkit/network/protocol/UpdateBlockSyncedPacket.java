@@ -21,4 +21,8 @@ public class UpdateBlockSyncedPacket extends UpdateBlockPacket {
         this.putUnsignedVarLong(actorUniqueId);
         this.putUnsignedVarLong(updateType.ordinal());
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

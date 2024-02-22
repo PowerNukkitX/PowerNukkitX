@@ -60,4 +60,8 @@ public class RequestPermissionsPacket extends DataPacket{
         }
         return null;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

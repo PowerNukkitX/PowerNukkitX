@@ -2,12 +2,12 @@ package cn.nukkit.network;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.event.player.PlayerAsyncCreationEvent;
 import cn.nukkit.event.server.QueryRegenerateEvent;
 import cn.nukkit.network.connection.BedrockPeer;
 import cn.nukkit.network.connection.BedrockPong;
 import cn.nukkit.network.connection.BedrockServerSession;
 import cn.nukkit.network.connection.netty.initializer.BedrockServerInitializer;
+import cn.nukkit.network.process.NetworkSession;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.query.codec.QueryPacketCodec;
 import cn.nukkit.network.query.handler.QueryPacketHandler;
@@ -31,18 +31,16 @@ import org.cloudburstmc.netty.channel.raknet.RakChannelFactory;
 import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
 import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
 
-import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadFactory;
 
 @Slf4j
 public class RakNetInterface implements SourceInterface {
-    private final Map<InetSocketAddress, BedrockServerSession> serverSessionMap = new ConcurrentHashMap<>();
+    private final Map<InetSocketAddress, NetworkSession> serverSessionMap = new ConcurrentHashMap<>();
     private final Map<InetAddress, Long> blockIpMap = new HashMap<>();
     private final RakServerChannel channel;
     private final Server server;
@@ -99,28 +97,15 @@ public class RakNetInterface implements SourceInterface {
 
                     @Override
                     public BedrockServerSession createSession0(BedrockPeer peer, int subClientId) {
-                        BedrockServerSession session = new BedrockServerSession(peer, subClientId);
-                        InetSocketAddress address = (InetSocketAddress) session.getSocketAddress();
+                        BedrockServerSession s = new BedrockServerSession(peer, subClientId);
+                        var session = new NetworkSession(s);
+                        InetSocketAddress address = (InetSocketAddress) session.getSession().getSocketAddress();
+                        RakNetInterface.this.serverSessionMap.put(address, session);
                         if (blockIpMap.containsKey(address.getAddress())) {
                             session.disconnect("Your IP address has been blocked by this server!");
                             RakNetInterface.this.serverSessionMap.remove(address);
-                            return session;
                         }
-                        try {
-                            PlayerAsyncCreationEvent event = new PlayerAsyncCreationEvent(RakNetInterface.this, Player.class, Player.class, address);
-                            RakNetInterface.this.server.getPluginManager().callEvent(event);
-
-                            RakNetInterface.this.serverSessionMap.put(event.getSocketAddress(), session);
-                            Constructor<? extends Player> constructor = event.getPlayerClass().getConstructor(SourceInterface.class, Integer.class, InetSocketAddress.class);
-                            Player player = constructor.newInstance(RakNetInterface.this, subClientId, event.getSocketAddress());
-                            RakNetInterface.this.server.addPlayer(address, player);
-                            session.setPlayer(player);
-                        } catch (Exception e) {
-                            log.error("Failed to create player", e);
-                            session.disconnect("Internal error");
-                            RakNetInterface.this.serverSessionMap.remove(address);
-                        }
-                        return session;
+                        return s;
                     }
 
                     @Override
@@ -136,8 +121,8 @@ public class RakNetInterface implements SourceInterface {
 
     @Override
     public int getNetworkLatency(Player player) {
-        BedrockServerSession session = this.serverSessionMap.get(player.getRawSocketAddress());
-        return session == null ? -1 : (int) session.getPing();
+        var session = this.serverSessionMap.get(player.getRawSocketAddress());
+        return session == null ? -1 : (int) session.getSession().getPing();
     }
 
     @Override
@@ -161,7 +146,7 @@ public class RakNetInterface implements SourceInterface {
     }
 
     @Override
-    public BedrockServerSession getSession(InetSocketAddress address) {
+    public NetworkSession getSession(InetSocketAddress address) {
         return this.serverSessionMap.get(address);
     }
 
@@ -172,8 +157,8 @@ public class RakNetInterface implements SourceInterface {
 
     @Override
     public void close(Player player, String reason) {
-        BedrockServerSession playerSession = this.getSession(player.getRawSocketAddress());
-        if (playerSession != null && playerSession.isConnected()) {
+        var playerSession = this.getSession(player.getRawSocketAddress());
+        if (playerSession != null) {
             playerSession.disconnect(reason);
         }
     }
@@ -198,15 +183,12 @@ public class RakNetInterface implements SourceInterface {
 
     @Override
     public void process() {
-        Iterator<BedrockServerSession> iterator = this.serverSessionMap.values().iterator();
+        var iterator = this.serverSessionMap.values().iterator();
         while (iterator.hasNext()) {
-            BedrockServerSession nukkitSession = iterator.next();
-            Player player = nukkitSession.getPlayer();
-            if (player != null && player.loggedIn && nukkitSession.getDisconnectReason() != null) {
-                player.close(player.getLeaveMessage(), nukkitSession.getDisconnectReason(), false);
+            var session = iterator.next();
+            session.tick();
+            if (session.isDisconnected()) {
                 iterator.remove();
-            } else {
-                nukkitSession.serverTick();
             }
         }
     }
@@ -214,9 +196,7 @@ public class RakNetInterface implements SourceInterface {
     @Override
     public void shutdown() {
         this.serverSessionMap.values().forEach(session -> {
-            if (session.isConnected()) {
-                session.disconnect("Shutdown");
-            }
+            session.disconnect("Shutdown");
         });
         this.channel.close();
     }

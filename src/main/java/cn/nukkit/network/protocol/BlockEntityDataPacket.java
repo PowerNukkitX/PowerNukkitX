@@ -35,4 +35,8 @@ public class BlockEntityDataPacket extends DataPacket {
         this.putBlockVector3(this.x, this.y, this.z);
         this.put(this.namedTag);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

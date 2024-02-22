@@ -30,4 +30,8 @@ public class SetEntityMotionPacket extends DataPacket {
         this.putEntityRuntimeId(this.eid);
         this.putVector3f(this.motionX, this.motionY, this.motionZ);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

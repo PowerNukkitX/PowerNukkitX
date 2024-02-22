@@ -76,4 +76,8 @@ public class ItemComponentPacket extends DataPacket {
             return data;
         }
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

@@ -16,4 +16,8 @@ public class TickingAreasLoadStatusPacket extends DataPacket {
     public void encode() {
         this.putBoolean(this.waitingForPreload);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

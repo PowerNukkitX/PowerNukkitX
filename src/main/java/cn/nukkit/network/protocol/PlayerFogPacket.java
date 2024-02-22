@@ -42,4 +42,8 @@ public class PlayerFogPacket extends DataPacket {
     public record Fog(Identifier identifier, String userProvidedId){
 
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

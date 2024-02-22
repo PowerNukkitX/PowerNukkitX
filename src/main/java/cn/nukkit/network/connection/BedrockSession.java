@@ -1,6 +1,5 @@
 package cn.nukkit.network.connection;
 
-import cn.nukkit.Player;
 import cn.nukkit.network.connection.netty.BedrockBatchWrapper;
 import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
 import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec;
@@ -20,6 +19,8 @@ import javax.crypto.SecretKey;
 import java.net.SocketAddress;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 public abstract class BedrockSession {
     private static final InternalLogger log = InternalLoggerFactory.getInstance(BedrockSession.class);
@@ -30,11 +31,24 @@ public abstract class BedrockSession {
     protected boolean logging;
     protected String disconnectReason;
     private final Queue<DataPacket> inbound = PlatformDependent.newSpscQueue();
-    private Player player;
+    private final AtomicBoolean nettyThreadOwned = new AtomicBoolean(false);
+    private final AtomicReference<Consumer<DataPacket>> consumer = new AtomicReference<>(null);
 
     public BedrockSession(BedrockPeer peer, int subClientId) {
         this.peer = peer;
         this.subClientId = subClientId;
+    }
+
+    public void setNettyThreadOwned(boolean immediatelyHandle) {
+        this.nettyThreadOwned.set(immediatelyHandle);
+    }
+
+    public boolean isNettyThreadOwned() {
+        return this.nettyThreadOwned.get();
+    }
+
+    public void setPacketConsumer(Consumer<DataPacket> consumer) {
+        this.consumer.set(consumer);
     }
 
     protected void checkForClosed() {
@@ -57,11 +71,12 @@ public abstract class BedrockSession {
         this.logOutbound(packet);
     }
 
-    public void sendNetWorkSettingsPacket(@NonNull NetworkSettingsPacket networkSettingsPacket) {
+    public void sendNetworkSettingsPacket(@NonNull NetworkSettingsPacket pk) {
+        //TODO WTF
         ByteBufAllocator alloc = this.peer.channel.alloc();
         ByteBuf buf1 = alloc.buffer(16);
         ByteBuf header = alloc.ioBuffer(5);
-        BedrockPacketWrapper msg = new BedrockPacketWrapper(0, subClientId, 0, networkSettingsPacket, null);
+        BedrockPacketWrapper msg = new BedrockPacketWrapper(0, subClientId, 0, pk, null);
         try {
             BedrockPacketCodec bedrockPacketCodec = this.peer.channel.pipeline().get(BedrockPacketCodec.class);
             DataPacket packet = msg.getPacket();
@@ -78,10 +93,14 @@ public abstract class BedrockSession {
             batch.setCompressed(buf2);
             this.peer.channel.writeAndFlush(batch);
         } catch (Throwable t) {
-            log.error("Error send NetworkSettingsPacket", t);
+            log.error("Error send", t);
         } finally {
             msg.release();
         }
+    }
+
+    public void flushSendBuffer() {
+        this.peer.flushSendQueue();
     }
 
     public BedrockPeer getPeer() {
@@ -122,17 +141,26 @@ public abstract class BedrockSession {
 
     protected void onPacket(BedrockPacketWrapper wrapper) {
         DataPacket packet = wrapper.getPacket();
-        inbound.add(packet);
+        this.logInbound(packet);
+        if (this.nettyThreadOwned.get()) {
+            var c = this.consumer.get();
+            if (c != null) {
+                c.accept(packet);
+            }
+        } else {
+            inbound.add(packet);
+        }
     }
 
-    public void serverTick() {
+    public void tick() {
         DataPacket packet;
-        while ((packet = this.inbound.poll()) != null) {
-            try {
-                this.player.handleDataPacket(packet);
-            } catch (Exception e) {
-                log.error("An error occurred whilst handling {} for {}", new Object[]{packet.getClass().getSimpleName(), this.player.getName()}, e);
+        var c = this.consumer.get();
+        if (c != null) {
+            while ((packet = this.inbound.poll()) != null) {
+                c.accept(packet);
             }
+        } else {
+            this.inbound.clear();
         }
     }
 
@@ -168,8 +196,8 @@ public abstract class BedrockSession {
         return disconnectReason;
     }
 
-    public void setDisconnectReason(String disconnectReason) {
-        this.disconnectReason = disconnectReason;
+    public boolean isDisconnected() {
+        return this.closed.get();
     }
 
     public final void disconnect() {
@@ -184,14 +212,6 @@ public abstract class BedrockSession {
 
     public boolean isConnected() {
         return !this.closed.get();
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
     }
 
     public long getPing() {

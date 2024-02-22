@@ -205,4 +205,8 @@ public class LoginPacket extends DataPacket {
         }
         return new PersonaPieceTint(pieceType, colors);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

@@ -18,9 +18,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.camera.data.CameraPreset;
-import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.command.utils.RawText;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.Attribute;
@@ -35,7 +33,6 @@ import cn.nukkit.entity.data.ShortEntityData;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.entity.data.Vector3fEntityData;
-import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.entity.item.EntityItem;
@@ -57,7 +54,6 @@ import cn.nukkit.event.inventory.InventoryPickupTridentEvent;
 import cn.nukkit.event.player.*;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.inventory.CraftTypeInventory;
@@ -104,9 +100,7 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.network.SourceInterface;
-import cn.nukkit.network.connection.BedrockServerSession;
-import cn.nukkit.network.process.DataPacketManager;
+import cn.nukkit.network.process.NetworkSession;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.CommandOriginData;
 import cn.nukkit.network.protocol.types.CommandOutputType;
@@ -116,10 +110,10 @@ import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
 import cn.nukkit.permission.PermissionAttachmentInfo;
+import cn.nukkit.player.info.PlayerInfo;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.positiontracking.PositionTrackingService;
-import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.scheduler.TaskHandler;
@@ -129,6 +123,7 @@ import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
+import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.BlockIterator;
 import cn.nukkit.utils.BossBarColor;
 import cn.nukkit.utils.DummyBossBar;
@@ -151,9 +146,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import javax.annotation.Nullable;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -195,7 +190,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public boolean playedBefore;
     public boolean spawned = false;
     public boolean loggedIn = false;
-    public boolean locallyInitialized = false;
     public int gamemode;
     public long lastBreak;
     /**
@@ -222,8 +216,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public long lastSkinChange;
     protected long breakingBlockTime = 0;
     protected double blockBreakProgress = 0;
-    protected final SourceInterface interfaz;
-    protected final BedrockServerSession networkSession;
+    protected @Nullable NetworkSession networkSession;
     protected final InetSocketAddress rawSocketAddress;
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
     protected final int chunksPerTick;
@@ -238,14 +231,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     protected boolean removeFormat = true;
     protected String username;
-    /**
-     * Player name in lower case
-     */
-    protected String iusername;
     protected String displayName;
     protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
     protected Vector3 sleeping = null;
-    protected Integer subClientId;
+
     protected int chunkLoadCount = 0;
     protected int nextChunkOrderRun = 1;
     protected Vector3 newPosition = null;
@@ -278,7 +267,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     protected Cache<String, FormWindowDialog> dialogWindows = Caffeine.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
     protected Map<Long, DummyBossBar> dummyBossBars = new Long2ObjectLinkedOpenHashMap<>();
-    protected boolean shouldLogin = false;
     protected double lastRightClickTime = 0.0;
     protected Vector3 lastRightClickPos = null;
     protected int lastInAirTick = 0;
@@ -311,7 +299,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected static final int NO_SHIELD_DELAY = 10;
     protected PlayerBlockActionData lastBlockAction;
     protected AsyncTask preLoginEventTask = null;
-    protected boolean verified = false;
     protected LoginChainData loginChainData;
     /**
      * 玩家升级时播放音乐的时间
@@ -360,22 +347,24 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected PlayerCursorInventory playerCursorInventory;
     protected CreativeOutputInventory creativeOutputInventory;
     protected boolean inventoryOpen;
-    ///
-    /// network system
-    protected DataPacketManager dataPacketManager;
+    private final @NotNull PlayerInfo info;
+
+    public @NotNull PlayerInfo getPlayerInfo() {
+        return this.info;
+    }
 
     ///
     @UsedByReflection
-    public Player(SourceInterface interfaz, Integer clientID, InetSocketAddress socketAddress) {
+    public Player(@NotNull NetworkSession session,@NotNull PlayerInfo info) {
         super(null, new CompoundTag());
-        this.interfaz = interfaz;
-        this.networkSession = interfaz.getSession(socketAddress);
+        this.info = info;
+
+        this.networkSession = session;
         this.perm = new PermissibleBase(this);
         this.server = Server.getInstance();
         this.lastBreak = -1;
+        this.socketAddress = this.getNetworkSession().getAddress();
         this.rawSocketAddress = socketAddress;
-        this.socketAddress = socketAddress;
-        this.subClientId = clientID;
         this.loaderId = Level.generateChunkLoaderId(this);
         this.chunksPerTick = this.server.getConfig("chunk-sending.per-tick", 8);
         this.spawnThreshold = this.server.getConfig("chunk-sending.spawn-threshold", 56);
@@ -386,11 +375,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.chunkRadius = viewDistance;
         this.boundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
         this.lastSkinChange = -1;
-        this.uuid = null;
-        this.rawUUID = null;
         this.playerChunkManager = new PlayerChunkManager(this);
         this.creationTime = System.currentTimeMillis();
-        this.dataPacketManager = new DataPacketManager();
+
+        this.username = info.getUsername();
+        this.displayName = info.getUsername();
+
+        this.loginChainData = info.getData();
+        this.uuid = info.getUniqueId();
+        this.rawUUID = Binary.writeUUID(info.getUniqueId());
+
+        //set user name data flag
+        this.setDataProperty(new StringEntityData(Entity.DATA_NAMETAG, info.getUsername()), false);
+        this.setSkin(info.getSkin());
     }
 
     private static InetSocketAddress uncheckedNewInetSocketAddress(String ip, int port) {
@@ -401,6 +398,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    public @NotNull NetworkSession getNetworkSession() {
+        if(this.networkSession == null){
+            throw new RuntimeException("Player is not connected");
+        }
+        return this.networkSession;
+    }
+
     /**
      * 将服务端侧游戏模式转换为网络包适用的游戏模式ID
      * 此方法是为了解决NK观察者模式ID为3而原版ID为6的问题
@@ -408,7 +412,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param gamemode 服务端侧游戏模式
      * @return 网络层游戏模式ID
      */
-    private static int toNetworkGamemode(int gamemode) {
+    public static int toNetworkGamemode(int gamemode) {
         return gamemode != SPECTATOR ? gamemode : GameType.SPECTATOR.ordinal();
     }
 
@@ -619,6 +623,27 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @Override
     protected void initEntity() {
         super.initEntity();
+        Level level = null;
+        if (this.namedTag.containsString("SpawnLevel")) {
+            level = this.server.getLevelByName(this.namedTag.getString("SpawnLevel"));
+        }
+        if (this.namedTag.containsString("SpawnBlockLevel")) {
+            level = this.server.getLevelByName(this.namedTag.getString("SpawnBlockLevel"));
+        }
+        if (level != null) {
+            if (this.namedTag.containsInt("SpawnX") && this.namedTag.containsInt("SpawnY") && this.namedTag.containsInt("SpawnZ")) {
+                this.spawnPosition = new Position(this.namedTag.getInt("SpawnX"), this.namedTag.getInt("SpawnY"), this.namedTag.getInt("SpawnZ"), level);
+            } else {
+                this.spawnPosition = null;
+            }
+            if (this.namedTag.containsInt("SpawnBlockPositionX") && this.namedTag.containsInt("SpawnBlockPositionY")
+                    && this.namedTag.containsInt("SpawnBlockPositionZ")) {
+                this.spawnBlockPosition = new Position(namedTag.getInt("SpawnBlockPositionX"), namedTag.getInt("SpawnBlockPositionY"), namedTag.getInt("SpawnBlockPositionZ"), level);
+            } else {
+                this.spawnBlockPosition = null;
+            }
+        }
+        this.loggedIn = true;
         this.addDefaultWindows();
     }
 
@@ -628,12 +653,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected void doFirstSpawn() {
         this.spawned = true;
 
-        this.inventory.sendHeldItem(this);
-
-        this.inventory.sendContents(this);
-        this.inventory.sendArmorContents(this);
-        this.getCursorInventory().sendContents(this);
-        this.offhandInventory.sendContents(this);
+        this.getNetworkSession().syncInventory();
 
         this.setEnableClientCommand(true);
 
@@ -643,22 +663,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.sendPlayStatus(PlayStatusPacket.PLAYER_SPAWN);
 
-        PlayerJoinEvent playerJoinEvent = new PlayerJoinEvent(this,
-                new TranslationContainer(TextFormat.YELLOW + "%multiplayer.player.joined", new String[]{
-                        this.getDisplayName()
-                })
-        );
-
-        this.server.getPluginManager().callEvent(playerJoinEvent);
-
-        if (playerJoinEvent.getJoinMessage().toString().trim().length() > 0) {
-            this.server.broadcastMessage(playerJoinEvent.getJoinMessage());
-        }
-
         this.noDamageTicks = 60;
-
-        this.getServer().sendRecipeList(this);
-
 
         for (long index : playerChunkManager.getUsedChunks()) {
             int chunkX = Level.getHashX(index);
@@ -704,6 +709,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         pk.z = this.level.getSpawnLocation().getFloorZ();
         pk.dimension = this.level.getDimension();
         this.dataPacket(pk);
+
+        //客户端初始化完毕再传送玩家，避免下落 (x)
+        //已经设置immobile了所以不用管下落了
+        Location pos;
+        if (this.server.isSafeSpawn() && (this.gamemode & 0x01) == 0) {
+            pos = this.level.getSafeSpawn(this).getLocation();
+            pos.yaw = this.yaw;
+            pos.pitch = this.pitch;
+        } else {
+            pos = new Location(this.x, this.y, this.z, this.yaw, this.pitch, this.level);
+        }
+        this.teleport(pos, TeleportCause.PLAYER_SPAWN);
 
         this.sendFogStack();
         this.sendCameraPresets();
@@ -794,12 +811,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                         final Position newPos = EnumLevel.moveToTheEnd(this);
                         if (newPos != null) {
                             if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
-                                if (teleport(newPos, PlayerTeleportEvent.TeleportCause.END_PORTAL)) {
+                                if (teleport(newPos, TeleportCause.END_PORTAL)) {
                                     server.getScheduler().scheduleDelayedTask(new Task() {
                                         @Override
                                         public void onRun(int currentTick) {
                                             // dirty hack to make sure chunks are loaded and generated before spawning player
-                                            teleport(newPos, PlayerTeleportEvent.TeleportCause.END_PORTAL);
+                                            teleport(newPos, TeleportCause.END_PORTAL);
                                             BlockEndPortal.spawnObsidianPlatform(newPos);
                                         }
                                     }, 5);
@@ -1084,21 +1101,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * 处理LOGIN_PACKET中执行
      */
-    protected void processLogin() {
-        if (!this.server.isWhitelisted((this.getName()).toLowerCase())) {
-            this.kick(PlayerKickEvent.Reason.NOT_WHITELISTED, "Server is white-listed");
-
-            return;
-        } else if (this.isBanned()) {
-            String reason = this.server.getNameBans().getEntires().get(this.getName().toLowerCase()).getReason();
-            this.kick(PlayerKickEvent.Reason.NAME_BANNED, !reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
-            return;
-        } else if (this.server.getIPBans().isBanned(this.getAddress())) {
-            String reason = this.server.getIPBans().getEntires().get(this.getAddress()).getReason();
-            this.kick(PlayerKickEvent.Reason.IP_BANNED, !reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
-            return;
-        }
-
+    public void processLogin() {
         if (this.hasPermission(Server.BROADCAST_CHANNEL_USERS)) {
             this.server.getPluginManager().subscribeToPermission(Server.BROADCAST_CHANNEL_USERS, this);
         }
@@ -1118,7 +1121,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (oldPlayer != null) {
             oldPlayer.saveNBT();
             nbt = oldPlayer.namedTag;
-            oldPlayer.close("", "disconnectionScreen.loggedinOtherLocation");
+            oldPlayer.close("disconnectionScreen.loggedinOtherLocation");
         } else {
             boolean existData = Server.getInstance().hasOfflinePlayerData(uuid);
             if (existData) {
@@ -1133,7 +1136,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return;
         }
 
-        server.updateName(this);
+        server.updateName(this.info);
 
         this.playedBefore = (nbt.getLong("lastPlayed") - nbt.getLong("firstPlayed")) > 1;
 
@@ -1184,9 +1187,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.server.getAutoSave()) {
             this.server.saveOfflinePlayerData(this.uuid, nbt, true);
         }
-
-        this.sendPlayStatus(PlayStatusPacket.LOGIN_SUCCESS);
-        this.server.onPlayerLogin(this);
 
         ListTag<DoubleTag> posList = nbt.getList("Pos", DoubleTag.class);
 
@@ -1239,168 +1239,40 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!this.server.isCheckMovement()) {
             this.checkMovement = false;
         }
-
-        ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
-        infoPacket.resourcePackEntries = this.server.getResourcePackManager().getResourceStack();
-        infoPacket.mustAccept = this.server.getForceResources();
-        this.dataPacket(infoPacket);
     }
 
-    /**
-     * 异步登录任务成功完成后执行
-     */
-    protected void completeLoginSequence() {
-        PlayerLoginEvent ev;
-        this.server.getPluginManager().callEvent(ev = new PlayerLoginEvent(this, "Plugin reason"));
-        if (ev.isCancelled()) {
-            this.close(this.getLeaveMessage(), ev.getKickMessage());
-            return;
-        }
-
-        Level level = null;
-        if (this.namedTag.containsString("SpawnLevel")) {
-            level = this.server.getLevelByName(this.namedTag.getString("SpawnLevel"));
-        }
-        if (this.namedTag.containsString("SpawnBlockLevel")) {
-            level = this.server.getLevelByName(this.namedTag.getString("SpawnBlockLevel"));
-        }
-        if (level != null) {
-            if (this.namedTag.containsInt("SpawnX") && this.namedTag.containsInt("SpawnY") && this.namedTag.containsInt("SpawnZ")) {
-                this.spawnPosition = new Position(this.namedTag.getInt("SpawnX"), this.namedTag.getInt("SpawnY"), this.namedTag.getInt("SpawnZ"), level);
-            } else {
-                this.spawnPosition = null;
-            }
-            if (this.namedTag.containsInt("SpawnBlockPositionX") && this.namedTag.containsInt("SpawnBlockPositionY")
-                    && this.namedTag.containsInt("SpawnBlockPositionZ")) {
-                this.spawnBlockPosition = new Position(namedTag.getInt("SpawnBlockPositionX"), namedTag.getInt("SpawnBlockPositionY"), namedTag.getInt("SpawnBlockPositionZ"), level);
-            } else {
-                this.spawnBlockPosition = null;
-            }
-        }
+    public Vector3 getSafeSpawn() {
         Vector3 worldSpawnPoint;
-        if (this.spawnPosition == null) worldSpawnPoint = this.server.getDefaultLevel().getSafeSpawn();
-        else worldSpawnPoint = spawnPosition;
-
-        StartGamePacket startGamePacket = new StartGamePacket();
-        startGamePacket.entityUniqueId = this.id;
-        startGamePacket.entityRuntimeId = this.id;
-        startGamePacket.playerGamemode = toNetworkGamemode(this.gamemode);
-        startGamePacket.x = (float) this.x;
-        startGamePacket.y = (float) (isOnGround() ? this.y + this.getEyeHeight() : this.y);//防止在地上生成容易陷进地里
-        startGamePacket.z = (float) this.z;
-        startGamePacket.yaw = (float) this.yaw;
-        startGamePacket.pitch = (float) this.pitch;
-        startGamePacket.seed = -1L;
-        startGamePacket.dimension = (byte) (this.level.getDimension() & 0xff);
-        startGamePacket.worldGamemode = toNetworkGamemode(getServer().getDefaultGamemode());
-        startGamePacket.difficulty = this.server.getDifficulty();
-        startGamePacket.spawnX = worldSpawnPoint.getFloorX();
-        startGamePacket.spawnY = worldSpawnPoint.getFloorY();
-        startGamePacket.spawnZ = worldSpawnPoint.getFloorZ();
-        startGamePacket.hasAchievementsDisabled = true;
-        startGamePacket.dayCycleStopTime = -1;
-        startGamePacket.rainLevel = 0;
-        startGamePacket.lightningLevel = 0;
-        startGamePacket.commandsEnabled = this.isEnableClientCommand();
-        startGamePacket.gameRules = getLevel().getGameRules();
-        startGamePacket.levelId = "";
-        startGamePacket.worldName = this.getServer().getNetwork().getName();
-        startGamePacket.generator = (byte) ((this.level.getDimension() + 1) & 0xff); //0 旧世界, 1 主世界, 2 下界, 3末地
-        startGamePacket.serverAuthoritativeMovement = getServer().getServerAuthoritativeMovement();
-        startGamePacket.isInventoryServerAuthoritative = true;//enable item stack request packet
-        startGamePacket.blockNetworkIdsHashed = true;//enable blockhash
-        //写入自定义方块数据
-        startGamePacket.blockProperties.addAll(Registries.BLOCK.getCustomBlockDefinitionList());
-        startGamePacket.playerPropertyData = EntityProperty.getPlayerPropertyCache();
-        this.dataPacketImmediately(startGamePacket);
-        this.loggedIn = true;
-
-        //注册实体属性
-        for (SyncEntityPropertyPacket pk : EntityProperty.getPacketCache()) {
-            this.dataPacket(pk);
+        if (this.spawnPosition == null) {
+            worldSpawnPoint = this.server.getDefaultLevel().getSafeSpawn();
+        } else {
+            worldSpawnPoint = spawnPosition;
         }
-        //写入自定义物品数据
-        ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
-        if (!Registries.ITEM.getCustomItemDefinition().isEmpty()) {
-            Int2ObjectOpenHashMap<ItemComponentPacket.Entry> entries = new Int2ObjectOpenHashMap<>();
-            int i = 0;
-            for (var entry : Registries.ITEM.getCustomItemDefinition().entrySet()) {
-                try {
-                    entries.put(i, new ItemComponentPacket.Entry(entry.getKey(), entry.getValue().nbt()));
-                    i++;
-                } catch (Exception e) {
-                    log.error("ItemComponentPacket encoding error", e);
-                }
-            }
-            itemComponentPacket.setEntries(entries.values().toArray(ItemComponentPacket.Entry.EMPTY_ARRAY));
-        }
-        this.dataPacket(itemComponentPacket);
-
-        this.dataPacket(new BiomeDefinitionListPacket());
-        this.dataPacket(new AvailableEntityIdentifiersPacket());
-        this.sendCreativeContents();
-        //发送玩家权限列表
-        server.getOnlinePlayers().values().forEach(player -> {
-            if (player != this) {
-                player.adventureSettings.sendAbilities(Collections.singleton(this));
-            }
-        });
-
-        this.sendPotionEffects(this);
-        this.sendData(this);
-        this.syncAttributes();
-        this.setNameTagVisible(true);
-        this.setNameTagAlwaysVisible(true);
-        this.setCanClimb(true);
-
-        log.info(this.getServer().getLanguage().tr("nukkit.player.logIn",
-                TextFormat.AQUA + this.username + TextFormat.WHITE,
-                this.getAddress(),
-                String.valueOf(this.getPort()),
-                String.valueOf(this.id),
-                this.level.getName(),
-                String.valueOf(NukkitMath.round(this.x, 4)),
-                String.valueOf(NukkitMath.round(this.y, 4)),
-                String.valueOf(NukkitMath.round(this.z, 4))));
-
-        if (this.isOp() || this.hasPermission("nukkit.textcolor")) {
-            this.setRemoveFormat(false);
-        }
-
-        this.server.addOnlinePlayer(this);
-        this.server.onPlayerCompleteLoginSequence(this);
+        return worldSpawnPoint;
     }
 
     /**
      * 玩家客户端初始化完成后调用
      */
     protected void onPlayerLocallyInitialized() {
+        PlayerJoinEvent playerJoinEvent = new PlayerJoinEvent(this,
+                new TranslationContainer(TextFormat.YELLOW + "%multiplayer.player.joined", new String[]{
+                        this.getDisplayName()
+                })
+        );
+
+        this.server.getPluginManager().callEvent(playerJoinEvent);
+
+        if (!playerJoinEvent.getJoinMessage().toString().trim().isEmpty()) {
+            this.server.broadcastMessage(playerJoinEvent.getJoinMessage());
+        }
+
         /*
           我们在玩家客户端初始化后才发送游戏模式，以解决观察者模式疾跑速度不正确的问题
           只有在玩家客户端进入游戏显示后再设置观察者模式，疾跑速度才正常
           强制更新游戏模式以确保客户端会收到模式更新包
          */
         this.setGamemode(this.gamemode, false, null, true);
-        //客户端初始化完毕再传送玩家，避免下落
-        Location pos;
-        if (this.server.isSafeSpawn() && (this.gamemode & 0x01) == 0) {
-            pos = this.level.getSafeSpawn(this).getLocation();
-            pos.yaw = this.yaw;
-            pos.pitch = this.pitch;
-        } else {
-            pos = new Location(this.x, this.y, this.z, this.yaw, this.pitch, this.level);
-        }
-        PlayerRespawnEvent respawnEvent = new PlayerRespawnEvent(this, pos, true);
-        this.server.getPluginManager().callEvent(respawnEvent);
-        Position fromEvent = respawnEvent.getRespawnPosition();
-        if (fromEvent instanceof Location) {
-            pos = fromEvent.getLocation();
-        } else {
-            pos = fromEvent.getLocation();
-            pos.yaw = this.yaw;
-            pos.pitch = this.pitch;
-        }
-        this.teleport(pos, TeleportCause.PLAYER_SPAWN);
         this.spawnToAll();
     }
 
@@ -1425,6 +1297,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         return false;
+    }
+
+    @Override
+    public boolean isBanned() {
+        return this.server.getNameBans().isBanned(this.getName());
     }
 
     protected void respawn() {
@@ -1662,12 +1539,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return new TranslationContainer(TextFormat.YELLOW + "%multiplayer.player.left", this.getDisplayName());
     }
 
-    @Override
-    public boolean isBanned() {
-        return this.server.getNameBans().isBanned(this.getName());
-    }
-
-    @Override
     public void setBanned(boolean value) {
         if (value) {
             this.server.getNameBans().addBan(this.getName(), null, null, null);
@@ -1978,7 +1849,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.server.getPluginManager().subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this);
         }
 
-        if (this.isEnableClientCommand() && spawned) this.sendCommandData();
+        if (this.isEnableClientCommand() && spawned) {
+            this.getNetworkSession().syncAvailableCommands();
+        }
     }
 
     public boolean isEnableClientCommand() {
@@ -1987,32 +1860,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     public void setEnableClientCommand(boolean enable) {
         this.enableClientCommand = enable;
-        SetCommandsEnabledPacket pk = new SetCommandsEnabledPacket();
-        pk.enabled = enable;
-        this.dataPacket(pk);
-        if (enable) this.sendCommandData();
-    }
-
-    public void sendCommandData() {
-        if (!spawned) {
-            return;
-        }
-        AvailableCommandsPacket pk = new AvailableCommandsPacket();
-        Map<String, CommandDataVersions> data = new HashMap<>();
-        int count = 0;
-        for (Command command : this.server.getCommandMap().getCommands().values()) {
-            if (!command.testPermissionSilent(this) || !command.isRegistered() || command.isServerSideOnly()) {
-                continue;
-            }
-            ++count;
-            CommandDataVersions data0 = command.generateCustomCommandData(this);
-            data.put(command.getName(), data0);
-        }
-        if (count > 0) {
-            //TODO: structure checking
-            pk.commands = data;
-            this.dataPacket(pk);
-        }
+        this.getNetworkSession().setEnableClientCommand(enable);
     }
 
     @Override
@@ -2426,32 +2274,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 0 is true
-     * -1 is false
-     * other is identifer
-     *
      * @param packet 发送的数据包<br>packet to send
-     * @return 数据包是否成功发送<br>packet successfully sent
      */
-    public boolean dataPacket(DataPacket packet) {
-        if (!this.connected) {
-            return false;
-        }
-        DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
-        this.server.getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
-            return false;
-        }
-        if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
-            log.trace("Outbound {}: {}", this.getName(), packet);
-        }
-        this.networkSession.sendPacket(packet);
-        return true;
-    }
-
-
-    public void forceDataPacket(DataPacket packet) {
-        this.networkSession.sendPacketImmediately(packet);
+    public void dataPacket(DataPacket packet) {
+        this.getNetworkSession().sendDataPacket(packet);
     }
 
     /**
@@ -2462,7 +2288,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return int
      */
     public int getPing() {
-        return this.interfaz.getNetworkLatency(this);
+        return (int) this.getNetworkSession().getPing();
     }
 
     public boolean sleepOn(Vector3 pos) {
@@ -3045,7 +2871,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (this.chunkLoadCount >= this.spawnThreshold && !this.spawned && loggedIn) {
-            this.doFirstSpawn();
+            this.getNetworkSession().notifyTerrainReady();
         }
     }
 
@@ -3062,40 +2888,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         double dot = dV.dot(new Vector2(this.x, this.z));
         double dot1 = dV.dot(new Vector2(pos.x, pos.z));
         return (dot1 - dot) >= -maxDiff;
-    }
-
-    public void handleDataPacket(DataPacket packet) {
-        if (!connected) {
-            return;
-        }
-
-        if (!verified && packet.pid() != ProtocolInfo.LOGIN_PACKET && packet.pid() != ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET) {
-            log.warn("Ignoring {} from {} due to player not verified yet", packet.getClass().getSimpleName(), getAddress());
-            if (unverifiedPackets++ > 100) {
-                this.close("", "Too many failed login attempts");
-            }
-            return;
-        }
-
-        DataPacketReceiveEvent ev = new DataPacketReceiveEvent(this, packet);
-        this.server.getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
-            return;
-        }
-        if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
-            log.trace("Inbound {}: {}", this.getName(), packet);
-        }
-        if (dataPacketManager.canProcess(packet.pid())) {
-            dataPacketManager.processPacket(this.playerHandle, packet);
-        }
-    }
-
-
-    /**
-     * Gets data packet manager,responsible for processing packets received by the player.
-     */
-    public DataPacketManager getDataPacketManager() {
-        return this.dataPacketManager;
     }
 
     /**
@@ -3121,7 +2913,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         for (String msg : message.split("\n")) {
             if (!msg.trim().isEmpty() && msg.length() <= 512 && this.messageLimitCounter-- > 0) {
                 PlayerChatEvent chatEvent = new PlayerChatEvent(this, msg);
-                System.out.println(getPing());
                 this.server.getPluginManager().callEvent(chatEvent);
                 if (!chatEvent.isCancelled()) {
                     this.server.broadcastMessage(this.getServer().getLanguage().tr(chatEvent.getFormat(), new String[]{chatEvent.getPlayer().getDisplayName(), chatEvent.getMessage()}), chatEvent.getRecipients());
@@ -3196,7 +2987,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!ev.isCancelled()) {
             String message;
             if (isAdmin) {
-                if (!this.isBanned()) {
+                if (!Server.getInstance().getNameBans().isBanned(username)) {
                     message = "Kicked by admin." + (!reasonString.isEmpty() ? " Reason: " + reasonString : "");
                 } else {
                     message = reasonString;
@@ -3572,44 +3363,23 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * {@code notify=true}
      *
-     * @see #close(TextContainer, String, boolean)
+     * @see #close(TextContainer, String)
      */
-    public void close(String message) {
-        this.close(message, "generic");
+    public void close(String reason) {
+        this.close(this.getLeaveMessage(), reason);
     }
 
-    /**
-     * {@code notify=true}
-     *
-     * @see #close(TextContainer, String, boolean)
-     */
     public void close(String message, String reason) {
-        this.close(message, reason, true);
-    }
-
-    /**
-     * @see #close(TextContainer, String, boolean)
-     */
-    public void close(String message, String reason, boolean notify) {
-        this.close(new TextContainer(message), reason, notify);
+        this.close(new TextContainer(message), reason);
     }
 
     /**
      * {@code reason="generic",notify=true}
      *
-     * @see #close(TextContainer, String, boolean)
+     * @see #close(TextContainer, String)
      */
     public void close(TextContainer message) {
         this.close(message, "generic");
-    }
-
-    /**
-     * notify=true
-     *
-     * @see #close(TextContainer, String, boolean)
-     */
-    public void close(TextContainer message, String reason) {
-        this.close(message, reason, true);
     }
 
     /**
@@ -3619,9 +3389,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param message PlayerQuitEvent事件消息<br>PlayerQuitEvent message
      * @param reason  登出原因<br>Reason for logout
-     * @param notify  是否显示登出画面通知<br>Whether to display the logout screen notification
      */
-    public void close(TextContainer message, String reason, boolean notify) {
+    public void close(TextContainer message, String reason) {
         if (this.connected && !this.closed) {
             //这里必须在玩家离线之前调用，否则无法将包发过去
             var scoreboardManager = this.getServer().getScoreboardManager();
@@ -3630,7 +3399,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 scoreboardManager.beforePlayerQuit(this);
             }
 
-            if (notify && !reason.isEmpty()) {
+            if (!reason.isEmpty()) {
                 DisconnectPacket pk = new DisconnectPacket();
                 pk.message = reason;
                 this.dataPacketImmediately(pk);
@@ -3679,7 +3448,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             super.close();
 
-            this.interfaz.close(this, notify ? reason : "");
+            this.getNetworkSession().disconnect(reason);
 
             if (this.loggedIn) {
                 this.server.removeOnlinePlayer(this);
@@ -3694,7 +3463,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.server.getPluginManager().unsubscribeFromPermission(Server.BROADCAST_CHANNEL_USERS, this);
             this.spawned = false;
             log.info(this.getServer().getLanguage().tr("nukkit.player.logOut",
-                    TextFormat.AQUA + (this.getName() == null ? "" : this.getName()) + TextFormat.WHITE,
+                    TextFormat.AQUA + this.getName() + TextFormat.WHITE,
                     this.getAddress(),
                     String.valueOf(this.getPort()),
                     this.getServer().getLanguage().tr(reason)));
@@ -3722,6 +3491,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.chunk = null;
 
         this.server.removePlayer(this);
+        this.networkSession = null;
     }
 
     public void save() {
@@ -4862,7 +4632,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 drops.addAll(value.getContents().values());
             }
             for (Item drop : drops) {
-                this.dropItem(drop);
+                if (!drop.isNull()) {
+                    this.dropItem(drop);
+                }
             }
         }
     }
@@ -5363,10 +5135,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.timeSinceRest = timeSinceRest;
     }
 
-    public BedrockServerSession getNetworkSession() {
-        return this.networkSession;
-    }
-
     // TODO: Support Translation Parameters
     public void sendPopupJukebox(String message) {
         TextPacket pk = new TextPacket();
@@ -5617,11 +5385,5 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     public int getChunkSendCountPerTick() {
         return chunksPerTick;
-    }
-
-    public void sendCreativeContents() {
-        CreativeContentPacket pk = new CreativeContentPacket();
-        pk.entries = Registries.CREATIVE.getCreativeItems();
-        this.dataPacket(pk);
     }
 }

@@ -48,4 +48,8 @@ public class TrimDataPacket extends DataPacket {
             putString(m.itemName());
         });
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

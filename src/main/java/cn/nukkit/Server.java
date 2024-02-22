@@ -18,6 +18,7 @@ import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
+import cn.nukkit.event.player.PlayerLoginEvent;
 import cn.nukkit.event.server.QueryRegenerateEvent;
 import cn.nukkit.event.server.ServerStartedEvent;
 import cn.nukkit.event.server.ServerStopEvent;
@@ -59,6 +60,8 @@ import cn.nukkit.permission.BanEntry;
 import cn.nukkit.permission.BanList;
 import cn.nukkit.permission.DefaultPermissions;
 import cn.nukkit.permission.Permissible;
+import cn.nukkit.player.info.PlayerInfo;
+import cn.nukkit.player.info.XboxLivePlayerInfo;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.JSPluginLoader;
 import cn.nukkit.plugin.JavaPluginLoader;
@@ -126,6 +129,7 @@ import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -272,9 +276,9 @@ public class Server {
     private QueryRegenerateEvent queryRegenerateEvent;
     private Config properties;
     private Config config;
-    private final Map<InetSocketAddress, Player> players = new HashMap<>();
+    private final Map<InetSocketAddress, Player> players = new ConcurrentHashMap<>();
 
-    private final Map<UUID, Player> playerList = new HashMap<>();
+    private final Map<UUID, Player> playerList = new ConcurrentHashMap<>();
 
     private PositionTrackingService positionTrackingService;
 
@@ -1685,14 +1689,28 @@ public class Server {
         this.sendFullPlayerListData(player);
     }
 
-    public void onPlayerLogin(Player player) {
+    public void onPlayerLogin(InetSocketAddress socketAddress, Player player) {
+        PlayerLoginEvent ev;
+        this.getPluginManager().callEvent(ev = new PlayerLoginEvent(player, "Plugin reason"));
+        if (ev.isCancelled()) {
+            player.close(player.getLeaveMessage(), ev.getKickMessage());
+            return;
+        }
+
+        log.info(this.getLanguage().tr("nukkit.player.logIn",
+                TextFormat.AQUA + player.getName() + TextFormat.WHITE,
+                player.getAddress(),
+                String.valueOf(player.getPort()),
+                String.valueOf(player.getId()),
+                player.level.getName(),
+                String.valueOf(NukkitMath.round(player.x, 4)),
+                String.valueOf(NukkitMath.round(player.y, 4)),
+                String.valueOf(NukkitMath.round(player.z, 4))));
+
+        this.players.put(socketAddress, player);
         if (this.sendUsageTicker > 0) {
             this.uniquePlayers.add(player.getUniqueId());
         }
-    }
-
-    public void addPlayer(InetSocketAddress socketAddress, Player player) {
-        this.players.put(socketAddress, player);
     }
 
     public void addOnlinePlayer(Player player) {
@@ -1858,20 +1876,23 @@ public class Server {
      * <p>
      * Update the UUID of the specified player name in the database, or add it if it does not exist.
      *
-     * @param player the player
+     * @param info the player info
      */
-    void updateName(Player player) {
-        byte[] nameBytes = player.getName().toLowerCase().getBytes(StandardCharsets.UTF_8);
+    void updateName(PlayerInfo info) {
+        var uniqueId = info.getUniqueId();
+        var name = info.getUsername();
+
+        byte[] nameBytes = name.toLowerCase().getBytes(StandardCharsets.UTF_8);
 
         ByteBuffer buffer = ByteBuffer.allocate(16);
-        buffer.putLong(player.getUniqueId().getMostSignificantBits());
-        buffer.putLong(player.getUniqueId().getLeastSignificantBits());
+        buffer.putLong(uniqueId.getMostSignificantBits());
+        buffer.putLong(uniqueId.getLeastSignificantBits());
         byte[] array = buffer.array();
         byte[] bytes = playerDataDB.get(array);
         if (bytes == null) {
             playerDataDB.put(nameBytes, array);
         }
-        if (player.getLoginChainData().isXboxAuthed() && this.getPropertyBoolean("xbox-auth") || !this.getPropertyBoolean("xbox-auth")) {//update
+        if (info instanceof XboxLivePlayerInfo && this.getPropertyBoolean("xbox-auth") || !this.getPropertyBoolean("xbox-auth")) {//update
             playerDataDB.put(nameBytes, array);
         }
     }
@@ -2150,7 +2171,6 @@ public class Server {
                 break;
             }
         }
-        player.dataPacketManager = null;
     }
 
     /**
@@ -2521,7 +2541,7 @@ public class Server {
             player.recalculatePermissions();
             player.getAdventureSettings().onOpChange(true);
             player.getAdventureSettings().update();
-            player.sendCommandData();
+            player.getNetworkSession().syncAvailableCommands();
         }
         this.operators.save(true);
     }
@@ -2533,7 +2553,7 @@ public class Server {
             player.recalculatePermissions();
             player.getAdventureSettings().onOpChange(false);
             player.getAdventureSettings().update();
-            player.sendCommandData();
+            player.getNetworkSession().syncAvailableCommands();
         }
         this.operators.save();
     }

@@ -44,4 +44,8 @@ public class PacketViolationWarningPacket extends DataPacket {
         FINAL_WARNING,
         TERMINATING_CONNECTION
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

@@ -51,4 +51,8 @@ public class CodeBuilderSourcePacket extends DataPacket {
     public void setValue(String value) {
         this.value = value;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

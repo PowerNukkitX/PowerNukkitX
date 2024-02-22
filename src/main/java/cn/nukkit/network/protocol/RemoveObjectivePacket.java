@@ -20,4 +20,8 @@ public class RemoveObjectivePacket extends DataPacket {
         this.reset();
         this.putString(this.objectiveName);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

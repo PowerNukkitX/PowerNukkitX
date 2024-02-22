@@ -37,4 +37,8 @@ public class EmoteListPacket extends DataPacket {
             this.putUUID(id);
         }
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

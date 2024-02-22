@@ -19,4 +19,8 @@ public class ServerSettingsRequestPacket extends DataPacket {
     public void encode() {
 
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

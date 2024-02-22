@@ -27,4 +27,8 @@ public class EventPacket extends DataPacket {
         this.putByte(this.usePlayerId);
         eventData.write(this);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

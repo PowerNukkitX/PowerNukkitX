@@ -150,4 +150,8 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
 
         NOT_FOUND
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

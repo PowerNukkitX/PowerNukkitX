@@ -86,4 +86,8 @@ public class SetScorePacket extends DataPacket {
             this.name = null;
         }
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

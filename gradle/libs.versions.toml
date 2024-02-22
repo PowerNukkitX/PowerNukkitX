@@ -43,6 +43,7 @@ org-xerial-snappy-snappy-java = "1.1.10.5"
 org-yaml-snakeyaml = "2.2"
 commons-lang3 = "3.14.0"
 commons-rng = "1.5"
+com-github-stateless4j = "2.6.0"
 
 [libraries]
 libdeflate = { module = "cn.powernukkitx:libdeflate-java", version.ref = "cn-powernukkitx-libdeflate-java" }
@@ -63,6 +64,7 @@ annotations = { module = "org.jetbrains:annotations", version.ref = "org-jetbrai
 asm = { module = "org.ow2.asm:asm", version.ref = "org-ow2-asm-asm" }
 lombok = { module = "org.projectlombok:lombok", version.ref = "org-projectlombok-lombok" }
 snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "org-yaml-snakeyaml" }
+stateless4j = { module = "com.github.stateless4j:stateless4j", version.ref = "com-github-stateless4j"}
 # Command-line parser
 joptsimple = { module = "net.sf.jopt-simple:jopt-simple", version.ref = "net-sf-jopt-simple-jopt-simple" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "org-apache-logging-log4j-log4j-core" }

@@ -60,4 +60,8 @@ public class UpdateBlockPacket extends DataPacket {
             this.flags = flags;
         }
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

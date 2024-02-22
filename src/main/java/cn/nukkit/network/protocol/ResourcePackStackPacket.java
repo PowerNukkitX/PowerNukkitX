@@ -61,4 +61,8 @@ public class ResourcePackStackPacket extends DataPacket {
         String name;
         boolean enabled;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

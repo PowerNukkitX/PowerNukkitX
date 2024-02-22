@@ -21,4 +21,8 @@ public class BiomeDefinitionListPacket extends DataPacket {
         this.reset();
         this.put(Registries.BIOME.getBiomeDefinitionListPacketData());
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

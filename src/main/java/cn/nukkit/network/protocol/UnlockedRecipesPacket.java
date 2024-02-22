@@ -34,4 +34,8 @@ public class UnlockedRecipesPacket extends DataPacket {
             this.putString(recipe);
         }
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

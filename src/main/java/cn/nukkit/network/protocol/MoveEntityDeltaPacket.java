@@ -99,4 +99,8 @@ public class MoveEntityDeltaPacket extends DataPacket {
     public boolean hasFlag(int flag) {
         return (this.flags & flag) != 0;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

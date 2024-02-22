@@ -28,4 +28,8 @@ public class EduUriResourcePacket extends DataPacket {
         this.putString(eduSharedUriResource.buttonName());
         this.putString(eduSharedUriResource.linkUri());
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

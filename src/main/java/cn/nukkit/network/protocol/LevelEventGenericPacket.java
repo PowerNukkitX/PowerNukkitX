@@ -32,4 +32,8 @@ public class LevelEventGenericPacket extends DataPacket {
             throw new EncoderException(e);
         }
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

@@ -72,4 +72,8 @@ public class AnimatePacket extends DataPacket {
             return ID_LOOKUP.get(id);
         }
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

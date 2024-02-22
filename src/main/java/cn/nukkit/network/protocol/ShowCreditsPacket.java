@@ -30,4 +30,8 @@ public class ShowCreditsPacket extends DataPacket {
         this.putEntityRuntimeId(this.eid);
         this.putVarInt(this.status);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

@@ -7,6 +7,7 @@ import cn.nukkit.event.HandlerList;
 /**
  * Called when the player logs in, before things have been set up
  */
+@Deprecated(forRemoval = true)
 public class PlayerPreLoginEvent extends PlayerEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
 

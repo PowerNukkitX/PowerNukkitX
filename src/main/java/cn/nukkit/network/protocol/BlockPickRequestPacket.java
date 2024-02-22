@@ -33,4 +33,8 @@ public class BlockPickRequestPacket extends DataPacket {
     public void encode() {
 
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

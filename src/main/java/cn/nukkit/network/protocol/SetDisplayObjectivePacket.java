@@ -34,4 +34,7 @@ public class SetDisplayObjectivePacket extends DataPacket {
         this.putVarInt(this.sortOrder.ordinal());
     }
 
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

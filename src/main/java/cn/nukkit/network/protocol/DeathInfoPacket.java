@@ -25,4 +25,8 @@ public class DeathInfoPacket extends DataPacket{
         this.putString(translation.getText());
         this.putArray(translation.getParameters(), this::putString);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

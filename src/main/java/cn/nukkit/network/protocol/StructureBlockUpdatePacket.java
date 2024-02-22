@@ -93,4 +93,8 @@ public class StructureBlockUpdatePacket extends DataPacket {
         this.putLInt(settings.getIntegritySeed());
         this.putVector3f(settings.getPivot());
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

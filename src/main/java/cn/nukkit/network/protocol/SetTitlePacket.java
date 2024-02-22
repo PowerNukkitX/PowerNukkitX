@@ -129,4 +129,8 @@ public class SetTitlePacket extends DataPacket {
         SET_SUBTITLE_JSON,
         SET_ACTIONBAR_JSON,
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

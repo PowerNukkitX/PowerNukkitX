@@ -27,4 +27,8 @@ public class UpdatePlayerGameTypePacket extends DataPacket {
         this.putVarInt(this.gameType.ordinal());
         this.putVarLong(entityId);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

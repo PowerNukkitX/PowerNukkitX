@@ -37,4 +37,8 @@ public class SetPlayerInventoryOptionsPacket extends DataPacket {
         this.putVarInt(this.layout.ordinal());
         this.putVarInt(this.craftingLayout.ordinal());
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

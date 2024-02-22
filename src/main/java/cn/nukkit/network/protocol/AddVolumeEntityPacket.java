@@ -91,4 +91,8 @@ public class AddVolumeEntityPacket extends DataPacket {
     public void setInstanceName(String instanceName) {
         this.instanceName = instanceName;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

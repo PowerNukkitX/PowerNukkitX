@@ -24,4 +24,8 @@ public class SetHealthPacket extends DataPacket {
         this.reset();
         this.putUnsignedVarInt(this.health);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

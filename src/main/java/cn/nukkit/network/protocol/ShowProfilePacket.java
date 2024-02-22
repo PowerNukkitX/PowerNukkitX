@@ -27,4 +27,7 @@ public class ShowProfilePacket extends DataPacket {
         this.putString(this.xuid);
     }
 
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

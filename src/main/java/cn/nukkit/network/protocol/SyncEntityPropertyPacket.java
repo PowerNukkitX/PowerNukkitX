@@ -49,4 +49,8 @@ public class SyncEntityPropertyPacket extends DataPacket {
     public void setData(CompoundTag data) {
         this.data = data;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

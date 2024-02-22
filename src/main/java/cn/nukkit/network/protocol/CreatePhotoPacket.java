@@ -28,4 +28,8 @@ public class CreatePhotoPacket extends DataPacket {
         this.putString(photoName);
         this.putString(photoItemName);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

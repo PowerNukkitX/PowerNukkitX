@@ -24,4 +24,8 @@ public class ServerSettingsResponsePacket extends DataPacket {
         this.putVarInt(this.formId);
         this.putString(this.data);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

@@ -71,4 +71,8 @@ public class CommandBlockUpdatePacket extends DataPacket {
         this.putLInt(this.tickDelay);
         this.putBoolean(this.executingOnFirstTick);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

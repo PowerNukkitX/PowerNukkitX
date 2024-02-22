@@ -40,4 +40,8 @@ public class RemoveVolumeEntityPacket extends DataPacket {
     public void setId(long id) {
         this.id = id;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

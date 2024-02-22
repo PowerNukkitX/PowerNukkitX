@@ -28,4 +28,7 @@ public class SetDifficultyPacket extends DataPacket {
         return NETWORK_ID;
     }
 
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

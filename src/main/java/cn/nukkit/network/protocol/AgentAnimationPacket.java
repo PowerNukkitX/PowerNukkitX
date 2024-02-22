@@ -21,4 +21,8 @@ public class AgentAnimationPacket extends DataPacket {
         putByte(this.animation);
         putEntityRuntimeId(this.runtimeEntityId);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

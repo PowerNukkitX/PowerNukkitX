@@ -94,4 +94,8 @@ public class TextPacket extends DataPacket {
         this.putString(this.xboxUserId);
         this.putString(this.platformChatId);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

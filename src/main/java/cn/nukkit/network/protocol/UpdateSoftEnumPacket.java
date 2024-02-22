@@ -37,4 +37,8 @@ public class UpdateSoftEnumPacket extends DataPacket {
         REMOVE,
         SET
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

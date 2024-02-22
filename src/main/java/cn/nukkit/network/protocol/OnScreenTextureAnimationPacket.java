@@ -19,4 +19,8 @@ public class OnScreenTextureAnimationPacket extends DataPacket {
         this.reset();
         this.putLInt(this.effectId);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

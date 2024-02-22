@@ -26,4 +26,8 @@ public class DebugInfoPacket extends DataPacket {
         this.putLong(this.entityId);
         this.putString(this.data);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

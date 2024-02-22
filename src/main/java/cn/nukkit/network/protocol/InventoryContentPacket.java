@@ -30,4 +30,8 @@ public class InventoryContentPacket extends DataPacket {
             this.putSlot(slot);
         }
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

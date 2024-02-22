@@ -94,4 +94,8 @@ public class AddPlayerPacket extends DataPacket {
         this.putString(deviceId);
         this.putLInt(buildPlatform);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

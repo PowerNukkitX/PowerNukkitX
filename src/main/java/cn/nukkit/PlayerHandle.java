@@ -1,6 +1,5 @@
 package cn.nukkit;
 
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.Entity;
@@ -12,8 +11,6 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.SourceInterface;
-import cn.nukkit.network.connection.BedrockServerSession;
 import cn.nukkit.network.protocol.PlayerFogPacket;
 import cn.nukkit.network.protocol.types.PlayerBlockActionData;
 import cn.nukkit.scheduler.AsyncTask;
@@ -37,18 +34,6 @@ public final class PlayerHandle {
 
     public PlayerHandle(@NotNull Player player) {
         this.player = player;
-    }
-
-    public BedrockServerSession getNetworkSession() {
-        return player.networkSession;
-    }
-
-    public void sendPlayStatus(int status) {
-        player.sendPlayStatus(status);
-    }
-
-    public void sendPlayStatus(int status, boolean immediate) {
-        player.sendPlayStatus(status, immediate);
     }
 
     public void forceSendEmptyChunks() {
@@ -77,10 +62,6 @@ public final class PlayerHandle {
 
     public void setBlockBreakProgress(double blockBreakProgress) {
         player.blockBreakProgress = blockBreakProgress;
-    }
-
-    public SourceInterface getInterfaz() {
-        return player.interfaz;
     }
 
     public Map<UUID, Player> getHiddenPlayers() {
@@ -116,19 +97,7 @@ public final class PlayerHandle {
     }
 
     public String getUsername() {
-        return player.username;
-    }
-
-    public void setUsername(String username) {
-        player.username = username;
-    }
-
-    public String getIusername() {
-        return player.iusername;
-    }
-
-    public void setIusername(String iusername) {
-        player.iusername = iusername;
+        return player.getName();
     }
 
     public String getDisplayName() {
@@ -145,10 +114,6 @@ public final class PlayerHandle {
 
     public void setSleeping(Vector3 sleeping) {
         player.sleeping = sleeping;
-    }
-
-    public Integer getSubClientId() {
-        return player.subClientId;
     }
 
     public int getChunkLoadCount() {
@@ -270,15 +235,6 @@ public final class PlayerHandle {
     public void setDummyBossBars(Map<Long, DummyBossBar> dummyBossBars) {
         player.dummyBossBars = dummyBossBars;
     }
-
-    public boolean isShouldLogin() {
-        return player.shouldLogin;
-    }
-
-    public void setShouldLogin(boolean shouldLogin) {
-        player.shouldLogin = shouldLogin;
-    }
-
     public double getLastRightClickTime() {
         return player.lastRightClickTime;
     }
@@ -323,20 +279,8 @@ public final class PlayerHandle {
         player.lastBeAttackEntity = lastBeAttackEntity;
     }
 
-    public void setLoginChainData(LoginChainData loginChainData) {
-        player.loginChainData = loginChainData;
-    }
-
     public LoginChainData getLoginChainData() {
         return player.loginChainData;
-    }
-
-    public boolean isVerified() {
-        return player.verified;
-    }
-
-    public void setVerified(boolean verified) {
-        player.verified = verified;
     }
 
     public AsyncTask getPreLoginEventTask() {
@@ -345,10 +289,6 @@ public final class PlayerHandle {
 
     public void setPreLoginEventTask(AsyncTask preLoginEventTask) {
         player.preLoginEventTask = preLoginEventTask;
-    }
-
-    public void completeLoginSequence() {
-        player.completeLoginSequence();
     }
 
     public void onPlayerLocallyInitialized() {
@@ -397,12 +337,6 @@ public final class PlayerHandle {
 
     public void offerMovementTask(Location newPosition) {
         player.offerMovementTask(newPosition);
-    }
-
-    @DeprecationDetails(since = "1.19.60-r1", reason = "use handleMovement")
-    @Deprecated
-    public void processMovement(int tickDiff) {
-        player.processMovement(tickDiff);
     }
 
     public void handleLogicInMove(boolean invalidMotion, double distance) {

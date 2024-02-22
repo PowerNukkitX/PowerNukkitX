@@ -37,4 +37,8 @@ public class CameraShakePacket extends DataPacket {
         POSITIONAL,
         ROTATIONAL
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

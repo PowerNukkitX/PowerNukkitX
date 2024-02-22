@@ -29,4 +29,8 @@ public class ScriptCustomEventPacket extends DataPacket {
         this.putString(this.eventName);
         this.putByteArray(this.eventData);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

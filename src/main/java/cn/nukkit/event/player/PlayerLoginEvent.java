@@ -4,6 +4,11 @@ import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 
+/**
+ * Called after the player has successfully authenticated, before it spawns. The player is on the loading screen when
+ * this is called.
+ * Cancelling this event will cause the player to be disconnected with the kick message set.
+ */
 public class PlayerLoginEvent extends PlayerEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
 

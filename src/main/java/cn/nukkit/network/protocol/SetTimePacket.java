@@ -27,4 +27,7 @@ public class SetTimePacket extends DataPacket {
         this.putVarInt(this.time);
     }
 
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

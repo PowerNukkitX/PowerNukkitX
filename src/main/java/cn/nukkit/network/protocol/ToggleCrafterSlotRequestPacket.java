@@ -29,4 +29,8 @@ public class ToggleCrafterSlotRequestPacket extends DataPacket {
         this.putByte(this.slot);
         this.putBoolean(this.disabled);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

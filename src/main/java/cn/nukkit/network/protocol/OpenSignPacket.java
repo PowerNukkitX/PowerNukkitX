@@ -31,4 +31,8 @@ public class OpenSignPacket extends DataPacket {
         putBlockVector3(position);
         putBoolean(frontSide);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

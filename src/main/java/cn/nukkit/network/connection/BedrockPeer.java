@@ -46,6 +46,7 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
     public static final String NAME = "bedrock-peer";
     private static final InternalLogger log = InternalLoggerFactory.getInstance(BedrockPeer.class);
 
+
     protected final Int2ObjectMap<BedrockSession> sessions = new Int2ObjectOpenHashMap<>();
     protected final Queue<BedrockPacketWrapper> packetQueue = PlatformDependent.newMpscQueue();
     protected final Channel channel;
@@ -83,10 +84,16 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
             return;
         }
 
+        this.flushSendQueue();
+    }
+
+    public void flushSendQueue() {
         if (!this.packetQueue.isEmpty()) {
             BedrockPacketWrapper packet;
             while ((packet = this.packetQueue.poll()) != null) {
-                this.channel.write(packet);
+                if (this.isConnected()) {
+                    this.channel.write(packet);
+                }
             }
             this.channel.flush();
         }
@@ -242,7 +249,7 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         this.sessions.put(0, this.sessionFactory.createSession(this, 0));
-        this.tickFuture = this.channel.eventLoop().scheduleAtFixedRate(this::onTick, 50, 50, TimeUnit.MILLISECONDS);
+        this.tickFuture = this.channel.eventLoop().scheduleAtFixedRate(this::onTick, 10, 10, TimeUnit.MILLISECONDS);
     }
 
     @Override

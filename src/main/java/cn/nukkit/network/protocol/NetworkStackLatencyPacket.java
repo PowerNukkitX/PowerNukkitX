@@ -24,4 +24,8 @@ public class NetworkStackLatencyPacket extends DataPacket {
         this.putLLong(timestamp);
         this.putBoolean(unknownBool);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

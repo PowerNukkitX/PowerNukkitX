@@ -52,4 +52,8 @@ public class ResourcePackClientResponsePacket extends DataPacket {
             this.version = version;
         }
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

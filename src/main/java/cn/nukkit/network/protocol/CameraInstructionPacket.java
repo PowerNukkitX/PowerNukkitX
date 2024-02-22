@@ -77,4 +77,8 @@ public class CameraInstructionPacket extends DataPacket {
         this.putLFloat(color.getGreen() / 255F);
         this.putLFloat(color.getBlue() / 255F);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

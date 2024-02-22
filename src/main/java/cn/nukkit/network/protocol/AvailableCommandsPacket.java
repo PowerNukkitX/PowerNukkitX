@@ -293,4 +293,7 @@ public class AvailableCommandsPacket extends DataPacket {
         }
     }
 
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

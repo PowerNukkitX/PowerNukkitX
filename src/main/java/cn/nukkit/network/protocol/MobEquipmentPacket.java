@@ -39,4 +39,8 @@ public class MobEquipmentPacket extends DataPacket {
         this.putByte((byte) this.hotbarSlot);
         this.putByte((byte) this.windowId);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

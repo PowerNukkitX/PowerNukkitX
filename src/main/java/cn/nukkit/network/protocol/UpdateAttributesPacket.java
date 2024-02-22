@@ -47,4 +47,7 @@ public class UpdateAttributesPacket extends DataPacket {
         this.putUnsignedVarInt(this.frame);
     }
 
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

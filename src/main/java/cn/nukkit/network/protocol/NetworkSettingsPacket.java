@@ -36,4 +36,8 @@ public class NetworkSettingsPacket extends DataPacket {
         this.clientThrottleThreshold = getByte();
         this.clientThrottleScalar = getLFloat();
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

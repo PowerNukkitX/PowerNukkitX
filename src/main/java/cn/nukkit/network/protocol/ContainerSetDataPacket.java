@@ -40,4 +40,8 @@ public class ContainerSetDataPacket extends DataPacket {
         this.putVarInt(this.property);
         this.putVarInt(this.value);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

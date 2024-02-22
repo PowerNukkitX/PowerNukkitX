@@ -37,4 +37,8 @@ public class MobArmorEquipmentPacket extends DataPacket {
         this.putSlot(this.slots[2]);
         this.putSlot(this.slots[3]);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

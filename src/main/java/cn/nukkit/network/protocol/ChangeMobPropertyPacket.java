@@ -37,4 +37,8 @@ public class ChangeMobPropertyPacket extends DataPacket {
         this.putVarInt(this.intValue);
         this.putLFloat(this.floatValue);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

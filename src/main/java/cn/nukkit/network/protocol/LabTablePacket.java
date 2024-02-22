@@ -30,4 +30,8 @@ public class LabTablePacket extends DataPacket {
         this.putBlockVector3(blockPosition);
         this.putByte((byte) reactionType.ordinal());
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

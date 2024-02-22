@@ -40,13 +40,7 @@ public final class DataPacketManager {
 
     public void registerDefaultProcessors() {
         registerProcessor(
-                new RequestNetworkSettingsProcessor(),
-                new LoginProcessor(),
-                new ClientToServerHandshakeProcessor(),
                 new InventoryTransactionProcessor(),
-                new ResourcePackClientResponseProcessor(),
-                new ResourcePackChunkRequestProcessor(),
-                new SetLocalPlayerAsInitializedProcessor(),
                 new PlayerSkinProcessor(),
                 new PacketViolationWarningProcessor(),
                 new EmoteProcessor(),
@@ -69,7 +63,6 @@ public final class DataPacketManager {
                 new ContainerCloseProcessor(),
                 new CraftingEventProcessor(),
                 new BlockEntityDataProcessor(),
-                new RequestChunkRadiusProcessor(),
                 new SetPlayerGameTypeProcessor(),
                 new LecternUpdateProcessor(),
                 new MapInfoRequestProcessor(),

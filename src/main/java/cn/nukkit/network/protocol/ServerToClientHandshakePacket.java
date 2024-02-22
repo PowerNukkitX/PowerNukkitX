@@ -30,4 +30,8 @@ public class ServerToClientHandshakePacket extends DataPacket {
     public String getJwt() {
         return jwt;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

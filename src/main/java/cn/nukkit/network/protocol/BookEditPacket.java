@@ -63,4 +63,8 @@ public class BookEditPacket extends DataPacket {
         SWAP_PAGES,
         SIGN_BOOK
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

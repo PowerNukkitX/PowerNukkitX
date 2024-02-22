@@ -30,4 +30,8 @@ public class UpdateAdventureSettingsPacket extends DataPacket {
     public int pid() {
         return ProtocolInfo.UPDATE_ADVENTURE_SETTINGS_PACKET;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

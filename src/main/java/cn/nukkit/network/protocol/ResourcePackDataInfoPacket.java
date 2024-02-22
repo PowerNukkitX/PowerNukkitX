@@ -82,4 +82,8 @@ public class ResourcePackDataInfoPacket extends AbstractResourcePackDataPacket {
     public void setPackId(UUID packId) {
         this.packId = packId;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

@@ -26,4 +26,8 @@ public class CompressedBiomeDefinitionListPacket extends DataPacket {
     @Override
     public void decode() {
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

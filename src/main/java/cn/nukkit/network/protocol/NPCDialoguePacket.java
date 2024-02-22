@@ -123,4 +123,8 @@ public class NPCDialoguePacket extends DataPacket {
         OPEN,
         CLOSE
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

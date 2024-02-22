@@ -52,4 +52,8 @@ public class TickSyncPacket extends DataPacket {
     public void setResponseTimestamp(long responseTimestamp) {
         this.responseTimestamp = responseTimestamp;
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

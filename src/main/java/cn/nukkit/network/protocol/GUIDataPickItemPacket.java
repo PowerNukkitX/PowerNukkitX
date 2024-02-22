@@ -22,4 +22,8 @@ public class GUIDataPickItemPacket extends DataPacket {
     public void decode() {
         this.hotbarSlot = this.getLInt();
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }

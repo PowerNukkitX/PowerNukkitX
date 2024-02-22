@@ -48,4 +48,8 @@ public class SetEntityDataPacket extends DataPacket {
         }
         this.putUnsignedVarLong(this.frame);
     }
+
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
+    }
 }
