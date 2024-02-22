@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author lt_name
  */
-public abstract class ItemCustomTool extends ItemTool implements ItemDurable, CustomItem {
+public abstract class ItemCustomTool extends ItemTool implements CustomItem {
     public ItemCustomTool(@NotNull String id) {
         super(id);
     }

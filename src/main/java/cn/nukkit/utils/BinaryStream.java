@@ -820,7 +820,7 @@ public class BinaryStream {
         return new EntityLink(
                 getEntityUniqueId(),
                 getEntityUniqueId(),
-                getByte(),
+                EntityLink.Type.values()[getByte()],
                 getBoolean(),
                 getBoolean()
         );

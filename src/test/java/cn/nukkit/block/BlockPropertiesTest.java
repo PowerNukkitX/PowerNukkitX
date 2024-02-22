@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.GameMockExtension;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -9,7 +8,6 @@ import cn.nukkit.utils.HashUtils;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.*;
 

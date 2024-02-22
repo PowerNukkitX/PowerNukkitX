@@ -17,6 +17,7 @@ import cn.nukkit.math.*;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.utils.MinecartType;
 import org.jetbrains.annotations.NotNull;
 
@@ -123,7 +124,7 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     }
 
     @Override
-    public boolean mountEntity(Entity entity, byte mode) {
+    public boolean mountEntity(Entity entity, EntityLink.Type mode) {
         return false;
     }
 

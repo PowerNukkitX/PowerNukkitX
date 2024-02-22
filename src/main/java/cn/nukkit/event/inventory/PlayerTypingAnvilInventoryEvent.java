@@ -21,7 +21,6 @@ package cn.nukkit.event.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.AnvilInventory;
-import lombok.Getter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 

@@ -2,13 +2,10 @@ package cn.nukkit.entity.data.profession;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.*;
-import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.RecipeBuildUtils;
-
-import java.util.Random;
 
 public class ProfessionLeather extends Profession {
 

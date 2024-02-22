@@ -24,8 +24,7 @@ public class SummonCommand extends VanillaCommand {
         this.commandParameters.clear();
         List<String> entity_key = new ArrayList<>();
         for (String key : Registries.ENTITY.getKnownEntities().keySet()) {
-            entity_key.add(key);
-            entity_key.add(key.substring(10));
+            entity_key.add(key.replace("minecraft:",""));
         }
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newEnum("entityType", false, entity_key.toArray(new String[0]), true),
@@ -83,7 +82,7 @@ public class SummonCommand extends VanillaCommand {
     }
 
     protected String completionPrefix(String type) {
-        var completed = type.startsWith("minecraft:") ? type : "minecraft:" + type;
+        var completed = type.contains(":") ? type : "minecraft:" + type;
         if (!Type.ENTITY_TYPE2ID.containsKey(type) && !Type.ENTITY_TYPE2ID.containsKey(completed)) {
             //是自定义生物，不需要补全
             return type;

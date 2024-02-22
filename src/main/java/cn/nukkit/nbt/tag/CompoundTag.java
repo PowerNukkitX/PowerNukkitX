@@ -1,14 +1,10 @@
-package cn.nukkit.nbt.tag;
+ package cn.nukkit.nbt.tag;
 
-import cn.nukkit.nbt.stream.NBTInputStream;
-import cn.nukkit.nbt.stream.NBTOutputStream;
 import io.netty.util.internal.EmptyArrays;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.util.*;
 import java.util.Map.Entry;
 

@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

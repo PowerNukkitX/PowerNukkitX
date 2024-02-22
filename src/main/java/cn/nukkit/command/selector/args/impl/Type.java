@@ -8,7 +8,6 @@ import cn.nukkit.command.selector.args.CachedSimpleSelectorArgument;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.level.Location;
-import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.registry.Registries;
 import com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.Nullable;

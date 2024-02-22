@@ -207,13 +207,8 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (face.getAxis().isHorizontal()) {
-            setBlockFace(player == null ? face : player.getDirection().getOpposite());
-            setTop(fy > 0.5);
-        } else {
-            setBlockFace(player.getDirection().getOpposite());
-            setTop(face != BlockFace.UP);
-        }
+        setBlockFace(player == null ? face : player.getDirection().getOpposite());
+        setTop(face.getAxis().isHorizontal() ? fy > 0.5 : face != BlockFace.UP);
 
         if (!this.getLevel().setBlock(block, this, true, true)) {
             return false;

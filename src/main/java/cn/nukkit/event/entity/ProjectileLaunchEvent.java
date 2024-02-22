@@ -4,7 +4,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import lombok.Getter;
 
 public class ProjectileLaunchEvent extends EntityEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();

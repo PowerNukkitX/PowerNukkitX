@@ -4,10 +4,9 @@ import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
-import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockLitRedstoneLamp extends BlockRedstoneLamp implements RedstoneComponent {
+public class BlockLitRedstoneLamp extends BlockRedstoneLamp {
     public static final BlockProperties PROPERTIES = new BlockProperties(LIT_REDSTONE_LAMP);
 
     @Override

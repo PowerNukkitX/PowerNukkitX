@@ -37,8 +37,8 @@ public class AnimateProcessor extends DataPacketProcessor<AnimatePacket> {
 
         switch (animation) {
             case ROW_RIGHT, ROW_LEFT -> {
-                if (player.riding instanceof EntityBoat) {
-                    ((EntityBoat) player.riding).onPaddle(animation, pk.rowingTime);
+                if (player.riding instanceof EntityBoat boat) {
+                    boat.onPaddle(animation, pk.rowingTime);
                 }
                 return;
             }

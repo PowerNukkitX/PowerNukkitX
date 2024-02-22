@@ -4,14 +4,13 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.CORAL_DIRECTION;
 import static cn.nukkit.block.property.CommonBlockProperties.CORAL_HANG_TYPE_BIT;
 import static cn.nukkit.block.property.CommonBlockProperties.DEAD_BIT;
 
-public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
+public class BlockCoralFanHang extends BlockCoralFan {
     public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_FAN_HANG, CORAL_DIRECTION, CORAL_HANG_TYPE_BIT, DEAD_BIT);
 
     @Override

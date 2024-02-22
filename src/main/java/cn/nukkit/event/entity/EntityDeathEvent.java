@@ -3,7 +3,6 @@ package cn.nukkit.event.entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
-import lombok.Getter;
 
 /**
  * @author MagicDroidX (Nukkit Project)

@@ -79,12 +79,12 @@ public class EmptyBehaviorGroup implements IBehaviorGroup {
 
     @Override
     public Set<ISensor> getSensors() {
-        return Collections.EMPTY_SET;
+        return Collections.emptySet();
     }
 
     @Override
     public Set<IController> getControllers() {
-        return Collections.EMPTY_SET;
+        return Collections.emptySet();
     }
 
     @Override

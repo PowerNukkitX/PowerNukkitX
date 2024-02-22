@@ -521,7 +521,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          */
 
         public ToolBuilder addExtraBlocks(@NotNull String blockName, DigProperty property) {
-            if (property.getSpeed() != null && property.getSpeed() < 0) {
+            Integer propertySpeed;
+            if ((propertySpeed = property.getSpeed()) != null && propertySpeed < 0) {
                 System.out.println("speed has an invalid value!");
                 return this;
             }
@@ -531,7 +532,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                             .putCompound("states", property.getStates())
                             .putString("tags", "")
                     )
-                    .putInt("speed", property.getSpeed()));
+                    .putInt("speed", propertySpeed));
             return this;
         }
 

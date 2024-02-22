@@ -1,10 +1,7 @@
 package cn.nukkit.nbt.tag;
 
-import cn.nukkit.nbt.stream.NBTInputStream;
-import cn.nukkit.nbt.stream.NBTOutputStream;
 import cn.nukkit.utils.Binary;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 public class ByteArrayTag extends Tag {

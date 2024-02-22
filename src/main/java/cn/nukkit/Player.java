@@ -61,7 +61,6 @@ import cn.nukkit.inventory.CraftingGridInventory;
 import cn.nukkit.inventory.CreativeOutputInventory;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.Inventory;
-import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.PlayerCursorInventory;
 import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.item.Item;
@@ -112,6 +111,7 @@ import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
 import cn.nukkit.permission.PermissionAttachmentInfo;
 import cn.nukkit.player.info.PlayerInfo;
+import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.scheduler.AsyncTask;
@@ -167,7 +167,7 @@ import java.util.stream.Collectors;
  * @author MagicDroidX &amp; Box (Nukkit Project)
  */
 @Slf4j
-public class Player extends EntityHuman implements CommandSender, InventoryHolder, ChunkLoader, IPlayer, IScoreboardViewer {
+public class Player extends EntityHuman implements CommandSender, ChunkLoader, IPlayer, IScoreboardViewer {
     /**
      * 一个承载玩家的空数组静态常量
      * <p>
@@ -689,8 +689,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         //Weather
         this.getLevel().sendWeather(this);
-
-        this.setMovementSpeed(DEFAULT_SPEED);
 
         //FoodLevel
         PlayerFood food = this.getFoodData();
@@ -1358,7 +1356,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.setDataProperty(new ShortEntityData(Player.DATA_AIR, 400), false);
         this.fireTicks = 0;
         this.collisionBlocks = null;
-        this.deadTicks = 0;
         this.noDamageTicks = 60;
 
         this.removeAllEffects();
@@ -2653,10 +2650,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.despawnFromAll();
                 return true;
             }
-            ++this.deadTicks;
-            if (this.deadTicks >= 10) {
-                this.despawnFromAll();
-            }
+            server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, this::despawnFromAll, 10);
             return true;
         }
 
@@ -4289,7 +4283,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
         //state update
         this.positionChanged = true;
+
         this.nextChunkOrderRun = 0;
+        this.playerChunkManager.handleTeleport();
+        final int dis = this.getViewDistance();
+        //refresh chunks for client
+        this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+            this.setViewDistance(4);
+            this.setViewDistance(dis);
+        }, 10);
         //DummyBossBar
         this.getDummyBossBars().values().forEach(DummyBossBar::reshow);
         //Weather

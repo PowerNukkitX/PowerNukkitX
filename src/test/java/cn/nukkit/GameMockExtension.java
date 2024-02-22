@@ -17,8 +17,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.leveldb.LevelDBProvider;
-import cn.nukkit.level.updater.Updater;
-import cn.nukkit.level.updater.block.BlockStateUpdaterBase;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.RakNetInterface;
@@ -31,9 +29,6 @@ import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.registry.BlockRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.ServerScheduler;
-import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.tags.BlockTags;
-import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.ClientChainData;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.collection.FreezableArrayManager;
@@ -84,10 +79,6 @@ public class GameMockExtension extends MockitoExtension {
         Registries.ENTITY.init();
         Profession.init();
         Registries.BLOCKENTITY.init();
-        String a = BlockTags.ACACIA;
-        String b = ItemTags.ARROW;
-        String c = BiomeTags.WARM;
-        Updater d = BlockStateUpdaterBase.INSTANCE;
         Registries.BLOCKSTATE_ITEMMETA.init();
         Registries.BLOCK.init();
         Enchantment.init();
@@ -122,7 +113,7 @@ public class GameMockExtension extends MockitoExtension {
         when(server.getLanguage()).thenReturn(lang);
         when(server.getApiVersion()).thenReturn("1.0.0");
 
-        when(simpleCommandMap.getCommands()).thenReturn(Collections.EMPTY_MAP);
+        when(simpleCommandMap.getCommands()).thenReturn(Collections.emptyMap());
         pluginManager = new PluginManager(server, simpleCommandMap);
         pluginManager.registerInterface(JavaPluginLoader.class);
         when(server.getPluginManager()).thenReturn(pluginManager);

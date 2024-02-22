@@ -6,8 +6,6 @@ import cn.nukkit.block.BlockTurtleEgg;
 import cn.nukkit.block.property.enums.TurtleEggCount;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import lombok.Getter;
-
 
 public class TurtleEggHatchEvent extends BlockEvent implements Cancellable {
 

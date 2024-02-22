@@ -1,7 +1,6 @@
 package cn.nukkit.block.fake;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockStructureBlock;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.IStructBlock;

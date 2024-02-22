@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.protocol.types.EntityLink;
 import lombok.ToString;
 
 /**
@@ -10,13 +11,9 @@ public class SetEntityLinkPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.SET_ENTITY_LINK_PACKET;
 
-    public static final byte TYPE_REMOVE = 0;
-    public static final byte TYPE_RIDE = 1;
-    public static final byte TYPE_PASSENGER = 2;
-
     public long vehicleUniqueId; //from
     public long riderUniqueId; //to
-    public byte type;
+    public EntityLink.Type type;
     public byte immediate;
     public boolean riderInitiated = false;
 
@@ -30,7 +27,7 @@ public class SetEntityLinkPacket extends DataPacket {
         this.reset();
         this.putEntityUniqueId(this.vehicleUniqueId);
         this.putEntityUniqueId(this.riderUniqueId);
-        this.putByte(this.type);
+        this.putByte((byte) this.type.ordinal());
         this.putByte(this.immediate);
         this.putBoolean(this.riderInitiated);
     }

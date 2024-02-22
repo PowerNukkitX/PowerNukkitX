@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCampfire;
 import cn.nukkit.entity.Entity;
@@ -280,12 +281,12 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(CommonBlockProperties.MINECRAFT_BLOCK_FACE);
+        return BlockFace.fromHorizontalIndex(getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION).ordinal());
     }
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(CommonBlockProperties.MINECRAFT_BLOCK_FACE, face);
+        setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, MinecraftCardinalDirection.values()[face.getOpposite().getHorizontalIndex()]);
     }
 
     @Override

@@ -3,7 +3,6 @@ package cn.nukkit.level.format;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.format.leveldb.LevelDat;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.scheduler.AsyncTask;
 

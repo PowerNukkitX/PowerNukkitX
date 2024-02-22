@@ -1,6 +1,5 @@
 package cn.nukkit.registry;
 
-import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BinaryStream;

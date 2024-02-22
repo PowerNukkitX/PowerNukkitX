@@ -2,10 +2,7 @@ package cn.nukkit.utils;
 
 import cn.powernukkitx.libdeflate.LibdeflateCompressor;
 
-import java.io.Closeable;
-
-
-public final class PNXLibDeflater extends LibdeflateCompressor implements Closeable, AutoCloseable {
+public final class PNXLibDeflater extends LibdeflateCompressor {
     public PNXLibDeflater() {
         this(6);
     }

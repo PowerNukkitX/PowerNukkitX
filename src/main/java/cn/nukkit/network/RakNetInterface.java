@@ -20,6 +20,9 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollDatagramChannel;
 import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.kqueue.KQueue;
+import io.netty.channel.kqueue.KQueueDatagramChannel;
+import io.netty.channel.kqueue.KQueueEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
@@ -66,6 +69,9 @@ public class RakNetInterface implements SourceInterface {
         if (Epoll.isAvailable()) {
             oclass = EpollDatagramChannel.class;
             eventloopgroup = new EpollEventLoopGroup(nettyThreadNumber, threadFactory);
+        } else if (KQueue.isAvailable()) {
+            oclass = KQueueDatagramChannel.class;
+            eventloopgroup = new KQueueEventLoopGroup(nettyThreadNumber, threadFactory);
         } else {
             oclass = NioDatagramChannel.class;
             eventloopgroup = new NioEventLoopGroup(nettyThreadNumber, threadFactory);

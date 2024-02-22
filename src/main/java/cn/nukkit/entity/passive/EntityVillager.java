@@ -1,6 +1,5 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.entity.EntityAgeable;
 import cn.nukkit.entity.EntityCreature;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -11,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 21.06.2016
  */
 
-public class EntityVillager extends EntityCreature implements IEntityNPC, EntityAgeable {
+public class EntityVillager extends EntityCreature implements IEntityNPC {
     @Override
     @NotNull public String getIdentifier() {
         return VILLAGER;
@@ -48,8 +47,6 @@ public class EntityVillager extends EntityCreature implements IEntityNPC, Entity
     public String getOriginalName() {
         return "Villager";
     }
-
-    
 
     @Override
     public void initEntity() {

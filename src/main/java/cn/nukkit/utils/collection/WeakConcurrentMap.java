@@ -57,7 +57,7 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
         if (key == null) {
             throw new NullPointerException();
         }
-        V value = target.get(new LatentKey<K>(key));
+        V value = target.get((Object) new LatentKey<K>(key));
         if (value == null) {
             value = defaultValue(key);
             if (value != null) {
@@ -79,7 +79,7 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
         if (key == null) {
             throw new NullPointerException();
         }
-        return target.containsKey(new LatentKey<K>(key));
+        return target.containsKey((Object) new LatentKey<K>(key));
     }
 
     /**
@@ -103,7 +103,7 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
         if (key == null) {
             throw new NullPointerException();
         }
-        return target.remove(new LatentKey<K>(key));
+        return target.remove((Object) new LatentKey<K>(key));
     }
 
     /**

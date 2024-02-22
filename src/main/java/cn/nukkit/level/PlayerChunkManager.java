@@ -13,6 +13,7 @@ import it.unimi.dsi.fastutil.longs.LongComparator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -40,14 +41,14 @@ public final class PlayerChunkManager {
     };
     private final Player player;
     //保存着上tick已经发送的全部区块hash值
-    private final LongOpenHashSet sentChunks;
+    private final @NotNull LongOpenHashSet sentChunks;
     //保存着这tick将要发送的全部区块hash值
-    private final LongOpenHashSet inRadiusChunks;
-    private final int chunkTrySendCountPerTick;
+    private final @NotNull LongOpenHashSet inRadiusChunks;
+    private final int trySendChunkCountPerTick;
     private final LongArrayFIFOQueue chunkSendQueue;
     private final Long2ObjectOpenHashMap<CompletableFuture<IChunk>> chunkLoadingQueue;
     private final Long2ObjectOpenHashMap<IChunk> chunkReadyToSend;
-    private long lastLoaderChunkPosHashed = -1;
+    private long lastLoaderChunkPosHashed = Long.MAX_VALUE;
 
     public PlayerChunkManager(Player player) {
         this.player = player;
@@ -55,7 +56,7 @@ public final class PlayerChunkManager {
         this.inRadiusChunks = new LongOpenHashSet();
         this.chunkSendQueue = new LongArrayFIFOQueue(player.getViewDistance() * player.getViewDistance());
         this.chunkLoadingQueue = new Long2ObjectOpenHashMap<>(player.getViewDistance() * player.getViewDistance());
-        this.chunkTrySendCountPerTick = player.getChunkSendCountPerTick();
+        this.trySendChunkCountPerTick = player.getChunkSendCountPerTick();
         this.chunkReadyToSend = new Long2ObjectOpenHashMap<>();
     }
 
@@ -65,11 +66,25 @@ public final class PlayerChunkManager {
         BlockVector3 floor = player.asBlockVector3();
         if ((currentLoaderChunkPosHashed = Level.chunkHash(floor.x >> 4, floor.z >> 4)) != lastLoaderChunkPosHashed) {
             lastLoaderChunkPosHashed = currentLoaderChunkPosHashed;
-            updateInRadiusChunks(floor);
+            updateInRadiusChunks(player.getViewDistance(), floor);
             removeOutOfRadiusChunks();
             updateChunkSendingQueue();
         }
-        loadQueuedChunks();
+        loadQueuedChunks(trySendChunkCountPerTick);
+        sendChunk();
+    }
+
+    public void handleTeleport() {
+        if (!player.isConnected()) return;
+        long currentLoaderChunkPosHashed;
+        BlockVector3 floor = player.asBlockVector3();
+        if ((currentLoaderChunkPosHashed = Level.chunkHash(floor.x >> 4, floor.z >> 4)) != lastLoaderChunkPosHashed) {
+            lastLoaderChunkPosHashed = currentLoaderChunkPosHashed;
+            updateInRadiusChunks(4, floor);
+            removeOutOfRadiusChunks();
+            updateChunkSendingQueue();
+        }
+        loadQueuedChunks(Integer.MAX_VALUE);
         sendChunk();
     }
 
@@ -83,14 +98,13 @@ public final class PlayerChunkManager {
         return inRadiusChunks;
     }
 
-    private void updateInRadiusChunks(BlockVector3 currentPos) {
+    private void updateInRadiusChunks(int viewDistance, BlockVector3 currentPos) {
         inRadiusChunks.clear();
         var loaderChunkX = currentPos.x >> 4;
         var loaderChunkZ = currentPos.z >> 4;
-        var chunkLoadingRadius = player.getViewDistance();
-        for (int rx = -chunkLoadingRadius; rx <= chunkLoadingRadius; rx++) {
-            for (int rz = -chunkLoadingRadius; rz <= chunkLoadingRadius; rz++) {
-                if (ifChunkNotInRadius(rx, rz, chunkLoadingRadius)) continue;
+        for (int rx = -viewDistance; rx <= viewDistance; rx++) {
+            for (int rz = -viewDistance; rz <= viewDistance; rz++) {
+                if (ifChunkNotInRadius(rx, rz, viewDistance)) continue;
                 var chunkX = loaderChunkX + rx;
                 var chunkZ = loaderChunkZ + rz;
                 var hashXZ = Level.chunkHash(chunkX, chunkZ);
@@ -124,7 +138,7 @@ public final class PlayerChunkManager {
         difference.stream().sorted(chunkDistanceComparator).forEachOrdered(v -> chunkSendQueue.enqueue(v.longValue()));
     }
 
-    private void loadQueuedChunks() {
+    private void loadQueuedChunks(int trySendChunkCountPerTick) {
         if (chunkSendQueue.isEmpty()) return;
         int triedSendChunkCount = 0;
         do {
@@ -151,7 +165,7 @@ public final class PlayerChunkManager {
             } else {
                 chunkSendQueue.enqueue(chunkHash);
             }
-        } while (!chunkSendQueue.isEmpty() && triedSendChunkCount < chunkTrySendCountPerTick);
+        } while (!chunkSendQueue.isEmpty() && triedSendChunkCount < trySendChunkCountPerTick);
     }
 
     private void sendChunk() {

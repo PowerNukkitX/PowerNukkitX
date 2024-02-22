@@ -1,10 +1,5 @@
 package cn.nukkit.nbt.tag;
 
-import cn.nukkit.nbt.stream.NBTInputStream;
-import cn.nukkit.nbt.stream.NBTOutputStream;
-
-import java.io.IOException;
-
 public class ByteTag extends NumberTag<Integer> {
     public int data;
 

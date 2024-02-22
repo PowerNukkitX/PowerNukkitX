@@ -2,7 +2,6 @@ package cn.nukkit.entity;
 
 
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.UpdateAttributesPacket;
 import cn.nukkit.utils.ServerException;
 
 import java.util.Collection;

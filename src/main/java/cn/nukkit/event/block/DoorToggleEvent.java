@@ -2,15 +2,13 @@ package cn.nukkit.event.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import lombok.Getter;
 
 /**
  * @author Snake1999
  * @since 2016/1/22
  */
-public class DoorToggleEvent extends BlockUpdateEvent implements Cancellable {
+public class DoorToggleEvent extends BlockUpdateEvent {
 
     private static final HandlerList handlers = new HandlerList();
 

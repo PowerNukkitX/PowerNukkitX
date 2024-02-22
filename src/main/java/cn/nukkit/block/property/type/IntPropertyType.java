@@ -50,7 +50,7 @@ public final class IntPropertyType extends BaseBlockPropertyType<Integer> {
         } else throw new IllegalArgumentException("Invalid value for int property type: " + value);
     }
 
-    public final class IntPropertyValue extends BlockPropertyValue<Integer, IntPropertyType, Integer> {
+    public final class IntPropertyValue extends BlockPropertyType.BlockPropertyValue<Integer, IntPropertyType, Integer> {
 
         IntPropertyValue(Integer value) {
             super(IntPropertyType.this, value);

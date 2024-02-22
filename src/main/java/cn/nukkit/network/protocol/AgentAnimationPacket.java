@@ -1,7 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import javax.annotation.Nonnegative;
-
 
 public class AgentAnimationPacket extends DataPacket {
     public byte animation;

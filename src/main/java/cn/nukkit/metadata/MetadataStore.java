@@ -29,7 +29,7 @@ public abstract class MetadataStore {
     public List<MetadataValue> getMetadata(Metadatable subject, String metadataKey) {
         String key = this.disambiguate(subject, metadataKey);
         if (this.metadataMap.containsKey(key)) {
-            Collection values = ((Map) this.metadataMap.get(key)).values();
+            Collection<MetadataValue> values = this.metadataMap.get(key).values();
             return Collections.unmodifiableList(new ArrayList<>(values));
         }
         return Collections.emptyList();
@@ -74,9 +74,9 @@ public abstract class MetadataStore {
         if (owningPlugin == null) {
             throw new PluginException("Plugin cannot be null");
         }
-        for (Map value : this.metadataMap.values()) {
+        for (Map<Plugin, MetadataValue> value : this.metadataMap.values()) {
             if (value.containsKey(owningPlugin)) {
-                ((MetadataValue) value.get(owningPlugin)).invalidate();
+                value.get(owningPlugin).invalidate();
             }
         }
     }

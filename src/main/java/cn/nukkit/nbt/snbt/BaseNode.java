@@ -24,7 +24,7 @@ public class BaseNode implements Node {
         this.tokenSource = tokenSource;
     }
 
-    static private Class<? extends List> listClass;
+    static private Class<? extends List<?>> listClass;
 
     /**
      * Sets the List class that is used to store child nodes. By default,
@@ -35,7 +35,7 @@ public class BaseNode implements Node {
      * @param listClass the #java.util.List implementation to use internally
      *                  for the child nodes. By default #java.util.ArrayList is used.
      */
-    static public void setListClass(Class<? extends List> listClass) {
+    static public void setListClass(Class<? extends List<?>> listClass) {
         BaseNode.listClass = listClass;
     }
 

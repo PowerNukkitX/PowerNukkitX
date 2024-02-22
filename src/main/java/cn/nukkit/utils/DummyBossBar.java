@@ -5,7 +5,6 @@ import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.data.EntityMetadata;
-import cn.nukkit.entity.mob.EntityCreeper;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.registry.Registries;
 

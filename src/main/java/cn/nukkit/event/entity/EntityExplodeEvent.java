@@ -5,7 +5,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.Position;
-import lombok.Getter;
 
 import java.util.HashSet;
 import java.util.List;

@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.utils.DyeColor;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CreeperFace

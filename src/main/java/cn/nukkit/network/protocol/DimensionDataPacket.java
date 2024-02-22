@@ -1,13 +1,7 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.level.DimensionData;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-
-import java.util.List;
-
 
 public class DimensionDataPacket extends DataPacket {
-    private final List<DimensionData> definitions = new ObjectArrayList<>();
 
     @Override
     public int pid() {

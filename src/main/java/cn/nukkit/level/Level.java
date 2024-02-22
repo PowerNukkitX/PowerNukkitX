@@ -766,9 +766,8 @@ public class Level implements Metadatable {
                     .collect(HashMap::new, (m, e) -> {
                         m.put(e.getKey(), (Player) e.getValue());
                     }, HashMap::putAll);
-        } else {
-            return (Map<Integer, Player>) Collections.EMPTY_MAP;
         }
+        return Collections.emptyMap();
     }
 
     public ChunkLoader[] getChunkLoaders(int chunkX, int chunkZ) {

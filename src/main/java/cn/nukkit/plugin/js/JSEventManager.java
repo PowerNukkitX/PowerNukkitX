@@ -291,7 +291,7 @@ public final class JSEventManager {
                 command = new Command(commandName, description,
                         usageMessage, alias) {
                     @Override
-                    public boolean execute(CommandSender sender, String commandLabel, String... args) {
+                    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
                         synchronized (jsPlugin.getJsContext()) {
                             var result = callback.execute(sender, args);
                             if (result.isBoolean()) {

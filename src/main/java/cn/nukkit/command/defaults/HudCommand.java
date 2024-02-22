@@ -37,15 +37,13 @@ public class HudCommand extends VanillaCommand {
             return 0;
         }
 
-        String visibility_str;
-        HudVisibility visibility = switch (visibility_str = list.getResult(1)) {
+        HudVisibility visibility = switch ((String) list.getResult(1)) {
             case "hide" -> HudVisibility.HIDE;
             case "reset" -> HudVisibility.RESET;
             default -> null;
         };
 
-        String element_str;
-        HudElement element = switch (element_str = list.getResult(2)) {
+        HudElement element = switch ((String) list.getResult(2)) {
             case "armor" -> HudElement.ARMOR;
             case "air_bubbles_bar" -> HudElement.AIR_BUBBLES_BAR;
             case "crosshair" -> HudElement.CROSSHAIR;
@@ -61,7 +59,7 @@ public class HudCommand extends VanillaCommand {
             default -> null;
         };
 
-        if(visibility == null || element == null) {
+        if (visibility == null || element == null) {
             return 0;
         }
 

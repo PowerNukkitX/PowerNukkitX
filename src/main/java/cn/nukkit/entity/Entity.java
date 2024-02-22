@@ -68,6 +68,7 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.PropertySyncData;
+import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.Task;
@@ -76,7 +77,6 @@ import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.TextFormat;
 import com.google.common.collect.Iterables;
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -87,15 +87,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiPredicate;
 
-import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
-import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_REMOVE;
-import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_RIDE;
 import static cn.nukkit.utils.Utils.dynamic;
 
 /**
  * @author MagicDroidX
  */
-@Slf4j
 public abstract class Entity extends Location implements Metadatable, EntityID {
     public static final Entity[] EMPTY_ARRAY = new Entity[0];
     //region data
@@ -529,7 +525,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public boolean inBlock = false;
     public boolean positionChanged;
     public boolean motionChanged;
-    public int deadTicks = 0;
     /**
      * Player do not use
      */
@@ -823,7 +818,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     protected float getBaseOffset() {
         return 0;
     }
-
 
     public int getFrostbiteInjury() {
         return 1;
@@ -1221,8 +1215,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         if (oldEffect != null && (
                 Math.abs(effect.getAmplifier()) < Math.abs(oldEffect.getAmplifier()) ||
-                (Math.abs(effect.getAmplifier()) == Math.abs(oldEffect.getAmplifier()) &&
-                effect.getDuration() < oldEffect.getDuration())
+                        (Math.abs(effect.getAmplifier()) == Math.abs(oldEffect.getAmplifier()) &&
+                                effect.getDuration() < oldEffect.getDuration())
         )) {
             return;
         }
@@ -1428,7 +1422,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             SetEntityLinkPacket pkk = new SetEntityLinkPacket();
             pkk.vehicleUniqueId = this.riding.getId();
             pkk.riderUniqueId = this.getId();
-            pkk.type = 1;
+            pkk.type = EntityLink.Type.RIDER;
             pkk.immediate = 1;
 
             player.dataPacket(pkk);
@@ -1456,7 +1450,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         addEntity.links = new EntityLink[this.passengers.size()];
         for (int i = 0; i < addEntity.links.length; i++) {
-            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.TYPE_RIDER : TYPE_PASSENGER, false, false);
+            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, false, false);
         }
 
         return addEntity;
@@ -1819,18 +1813,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         }
         this.justCreated = false;
 
-        if (!this.isAlive()) {
-            this.removeAllEffects();
-            this.despawnFromAll();
-            if (!this.isPlayer) {
-                this.close();
-            }
-            return false;
+        if (riding != null && !riding.isAlive() && riding instanceof EntityRideable entityRideable) {
+            entityRideable.dismountEntity(this);
         }
-        if (riding != null && !riding.isAlive() && riding instanceof EntityRideable) {
-            ((EntityRideable) riding).dismountEntity(this);
-        }
-
         updatePassengers();
 
         if (!this.effects.isEmpty()) {
@@ -2073,12 +2058,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         }
 
         if (!this.isAlive()) {
-            ++this.deadTicks;
-            if (this.deadTicks >= 15) {
-                //apply death smoke cloud only if it is a creature
-                if (this instanceof EntityCreature) {
-                    //通过碰撞箱大小动态添加 death smoke cloud
-                    var aabb = this.getBoundingBox();
+            //apply death smoke cloud only if it is a creature
+            if (this instanceof EntityCreature) {
+                //通过碰撞箱大小动态添加 death smoke cloud
+                server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+                    final var aabb = this.getBoundingBox();
                     for (double x = aabb.getMinX(); x <= aabb.getMaxX(); x += 0.5) {
                         for (double z = aabb.getMinZ(); z <= aabb.getMaxZ(); z += 0.5) {
                             for (double y = aabb.getMinY(); y <= aabb.getMaxY(); y += 0.5) {
@@ -2086,19 +2070,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                             }
                         }
                     }
-                    //使用DEATH_SMOKE_CLOUD会导致两次死亡音效
-//                    EntityEventPacket pk = new EntityEventPacket();
-//                    pk.eid = this.getId();
-//                    pk.event = EntityEventPacket.DEATH_SMOKE_CLOUD;
-//
-//                    Server.broadcastPacket(this.hasSpawned.values(), pk);
-                }
-                this.despawnFromAll();
-                if (!this.isPlayer) {
-                    this.close();
-                }
+                }, 10);
             }
-            return this.deadTicks < 10;
+            if (!this.isPlayer) {
+                this.close();
+            }
+            return false;
         }
 
         int tickDiff = currentTick - this.lastUpdate;
@@ -2119,7 +2096,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public boolean mountEntity(Entity entity) {
-        return mountEntity(entity, TYPE_RIDE);
+        return mountEntity(entity, EntityLink.Type.RIDER);
     }
 
     /**
@@ -2128,7 +2105,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @param entity The target Entity
      * @return {@code true} if the mounting successful
      */
-    public boolean mountEntity(Entity entity, byte mode) {
+    public boolean mountEntity(Entity entity, EntityLink.Type mode) {
         Objects.requireNonNull(entity, "The target of the mounting entity can't be null");
 
         if (isPassenger(entity) || entity.riding != null && !entity.riding.dismountEntity(entity, false)) {
@@ -2165,15 +2142,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (ev.isCancelled()) {
             int seatIndex = this.passengers.indexOf(entity);
             if (seatIndex == 0) {
-                this.broadcastLinkPacket(entity, TYPE_RIDE);
+                this.broadcastLinkPacket(entity, EntityLink.Type.RIDER);
             } else if (seatIndex != -1) {
-                this.broadcastLinkPacket(entity, TYPE_PASSENGER);
+                this.broadcastLinkPacket(entity, EntityLink.Type.PASSENGER);
             }
             return false;
         }
 
         if (sendLinks) {
-            broadcastLinkPacket(entity, TYPE_REMOVE);
+            broadcastLinkPacket(entity, EntityLink.Type.REMOVE);
         }
 
         // Refurbish the entity
@@ -2187,12 +2164,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return true;
     }
 
-    protected void broadcastLinkPacket(Entity rider, byte type) {
+    protected void broadcastLinkPacket(Entity rider, EntityLink.Type type) {
         SetEntityLinkPacket pk = new SetEntityLinkPacket();
         pk.vehicleUniqueId = getId();         // To the?
         pk.riderUniqueId = rider.getId(); // From who?
         pk.type = type;
-        pk.riderInitiated = type > 0;
+        pk.riderInitiated = type != EntityLink.Type.REMOVE;
         Server.broadcastPacket(this.hasSpawned.values(), pk);
     }
 
@@ -3253,11 +3230,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         }
     }
 
-    public boolean setDataProperty(EntityData data) {
+    public boolean setDataProperty(EntityData<?> data) {
         return setDataProperty(data, true);
     }
 
-    public boolean setDataProperty(EntityData data, boolean send) {
+    public boolean setDataProperty(EntityData<?> data, boolean send) {
         if (Objects.equals(data, this.getDataProperties().get(data.getId()))) {
             return false;
         }
@@ -3278,7 +3255,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return this.dataProperties;
     }
 
-    public EntityData getDataProperty(int id) {
+    public EntityData<?> getDataProperty(int id) {
         return this.getDataProperties().get(id);
     }
 
@@ -3568,10 +3545,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         pk.encode();
         Server.broadcastPacket(players, pk);
     }
-
-    private record OldStringClass(String key, Class<? extends Entity> value) {
-    }
-
 
     private boolean validateAndSetIntProperty(String identifier, int value) {
         if (!intProperties.containsKey(identifier)) return false;

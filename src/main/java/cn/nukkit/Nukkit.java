@@ -1,7 +1,6 @@
 package cn.nukkit;
 
 import cn.nukkit.nbt.stream.PGZIPOutputStream;
-import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.plugin.js.JSIInitiator;
 import cn.nukkit.utils.ServerKiller;
 import com.google.common.base.Preconditions;
@@ -23,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static cn.nukkit.utils.Utils.dynamic;

@@ -1,7 +1,7 @@
 package cn.nukkit.event.server;
 
 import cn.nukkit.event.HandlerList;
-import lombok.Getter;
+
 
 /**
  * @author NycuRO (NukkitX Project)

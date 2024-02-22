@@ -31,7 +31,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      *
      * @param map
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     public ConfigSection(LinkedHashMap<String, Object> map) {
         this();
         if (map == null || map.isEmpty()) return;
@@ -46,7 +46,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
         }
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     public ConfigSection(Map<String, Object> map) {
         this();
         if (map == null || map.isEmpty()) return;
@@ -55,20 +55,20 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
                 super.put(entry.getKey(), new ConfigSection(linkedHashMap));
             } else if (entry.getValue() instanceof Map map1) {
                 super.put(entry.getKey(), new ConfigSection(map1));
-            } else if (entry.getValue() instanceof List) {
-                super.put(entry.getKey(), parseList((List) entry.getValue()));
+            } else if (entry.getValue() instanceof List list) {
+                super.put(entry.getKey(), parseList(list));
             } else {
                 super.put(entry.getKey(), entry.getValue());
             }
         }
     }
 
-    private List parseList(List list) {
+    private List<?> parseList(List<?> list) {
         List<Object> newList = new ArrayList<>();
 
         for (Object o : list) {
             if (o instanceof LinkedHashMap) {
-                newList.add(new ConfigSection((LinkedHashMap) o));
+                newList.add(new ConfigSection((LinkedHashMap<String, Object>) o));
             } else {
                 newList.add(o);
             }
@@ -381,7 +381,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key - key (inside) current section
      * @return
      */
-    public List getList(String key) {
+    public List<?> getList(String key) {
         return this.getList(key, null);
     }
 
@@ -392,7 +392,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param defaultList - default value that will returned if section element is not exists
      * @return
      */
-    public List getList(String key, List defaultList) {
+    public List<?> getList(String key, List<?> defaultList) {
         return this.get(key, defaultList);
     }
 
@@ -414,7 +414,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @return
      */
     public List<String> getStringList(String key) {
-        List value = this.getList(key);
+        List<?> value = this.getList(key);
         if (value == null) {
             return new ArrayList<>(0);
         }
@@ -680,9 +680,9 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key - key (inside) current section
      * @return
      */
-    public List<Map> getMapList(String key) {
-        List<Map> list = getList(key);
-        List<Map> result = new ArrayList<>();
+    public List<Map<?, ?>> getMapList(String key) {
+        List<Map<?, ?>> list = (List<Map<?, ?>>) getList(key);
+        List<Map<?, ?>> result = new ArrayList<>();
 
         if (list == null) {
             return result;
@@ -690,7 +690,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
 
         for (Object object : list) {
             if (object instanceof Map) {
-                result.add((Map) object);
+                result.add((Map<?, ?>) object);
             }
         }
 

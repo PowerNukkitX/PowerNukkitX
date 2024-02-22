@@ -5,7 +5,6 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 
-import java.util.Objects;
 import java.util.Random;
 
 public abstract class TreeGenerator extends ObjectGenerator {
