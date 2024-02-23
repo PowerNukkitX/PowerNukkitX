@@ -20,14 +20,14 @@ public class SessionStartHandler extends BedrockSessionPacketHandler {
         if (protocol != ProtocolInfo.CURRENT_PROTOCOL) {
             session.sendPlayStatus(protocol < ProtocolInfo.CURRENT_PROTOCOL ? PlayStatusPacket.LOGIN_FAILED_CLIENT : PlayStatusPacket.LOGIN_FAILED_SERVER, true);
             var message = protocol < ProtocolInfo.CURRENT_PROTOCOL ? "disconnectionScreen.outdatedClient" : "disconnectionScreen.outdatedServer";
-            player.close(message);
+            session.close(message);
             return;
         }
 
         var server = session.getServer();
         if (server.getIPBans().isBanned(session.getAddressString())) {
             String reason = server.getIPBans().getEntires().get(session.getAddressString()).getReason();
-            player.close(!reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
+            session.close(!reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
             return;
         }
 

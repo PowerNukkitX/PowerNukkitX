@@ -2,10 +2,10 @@ package cn.nukkit.scoreboard.storage;
 
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
-import cn.nukkit.scoreboard.scoreboard.IScoreboard;
-import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
-import cn.nukkit.scoreboard.scoreboard.Scoreboard;
-import cn.nukkit.scoreboard.scoreboard.ScoreboardLine;
+import cn.nukkit.scoreboard.IScoreboard;
+import cn.nukkit.scoreboard.IScoreboardLine;
+import cn.nukkit.scoreboard.Scoreboard;
+import cn.nukkit.scoreboard.ScoreboardLine;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.IScorer;

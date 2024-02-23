@@ -272,7 +272,6 @@ public class BedrockSession {
         return this.closed.get();
     }
 
-
     @ApiStatus.Internal
     public void close(@Nullable String reason) {
         this.close(reason, false);
@@ -300,11 +299,23 @@ public class BedrockSession {
         }
     }
 
+    /**
+     * Player disconnection process
+     * <p>
+     * 1.BedrockSession#close -> channel#disconnect -> channelInactive-> BedrockPeer#onClose -> all BedrockSession#onClose -> tickFuture#cancel -> free
+     * <p>
+     * 2.onRakNetDisconnect -> channel#disconnect -> channelInactive-> BedrockPeer#onClose -> all BedrockSession#onClose -> tickFuture#cancel -> free
+     * <p>
+     * 3.Player#close -> BedrockSession#close
+     */
     public void onClose() {
         if (!this.closed.compareAndSet(false, true)) {
             return;
         }
-        this.getPlayer().close();
+        Player player = this.getPlayer();
+        if (player != null) {
+            player.close(BedrockDisconnectReasons.DISCONNECTED);
+        }
         this.peer.removeSession(this);
     }
 
@@ -477,6 +488,7 @@ public class BedrockSession {
         return Server.getInstance();
     }
 
+    @Nullable
     public Player getPlayer() {
         return this.handle == null ? null : this.handle.player;
     }

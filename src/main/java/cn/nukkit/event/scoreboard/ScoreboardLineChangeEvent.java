@@ -1,8 +1,8 @@
 package cn.nukkit.event.scoreboard;
 
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.scoreboard.scoreboard.IScoreboard;
-import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
+import cn.nukkit.scoreboard.IScoreboard;
+import cn.nukkit.scoreboard.IScoreboardLine;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,4 +1,4 @@
-package cn.nukkit.scoreboard.scoreboard;
+package cn.nukkit.scoreboard;
 
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;

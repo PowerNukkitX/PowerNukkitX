@@ -120,8 +120,8 @@ import cn.nukkit.scheduler.TaskHandler;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
 import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
-import cn.nukkit.scoreboard.scoreboard.IScoreboard;
-import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
+import cn.nukkit.scoreboard.IScoreboard;
+import cn.nukkit.scoreboard.IScoreboardLine;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.BlockIterator;
@@ -156,6 +156,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -222,7 +223,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected final int chunksPerTick;
     protected final int spawnThreshold;
     protected int messageLimitCounter = 2;
-    protected boolean connected = true;
+    protected AtomicBoolean connected = new AtomicBoolean(true);
     protected InetSocketAddress socketAddress;
     /**
      * 是否移除改玩家聊天中的颜色字符如 §c §1
@@ -1769,7 +1770,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public boolean isOnline() {
-        return this.connected && this.loggedIn;
+        return this.connected.get() && this.loggedIn;
     }
 
     @Override
@@ -1897,7 +1898,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public boolean isConnected() {
-        return connected;
+        return connected.get();
     }
 
     /**
@@ -2218,7 +2219,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public void sendChunk(int x, int z, DataPacket packet) {
-        if (!this.connected) {
+        if (!this.isConnected()) {
             return;
         }
 
@@ -3391,99 +3392,98 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param reason  登出原因<br>Reason for logout
      */
     public void close(TextContainer message, String reason) {
-        if (this.connected && !this.closed) {
-            //这里必须在玩家离线之前调用，否则无法将包发过去
-            var scoreboardManager = this.getServer().getScoreboardManager();
-            //in test environment sometimes the scoreboard manager is null
-            if (scoreboardManager != null) {
-                scoreboardManager.beforePlayerQuit(this);
-            }
-
-            this.connected = false;
-            PlayerQuitEvent ev = null;
-            if (this.username != null && !this.getName().isEmpty()) {
-                this.server.getPluginManager().callEvent(ev = new PlayerQuitEvent(this, message, true, reason));
-                if (this.fishing != null) {
-                    this.stopFishing(false);
-                }
-            }
-
-            // Close the temporary windows first, so they have chance to change all inventories before being disposed
-            this.removeAllWindows(false);
-            resetCraftingGridType();
-
-            if (ev != null && this.loggedIn && ev.getAutoSave()) {
-                this.save();
-            }
-
-            for (Player player : new ArrayList<>(this.server.getOnlinePlayers().values())) {
-                if (!player.canSee(this)) {
-                    player.showPlayer(this);
-                }
-            }
-
-            this.hiddenPlayers.clear();
-
-            this.removeAllWindows(true);
-            LongIterator iterator = this.playerChunkManager.getUsedChunks().iterator();
-            while (iterator.hasNext()) {
-                long l = iterator.nextLong();
-                int chunkX = Level.getHashX(l);
-                int chunkZ = Level.getHashZ(l);
-                this.level.unregisterChunkLoader(this, chunkX, chunkZ);
-                iterator.remove();
-
-                for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
-                    if (entity != this) {
-                        entity.getViewers().remove(getLoaderId());
-                    }
-                }
-            }
-
-            super.close();
-            this.server.getNetwork().onSessionDisconnect(getSocketAddress());
-            if (this.loggedIn) {
-                this.server.removeOnlinePlayer(this);
-            }
-
-            this.loggedIn = false;
-
-            if (ev != null && !Objects.equals(this.username, "") && this.spawned && !Objects.equals(ev.getQuitMessage().toString(), "")) {
-                this.server.broadcastMessage(ev.getQuitMessage());
-            }
-            this.server.getPluginManager().unsubscribeFromPermission(Server.BROADCAST_CHANNEL_USERS, this);
-            this.server.getPluginManager().unsubscribeFromPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this);
-            this.spawned = false;
-            log.info(this.getServer().getLanguage().tr("nukkit.player.logOut",
-                    TextFormat.AQUA + this.getName() + TextFormat.WHITE,
-                    this.getAddress(),
-                    String.valueOf(this.getPort()),
-                    this.getServer().getLanguage().tr(reason)));
-            this.windows.clear();
-            this.playerChunkManager.getUsedChunks().clear();
-            this.hasSpawned.clear();
-            this.spawnPosition = null;
-
-            if (this.riding instanceof EntityRideable entityRideable) {
-                entityRideable.dismountEntity(this);
-            }
-
-            this.riding = null;
+        if (!this.connected.compareAndSet(true, false) && this.closed) {
+            return;
         }
+        var scoreboardManager = this.getServer().getScoreboardManager();
+        if (scoreboardManager != null) {
+            scoreboardManager.beforePlayerQuit(this);
+        }
+
+        if (this.riding instanceof EntityRideable entityRideable) {
+            entityRideable.dismountEntity(this);
+        }
+
+        PlayerQuitEvent ev = null;
+        if (this.username != null && !this.getName().isEmpty()) {
+            this.server.getPluginManager().callEvent(ev = new PlayerQuitEvent(this, message, true, reason));
+            if (this.fishing != null) {
+                this.stopFishing(false);
+            }
+        }
+        resetCraftingGridType();
+        // Close the temporary windows first, so they have chance to change all inventories before being disposed
+        if (ev != null && ev.getAutoSave()) {
+            this.save();
+        }
+        super.close();
+        this.removeAllWindows(false);
+        this.removeAllWindows(true);
+        this.windows.clear();
+        this.hiddenPlayers.clear();
+
+        //save player data
+        //unload chunk for the player
+        LongIterator iterator = this.playerChunkManager.getUsedChunks().iterator();
+        while (iterator.hasNext()) {
+            long l = iterator.nextLong();
+            int chunkX = Level.getHashX(l);
+            int chunkZ = Level.getHashZ(l);
+            this.level.unregisterChunkLoader(this, chunkX, chunkZ);
+            iterator.remove();
+            for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
+                if (entity != this) {
+                    entity.getViewers().remove(getLoaderId());
+                }
+            }
+        }
+        this.playerChunkManager.getUsedChunks().clear();
+        //remove player from playerlist
+        this.server.removeOnlinePlayer(this);
+        //remove player from players map
+        this.server.removePlayer(this);
+
+        this.server.getPluginManager().unsubscribeFromPermission(Server.BROADCAST_CHANNEL_USERS, this);
+        this.server.getPluginManager().unsubscribeFromPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this);
+        // broadcast disconnection message
+        if (ev != null && !Objects.equals(this.username, "") && this.spawned && !Objects.equals(ev.getQuitMessage().toString(), "")) {
+            this.server.broadcastMessage(ev.getQuitMessage());
+        }
+        log.info(this.getServer().getLanguage().tr("nukkit.player.logOut",
+                TextFormat.AQUA + this.getName() + TextFormat.WHITE,
+                this.getAddress(),
+                String.valueOf(this.getPort()),
+                this.getServer().getLanguage().tr(reason)));
+
+        this.hasSpawned.clear();
+        this.loggedIn = false;
+        this.spawned = false;
+        this.spawnPosition = null;
+        this.riding = null;
+        this.chunk = null;
+
+        assert this.session != null;
+        //close player network session
+        this.session.close(reason);
+        this.server.getNetwork().onSessionDisconnect(getSocketAddress());
+        this.session = null;
 
         if (this.perm != null) {
             this.perm.clearPermissions();
             this.perm = null;
         }
-
         if (this.inventory != null) {
             this.inventory = null;
         }
-
-        this.chunk = null;
-
-        this.server.removePlayer(this);
-        this.session = null;
+        if (this.offhandInventory != null) {
+            this.offhandInventory = null;
+        }
+        if (this.enderChestInventory != null) {
+            this.enderChestInventory = null;
+        }
+        if (this.creativeOutputInventory != null) {
+            this.creativeOutputInventory = null;
+        }
     }
 
     public void save() {
@@ -5211,7 +5211,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
 
     public boolean dataPacketImmediately(DataPacket packet) {
-        if (!this.connected) {
+        if (!this.isConnected()) {
             return false;
         }
         DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);

@@ -1,8 +1,8 @@
 package cn.nukkit.scoreboard.displayer;
 
 import cn.nukkit.scoreboard.data.DisplaySlot;
-import cn.nukkit.scoreboard.scoreboard.IScoreboard;
-import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
+import cn.nukkit.scoreboard.IScoreboard;
+import cn.nukkit.scoreboard.IScoreboardLine;
 
 /**
  * 计分板观察者 (eg: Player)

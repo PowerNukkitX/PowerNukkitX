@@ -1,7 +1,7 @@
 package cn.nukkit.scoreboard.storage;
 
 import cn.nukkit.scoreboard.data.DisplaySlot;
-import cn.nukkit.scoreboard.scoreboard.IScoreboard;
+import cn.nukkit.scoreboard.IScoreboard;
 
 import java.util.Collection;
 import java.util.Map;

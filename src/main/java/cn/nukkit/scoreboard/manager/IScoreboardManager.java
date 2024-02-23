@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
-import cn.nukkit.scoreboard.scoreboard.IScoreboard;
+import cn.nukkit.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.storage.IScoreboardStorage;
 
 import javax.annotation.Nullable;

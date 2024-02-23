@@ -9,7 +9,7 @@ import cn.nukkit.event.scoreboard.ScoreboardObjectiveChangeEvent;
 import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
-import cn.nukkit.scoreboard.scoreboard.IScoreboard;
+import cn.nukkit.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import cn.nukkit.scoreboard.storage.IScoreboardStorage;

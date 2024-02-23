@@ -1,4 +1,4 @@
-package cn.nukkit.scoreboard.scoreboard;
+package cn.nukkit.scoreboard;
 
 import cn.nukkit.network.protocol.SetScorePacket;
 import cn.nukkit.scoreboard.scorer.IScorer;

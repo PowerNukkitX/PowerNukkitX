@@ -100,6 +100,7 @@ import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.impl.Iq80DBFactory;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -1701,11 +1702,13 @@ public class Server {
         }
     }
 
+    @ApiStatus.Internal
     public void addOnlinePlayer(Player player) {
         this.playerList.put(player.getUniqueId(), player);
         this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player.getLoginChainData().getXUID());
     }
 
+    @ApiStatus.Internal
     public void removeOnlinePlayer(Player player) {
         if (this.playerList.containsKey(player.getUniqueId())) {
             this.playerList.remove(player.getUniqueId());
@@ -2139,13 +2142,7 @@ public class Server {
         return matchedPlayer.toArray(Player.EMPTY_ARRAY);
     }
 
-    /**
-     * 删除一个玩家，可以让一个玩家离线.
-     * <p>
-     * Delete a player to take a player offline.
-     *
-     * @param player 需要删除的玩家<br>Players who need to be deleted
-     */
+    @ApiStatus.Internal
     public void removePlayer(Player player) {
         Player toRemove = this.players.remove(player.getRawSocketAddress());
         if (toRemove != null) {

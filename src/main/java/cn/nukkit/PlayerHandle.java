@@ -85,7 +85,7 @@ public final class PlayerHandle {
     }
 
     public void setConnected(boolean connected) {
-        player.connected = connected;
+        player.connected.set(connected);
     }
 
     public void setSocketAddress(InetSocketAddress socketAddress) {

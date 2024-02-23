@@ -1,4 +1,4 @@
-package cn.nukkit.scoreboard.scoreboard;
+package cn.nukkit.scoreboard;
 
 import cn.nukkit.Server;
 import cn.nukkit.event.scoreboard.ScoreboardLineChangeEvent;
