@@ -46,7 +46,7 @@ public class SingleFakeBlock implements FakeBlock {
             System.out.println(position.getFloorX() + ":" + position.getFloorY() + ":" + position.getFloorZ());
             UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
             updateBlockPacket.blockRuntimeId = block.getBlockState().unsignedBlockStateHash();
-            updateBlockPacket.flags = UpdateBlockPacket.FLAG_ALL;
+            updateBlockPacket.flags = UpdateBlockPacket.FLAG_NETWORK;
             updateBlockPacket.x = position.getFloorX();
             updateBlockPacket.y = position.getFloorY();
             updateBlockPacket.z = position.getFloorZ();
@@ -71,7 +71,7 @@ public class SingleFakeBlock implements FakeBlock {
         this.lastPositions.forEach(position -> {
             UpdateBlockPacket packet = new UpdateBlockPacket();
             packet.blockRuntimeId = player.getLevel().getBlock(position).getBlockState().unsignedBlockStateHash();
-            packet.flags = UpdateBlockPacket.FLAG_ALL;
+            packet.flags = UpdateBlockPacket.FLAG_NETWORK;
             packet.x = position.getFloorX();
             packet.y = position.getFloorY();
             packet.z = position.getFloorZ();
