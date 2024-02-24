@@ -76,7 +76,7 @@ public class NbtTest {
     void TestNBT2SNBT() {
         var oldNBT = new LinkedCompoundTag()
                 .putInt("test1", 1)
-                .byteBuf.writeString("test2", "hahaha")
+                .putString("test2", "hahaha")
                 .putBoolean("test3", false)
                 .putByte("test4", 12)
                 .putFloat("test5", (float) 1.22)
@@ -95,14 +95,14 @@ public class NbtTest {
                                 .add(new ByteArrayTag(new byte[]{11, 22, 33, 44, 55}))))
                 .putList("list2", new ListTag<>()
                         .add(new CompoundTag()
-                                .byteBuf.writeString("string1", "asdafsdf")
-                                .byteBuf.writeString("string2", "afasdfcc"))
+                                .putString("string1", "asdafsdf")
+                                .putString("string2", "afasdfcc"))
                         .add(new CompoundTag()
-                                .byteBuf.writeString("string1", "asdafsdf")
-                                .byteBuf.writeString("string2", "afasdfcc")))
+                                .putString("string1", "asdafsdf")
+                                .putString("string2", "afasdfcc")))
                 .putCompound("nestCompoundTag", new CompoundTag()
-                        .byteBuf.writeString("string3", "123123123")
-                        .byteBuf.writeString("string4", "zxdzsfdsdf"))
+                        .putString("string3", "123123123")
+                        .putString("string4", "zxdzsfdsdf"))
                 .put("endTag", new EndTag());
         var oldSNBT = oldNBT.toSNBT();
         System.out.println(oldSNBT);
@@ -128,7 +128,7 @@ public class NbtTest {
     void testWriteNbt() {
         var write = new LinkedCompoundTag()
                 .putInt("test1", 1)
-                .byteBuf.writeString("test2", "hahaha")
+                .putString("test2", "hahaha")
                 .putBoolean("test3", false)
                 .putByte("test4", 12)
                 .putFloat("test5", (float) 1.22)
@@ -153,7 +153,7 @@ public class NbtTest {
     void testWriteReadGzipNbt() {
         var write = new LinkedCompoundTag()
                 .putInt("test1", 1)
-                .byteBuf.writeString("test2", "hahaha")
+                .putString("test2", "hahaha")
                 .putBoolean("test3", false)
                 .putByte("test4", 12)
                 .putFloat("test5", (float) 1.22)
@@ -170,7 +170,7 @@ public class NbtTest {
     void testWriteByteBufOutputStream() {
         var write = new LinkedCompoundTag()
                 .putInt("test1", 1)
-                .byteBuf.writeString("test2", "hahaha")
+                .putString("test2", "hahaha")
                 .putBoolean("test3", false)
                 .putByte("test4", 12)
                 .putFloat("test5", (float) 1.22)
