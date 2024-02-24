@@ -2,6 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.utils.MainLogger;
 import lombok.ToString;
 
@@ -35,18 +36,18 @@ public class ItemComponentPacket extends DataPacket {
     }
     
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
         
     }
     
     @Override
-    public void encode() {
-        this.reset();
-        this.putUnsignedVarInt(this.entries.length);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeUnsignedVarInt(this.entries.length);
         try {
             for (Entry entry : this.entries) {
-                this.putString(entry.getName());
-                this.put(NBTIO.write(entry.getData(), ByteOrder.LITTLE_ENDIAN, true));
+                byteBuf.writeString(entry.getName());
+                byteBuf.writeBytes(NBTIO.write(entry.getData(), ByteOrder.LITTLE_ENDIAN, true));
             }
         } catch (IOException e) {
             MainLogger.getLogger().error("Error while encoding NBT data of ItemComponentPacket", e);

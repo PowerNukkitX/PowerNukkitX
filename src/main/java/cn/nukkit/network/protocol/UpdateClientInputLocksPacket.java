@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -19,16 +20,16 @@ public class UpdateClientInputLocksPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.lockComponentData = this.getVarInt();
-        this.serverPosition = this.getVector3f();
+    public void decode(HandleByteBuf byteBuf) {
+        this.lockComponentData = byteBuf.readVarInt();
+        this.serverPosition = byteBuf.readVector3f();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putVarInt(lockComponentData);
-        this.putVector3f(serverPosition);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeVarInt(lockComponentData);
+        byteBuf.writeVector3f(serverPosition);
     }
 
     public void handle(PacketHandler handler) {

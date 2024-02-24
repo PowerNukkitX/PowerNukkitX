@@ -18,7 +18,6 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
-import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.weather.EntityLightningStrike;
 import cn.nukkit.event.entity.CreeperPowerEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -37,15 +36,10 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityCreeper extends EntityMob implements EntityWalkable, EntityInteractable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return CREEPER;
     }
-    
-
-    public static final int DATA_SWELL_DIRECTION = 16;
-    public static final int DATA_SWELL = 17;
-    public static final int DATA_SWELL_OLD = 18;
-    public static final int DATA_POWERED = 19;
 
     public EntityCreeper(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -93,7 +87,6 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         );
     }
 
-    
 
     @Override
     public float getWidth() {
@@ -111,7 +104,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
     }
 
     public boolean isPowered() {
-        return getDataPropertyBoolean(DATA_POWERED);
+        return getDataProperty(HORSE_TYPE) > 0;
     }
 
     public void setPowered(EntityLightningStrike bolt) {
@@ -119,7 +112,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         this.getServer().getPluginManager().callEvent(ev);
 
         if (!ev.isCancelled()) {
-            this.setDataProperty(new ByteEntityData(DATA_POWERED, 1));
+            this.setDataProperty(HORSE_TYPE, 1);
             this.namedTag.putBoolean("powered", true);
         }
     }
@@ -129,7 +122,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         this.getServer().getPluginManager().callEvent(ev);
 
         if (!ev.isCancelled()) {
-            this.setDataProperty(new ByteEntityData(DATA_POWERED, powered ? 1 : 0));
+            this.setDataProperty(HORSE_TYPE, powered ? 1 : 0);
             this.namedTag.putBoolean("powered", powered);
         }
     }
@@ -145,7 +138,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         super.initEntity();
 
         if (this.namedTag.getBoolean("powered") || this.namedTag.getBoolean("IsPowered")) {
-            this.dataProperties.putBoolean(DATA_POWERED, true);
+            this.entityDataMap.put(HORSE_TYPE, 1);
         }
     }
 

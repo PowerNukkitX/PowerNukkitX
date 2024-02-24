@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
 
@@ -20,18 +21,18 @@ public class SetDisplayObjectivePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
         //only server -> client
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putString(this.displaySlot.getSlotName());
-        this.putString(this.objectiveName);
-        this.putString(this.displayName);
-        this.putString(this.criteriaName);
-        this.putVarInt(this.sortOrder.ordinal());
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeString(this.displaySlot.getSlotName());
+        byteBuf.writeString(this.objectiveName);
+        byteBuf.writeString(this.displayName);
+        byteBuf.writeString(this.criteriaName);
+        byteBuf.writeVarInt(this.sortOrder.ordinal());
     }
 
     public void handle(PacketHandler handler) {

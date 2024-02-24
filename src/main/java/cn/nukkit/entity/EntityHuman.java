@@ -176,7 +176,7 @@ public class EntityHuman extends EntityHumanType {
             pk.yaw = (float) this.yaw;
             pk.pitch = (float) this.pitch;
             pk.item = this.getInventory().getItemInHand();
-            pk.metadata = this.dataProperties;
+            pk.entityData = this.entityDataMap;
             player.dataPacket(pk);
 
             this.inventory.sendArmorContents(player);

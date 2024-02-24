@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -18,16 +19,16 @@ public class ContainerClosePacket extends DataPacket {
     public boolean wasServerInitiated = true;
 
     @Override
-    public void decode() {
-        this.windowId = this.getByte();
-        this.wasServerInitiated = this.getBoolean();
+    public void decode(HandleByteBuf byteBuf) {
+        this.windowId = byteBuf.readByte();
+        this.wasServerInitiated = byteBuf.readBoolean();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putByte((byte) this.windowId);
-        this.putBoolean(this.wasServerInitiated);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeByte((byte) this.windowId);
+        byteBuf.writeBoolean(this.wasServerInitiated);
     }
 
     public void handle(PacketHandler handler) {

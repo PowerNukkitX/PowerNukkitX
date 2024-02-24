@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 
@@ -18,16 +19,16 @@ public class AnvilDamagePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.damage = this.getByte();
-        BlockVector3 vec = this.getBlockVector3();
+    public void decode(HandleByteBuf byteBuf) {
+        this.damage = byteBuf.readByte();
+        BlockVector3 vec = byteBuf.readBlockVector3();
         this.x = vec.x;
         this.y = vec.y;
         this.z = vec.z;
     }
 
     @Override
-    public void encode() {
+    public void encode(HandleByteBuf byteBuf) {
 
     }
 

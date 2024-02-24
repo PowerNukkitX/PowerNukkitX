@@ -6,15 +6,11 @@ import cn.nukkit.Server;
 import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.custom.CustomEntity;
-import cn.nukkit.entity.data.ByteEntityData;
-import cn.nukkit.entity.data.EntityData;
-import cn.nukkit.entity.data.EntityMetadata;
-import cn.nukkit.entity.data.FloatEntityData;
-import cn.nukkit.entity.data.IntEntityData;
-import cn.nukkit.entity.data.LongEntityData;
-import cn.nukkit.entity.data.ShortEntityData;
-import cn.nukkit.entity.data.StringEntityData;
-import cn.nukkit.entity.data.Vector3fEntityData;
+import cn.nukkit.entity.data.EntityDataMap;
+import cn.nukkit.entity.data.EntityDataType;
+import cn.nukkit.entity.data.EntityDataTypes;
+import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.entity.data.PlayerFlag;
 import cn.nukkit.entity.data.property.BooleanEntityProperty;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.data.property.EnumEntityProperty;
@@ -87,286 +83,17 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiPredicate;
 
-import static cn.nukkit.utils.Utils.dynamic;
-
 /**
  * @author MagicDroidX
  */
-public abstract class Entity extends Location implements Metadatable, EntityID {
+public abstract class Entity extends Location implements Metadatable, EntityID, EntityDataTypes {
     public static final Entity[] EMPTY_ARRAY = new Entity[0];
-    //region data
-    //All DATA constants were made dynamic because they have tendency to change on Minecraft updates,
-    //these dynamic calls will avoid the need of plugin recompilations after Minecraft updates that shifts the data values
-    public static final int DATA_FLAGS = dynamic(0);
-    public static final int DATA_HEALTH = dynamic(1); //int (minecart/boat)
-    public static final int DATA_VARIANT = dynamic(2); //int
-    public static final int DATA_COLOR = dynamic(3); //byte
-    public static final int DATA_NAMETAG = dynamic(4); //string
-    public static final int DATA_OWNER_EID = dynamic(5); //long
-    public static final int DATA_TARGET_EID = dynamic(6); //long
-    public static final int DATA_AIR = dynamic(7); //short
-    public static final int DATA_POTION_COLOR = dynamic(8); //int (ARGB!)
-    public static final int DATA_POTION_AMBIENT = dynamic(9); //byte
-    public static final int DATA_JUMP_DURATION = dynamic(10); //long
-    public static final int DATA_HURT_TIME = dynamic(11); //int (minecart/boat)
-    public static final int DATA_HURT_DIRECTION = dynamic(12); //int (minecart/boat)
-    public static final int DATA_PADDLE_TIME_LEFT = dynamic(13); //float
-    public static final int DATA_PADDLE_TIME_RIGHT = dynamic(14); //float
-    public static final int DATA_EXPERIENCE_VALUE = dynamic(15); //int (xp orb)
-    public static final int DATA_DISPLAY_ITEM = dynamic(16); //int (id | (data << 16))
-    public static final int DATA_DISPLAY_OFFSET = dynamic(17); //int
-    public static final int DATA_HAS_DISPLAY = dynamic(18); //byte (must be 1 for minecart to show block inside)
-    public static final int DATA_SWELL = dynamic(19);
-    public static final int DATA_OLD_SWELL = dynamic(20);
-    public static final int DATA_SWELL_DIR = dynamic(21);
-    public static final int DATA_CHARGE_AMOUNT = dynamic(22);
-    public static final int DATA_ENDERMAN_HELD_RUNTIME_ID = dynamic(23); //short
-    public static final int DATA_CLIENT_EVENT = dynamic(24); //byte
-
-    public static final int DATA_PLAYER_FLAG_SLEEP = 1;
-    public static final int DATA_PLAYER_FLAG_DEAD = 2;
-    public static final int DATA_PLAYER_BUTTON_TEXT = 40;
-
-    public static final int DATA_USING_ITEM = dynamic(25); //byte
-    public static final int DATA_PLAYER_FLAGS = dynamic(26); //byte
-    public static final int DATA_PLAYER_INDEX = dynamic(27);
-    public static final int DATA_PLAYER_BED_POSITION = dynamic(28); //block coords
-
-    public static final int DATA_FIREBALL_POWER_X = dynamic(29); //float
-    public static final int DATA_FIREBALL_POWER_Y = dynamic(30); //float
-    public static final int DATA_FIREBALL_POWER_Z = dynamic(31); //float
-    public static final int DATA_AUX_POWER = dynamic(32); //???
-    public static final int DATA_FISH_X = dynamic(33); //float
-    public static final int DATA_FISH_Z = dynamic(34); //float
-    public static final int DATA_FISH_ANGLE = dynamic(35); //float
-    public static final int DATA_POTION_AUX_VALUE = dynamic(36); //short
-    public static final int DATA_LEAD_HOLDER_EID = dynamic(37); //long
-    public static final int DATA_SCALE = dynamic(38); //float
-    public static final int DATA_HAS_NPC_COMPONENT = dynamic(39); //byte
-    public static final int DATA_NPC_SKIN_DATA = dynamic(40); //string
-    public static final int DATA_NPC_ACTIONS = dynamic(41); //string
-    public static final int DATA_MAX_AIR = dynamic(42); //short
-    public static final int DATA_MARK_VARIANT = dynamic(43); //int
-    public static final int DATA_CONTAINER_TYPE = dynamic(44); //byte
-    public static final int DATA_CONTAINER_BASE_SIZE = dynamic(45); //int
-    public static final int DATA_CONTAINER_EXTRA_SLOTS_PER_STRENGTH = dynamic(46); //int
-    public static final int DATA_BLOCK_TARGET = dynamic(47); //block coords (ender crystal)
-    public static final int DATA_WITHER_INVULNERABLE_TICKS = dynamic(48); //int
-    public static final int DATA_WITHER_TARGET_1 = dynamic(49); //long
-    public static final int DATA_WITHER_TARGET_2 = dynamic(50); //long
-    public static final int DATA_WITHER_TARGET_3 = dynamic(51); //long
-    public static final int DATA_AERIAL_ATTACK = dynamic(52);
-    public static final int DATA_BOUNDING_BOX_WIDTH = dynamic(53); //float
-    public static final int DATA_BOUNDING_BOX_HEIGHT = dynamic(54); //float
-    public static final int DATA_FUSE_LENGTH = dynamic(55); //int
-    public static final int DATA_RIDER_SEAT_POSITION = dynamic(56); //vector3f
-    public static final int DATA_RIDER_ROTATION_LOCKED = dynamic(57); //byte
-    public static final int DATA_RIDER_MAX_ROTATION = dynamic(58); //float
-    public static final int DATA_RIDER_MIN_ROTATION = dynamic(59); //float
-    public static final int DATA_RIDER_ROTATION_OFFSET = dynamic(60);
-    public static final int DATA_AREA_EFFECT_CLOUD_RADIUS = dynamic(61); //float
-    public static final int DATA_AREA_EFFECT_CLOUD_WAITING = dynamic(62); //int
-    public static final int DATA_AREA_EFFECT_CLOUD_PARTICLE_ID = dynamic(63); //int
-    public static final int DATA_SHULKER_PEEK_ID = dynamic(64); //int
-    public static final int DATA_SHULKER_ATTACH_FACE = dynamic(65); //byte
-    public static final int DATA_SHULKER_ATTACHED = dynamic(66); //short
-    public static final int DATA_SHULKER_ATTACH_POS = dynamic(67); //block coords
-    public static final int DATA_TRADING_PLAYER_EID = dynamic(68); //long
-    public static final int DATA_TRADING_CAREER = dynamic(69);
-    public static final int DATA_HAS_COMMAND_BLOCK = dynamic(70); //byte
-    public static final int DATA_COMMAND_BLOCK_COMMAND = dynamic(71); //string
-    public static final int DATA_COMMAND_BLOCK_LAST_OUTPUT = dynamic(72); //string
-    public static final int DATA_COMMAND_BLOCK_TRACK_OUTPUT = dynamic(73); //byte
-    public static final int DATA_CONTROLLING_RIDER_SEAT_NUMBER = dynamic(74); //byte
-    public static final int DATA_STRENGTH = dynamic(75); //int
-    public static final int DATA_MAX_STRENGTH = dynamic(76); //int
-    public static final int DATA_SPELL_CASTING_COLOR = dynamic(77); //int
-    public static final int DATA_LIMITED_LIFE = dynamic(78); //int
-    public static final int DATA_ARMOR_STAND_POSE_INDEX = dynamic(79); //int
-    public static final int DATA_ENDER_CRYSTAL_TIME_OFFSET = dynamic(80); //int
-    public static final int DATA_ALWAYS_SHOW_NAMETAG = dynamic(81); //byte
-    public static final int DATA_COLOR_2 = dynamic(82); //byte
-    public static final int DATA_NAME_AUTHOR = dynamic(83);
-    public static final int DATA_SCORE_TAG = dynamic(84); //String
-    public static final int DATA_BALLOON_ATTACHED_ENTITY = dynamic(85); //long
-    public static final int DATA_PUFFERFISH_SIZE = dynamic(86); //byte
-    public static final int DATA_BUBBLE_TIME = dynamic(87); //int
-    public static final int DATA_AGENT = dynamic(88); //long
-    public static final int DATA_SITTING_AMOUNT = dynamic(89); //??
-    public static final int DATA_SITTING_AMOUNT_PREVIOUS = dynamic(90); //??
-    public static final int DATA_EATING_COUNTER = dynamic(91); //int
-    public static final int DATA_FLAGS_EXTENDED = dynamic(92); //flags
-    public static final int DATA_LAYING_AMOUNT = dynamic(93); //??
-    public static final int DATA_LAYING_AMOUNT_PREVIOUS = dynamic(94); //??
-    public static final int DATA_DURATION = dynamic(95); //int
-    public static final int DATA_SPAWN_TIME = dynamic(96); //int
-    public static final int DATA_CHANGE_RATE = dynamic(97); //float
-    public static final int DATA_CHANGE_ON_PICKUP = dynamic(98); //float
-    public static final int DATA_PICKUP_COUNT = dynamic(99); //int
-    public static final int DATA_INTERACTIVE_TAG = dynamic(100); //string (button text)
-    public static final int DATA_TRADE_TIER = dynamic(101); //int 这个没啥用
-    public static final int DATA_MAX_TRADE_TIER = dynamic(102); //int 这个控制村民最大等级
-    public static final int DATA_TRADE_EXPERIENCE = dynamic(103); //int这个控制当前经验
-    public static final int DATA_SKIN_ID = dynamic(104); //int
-    public static final int DATA_SPAWNING_FRAMES = dynamic(105); //??
-    public static final int DATA_COMMAND_BLOCK_TICK_DELAY = dynamic(106); //int
-    public static final int DATA_COMMAND_BLOCK_EXECUTE_ON_FIRST_TICK = dynamic(107); //byte
-    public static final int DATA_AMBIENT_SOUND_INTERVAL = dynamic(108); //float
-    public static final int DATA_AMBIENT_SOUND_INTERVAL_RANGE = dynamic(109); //float
-    public static final int DATA_AMBIENT_SOUND_EVENT_NAME = dynamic(110); //string
-    public static final int DATA_FALL_DAMAGE_MULTIPLIER = dynamic(111); //float
-    public static final int DATA_NAME_RAW_TEXT = dynamic(112); //string
-    public static final int DATA_CAN_RIDE_TARGET = dynamic(113); //byte
-    public static final int DATA_LOW_TIER_CURED_DISCOUNT = dynamic(114); //int
-    public static final int DATA_HIGH_TIER_CURED_DISCOUNT = dynamic(115); //int
-    public static final int DATA_NEARBY_CURED_DISCOUNT = dynamic(116); //int
-    public static final int DATA_NEARBY_CURED_DISCOUNT_TIMESTAMP = dynamic(117); //int
-    public static final int DATA_HITBOX = dynamic(118); //NBT
-    public static final int DATA_IS_BUOYANT = dynamic(119); //byte
-    public static final int DATA_FREEZING_EFFECT_STRENGTH = dynamic(120); //float
-    public static final int DATA_BUOYANCY_DATA = dynamic(121); //string
-    public static final int DATA_GOAT_HORN_COUNT = dynamic(122); // ???
-    public static final int DATA_BASE_RUNTIME_ID = dynamic(123); // ???
-    public static final int DATA_MOVEMENT_SOUND_DISTANCE_OFFSET = dynamic(124); // ???
-    public static final int DATA_HEARTBEAT_INTERVAL_TICKS = dynamic(125); // ???
-    public static final int DATA_HEARTBEAT_SOUND_EVENT = dynamic(126); // ???
-    public static final int DATA_PLAYER_LAST_DEATH_POS = 127;// ???
-    public static final int DATA_PLAYER_LAST_DEATH_DIMENSION = 128;// ???
-    public static final int DATA_PLAYER_HAS_DIED = 129;// ???
-    public static final int DATA_COLLISION_BOX = 130; //vector3f
-
-    // Flags
-    public static final int DATA_FLAG_ONFIRE = dynamic(0);
-    public static final int DATA_FLAG_SNEAKING = dynamic(1);
-    public static final int DATA_FLAG_RIDING = dynamic(2);
-    public static final int DATA_FLAG_SPRINTING = dynamic(3);
-    public static final int DATA_FLAG_ACTION = dynamic(4);
-    public static final int DATA_FLAG_INVISIBLE = dynamic(5);
-    public static final int DATA_FLAG_TEMPTED = dynamic(6);
-    public static final int DATA_FLAG_INLOVE = dynamic(7);
-    public static final int DATA_FLAG_SADDLED = dynamic(8);
-    public static final int DATA_FLAG_POWERED = dynamic(9);
-    public static final int DATA_FLAG_IGNITED = dynamic(10);
-    public static final int DATA_FLAG_BABY = dynamic(11); //disable head scaling
-    public static final int DATA_FLAG_CONVERTING = dynamic(12);
-    public static final int DATA_FLAG_CRITICAL = dynamic(13);
-    public static final int DATA_FLAG_CAN_SHOW_NAMETAG = dynamic(14);
-    public static final int DATA_FLAG_ALWAYS_SHOW_NAMETAG = dynamic(15);
-    public static final int DATA_FLAG_IMMOBILE = dynamic(16);
-    public static final int DATA_FLAG_NO_AI = DATA_FLAG_IMMOBILE;
-    public static final int DATA_FLAG_SILENT = dynamic(17);
-    public static final int DATA_FLAG_WALLCLIMBING = dynamic(18);
-    public static final int DATA_FLAG_CAN_CLIMB = dynamic(19);
-    public static final int DATA_FLAG_SWIMMER = dynamic(20);
-    public static final int DATA_FLAG_CAN_FLY = dynamic(21);
-    public static final int DATA_FLAG_WALKER = dynamic(22);
-    public static final int DATA_FLAG_RESTING = dynamic(23);
-    public static final int DATA_FLAG_SITTING = dynamic(24);
-    public static final int DATA_FLAG_ANGRY = dynamic(25);
-    public static final int DATA_FLAG_INTERESTED = dynamic(26);
-    public static final int DATA_FLAG_CHARGED = dynamic(27);
-    public static final int DATA_FLAG_TAMED = dynamic(28);
-    public static final int DATA_FLAG_ORPHANED = dynamic(29);
-    public static final int DATA_FLAG_LEASHED = dynamic(30);
-    public static final int DATA_FLAG_SHEARED = dynamic(31);
-    public static final int DATA_FLAG_GLIDING = dynamic(32);
-    public static final int DATA_FLAG_ELDER = dynamic(33);
-    public static final int DATA_FLAG_MOVING = dynamic(34);
-    public static final int DATA_FLAG_BREATHING = dynamic(35);
-    public static final int DATA_FLAG_CHESTED = dynamic(36);
-    public static final int DATA_FLAG_STACKABLE = dynamic(37);
-    public static final int DATA_FLAG_SHOWBASE = dynamic(38);
-    public static final int DATA_FLAG_REARING = dynamic(39);  //STANDING
-    public static final int DATA_FLAG_VIBRATING = dynamic(40);
-    public static final int DATA_FLAG_IDLING = dynamic(41);
-    public static final int DATA_FLAG_EVOKER_SPELL = dynamic(42);
-    public static final int DATA_FLAG_CHARGE_ATTACK = dynamic(43);
-    public static final int DATA_FLAG_WASD_CONTROLLED = dynamic(44);
-    public static final int DATA_FLAG_CAN_POWER_JUMP = dynamic(45);
-    public static final int DATA_FLAG_CAN_DASH = dynamic(46);
-    public static final int DATA_FLAG_LINGER = dynamic(47);
-    public static final int DATA_FLAG_HAS_COLLISION = dynamic(48);
-    public static final int DATA_FLAG_GRAVITY = dynamic(49);
-    public static final int DATA_FLAG_FIRE_IMMUNE = dynamic(50);
-    public static final int DATA_FLAG_DANCING = dynamic(51);
-    public static final int DATA_FLAG_ENCHANTED = dynamic(52);
-    public static final int DATA_FLAG_SHOW_TRIDENT_ROPE = dynamic(53); // tridents show an animated rope when enchanted with loyalty after they are thrown and return to their owner. To be combined with DATA_OWNER_EID
-    public static final int DATA_FLAG_CONTAINER_PRIVATE = dynamic(54); //inventory is private, doesn't drop contents when killed if true
-    public static final int DATA_FLAG_IS_TRANSFORMING = dynamic(55);
-    public static final int DATA_FLAG_SPIN_ATTACK = dynamic(56);
-    public static final int DATA_FLAG_SWIMMING = dynamic(57);
-    public static final int DATA_FLAG_BRIBED = dynamic(58); //dolphins have this set when they go to find treasure for the player
-    public static final int DATA_FLAG_PREGNANT = dynamic(59);
-    public static final int DATA_FLAG_LAYING_EGG = dynamic(60);
-    public static final int DATA_FLAG_RIDER_CAN_PICK = dynamic(61);
-    public static final int DATA_FLAG_TRANSITION_SITTING = dynamic(62); // PowerNukkit but without typo
-    public static final int DATA_FLAG_EATING = dynamic(63);
-    public static final int DATA_FLAG_LAYING_DOWN = dynamic(64);
-    public static final int DATA_FLAG_SNEEZING = dynamic(65);
-    public static final int DATA_FLAG_TRUSTING = dynamic(66);
-    public static final int DATA_FLAG_ROLLING = dynamic(67);
-    public static final int DATA_FLAG_SCARED = dynamic(68);
-    public static final int DATA_FLAG_IN_SCAFFOLDING = dynamic(69);
-    public static final int DATA_FLAG_OVER_SCAFFOLDING = dynamic(70);
-    public static final int DATA_FLAG_FALL_THROUGH_SCAFFOLDING = dynamic(71);
-    public static final int DATA_FLAG_BLOCKING = dynamic(72); //shield
-    public static final int DATA_FLAG_TRANSITION_BLOCKING = dynamic(73);
-    public static final int DATA_FLAG_BLOCKED_USING_SHIELD = dynamic(74);
-    public static final int DATA_FLAG_BLOCKED_USING_DAMAGED_SHIELD = dynamic(75);
-    public static final int DATA_FLAG_SLEEPING = dynamic(76);
-    public static final int DATA_FLAG_ENTITY_GROW_UP = dynamic(77);
-    public static final int DATA_FLAG_TRADE_INTEREST = dynamic(78);
-    public static final int DATA_FLAG_DOOR_BREAKER = dynamic(79);
-    public static final int DATA_FLAG_BREAKING_OBSTRUCTION = dynamic(80);
-    public static final int DATA_FLAG_DOOR_OPENER = dynamic(81);
-    public static final int DATA_FLAG_IS_ILLAGER_CAPTAIN = dynamic(82);
-    public static final int DATA_FLAG_STUNNED = dynamic(83);
-    public static final int DATA_FLAG_ROARING = dynamic(84);
-    public static final int DATA_FLAG_DELAYED_ATTACK = dynamic(85);
-    public static final int DATA_FLAG_IS_AVOIDING_MOBS = dynamic(86);
-    public static final int DATA_FLAG_IS_AVOIDING_BLOCKS = dynamic(87);
-    public static final int DATA_FLAG_FACING_TARGET_TO_RANGE_ATTACK = dynamic(88);
-    public static final int DATA_FLAG_HIDDEN_WHEN_INVISIBLE = dynamic(89);
-    public static final int DATA_FLAG_IS_IN_UI = dynamic(90);
-    public static final int DATA_FLAG_STALKING = dynamic(91);
-    public static final int DATA_FLAG_EMOTING = dynamic(92);
-    public static final int DATA_FLAG_CELEBRATING = dynamic(93);
-    public static final int DATA_FLAG_ADMIRING = dynamic(94);
-    public static final int DATA_FLAG_CELEBRATING_SPECIAL = dynamic(95);
-    public static final int DATA_FLAG_RAM_ATTACK = dynamic(97);
-    public static final int DATA_FLAG_PLAYING_DEAD = dynamic(98);
-    public static final int DATA_FLAG_IN_ASCENDABLE_BLOCK = dynamic(99);
-    public static final int DATA_FLAG_OVER_DESCENDABLE_BLOCK = dynamic(100);
-    public static final int DATA_FLAG_CROAKING = dynamic(101);
-    public static final int DATA_FLAG_EAT_MOB = dynamic(102);
-    public static final int DATA_FLAG_JUMP_GOAL_JUMP = dynamic(103);
-    public static final int DATA_FLAG_EMERGING = dynamic(104);
-    public static final int DATA_FLAG_SNIFFING = dynamic(105);
-    public static final int DATA_FLAG_DIGGING = dynamic(106);
-    public static final int DATA_FLAG_SONIC_BOOM = dynamic(107);
-    public static final int DATA_FLAG_HAS_DASH_COOLDOWN = dynamic(108);
-    public static final int DATA_FLAG_PUSH_TOWARDS_CLOSEST_SPACE = dynamic(109);
-    public static final int DATA_FLAG_SCENTING = dynamic(110);
-    public static final int DATA_FLAG_RISING = dynamic(111);
-    public static final int DATA_FLAG_FEELING_HAPPY = dynamic(112);
-    public static final int DATA_FLAG_SEARCHING = dynamic(113);
-    public static final int DATA_FLAG_CRAWLING = dynamic(114);
-    public static final int DATA_FLAG_TIMER_FLAG_1 = dynamic(115);
-    public static final int DATA_FLAG_TIMER_FLAG_2 = dynamic(116);
-    public static final int DATA_FLAG_TIMER_FLAG_3 = dynamic(117);
-
+    protected final EntityDataMap entityDataMap = new EntityDataMap();
     public static AtomicLong entityCount = new AtomicLong(1);
     public final List<Entity> passengers = new ArrayList<>();
     public final AxisAlignedBB offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
     protected final Map<Integer, Player> hasSpawned = new ConcurrentHashMap<>();
     protected final Map<EffectType, Effect> effects = new ConcurrentHashMap<>();
-    protected final EntityMetadata dataProperties = new EntityMetadata()
-            .putLong(DATA_FLAGS, 0)
-            .putShort(DATA_AIR, 400)
-            .putShort(DATA_MAX_AIR, 400)
-            .putString(DATA_NAMETAG, "")
-            .putLong(DATA_LEAD_HOLDER_EID, -1)
-            .putFloat(DATA_SCALE, 1f);
     /**
      * 这个实体骑在谁身上
      * <p>
@@ -399,7 +126,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public double entityCollisionReduction = 0; // Higher than 0.9 will result a fast collisions
     public AxisAlignedBB boundingBox;
     public boolean onGround;
-    public boolean inBlock = false;
     public boolean positionChanged;
     public boolean motionChanged;
     /**
@@ -439,7 +165,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      */
     protected float ySize = 0;
     protected boolean inEndPortal;
-    protected boolean isStatic = false;
     protected Server server;
     protected boolean isPlayer = this instanceof Player;
     private int maxHealth = 20;
@@ -560,13 +285,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     /**
      * @see #getDefaultNBT(Vector3, Vector3, float, float)
      */
-    public @NotNull
-    static CompoundTag getDefaultNBT(@NotNull Vector3 pos) {
+    @NotNull
+    public static CompoundTag getDefaultNBT(@NotNull Vector3 pos) {
         return getDefaultNBT(pos, null);
     }
 
-    public @NotNull
-    static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion) {
+    @NotNull
+    public static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion) {
         Location loc = pos instanceof Location ? (Location) pos : null;
 
         if (loc != null) {
@@ -587,8 +312,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @param pitch  the pitch
      * @return the default nbt
      */
-    public @NotNull
-    static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion, float yaw, float pitch) {
+    @NotNull
+    public static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion, float yaw, float pitch) {
         return new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
                         .add(new DoubleTag(pos.x))
@@ -618,7 +343,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         var pk = new AnimateEntityPacket();
         pk.parseFromAnimation(animation);
         entities.forEach(entity -> pk.getEntityRuntimeIds().add(entity.getId()));
-        pk.encode();
         Server.broadcastPacket(players, pk);
     }
 
@@ -749,12 +473,17 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 this.attributes.put(attribute.getId(), attribute);
             }
         }
-
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, true);
-        this.dataProperties.putFloat(DATA_BOUNDING_BOX_HEIGHT, this.getHeight());
-        this.dataProperties.putFloat(DATA_BOUNDING_BOX_WIDTH, this.getWidth());
-        this.dataProperties.putInt(DATA_HEALTH, (int) this.getHealth());
-
+        this.entityDataMap.getOrCreateFlags();
+        this.entityDataMap.put(AIR_SUPPLY, this.namedTag.getShort("Air"));
+        this.entityDataMap.put(AIR_SUPPLY_MAX, 400);
+        this.entityDataMap.put(NAME, "");
+        this.entityDataMap.put(LEASH_HOLDER, -1);
+        this.entityDataMap.put(SCALE, 1f);
+        this.entityDataMap.put(HEIGHT, this.getHeight());
+        this.entityDataMap.put(WIDTH, this.getWidth());
+        this.entityDataMap.put(STRUCTURAL_INTEGRITY, (int) this.getHealth());
+        this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
+        this.setDataFlags(EnumSet.of(EntityFlag.CAN_CLIMB, EntityFlag.BREATHING, EntityFlag.HAS_COLLISION, EntityFlag.HAS_GRAVITY));
         this.scheduleUpdate();
     }
 
@@ -768,18 +497,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             return;
         }
         this.initialized = true;
-
+        this.id = Entity.entityCount.getAndIncrement();
         this.isPlayer = this instanceof Player;
         this.temporalVector = new Vector3();
-
-        this.id = Entity.entityCount.getAndIncrement();
         this.justCreated = true;
         this.namedTag = nbt;
-
         this.chunk = chunk;
         this.setLevel(chunk.getProvider().getLevel());
         this.server = chunk.getProvider().getLevel().getServer();
-
         this.boundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
 
         ListTag<DoubleTag> posList = this.namedTag.getList("Pos", DoubleTag.class);
@@ -815,8 +540,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (!this.namedTag.contains("Air")) {
             this.namedTag.putShort("Air", 300);
         }
-        this.setDataProperty(new ShortEntityData(DATA_AIR, this.namedTag.getShort("Air")), false);
-
         if (!this.namedTag.contains("OnGround")) {
             this.namedTag.putBoolean("OnGround", false);
         }
@@ -831,9 +554,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             this.namedTag.putFloat("Scale", 1);
         }
         this.scale = this.namedTag.getFloat("Scale");
-        this.setDataProperty(new FloatEntityData(DATA_SCALE, scale), false);
-
-        //Color is handled via EntityColor
 
         try {
             this.chunk.addEntity(this);
@@ -863,138 +583,97 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public String getNameTag() {
-        return this.getDataPropertyString(DATA_NAMETAG);
+        return this.getDataProperty(NAME, "");
     }
 
     public void setNameTag(String name) {
-        this.setDataProperty(new StringEntityData(DATA_NAMETAG, name));
+        this.setDataProperty(NAME, name);
     }
 
     public boolean isNameTagVisible() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_CAN_SHOW_NAMETAG);
+        return this.getDataFlag(EntityFlag.CAN_SHOW_NAME);
     }
 
     public void setNameTagVisible(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CAN_SHOW_NAMETAG, value);
+        this.setDataFlag(EntityFlag.CAN_SHOW_NAME, value);
     }
 
     public boolean isNameTagAlwaysVisible() {
-        return this.getDataPropertyByte(DATA_ALWAYS_SHOW_NAMETAG) == 1;
+        return this.getDataProperty(NAMETAG_ALWAYS_SHOW, (byte) 0) == 1;
     }
 
     public void setNameTagAlwaysVisible(boolean value) {
-        this.setDataProperty(new ByteEntityData(DATA_ALWAYS_SHOW_NAMETAG, value ? 1 : 0));
-    }
-
-    public void setNameTagVisible() {
-        this.setNameTagVisible(true);
-    }
-
-    public void setNameTagAlwaysVisible() {
-        this.setNameTagAlwaysVisible(true);
+        this.setDataProperty(NAMETAG_ALWAYS_SHOW, value ? 1 : 0);
     }
 
     public String getScoreTag() {
-        return this.getDataPropertyString(DATA_SCORE_TAG);
+        return this.getDataProperty(SCORE, "");
     }
 
     public void setScoreTag(String score) {
-        this.setDataProperty(new StringEntityData(DATA_SCORE_TAG, score));
+        this.setDataProperty(SCORE, score);
     }
 
     public boolean isSneaking() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SNEAKING);
+        return this.getDataFlag(EntityFlag.SNEAKING);
     }
 
     public void setSneaking(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SNEAKING, value);
-    }
-
-    public void setSneaking() {
-        this.setSneaking(true);
+        this.setDataFlag(EntityFlag.SNEAKING, value);
     }
 
     public boolean isSwimming() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SWIMMING);
+        return this.getDataFlag(EntityFlag.SWIMMING);
     }
 
     public void setSwimming(boolean value) {
         if (isSwimming() == value) {
             return;
         }
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SWIMMING, value);
+        this.setDataFlag(EntityFlag.SWIMMING, value);
         if (Float.compare(getSwimmingHeight(), getHeight()) != 0) {
             recalculateBoundingBox(true);
         }
     }
 
-
-    public float getSwimmingHeight() {
-        return getHeight();
-    }
-
-    public void setSwimming() {
-        this.setSwimming(true);
-    }
-
     public boolean isSprinting() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SPRINTING);
+        return this.getDataFlag(EntityFlag.SPRINTING);
     }
 
     public void setSprinting(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SPRINTING, value);
-    }
-
-    public void setSprinting() {
-        this.setSprinting(true);
+        this.setDataFlag(EntityFlag.SPRINTING, value);
     }
 
     public boolean isGliding() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_GLIDING);
+        return this.getDataFlag(EntityFlag.GLIDING);
     }
 
     public void setGliding(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_GLIDING, value);
-    }
-
-    public void setGliding() {
-        this.setGliding(true);
+        this.setDataFlag(EntityFlag.GLIDING, value);
     }
 
     public boolean isImmobile() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_IMMOBILE);
+        return this.getDataFlag(EntityFlag.NO_AI);
     }
 
     public void setImmobile(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_IMMOBILE, value);
-    }
-
-    public void setImmobile() {
-        this.setImmobile(true);
+        this.setDataFlag(EntityFlag.NO_AI, value);
     }
 
     public boolean canClimb() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_CAN_CLIMB);
-    }
-
-    public void setCanClimb() {
-        this.setCanClimb(true);
+        return this.getDataFlag(EntityFlag.CAN_CLIMB);
     }
 
     public void setCanClimb(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CAN_CLIMB, value);
+        this.setDataFlag(EntityFlag.CAN_CLIMB, value);
     }
 
     public boolean canClimbWalls() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_WALLCLIMBING);
-    }
-
-    public void setCanClimbWalls() {
-        this.setCanClimbWalls(true);
+        return this.getDataFlag(EntityFlag.WALL_CLIMBING);
     }
 
     public void setCanClimbWalls(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_WALLCLIMBING, value);
+        this.setDataFlag(EntityFlag.WALL_CLIMBING, value);
     }
 
     public float getScale() {
@@ -1003,8 +682,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public void setScale(float scale) {
         this.scale = scale;
-        this.setDataProperty(new FloatEntityData(DATA_SCALE, this.scale));
+        this.setDataProperty(SCALE, this.scale);
         this.recalculateBoundingBox();
+    }
+
+    public float getSwimmingHeight() {
+        return getHeight();
     }
 
     public List<Entity> getPassengers() {
@@ -1138,14 +821,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 z + radius
         );
 
-        FloatEntityData bbH = new FloatEntityData(DATA_BOUNDING_BOX_HEIGHT, entityHeight);
-        FloatEntityData bbW = new FloatEntityData(DATA_BOUNDING_BOX_WIDTH, this.getWidth());
-        this.dataProperties.put(bbH);
-        this.dataProperties.put(bbW);
+        this.getEntityDataMap().put(HEIGHT, entityHeight);
+        this.getEntityDataMap().put(WIDTH, this.getWidth());
         if (send) {
-            if(this instanceof Player player){
-                sendData(player, new EntityMetadata().put(bbH).put(bbW));
-            }
+            sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.entityDataMap.copy(WIDTH, HEIGHT));
         }
     }
 
@@ -1170,12 +849,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             int r = (color[0] / count) & 0xff;
             int g = (color[1] / count) & 0xff;
             int b = (color[2] / count) & 0xff;
-
-            this.setDataProperty(new IntEntityData(Entity.DATA_POTION_COLOR, (r << 16) + (g << 8) + b));
-            this.setDataProperty(new ByteEntityData(Entity.DATA_POTION_AMBIENT, ambient ? 1 : 0));
+            setDataProperties(Map.of(
+                    EFFECT_COLOR, (r << 16) + (g << 8) + b,
+                    EFFECT_AMBIENCE, ambient ? 1 : 0
+            ));
         } else {
-            this.setDataProperty(new IntEntityData(Entity.DATA_POTION_COLOR, 0));
-            this.setDataProperty(new ByteEntityData(Entity.DATA_POTION_AMBIENT, 0));
+            setDataProperties(Map.of(
+                    EFFECT_COLOR, 0,
+                    EFFECT_AMBIENCE, 0
+            ));
         }
     }
 
@@ -1216,7 +898,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         this.namedTag.putFloat("FallDistance", this.fallDistance);
         this.namedTag.putShort("Fire", this.fireTicks);
-        this.namedTag.putShort("Air", this.getDataPropertyShort(DATA_AIR));
+        this.namedTag.putShort("Air", this.getDataProperty(AIR_SUPPLY, (short) 0));
         this.namedTag.putBoolean("OnGround", this.onGround);
         this.namedTag.putBoolean("Invulnerable", this.invulnerable);
         this.namedTag.putFloat("Scale", this.scale);
@@ -1325,7 +1007,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         addEntity.speedX = (float) this.motionX;
         addEntity.speedY = (float) this.motionY;
         addEntity.speedZ = (float) this.motionZ;
-        addEntity.metadata = this.dataProperties;
+        addEntity.entityData = this.entityDataMap;
 
         addEntity.links = new EntityLink[this.passengers.size()];
         for (int i = 0; i < addEntity.links.length; i++) {
@@ -1358,10 +1040,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.sendData(player, null);
     }
 
-    public void sendData(Player player, EntityMetadata data) {
+    public void sendData(Player player, EntityDataMap data) {
         SetEntityDataPacket pk = new SetEntityDataPacket();
         pk.eid = this.getId();
-        pk.metadata = data == null ? this.dataProperties : data;
+        pk.entityData = data == null ? this.entityDataMap : data;
         pk.syncedProperties = this.propertySyncData();
 
         player.dataPacket(pk);
@@ -1371,10 +1053,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.sendData(players, null);
     }
 
-    public void sendData(Player[] players, EntityMetadata data) {
+    public void sendData(Player[] players, EntityDataMap data) {
         SetEntityDataPacket pk = new SetEntityDataPacket();
         pk.eid = this.getId();
-        pk.metadata = data == null ? this.dataProperties : data;
+        pk.entityData = data == null ? this.entityDataMap : data;
         pk.syncedProperties = this.propertySyncData();
 
         for (Player player : players) {
@@ -1545,7 +1227,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             this.health = this.getMaxHealth();
         }
 
-        setDataProperty(new IntEntityData(DATA_HEALTH, (int) this.health));
+        setDataProperty(STRUCTURAL_INTEGRITY, (int) this.health);
     }
 
     public boolean isAlive() {
@@ -1737,8 +1419,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             }
             if (this.fireTicks <= 0) {
                 this.extinguish();
-            } else if (!this.fireProof && (!(this instanceof Player) || !((Player) this).isSpectator())) {
-                this.setDataFlag(DATA_FLAGS, DATA_FLAG_ONFIRE, true);
+            } else if (!this.fireProof && (!(this instanceof Player player) || !player.isSpectator())) {
+                this.setDataFlag(EntityFlag.ON_FIRE);
                 hasUpdate = true;
             }
         }
@@ -2002,7 +1684,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         // Add variables to entity
         entity.riding = this;
-        entity.setDataFlag(DATA_FLAGS, DATA_FLAG_RIDING, true);
+        entity.setDataFlag(EntityFlag.RIDING);
         passengers.add(entity);
 
         entity.setSeatPosition(getMountedOffset(entity));
@@ -2034,7 +1716,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         // Refurbish the entity
         entity.riding = null;
-        entity.setDataFlag(DATA_FLAGS, DATA_FLAG_RIDING, false);
+        entity.setDataFlag(EntityFlag.RIDING, false);
         passengers.remove(entity);
 
         entity.setSeatPosition(new Vector3f());
@@ -2072,11 +1754,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public Vector3f getSeatPosition() {
-        return this.getDataPropertyVector3f(DATA_RIDER_SEAT_POSITION);
+        return this.getDataProperty(SEAT_OFFSET);
     }
 
     public void setSeatPosition(Vector3f pos) {
-        this.setDataProperty(new Vector3fEntityData(DATA_RIDER_SEAT_POSITION, pos));
+        this.setDataProperty(SEAT_OFFSET, pos);
     }
 
     public Vector3f getMountedOffset(Entity entity) {
@@ -2147,7 +1829,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public void extinguish() {
         this.fireTicks = 0;
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_ONFIRE, false);
+        this.setDataFlag(EntityFlag.ON_FIRE, false);
     }
 
     public boolean canTriggerWalking() {
@@ -2738,7 +2420,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 block.addVelocityToEntity(this, vector);
         }
 
-        setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_IN_SCAFFOLDING, scaffolding);
+        setDataFlagExtend(EntityFlag.IN_SCAFFOLDING, scaffolding);
 
         if (Math.abs(this.y % 1) > 0.125) {
             int minX = NukkitMath.floorDouble(boundingBox.getMinX());
@@ -2752,7 +2434,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 for (int j = minZ; j <= maxZ; j++) {
                     Location location = new Location(i, Y, j, level);
                     if (BlockID.SCAFFOLDING.equals(location.getLevelBlock(false).getId())) {
-                        setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_OVER_SCAFFOLDING, true);
+                        setDataFlagExtend(EntityFlag.OVER_SCAFFOLDING, true);
                         break outerScaffolding;
                     }
                 }
@@ -3109,100 +2791,108 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         }
     }
 
-    public boolean setDataProperty(EntityData<?> data) {
-        return setDataProperty(data, true);
+    public void setDataProperties(Map<EntityDataType<?>, Object> maps) {
+        setDataProperties(maps, true);
     }
 
-    public boolean setDataProperty(EntityData<?> data, boolean send) {
-        if (Objects.equals(data, this.getDataProperties().get(data.getId()))) {
+    public void setDataProperties(Map<EntityDataType<?>, Object> maps, boolean send) {
+        EntityDataMap sendMap = new EntityDataMap();
+        for (var e : maps.entrySet()) {
+            EntityDataType<?> key = e.getKey();
+            Object value = e.getValue();
+            if (this.getEntityDataMap().containsKey(key) && this.getEntityDataMap().get(key).equals(value)) {
+                continue;
+            }
+            this.getEntityDataMap().put(key, value);
+            sendMap.put(key, value);
+        }
+        if (send) {
+            this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), sendMap);
+        }
+    }
+
+    public boolean setDataProperty(EntityDataType<?> key, Object value) {
+        return setDataProperty(key, value, true);
+    }
+
+    public boolean setDataProperty(EntityDataType<?> key, Object value, boolean send) {
+        if (this.getEntityDataMap().containsKey(key) && this.getEntityDataMap().get(key).equals(value)) {
             return false;
         }
 
-        this.getDataProperties().put(data);
+        this.getEntityDataMap().put(key, value);
         if (send) {
-            EntityMetadata metadata = new EntityMetadata();
-            metadata.put(this.dataProperties.get(data.getId()));
-            if (data.getId() == DATA_FLAGS_EXTENDED) {
-                metadata.put(this.dataProperties.get(DATA_FLAGS));
-            }
-            this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), metadata);
+            EntityDataMap map = new EntityDataMap();
+            map.put(key, value);
+            this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), map);
         }
         return true;
     }
 
-    public EntityMetadata getDataProperties() {
-        return this.dataProperties;
+    public EntityDataMap getEntityDataMap() {
+        return this.entityDataMap;
     }
 
-    public EntityData<?> getDataProperty(int id) {
-        return this.getDataProperties().get(id);
+    @NotNull
+    public <T> T getDataProperty(EntityDataType<T> key) {
+        return this.getEntityDataMap().get(key);
     }
 
-    public int getDataPropertyInt(int id) {
-        return this.getDataProperties().getInt(id);
+    @NotNull
+    public <T> T getDataProperty(EntityDataType<T> key, T d) {
+        return this.getEntityDataMap().getOrDefault(key, d);
     }
 
-    public int getDataPropertyShort(int id) {
-        return this.getDataProperties().getShort(id);
+    public void setDataFlag(EntityFlag entityFlag) {
+        this.setDataFlag(entityFlag, true);
     }
 
-    public int getDataPropertyByte(int id) {
-        return this.getDataProperties().getByte(id);
-    }
-
-    public boolean getDataPropertyBoolean(int id) {
-        return this.getDataProperties().getBoolean(id);
-    }
-
-    public long getDataPropertyLong(int id) {
-        return this.getDataProperties().getLong(id);
-    }
-
-    public String getDataPropertyString(int id) {
-        return this.getDataProperties().getString(id);
-    }
-
-    public float getDataPropertyFloat(int id) {
-        return this.getDataProperties().getFloat(id);
-    }
-
-    public CompoundTag getDataPropertyNBT(int id) {
-        return this.getDataProperties().getNBT(id);
-    }
-
-    public Vector3 getDataPropertyPos(int id) {
-        return this.getDataProperties().getPosition(id);
-    }
-
-    public Vector3f getDataPropertyVector3f(int id) {
-        return this.getDataProperties().getFloatPosition(id);
-    }
-
-    public int getDataPropertyType(int id) {
-        return this.getDataProperties().exists(id) ? this.getDataProperty(id).getType() : -1;
-    }
-
-    public void setDataFlag(int propertyId, int id) {
-        this.setDataFlag(propertyId, id, true);
-    }
-
-    public void setDataFlag(int propertyId, int id, boolean value) {
-        if (this.getDataFlag(propertyId, id) != value) {
-            if (propertyId == EntityHuman.DATA_PLAYER_FLAGS) {
-                byte flags = (byte) this.getDataPropertyByte(propertyId);
-                flags ^= 1 << id;
-                this.setDataProperty(new ByteEntityData(propertyId, flags));
-            } else {
-                long flags = this.getDataPropertyLong(propertyId);
-                flags ^= 1L << id;
-                this.setDataProperty(new LongEntityData(propertyId, flags));
-            }
-
+    public void setDataFlag(EntityFlag entityFlag, boolean value) {
+        if (this.getEntityDataMap().existFlag(entityFlag) ^ value) {
+            this.getEntityDataMap().setFlag(entityFlag, value);
+            EntityDataMap entityDataMap = new EntityDataMap();
+            entityDataMap.put(EntityDataTypes.FLAGS, this.getEntityDataMap().getFlags());
+            sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
         }
     }
 
-    public boolean getDataFlag(int propertyId, int id) {
-        return (((propertyId == EntityHuman.DATA_PLAYER_FLAGS ? this.getDataPropertyByte(propertyId) & 0xff : this.getDataPropertyLong(propertyId))) & (1L << id)) > 0;
+    public void setDataFlags(EnumSet<EntityFlag> entityFlags) {
+        this.getEntityDataMap().put(FLAGS, entityFlags);
+        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
+    }
+
+    public void setDataFlagExtend(EntityFlag entityFlag) {
+        this.setDataFlag(entityFlag, true);
+    }
+
+    public void setDataFlagExtend(EntityFlag entityFlag, boolean value) {
+        if (this.getEntityDataMap().existFlag(entityFlag) ^ value) {
+            EnumSet<EntityFlag> entityFlags = this.getEntityDataMap().getOrDefault(EntityDataTypes.FLAGS_2, EnumSet.noneOf(EntityFlag.class));
+            if (value) {
+                entityFlags.add(entityFlag);
+            } else {
+                entityFlags.remove(entityFlag);
+            }
+            this.getEntityDataMap().put(EntityDataTypes.FLAGS_2, entityFlags);
+            EntityDataMap entityDataMap = new EntityDataMap();
+            entityDataMap.put(EntityDataTypes.FLAGS_2, entityFlags);
+            sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
+        }
+    }
+
+    public void setDataFlagsExtend(EnumSet<EntityFlag> entityFlags) {
+        this.getEntityDataMap().put(FLAGS_2, entityFlags);
+        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
+    }
+
+    public boolean getDataFlag(EntityFlag id) {
+        return this.getEntityDataMap().getOrCreateFlags().contains(id);
+    }
+
+    public void setPlayerFlag(PlayerFlag entityFlag) {
+        byte flags = this.getEntityDataMap().getOrDefault(EntityDataTypes.PLAYER_FLAGS, (byte) 0);
+        flags ^= (byte) (1 << entityFlag.getValue());
+        this.setDataProperty(EntityDataTypes.PLAYER_FLAGS, flags);
     }
 
     @Override
@@ -3275,12 +2965,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
 
     public boolean isSpinAttacking() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SPIN_ATTACK);
+        return this.getDataFlag(EntityFlag.DAMAGE_NEARBY_MOBS);
     }
 
 
     public void setSpinAttacking(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SPIN_ATTACK, value);
+        this.setDataFlag(EntityFlag.DAMAGE_NEARBY_MOBS, value);
     }
 
 
@@ -3296,7 +2986,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public void setNoClip(boolean noClip) {
         this.noClip = noClip;
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, noClip);
+        this.setDataFlag(EntityFlag.HAS_COLLISION, noClip);
     }
 
 
@@ -3328,14 +3018,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
 
     public float getFreezingEffectStrength() {
-        return ((FloatEntityData) this.getDataProperty(DATA_FREEZING_EFFECT_STRENGTH)).getData();
+        return this.getDataProperty(FREEZING_EFFECT_STRENGTH);
     }
 
 
     public void setFreezingEffectStrength(float strength) {
         if (strength < 0 || strength > 1)
             throw new IllegalArgumentException("Freezing Effect Strength must be between 0 and 1");
-        this.setDataProperty(new FloatEntityData(DATA_FREEZING_EFFECT_STRENGTH, strength));
+        this.setDataProperty(FREEZING_EFFECT_STRENGTH, strength);
     }
 
 
@@ -3359,12 +3049,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
 
     public void setAmbientSoundInterval(float interval) {
-        this.setDataProperty(new FloatEntityData(Entity.DATA_AMBIENT_SOUND_INTERVAL, interval));
+        this.setDataProperty(AMBIENT_SOUND_INTERVAL, interval);
     }
 
 
     public void setAmbientSoundIntervalRange(float range) {
-        this.setDataProperty(new FloatEntityData(Entity.DATA_AMBIENT_SOUND_INTERVAL_RANGE, range));
+        this.setDataProperty(AMBIENT_SOUND_INTERVAL, range);
     }
 
 
@@ -3374,7 +3064,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
 
     public void setAmbientSoundEventName(String eventName) {
-        this.setDataProperty(new StringEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, eventName));
+        this.setDataProperty(AMBIENT_SOUND_EVENT_NAME, eventName);
     }
 
 
@@ -3396,7 +3086,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         var pk = new AnimateEntityPacket();
         pk.parseFromAnimation(animation);
         pk.getEntityRuntimeIds().add(this.getId());
-        pk.encode();
         Server.broadcastPacket(players, pk);
     }
 
@@ -3421,7 +3110,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         pk.action = action;
         pk.rowingTime = rowingTime;
         pk.eid = this.getId();
-        pk.encode();
         Server.broadcastPacket(players, pk);
     }
 

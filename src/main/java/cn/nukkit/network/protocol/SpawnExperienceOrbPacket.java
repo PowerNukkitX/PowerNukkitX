@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -13,15 +14,15 @@ public class SpawnExperienceOrbPacket extends DataPacket {
     public int amount;
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putVector3f(this.x, this.y, this.z);
-        this.putUnsignedVarInt(this.amount);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeVector3f(this.x, this.y, this.z);
+        byteBuf.writeUnsignedVarInt(this.amount);
     }
 
     @Override

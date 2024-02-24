@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.projectile.SlenderProjectile;
 import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -26,7 +25,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -39,7 +37,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityFishingHook extends SlenderProjectile {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return FISHING_HOOK;
     }
 
@@ -91,11 +90,11 @@ public class EntityFishingHook extends SlenderProjectile {
     @Override
     public boolean onUpdate(int currentTick) {
         boolean hasUpdate = false;
-        long target = getDataPropertyLong(DATA_TARGET_EID);
+        long target = getDataProperty(TARGET_EID);
         if (target != 0L) {
             Entity entity = getLevel().getEntity(target);
             if (entity == null || !entity.isAlive()) {
-                setDataProperty(new LongEntityData(DATA_TARGET_EID, 0L));
+                setDataProperty(TARGET_EID, 0L);
             } else {
                 Vector3f offset = entity.getMountedOffset(this);
                 setPosition(new Vector3(entity.x + offset.x, entity.y + offset.y, entity.z + offset.z));
@@ -266,7 +265,7 @@ public class EntityFishingHook extends SlenderProjectile {
                 }
             }
         } else if (this.shootingEntity != null) {
-            var eid = this.getDataPropertyLong(DATA_TARGET_EID);
+            var eid = this.getDataProperty(TARGET_EID);
             var targetEntity = this.getLevel().getEntity(eid);
             if (targetEntity != null && targetEntity.isAlive()) { // 钓鱼竿收杆应该牵引被钓生物
                 targetEntity.setMotion(this.shootingEntity.subtract(targetEntity).divide(8).add(0, 0.3, 0));
@@ -294,7 +293,8 @@ public class EntityFishingHook extends SlenderProjectile {
         if (this.shootingEntity != null) {
             ownerId = this.shootingEntity.getId();
         }
-        pk.metadata = this.dataProperties.putLong(DATA_OWNER_EID, ownerId);
+        this.entityDataMap.put(OWNER_EID, ownerId);
+        pk.entityData = entityDataMap;
         return pk;
     }
 
@@ -325,7 +325,7 @@ public class EntityFishingHook extends SlenderProjectile {
     }
 
     public void setTarget(long eid) {
-        this.setDataProperty(new LongEntityData(DATA_TARGET_EID, eid));
+        this.setDataProperty(TARGET_EID, eid);
         this.canCollide = eid == 0;
     }
 

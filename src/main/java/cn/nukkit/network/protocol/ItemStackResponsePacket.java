@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponse;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseStatus;
 import lombok.NoArgsConstructor;
@@ -16,28 +17,27 @@ public class ItemStackResponsePacket extends DataPacket {
     public final List<ItemStackResponse> entries = new ArrayList<>();
 
     @Override
-    public void encode() {
-        this.reset();
-        putArray(entries, (r) -> {
-            putByte((byte) r.getResult().ordinal());
-            putVarInt(r.getRequestId());
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeArray(entries, (r) -> {
+            byteBuf.writeByte((byte) r.getResult().ordinal());
+            byteBuf.writeVarInt(r.getRequestId());
             if (r.getResult() != ItemStackResponseStatus.OK) return;
-            putArray(r.getContainers(), (container) -> {
-                putByte((byte) container.getContainer().getId());
-                putArray(container.getItems(), (item) -> {
-                    putByte((byte) item.getSlot());
-                    putByte((byte) item.getHotbarSlot());
-                    putByte((byte) item.getCount());
-                    putVarInt(item.getStackNetworkId());
-                    putString(item.getCustomName());
-                    putVarInt(item.getDurabilityCorrection());
+            byteBuf.writeArray(r.getContainers(), (container) -> {
+                byteBuf.writeByte((byte) container.getContainer().getId());
+                byteBuf.writeArray(container.getItems(), (item) -> {
+                    byteBuf.writeByte((byte) item.getSlot());
+                    byteBuf.writeByte((byte) item.getHotbarSlot());
+                    byteBuf.writeByte((byte) item.getCount());
+                    byteBuf.writeVarInt(item.getStackNetworkId());
+                    byteBuf.writeString(item.getCustomName());
+                    byteBuf.writeVarInt(item.getDurabilityCorrection());
                 });
             });
         });
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
         throw new UnsupportedOperationException();//client bound
     }
 

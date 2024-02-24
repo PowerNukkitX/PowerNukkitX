@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -17,14 +18,14 @@ public class SetPlayerGameTypePacket extends DataPacket {
     public int gamemode;
 
     @Override
-    public void decode() {
-        this.gamemode = this.getVarInt();
+    public void decode(HandleByteBuf byteBuf) {
+        this.gamemode = byteBuf.readVarInt();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putVarInt(this.gamemode);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeVarInt(this.gamemode);
     }
 
     public void handle(PacketHandler handler) {

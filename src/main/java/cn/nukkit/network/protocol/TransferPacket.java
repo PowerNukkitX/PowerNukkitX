@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -10,16 +11,16 @@ public class TransferPacket extends DataPacket {
     public int port = 19132; // Server port
 
     @Override
-    public void decode() {
-        this.address = this.getString();
-        this.port = (short) this.getLShort();
+    public void decode(HandleByteBuf byteBuf) {
+        this.address = byteBuf.readString();
+        this.port = (short) byteBuf.readShortLE();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putString(address);
-        this.putLShort(port);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeString(address);
+        byteBuf.writeShortLE(port);
     }
 
     @Override

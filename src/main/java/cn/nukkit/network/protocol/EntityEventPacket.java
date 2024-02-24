@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.DeprecationDetails;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -107,18 +108,18 @@ public class EntityEventPacket extends DataPacket {
     public int data;
 
     @Override
-    public void decode() {
-        this.eid = this.getEntityRuntimeId();
-        this.event = this.getByte();
-        this.data = this.getVarInt();
+    public void decode(HandleByteBuf byteBuf) {
+        this.eid = byteBuf.readEntityRuntimeId();
+        this.event = byteBuf.readByte();
+        this.data = byteBuf.readVarInt();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putEntityRuntimeId(this.eid);
-        this.putByte((byte) this.event);
-        this.putVarInt(this.data);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeEntityRuntimeId(this.eid);
+        byteBuf.writeByte((byte) this.event);
+        byteBuf.writeVarInt(this.data);
     }
 
     public void handle(PacketHandler handler) {

@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -28,33 +29,33 @@ public class LevelChunkPacket extends DataPacket {
     public int dimension;
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putVarInt(this.chunkX);
-        this.putVarInt(this.chunkZ);
-        this.putVarInt(this.dimension);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeVarInt(this.chunkX);
+        byteBuf.writeVarInt(this.chunkZ);
+        byteBuf.writeVarInt(this.dimension);
         if (!this.requestSubChunks) {
-            this.putUnsignedVarInt(this.subChunkCount);
+            byteBuf.writeUnsignedVarInt(this.subChunkCount);
         } else if (this.subChunkLimit < 0) {
-            this.putUnsignedVarInt(-1);
+            byteBuf.writeUnsignedVarInt(-1);
         } else {
-            this.putUnsignedVarInt(-2);
-            this.putUnsignedVarInt(this.subChunkLimit);
+            byteBuf.writeUnsignedVarInt(-2);
+            byteBuf.writeUnsignedVarInt(this.subChunkLimit);
         }
-        this.putBoolean(cacheEnabled);
+        byteBuf.writeBoolean(cacheEnabled);
         if (this.cacheEnabled) {
-            this.putUnsignedVarInt(blobIds.length);
+            byteBuf.writeUnsignedVarInt(blobIds.length);
 
             for (long blobId : blobIds) {
-                this.putLLong(blobId);
+                byteBuf.writeLongLE(blobId);
             }
         }
-        this.putByteArray(this.data);
+        byteBuf.writeByteArray(this.data);
     }
 
     public void handle(PacketHandler handler) {

@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -13,14 +14,13 @@ public class ChunkRadiusUpdatedPacket extends DataPacket {
     public int radius;
 
     @Override
-    public void decode() {
-        this.radius = this.getVarInt();
+    public void decode(HandleByteBuf byteBuf) {
+        this.radius = byteBuf.readVarInt();
     }
 
     @Override
-    public void encode() {
-        super.reset();
-        this.putVarInt(this.radius);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeVarInt(this.radius);
     }
 
     @Override

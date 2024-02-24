@@ -2,7 +2,7 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
-import cn.nukkit.entity.data.IntPositionEntityData;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.mob.EntityEnderDragon;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -10,7 +10,7 @@ import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.math.Vector3;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,10 +19,11 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityEnderCrystal extends Entity implements EntityExplosive {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return ENDER_CRYSTAL;
     }
-    
+
 
     /**
      * @since 1.2.1.0-PN
@@ -33,7 +34,6 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
         super(chunk, nbt);
     }
 
-    
 
     @Override
     protected void initEntity() {
@@ -44,7 +44,7 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
         }
 
         this.fireProof = true;
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_FIRE_IMMUNE, true);
+        this.setDataFlag(EntityFlag.FIRE_IMMUNE, true);
     }
 
     @Override
@@ -113,19 +113,19 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
     }
 
     public boolean showBase() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SHOWBASE);
+        return this.getDataFlag(EntityFlag.SHOW_BOTTOM);
     }
 
     public void setShowBase(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHOWBASE, value);
+        this.setDataFlag(EntityFlag.SHOW_BOTTOM, value);
     }
 
-    public Vector3 getBeamTarget() {
-        return this.getDataPropertyPos(DATA_BLOCK_TARGET);
+    public BlockVector3 getBeamTarget() {
+        return this.getDataProperty(BLOCK_TARGET_POS);
     }
 
-    public void setBeamTarget(Vector3 beamTarget) {
-        this.setDataProperty(new IntPositionEntityData(DATA_BLOCK_TARGET, beamTarget));
+    public void setBeamTarget(BlockVector3 beamTarget) {
+        this.setDataProperty(BLOCK_TARGET_POS, beamTarget);
     }
 
     @Override

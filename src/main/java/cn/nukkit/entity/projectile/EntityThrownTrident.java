@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.data.LongEntityData;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -189,11 +189,11 @@ public class EntityThrownTrident extends SlenderProjectile {
     }
 
     public boolean isCritical() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_CRITICAL);
+        return this.getDataFlag(EntityFlag.CRITICAL);
     }
 
     public void setCritical(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CRITICAL, value);
+        this.setDataFlag(EntityFlag.CRITICAL, value);
     }
 
     @Override
@@ -261,7 +261,7 @@ public class EntityThrownTrident extends SlenderProjectile {
         pk.speedZ = (float) this.motionZ;
         pk.yaw = (float) this.yaw;
         pk.pitch = (float) this.pitch;
-        pk.metadata = this.dataProperties;
+        pk.entityData = this.entityDataMap;
         player.dataPacket(pk);
 
         super.spawnTo(player);
@@ -440,16 +440,16 @@ public class EntityThrownTrident extends SlenderProjectile {
     }
 
     public boolean getTridentRope() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SHOW_TRIDENT_ROPE);
+        return this.getDataFlag(EntityFlag.RETURN_TRIDENT);
     }
 
     public void setTridentRope(boolean tridentRope) {
         if (tridentRope) {
-            this.setDataProperty(new LongEntityData(DATA_OWNER_EID, this.shootingEntity.getId()));
+            this.setDataProperty(OWNER_EID, this.shootingEntity.getId());
         } else {
-            this.setDataProperty(new LongEntityData(DATA_OWNER_EID, -1));
+            this.setDataProperty(OWNER_EID, -1);
         }
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHOW_TRIDENT_ROPE, tridentRope);
+        this.setDataFlag(EntityFlag.RETURN_TRIDENT, tridentRope);
     }
 
     public boolean canReturnToShooter() {

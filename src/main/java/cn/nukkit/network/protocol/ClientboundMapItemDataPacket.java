@@ -2,6 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.utils.Utils;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -52,14 +53,13 @@ public class ClientboundMapItemDataPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putEntityUniqueId(mapId);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeEntityUniqueId(mapId);
 
         int update = 0;
         if (image != null || colors.length > 0) {
@@ -72,66 +72,66 @@ public class ClientboundMapItemDataPacket extends DataPacket {
             update |= ENTITIES_UPDATE;
         }
 
-        this.putUnsignedVarInt(update);
-        this.putByte(this.dimensionId);
-        this.putBoolean(this.isLocked);
-        this.putBlockVector3(this.origin);
+        byteBuf.writeUnsignedVarInt(update);
+        byteBuf.writeByte(this.dimensionId);
+        byteBuf.writeBoolean(this.isLocked);
+        byteBuf.writeBlockVector3(this.origin);
 
         if ((update & ENTITIES_UPDATE) != 0) { //TODO: find out what these are for
-            this.putUnsignedVarInt(eids.length);
+            byteBuf.writeUnsignedVarInt(eids.length);
             for (long eid : eids) {
-                this.putEntityUniqueId(eid);
+                byteBuf.writeEntityUniqueId(eid);
             }
         }
         if ((update & (ENTITIES_UPDATE | TEXTURE_UPDATE | DECORATIONS_UPDATE)) != 0) {
-            this.putByte(this.scale);
+            byteBuf.writeByte(this.scale);
         }
 
         if ((update & DECORATIONS_UPDATE) != 0) {
-            this.putUnsignedVarInt(this.trackedObjects.size());
+            byteBuf.writeUnsignedVarInt(this.trackedObjects.size());
             for (MapTrackedObject object : this.trackedObjects) {
                 switch (object.getType()) {
                     case BLOCK -> {
-                        this.putLInt(object.getType().ordinal());
-                        this.putBlockVector3(object.getPosition().getFloorX(), object.getPosition().getFloorY(), object.getPosition().getFloorZ());
+                        byteBuf.writeIntLE(object.getType().ordinal());
+                        byteBuf.writeBlockVector3(object.getPosition().getFloorX(), object.getPosition().getFloorY(), object.getPosition().getFloorZ());
                     }
                     case ENTITY -> {
-                        this.putLInt(object.getType().ordinal());
-                        this.putEntityUniqueId(object.getEntityId());
+                        byteBuf.writeIntLE(object.getType().ordinal());
+                        byteBuf.writeEntityUniqueId(object.getEntityId());
                     }
                 }
             }
 
-            this.putUnsignedVarInt(decorators.length);
+            byteBuf.writeUnsignedVarInt(decorators.length);
             for (MapDecorator decorator : decorators) {
-                this.putByte(decorator.rotation);
-                this.putByte(decorator.icon);
-                this.putByte(decorator.offsetX);
-                this.putByte(decorator.offsetZ);
-                this.putString(decorator.label);
-                this.putVarInt(decorator.color.getRGB());
+                byteBuf.writeByte(decorator.rotation);
+                byteBuf.writeByte(decorator.icon);
+                byteBuf.writeByte(decorator.offsetX);
+                byteBuf.writeByte(decorator.offsetZ);
+                byteBuf.writeString(decorator.label);
+                byteBuf.writeVarInt(decorator.color.getRGB());
             }
         }
 
         if ((update & TEXTURE_UPDATE) != 0) {
-            this.putVarInt(width);
-            this.putVarInt(height);
-            this.putVarInt(offsetX);
-            this.putVarInt(offsetZ);
+            byteBuf.writeVarInt(width);
+            byteBuf.writeVarInt(height);
+            byteBuf.writeVarInt(offsetX);
+            byteBuf.writeVarInt(offsetZ);
 
             if (image != null) {
-                this.putUnsignedVarInt((long) width * height);
+                byteBuf.writeUnsignedVarInt(width * height);
                 for (int y = 0; y < width; y++) {
                     for (int x = 0; x < height; x++) {
-                        this.putUnsignedVarInt(Utils.toABGR(this.image.getRGB(x, y)));
+                        byteBuf.writeUnsignedVarInt(this.image.getRGB(x, y));
                     }
                 }
 
                 image.flush();
             } else if (colors.length > 0) {
-                this.putUnsignedVarInt(colors.length);
+                byteBuf.writeUnsignedVarInt(colors.length);
                 for (int color : colors) {
-                    this.putUnsignedVarInt(color);
+                    byteBuf.writeUnsignedVarInt(color);
                 }
             }
         }
@@ -141,7 +141,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
 
 
         public static final MapDecorator[] EMPTY_ARRAY = new MapDecorator[0];
-        
+
         public byte rotation;
         public byte icon;
         public byte offsetX;

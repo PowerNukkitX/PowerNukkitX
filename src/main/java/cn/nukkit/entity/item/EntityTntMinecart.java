@@ -5,7 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
-import cn.nukkit.entity.data.IntEntityData;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityExplosionPrimeEvent;
 import cn.nukkit.item.Item;
@@ -52,7 +52,7 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
         } else {
             fuse = 80;
         }
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CHARGED, false);
+        this.setDataFlag(EntityFlag.CHARGED, false);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
             lastUpdate = currentTick;
 
             if (fuse % 5 == 0) {
-                setDataProperty(new IntEntityData(DATA_FUSE_LENGTH, fuse));
+                setDataProperty(FUSE_TIME, fuse);
             }
 
             fuse -= tickDiff;

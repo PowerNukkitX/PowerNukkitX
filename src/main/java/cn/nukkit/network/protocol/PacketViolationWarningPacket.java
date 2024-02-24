@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 
@@ -17,20 +18,20 @@ public class PacketViolationWarningPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.type = PacketViolationType.values()[this.getVarInt() + 1];
-        this.severity = PacketViolationSeverity.values()[this.getVarInt()];
-        this.packetId = this.getVarInt();
-        this.context = this.getString();
+    public void decode(HandleByteBuf byteBuf) {
+        this.type = PacketViolationType.values()[byteBuf.readVarInt() + 1];
+        this.severity = PacketViolationSeverity.values()[byteBuf.readVarInt()];
+        this.packetId = byteBuf.readVarInt();
+        this.context = byteBuf.readString();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putVarInt(this.type.ordinal() - 1);
-        this.putVarInt(this.severity.ordinal());
-        this.putVarInt(this.packetId);
-        this.putString(this.context);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeVarInt(this.type.ordinal() - 1);
+        byteBuf.writeVarInt(this.severity.ordinal());
+        byteBuf.writeVarInt(this.packetId);
+        byteBuf.writeString(this.context);
     }
 
     public enum PacketViolationType {

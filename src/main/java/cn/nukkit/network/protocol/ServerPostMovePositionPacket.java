@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 
 public class ServerPostMovePositionPacket extends DataPacket {
 
@@ -14,14 +15,14 @@ public class ServerPostMovePositionPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.position = this.getVector3f();
+    public void decode(HandleByteBuf byteBuf) {
+        this.position = byteBuf.readVector3f();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putVector3f(this.position);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeVector3f(this.position);
     }
 
     public void handle(PacketHandler handler) {

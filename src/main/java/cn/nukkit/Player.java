@@ -27,12 +27,9 @@ import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.EntityRideable;
-import cn.nukkit.entity.data.ByteEntityData;
-import cn.nukkit.entity.data.IntPositionEntityData;
-import cn.nukkit.entity.data.ShortEntityData;
+import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.entity.data.PlayerFlag;
 import cn.nukkit.entity.data.Skin;
-import cn.nukkit.entity.data.StringEntityData;
-import cn.nukkit.entity.data.Vector3fEntityData;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.entity.item.EntityItem;
@@ -117,11 +114,11 @@ import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.scheduler.TaskHandler;
+import cn.nukkit.scoreboard.IScoreboard;
+import cn.nukkit.scoreboard.IScoreboardLine;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
 import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
-import cn.nukkit.scoreboard.IScoreboard;
-import cn.nukkit.scoreboard.IScoreboardLine;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.BlockIterator;
@@ -385,10 +382,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.loginChainData = info.getData();
         this.uuid = info.getUniqueId();
         this.rawUUID = Binary.writeUUID(info.getUniqueId());
-
-        //set user name data flag
-        this.setDataProperty(new StringEntityData(Entity.DATA_NAMETAG, info.getUsername()), false);
-        this.setDataProperty(new ByteEntityData(Entity.DATA_ALWAYS_SHOW_NAMETAG, 1), false);
         this.setSkin(info.getSkin());
     }
 
@@ -646,6 +639,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
         this.loggedIn = true;
+        setDataFlag(EntityFlag.HIDDEN_WHEN_INVISIBLE);
+        setDataFlag(EntityFlag.PUSH_TOWARDS_CLOSEST_SPACE);
         this.addDefaultWindows();
     }
 
@@ -794,13 +789,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         Block[] scaffoldingUnder = level.getCollisionBlocks(
                 scanBoundingBox,
                 true, true,
-                b -> b.getId() == BlockID.SCAFFOLDING
+                b -> b.getId().equals(BlockID.SCAFFOLDING)
         );
 
-        setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_OVER_DESCENDABLE_BLOCK, scaffoldingUnder.length > 0);
-        setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_IN_SCAFFOLDING, scaffolding);
-        setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_OVER_SCAFFOLDING, scaffoldingUnder.length > 0);
-        setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_IN_ASCENDABLE_BLOCK, scaffolding);
+        setDataFlagExtend(EntityFlag.IN_SCAFFOLDING, scaffolding);
+        setDataFlagExtend(EntityFlag.OVER_SCAFFOLDING, scaffoldingUnder.length > 0);
+        setDataFlagExtend(EntityFlag.IN_ASCENDABLE_BLOCK, scaffolding);
+        setDataFlagExtend(EntityFlag.OVER_DESCENDABLE_BLOCK, scaffoldingUnder.length > 0);
 
         if (endPortal) {
             if (!inEndPortal) {
@@ -1285,6 +1280,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
           强制更新游戏模式以确保客户端会收到模式更新包
          */
         this.setGamemode(this.gamemode, false, null, true);
+        //init entity data property
+        this.setDataProperty(NAME, info.getUsername(), false);
+        this.setDataProperty(NAMETAG_ALWAYS_SHOW, 1, false);
+        this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
         this.spawnToAll();
     }
 
@@ -1365,7 +1364,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.setSprinting(false);
         this.setSneaking(false);
 
-        this.setDataProperty(new ShortEntityData(Player.DATA_AIR, 400), false);
+        this.setDataProperty(Player.AIR_SUPPLY, 400, false);
         this.fireTicks = 0;
         this.collisionBlocks = null;
         this.noDamageTicks = 60;
@@ -1494,10 +1493,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.setItemCoolDown(e.getShieldBreakCoolDown(), "shield");
         }
         if (animate) {
-            this.setDataFlag(DATA_FLAGS, DATA_FLAG_BLOCKED_USING_DAMAGED_SHIELD, true);
-            this.getServer().getScheduler().scheduleTask(null, () -> {
+            this.setDataFlag(EntityFlag.BLOCKED_USING_DAMAGED_SHIELD, true);
+            this.getServer().getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
                 if (this.isOnline()) {
-                    this.setDataFlag(DATA_FLAGS, DATA_FLAG_BLOCKED_USING_DAMAGED_SHIELD, false);
+                    this.setDataFlag(EntityFlag.BLOCKED_USING_DAMAGED_SHIELD, false);
                 }
             });
         }
@@ -2043,7 +2042,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * Returns whether the player is currently using an item (right-click and hold).
      */
     public boolean isUsingItem(String itemId) {
-        return getLastUseTick(itemId) != -1 && this.getDataFlag(DATA_FLAGS, DATA_FLAG_ACTION);
+        return getLastUseTick(itemId) != -1 && this.getDataFlag(EntityFlag.USING_ITEM);
     }
 
     /**
@@ -2095,12 +2094,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public void setLastUseTick(@NotNull String itemId, int tick) {
         lastUseItemMap.put(itemId, tick);
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_ACTION, true);
+        this.setDataFlag(EntityFlag.USING_ITEM, true);
     }
 
     public void removeLastUseTick(@NotNull String itemId) {
         lastUseItemMap.remove(itemId);
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_ACTION, false);
+        this.setDataFlag(EntityFlag.USING_ITEM, false);
     }
 
     public int getLastUseTick(String itemId) {
@@ -2123,12 +2122,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public void setButtonText(String text) {
         this.buttonText = text;
-        this.setDataProperty(new StringEntityData(Entity.DATA_INTERACTIVE_TAG, this.buttonText));
-    }
-
-    public void removettonText() {
-        this.buttonText = "";
-        this.getDataProperties().remove(Entity.DATA_INTERACTIVE_TAG);
+        this.setDataProperty(INTERACT_TEXT, this.buttonText);
     }
 
     public void unloadChunk(int x, int z) {
@@ -2330,8 +2324,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sleeping = pos.clone();
         this.teleport(new Location(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5, this.yaw, this.pitch, this.level), null);
 
-        this.setDataProperty(new IntPositionEntityData(DATA_PLAYER_BED_POSITION, (int) pos.x, (int) pos.y, (int) pos.z));
-        this.setDataFlag(DATA_PLAYER_FLAGS, DATA_PLAYER_FLAG_SLEEP, true);
+        this.setDataProperty(BED_POSITION, new BlockVector3((int) pos.x, (int) pos.y, (int) pos.z));
+        this.setPlayerFlag(PlayerFlag.SLEEP);
         this.setSpawnBlock(Position.fromObject(pos, getLevel()));
         this.level.sleepTicks = 75;
 
@@ -2345,8 +2339,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.server.getPluginManager().callEvent(new PlayerBedLeaveEvent(this, this.level.getBlock(this.sleeping)));
 
             this.sleeping = null;
-            this.setDataProperty(new IntPositionEntityData(DATA_PLAYER_BED_POSITION, 0, 0, 0));
-            this.setDataFlag(DATA_PLAYER_FLAGS, DATA_PLAYER_FLAG_SLEEP, false);
+            this.setDataProperty(BED_POSITION, new BlockVector3(0, 0, 0));
+            this.setPlayerFlag(PlayerFlag.SLEEP);
 
 
             this.level.sleepTicks = 0;
@@ -2455,9 +2449,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (this.isSpectator()) {
             this.onGround = false;
-            this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, false);
+            this.setDataFlag(EntityFlag.HAS_COLLISION, false);
         } else {
-            this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, true);
+            this.setDataFlag(EntityFlag.HAS_COLLISION, true);
         }
 
         this.namedTag.putInt("playerGameType", this.gamemode);
@@ -2549,7 +2543,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.x += dx;
         this.y += dy;
         this.z += dz;
-        this.recalculateBoundingBox();
+        this.recalculateBoundingBox(false);
 
         this.checkChunks();
 
@@ -2630,7 +2624,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void sendFogStack() {
         var pk = new PlayerFogPacket();
         pk.setFogStack(this.fogStack);
-        pk.encode();
         this.dataPacket(pk);
     }
 
@@ -2824,10 +2817,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 EntityInteractable onInteract = getEntityPlayerLookingAt(interactDistance);
                 setButtonText(onInteract.getInteractButtonText(this));
             } else {
-                removettonText();
+                setButtonText("");
             }
         } else {
-            removettonText();
+            setButtonText("");
         }
     }
 
@@ -3799,7 +3792,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             if (showMessages && !ev.getDeathMessage().toString().isEmpty()) {
                 this.server.broadcast(ev.getDeathMessage(), Server.BROADCAST_CHANNEL_USERS);
             }
-            this.setDataProperty(new Vector3fEntityData(Entity.DATA_PLAYER_LAST_DEATH_POS, this.getFloorX(), this.getFloorY(), this.getFloorZ()));
+            this.setDataProperty(PLAYER_LAST_DEATH_POS, new BlockVector3(this.getFloorX(), this.getFloorY(), this.getFloorZ()));
 
             RespawnPacket pk = new RespawnPacket();
             Position pos = this.getSpawn();
@@ -4164,7 +4157,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.level.dropItem(this.add(0, 1.3, 0), item, motion, 40);
 
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_ACTION, false);
+        this.setDataFlag(EntityFlag.USING_ITEM, false);
         return true;
     }
 
@@ -4189,7 +4182,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         Vector3 motion = this.getDirectionVector().multiply(0.4);
 
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_ACTION, false);
+        this.setDataFlag(EntityFlag.USING_ITEM, false);
 
         return this.level.dropAndGetItem(this.add(0, 1.3, 0), item, motion, 40);
     }
@@ -4373,10 +4366,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         String actionJson = dialog.getButtonJSONData();
 
         if (book && dialogWindows.getIfPresent(dialog.getSceneName()) != null) dialog.updateSceneName();
-        dialog.getBindEntity().setDataProperty(new ByteEntityData(Entity.DATA_HAS_NPC_COMPONENT, 1));
-        dialog.getBindEntity().setDataProperty(new StringEntityData(Entity.DATA_NPC_SKIN_DATA, dialog.getSkinData()));
-        dialog.getBindEntity().setDataProperty(new StringEntityData(Entity.DATA_NPC_ACTIONS, actionJson));
-        dialog.getBindEntity().setDataProperty(new StringEntityData(Entity.DATA_INTERACTIVE_TAG, dialog.getContent()));
+        dialog.getBindEntity().setDataProperty(HAS_NPC, 1);
+        dialog.getBindEntity().setDataProperty(NPC_DATA, dialog.getSkinData());
+        dialog.getBindEntity().setDataProperty(ACTIONS, actionJson);
+        dialog.getBindEntity().setDataProperty(INTERACT_TEXT, dialog.getContent());
 
         NPCDialoguePacket packet = new NPCDialoguePacket();
         packet.setRuntimeEntityId(dialog.getEntityId());

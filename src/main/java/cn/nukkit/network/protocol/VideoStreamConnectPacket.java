@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -20,14 +21,14 @@ public class VideoStreamConnectPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
-    public void encode() {
-        this.putString(address);
-        this.putLFloat(screenshotFrequency);
-        this.putByte(action);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeString(address);
+        byteBuf.writeFloatLE(screenshotFrequency);
+        byteBuf.writeByte(action);
     }
 
     public void handle(PacketHandler handler) {

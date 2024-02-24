@@ -2,7 +2,7 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
-import cn.nukkit.entity.data.IntEntityData;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityExplosionPrimeEvent;
@@ -89,8 +89,8 @@ public class EntityTnt extends Entity implements EntityExplosive {
             fuse = 80;
         }
 
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_IGNITED, true);
-        this.setDataProperty(new IntEntityData(DATA_FUSE_LENGTH, fuse));
+        this.setDataFlag(EntityFlag.IGNITED, true);
+        this.setDataProperty(FUSE_TIME, fuse);
 
         this.getLevel().addSound(this, Sound.RANDOM_FUSE);
     }
@@ -120,7 +120,7 @@ public class EntityTnt extends Entity implements EntityExplosive {
         }
 
         if (fuse % 5 == 0) {
-            this.setDataProperty(new IntEntityData(DATA_FUSE_LENGTH, fuse));
+            this.setDataProperty(FUSE_TIME, fuse);
         }
 
         lastUpdate = currentTick;

@@ -1,6 +1,8 @@
 package cn.nukkit.network.protocol;
 
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
+
 public class RemoveVolumeEntityPacket extends DataPacket {
 
 
@@ -23,14 +25,13 @@ public class RemoveVolumeEntityPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        id = getUnsignedVarInt();
+    public void decode(HandleByteBuf byteBuf) {
+        id = byteBuf.readUnsignedVarInt();
     }
 
     @Override
-    public void encode() {
-        reset();
-        putUnsignedVarInt(id);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeUnsignedVarInt((int) id);
     }
 
     public long getId() {

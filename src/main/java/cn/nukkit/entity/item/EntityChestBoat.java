@@ -35,7 +35,6 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
         return "Chest Boat";
     }
 
-    
 
     @Override
     public ChestBoatInventory getInventory() {
@@ -73,7 +72,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
         addEntity.speedX = (float) this.motionX;
         addEntity.speedY = (float) this.motionY;
         addEntity.speedZ = (float) this.motionZ;
-        addEntity.metadata = this.dataProperties;
+        addEntity.entityData = this.entityDataMap;
 
         addEntity.links = new EntityLink[this.passengers.size()];
         for (int i = 0; i < addEntity.links.length; i++) {
@@ -103,17 +102,16 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
             }
         }
 
-        this.dataProperties
-                .putByte(DATA_CONTAINER_TYPE, InventoryType.CHEST_BOAT.getNetworkType())
-                .putInt(DATA_CONTAINER_BASE_SIZE, this.inventory.getSize())
-                .putInt(DATA_CONTAINER_EXTRA_SLOTS_PER_STRENGTH, 0);
+        this.entityDataMap.put(CONTAINER_TYPE, InventoryType.CHEST_BOAT.getNetworkType());
+        entityDataMap.put(CONTAINER_SIZE, this.inventory.getSize());
+        entityDataMap.put(CONTAINER_STRENGTH_MODIFIER, 0);
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
 
-        this.namedTag.putList("Items",new ListTag<CompoundTag>());
+        this.namedTag.putList("Items", new ListTag<CompoundTag>());
         if (this.inventory != null) {
             for (int slot = 0; slot < 27; ++slot) {
                 Item item = this.inventory.getItem(slot);

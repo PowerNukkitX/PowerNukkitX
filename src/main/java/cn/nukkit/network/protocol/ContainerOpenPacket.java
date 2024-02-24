@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -23,23 +24,23 @@ public class ContainerOpenPacket extends DataPacket {
     public long entityId = -1;
 
     @Override
-    public void decode() {
-        this.windowId = this.getByte();
-        this.type = this.getByte();
-        BlockVector3 v = this.getBlockVector3();
+    public void decode(HandleByteBuf byteBuf) {
+        this.windowId = byteBuf.readByte();
+        this.type = byteBuf.readByte();
+        BlockVector3 v = byteBuf.readBlockVector3();
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
-        this.entityId = this.getEntityUniqueId();
+        this.entityId = byteBuf.readEntityUniqueId();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putByte((byte) this.windowId);
-        this.putByte((byte) this.type);
-        this.putBlockVector3(this.x, this.y, this.z);
-        this.putEntityUniqueId(this.entityId);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeByte((byte) this.windowId);
+        byteBuf.writeByte((byte) this.type);
+        byteBuf.writeBlockVector3(this.x, this.y, this.z);
+        byteBuf.writeEntityUniqueId(this.entityId);
     }
 
     public void handle(PacketHandler handler) {

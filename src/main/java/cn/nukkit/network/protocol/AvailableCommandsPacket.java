@@ -1,15 +1,25 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.command.data.*;
+import cn.nukkit.command.data.ChainedSubCommandData;
+import cn.nukkit.command.data.CommandData;
+import cn.nukkit.command.data.CommandDataVersions;
+import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandOverload;
+import cn.nukkit.command.data.CommandParamOption;
+import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.CommandEnumConstraintData;
-import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.SequencedHashSet;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.ToString;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.ObjIntConsumer;
 
 import static cn.nukkit.utils.Utils.dynamic;
@@ -24,9 +34,9 @@ public class AvailableCommandsPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.AVAILABLE_COMMANDS_PACKET;
 
-    private static final ObjIntConsumer<BinaryStream> WRITE_BYTE = (s, v) -> s.putByte((byte) v);
-    private static final ObjIntConsumer<BinaryStream> WRITE_SHORT = BinaryStream::putLShort;
-    private static final ObjIntConsumer<BinaryStream> WRITE_INT = BinaryStream::putLInt;
+    private static final ObjIntConsumer<HandleByteBuf> WRITE_BYTE = (s, v) -> s.writeByte((byte) v);
+    private static final ObjIntConsumer<HandleByteBuf> WRITE_SHORT = HandleByteBuf::writeShortLE;
+    private static final ObjIntConsumer<HandleByteBuf> WRITE_INT = HandleByteBuf::writeIntLE;
 
     public static final int ARG_FLAG_VALID = 0x100000;
     public static final int ARG_FLAG_ENUM = 0x200000;
@@ -68,13 +78,13 @@ public class AvailableCommandsPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
         //non
     }
 
     @Override
-    public void encode() {
-        this.reset();
+    public void encode(HandleByteBuf byteBuf) {
+
         Set<String> enumValuesSet = new ObjectOpenHashSet<>();
         SequencedHashSet<String> subCommandValues = new SequencedHashSet<>();
         Set<String> postfixSet = new ObjectOpenHashSet<>();
@@ -143,27 +153,27 @@ public class AvailableCommandsPacket extends DataPacket {
         List<CommandEnum> enums = new ObjectArrayList<>(enumsSet);
         List<CommandEnum> softEnums = new ObjectArrayList<>(softEnumsSet);
 
-        putUnsignedVarInt(enumValues.size());
+        byteBuf.writeUnsignedVarInt(enumValues.size());
         for (var enumValue : enumValues) {
-            this.putString(enumValue);
+            byteBuf.writeString(enumValue);
         }
 
-        this.putUnsignedVarInt(subCommandValues.size());
+        byteBuf.writeUnsignedVarInt(subCommandValues.size());
         for (var subCommandValue : subCommandValues) {
-            this.putString(subCommandValue);
+            byteBuf.writeString(subCommandValue);
         }
 
-        putUnsignedVarInt(postFixes.size());
+        byteBuf.writeUnsignedVarInt(postFixes.size());
         for (var postFix : postFixes) {
-            this.putString(postFix);
+            byteBuf.writeString(postFix);
         }
 
-        this.writeEnums(enumValues, enums);
+        this.writeEnums(byteBuf,enumValues, enums);
 
-        this.putUnsignedVarInt(subCommandData.size());
+        byteBuf.writeUnsignedVarInt(subCommandData.size());
         for (ChainedSubCommandData chainedSubCommandData : subCommandData) {
-            this.putString(chainedSubCommandData.getName());
-            this.putUnsignedVarInt(chainedSubCommandData.getValues().size());
+            byteBuf.writeString(chainedSubCommandData.getName());
+            byteBuf.writeUnsignedVarInt(chainedSubCommandData.getValues().size());
             for (ChainedSubCommandData.Value value : chainedSubCommandData.getValues()) {
                 int first = subCommandValues.indexOf(value.getFirst());
                 checkArgument(first > -1, "Invalid enum value detected: " + value.getFirst());
@@ -171,19 +181,19 @@ public class AvailableCommandsPacket extends DataPacket {
                 int second = subCommandValues.indexOf(value.getSecond());
                 checkArgument(second > -1, "Invalid enum value detected: " + value.getSecond());
 
-                this.putLShort(first);
-                this.putLShort(second);
+                byteBuf.writeShortLE(first);
+                byteBuf.writeShortLE(second);
             }
         }
 
-        this.putUnsignedVarInt(commands.size());
+        byteBuf.writeUnsignedVarInt(commands.size());
         for (var entry : commands.entrySet()) {
-            this.writeCommand(entry, enums, softEnums, postFixes, subCommandData);
+            this.writeCommand(byteBuf,entry, enums, softEnums, postFixes, subCommandData);
         }
 
-        this.putUnsignedVarInt(softEnums.size());
+        byteBuf.writeUnsignedVarInt(softEnums.size());
         for (var softEnum : softEnums) {
-            this.writeCommandEnum(softEnum);
+            this.writeCommandEnum(byteBuf, softEnum);
         }
 
         // Constraints
@@ -192,12 +202,12 @@ public class AvailableCommandsPacket extends DataPacket {
             helper.writeCommandEnumConstraints(buf, constraint, enums, enumValues);
         });*/
 
-        this.putUnsignedVarInt(0);
+        byteBuf.writeUnsignedVarInt(0);
     }
 
-    private void writeEnums(List<String> values, List<CommandEnum> enums) {
+    private void writeEnums(HandleByteBuf byteBuf, List<String> values, List<CommandEnum> enums) {
         // Determine width of enum index
-        ObjIntConsumer<BinaryStream> indexWriter;
+        ObjIntConsumer<HandleByteBuf> indexWriter;
         int valuesSize = values.size();
         if (valuesSize < 0x100) {//256
             indexWriter = WRITE_BYTE;
@@ -207,52 +217,52 @@ public class AvailableCommandsPacket extends DataPacket {
             indexWriter = WRITE_INT;
         }
         // Write enums
-        putUnsignedVarInt(enums.size());
+        byteBuf.writeUnsignedVarInt(enums.size());
         for (CommandEnum commandEnum : enums) {
-            this.putString(commandEnum.getName());
+            byteBuf.writeString(commandEnum.getName());
 
-            this.putUnsignedVarInt(commandEnum.getValues().size());
+            byteBuf.writeUnsignedVarInt(commandEnum.getValues().size());
             for (String value : commandEnum.getValues()) {
                 int index = values.indexOf(value);
                 Preconditions.checkArgument(index > -1, "Invalid enum value detected: " + value);
-                indexWriter.accept(this, index);
+                indexWriter.accept(byteBuf, index);
             }
         }
     }
 
-    private void writeCommand(Map.Entry<String, CommandDataVersions> commandEntry, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes, List<ChainedSubCommandData> subCommands) {
+    private void writeCommand(HandleByteBuf byteBuf, Map.Entry<String, CommandDataVersions> commandEntry, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes, List<ChainedSubCommandData> subCommands) {
         var commandData = commandEntry.getValue().versions.get(0);
-        this.putString(commandEntry.getKey());
-        this.putString(commandData.description);
+        byteBuf.writeString(commandEntry.getKey());
+        byteBuf.writeString(commandData.description);
         int flags = 0;
         for (CommandData.Flag flag : commandData.flags) {
             flags |= flag.bit;
         }
-        this.putLShort(flags);
-        this.putByte((byte) commandData.permission);
+        byteBuf.writeShortLE(flags);
+        byteBuf.writeByte((byte) commandData.permission);
 
-        this.putLInt(commandData.aliases == null ? -1 : enums.indexOf(commandData.aliases));
+        byteBuf.writeIntLE(commandData.aliases == null ? -1 : enums.indexOf(commandData.aliases));
 
-        this.putUnsignedVarInt(subCommands.size());
+        byteBuf.writeUnsignedVarInt(subCommands.size());
         for (ChainedSubCommandData subcommand : subCommands) {
             int index = subCommands.indexOf(subcommand);
             checkArgument(index > -1, "Invalid subcommand index: " + subcommand);
-            this.putLShort(index);
+            byteBuf.writeShortLE(index);
         }
 
         Collection<CommandOverload> overloads = commandData.overloads.values();
-        this.putUnsignedVarInt(overloads.size());
+        byteBuf.writeUnsignedVarInt(overloads.size());
         for (CommandOverload overload : overloads) {
-            this.putBoolean(overload.chaining);
-            this.putUnsignedVarInt(overload.input.parameters.length);
+            byteBuf.writeBoolean(overload.chaining);
+            byteBuf.writeUnsignedVarInt(overload.input.parameters.length);
             for (CommandParameter param : overload.input.parameters) {
-                this.writeParameter(param, enums, softEnums, postFixes);
+                this.writeParameter(byteBuf, param, enums, softEnums, postFixes);
             }
         }
     }
 
-    private void writeParameter(CommandParameter param, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes) {
-        this.putString(param.name);
+    private void writeParameter(HandleByteBuf byteBuf, CommandParameter param, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes) {
+        byteBuf.writeString(param.name);
 
         int index;
         if (param.postFix != null) {
@@ -269,8 +279,8 @@ public class AvailableCommandsPacket extends DataPacket {
             throw new IllegalStateException("No param type specified: " + param);
         }
 
-        this.putLInt(index);
-        this.putBoolean(param.optional);
+        byteBuf.writeIntLE(index);
+        byteBuf.writeBoolean(param.optional);
 
         byte options = 0;
         if (param.paramOptions != null) {
@@ -278,18 +288,18 @@ public class AvailableCommandsPacket extends DataPacket {
                 options |= 1 << option.ordinal();
             }
         }
-        this.putByte(options);
+        byteBuf.writeByte(options);
     }
 
-    private void writeCommandEnum(CommandEnum enumData) {
+    private void writeCommandEnum(HandleByteBuf byteBuf, CommandEnum enumData) {
         Preconditions.checkNotNull(enumData, "enumData");
 
-        this.putString(enumData.getName());
+        byteBuf.writeString(enumData.getName());
 
         List<String> values = enumData.getValues();
-        this.putUnsignedVarInt(values.size());
+        byteBuf.writeUnsignedVarInt(values.size());
         for (String value : values) {
-            this.putString(value);
+            byteBuf.writeString(value);
         }
     }
 

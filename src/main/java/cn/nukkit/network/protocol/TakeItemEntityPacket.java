@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -14,16 +15,16 @@ public class TakeItemEntityPacket extends DataPacket {
     public long target;
 
     @Override
-    public void decode() {
-        this.target = this.getEntityRuntimeId();
-        this.entityId = this.getEntityRuntimeId();
+    public void decode(HandleByteBuf byteBuf) {
+        this.target = byteBuf.readEntityRuntimeId();
+        this.entityId = byteBuf.readEntityRuntimeId();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putEntityRuntimeId(this.target);
-        this.putEntityRuntimeId(this.entityId);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeEntityRuntimeId(this.target);
+        byteBuf.writeEntityRuntimeId(this.entityId);
     }
 
     @Override

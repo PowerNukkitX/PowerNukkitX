@@ -1,6 +1,8 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.entity.data.Skin;
+import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.PersonaPiece;
 import cn.nukkit.utils.PersonaPieceTint;
 import cn.nukkit.utils.SerializedImage;
@@ -32,34 +34,35 @@ public class LoginPacket extends DataPacket {
     public Skin skin;
     public long issueUnixTime = -1;
 
+    private BinaryStream buffer;
+
     @Override
     public int pid() {
         return NETWORK_ID;
     }
 
     @Override
-    public void decode() {
-        this.protocol = this.getInt();
+    public void decode(HandleByteBuf byteBuf) {
+        this.protocol = byteBuf.readInt();
         if (protocol == 0) {
-            setOffset(getOffset() + 2);
-            this.protocol = getInt();
+            byteBuf.readerIndex(byteBuf.readerIndex() + 2);
+            this.protocol = byteBuf.readInt();
         }
-        this.setBuffer(this.getByteArray(), 0);
-        decodeChainData();
-        decodeSkinData();
+        buffer = new BinaryStream(byteBuf.readByteArray(), 0);
+        decodeChainData(buffer);
+        decodeSkinData(buffer);
     }
 
     @Override
-    public void encode() {
-
+    public void encode(HandleByteBuf byteBuf) {
     }
 
     public int getProtocol() {
         return protocol;
     }
 
-    private void decodeChainData() {
-        Map<String, List<String>> map = GSON.fromJson(new String(this.get(getLInt()), StandardCharsets.UTF_8),
+    private void decodeChainData(BinaryStream binaryStream) {
+        Map<String, List<String>> map = GSON.fromJson(new String(binaryStream.get(binaryStream.getLInt()), StandardCharsets.UTF_8),
                 new TypeToken<Map<String, List<String>>>() {
                 }.getType());
         if (map.isEmpty() || !map.containsKey("chain") || map.get("chain").isEmpty()) return;
@@ -78,8 +81,8 @@ public class LoginPacket extends DataPacket {
         }
     }
 
-    private void decodeSkinData() {
-        JsonObject skinToken = decodeToken(new String(this.get(this.getLInt())));
+    private void decodeSkinData(BinaryStream binaryStream) {
+        JsonObject skinToken = decodeToken(new String(binaryStream.get(binaryStream.getLInt())));
         if (skinToken.has("ClientRandomId")) this.clientId = skinToken.get("ClientRandomId").getAsLong();
 
         skin = new Skin();
@@ -204,6 +207,10 @@ public class LoginPacket extends DataPacket {
             colors.add(element.getAsString()); // remove #
         }
         return new PersonaPieceTint(pieceType, colors);
+    }
+
+    public BinaryStream getBuffer() {
+        return buffer;
     }
 
     public void handle(PacketHandler handler) {

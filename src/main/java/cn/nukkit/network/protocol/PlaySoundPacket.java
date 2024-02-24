@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -20,17 +21,17 @@ public class PlaySoundPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putString(this.name);
-        this.putBlockVector3(this.x * 8, this.y * 8, this.z * 8);
-        this.putLFloat(this.volume);
-        this.putLFloat(this.pitch);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeString(this.name);
+        byteBuf.writeBlockVector3(this.x * 8, this.y * 8, this.z * 8);
+        byteBuf.writeFloatLE(this.volume);
+        byteBuf.writeFloatLE(this.pitch);
     }
 
     public void handle(PacketHandler handler) {

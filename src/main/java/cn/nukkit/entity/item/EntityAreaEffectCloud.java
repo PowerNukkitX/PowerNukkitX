@@ -2,16 +2,13 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
-import cn.nukkit.entity.data.FloatEntityData;
-import cn.nukkit.entity.data.IntEntityData;
-import cn.nukkit.entity.data.LongEntityData;
-import cn.nukkit.entity.data.ShortEntityData;
+import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.entity.effect.Effect;
+import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.entity.effect.Effect;
-import cn.nukkit.entity.effect.PotionType;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -22,7 +19,8 @@ import java.util.List;
 public class EntityAreaEffectCloud extends Entity {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return AREA_EFFECT_CLOUD;
     }
 
@@ -45,7 +43,7 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public int getWaitTime() {
-        return this.getDataPropertyInt(DATA_AREA_EFFECT_CLOUD_WAITING);
+        return this.getDataProperty(AREA_EFFECT_CLOUD_WAITING, 0);
     }
 
     public void setWaitTime(int waitTime) {
@@ -53,11 +51,11 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setWaitTime(int waitTime, boolean send) {
-        this.setDataProperty(new IntEntityData(DATA_AREA_EFFECT_CLOUD_WAITING, waitTime), send);
+        this.setDataProperty(AREA_EFFECT_CLOUD_WAITING, waitTime, send);
     }
 
     public int getPotionId() {
-        return this.getDataPropertyShort(DATA_POTION_AUX_VALUE);
+        return this.getDataProperty(AUX_VALUE_DATA);
     }
 
     public void setPotionId(int potionId) {
@@ -65,7 +63,7 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setPotionId(int potionId, boolean send) {
-        this.setDataProperty(new ShortEntityData(DATA_POTION_AUX_VALUE, potionId & 0xFFFF), send);
+        this.setDataProperty(AUX_VALUE_DATA, potionId & 0xFFFF, send);
     }
 
     public void recalculatePotionColor() {
@@ -104,7 +102,7 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public int getPotionColor() {
-        return this.getDataPropertyInt(DATA_POTION_COLOR);
+        return this.getDataProperty(EFFECT_COLOR);
     }
 
     public void setPotionColor(int argp) {
@@ -116,11 +114,11 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setPotionColor(int argp, boolean send) {
-        this.setDataProperty(new IntEntityData(DATA_POTION_COLOR, argp), send);
+        this.setDataProperty(EFFECT_COLOR, argp, send);
     }
 
     public int getPickupCount() {
-        return this.getDataPropertyInt(DATA_PICKUP_COUNT);
+        return this.getDataProperty(AREA_EFFECT_CLOUD_PICKUP_COUNT);
     }
 
     public void setPickupCount(int pickupCount) {
@@ -128,11 +126,11 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setPickupCount(int pickupCount, boolean send) {
-        this.setDataProperty(new IntEntityData(DATA_PICKUP_COUNT, pickupCount), send);
+        this.setDataProperty(AREA_EFFECT_CLOUD_PICKUP_COUNT, pickupCount, send);
     }
 
     public float getRadiusChangeOnPickup() {
-        return this.getDataPropertyFloat(DATA_CHANGE_ON_PICKUP);
+        return this.getDataProperty(AREA_EFFECT_CLOUD_CHANGE_ON_PICKUP);
     }
 
     public void setRadiusChangeOnPickup(float radiusChangeOnPickup) {
@@ -140,11 +138,11 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setRadiusChangeOnPickup(float radiusChangeOnPickup, boolean send) {
-        this.setDataProperty(new FloatEntityData(DATA_CHANGE_ON_PICKUP, radiusChangeOnPickup), send);
+        this.setDataProperty(AREA_EFFECT_CLOUD_CHANGE_ON_PICKUP, radiusChangeOnPickup, send);
     }
 
     public float getRadiusPerTick() {
-        return this.getDataPropertyFloat(DATA_CHANGE_RATE);
+        return this.getDataProperty(AREA_EFFECT_CLOUD_CHANGE_RATE);
     }
 
     public void setRadiusPerTick(float radiusPerTick) {
@@ -152,11 +150,11 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setRadiusPerTick(float radiusPerTick, boolean send) {
-        this.setDataProperty(new FloatEntityData(DATA_CHANGE_RATE, radiusPerTick), send);
+        this.setDataProperty(AREA_EFFECT_CLOUD_CHANGE_RATE, radiusPerTick, send);
     }
 
     public long getSpawnTime() {
-        return this.getDataPropertyInt(DATA_SPAWN_TIME);
+        return this.getDataProperty(AREA_EFFECT_CLOUD_SPAWN_TIME);
     }
 
     public void setSpawnTime(long spawnTime) {
@@ -164,11 +162,11 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setSpawnTime(long spawnTime, boolean send) {
-        this.setDataProperty(new LongEntityData(DATA_SPAWN_TIME, spawnTime), send);
+        this.setDataProperty(AREA_EFFECT_CLOUD_SPAWN_TIME, spawnTime, send);
     }
 
     public int getDuration() {
-        return this.getDataPropertyInt(DATA_DURATION);
+        return this.getDataProperty(AREA_EFFECT_CLOUD_DURATION);
     }
 
     public void setDuration(int duration) {
@@ -176,11 +174,11 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setDuration(int duration, boolean send) {
-        this.setDataProperty(new IntEntityData(DATA_DURATION, duration), send);
+        this.setDataProperty(AREA_EFFECT_CLOUD_DURATION, duration, send);
     }
 
     public float getRadius() {
-        return this.getDataPropertyFloat(DATA_AREA_EFFECT_CLOUD_RADIUS);
+        return this.getDataProperty(AREA_EFFECT_CLOUD_RADIUS);
     }
 
     public void setRadius(float radius) {
@@ -188,11 +186,11 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setRadius(float radius, boolean send) {
-        this.setDataProperty(new FloatEntityData(DATA_AREA_EFFECT_CLOUD_RADIUS, radius), send);
+        this.setDataProperty(AREA_EFFECT_CLOUD_RADIUS, radius, send);
     }
 
     public int getParticleId() {
-        return this.getDataPropertyInt(DATA_AREA_EFFECT_CLOUD_PARTICLE_ID);
+        return this.getDataProperty(AREA_EFFECT_CLOUD_PARTICLE);
     }
 
     public void setParticleId(int particleId) {
@@ -200,18 +198,18 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setParticleId(int particleId, boolean send) {
-        this.setDataProperty(new IntEntityData(DATA_AREA_EFFECT_CLOUD_PARTICLE_ID, particleId), send);
+        this.setDataProperty(AREA_EFFECT_CLOUD_PARTICLE, particleId, send);
     }
 
     @Override
     protected void initEntity() {
         super.initEntity();
         this.invulnerable = true;
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_FIRE_IMMUNE, true);
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_IMMOBILE, true);
-        this.setDataProperty(new ShortEntityData(DATA_AREA_EFFECT_CLOUD_PARTICLE_ID, 32), false);
-        this.setDataProperty(new LongEntityData(DATA_SPAWN_TIME, this.level.getCurrentTick()), false);
-        this.setDataProperty(new IntEntityData(DATA_PICKUP_COUNT, 0), false);
+        this.setDataFlag(EntityFlag.FIRE_IMMUNE, true);
+        this.setDataFlag(EntityFlag.NO_AI, true);
+        this.setParticleId(32, false);
+        this.setSpawnTime(this.level.getCurrentTick(), false);
+        this.setPickupCount(0, false);
 
         cloudEffects = new ArrayList<>(1);
         for (CompoundTag effectTag : namedTag.getList("mobEffects", CompoundTag.class).getAll()) {
@@ -294,7 +292,7 @@ public class EntityAreaEffectCloud extends Entity {
             );
         }
         //TODO Do we really need to save the entity data to nbt or is it already saved somewhere?
-        namedTag.putList("mobEffects",effectsTag);
+        namedTag.putList("mobEffects", effectsTag);
         namedTag.putInt("ParticleColor", getPotionColor());
         namedTag.putShort("PotionId", getPotionId());
         namedTag.putInt("Duration", getDuration());
@@ -360,8 +358,8 @@ public class EntityAreaEffectCloud extends Entity {
 
         float height = getHeight();
         boundingBox.setBounds(x - radius, y - height, z - radius, x + radius, y + height, z + radius);
-        this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_HEIGHT, height), false);
-        this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_WIDTH, radius), false);
+        this.setDataProperty(HEIGHT, height, false);
+        this.setDataProperty(WIDTH, radius, false);
 
         return true;
     }

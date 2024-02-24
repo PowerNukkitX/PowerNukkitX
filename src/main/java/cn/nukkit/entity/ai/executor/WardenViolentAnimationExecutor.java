@@ -1,8 +1,8 @@
 package cn.nukkit.entity.ai.executor;
 
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.data.EntityFlag;
 
 
 public class WardenViolentAnimationExecutor implements IBehaviorExecutor {
@@ -29,8 +29,8 @@ public class WardenViolentAnimationExecutor implements IBehaviorExecutor {
     @Override
     public void onInterrupt(EntityIntelligent entity) {
         this.currentTick = 0;
-        entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_ROARING, false);
-        entity.setDataFlag(Entity.DATA_FLAGS_EXTENDED, Entity.DATA_FLAG_ROARING, false);
+        entity.setDataFlag(EntityFlag.ROARING, false);
+        entity.setDataFlagExtend(EntityFlag.ROARING, false);
     }
 
     @Override
@@ -38,14 +38,14 @@ public class WardenViolentAnimationExecutor implements IBehaviorExecutor {
         entity.getMemoryStorage().put(CoreMemoryTypes.IS_ATTACK_TARGET_CHANGED, false);
         entity.setMoveTarget(null);
 
-        entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_ROARING, true);
-        entity.setDataFlag(Entity.DATA_FLAGS_EXTENDED, Entity.DATA_FLAG_ROARING, true);
+        entity.setDataFlag(EntityFlag.ROARING, true);
+        entity.setDataFlagExtend(EntityFlag.ROARING, true);
     }
 
     @Override
     public void onStop(EntityIntelligent entity) {
         this.currentTick = 0;
-        entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_ROARING, false);
-        entity.setDataFlag(Entity.DATA_FLAGS_EXTENDED, Entity.DATA_FLAG_ROARING, false);
+        entity.setDataFlag(EntityFlag.ROARING, false);
+        entity.setDataFlagExtend(EntityFlag.ROARING, false);
     }
 }

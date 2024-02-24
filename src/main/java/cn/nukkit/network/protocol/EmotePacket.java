@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -23,22 +24,22 @@ public class EmotePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.runtimeId = this.getEntityRuntimeId();
-        this.emoteID = this.getString();
-        this.xuid = this.getString();
-        this.platformId = this.getString();
-        this.flags = (byte) this.getByte();
+    public void decode(HandleByteBuf byteBuf) {
+        this.runtimeId = byteBuf.readEntityRuntimeId();
+        this.emoteID = byteBuf.readString();
+        this.xuid = byteBuf.readString();
+        this.platformId = byteBuf.readString();
+        this.flags = (byte) byteBuf.readByte();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putEntityRuntimeId(this.runtimeId);
-        this.putString(this.emoteID);
-        this.putString(this.xuid);
-        this.putString(this.platformId);
-        this.putByte(flags);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeEntityRuntimeId(this.runtimeId);
+        byteBuf.writeString(this.emoteID);
+        byteBuf.writeString(this.xuid);
+        byteBuf.writeString(this.platformId);
+        byteBuf.writeByte(flags);
     }
 
     public void handle(PacketHandler handler) {

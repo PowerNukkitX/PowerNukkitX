@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -14,15 +15,15 @@ public class NetworkStackLatencyPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        timestamp = this.getLLong();
+    public void decode(HandleByteBuf byteBuf) {
+        timestamp = byteBuf.readLongLE();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putLLong(timestamp);
-        this.putBoolean(unknownBool);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeLongLE(timestamp);
+        byteBuf.writeBoolean(unknownBool);
     }
 
     public void handle(PacketHandler handler) {

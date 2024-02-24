@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.EduSharedUriResource;
 import lombok.ToString;
 
@@ -16,17 +17,17 @@ public class EduUriResourcePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        String buttonName = this.getString();
-        String linkUri = this.getString();
+    public void decode(HandleByteBuf byteBuf) {
+        String buttonName = byteBuf.readString();
+        String linkUri = byteBuf.readString();
         this.eduSharedUriResource = new EduSharedUriResource(buttonName, linkUri);
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putString(eduSharedUriResource.buttonName());
-        this.putString(eduSharedUriResource.linkUri());
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeString(eduSharedUriResource.buttonName());
+        byteBuf.writeString(eduSharedUriResource.linkUri());
     }
 
     public void handle(PacketHandler handler) {

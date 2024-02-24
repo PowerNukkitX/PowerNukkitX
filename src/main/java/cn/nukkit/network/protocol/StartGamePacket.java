@@ -5,6 +5,7 @@ import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.registry.Registries;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -141,130 +142,130 @@ public class StartGamePacket extends DataPacket {
     public boolean isSoundsServerAuthoritative;
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putEntityUniqueId(this.entityUniqueId);
-        this.putEntityRuntimeId(this.entityRuntimeId);
-        this.putVarInt(this.playerGamemode);
-        this.putVector3f(this.x, this.y, this.z);
-        this.putLFloat(this.yaw);
-        this.putLFloat(this.pitch);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeEntityUniqueId(this.entityUniqueId);
+        byteBuf.writeEntityRuntimeId(this.entityRuntimeId);
+        byteBuf.writeVarInt(this.playerGamemode);
+        byteBuf.writeVector3f(this.x, this.y, this.z);
+        byteBuf.writeFloatLE(this.yaw);
+        byteBuf.writeFloatLE(this.pitch);
         /* Level settings start */
-        this.putLLong(this.seed);
-        this.putLShort(0x00); // SpawnBiomeType - Default
-        this.putString("plains"); // UserDefinedBiomeName
-        this.putVarInt(this.dimension);
-        this.putVarInt(this.generator);
-        this.putVarInt(this.worldGamemode);
-        this.putVarInt(this.difficulty);
-        this.putBlockVector3(this.spawnX, this.spawnY, this.spawnZ);
-        this.putBoolean(this.hasAchievementsDisabled);
-        this.putBoolean(this.worldEditor);
-        this.putBoolean(this.createdInEditor);
-        this.putBoolean(this.exportedFromEditor);
-        this.putVarInt(this.dayCycleStopTime);
-        this.putVarInt(this.eduEditionOffer);
-        this.putBoolean(this.hasEduFeaturesEnabled);
-        this.putString(""); // Education Edition Product ID
-        this.putLFloat(this.rainLevel);
-        this.putLFloat(this.lightningLevel);
-        this.putBoolean(this.hasConfirmedPlatformLockedContent);
-        this.putBoolean(this.multiplayerGame);
-        this.putBoolean(this.broadcastToLAN);
-        this.putVarInt(this.xblBroadcastIntent);
-        this.putVarInt(this.platformBroadcastIntent);
-        this.putBoolean(this.commandsEnabled);
-        this.putBoolean(this.isTexturePacksRequired);
-        this.putGameRules(this.gameRules);
+        byteBuf.writeLongLE(this.seed);
+        byteBuf.writeShortLE(0x00); // SpawnBiomeType - Default
+        byteBuf.writeString("plains"); // UserDefinedBiomeName
+        byteBuf.writeVarInt(this.dimension);
+        byteBuf.writeVarInt(this.generator);
+        byteBuf.writeVarInt(this.worldGamemode);
+        byteBuf.writeVarInt(this.difficulty);
+        byteBuf.writeBlockVector3(this.spawnX, this.spawnY, this.spawnZ);
+        byteBuf.writeBoolean(this.hasAchievementsDisabled);
+        byteBuf.writeBoolean(this.worldEditor);
+        byteBuf.writeBoolean(this.createdInEditor);
+        byteBuf.writeBoolean(this.exportedFromEditor);
+        byteBuf.writeVarInt(this.dayCycleStopTime);
+        byteBuf.writeVarInt(this.eduEditionOffer);
+        byteBuf.writeBoolean(this.hasEduFeaturesEnabled);
+        byteBuf.writeString(""); // Education Edition Product ID
+        byteBuf.writeFloatLE(this.rainLevel);
+        byteBuf.writeFloatLE(this.lightningLevel);
+        byteBuf.writeBoolean(this.hasConfirmedPlatformLockedContent);
+        byteBuf.writeBoolean(this.multiplayerGame);
+        byteBuf.writeBoolean(this.broadcastToLAN);
+        byteBuf.writeVarInt(this.xblBroadcastIntent);
+        byteBuf.writeVarInt(this.platformBroadcastIntent);
+        byteBuf.writeBoolean(this.commandsEnabled);
+        byteBuf.writeBoolean(this.isTexturePacksRequired);
+        byteBuf.writeGameRules(this.gameRules);
         if (!Server.getInstance().isWaterdogCapable()) {
-            this.putLInt(6); // Experiment count
+            byteBuf.writeIntLE(6); // Experiment count
             {
-                this.putString("data_driven_items");
-                this.putBoolean(true);
-                this.putString("data_driven_biomes");
-                this.putBoolean(true);
-                this.putString("upcoming_creator_features");
-                this.putBoolean(true);
-                this.putString("gametest");
-                this.putBoolean(true);
-                this.putString("experimental_molang_features");
-                this.putBoolean(true);
-                this.putString("cameras");
-                this.putBoolean(true);
+                byteBuf.writeString("data_driven_items");
+                byteBuf.writeBoolean(true);
+                byteBuf.writeString("data_driven_biomes");
+                byteBuf.writeBoolean(true);
+                byteBuf.writeString("upcoming_creator_features");
+                byteBuf.writeBoolean(true);
+                byteBuf.writeString("gametest");
+                byteBuf.writeBoolean(true);
+                byteBuf.writeString("experimental_molang_features");
+                byteBuf.writeBoolean(true);
+                byteBuf.writeString("cameras");
+                byteBuf.writeBoolean(true);
             }
-            this.putBoolean(true); // Were experiments previously toggled
+            byteBuf.writeBoolean(true); // Were experiments previously toggled
         } else {
-            this.putLInt(0);
-            this.putBoolean(false); // Were experiments previously toggled
+            byteBuf.writeIntLE(0);
+            byteBuf.writeBoolean(false); // Were experiments previously toggled
         }
-        this.putBoolean(this.bonusChest);
-        this.putBoolean(this.hasStartWithMapEnabled);
-        this.putVarInt(this.permissionLevel);
-        this.putLInt(this.serverChunkTickRange);
-        this.putBoolean(this.hasLockedBehaviorPack);
-        this.putBoolean(this.hasLockedResourcePack);
-        this.putBoolean(this.isFromLockedWorldTemplate);
-        this.putBoolean(this.isUsingMsaGamertagsOnly);
-        this.putBoolean(this.isFromWorldTemplate);
-        this.putBoolean(this.isWorldTemplateOptionLocked);
-        this.putBoolean(this.isOnlySpawningV1Villagers);
-        this.putBoolean(this.isDisablingPersonas);
-        this.putBoolean(this.isDisablingCustomSkins);
-        this.putBoolean(this.emoteChatMuted);
-        this.putString("*"); // vanillaVersion
-        this.putLInt(16); // Limited world width
-        this.putLInt(16); // Limited world height
-        this.putBoolean(false); // Nether type
-        this.putString(""); // EduSharedUriResource buttonName
-        this.putString(""); // EduSharedUriResource linkUri
-        this.putBoolean(false); // force Experimental Gameplay (exclusive to debug clients)
-        this.putByte(this.chatRestrictionLevel);
-        this.putBoolean(this.disablePlayerInteractions);
+        byteBuf.writeBoolean(this.bonusChest);
+        byteBuf.writeBoolean(this.hasStartWithMapEnabled);
+        byteBuf.writeVarInt(this.permissionLevel);
+        byteBuf.writeIntLE(this.serverChunkTickRange);
+        byteBuf.writeBoolean(this.hasLockedBehaviorPack);
+        byteBuf.writeBoolean(this.hasLockedResourcePack);
+        byteBuf.writeBoolean(this.isFromLockedWorldTemplate);
+        byteBuf.writeBoolean(this.isUsingMsaGamertagsOnly);
+        byteBuf.writeBoolean(this.isFromWorldTemplate);
+        byteBuf.writeBoolean(this.isWorldTemplateOptionLocked);
+        byteBuf.writeBoolean(this.isOnlySpawningV1Villagers);
+        byteBuf.writeBoolean(this.isDisablingPersonas);
+        byteBuf.writeBoolean(this.isDisablingCustomSkins);
+        byteBuf.writeBoolean(this.emoteChatMuted);
+        byteBuf.writeString("*"); // vanillaVersion
+        byteBuf.writeIntLE(16); // Limited world width
+        byteBuf.writeIntLE(16); // Limited world height
+        byteBuf.writeBoolean(false); // Nether type
+        byteBuf.writeString(""); // EduSharedUriResource buttonName
+        byteBuf.writeString(""); // EduSharedUriResource linkUri
+        byteBuf.writeBoolean(false); // force Experimental Gameplay (exclusive to debug clients)
+        byteBuf.writeByte(this.chatRestrictionLevel);
+        byteBuf.writeBoolean(this.disablePlayerInteractions);
         /* Level settings end */
-        this.putString(this.levelId);
-        this.putString(this.worldName);
-        this.putString(this.premiumWorldTemplateId);
-        this.putBoolean(this.isTrial);
-        this.putVarInt(Objects.requireNonNullElseGet(this.serverAuthoritativeMovement, () -> this.isMovementServerAuthoritative ? 1 : 0));// 2 - rewind
-        this.putVarInt(0); // RewindHistorySize
+        byteBuf.writeString(this.levelId);
+        byteBuf.writeString(this.worldName);
+        byteBuf.writeString(this.premiumWorldTemplateId);
+        byteBuf.writeBoolean(this.isTrial);
+        byteBuf.writeVarInt(Objects.requireNonNullElseGet(this.serverAuthoritativeMovement, () -> this.isMovementServerAuthoritative ? 1 : 0));// 2 - rewind
+        byteBuf.writeVarInt(0); // RewindHistorySize
         if (this.serverAuthoritativeMovement != null) {
-            this.putBoolean(this.serverAuthoritativeMovement > 0); // isServerAuthoritativeBlockBreaking
+            byteBuf.writeBoolean(this.serverAuthoritativeMovement > 0); // isServerAuthoritativeBlockBreaking
         } else {//兼容nkx旧插件
-            this.putBoolean(this.isMovementServerAuthoritative); // isServerAuthoritativeBlockBreaking
+            byteBuf.writeBoolean(this.isMovementServerAuthoritative); // isServerAuthoritativeBlockBreaking
         }
-        this.putLLong(this.currentTick);
-        this.putVarInt(this.enchantmentSeed);
+        byteBuf.writeLongLE(this.currentTick);
+        byteBuf.writeVarInt(this.enchantmentSeed);
 
         // Custom blocks
-        this.putUnsignedVarInt(this.blockProperties.size());
+        byteBuf.writeUnsignedVarInt(this.blockProperties.size());
         try {
             for (CustomBlockDefinition customBlockDefinition : this.blockProperties) {
-                this.putString(customBlockDefinition.identifier());
-                this.put(NBTIO.write(customBlockDefinition.nbt(), ByteOrder.LITTLE_ENDIAN, true));
+                byteBuf.writeString(customBlockDefinition.identifier());
+                byteBuf.writeBytes(NBTIO.write(customBlockDefinition.nbt(), ByteOrder.LITTLE_ENDIAN, true));
             }
         } catch (IOException e) {
             log.error("Error while encoding NBT data of BlockPropertyData", e);
         }
 
-        this.put(Registries.ITEM_RUNTIMEID.getItemPalette());
-        this.putString(this.multiplayerCorrelationId);
-        this.putBoolean(this.isInventoryServerAuthoritative);
-        this.putString(vanillaVersion); // Server Engine
+        byteBuf.writeBytes(Registries.ITEM_RUNTIMEID.getItemPalette());
+        byteBuf.writeString(this.multiplayerCorrelationId);
+        byteBuf.writeBoolean(this.isInventoryServerAuthoritative);
+        byteBuf.writeString(vanillaVersion); // Server Engine
         try {
-            this.put(NBTIO.writeNetwork(playerPropertyData)); // playerPropertyData
+            byteBuf.writeBytes(NBTIO.writeNetwork(playerPropertyData)); // playerPropertyData
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        this.putLLong(0); // blockRegistryChecksum
-        this.putUUID(new UUID(0, 0)); // worldTemplateId
-        this.putBoolean(this.clientSideGenerationEnabled);
-        this.putBoolean(this.blockNetworkIdsHashed); // blockIdsAreHashed
-        this.putBoolean(this.isSoundsServerAuthoritative); // serverAuthSounds
+        byteBuf.writeLongLE(0); // blockRegistryChecksum
+        byteBuf.writeUUID(new UUID(0, 0)); // worldTemplateId
+        byteBuf.writeBoolean(this.clientSideGenerationEnabled);
+        byteBuf.writeBoolean(this.blockNetworkIdsHashed); // blockIdsAreHashed
+        byteBuf.writeBoolean(this.isSoundsServerAuthoritative); // serverAuthSounds
     }
 
     public void handle(PacketHandler handler) {

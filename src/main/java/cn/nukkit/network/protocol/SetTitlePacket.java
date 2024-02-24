@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,26 +37,26 @@ public class SetTitlePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.type = this.getVarInt();
-        this.text = this.getString();
-        this.fadeInTime = this.getVarInt();
-        this.stayTime = this.getVarInt();
-        this.fadeOutTime = this.getVarInt();
-        this.xuid = this.getString();
-        this.platformOnlineId = this.getString();
+    public void decode(HandleByteBuf byteBuf) {
+        this.type = byteBuf.readVarInt();
+        this.text = byteBuf.readString();
+        this.fadeInTime = byteBuf.readVarInt();
+        this.stayTime = byteBuf.readVarInt();
+        this.fadeOutTime = byteBuf.readVarInt();
+        this.xuid = byteBuf.readString();
+        this.platformOnlineId = byteBuf.readString();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putVarInt(type);
-        this.putString(text);
-        this.putVarInt(fadeInTime);
-        this.putVarInt(stayTime);
-        this.putVarInt(fadeOutTime);
-        this.putString(xuid);
-        this.putString(platformOnlineId);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeVarInt(type);
+        byteBuf.writeString(text);
+        byteBuf.writeVarInt(fadeInTime);
+        byteBuf.writeVarInt(stayTime);
+        byteBuf.writeVarInt(fadeOutTime);
+        byteBuf.writeString(xuid);
+        byteBuf.writeString(platformOnlineId);
     }
 
     @NotNull public TitleAction getTitleAction() {

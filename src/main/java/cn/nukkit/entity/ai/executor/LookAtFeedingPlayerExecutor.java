@@ -1,8 +1,8 @@
 package cn.nukkit.entity.ai.executor;
 
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.data.EntityFlag;
 
 /**
  * 实体看向最近携带食物的玩家<br/>
@@ -20,7 +20,7 @@ public class LookAtFeedingPlayerExecutor implements EntityControl, IBehaviorExec
         var vector3 = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_FEEDING_PLAYER);
         if (vector3 != null) {
             setLookTarget(entity, vector3);
-            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INTERESTED, true);
+            entity.setDataFlag(EntityFlag.INTERESTED, true);
             return true;
         } else return false;
     }
@@ -29,7 +29,7 @@ public class LookAtFeedingPlayerExecutor implements EntityControl, IBehaviorExec
     public void onInterrupt(EntityIntelligent entity) {
         entity.setEnablePitch(false);
         if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
-            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INTERESTED, false);
+            entity.setDataFlag(EntityFlag.INTERESTED, false);
         }
         removeLookTarget(entity);
     }
@@ -38,7 +38,7 @@ public class LookAtFeedingPlayerExecutor implements EntityControl, IBehaviorExec
     public void onStop(EntityIntelligent entity) {
         entity.setEnablePitch(false);
         if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
-            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INTERESTED, false);
+            entity.setDataFlag(EntityFlag.INTERESTED, false);
         }
         removeLookTarget(entity);
     }

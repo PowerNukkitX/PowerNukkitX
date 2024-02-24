@@ -2,6 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.Server;
 import cn.nukkit.entity.data.Skin;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 import java.util.UUID;
@@ -21,37 +22,37 @@ public class PlayerListPacket extends DataPacket {
     public Entry[] entries = Entry.EMPTY_ARRAY;
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putByte(this.type);
-        this.putUnsignedVarInt(this.entries.length);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeByte(this.type);
+        byteBuf.writeUnsignedVarInt(this.entries.length);
 
         if (this.type == TYPE_ADD) {
             for (Entry entry : this.entries) {
-                this.putUUID(entry.uuid);
+                byteBuf.writeUUID(entry.uuid);
 
-                this.putVarLong(entry.entityId);
-                this.putString(entry.name);
-                this.putString(entry.xboxUserId);
-                this.putString(entry.platformChatId);
-                this.putLInt(entry.buildPlatform);
-                this.putSkin(entry.skin);
-                this.putBoolean(entry.isTeacher);
-                this.putBoolean(entry.isHost);
-                this.putBoolean(entry.subClient);
+                byteBuf.writeVarLong(entry.entityId);
+                byteBuf.writeString(entry.name);
+                byteBuf.writeString(entry.xboxUserId);
+                byteBuf.writeString(entry.platformChatId);
+                byteBuf.writeIntLE(entry.buildPlatform);
+                byteBuf.writeSkin(entry.skin);
+                byteBuf.writeBoolean(entry.isTeacher);
+                byteBuf.writeBoolean(entry.isHost);
+                byteBuf.writeBoolean(entry.subClient);
             }
 
             for (Entry entry : this.entries) {
-                this.putBoolean(entry.trustedSkin || Server.getInstance().isForceSkinTrusted());
+                byteBuf.writeBoolean(entry.trustedSkin || Server.getInstance().isForceSkinTrusted());
             }
         } else {
             for (Entry entry : this.entries) {
-                this.putUUID(entry.uuid);
+                byteBuf.writeUUID(entry.uuid);
             }
         }
     }

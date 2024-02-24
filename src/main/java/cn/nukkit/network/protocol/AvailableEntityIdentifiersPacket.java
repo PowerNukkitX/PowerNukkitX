@@ -4,6 +4,7 @@ import cn.nukkit.Nukkit;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.registry.Registries;
 import lombok.ToString;
 
@@ -44,14 +45,12 @@ public class AvailableEntityIdentifiersPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.tag = this.get();
+    public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.put(this.tag);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeBytes(this.tag);
     }
 
     public void handle(PacketHandler handler) {

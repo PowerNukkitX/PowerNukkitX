@@ -1,6 +1,6 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.math.BlockVector3;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -21,19 +21,13 @@ public class BlockEntityDataPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        BlockVector3 v = this.getBlockVector3();
-        this.x = v.x;
-        this.y = v.y;
-        this.z = v.z;
-        this.namedTag = this.get();
+    public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putBlockVector3(this.x, this.y, this.z);
-        this.put(this.namedTag);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeBlockVector3(this.x, this.y, this.z);
+        byteBuf.writeBytes(this.namedTag);
     }
 
     public void handle(PacketHandler handler) {

@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -20,15 +21,15 @@ public class SetEntityMotionPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putEntityRuntimeId(this.eid);
-        this.putVector3f(this.motionX, this.motionY, this.motionZ);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeEntityRuntimeId(this.eid);
+        byteBuf.writeVector3f(this.motionX, this.motionY, this.motionZ);
     }
 
     public void handle(PacketHandler handler) {

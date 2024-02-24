@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.ToString;
@@ -18,21 +19,21 @@ public class AnimatePacket extends DataPacket {
     public float rowingTime;
 
     @Override
-    public void decode() {
-        this.action = Action.fromId(this.getVarInt());
-        this.eid = getEntityRuntimeId();
+    public void decode(HandleByteBuf byteBuf) {
+        this.action = Action.fromId(byteBuf.readVarInt());
+        this.eid = byteBuf.readEntityRuntimeId();
         if (this.action == Action.ROW_RIGHT || this.action == Action.ROW_LEFT) {
-            this.rowingTime = this.getLFloat();
+            this.rowingTime = byteBuf.readFloatLE();
         }
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putVarInt(this.action.getId());
-        this.putEntityRuntimeId(this.eid);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeVarInt(this.action.getId());
+        byteBuf.writeEntityRuntimeId(this.eid);
         if (this.action == Action.ROW_RIGHT || this.action == Action.ROW_LEFT) {
-            this.putLFloat(this.rowingTime);
+            byteBuf.writeFloatLE(this.rowingTime);
         }
     }
 

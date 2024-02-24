@@ -62,7 +62,7 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
             assert stream != null;
             CompoundTag compoundTag = NBTIO.readCompressed(stream);
             for (var tag : compoundTag.getList("item", CompoundTag.class).getAll()) {
-                register0(tag.getString("name"), tag.getShort("id"));
+                register0(tag.getString("name"), (int) tag.getShort("id"));
             }
             trim();
         } catch (IOException e) {

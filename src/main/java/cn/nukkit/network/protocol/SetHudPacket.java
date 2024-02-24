@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.hud.HudElement;
 import cn.nukkit.network.protocol.types.hud.HudVisibility;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -19,17 +20,16 @@ public class SetHudPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
         this.elements.clear();
-        this.getArray(this.elements, value -> HudElement.values()[(int) this.getUnsignedVarInt()]);
-        this.visibility = HudVisibility.values()[this.getByte()];
+        byteBuf.readArray(this.elements, value -> HudElement.values()[byteBuf.readUnsignedVarInt()]);
+        this.visibility = HudVisibility.values()[byteBuf.readByte()];
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putArray(this.elements, (buf, element) -> this.putUnsignedVarInt(element.ordinal()));
-        this.putByte((byte) this.visibility.ordinal());
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeArray(this.elements, (buf, element) -> byteBuf.writeUnsignedVarInt(element.ordinal()));
+        byteBuf.writeByte((byte) this.visibility.ordinal());
     }
 
     public void handle(PacketHandler handler) {

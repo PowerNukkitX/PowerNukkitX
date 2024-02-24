@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -22,17 +23,17 @@ public class SetSpawnPositionPacket extends DataPacket {
     public int dimension = 0;
     
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putVarInt(this.spawnType);
-        this.putBlockVector3(this.x, this.y, this.z);
-        this.putVarInt(dimension);
-        this.putBlockVector3(this.x, this.y, this.z);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeVarInt(this.spawnType);
+        byteBuf.writeBlockVector3(this.x, this.y, this.z);
+        byteBuf.writeVarInt(dimension);
+        byteBuf.writeBlockVector3(this.x, this.y, this.z);
     }
 
     @Override

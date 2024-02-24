@@ -1,7 +1,7 @@
 package cn.nukkit.network.process.processor;
 
 import cn.nukkit.PlayerHandle;
-import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.RiderJumpPacket;
@@ -20,7 +20,7 @@ public class RiderJumpProcessor extends DataPacketProcessor<RiderJumpPacket> {
             horse.motionX = 0;
             horse.motionY = 0;
             horse.motionZ = 0;
-            horse.setDataFlag(EntityHorse.DATA_FLAGS, Entity.DATA_FLAG_REARING);
+            horse.setDataFlag(EntityFlag.STANDING);
         }
     }
 

@@ -1,7 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.utils.BinaryStream;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
@@ -32,23 +32,23 @@ public class CraftingEventPacket extends DataPacket {
     public Item[] output;
 
     @Override
-    public void decode() {
-        this.windowId = this.getByte();
-        this.type = this.getVarInt();
-        this.id = this.getUUID();
+    public void decode(HandleByteBuf byteBuf) {
+        this.windowId = byteBuf.readByte();
+        this.type = byteBuf.readVarInt();
+        this.id = byteBuf.readUUID();
 
-        this.input = this.getArray(Item.class, BinaryStream::getSlot);
-        this.output = this.getArray(Item.class, BinaryStream::getSlot);
+        this.input = byteBuf.readArray(Item.class, HandleByteBuf::readSlot);
+        this.output = byteBuf.readArray(Item.class, HandleByteBuf::readSlot);
     }
 
     @Override
-    public void encode() {
-        putByte((byte) (windowId & 0xFF));
-        putVarInt(type);
-        putUUID(id);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeByte((byte) (windowId & 0xFF));
+        byteBuf.writeVarInt(type);
+        byteBuf.writeUUID(id);
 
-        putArray(input, this::putSlot);
-        putArray(output, this::putSlot);
+        byteBuf.writeArray(input, byteBuf::writeSlot);
+        byteBuf.writeArray(output, byteBuf::writeSlot);
     }
 
     @Override

@@ -1,9 +1,10 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 
 
-public class DeathInfoPacket extends DataPacket{
+public class DeathInfoPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.DEATH_INFO_PACKET;
 
@@ -15,15 +16,14 @@ public class DeathInfoPacket extends DataPacket{
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
         //empty
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putString(translation.getText());
-        this.putArray(translation.getParameters(), this::putString);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeString(translation.getText());
+        byteBuf.writeArray(translation.getParameters(), byteBuf::writeString);
     }
 
     public void handle(PacketHandler handler) {

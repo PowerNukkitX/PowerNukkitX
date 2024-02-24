@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.CodeBuilderCategoryType;
 import cn.nukkit.network.protocol.types.CodeBuilderOperationType;
 
@@ -15,17 +16,17 @@ public class CodeBuilderSourcePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.operation = CodeBuilderOperationType.values()[getByte()];
-        this.category = CodeBuilderCategoryType.values()[getByte()];
-        this.value = getString();
+    public void decode(HandleByteBuf byteBuf) {
+        this.operation = CodeBuilderOperationType.values()[byteBuf.readByte()];
+        this.category = CodeBuilderCategoryType.values()[byteBuf.readByte()];
+        this.value = byteBuf.readString();
     }
 
     @Override
-    public void encode() {
-        putByte((byte) operation.ordinal());
-        putByte((byte) category.ordinal());
-        putString(value);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeByte((byte) operation.ordinal());
+        byteBuf.writeByte((byte) category.ordinal());
+        byteBuf.writeString(value);
     }
 
     public CodeBuilderOperationType getOperation() {

@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -17,14 +18,14 @@ public class RemoveEntityPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putEntityUniqueId(this.eid);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeEntityUniqueId(this.eid);
     }
 
     public void handle(PacketHandler handler) {

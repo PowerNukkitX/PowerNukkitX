@@ -1,7 +1,7 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
-import cn.nukkit.utils.BinaryStream;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -23,12 +23,12 @@ public class ItemStackRequestPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        requests.addAll(List.of(getArray(ItemStackRequest.class, BinaryStream::readItemStackRequest)));
+    public void decode(HandleByteBuf byteBuf) {
+        requests.addAll(List.of(byteBuf.readArray(ItemStackRequest.class, HandleByteBuf::readItemStackRequest)));
     }
 
     @Override
-    public void encode() {
+    public void encode(HandleByteBuf byteBuf) {
         //non server bound
     }
 

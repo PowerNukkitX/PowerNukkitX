@@ -5,7 +5,6 @@ import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
-import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.entity.item.EntityEnderCrystal;
 import cn.nukkit.entity.item.EntityMinecartAbstract;
@@ -30,9 +29,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class EntityProjectile extends Entity {
-
-    public static final int DATA_SHOOTER_ID = 17;
-
     public static final int PICKUP_NONE = 0;
 
     public static final int PICKUP_ANY = 1;
@@ -60,7 +56,7 @@ public abstract class EntityProjectile extends Entity {
         super(chunk, nbt);
         this.shootingEntity = shootingEntity;
         if (shootingEntity != null) {
-            this.setDataProperty(new LongEntityData(DATA_SHOOTER_ID, shootingEntity.getId()));
+            this.setDataProperty(TARGET_EID, shootingEntity.getId());
         }
     }
 

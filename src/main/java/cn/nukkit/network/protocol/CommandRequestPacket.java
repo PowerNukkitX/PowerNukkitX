@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.CommandOriginData;
 import lombok.ToString;
 
@@ -39,21 +40,21 @@ public class CommandRequestPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.command = this.getString();
+    public void decode(HandleByteBuf byteBuf) {
+        this.command = byteBuf.readString();
 
-        CommandOriginData.Origin type = CommandOriginData.Origin.values()[this.getVarInt()];
-        UUID uuid = this.getUUID();
-        String requestId = this.getString();
+        CommandOriginData.Origin type = CommandOriginData.Origin.values()[byteBuf.readVarInt()];
+        UUID uuid = byteBuf.readUUID();
+        String requestId = byteBuf.readString();
         Long varLong = null;
         if (type == CommandOriginData.Origin.DEV_CONSOLE || type == CommandOriginData.Origin.TEST) {
-            varLong = this.getVarLong();
+            varLong = byteBuf.readVarLong();
         }
         this.data = new CommandOriginData(type, uuid, requestId, varLong);
     }
 
     @Override
-    public void encode() {
+    public void encode(HandleByteBuf byteBuf) {
     }
 
     public void handle(PacketHandler handler) {

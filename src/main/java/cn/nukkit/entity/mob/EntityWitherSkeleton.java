@@ -15,7 +15,6 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
-import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
@@ -110,7 +109,7 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
             this.setItemInHand(Item.get(Item.STONE_SWORD));
         }
         // 设置凋零骷髅空闲状态播放空闲声音
-        this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT));
+        this.setDataProperty(AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT);
     }
 
     @Override

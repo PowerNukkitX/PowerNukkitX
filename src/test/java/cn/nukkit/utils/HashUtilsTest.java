@@ -14,7 +14,7 @@ public class HashUtilsTest {
         state.putBoolean("button_pressed_bit", false)
                 .putInt("facing_direction", 5);
 
-        compoundTag.putString("name", "minecraft:warped_button")
+        compoundTag.byteBuf.writeString("name", "minecraft:warped_button")
                 .putCompound("states", state);
         int i = HashUtils.fnv1a_32_nbt(compoundTag);
         Assertions.assertEquals(1204504330,i);

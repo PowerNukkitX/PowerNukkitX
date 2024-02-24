@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -11,14 +12,14 @@ public class EntityFallPacket extends DataPacket {
     public boolean unknown;
 
     @Override
-    public void decode() {
-        this.eid = this.getEntityRuntimeId();
-        this.fallDistance = this.getLFloat();
-        this.unknown = this.getBoolean();
+    public void decode(HandleByteBuf byteBuf) {
+        this.eid = byteBuf.readEntityRuntimeId();
+        this.fallDistance = byteBuf.readFloatLE();
+        this.unknown = byteBuf.readBoolean();
     }
 
     @Override
-    public void encode() {
+    public void encode(HandleByteBuf byteBuf) {
 
     }
 

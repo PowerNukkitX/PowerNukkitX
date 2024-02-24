@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.resourcepacks.ResourcePack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.ToString;
@@ -24,37 +25,36 @@ public class ResourcePacksInfoPacket extends DataPacket {
     private List<CDNEntry> CDNEntries = new ObjectArrayList<>();
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putBoolean(this.mustAccept);
-        this.putBoolean(this.scripting);
-        this.putBoolean(this.forceServerPacks);
-        this.encodePacks(this.behaviourPackEntries, true);
-        this.encodePacks(this.resourcePackEntries, false);
-        putUnsignedVarInt(getCDNEntries().size());
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeBoolean(this.mustAccept);
+        byteBuf.writeBoolean(this.scripting);
+        byteBuf.writeBoolean(this.forceServerPacks);
+        this.encodePacks(byteBuf, this.behaviourPackEntries, true);
+        this.encodePacks(byteBuf, this.resourcePackEntries, false);
+        byteBuf.writeUnsignedVarInt(getCDNEntries().size());
         for (var cdn : getCDNEntries()) {
-            putString(cdn.packId);
-            putString(cdn.remoteUrl);
+            byteBuf.writeString(cdn.packId);
+            byteBuf.writeString(cdn.remoteUrl);
         }
     }
 
-    private void encodePacks(ResourcePack[] packs, boolean behaviour) {
-        this.putLShort(packs.length);
+    private void encodePacks(HandleByteBuf byteBuf, ResourcePack[] packs, boolean behaviour) {
+        byteBuf.writeShortLE(packs.length);
         for (ResourcePack entry : packs) {
-            this.putString(entry.getPackId().toString());
-            this.putString(entry.getPackVersion());
-            this.putLLong(entry.getPackSize());
-            this.putString(entry.getEncryptionKey()); // encryption key
-            this.putString(""); // sub-pack name
-            this.putString(!entry.getEncryptionKey().equals("") ? entry.getPackId().toString() : ""); // content identity
-            this.putBoolean(false); // scripting
+            byteBuf.writeString(entry.getPackId().toString());
+            byteBuf.writeString(entry.getPackVersion());
+            byteBuf.writeLongLE(entry.getPackSize());
+            byteBuf.writeString(entry.getEncryptionKey()); // encryption key
+            byteBuf.writeString(""); // sub-pack name
+            byteBuf.writeString(!entry.getEncryptionKey().equals("") ? entry.getPackId().toString() : ""); // content identity
+            byteBuf.writeBoolean(false); // scripting
             if (!behaviour) {
-                this.putBoolean(false); // raytracing capable
+                byteBuf.writeBoolean(false); // raytracing capable
             }
         }
     }

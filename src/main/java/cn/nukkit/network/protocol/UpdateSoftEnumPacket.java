@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 import java.util.List;
@@ -17,19 +18,19 @@ public class UpdateSoftEnumPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putString(name);
-        this.putUnsignedVarInt(values.size());
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeString(name);
+        byteBuf.writeUnsignedVarInt(values.size());
 
         for (String value : values) {
-            this.putString(value);
+            byteBuf.writeString(value);
         }
-        this.putByte((byte) type.ordinal());
+        byteBuf.writeByte((byte) type.ordinal());
     }
 
     public enum Type {

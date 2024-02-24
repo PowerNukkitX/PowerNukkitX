@@ -1,5 +1,7 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
+
 public class CameraShakePacket extends DataPacket {
     public float intensity;
     public float duration;
@@ -12,20 +14,20 @@ public class CameraShakePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.intensity = this.getLFloat();
-        this.duration = this.getLFloat();
-        this.shakeType = CameraShakeType.values()[this.getByte()];
-        this.shakeAction = CameraShakeAction.values()[this.getByte()];
+    public void decode(HandleByteBuf byteBuf) {
+        this.intensity = byteBuf.readFloatLE();
+        this.duration = byteBuf.readFloatLE();
+        this.shakeType = CameraShakeType.values()[byteBuf.readByte()];
+        this.shakeAction = CameraShakeAction.values()[byteBuf.readByte()];
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putLFloat(this.intensity);
-        this.putLFloat(this.duration);
-        this.putByte((byte) this.shakeType.ordinal());
-        this.putByte((byte) this.shakeAction.ordinal());
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeFloatLE(this.intensity);
+        byteBuf.writeFloatLE(this.duration);
+        byteBuf.writeByte((byte) this.shakeType.ordinal());
+        byteBuf.writeByte((byte) this.shakeAction.ordinal());
     }
 
     public enum CameraShakeAction {

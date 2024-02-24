@@ -1,5 +1,7 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
+
 public class OnScreenTextureAnimationPacket extends DataPacket {
 
     public int effectId;
@@ -10,14 +12,14 @@ public class OnScreenTextureAnimationPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.effectId = this.getLInt();
+    public void decode(HandleByteBuf byteBuf) {
+        this.effectId = byteBuf.readIntLE();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putLInt(this.effectId);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeIntLE(this.effectId);
     }
 
     public void handle(PacketHandler handler) {

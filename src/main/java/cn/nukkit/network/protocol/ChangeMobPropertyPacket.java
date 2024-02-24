@@ -1,5 +1,7 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
+
 /**
  * Server-bound packet to change the properties of a mob.
  *
@@ -19,23 +21,23 @@ public class ChangeMobPropertyPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.uniqueEntityId = getLong();
-        this.property = getString();
-        this.boolValue = getBoolean();
-        this.stringValue = getString();
-        this.intValue = getVarInt();
-        this.floatValue = getLFloat();
+    public void decode(HandleByteBuf byteBuf) {
+        this.uniqueEntityId = byteBuf.readLong();
+        this.property = byteBuf.readString();
+        this.boolValue = byteBuf.readBoolean();
+        this.stringValue = byteBuf.readString();
+        this.intValue = byteBuf.readVarInt();
+        this.floatValue = byteBuf.readFloatLE();
     }
 
     @Override
-    public void encode() {
-        this.putLong(this.uniqueEntityId);
-        this.putString(this.property);
-        this.putBoolean(this.boolValue);
-        this.putString(this.stringValue);
-        this.putVarInt(this.intValue);
-        this.putLFloat(this.floatValue);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeLong(this.uniqueEntityId);
+        byteBuf.writeString(this.property);
+        byteBuf.writeBoolean(this.boolValue);
+        byteBuf.writeString(this.stringValue);
+        byteBuf.writeVarInt(this.intValue);
+        byteBuf.writeFloatLE(this.floatValue);
     }
 
     public void handle(PacketHandler handler) {

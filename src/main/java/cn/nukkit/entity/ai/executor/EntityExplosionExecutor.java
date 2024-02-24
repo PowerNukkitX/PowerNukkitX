@@ -1,10 +1,9 @@
 package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.Server;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.MemoryType;
-import cn.nukkit.entity.data.IntEntityData;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.mob.EntityCreeper;
 import cn.nukkit.event.entity.EntityExplosionPrimeEvent;
 import cn.nukkit.level.Explosion;
@@ -13,8 +12,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.particle.HugeExplodeSeedParticle;
 import org.jetbrains.annotations.Nullable;
 
-import static cn.nukkit.entity.Entity.DATA_FLAGS;
-import static cn.nukkit.entity.Entity.DATA_FLAG_IGNITED;
+import static cn.nukkit.entity.data.EntityDataTypes.FUSE_TIME;
 
 
 public class EntityExplosionExecutor implements IBehaviorExecutor {
@@ -45,8 +43,8 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
         currentTick++;
         if (explodeTime > currentTick) {
             entity.level.addSound(entity, Sound.RANDOM_FUSE);
-            entity.setDataProperty(new IntEntityData(Entity.DATA_FUSE_LENGTH, currentTick));
-            entity.setDataFlag(DATA_FLAGS, DATA_FLAG_IGNITED, true);
+            entity.setDataProperty(FUSE_TIME, currentTick);
+            entity.setDataFlag(EntityFlag.IGNITED, true);
             return true;
         } else {
             explode(entity);
@@ -56,13 +54,13 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
-        entity.setDataFlag(DATA_FLAGS, DATA_FLAG_IGNITED, false);
+        entity.setDataFlag(EntityFlag.IGNITED, false);
         currentTick = 0;
     }
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        entity.setDataFlag(DATA_FLAGS, DATA_FLAG_IGNITED, false);
+        entity.setDataFlag(EntityFlag.IGNITED, false);
         currentTick = 0;
     }
 

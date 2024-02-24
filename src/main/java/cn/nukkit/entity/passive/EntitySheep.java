@@ -20,7 +20,7 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
-import cn.nukkit.entity.data.ByteEntityData;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
@@ -41,10 +41,11 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityShearable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return SHEEP;
     }
-    
+
     public boolean sheared = false;
     public int color = 0;
 
@@ -118,7 +119,6 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
         return "Sheep";
     }
 
-    
 
     @Override
     public void initEntity() {
@@ -137,7 +137,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
             this.sheared = this.namedTag.getBoolean("Sheared");
         }
 
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHEARED, this.sheared);
+        this.setDataFlag(EntityFlag.SHEARED, this.sheared);
     }
 
     @Override
@@ -168,7 +168,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
         }
 
         this.sheared = true;
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHEARED, true);
+        this.setDataFlag(EntityFlag.SHEARED, true);
 
         this.level.dropItem(this, Item.get(Item.WOOL, getColor(), ThreadLocalRandom.current().nextInt(2) + 1));
 
@@ -178,7 +178,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     }
 
     public void growWool() {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHEARED, false);
+        this.setDataFlag(EntityFlag.SHEARED, false);
         this.sheared = false;
     }
 
@@ -196,7 +196,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
 
     public void setColor(int color) {
         this.color = color;
-        this.setDataProperty(new ByteEntityData(DATA_COLOR, color));
+        this.setDataProperty(COLOR, color);
         this.namedTag.putByte("Color", this.color);
     }
 

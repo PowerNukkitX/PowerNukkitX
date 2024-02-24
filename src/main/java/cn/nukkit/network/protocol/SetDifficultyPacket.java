@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -13,14 +14,14 @@ public class SetDifficultyPacket extends DataPacket {
     public int difficulty;
 
     @Override
-    public void decode() {
-        this.difficulty = (int) this.getUnsignedVarInt();
+    public void decode(HandleByteBuf byteBuf) {
+        this.difficulty = (int) byteBuf.readUnsignedVarInt();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putUnsignedVarInt(this.difficulty);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeUnsignedVarInt(this.difficulty);
     }
 
     @Override

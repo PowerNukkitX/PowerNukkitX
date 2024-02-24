@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.List;
@@ -17,18 +18,18 @@ public class SetScoreboardIdentityPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
         //only server -> client
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putByte((byte) this.action.ordinal());
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeByte((byte) this.action.ordinal());
 
         for (Entry entry : this.entries) {
-            this.putVarLong(entry.scoreboardId);
-            this.putUUID(entry.uuid);
+            byteBuf.writeVarLong(entry.scoreboardId);
+            byteBuf.writeUUID(entry.uuid);
         }
     }
 

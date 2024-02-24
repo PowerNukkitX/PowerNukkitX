@@ -5,7 +5,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.EntityRideable;
-import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.vehicle.VehicleDamageByEntityEvent;
@@ -27,27 +26,27 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
     }
 
     public int getRollingAmplitude() {
-        return this.getDataPropertyInt(DATA_HURT_TIME);
+        return this.getDataProperty(HURT_TICKS);
     }
 
     public void setRollingAmplitude(int time) {
-        this.setDataProperty(new IntEntityData(DATA_HURT_TIME, time));
+        this.setDataProperty(HURT_TICKS, time);
     }
 
     public int getRollingDirection() {
-        return this.getDataPropertyInt(DATA_HURT_DIRECTION);
+        return this.getDataProperty(HURT_DIRECTION);
     }
 
     public void setRollingDirection(int direction) {
-        this.setDataProperty(new IntEntityData(DATA_HURT_DIRECTION, direction));
+        this.setDataProperty(HURT_DIRECTION, direction);
     }
 
     public int getDamage() {
-        return this.getDataPropertyInt(DATA_HEALTH); // false data name (should be DATA_DAMAGE_TAKEN)
+        return this.getDataProperty(STRUCTURAL_INTEGRITY); // false data name (should be DATA_DAMAGE_TAKEN)
     }
 
     public void setDamage(int damage) {
-        this.setDataProperty(new IntEntityData(DATA_HEALTH, damage));
+        this.setDataProperty(STRUCTURAL_INTEGRITY, damage);
     }
 
     @Override

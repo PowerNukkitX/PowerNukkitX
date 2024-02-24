@@ -3,9 +3,9 @@ package cn.nukkit.entity.ai.controller;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCarpet;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityPhysical;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.math.Vector3;
 
 import java.util.Arrays;
@@ -36,14 +36,14 @@ public class WalkController implements IController {
             Vector3 direction = entity.getMoveDirectionEnd().clone();
             var speed = entity.getMovementSpeed();
             if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
-                entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, false);
+                entity.setDataFlag(EntityFlag.MOVING, false);
                 return false;
             }
             var relativeVector = direction.clone().setComponents(direction.x - entity.x,
                     direction.y - entity.y, direction.z - entity.z);
             var xzLengthSquared = relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z;
             if (Math.abs(xzLengthSquared) < EntityPhysical.PRECISION) {
-                entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, false);
+                entity.setDataFlag(EntityFlag.MOVING, false);
                 return false;
             }
             var xzLength = Math.sqrt(relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z);
@@ -61,14 +61,14 @@ public class WalkController implements IController {
                 currentJumpCoolDown = 0;
             }
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
-            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, true);
+            entity.setDataFlag(EntityFlag.MOVING, true);
             if (xzLength < speed) {
                 needNewDirection(entity);
                 return false;
             }
             return true;
         } else {
-            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, false);
+            entity.setDataFlag(EntityFlag.MOVING, false);
             return false;
         }
     }

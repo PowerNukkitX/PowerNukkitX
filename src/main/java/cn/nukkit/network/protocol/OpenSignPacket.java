@@ -1,7 +1,7 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -20,16 +20,15 @@ public class OpenSignPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.position = getBlockVector3();
-        this.frontSide = getBoolean();
+    public void decode(HandleByteBuf byteBuf) {
+        this.position = byteBuf.readBlockVector3();
+        this.frontSide = byteBuf.readBoolean();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        putBlockVector3(position);
-        putBoolean(frontSide);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeBlockVector3(position);
+        byteBuf.writeBoolean(frontSide);
     }
 
     public void handle(PacketHandler handler) {

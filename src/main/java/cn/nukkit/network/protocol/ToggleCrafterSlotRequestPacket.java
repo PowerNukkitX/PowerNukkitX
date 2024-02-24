@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 
 public class ToggleCrafterSlotRequestPacket extends DataPacket {
 
@@ -16,18 +17,18 @@ public class ToggleCrafterSlotRequestPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.blockPosition = this.getVector3f();
-        this.slot = (byte) this.getByte();
-        this.disabled = this.getBoolean();
+    public void decode(HandleByteBuf byteBuf) {
+        this.blockPosition = byteBuf.readVector3f();
+        this.slot = (byte) byteBuf.readByte();
+        this.disabled = byteBuf.readBoolean();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putVector3f(this.blockPosition);
-        this.putByte(this.slot);
-        this.putBoolean(this.disabled);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeVector3f(this.blockPosition);
+        byteBuf.writeByte(this.slot);
+        byteBuf.writeBoolean(this.disabled);
     }
 
     public void handle(PacketHandler handler) {

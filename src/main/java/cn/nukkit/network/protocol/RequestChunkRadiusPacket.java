@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -18,13 +19,13 @@ public class RequestChunkRadiusPacket extends DataPacket {
     private int maxRadius;
 
     @Override
-    public void decode() {
-        this.radius = this.getVarInt();
-        this.maxRadius = getByte();
+    public void decode(HandleByteBuf byteBuf) {
+        this.radius = byteBuf.readVarInt();
+        this.maxRadius = byteBuf.readByte();
     }
 
     @Override
-    public void encode() {
+    public void encode(HandleByteBuf byteBuf) {
 
     }
 

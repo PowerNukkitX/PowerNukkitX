@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -23,27 +24,27 @@ public class PlayerEnchantOptionsPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
         //client bound
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putUnsignedVarInt(this.options.size());
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeUnsignedVarInt(this.options.size());
         for (EnchantOptionData option : this.options) {
-            this.putVarInt(option.minLevel());
-            this.putInt(0);
-            this.putUnsignedVarInt(option.enchantments.size());
+            byteBuf.writeVarInt(option.minLevel());
+            byteBuf.writeInt(0);
+            byteBuf.writeUnsignedVarInt(option.enchantments.size());
             for (Enchantment data : option.enchantments) {
-                this.putByte((byte) data.getId());
-                this.putByte((byte) data.getLevel());
+                byteBuf.writeByte((byte) data.getId());
+                byteBuf.writeByte((byte) data.getLevel());
             }
-            this.putUnsignedVarInt(0);
-            this.putUnsignedVarInt(0);
-            this.putString(option.enchantName);
+            byteBuf.writeUnsignedVarInt(0);
+            byteBuf.writeUnsignedVarInt(0);
+            byteBuf.writeString(option.enchantName);
             int netid = ENCH_RECIPE_NETID.getAndIncrement();
-            this.putUnsignedVarInt(netid);
+            byteBuf.writeUnsignedVarInt(netid);
             RECIPE_MAP.put(netid, option);
         }
     }

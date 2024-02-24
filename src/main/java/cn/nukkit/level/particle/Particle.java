@@ -1,6 +1,5 @@
 package cn.nukkit.level.particle;
 
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.DataPacket;
 
@@ -36,40 +35,17 @@ public abstract class Particle extends Vector3 {
     public static final int TYPE_HEART = dynamic(19);
     public static final int TYPE_TERRAIN = dynamic(20);
     public static final int TYPE_TOWN_AURA = dynamic(21);
-
-    @Deprecated
-    @DeprecationDetails(since = "1.5.2.0-PN", by = "PowerNukkit", reason = "Same as TYPE_TOWN_AURA",
-            replaceWith = "TYPE_TOWN_AURA")
-    public static final int TYPE_SUSPENDED_TOWN = TYPE_TOWN_AURA;
-
     public static final int TYPE_PORTAL = dynamic(22);
-
-
     public static final int TYPE_MOB_PORTAL = dynamic(23);
     public static final int TYPE_SPLASH = dynamic(24);
-
-    @Deprecated
-    @DeprecationDetails(since = "1.5.2.0-PN", by = "PowerNukkit", reason = "Same as TYPE_SPLASH",
-            replaceWith = "TYPE_SPLASH")
-    public static final int TYPE_WATER_SPLASH = TYPE_SPLASH;
-
-
     public static final int TYPE_WATER_SPLASH_MANUAL = dynamic(25);
     public static final int TYPE_WATER_WAKE = dynamic(26);
     public static final int TYPE_DRIP_WATER = dynamic(27);
     public static final int TYPE_DRIP_LAVA = dynamic(28);
     public static final int TYPE_DRIP_HONEY = dynamic(29);
-
     public static final int TYPE_STALACTITE_DRIP_WATER = dynamic(30);
-
     public static final int TYPE_STALACTITE_DRIP_LAVA = dynamic(31);
     public static final int TYPE_FALLING_DUST = dynamic(32);
-
-    @Deprecated
-    @DeprecationDetails(since = "1.5.2.0-PN", by = "PowerNukkit", reason = "Same as TYPE_FALLING_DUST",
-            replaceWith = "TYPE_FALLING_DUST")
-    public static final int TYPE_DUST = TYPE_FALLING_DUST;
-
     public static final int TYPE_MOB_SPELL = dynamic(33);
     public static final int TYPE_MOB_SPELL_AMBIENT = dynamic(34);
     public static final int TYPE_MOB_SPELL_INSTANTANEOUS = dynamic(35);
@@ -83,7 +59,6 @@ public abstract class Particle extends Vector3 {
     public static final int TYPE_NOTE = dynamic(43);
     public static final int TYPE_WITCH_SPELL = dynamic(44);
     public static final int TYPE_CARROT = dynamic(45);
-
     public static final int TYPE_MOB_APPEARANCE = dynamic(46);
     public static final int TYPE_END_ROD = dynamic(47);
     public static final int TYPE_RISING_DRAGONS_BREATH = dynamic(48);
@@ -100,22 +75,16 @@ public abstract class Particle extends Vector3 {
     public static final int TYPE_BUBBLE_COLUMN_UP = dynamic(59);
     public static final int TYPE_BUBBLE_COLUMN_DOWN = dynamic(60);
     public static final int TYPE_SNEEZE = dynamic(61);
-
     public static final int TYPE_SHULKER_BULLET = dynamic(62);
-
     public static final int TYPE_BLEACH = dynamic(63);
     public static final int TYPE_LARGE_EXPLOSION = dynamic(64);
-
     public static final int TYPE_MYCELIUM_DUST = dynamic(65);
     public static final int TYPE_FALLING_RED_DUST = dynamic(66);
     public static final int TYPE_CAMPFIRE_SMOKE = dynamic(67);
-
     public static final int TYPE_TALL_CAMPFIRE_SMOKE = dynamic(68);
     public static final int TYPE_FALLING_DRAGONS_BREATH = dynamic(69);
     public static final int TYPE_DRAGONS_BREATH = dynamic(70);
-
     public static final int TYPE_BLUE_FLAME = dynamic(71);
-
     public static final int TYPE_SOUL = dynamic(72);
 
     public static final int TYPE_OBSIDIAN_TEAR = dynamic(73);

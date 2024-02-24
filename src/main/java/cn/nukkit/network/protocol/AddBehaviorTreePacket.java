@@ -1,11 +1,11 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
 public class AddBehaviorTreePacket extends DataPacket {
-
-    public String unknown;
+    public String behaviorTreeJson;
 
     @Override
     public int pid() {
@@ -13,14 +13,12 @@ public class AddBehaviorTreePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-
+    public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putString(unknown);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeString(behaviorTreeJson);
     }
 
     public void handle(PacketHandler handler) {

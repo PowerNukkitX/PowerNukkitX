@@ -2,6 +2,7 @@ package cn.nukkit.entity.projectile;
 
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -81,11 +82,11 @@ public class EntityArrow extends SlenderProjectile {
     }
 
     public boolean isCritical() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_CRITICAL);
+        return this.getDataFlag(EntityFlag.CRITICAL);
     }
 
     public void setCritical(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CRITICAL, value);
+        this.setDataFlag(EntityFlag.CRITICAL);
     }
 
     @Override

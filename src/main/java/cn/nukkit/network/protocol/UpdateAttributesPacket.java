@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.entity.Attribute;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -21,30 +22,30 @@ public class UpdateAttributesPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
+    public void encode(HandleByteBuf byteBuf) {
+        
 
-        this.putEntityRuntimeId(this.entityId);
+        byteBuf.writeEntityRuntimeId(this.entityId);
 
         if (this.entries == null) {
-            this.putUnsignedVarInt(0);
+            byteBuf.writeUnsignedVarInt(0);
         } else {
-            this.putUnsignedVarInt(this.entries.length);
+            byteBuf.writeUnsignedVarInt(this.entries.length);
             for (Attribute entry : this.entries) {
-                this.putLFloat(entry.getMinValue());
-                this.putLFloat(entry.getMaxValue());
-                this.putLFloat(entry.getValue());
-                this.putLFloat(entry.getDefaultValue());
-                this.putString(entry.getName());
-                this.putUnsignedVarInt(0); // Modifiers
+                byteBuf.writeFloatLE(entry.getMinValue());
+                byteBuf.writeFloatLE(entry.getMaxValue());
+                byteBuf.writeFloatLE(entry.getValue());
+                byteBuf.writeFloatLE(entry.getDefaultValue());
+                byteBuf.writeString(entry.getName());
+                byteBuf.writeUnsignedVarInt(0); // Modifiers
             }
         }
-        this.putUnsignedVarInt(this.frame);
+        byteBuf.writeUnsignedVarInt((int) this.frame);
     }
 
     public void handle(PacketHandler handler) {

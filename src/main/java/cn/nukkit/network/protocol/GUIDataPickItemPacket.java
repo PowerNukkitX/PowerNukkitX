@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -13,14 +14,14 @@ public class GUIDataPickItemPacket extends DataPacket {
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putLInt(this.hotbarSlot);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeIntLE(this.hotbarSlot);
     }
 
     @Override
-    public void decode() {
-        this.hotbarSlot = this.getLInt();
+    public void decode(HandleByteBuf byteBuf) {
+        this.hotbarSlot = byteBuf.readIntLE();
     }
 
     public void handle(PacketHandler handler) {

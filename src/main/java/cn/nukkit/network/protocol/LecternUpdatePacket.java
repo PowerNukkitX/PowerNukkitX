@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -19,15 +20,15 @@ public class LecternUpdatePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.page = this.getByte();
-        this.totalPages = this.getByte();
-        this.blockPosition = this.getBlockVector3();
-        this.dropBook = this.getBoolean();
+    public void decode(HandleByteBuf byteBuf) {
+        this.page = byteBuf.readByte();
+        this.totalPages = byteBuf.readByte();
+        this.blockPosition = byteBuf.readBlockVector3();
+        this.dropBook = byteBuf.readBoolean();
     }
 
     @Override
-    public void encode() {
+    public void encode(HandleByteBuf byteBuf) {
     }
 
     public void handle(PacketHandler handler) {

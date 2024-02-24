@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -25,34 +26,34 @@ public class BookEditPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.action = Action.values()[this.getByte()];
-        this.inventorySlot = this.getByte();
+    public void decode(HandleByteBuf byteBuf) {
+        this.action = Action.values()[byteBuf.readByte()];
+        this.inventorySlot = byteBuf.readByte();
 
         switch (this.action) {
             case REPLACE_PAGE:
             case ADD_PAGE:
-                this.pageNumber = this.getByte();
-                this.text = this.getString();
-                this.photoName = this.getString();
+                this.pageNumber = byteBuf.readByte();
+                this.text = byteBuf.readString();
+                this.photoName = byteBuf.readString();
                 break;
             case DELETE_PAGE:
-                this.pageNumber = this.getByte();
+                this.pageNumber = byteBuf.readByte();
                 break;
             case SWAP_PAGES:
-                this.pageNumber = this.getByte();
-                this.secondaryPageNumber = this.getByte();
+                this.pageNumber = byteBuf.readByte();
+                this.secondaryPageNumber = byteBuf.readByte();
                 break;
             case SIGN_BOOK:
-                this.title = this.getString();
-                this.author = this.getString();
-                this.xuid = this.getString();
+                this.title = byteBuf.readString();
+                this.author = byteBuf.readString();
+                this.xuid = byteBuf.readString();
                 break;
         }
     }
 
     @Override
-    public void encode() {
+    public void encode(HandleByteBuf byteBuf) {
 
     }
 

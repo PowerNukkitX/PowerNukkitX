@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -173,21 +174,21 @@ public class LevelEventPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.evid = this.getVarInt();
-        Vector3f v = this.getVector3f();
+    public void decode(HandleByteBuf byteBuf) {
+        this.evid = byteBuf.readVarInt();
+        Vector3f v = byteBuf.readVector3f();
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
-        this.data = this.getVarInt();
+        this.data = byteBuf.readVarInt();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putVarInt(this.evid);
-        this.putVector3f(this.x, this.y, this.z);
-        this.putVarInt(this.data);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeVarInt(this.evid);
+        byteBuf.writeVector3f(this.x, this.y, this.z);
+        byteBuf.writeVarInt(this.data);
     }
 
     public void handle(PacketHandler handler) {

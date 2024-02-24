@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
@@ -13,45 +14,41 @@ import java.util.List;
 
 @NoArgsConstructor(onConstructor = @__())
 public class AnimateEntityPacket extends DataPacket {
-
-
     public static final int NETWORK_ID = ProtocolInfo.ANIMATE_ENTITY_PACKET;
 
     private String animation;
     private String nextState;
     private String stopExpression;
-
-
     private int stopExpressionVersion;
     private String controller;
     private float blendOutTime;
     private List<Long> entityRuntimeIds = new ArrayList<>();
 
     @Override
-    public void decode() {
-        this.animation = this.getString();
-        this.nextState = this.getString();
-        this.stopExpression = this.getString();
-        this.stopExpressionVersion = this.getInt();
-        this.controller = this.getString();
-		this.blendOutTime = this.getLFloat();
-		for (int i = 0, len = (int) this.getUnsignedVarInt(); i < len; i++) {
-			this.entityRuntimeIds.add(this.getEntityRuntimeId());
+    public void decode(HandleByteBuf byteBuf) {
+        this.animation = byteBuf.readString();
+        this.nextState = byteBuf.readString();
+        this.stopExpression = byteBuf.readString();
+        this.stopExpressionVersion = byteBuf.readInt();
+        this.controller = byteBuf.readString();
+		this.blendOutTime = byteBuf.readFloatLE();
+		for (int i = 0, len = (int) byteBuf.readUnsignedVarInt(); i < len; i++) {
+			this.entityRuntimeIds.add(byteBuf.readEntityRuntimeId());
 		}
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putString(this.animation);
-		this.putString(this.nextState);
-        this.putString(this.stopExpression);
-        this.putInt(this.stopExpressionVersion);
-        this.putString(this.controller);
-		this.putLFloat(this.blendOutTime);
-		this.putUnsignedVarInt(this.entityRuntimeIds.size());
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeString(this.animation);
+		byteBuf.writeString(this.nextState);
+        byteBuf.writeString(this.stopExpression);
+        byteBuf.writeInt(this.stopExpressionVersion);
+        byteBuf.writeString(this.controller);
+		byteBuf.writeFloatLE(this.blendOutTime);
+		byteBuf.writeUnsignedVarInt(this.entityRuntimeIds.size());
 		for (long entityRuntimeId : this.entityRuntimeIds){
-			this.putEntityRuntimeId(entityRuntimeId);
+			byteBuf.writeEntityRuntimeId(entityRuntimeId);
 		}
     }
     

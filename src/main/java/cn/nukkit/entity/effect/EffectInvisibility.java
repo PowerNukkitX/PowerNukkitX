@@ -1,6 +1,7 @@
 package cn.nukkit.entity.effect;
 
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.data.EntityFlag;
 
 import java.awt.*;
 
@@ -12,13 +13,13 @@ public class EffectInvisibility extends Effect {
 
     @Override
     public void add(Entity entity) {
-        entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INVISIBLE, true);
+        entity.setDataFlag(EntityFlag.INVISIBLE, true);
         entity.setNameTagVisible(false);
     }
 
     @Override
     public void remove(Entity entity) {
-        entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INVISIBLE, false);
+        entity.setDataFlag(EntityFlag.INVISIBLE, false);
         entity.setNameTagVisible(true);
     }
 }

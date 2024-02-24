@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.scoreboard.data.ScorerType;
 
 import java.util.ArrayList;
@@ -15,29 +16,29 @@ public class SetScorePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
         //only server -> client
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putByte((byte) this.action.ordinal());
-        this.putUnsignedVarInt(this.infos.size());
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeByte((byte) this.action.ordinal());
+        byteBuf.writeUnsignedVarInt(this.infos.size());
 
         for (ScoreInfo info : this.infos) {
-            this.putVarLong(info.scoreboardId);
-            this.putString(info.objectiveId);
-            this.putLInt(info.score);
+            byteBuf.writeVarLong(info.scoreboardId);
+            byteBuf.writeString(info.objectiveId);
+            byteBuf.writeIntLE(info.score);
             if (this.action == Action.SET) {
-                this.putByte((byte) info.type.ordinal());
+                byteBuf.writeByte((byte) info.type.ordinal());
                 switch (info.type) {
                     case ENTITY:
                     case PLAYER:
-                        this.putVarLong(info.entityId);
+                        byteBuf.writeVarLong(info.entityId);
                         break;
                     case FAKE:
-                        this.putString(info.name);
+                        byteBuf.writeString(info.name);
                         break;
                     default:
                         throw new IllegalArgumentException("Invalid score info received");

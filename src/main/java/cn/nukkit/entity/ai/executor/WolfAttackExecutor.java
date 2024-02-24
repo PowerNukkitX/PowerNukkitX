@@ -4,6 +4,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.MemoryType;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.passive.EntityWolf;
 
 /**
@@ -43,7 +44,7 @@ public class WolfAttackExecutor extends MeleeAttackExecutor {
             var vector3 = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_FEEDING_PLAYER);
             if (vector3 != null) {
                 this.lookTarget = vector3.clone();
-                entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INTERESTED, true);
+                entity.setDataFlag(EntityFlag.INTERESTED, true);
             }
         }
         return super.execute(entity);
@@ -66,7 +67,7 @@ public class WolfAttackExecutor extends MeleeAttackExecutor {
         entity.getServer().getScheduler().scheduleDelayedTask(null, () -> wolf.setAngry(false), 5);
 
         if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
-            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INTERESTED, false);
+            entity.setDataFlag(EntityFlag.INTERESTED, false);
         }
     }
 }

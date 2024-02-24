@@ -1,4 +1,4 @@
- package cn.nukkit.nbt.tag;
+package cn.nukkit.nbt.tag;
 
 import io.netty.util.internal.EmptyArrays;
 import org.jetbrains.annotations.NotNull;
@@ -164,14 +164,14 @@ public class CompoundTag extends Tag {
         return (T) tags.remove(name);
     }
 
-    public int getByte(String name) {
+    public byte getByte(String name) {
         if (!tags.containsKey(name)) return (byte) 0;
-        return ((NumberTag<?>) tags.get(name)).getData().intValue();
+        return ((NumberTag<?>) tags.get(name)).getData().byteValue();
     }
 
-    public int getShort(String name) {
+    public short getShort(String name) {
         if (!tags.containsKey(name)) return 0;
-        return ((NumberTag<?>) tags.get(name)).getData().intValue();
+        return ((NumberTag<?>) tags.get(name)).getData().shortValue();
     }
 
     public int getInt(String name) {
@@ -259,7 +259,7 @@ public class CompoundTag extends Tag {
     public String toString() {
         StringJoiner joiner = new StringJoiner(",\n\t");
         tags.forEach((key, tag) -> joiner.add('\'' + key + "' : " + tag.toString().replace("\n", "\n\t")));
-        return "CompoundTag '" +"' (" + tags.size() + " entries) {\n\t" + joiner + "\n}";
+        return "CompoundTag '" + "' (" + tags.size() + " entries) {\n\t" + joiner + "\n}";
     }
 
     @Override

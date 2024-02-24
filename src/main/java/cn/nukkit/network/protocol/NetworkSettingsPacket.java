@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import lombok.ToString;
 
@@ -19,22 +20,22 @@ public class NetworkSettingsPacket extends DataPacket {
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putLShort(this.compressionThreshold);
-        this.putLShort(this.compressionAlgorithm.ordinal());
-        this.putBoolean(this.clientThrottleEnabled);
-        this.putByte(this.clientThrottleThreshold);
-        this.putLFloat(this.clientThrottleScalar);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeShortLE(this.compressionThreshold);
+        byteBuf.writeShortLE(this.compressionAlgorithm.ordinal());
+        byteBuf.writeBoolean(this.clientThrottleEnabled);
+        byteBuf.writeByte(this.clientThrottleThreshold);
+        byteBuf.writeFloatLE(this.clientThrottleScalar);
     }
 
     @Override
-    public void decode() {
-        this.compressionThreshold = getLShort();
-        this.compressionAlgorithm = PacketCompressionAlgorithm.values()[getLShort()];
-        this.clientThrottleEnabled = getBoolean();
-        this.clientThrottleThreshold = getByte();
-        this.clientThrottleScalar = getLFloat();
+    public void decode(HandleByteBuf byteBuf) {
+        this.compressionThreshold = byteBuf.readShortLE();
+        this.compressionAlgorithm = PacketCompressionAlgorithm.values()[byteBuf.readShortLE()];
+        this.clientThrottleEnabled = byteBuf.readBoolean();
+        this.clientThrottleThreshold = byteBuf.readByte();
+        this.clientThrottleScalar = byteBuf.readFloatLE();
     }
 
     public void handle(PacketHandler handler) {

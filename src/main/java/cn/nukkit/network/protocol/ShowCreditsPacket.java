@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -19,16 +20,16 @@ public class ShowCreditsPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.eid = this.getEntityRuntimeId();
-        this.status = this.getVarInt();
+    public void decode(HandleByteBuf byteBuf) {
+        this.eid = byteBuf.readEntityRuntimeId();
+        this.status = byteBuf.readVarInt();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putEntityRuntimeId(this.eid);
-        this.putVarInt(this.status);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeEntityRuntimeId(this.eid);
+        byteBuf.writeVarInt(this.status);
     }
 
     public void handle(PacketHandler handler) {

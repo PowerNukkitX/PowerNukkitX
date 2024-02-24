@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.camera.data.CameraPreset;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,28 +20,27 @@ public class CameraPresetsPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        putUnsignedVarInt(presets.size());
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeUnsignedVarInt(presets.size());
         for (var p : presets) {
-            writePreset(p);
+            writePreset(byteBuf, p);
         }
     }
 
-    public void writePreset(CameraPreset preset) {
-        putString(preset.getIdentifier());
-        putString(preset.getInheritFrom());
-        putNotNull(preset.getPos(), (v) -> putLFloat(v.getX()));
-        putNotNull(preset.getPos(), (v) -> putLFloat(v.getY()));
-        putNotNull(preset.getPos(), (v) -> putLFloat(v.getZ()));
-        putNotNull(preset.getPitch(), this::putLFloat);
-        putNotNull(preset.getYaw(), this::putLFloat);
-        putNotNull(preset.getListener(), (l) -> putByte((byte) l.ordinal()));
-        putOptional(preset.getPlayEffect(), this::putBoolean);
+    public void writePreset(HandleByteBuf byteBuf, CameraPreset preset) {
+        byteBuf.writeString(preset.getIdentifier());
+        byteBuf.writeString(preset.getInheritFrom());
+        byteBuf.writeNotNull(preset.getPos(), (v) -> byteBuf.writeFloatLE(v.getX()));
+        byteBuf.writeNotNull(preset.getPos(), (v) -> byteBuf.writeFloatLE(v.getY()));
+        byteBuf.writeNotNull(preset.getPos(), (v) -> byteBuf.writeFloatLE(v.getZ()));
+        byteBuf.writeNotNull(preset.getPitch(), byteBuf::writeFloatLE);
+        byteBuf.writeNotNull(preset.getYaw(), byteBuf::writeFloatLE);
+        byteBuf.writeNotNull(preset.getListener(), (l) -> byteBuf.writeByte((byte) l.ordinal()));
+        byteBuf.writeOptional(preset.getPlayEffect(), byteBuf::writeBoolean);
     }
 
     public void handle(PacketHandler handler) {

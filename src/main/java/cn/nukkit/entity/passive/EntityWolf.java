@@ -21,7 +21,6 @@ import cn.nukkit.entity.ai.sensor.EntityAttackedByOwnerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.ai.sensor.WolfNearestFeedingPlayerSensor;
-import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
@@ -197,8 +196,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
         //同步owner eid
         if (hasOwner()) {
             Player owner = getOwner();
-            if (owner != null && getDataPropertyLong(Entity.DATA_OWNER_EID) != owner.getId()) {
-                this.setDataProperty(new LongEntityData(Entity.DATA_OWNER_EID, owner.getId()));
+            if (owner != null && getDataProperty(Entity.OWNER_EID) != owner.getId()) {
+                this.setDataProperty(Entity.OWNER_EID, owner.getId());
             }
         }
         return super.onUpdate(currentTick);

@@ -18,6 +18,7 @@
 
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -45,16 +46,15 @@ public class FilterTextPacket extends DataPacket {
     }
 
     @Override
-    public void encode() {
-        reset();
-        putString(text);
-        putBoolean(fromServer);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeString(text);
+        byteBuf.writeBoolean(fromServer);
     }
 
     @Override
-    public void decode() {
-        text = getString();
-        fromServer = getBoolean();
+    public void decode(HandleByteBuf byteBuf) {
+        text = byteBuf.readString();
+        fromServer = byteBuf.readBoolean();
     }
 
     public String getText() {

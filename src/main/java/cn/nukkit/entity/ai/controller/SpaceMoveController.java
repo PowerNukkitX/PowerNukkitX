@@ -1,7 +1,7 @@
 package cn.nukkit.entity.ai.controller;
 
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.math.Vector3;
 
 /**
@@ -26,14 +26,14 @@ public class SpaceMoveController implements IController {
             var dy = relativeVector.y * k;
             var dz = relativeVector.z * k;
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
-            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, true);
+            entity.setDataFlag(EntityFlag.MOVING, true);
             if (xyzLength < speed) {
                 needNewDirection(entity);
                 return false;
             }
             return true;
         } else {
-            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, false);
+            entity.setDataFlag(EntityFlag.MOVING, false);
             return false;
         }
     }

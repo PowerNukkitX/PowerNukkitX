@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.recipe.*;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
@@ -60,126 +61,126 @@ public class CraftingDataPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putUnsignedVarInt(entries.size());
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeUnsignedVarInt(entries.size());
 
         int recipeNetworkId = 1;
         for (Recipe recipe : entries) {
-            this.putVarInt(recipe.getType().networkType);
+            byteBuf.writeVarInt(recipe.getType().networkType);
             switch (recipe.getType()) {
                 case STONECUTTER -> {
                     StonecutterRecipe stonecutter = (StonecutterRecipe) recipe;
-                    this.putString(stonecutter.getRecipeId());
-                    this.putUnsignedVarInt(1);
-                    this.putRecipeIngredient(new DefaultDescriptor(stonecutter.getIngredient()));
-                    this.putUnsignedVarInt(1);
-                    this.putSlot(stonecutter.getResult(), true);
-                    this.putUUID(stonecutter.getUUID());
-                    this.putString(CRAFTING_TAG_STONECUTTER);
-                    this.putVarInt(stonecutter.getPriority());
-                    this.putUnsignedVarInt(recipeNetworkId++);
+                    byteBuf.writeString(stonecutter.getRecipeId());
+                    byteBuf.writeUnsignedVarInt(1);
+                    byteBuf.writeRecipeIngredient(new DefaultDescriptor(stonecutter.getIngredient()));
+                    byteBuf.writeUnsignedVarInt(1);
+                    byteBuf.writeSlot(stonecutter.getResult(), true);
+                    byteBuf.writeUUID(stonecutter.getUUID());
+                    byteBuf.writeString(CRAFTING_TAG_STONECUTTER);
+                    byteBuf.writeVarInt(stonecutter.getPriority());
+                    byteBuf.writeUnsignedVarInt(recipeNetworkId++);
                 }
                 case SHAPELESS, CARTOGRAPHY, SHULKER_BOX -> {
                     ShapelessRecipe shapeless = (ShapelessRecipe) recipe;
-                    this.putString(shapeless.getRecipeId());
+                    byteBuf.writeString(shapeless.getRecipeId());
                     List<ItemDescriptor> ingredients = shapeless.getIngredients();
-                    this.putUnsignedVarInt(ingredients.size());
+                    byteBuf.writeUnsignedVarInt(ingredients.size());
                     for (var ingredient : ingredients) {
-                        this.putRecipeIngredient(ingredient);
+                        byteBuf.writeRecipeIngredient(ingredient);
                     }
-                    this.putUnsignedVarInt(1);
-                    this.putSlot(shapeless.getResult(), true);
-                    this.putUUID(shapeless.getUUID());
+                    byteBuf.writeUnsignedVarInt(1);
+                    byteBuf.writeSlot(shapeless.getResult(), true);
+                    byteBuf.writeUUID(shapeless.getUUID());
                     switch (recipe.getType()) {
-                        case CARTOGRAPHY -> this.putString(CRAFTING_TAG_CARTOGRAPHY_TABLE);
-                        case SHAPELESS, SHULKER_BOX -> this.putString(CRAFTING_TAG_CRAFTING_TABLE);
+                        case CARTOGRAPHY -> byteBuf.writeString(CRAFTING_TAG_CARTOGRAPHY_TABLE);
+                        case SHAPELESS, SHULKER_BOX -> byteBuf.writeString(CRAFTING_TAG_CRAFTING_TABLE);
                     }
-                    this.putVarInt(shapeless.getPriority());
-                    this.putUnsignedVarInt(recipeNetworkId++);
+                    byteBuf.writeVarInt(shapeless.getPriority());
+                    byteBuf.writeUnsignedVarInt(recipeNetworkId++);
                 }
                 case SMITHING_TRANSFORM -> {
                     SmithingTransformRecipe smithing = (SmithingTransformRecipe) recipe;
-                    this.putString(smithing.getRecipeId());
+                    byteBuf.writeString(smithing.getRecipeId());
                     //todo 1.19.80还没有模板，下个版本再加入
-                    this.putRecipeIngredient(smithing.getTemplate());
-                    this.putRecipeIngredient(smithing.getBase());
-                    this.putRecipeIngredient(smithing.getAddition());
-                    this.putSlot(smithing.getResult(), true);
-                    this.putString(CRAFTING_TAG_SMITHING_TABLE);
-                    this.putUnsignedVarInt(recipeNetworkId++);
+                    byteBuf.writeRecipeIngredient(smithing.getTemplate());
+                    byteBuf.writeRecipeIngredient(smithing.getBase());
+                    byteBuf.writeRecipeIngredient(smithing.getAddition());
+                    byteBuf.writeSlot(smithing.getResult(), true);
+                    byteBuf.writeString(CRAFTING_TAG_SMITHING_TABLE);
+                    byteBuf.writeUnsignedVarInt(recipeNetworkId++);
                 }
                 case SMITHING_TRIM -> {
                     //todo
                 }
                 case SHAPED -> {
                     ShapedRecipe shaped = (ShapedRecipe) recipe;
-                    this.putString(shaped.getRecipeId());
-                    this.putVarInt(shaped.getWidth());
-                    this.putVarInt(shaped.getHeight());
+                    byteBuf.writeString(shaped.getRecipeId());
+                    byteBuf.writeVarInt(shaped.getWidth());
+                    byteBuf.writeVarInt(shaped.getHeight());
                     for (int z = 0; z < shaped.getHeight(); ++z) {
                         for (int x = 0; x < shaped.getWidth(); ++x) {
-                            this.putRecipeIngredient(shaped.getIngredient(x, z));
+                            byteBuf.writeRecipeIngredient(shaped.getIngredient(x, z));
                         }
                     }
                     List<Item> results = shaped.getResults();
-                    this.putUnsignedVarInt(results.size());
+                    byteBuf.writeUnsignedVarInt(results.size());
                     for (Item output : results) {
-                        this.putSlot(output, true);
+                        byteBuf.writeSlot(output, true);
                     }
-                    this.putUUID(shaped.getUUID());
-                    this.putString(CRAFTING_TAG_CRAFTING_TABLE);
-                    this.putVarInt(shaped.getPriority());
-                    this.putUnsignedVarInt(recipeNetworkId++);
+                    byteBuf.writeUUID(shaped.getUUID());
+                    byteBuf.writeString(CRAFTING_TAG_CRAFTING_TABLE);
+                    byteBuf.writeVarInt(shaped.getPriority());
+                    byteBuf.writeUnsignedVarInt(recipeNetworkId++);
                 }
                 case MULTI -> {
-                    this.putUUID(((MultiRecipe) recipe).getId());
-                    this.putUnsignedVarInt(recipeNetworkId++);
+                    byteBuf.writeUUID(((MultiRecipe) recipe).getId());
+                    byteBuf.writeUnsignedVarInt(recipeNetworkId++);
                 }
                 case FURNACE, FURNACE_DATA, SMOKER, SMOKER_DATA, BLAST_FURNACE, BLAST_FURNACE_DATA, CAMPFIRE, CAMPFIRE_DATA, SOUL_CAMPFIRE_DATA, SOUL_CAMPFIRE -> {
                     SmeltingRecipe smelting = (SmeltingRecipe) recipe;
                     Item input = smelting.getInput().toItem();
-                    this.putVarInt(input.getRuntimeId());
+                    byteBuf.writeVarInt(input.getRuntimeId());
                     if (recipe.getType().name().endsWith("_DATA")) {
-                        this.putVarInt(input.getDamage());
+                        byteBuf.writeVarInt(input.getDamage());
                     }
-                    this.putSlot(smelting.getResult(), true);
+                    byteBuf.writeSlot(smelting.getResult(), true);
                     switch (recipe.getType()) {
-                        case FURNACE, FURNACE_DATA -> this.putString(CRAFTING_TAG_FURNACE);
-                        case SMOKER, SMOKER_DATA -> this.putString(CRAFTING_TAG_SMOKER);
-                        case BLAST_FURNACE, BLAST_FURNACE_DATA -> this.putString(CRAFTING_TAG_BLAST_FURNACE);
-                        case CAMPFIRE, CAMPFIRE_DATA -> this.putString(CRAFTING_TAG_CAMPFIRE);
-                        case SOUL_CAMPFIRE_DATA, SOUL_CAMPFIRE -> this.putString(CRAFTING_TAG_SOUL_CAMPFIRE);
+                        case FURNACE, FURNACE_DATA -> byteBuf.writeString(CRAFTING_TAG_FURNACE);
+                        case SMOKER, SMOKER_DATA -> byteBuf.writeString(CRAFTING_TAG_SMOKER);
+                        case BLAST_FURNACE, BLAST_FURNACE_DATA -> byteBuf.writeString(CRAFTING_TAG_BLAST_FURNACE);
+                        case CAMPFIRE, CAMPFIRE_DATA -> byteBuf.writeString(CRAFTING_TAG_CAMPFIRE);
+                        case SOUL_CAMPFIRE_DATA, SOUL_CAMPFIRE -> byteBuf.writeString(CRAFTING_TAG_SOUL_CAMPFIRE);
                     }
                 }
             }
         }
 
-        this.putUnsignedVarInt(this.brewingEntries.size());
+        byteBuf.writeUnsignedVarInt(this.brewingEntries.size());
         for (BrewingRecipe recipe : brewingEntries) {
-            this.putVarInt(recipe.getInput().getRuntimeId());
-            this.putVarInt(recipe.getInput().getDamage());
-            this.putVarInt(recipe.getIngredient().getRuntimeId());
-            this.putVarInt(recipe.getIngredient().getDamage());
-            this.putVarInt(recipe.getResult().getRuntimeId());
-            this.putVarInt(recipe.getResult().getDamage());
+            byteBuf.writeVarInt(recipe.getInput().getRuntimeId());
+            byteBuf.writeVarInt(recipe.getInput().getDamage());
+            byteBuf.writeVarInt(recipe.getIngredient().getRuntimeId());
+            byteBuf.writeVarInt(recipe.getIngredient().getDamage());
+            byteBuf.writeVarInt(recipe.getResult().getRuntimeId());
+            byteBuf.writeVarInt(recipe.getResult().getDamage());
         }
 
-        this.putUnsignedVarInt(this.containerEntries.size());
+        byteBuf.writeUnsignedVarInt(this.containerEntries.size());
         for (ContainerRecipe recipe : containerEntries) {
-            this.putVarInt(recipe.getInput().getRuntimeId());
-            this.putVarInt(recipe.getIngredient().getRuntimeId());
-            this.putVarInt(recipe.getResult().getRuntimeId());
+            byteBuf.writeVarInt(recipe.getInput().getRuntimeId());
+            byteBuf.writeVarInt(recipe.getIngredient().getRuntimeId());
+            byteBuf.writeVarInt(recipe.getResult().getRuntimeId());
         }
 
-        this.putUnsignedVarInt(0); // Material reducers size
+        byteBuf.writeUnsignedVarInt(0); // Material reducers size
 
-        this.putBoolean(cleanRecipes);
+        byteBuf.writeBoolean(cleanRecipes);
     }
 
     @Override

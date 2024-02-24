@@ -11,6 +11,7 @@ import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.network.connection.netty.BedrockBatchWrapper;
 import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
 import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.process.handler.HandshakePacketHandler;
 import cn.nukkit.network.process.handler.InGamePacketHandler;
@@ -25,6 +26,7 @@ import cn.nukkit.network.protocol.DisconnectPacket;
 import cn.nukkit.network.protocol.NetworkSettingsPacket;
 import cn.nukkit.network.protocol.PacketHandler;
 import cn.nukkit.network.protocol.PlayStatusPacket;
+import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.SetCommandsEnabledPacket;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import cn.nukkit.player.info.PlayerInfo;
@@ -35,6 +37,7 @@ import com.github.oxo42.stateless4j.StateMachineConfig;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.CompositeByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.util.internal.PlatformDependent;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -164,6 +167,17 @@ public class BedrockSession {
         this.logOutbound(packet);
     }
 
+    public void sendRawPacket(int pid, @NonNull ByteBuf buf2) {
+        BedrockPacketCodec bedrockPacketCodec = this.peer.channel.pipeline().get(BedrockPacketCodec.class);
+        ByteBuf buf1 = ByteBufAllocator.DEFAULT.ioBuffer(4);
+        BedrockPacketWrapper msg = new BedrockPacketWrapper(pid, this.subClientId, 0, null, null);
+        bedrockPacketCodec.encodeHeader(buf1, msg);
+        CompositeByteBuf compositeBuf = Unpooled.compositeBuffer();
+        compositeBuf.addComponents(true, buf1, buf2);
+        msg.setPacketBuffer(compositeBuf);
+        this.peer.sendRawPacket(msg);
+    }
+
     public void sendPacketImmediately(@NonNull DataPacket packet) {
         DataPacketSendEvent ev = new DataPacketSendEvent(this.getPlayer(), packet);
         Server.getInstance().getPluginManager().callEvent(ev);
@@ -184,8 +198,7 @@ public class BedrockSession {
             DataPacket packet = msg.getPacket();
             msg.setPacketId(packet.pid());
             bedrockPacketCodec.encodeHeader(buf1, msg);
-            packet.tryEncode();
-            buf1.writeBytes(packet.getBuffer());
+            packet.encode(HandleByteBuf.of(buf1));
 
             BedrockBatchWrapper batch = BedrockBatchWrapper.newInstance();
             CompositeByteBuf buf2 = alloc.compositeDirectBuffer(2);
@@ -455,7 +468,7 @@ public class BedrockSession {
     }
 
     public void syncCraftingData() {
-        this.sendDataPacket(Registries.RECIPE.getCraftingPacket());
+        this.sendRawPacket(ProtocolInfo.CRAFTING_DATA_PACKET, Registries.RECIPE.getCraftingPacket());
     }
 
     public void syncCreativeContent() {

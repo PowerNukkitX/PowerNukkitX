@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -37,14 +38,14 @@ public class CompletedUsingItemPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putLShort(itemId);
-        this.putLInt(action);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeShortLE(itemId);
+        byteBuf.writeIntLE(action);
     }
 
     public void handle(PacketHandler handler) {

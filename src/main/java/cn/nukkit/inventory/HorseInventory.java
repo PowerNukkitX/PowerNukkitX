@@ -2,9 +2,7 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-
-
-import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
@@ -59,14 +57,14 @@ public class HorseInventory extends BaseInventory {
         super.onSlotChange(index, before, send);
         if (index == 0) {
             if (this.getSaddle().isNull()) {
-                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SADDLED, false);
-                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED, false);
-                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_CAN_POWER_JUMP, false);
+                this.getHolder().setDataFlag(EntityFlag.SADDLED, false);
+                this.getHolder().setDataFlag(EntityFlag.WASD_CONTROLLED, false);
+                this.getHolder().setDataFlag(EntityFlag.CAN_POWER_JUMP, false);
             } else {
                 this.getHolder().getLevel().addLevelSoundEvent(this.getHolder(), LevelSoundEventPacket.SOUND_SADDLE, -1, this.getHolder().getIdentifier(), false, false);
-                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SADDLED);
-                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED);
-                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_CAN_POWER_JUMP);
+                this.getHolder().setDataFlag(EntityFlag.SADDLED);
+                this.getHolder().setDataFlag(EntityFlag.WASD_CONTROLLED);
+                this.getHolder().setDataFlag(EntityFlag.CAN_POWER_JUMP);
             }
         } else if (index == 1) {
             if (!this.getHorseArmor().isNull()) {

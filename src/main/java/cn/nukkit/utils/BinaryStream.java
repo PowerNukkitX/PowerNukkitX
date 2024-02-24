@@ -3,11 +3,9 @@ package cn.nukkit.utils;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Attribute;
-import cn.nukkit.entity.data.*;
+import cn.nukkit.entity.data.Skin;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.level.GameRule;
-import cn.nukkit.level.GameRules;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector2f;
@@ -35,14 +33,20 @@ import io.netty.buffer.ByteBufInputStream;
 import io.netty.util.internal.EmptyArrays;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -755,18 +759,6 @@ public class BinaryStream {
     public void putVector2f(float x, float y) {
         this.putLFloat(x);
         this.putLFloat(y);
-    }
-
-    public void putGameRules(GameRules gameRules) {
-        // LinkedHashMap gives mutability and is faster in iteration
-        val rules = new LinkedHashMap<>(gameRules.getGameRules());
-        rules.keySet().removeIf(GameRule::isDeprecated);
-
-        this.putUnsignedVarInt(rules.size());
-        rules.forEach((gameRule, value) -> {
-            this.putString(gameRule.getName().toLowerCase());
-            value.write(this);
-        });
     }
 
     /**

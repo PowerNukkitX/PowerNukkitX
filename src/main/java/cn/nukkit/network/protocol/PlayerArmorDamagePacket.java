@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 import java.util.EnumSet;
@@ -18,27 +19,27 @@ public class PlayerArmorDamagePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        int flagsval = this.getByte();
+    public void decode(HandleByteBuf byteBuf) {
+        int flagsval = byteBuf.readByte();
         for (int i = 0; i < 4; i++) {
             if ((flagsval & (1 << i)) != 0) {
                 this.flags.add(PlayerArmorDamageFlag.values()[i]);
-                this.damage[i] = this.getVarInt();
+                this.damage[i] = byteBuf.readVarInt();
             }
         }
     }
 
     @Override
-    public void encode() {
-        this.reset();
+    public void encode(HandleByteBuf byteBuf) {
+        
         int outflags = 0;
         for (PlayerArmorDamageFlag flag : this.flags) {
             outflags |= 1 << flag.ordinal();
         }
-        this.putByte((byte) outflags);
+        byteBuf.writeByte((byte) outflags);
 
         for (PlayerArmorDamageFlag flag : this.flags) {
-            this.putVarInt(this.damage[flag.ordinal()]);
+            byteBuf.writeVarInt(this.damage[flag.ordinal()]);
         }
     }
 

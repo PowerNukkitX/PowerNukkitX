@@ -42,7 +42,7 @@ public class EntitySplashPotion extends EntityProjectile {
 
         potionId = this.namedTag.getShort("PotionId");
 
-        this.dataProperties.putShort(DATA_POTION_AUX_VALUE, this.potionId);
+        this.entityDataMap.put(AUX_VALUE_DATA, this.potionId);
 
         /*Effect effect = Potion.getEffect(potionId, true); TODO: potion color
 

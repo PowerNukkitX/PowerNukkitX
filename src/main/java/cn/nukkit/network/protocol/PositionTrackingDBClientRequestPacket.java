@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -14,9 +15,9 @@ public class PositionTrackingDBClientRequestPacket extends DataPacket {
 
 
     public static final int NETWORK_ID = ProtocolInfo.POS_TRACKING_CLIENT_REQUEST_PACKET;
-    
+
     private static final Action[] ACTIONS = Action.values();
-    
+
     private Action action;
     private int trackingId;
 
@@ -30,17 +31,16 @@ public class PositionTrackingDBClientRequestPacket extends DataPacket {
     }
 
     @Override
-    public void encode() {
-        reset();
-        putByte((byte) action.ordinal());
-        putVarInt(trackingId);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeByte((byte) action.ordinal());
+        byteBuf.writeVarInt(trackingId);
     }
 
     @Override
-    public void decode() {
-        int aByte = getByte();
+    public void decode(HandleByteBuf byteBuf) {
+        int aByte = byteBuf.readByte();
         action = ACTIONS[aByte];
-        trackingId = getVarInt();
+        trackingId = byteBuf.readVarInt();
     }
 
     @Override

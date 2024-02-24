@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -47,58 +48,58 @@ public class BossEventPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.bossEid = this.getEntityUniqueId();
-        this.type = (int) this.getUnsignedVarInt();
+    public void decode(HandleByteBuf byteBuf) {
+        this.bossEid = byteBuf.readEntityUniqueId();
+        this.type = (int) byteBuf.readUnsignedVarInt();
         switch (this.type) {
             case TYPE_REGISTER_PLAYER:
             case TYPE_UNREGISTER_PLAYER:
             case TYPE_QUERY:
-                this.playerEid = this.getEntityUniqueId();
+                this.playerEid = byteBuf.readEntityUniqueId();
                 break;
             case TYPE_SHOW:
-                this.title = this.getString();
-                this.healthPercent = this.getLFloat();
+                this.title = byteBuf.readString();
+                this.healthPercent = byteBuf.readFloatLE();
             case TYPE_UPDATE_PROPERTIES:
-                this.unknown = (short) this.getShort();
+                this.unknown = (short) byteBuf.readShort();
             case TYPE_TEXTURE:
-                this.color = (int) this.getUnsignedVarInt();
-                this.overlay = (int) this.getUnsignedVarInt();
+                this.color = (int) byteBuf.readUnsignedVarInt();
+                this.overlay = (int) byteBuf.readUnsignedVarInt();
                 break;
             case TYPE_HEALTH_PERCENT:
-                this.healthPercent = this.getLFloat();
+                this.healthPercent = byteBuf.readFloatLE();
                 break;
             case TYPE_TITLE:
-                this.title = this.getString();
+                this.title = byteBuf.readString();
                 break;
         }
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putEntityUniqueId(this.bossEid);
-        this.putUnsignedVarInt(this.type);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeEntityUniqueId(this.bossEid);
+        byteBuf.writeUnsignedVarInt(this.type);
         switch (this.type) {
             case TYPE_REGISTER_PLAYER:
             case TYPE_UNREGISTER_PLAYER:
             case TYPE_QUERY:
-                this.putEntityUniqueId(this.playerEid);
+                byteBuf.writeEntityUniqueId(this.playerEid);
                 break;
             case TYPE_SHOW:
-                this.putString(this.title);
-                this.putLFloat(this.healthPercent);
+                byteBuf.writeString(this.title);
+                byteBuf.writeFloatLE(this.healthPercent);
             case TYPE_UNKNOWN_6:
-                this.putShort(this.unknown);
+                byteBuf.writeShort(this.unknown);
             case TYPE_TEXTURE:
-                this.putUnsignedVarInt(this.color);
-                this.putUnsignedVarInt(this.overlay);
+                byteBuf.writeUnsignedVarInt(this.color);
+                byteBuf.writeUnsignedVarInt(this.overlay);
                 break;
             case TYPE_HEALTH_PERCENT:
-                this.putLFloat(this.healthPercent);
+                byteBuf.writeFloatLE(this.healthPercent);
                 break;
             case TYPE_TITLE:
-                this.putString(this.title);
+                byteBuf.writeString(this.title);
                 break;
         }
     }

@@ -8,8 +8,6 @@ import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
-import cn.nukkit.entity.data.IntEntityData;
-import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
@@ -24,7 +22,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInteractable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return NPC;
     }
 
@@ -43,7 +42,6 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
         super(chunk, nbt);
     }
 
-    
 
     @Override
     public float getWidth() {
@@ -88,12 +86,12 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
             if (response.getRequestType() == NPCRequestPacket.RequestType.SET_ACTIONS) {
                 if (!response.getData().isEmpty()) {
                     this.dialog.setButtonJSONData(response.getData());
-                    this.setDataProperty(new StringEntityData(Entity.DATA_NPC_ACTIONS, response.getData()));
+                    this.setDataProperty(Entity.ACTIONS, response.getData());
                 }
             }
             if (response.getRequestType() == NPCRequestPacket.RequestType.SET_INTERACTION_TEXT) {
                 this.dialog.setContent(response.getData());
-                this.setDataProperty(new StringEntityData(Entity.DATA_INTERACTIVE_TAG, response.getData()));
+                this.setDataProperty(Entity.INTERACT_TEXT, response.getData());
             }
             if (response.getRequestType() == NPCRequestPacket.RequestType.SET_NAME) {
                 this.dialog.setTitle(response.getData());
@@ -162,7 +160,7 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
 
     public void setVariant(int variant) {
         this.variant = variant;
-        this.setDataProperty(new IntEntityData(DATA_VARIANT, variant));
+        this.setDataProperty(VARIANT, variant);
     }
 
     public FormWindowDialog getDialog() {

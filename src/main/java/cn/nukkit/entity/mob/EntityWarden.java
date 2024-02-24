@@ -18,7 +18,6 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.RouteUnreachableTimeSensor;
-import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -107,7 +106,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                         }, (entity) -> true, 1, 1, 120),
                         new Behavior((entity) -> {
                             //计算心跳间隔
-                            this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_INTERVAL_TICKS, this.calHeartBeatDelay()));
+                            this.setDataProperty(Entity.HEARTBEAT_INTERVAL_TICKS,this.calHeartBeatDelay());
                             return false;
                         }, (entity) -> true, 1, 1, 20)),
                 Set.of(
@@ -164,8 +163,8 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     protected void initEntity() {
         this.setMaxHealth(500);
         super.initEntity();
-        this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_INTERVAL_TICKS, 40));
-        this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_SOUND_EVENT, LevelSoundEventPacket.SOUND_HEARTBEAT));
+        this.setDataProperty(Entity.HEARTBEAT_INTERVAL_TICKS, 40);
+        this.setDataProperty(Entity.HEARTBEAT_SOUND_EVENT, LevelSoundEventPacket.SOUND_HEARTBEAT);
         //空闲声音
         this.setAmbientSoundEvent(Sound.MOB_WARDEN_IDLE);
         this.setAmbientSoundInterval(8.0f);

@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString(exclude = "namedtag")
@@ -18,18 +19,18 @@ public class UpdateEquipmentPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putByte((byte) this.windowId);
-        this.putByte((byte) this.windowType);
-        this.putVarInt(0);//size
-        this.putEntityUniqueId(this.eid);
-        this.put(this.namedtag);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeByte((byte) this.windowId);
+        byteBuf.writeByte((byte) this.windowType);
+        byteBuf.writeVarInt(0);//size
+        byteBuf.writeEntityUniqueId(this.eid);
+        byteBuf.writeBytes(this.namedtag);
     }
 
     public void handle(PacketHandler handler) {

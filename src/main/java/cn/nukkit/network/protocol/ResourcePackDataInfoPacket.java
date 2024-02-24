@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 import cn.nukkit.utils.version.Version;
 
@@ -32,26 +33,26 @@ public class ResourcePackDataInfoPacket extends AbstractResourcePackDataPacket {
     public int type = TYPE_RESOURCE;
 
     @Override
-    public void decode() {
-        decodePackInfo();
-        this.maxChunkSize = this.getLInt();
-        this.chunkCount = this.getLInt();
-        this.compressedPackSize = this.getLLong();
-        this.sha256 = this.getByteArray();
-        this.premium = this.getBoolean();
-        this.type = this.getByte();
+    public void decode(HandleByteBuf byteBuf) {
+        decodePackInfo(byteBuf);
+        this.maxChunkSize = byteBuf.readIntLE();
+        this.chunkCount = byteBuf.readIntLE();
+        this.compressedPackSize = byteBuf.readLongLE();
+        this.sha256 = byteBuf.readByteArray();
+        this.premium = byteBuf.readBoolean();
+        this.type = byteBuf.readByte();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        encodePackInfo();
-        this.putLInt(this.maxChunkSize);
-        this.putLInt(this.chunkCount);
-        this.putLLong(this.compressedPackSize);
-        this.putByteArray(this.sha256);
-        this.putBoolean(this.premium);
-        this.putByte((byte) this.type);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        encodePackInfo(byteBuf);
+        byteBuf.writeIntLE(this.maxChunkSize);
+        byteBuf.writeIntLE(this.chunkCount);
+        byteBuf.writeLongLE(this.compressedPackSize);
+        byteBuf.writeByteArray(this.sha256);
+        byteBuf.writeBoolean(this.premium);
+        byteBuf.writeByte((byte) this.type);
     }
 
     @Override

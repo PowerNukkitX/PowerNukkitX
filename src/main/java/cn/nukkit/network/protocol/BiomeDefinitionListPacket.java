@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.registry.Registries;
 import lombok.ToString;
 
@@ -13,13 +14,12 @@ public class BiomeDefinitionListPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.put(Registries.BIOME.getBiomeDefinitionListPacketData());
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeBytes(Registries.BIOME.getBiomeDefinitionListPacketData());
     }
 
     public void handle(PacketHandler handler) {

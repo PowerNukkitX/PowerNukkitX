@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -20,18 +21,18 @@ public class HurtArmorPacket extends DataPacket {
     public long armorSlots;
 
     @Override
-    public void decode() {
-        this.cause = getVarInt();
-        this.damage = getVarInt();
-        this.armorSlots = getUnsignedVarLong();
+    public void decode(HandleByteBuf byteBuf) {
+        this.cause = byteBuf.readVarInt();
+        this.damage = byteBuf.readVarInt();
+        this.armorSlots = byteBuf.readUnsignedVarLong();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putVarInt(this.cause);
-        this.putVarInt(this.damage);
-        this.putUnsignedVarLong(this.armorSlots);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeVarInt(this.cause);
+        byteBuf.writeVarInt(this.damage);
+        byteBuf.writeUnsignedVarLong(this.armorSlots);
     }
 
     @Override

@@ -2,6 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 import java.io.IOException;
@@ -30,24 +31,24 @@ public class UpdateTradePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putByte(containerId);
-        this.putByte(containerType);
-        this.putVarInt(size);
-        this.putVarInt(tradeTier);
-        this.putEntityUniqueId(traderUniqueEntityId);
-        this.putEntityUniqueId(playerUniqueEntityId);
-        this.putString(displayName);
-        this.putBoolean(newTradingUi);
-        this.putBoolean(usingEconomyTrade);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeByte(containerId);
+        byteBuf.writeByte(containerType);
+        byteBuf.writeVarInt(size);
+        byteBuf.writeVarInt(tradeTier);
+        byteBuf.writeEntityUniqueId(traderUniqueEntityId);
+        byteBuf.writeEntityUniqueId(playerUniqueEntityId);
+        byteBuf.writeString(displayName);
+        byteBuf.writeBoolean(newTradingUi);
+        byteBuf.writeBoolean(usingEconomyTrade);
         try {
-            this.put(NBTIO.write(this.offers, ByteOrder.LITTLE_ENDIAN, true));
+            byteBuf.writeBytes(NBTIO.write(this.offers, ByteOrder.LITTLE_ENDIAN, true));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }

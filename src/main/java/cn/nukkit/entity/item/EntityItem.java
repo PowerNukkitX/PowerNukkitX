@@ -3,6 +3,7 @@ package cn.nukkit.entity.item;
 import cn.nukkit.Server;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.ItemDespawnEvent;
@@ -21,10 +22,11 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityItem extends Entity {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return ITEM;
     }
-    
+
     protected String owner;
     protected String thrower;
     protected Item item;
@@ -34,7 +36,6 @@ public class EntityItem extends Entity {
         super(chunk, nbt);
     }
 
-    
 
     @Override
     public float getWidth() {
@@ -100,7 +101,7 @@ public class EntityItem extends Entity {
         }
 
         this.item = NBTIO.getItemHelper(this.namedTag.getCompound("Item"));
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_GRAVITY, true);
+        this.setDataFlag(EntityFlag.HAS_GRAVITY, true);
 
         if (this.item.isLavaResistant()) {
             this.fireProof = true; // Netherite items are fireproof
@@ -109,7 +110,7 @@ public class EntityItem extends Entity {
         this.server.getPluginManager().callEvent(new ItemSpawnEvent(this));
     }
 
-    
+
     @Override
     public boolean attack(EntityDamageEvent source) {
         if (item != null && item.isLavaResistant() && (
@@ -286,7 +287,8 @@ public class EntityItem extends Entity {
     }
 
     @Override
-    @NotNull public String getName() {
+    @NotNull
+    public String getName() {
         if (this.hasCustomName()) {
             return getNameTag();
         }
@@ -340,7 +342,7 @@ public class EntityItem extends Entity {
         addEntity.speedX = (float) this.motionX;
         addEntity.speedY = (float) this.motionY;
         addEntity.speedZ = (float) this.motionZ;
-        addEntity.metadata = this.dataProperties;
+        addEntity.entityData = this.entityDataMap;
         addEntity.item = this.getItem();
         return addEntity;
     }

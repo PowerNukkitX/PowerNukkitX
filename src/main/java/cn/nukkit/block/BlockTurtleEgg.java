@@ -6,6 +6,7 @@ import cn.nukkit.block.property.enums.TurtleEggCount;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.mob.EntityGhast;
 import cn.nukkit.entity.mob.EntityPhantom;
 import cn.nukkit.entity.passive.EntityBat;
@@ -228,7 +229,7 @@ public class BlockTurtleEgg extends BlockFlowable {
                     if (turtle != null) {
                         turtle.setBreedingAge(-24000);
                         turtle.setHomePos(new Vector3(x, y, z));
-                        turtle.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_BABY, true);
+                        turtle.setDataFlag(EntityFlag.BABY, true);
                         turtle.setScale(0.16f);
                         turtle.spawnToAll();
                         continue;

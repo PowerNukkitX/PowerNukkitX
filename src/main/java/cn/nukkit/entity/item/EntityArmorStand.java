@@ -7,7 +7,6 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityNameable;
-import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -37,9 +36,11 @@ import java.util.Collection;
 
 public class EntityArmorStand extends Entity implements EntityInventoryHolder, EntityInteractable, EntityNameable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return ARMOR_STAND;
     }
+
     private static final String TAG_MAINHAND = "Mainhand";
     private static final String TAG_POSE_INDEX = "PoseIndex";
     private static final String TAG_OFFHAND = "Offhand";
@@ -71,7 +72,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
     }
 
-    
 
     @Override
     public float getHeight() {
@@ -289,14 +289,14 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     private int getPose() {
-        return this.dataProperties.getInt(Entity.DATA_ARMOR_STAND_POSE_INDEX);
+        return this.entityDataMap.get(Entity.ARMOR_STAND_POSE_INDEX);
     }
 
     private void setPose(int pose) {
-        this.dataProperties.putInt(Entity.DATA_ARMOR_STAND_POSE_INDEX, pose);
+        this.entityDataMap.put(Entity.ARMOR_STAND_POSE_INDEX, pose);
         SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
         setEntityDataPacket.eid = this.getId();
-        setEntityDataPacket.metadata = this.getDataProperties();
+        setEntityDataPacket.entityData = this.getEntityDataMap();
         Server.getInstance().getOnlinePlayers().values().forEach(all -> all.dataPacket(setEntityDataPacket));
     }
 
@@ -312,7 +312,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             for (int i = 0; i < 4; i++) {
                 armorTag.add(NBTIO.putItemHelper(this.armorInventory.getItem(i), i));
             }
-            this.namedTag.putList(TAG_ARMOR,armorTag);
+            this.namedTag.putList(TAG_ARMOR, armorTag);
         }
 
         this.namedTag.putInt(TAG_POSE_INDEX, this.getPose());
@@ -414,7 +414,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
         setLastDamageCause(source);
 
-        if (getDataPropertyInt(DATA_HURT_TIME) > 0) {
+        if (getDataProperty(HURT_TICKS) > 0) {
             setHealth(0);
             return true;
         }
@@ -429,7 +429,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             }
         }
 
-        setDataProperty(new IntEntityData(DATA_HURT_TIME, 9), true);
+        setDataProperty(HURT_TICKS, 9, true);
         level.addSound(this, Sound.MOB_ARMOR_STAND_HIT);
 
         return true;
@@ -444,9 +444,9 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     public boolean entityBaseTick(int tickDiff) {
         boolean hasUpdate = super.entityBaseTick(tickDiff);
 
-        int hurtTime = getDataPropertyInt(DATA_HURT_TIME);
+        int hurtTime = getDataProperty(HURT_TICKS);
         if (hurtTime > 0 && age % 2 == 0) {
-            setDataProperty(new IntEntityData(DATA_HURT_TIME, hurtTime - 1), true);
+            setDataProperty(HURT_TICKS, hurtTime - 1, true);
             hasUpdate = true;
         }
         hurtTime = namedTag.getByte("InvulnerableTimer");

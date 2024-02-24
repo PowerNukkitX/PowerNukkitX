@@ -1,6 +1,8 @@
 package cn.nukkit.network.protocol;
 
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
+
 public class ScriptMessagePacket extends DataPacket {
     private String channel;
     private String message;
@@ -11,15 +13,15 @@ public class ScriptMessagePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.channel = getString();
-        this.message = getString();
+    public void decode(HandleByteBuf byteBuf) {
+        this.channel = byteBuf.readString();
+        this.message = byteBuf.readString();
     }
 
     @Override
-    public void encode() {
-        putString(channel);
-        putString(message);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeString(channel);
+        byteBuf.writeString(message);
     }
 
     public String _getChannel() {

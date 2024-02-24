@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -14,15 +15,15 @@ public class ServerSettingsResponsePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putVarInt(this.formId);
-        this.putString(this.data);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeVarInt(this.formId);
+        byteBuf.writeString(this.data);
     }
 
     public void handle(PacketHandler handler) {

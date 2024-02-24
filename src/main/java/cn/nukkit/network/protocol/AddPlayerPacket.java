@@ -1,8 +1,9 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.Server;
-import cn.nukkit.entity.data.EntityMetadata;
+import cn.nukkit.entity.data.EntityDataMap;
 import cn.nukkit.item.Item;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.PropertySyncData;
 import cn.nukkit.utils.Binary;
 import lombok.ToString;
@@ -36,7 +37,7 @@ public class AddPlayerPacket extends DataPacket {
     public float yaw;
     public Item item;
     public int gameType = Server.getInstance().getGamemode();
-    public EntityMetadata metadata = new EntityMetadata();
+    public EntityDataMap entityData = new EntityDataMap();
 
 
     public PropertySyncData syncedProperties = new PropertySyncData(new int[]{}, new float[]{});
@@ -45,54 +46,54 @@ public class AddPlayerPacket extends DataPacket {
     public int buildPlatform = -1;
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putUUID(this.uuid);
-        this.putString(this.username);
-//        this.putEntityUniqueId(this.entityUniqueId);
-        this.putEntityRuntimeId(this.entityRuntimeId);
-        this.putString(this.platformChatId);
-        this.putVector3f(this.x, this.y, this.z);
-        this.putVector3f(this.speedX, this.speedY, this.speedZ);
-        this.putLFloat(this.pitch);
-        this.putLFloat(this.yaw); //TODO headrot
-        this.putLFloat(this.yaw);
-        this.putSlot(this.item);
-        this.putVarInt(this.gameType);
-        this.put(Binary.writeMetadata(this.metadata));
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeUUID(this.uuid);
+        byteBuf.writeString(this.username);
+//        byteBuf.writeEntityUniqueId(this.entityUniqueId);
+        byteBuf.writeEntityRuntimeId(this.entityRuntimeId);
+        byteBuf.writeString(this.platformChatId);
+        byteBuf.writeVector3f(this.x, this.y, this.z);
+        byteBuf.writeVector3f(this.speedX, this.speedY, this.speedZ);
+        byteBuf.writeFloatLE(this.pitch);
+        byteBuf.writeFloatLE(this.yaw); //TODO headrot
+        byteBuf.writeFloatLE(this.yaw);
+        byteBuf.writeSlot(this.item);
+        byteBuf.writeVarInt(this.gameType);
+        byteBuf.writeBytes(Binary.writeEntityData(this.entityData));
         //syncedProperties
-        this.putUnsignedVarInt(this.syncedProperties.intProperties().length);
+        byteBuf.writeUnsignedVarInt(this.syncedProperties.intProperties().length);
         for (int i = 0, len = this.syncedProperties.intProperties().length; i < len; ++i) {
-            this.putUnsignedVarInt(i);
-            this.putVarInt(this.syncedProperties.intProperties()[i]);
+            byteBuf.writeUnsignedVarInt(i);
+            byteBuf.writeVarInt(this.syncedProperties.intProperties()[i]);
         }
-        this.putUnsignedVarInt(this.syncedProperties.floatProperties().length);
+        byteBuf.writeUnsignedVarInt(this.syncedProperties.floatProperties().length);
         for (int i = 0, len = this.syncedProperties.floatProperties().length; i < len; ++i) {
-            this.putUnsignedVarInt(i);
-            this.putLFloat(this.syncedProperties.floatProperties()[i]);
+            byteBuf.writeUnsignedVarInt(i);
+            byteBuf.writeFloatLE(this.syncedProperties.floatProperties()[i]);
         }
-//        this.putUnsignedVarInt(0); //TODO: Adventure settings
-//        this.putUnsignedVarInt(0);
-//        this.putUnsignedVarInt(0);
-//        this.putUnsignedVarInt(0);
-//        this.putUnsignedVarInt(0);
-        this.putLLong(entityUniqueId);
-        this.putUnsignedVarInt(0); // playerPermission
-        this.putUnsignedVarInt(0); // commandPermission
-        this.putUnsignedVarInt(1); // abilitiesLayer size
-        this.putLShort(1); // BASE layer type
-        this.putLInt(262143); // abilitiesSet - all abilities
-        this.putLInt(63); // abilityValues - survival abilities
-        this.putLFloat(0.1f); // flySpeed
-        this.putLFloat(0.05f); // walkSpeed
-        this.putUnsignedVarInt(0); //TODO: Entity links
-        this.putString(deviceId);
-        this.putLInt(buildPlatform);
+//        byteBuf.writeUnsignedVarInt(0); //TODO: Adventure settings
+//        byteBuf.writeUnsignedVarInt(0);
+//        byteBuf.writeUnsignedVarInt(0);
+//        byteBuf.writeUnsignedVarInt(0);
+//        byteBuf.writeUnsignedVarInt(0);
+        byteBuf.writeLongLE(entityUniqueId);
+        byteBuf.writeUnsignedVarInt(0); // playerPermission
+        byteBuf.writeUnsignedVarInt(0); // commandPermission
+        byteBuf.writeUnsignedVarInt(1); // abilitiesLayer size
+        byteBuf.writeShortLE(1); // BASE layer type
+        byteBuf.writeIntLE(262143); // abilitiesSet - all abilities
+        byteBuf.writeIntLE(63); // abilityValues - survival abilities
+        byteBuf.writeFloatLE(0.1f); // flySpeed
+        byteBuf.writeFloatLE(0.05f); // walkSpeed
+        byteBuf.writeUnsignedVarInt(0); //TODO: Entity links
+        byteBuf.writeString(deviceId);
+        byteBuf.writeIntLE(buildPlatform);
     }
 
     public void handle(PacketHandler handler) {

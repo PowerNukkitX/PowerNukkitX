@@ -9,6 +9,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.item.EntityArmorStand;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -251,7 +252,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 if (spamBug && player.getInventory().getItemInHand().getBlock().isAir()) {
                     return;
                 }
-                player.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_ACTION, false);
+                player.setDataFlag(EntityFlag.USING_ITEM, false);
                 if (player.canInteract(blockVector.add(0.5, 0.5, 0.5), player.isCreative() ? 13 : 7)) {
                     if (player.isCreative()) {
                         Item i = player.getInventory().getItemInHand();

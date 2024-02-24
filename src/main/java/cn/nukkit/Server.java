@@ -686,10 +686,6 @@ public class Server {
         log.info(this.getLanguage().tr("nukkit.server.networkStart", new String[]{this.getIp().equals("") ? "*" : this.getIp(), String.valueOf(this.getPort())}));
         this.serverID = UUID.randomUUID();
 
-        this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5);
-        this.network = new Network(this);
-        this.network.setPong(this.getMotd());
-
         log.info(this.getLanguage().tr("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + " (" + this.getGitCommit() + ")" + TextFormat.WHITE, this.getApiVersion()));
         log.info(this.getLanguage().tr("nukkit.server.license"));
 
@@ -735,11 +731,8 @@ public class Server {
                 this.getConfig("memory-compression.heat.melting", 16),
                 this.getConfig("memory-compression.heat.single-operation", 1),
                 this.getConfig("memory-compression.heat.batch-operation", 32));
-
         scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
-
         functionManager = new FunctionManager(this.commandDataPath + "/functions");
-
         tickingAreaManager = new SimpleTickingAreaManager(new JSONTickingAreaStorage(this.dataPath + "worlds/"));
 
         // Convert legacy data before plugins get the chance to mess with it.
@@ -756,11 +749,9 @@ public class Server {
                 new ZippedResourcePackLoader(new File(Nukkit.DATA_PATH, "resource_packs")),
                 new JarPluginResourcePackLoader(new File(this.pluginPath))
         );
-
         this.commandMap = new SimpleCommandMap(this);
         this.pluginManager = new PluginManager(this, this.commandMap);
         this.pluginManager.subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this.consoleSender);
-
         this.pluginManager.registerInterface(JavaPluginLoader.class);
         this.pluginManager.registerInterface(JSPluginLoader.class);
 
@@ -770,8 +761,12 @@ public class Server {
         } catch (IOException e) {
             log.error("Failed to start the Position Tracking DB service!", e);
         }
-
         this.pluginManager.loadInternalPlugin();
+
+        this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5);
+        this.network = new Network(this);
+        this.network.setPong(this.getMotd());
+
         this.pluginManager.loadPlugins(this.pluginPath);
 
         {//trim
@@ -1594,7 +1589,6 @@ public class Server {
      * @see #broadcastPacket(Player[], DataPacket)
      */
     public static void broadcastPacket(Collection<Player> players, DataPacket packet) {
-        packet.tryEncode();
         for (Player player : players) {
             player.dataPacket(packet);
         }
@@ -1607,8 +1601,6 @@ public class Server {
      * @param packet  数据包
      */
     public static void broadcastPacket(Player[] players, DataPacket packet) {
-        packet.tryEncode();
-
         for (Player player : players) {
             player.dataPacket(packet);
         }
@@ -2249,7 +2241,7 @@ public class Server {
      * @param player 玩家
      */
     public void sendRecipeList(Player player) {
-        player.dataPacket(Registries.RECIPE.getCraftingPacket());
+        player.getSession().sendRawPacket(ProtocolInfo.CRAFTING_DATA_PACKET, Registries.RECIPE.getCraftingPacket());
     }
 
     /**

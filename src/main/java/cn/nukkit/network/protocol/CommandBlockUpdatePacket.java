@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -31,45 +32,45 @@ public class CommandBlockUpdatePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.isBlock = this.getBoolean();
+    public void decode(HandleByteBuf byteBuf) {
+        this.isBlock = byteBuf.readBoolean();
         if (this.isBlock) {
-            BlockVector3 v = this.getBlockVector3();
+            BlockVector3 v = byteBuf.readBlockVector3();
             this.x = v.x;
             this.y = v.y;
             this.z = v.z;
-            this.commandBlockMode = (int) this.getUnsignedVarInt();
-            this.isRedstoneMode = this.getBoolean();
-            this.isConditional = this.getBoolean();
+            this.commandBlockMode = (int) byteBuf.readUnsignedVarInt();
+            this.isRedstoneMode = byteBuf.readBoolean();
+            this.isConditional = byteBuf.readBoolean();
         } else {
-            this.minecartEid = this.getEntityRuntimeId();
+            this.minecartEid = byteBuf.readEntityRuntimeId();
         }
-        this.command = this.getString();
-        this.lastOutput = this.getString();
-        this.name = this.getString();
-        this.shouldTrackOutput = this.getBoolean();
-        this.tickDelay = this.getLInt();
-        this.executingOnFirstTick = this.getBoolean();
+        this.command = byteBuf.readString();
+        this.lastOutput = byteBuf.readString();
+        this.name = byteBuf.readString();
+        this.shouldTrackOutput = byteBuf.readBoolean();
+        this.tickDelay = byteBuf.readIntLE();
+        this.executingOnFirstTick = byteBuf.readBoolean();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putBoolean(this.isBlock);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeBoolean(this.isBlock);
         if (this.isBlock) {
-            this.putBlockVector3(this.x, this.y, this.z);
-            this.putUnsignedVarInt(this.commandBlockMode);
-            this.putBoolean(this.isRedstoneMode);
-            this.putBoolean(this.isConditional);
+            byteBuf.writeBlockVector3(this.x, this.y, this.z);
+            byteBuf.writeUnsignedVarInt(this.commandBlockMode);
+            byteBuf.writeBoolean(this.isRedstoneMode);
+            byteBuf.writeBoolean(this.isConditional);
         } else {
-            this.putEntityRuntimeId(this.minecartEid);
+            byteBuf.writeEntityRuntimeId(this.minecartEid);
         }
-        this.putString(this.command);
-        this.putString(this.lastOutput);
-        this.putString(this.name);
-        this.putBoolean(this.shouldTrackOutput);
-        this.putLInt(this.tickDelay);
-        this.putBoolean(this.executingOnFirstTick);
+        byteBuf.writeString(this.command);
+        byteBuf.writeString(this.lastOutput);
+        byteBuf.writeString(this.name);
+        byteBuf.writeBoolean(this.shouldTrackOutput);
+        byteBuf.writeIntLE(this.tickDelay);
+        byteBuf.writeBoolean(this.executingOnFirstTick);
     }
 
     public void handle(PacketHandler handler) {

@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.BlockSyncType;
 import lombok.ToString;
 
@@ -16,10 +17,10 @@ public class UpdateBlockSyncedPacket extends UpdateBlockPacket {
     }
 
     @Override
-    public void encode() {
-        super.encode();
-        this.putUnsignedVarLong(actorUniqueId);
-        this.putUnsignedVarLong(updateType.ordinal());
+    public void encode(HandleByteBuf byteBuf) {
+        super.encode(byteBuf);
+        byteBuf.writeUnsignedVarLong(actorUniqueId);
+        byteBuf.writeUnsignedVarLong(updateType.ordinal());
     }
 
     public void handle(PacketHandler handler) {

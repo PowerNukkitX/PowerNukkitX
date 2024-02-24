@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.entity.data.EntityMetadata;
+import cn.nukkit.entity.data.EntityDataMap;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.PropertySyncData;
 import cn.nukkit.utils.Binary;
 import lombok.ToString;
@@ -16,34 +17,37 @@ public class SetEntityDataPacket extends DataPacket {
     public int pid() {
         return NETWORK_ID;
     }
+
     public long eid;
-    public EntityMetadata metadata;
+    public EntityDataMap entityData;
     public PropertySyncData syncedProperties = new PropertySyncData(new int[]{}, new float[]{});
 
     public long frame;
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putUnsignedVarLong(this.eid);
-        this.put(Binary.writeMetadata(this.metadata));
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeUnsignedVarLong(this.eid);
+        if(entityData.isEmpty()){
+            System.out.println("entity data is empty");
+        }
+        byteBuf.writeBytes(Binary.writeEntityData(this.entityData));
         //syncedProperties
-        this.putUnsignedVarInt(this.syncedProperties.intProperties().length);
+        byteBuf.writeUnsignedVarInt(this.syncedProperties.intProperties().length);
         for (int i = 0, len = this.syncedProperties.intProperties().length; i < len; ++i) {
-            this.putUnsignedVarInt(i);
-            this.putVarInt(this.syncedProperties.intProperties()[i]);
+            byteBuf.writeUnsignedVarInt(i);
+            byteBuf.writeVarInt(this.syncedProperties.intProperties()[i]);
         }
-        this.putUnsignedVarInt(this.syncedProperties.floatProperties().length);
+        byteBuf.writeUnsignedVarInt(this.syncedProperties.floatProperties().length);
         for (int i = 0, len = this.syncedProperties.floatProperties().length; i < len; ++i) {
-            this.putUnsignedVarInt(i);
-            this.putLFloat(this.syncedProperties.floatProperties()[i]);
+            byteBuf.writeUnsignedVarInt(i);
+            byteBuf.writeFloatLE(this.syncedProperties.floatProperties()[i]);
         }
-        this.putUnsignedVarLong(this.frame);
+        byteBuf.writeUnsignedVarLong(this.frame);
     }
 
     public void handle(PacketHandler handler) {

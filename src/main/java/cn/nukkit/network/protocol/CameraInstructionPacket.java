@@ -6,6 +6,7 @@ import cn.nukkit.camera.instruction.CameraInstruction;
 import cn.nukkit.camera.instruction.impl.ClearInstruction;
 import cn.nukkit.camera.instruction.impl.FadeInstruction;
 import cn.nukkit.camera.instruction.impl.SetInstruction;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,29 +26,28 @@ public class CameraInstructionPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        putNotNull(setInstruction, (s) -> {
-            putLInt(s.getPreset().getId());
-            putNotNull(s.getEase(), this::writeEase);
-            putNotNull(s.getPos(), this::putVector3f);
-            putNotNull(s.getRot(), this::putVector2f);
-            putNotNull(s.getFacing(), this::putVector3f);
-            putOptional(s.getDefaultPreset(), this::putBoolean);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeNotNull(setInstruction, (s) -> {
+            byteBuf.writeIntLE(s.getPreset().getId());
+            byteBuf.writeNotNull(s.getEase(), e -> this.writeEase(byteBuf, e));
+            byteBuf.writeNotNull(s.getPos(), byteBuf::writeVector3f);
+            byteBuf.writeNotNull(s.getRot(), byteBuf::writeVector2f);
+            byteBuf.writeNotNull(s.getFacing(), byteBuf::writeVector3f);
+            byteBuf.writeOptional(s.getDefaultPreset(), byteBuf::writeBoolean);
         });
         if (clearInstruction == null) {
-            putBoolean(false);
+            byteBuf.writeBoolean(false);
         } else {
-            putBoolean(true);//optional.isPresent
-            putBoolean(true);//actual data
+            byteBuf.writeBoolean(true);//optional.isPresent
+            byteBuf.writeBoolean(true);//actual data
         }
-        putNotNull(fadeInstruction, (f) -> {
-            putNotNull(f.getTime(), this::writeTimeData);
-            putNotNull(f.getColor(), this::writeColor);
+        byteBuf.writeNotNull(fadeInstruction, (f) -> {
+            byteBuf.writeNotNull(f.getTime(), t -> this.writeTimeData(byteBuf, t));
+            byteBuf.writeNotNull(f.getColor(), c -> this.writeColor(byteBuf, c));
         });
     }
 
@@ -61,21 +61,21 @@ public class CameraInstructionPacket extends DataPacket {
         }
     }
 
-    protected void writeEase(Ease ease) {
-        this.putByte((byte) ease.easeType().ordinal());
-        this.putLFloat(ease.time());
+    protected void writeEase(HandleByteBuf byteBuf, Ease ease) {
+        byteBuf.writeByte((byte) ease.easeType().ordinal());
+        byteBuf.writeFloatLE(ease.time());
     }
 
-    protected void writeTimeData(Time time) {
-        this.putLFloat(time.fadeIn());
-        this.putLFloat(time.hold());
-        this.putLFloat(time.fadeOut());
+    protected void writeTimeData(HandleByteBuf byteBuf, Time time) {
+        byteBuf.writeFloatLE(time.fadeIn());
+        byteBuf.writeFloatLE(time.hold());
+        byteBuf.writeFloatLE(time.fadeOut());
     }
 
-    protected void writeColor(Color color) {
-        this.putLFloat(color.getRed() / 255F);
-        this.putLFloat(color.getGreen() / 255F);
-        this.putLFloat(color.getBlue() / 255F);
+    protected void writeColor(HandleByteBuf byteBuf, Color color) {
+        byteBuf.writeFloatLE(color.getRed() / 255F);
+        byteBuf.writeFloatLE(color.getGreen() / 255F);
+        byteBuf.writeFloatLE(color.getBlue() / 255F);
     }
 
     public void handle(PacketHandler handler) {

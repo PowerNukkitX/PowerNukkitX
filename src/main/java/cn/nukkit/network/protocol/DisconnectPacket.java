@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.DisconnectFailReason;
 import lombok.ToString;
 
@@ -20,19 +21,19 @@ public class DisconnectPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.reason = DisconnectFailReason.values()[this.getVarInt()];
-        this.hideDisconnectionScreen = this.getBoolean();
-        this.message = this.getString();
+    public void decode(HandleByteBuf byteBuf) {
+        this.reason = DisconnectFailReason.values()[byteBuf.readVarInt()];
+        this.hideDisconnectionScreen = byteBuf.readBoolean();
+        this.message = byteBuf.readString();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putVarInt(this.reason.ordinal());
-        this.putBoolean(this.hideDisconnectionScreen);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeVarInt(this.reason.ordinal());
+        byteBuf.writeBoolean(this.hideDisconnectionScreen);
         if (!this.hideDisconnectionScreen) {
-            this.putString(this.message);
+            byteBuf.writeString(this.message);
         }
     }
 

@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.utils.Identifier;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,14 +26,13 @@ public class PlayerFogPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
         //unused
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putArray(fogStack, fog -> this.putString(fog.identifier().toString()));
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeArray(fogStack, fog -> byteBuf.writeString(fog.identifier().toString()));
     }
 
     /**

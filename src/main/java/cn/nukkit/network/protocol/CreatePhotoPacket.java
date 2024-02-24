@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 
@@ -17,16 +18,16 @@ public class CreatePhotoPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putLLong(id);
-        this.putString(photoName);
-        this.putString(photoItemName);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeLongLE(id);
+        byteBuf.writeString(photoName);
+        byteBuf.writeString(photoItemName);
     }
 
     public void handle(PacketHandler handler) {

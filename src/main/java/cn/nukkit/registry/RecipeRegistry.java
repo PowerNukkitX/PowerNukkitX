@@ -3,8 +3,8 @@ package cn.nukkit.registry;
 import cn.nukkit.Server;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.CraftingDataPacket;
-import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.recipe.*;
 import cn.nukkit.recipe.descriptor.ComplexAliasDescriptor;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
@@ -16,6 +16,9 @@ import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.MinecraftNamespaceComparator;
 import cn.nukkit.utils.Utils;
 import com.google.common.collect.Collections2;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.util.ReferenceCountUtil;
 import io.netty.util.collection.CharObjectHashMap;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
@@ -46,7 +49,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     /**
      * 缓存着配方数据包
      */
-    private static DataPacket packet = null;
+    private static ByteBuf buffer = null;
     private final VanillaRecipeParser vanillaRecipeParser = new VanillaRecipeParser(this);
     private final EnumMap<RecipeType, Int2ObjectArrayMap<Set<Recipe>>> recipeMaps = new EnumMap<>(RecipeType.class);
     private final Object2ObjectOpenHashMap<String, Recipe> allRecipeMaps = new Object2ObjectOpenHashMap<>();
@@ -361,8 +364,8 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         return null;
     }
 
-    public DataPacket getCraftingPacket() {
-        return packet;
+    public ByteBuf getCraftingPacket() {
+        return buffer.copy();
     }
 
     public String computeRecipeIdWithItem(Collection<Item> results, Collection<Item> inputs, RecipeType type) {
@@ -410,8 +413,9 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         return networkIdRecipeList.get(networkId - 1);
     }
 
-    public static void setCraftingPacket(DataPacket craftingPacket) {
-        packet = craftingPacket;
+    public static void setCraftingPacket(ByteBuf craftingPacket) {
+        ReferenceCountUtil.safeRelease(buffer);
+        buffer = craftingPacket.retain();
     }
 
     @Override
@@ -468,10 +472,12 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         recipeMaps.values().forEach(Map::clear);
         allRecipeMaps.clear();
         RECIPE_COUNT = 0;
-        packet = null;
+        ReferenceCountUtil.safeRelease(buffer);
+        buffer = null;
     }
 
     public void rebuildPacket() {
+        ByteBuf buf = ByteBufAllocator.DEFAULT.ioBuffer(64);
         CraftingDataPacket pk = new CraftingDataPacket();
         pk.cleanRecipes = true;
 
@@ -495,8 +501,8 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         for (ContainerRecipe recipe : getContainerRecipeMap()) {
             pk.addContainerRecipe(recipe);
         }
-        pk.tryEncode();
-        packet = pk;
+        pk.encode(HandleByteBuf.of(buf));
+        buffer = buf;
     }
 
     @SneakyThrows

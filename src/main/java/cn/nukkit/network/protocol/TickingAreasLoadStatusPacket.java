@@ -1,5 +1,7 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
+
 public class TickingAreasLoadStatusPacket extends DataPacket {
     boolean waitingForPreload;
 
@@ -9,12 +11,12 @@ public class TickingAreasLoadStatusPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
-    public void encode() {
-        this.putBoolean(this.waitingForPreload);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeBoolean(this.waitingForPreload);
     }
 
     public void handle(PacketHandler handler) {

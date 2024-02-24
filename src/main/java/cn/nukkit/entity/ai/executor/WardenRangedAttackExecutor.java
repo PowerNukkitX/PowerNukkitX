@@ -1,10 +1,10 @@
 package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.Server;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
@@ -82,14 +82,14 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
     public void onInterrupt(EntityIntelligent entity) {
         this.currentTick = 0;
 
-        entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SONIC_BOOM, false);
-        entity.setDataFlag(Entity.DATA_FLAGS_EXTENDED, Entity.DATA_FLAG_SONIC_BOOM, false);
+        entity.setDataFlag(EntityFlag.SONIC_BOOM, false);
+        entity.setDataFlagExtend(EntityFlag.SONIC_BOOM, false);
     }
 
     @Override
     public void onStart(EntityIntelligent entity) {
-        entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SONIC_BOOM, true);
-        entity.setDataFlag(Entity.DATA_FLAGS_EXTENDED, Entity.DATA_FLAG_SONIC_BOOM, true);
+        entity.setDataFlag(EntityFlag.SONIC_BOOM, true);
+        entity.setDataFlagExtend(EntityFlag.SONIC_BOOM, true);
 
         entity.level.addSound(entity, Sound.MOB_WARDEN_SONIC_CHARGE);
 //        LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
@@ -106,8 +106,8 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
     public void onStop(EntityIntelligent entity) {
         this.currentTick = 0;
 
-        entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SONIC_BOOM, false);
-        entity.setDataFlag(Entity.DATA_FLAGS_EXTENDED, Entity.DATA_FLAG_SONIC_BOOM, false);
+        entity.setDataFlag(EntityFlag.SONIC_BOOM, false);
+        entity.setDataFlagExtend(EntityFlag.SONIC_BOOM, false);
     }
 
     protected void sendAttackParticle(EntityIntelligent entity, Vector3 from, Vector3 to) {

@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -80,22 +81,22 @@ public class NPCRequestPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.entityRuntimeId = super.getEntityRuntimeId();
-        this.requestType = RequestType.values()[this.getByte()];
-        this.data = this.getString();
-        this.skinType = this.getByte();
-        this.sceneName = this.getString();
+    public void decode(HandleByteBuf byteBuf) {
+        this.entityRuntimeId = byteBuf.readEntityRuntimeId();
+        this.requestType = RequestType.values()[byteBuf.readByte()];
+        this.data = byteBuf.readString();
+        this.skinType = byteBuf.readByte();
+        this.sceneName = byteBuf.readString();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putEntityRuntimeId(this.entityRuntimeId);
-        this.putByte((byte) requestType.ordinal());
-        this.putString(this.data);
-        this.putByte((byte) this.skinType);
-        this.putString(this.sceneName);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeEntityRuntimeId(this.entityRuntimeId);
+        byteBuf.writeByte((byte) requestType.ordinal());
+        byteBuf.writeString(this.data);
+        byteBuf.writeByte((byte) this.skinType);
+        byteBuf.writeString(this.sceneName);
     }
 
     public void handle(PacketHandler handler) {

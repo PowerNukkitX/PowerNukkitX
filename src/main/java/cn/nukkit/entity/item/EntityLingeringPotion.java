@@ -1,6 +1,7 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
@@ -15,7 +16,8 @@ import java.util.List;
 
 public class EntityLingeringPotion extends EntitySplashPotion {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return LINGERING_POTION;
     }
 
@@ -30,7 +32,7 @@ public class EntityLingeringPotion extends EntitySplashPotion {
     @Override
     protected void initEntity() {
         super.initEntity();
-        setDataFlag(DATA_FLAGS, DATA_FLAG_LINGER, true);
+        setDataFlag(EntityFlag.LINGERING, true);
     }
 
     @Override
@@ -39,12 +41,12 @@ public class EntityLingeringPotion extends EntitySplashPotion {
         saveNBT();
         ListTag<?> pos = (ListTag<?>) namedTag.getList("Pos", CompoundTag.class).copy();
         EntityAreaEffectCloud entity = (EntityAreaEffectCloud) Entity.createEntity(Entity.AREA_EFFECT_CLOUD, getChunk(),
-                new CompoundTag().putList("Pos",pos)
-                        .putList("Rotation",new ListTag<>()
+                new CompoundTag().putList("Pos", pos)
+                        .putList("Rotation", new ListTag<>()
                                 .add(new FloatTag(0))
                                 .add(new FloatTag(0))
                         )
-                        .putList("Motion",new ListTag<>()
+                        .putList("Motion", new ListTag<>()
                                 .add(new DoubleTag(0))
                                 .add(new DoubleTag(0))
                                 .add(new DoubleTag(0))

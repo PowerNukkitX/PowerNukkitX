@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -15,17 +16,16 @@ public class NetworkChunkPublisherUpdatePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.position = this.getSignedBlockPosition();
-        this.radius = (int) this.getUnsignedVarInt();
+    public void decode(HandleByteBuf byteBuf) {
+        this.position = byteBuf.readSignedBlockPosition();
+        this.radius = (int) byteBuf.readUnsignedVarInt();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putSignedBlockPosition(position);
-        this.putUnsignedVarInt(radius);
-        this.putInt(0); // Saved chunks
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeSignedBlockPosition(position);
+        byteBuf.writeUnsignedVarInt(radius);
+        byteBuf.writeInt(0); // Saved chunks
     }
 
     public void handle(PacketHandler handler) {

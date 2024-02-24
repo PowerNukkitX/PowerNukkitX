@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.ToString;
 
@@ -19,22 +20,22 @@ public class EmoteListPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.runtimeId = this.getEntityRuntimeId();
-        int size = (int) this.getUnsignedVarInt();
+    public void decode(HandleByteBuf byteBuf) {
+        this.runtimeId = byteBuf.readEntityRuntimeId();
+        int size = (int) byteBuf.readUnsignedVarInt();
         for (int i = 0; i < size; i++) {
-            UUID id = this.getUUID();
+            UUID id = byteBuf.readUUID();
             pieceIds.add(id);
         }
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putEntityRuntimeId(runtimeId);
-        this.putUnsignedVarInt(pieceIds.size());
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeEntityRuntimeId(runtimeId);
+        byteBuf.writeUnsignedVarInt(pieceIds.size());
         for (UUID id : pieceIds) {
-            this.putUUID(id);
+            byteBuf.writeUUID(id);
         }
     }
 

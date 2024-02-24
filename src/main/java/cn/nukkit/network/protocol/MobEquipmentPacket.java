@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -22,22 +23,22 @@ public class MobEquipmentPacket extends DataPacket {
     public int windowId;
 
     @Override
-    public void decode() {
-        this.eid = this.getEntityRuntimeId(); //EntityRuntimeID
-        this.item = this.getSlot();
-        this.inventorySlot = this.getByte();
-        this.hotbarSlot = this.getByte();
-        this.windowId = this.getByte();
+    public void decode(HandleByteBuf byteBuf) {
+        this.eid = byteBuf.readEntityRuntimeId(); //EntityRuntimeID
+        this.item = byteBuf.readSlot();
+        this.inventorySlot = byteBuf.readByte();
+        this.hotbarSlot = byteBuf.readByte();
+        this.windowId = byteBuf.readByte();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putEntityRuntimeId(this.eid); //EntityRuntimeID
-        this.putSlot(this.item);
-        this.putByte((byte) this.inventorySlot);
-        this.putByte((byte) this.hotbarSlot);
-        this.putByte((byte) this.windowId);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeEntityRuntimeId(this.eid); //EntityRuntimeID
+        byteBuf.writeSlot(this.item);
+        byteBuf.writeByte((byte) this.inventorySlot);
+        byteBuf.writeByte((byte) this.hotbarSlot);
+        byteBuf.writeByte((byte) this.windowId);
     }
 
     public void handle(PacketHandler handler) {

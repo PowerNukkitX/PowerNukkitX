@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.BlockChangeEntry;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -26,30 +27,30 @@ public class UpdateSubChunkBlocksPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        putVarInt(chunkX);
-        putUnsignedVarInt(chunkY);
-        putVarInt(chunkZ);
-        putUnsignedVarInt(standardBlocks.size());
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeVarInt(chunkX);
+        byteBuf.writeUnsignedVarInt(chunkY);
+        byteBuf.writeVarInt(chunkZ);
+        byteBuf.writeUnsignedVarInt(standardBlocks.size());
         for (final var each : standardBlocks) {
-            putBlockVector3(each.blockPos());
-            putUnsignedVarInt(each.runtimeID());
-            putUnsignedVarInt(each.updateFlags());
-            putUnsignedVarLong(each.messageEntityID());
-            putUnsignedVarInt(each.messageType().ordinal());
+            byteBuf.writeBlockVector3(each.blockPos());
+            byteBuf.writeUnsignedVarInt((int) each.runtimeID());
+            byteBuf.writeUnsignedVarInt(each.updateFlags());
+            byteBuf.writeUnsignedVarLong(each.messageEntityID());
+            byteBuf.writeUnsignedVarInt(each.messageType().ordinal());
         }
-        putUnsignedVarInt(extraBlocks.size());
+        byteBuf.writeUnsignedVarInt(extraBlocks.size());
         for (final var each : extraBlocks) {
-            putBlockVector3(each.blockPos());
-            putUnsignedVarInt(each.runtimeID());
-            putUnsignedVarInt(each.updateFlags());
-            putUnsignedVarLong(each.messageEntityID());
-            putUnsignedVarInt(each.messageType().ordinal());
+            byteBuf.writeBlockVector3(each.blockPos());
+            byteBuf.writeUnsignedVarInt((int) each.runtimeID());
+            byteBuf.writeUnsignedVarInt(each.updateFlags());
+            byteBuf.writeUnsignedVarLong(each.messageEntityID());
+            byteBuf.writeUnsignedVarInt(each.messageType().ordinal());
         }
     }
 

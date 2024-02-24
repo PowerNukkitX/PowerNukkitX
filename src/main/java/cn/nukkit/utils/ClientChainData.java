@@ -33,7 +33,7 @@ import java.util.*;
  */
 public final class ClientChainData implements LoginChainData {
 
-    public static ClientChainData of(byte[] buffer) {
+    public static ClientChainData of(BinaryStream buffer) {
         return new ClientChainData(buffer);
     }
 
@@ -200,10 +200,11 @@ public final class ClientChainData implements LoginChainData {
 
     private JsonObject rawData;
 
-    private BinaryStream bs = new BinaryStream();
+    private BinaryStream bs;
 
-    private ClientChainData(byte[] buffer) {
-        bs.setBuffer(buffer, 0);
+    private ClientChainData(BinaryStream buffer) {
+        buffer.setOffset(0);
+        bs = buffer;
         decodeChainData();
         decodeSkinData();
     }

@@ -2,6 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.Server;
 import cn.nukkit.entity.data.Skin;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 import java.util.UUID;
@@ -20,24 +21,23 @@ public class PlayerSkinPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        uuid = getUUID();
-        skin = getSkin();
-        newSkinName = getString();
-        oldSkinName = getString();
-        if (!feof()) { // -facepalm-
-            skin.setTrusted(getBoolean());
+    public void decode(HandleByteBuf byteBuf) {
+        uuid = byteBuf.readUUID();
+        skin = byteBuf.readSkin();
+        newSkinName = byteBuf.readString();
+        oldSkinName = byteBuf.readString();
+        if (byteBuf.isReadable()) { // -facepalm-
+            skin.setTrusted(byteBuf.readBoolean());
         }
     }
 
     @Override
-    public void encode() {
-        reset();
-        putUUID(uuid);
-        putSkin(skin);
-        putString(newSkinName);
-        putString(oldSkinName);
-        putBoolean(skin.isTrusted() || Server.getInstance().isForceSkinTrusted());
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeUUID(uuid);
+        byteBuf.writeSkin(skin);
+        byteBuf.writeString(newSkinName);
+        byteBuf.writeString(oldSkinName);
+        byteBuf.writeBoolean(skin.isTrusted() || Server.getInstance().isForceSkinTrusted());
     }
 
     public void handle(PacketHandler handler) {

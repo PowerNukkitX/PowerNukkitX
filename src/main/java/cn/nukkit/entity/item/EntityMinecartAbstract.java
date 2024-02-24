@@ -10,8 +10,6 @@ import cn.nukkit.blockentity.BlockEntityHopper;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityLiving;
-import cn.nukkit.entity.data.ByteEntityData;
-import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.vehicle.VehicleMoveEvent;
@@ -739,31 +737,31 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             if (namedTag.getBoolean("CustomDisplayTile")) {
                 int display = namedTag.getInt("DisplayTile");
                 int offSet = namedTag.getInt("DisplayOffset");
-                setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 1));
-                setDataProperty(new IntEntityData(DATA_DISPLAY_ITEM, display));
-                setDataProperty(new IntEntityData(DATA_DISPLAY_OFFSET, offSet));
+                setDataProperty(CUSTOM_DISPLAY, 1);
+                setDataProperty(HORSE_FLAGS, display);
+                setDataProperty(DISPLAY_OFFSET, offSet);
             }
         } else {
             int display = blockInside == null ? 0 : blockInside.getRuntimeId();
             if (display == 0) {
-                setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 0));
+                setDataProperty(CUSTOM_DISPLAY, 0);
                 return;
             }
-            setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 1));
-            setDataProperty(new IntEntityData(DATA_DISPLAY_ITEM, display));
-            setDataProperty(new IntEntityData(DATA_DISPLAY_OFFSET, 6));
+            setDataProperty(CUSTOM_DISPLAY, 1);
+            setDataProperty(HORSE_FLAGS, display);
+            setDataProperty(DISPLAY_OFFSET, 6);
         }
     }
 
     private void saveEntityData() {
-        boolean hasDisplay = super.getDataPropertyByte(DATA_HAS_DISPLAY) == 1
+        boolean hasDisplay = super.getDataProperty(CUSTOM_DISPLAY) == 1
                 || blockInside != null;
         int display;
         int offSet;
         namedTag.putBoolean("CustomDisplayTile", hasDisplay);
         if (hasDisplay) {
             display = blockInside.getRuntimeId();
-            offSet = getDataPropertyInt(DATA_DISPLAY_OFFSET);
+            offSet = getDataProperty(DISPLAY_OFFSET);
             namedTag.putInt("DisplayTile", display);
             namedTag.putInt("DisplayOffset", offSet);
         }
@@ -801,15 +799,15 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 blockInside = block;
                 //              Runtimeid
                 int display = blockInside.getRuntimeId();
-                setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 1));
-                setDataProperty(new IntEntityData(DATA_DISPLAY_ITEM, display));
+                setDataProperty(CUSTOM_DISPLAY, 1);
+                setDataProperty(HORSE_FLAGS, display);
                 setDisplayBlockOffset(6);
             }
         } else {
             // Set block to air (default).
             blockInside = null;
-            setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 0));
-            setDataProperty(new IntEntityData(DATA_DISPLAY_ITEM, 0));
+            setDataProperty(CUSTOM_DISPLAY, 0);
+            setDataProperty(HORSE_FLAGS, 0);
             setDisplayBlockOffset(0);
         }
         return true;
@@ -832,7 +830,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      */
     @API(usage = Usage.EXPERIMENTAL, definition = Definition.UNIVERSAL)
     public int getDisplayBlockOffset() {
-        return super.getDataPropertyInt(DATA_DISPLAY_OFFSET);
+        return super.getDataProperty(DISPLAY_OFFSET);
     }
 
     /**
@@ -842,7 +840,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      */
     @API(usage = Usage.EXPERIMENTAL, definition = Definition.PLATFORM_NATIVE)
     public void setDisplayBlockOffset(int offset) {
-        setDataProperty(new IntEntityData(DATA_DISPLAY_OFFSET, offset));
+        setDataProperty(DISPLAY_OFFSET, offset);
     }
 
     /**

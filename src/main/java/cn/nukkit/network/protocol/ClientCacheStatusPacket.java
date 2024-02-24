@@ -1,5 +1,7 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
+
 public class ClientCacheStatusPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.CLIENT_CACHE_STATUS_PACKET;
 
@@ -11,14 +13,14 @@ public class ClientCacheStatusPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.supported = this.getBoolean();
+    public void decode(HandleByteBuf byteBuf) {
+        this.supported = byteBuf.readBoolean();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putBoolean(this.supported);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeBoolean(this.supported);
     }
 
     public void handle(PacketHandler handler) {

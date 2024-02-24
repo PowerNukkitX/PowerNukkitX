@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -8,7 +9,7 @@ import lombok.ToString;
 @Deprecated(since = "1.20.10-r1")
 @ToString
 public class ScriptCustomEventPacket extends DataPacket {
-    
+
     public String eventName;
     public byte[] eventData;
 
@@ -18,16 +19,16 @@ public class ScriptCustomEventPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.eventName = this.getString();
-        this.eventData = this.getByteArray();
+    public void decode(HandleByteBuf byteBuf) {
+        this.eventName = byteBuf.readString();
+        this.eventData = byteBuf.readByteArray();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putString(this.eventName);
-        this.putByteArray(this.eventData);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeString(this.eventName);
+        byteBuf.writeByteArray(this.eventData);
     }
 
     public void handle(PacketHandler handler) {

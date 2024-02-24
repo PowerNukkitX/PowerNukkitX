@@ -364,7 +364,7 @@ public class BehaviorGroup implements IBehaviorGroup {
         }
 
         entity.setNameTag(strBuilder.toString());
-        entity.setNameTagAlwaysVisible();
+        entity.setNameTagAlwaysVisible(true);
     }
 
     /**

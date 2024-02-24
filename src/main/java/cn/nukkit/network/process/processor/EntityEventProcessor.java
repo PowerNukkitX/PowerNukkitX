@@ -22,7 +22,6 @@ public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket>
             }
 
             pk.eid = player.getId();
-            pk.isEncoded = false;
 
             player.dataPacket(pk);
             Server.broadcastPacket(player.getViewers().values(), pk);

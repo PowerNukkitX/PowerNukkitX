@@ -1,6 +1,7 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.data.EntityFlag;
 
 /**
  * 可坐下实体接口<p>
@@ -14,6 +15,6 @@ public interface EntityCanSit extends EntityComponent {
 
     default void setSitting(boolean sitting) {
         getMemoryStorage().put(CoreMemoryTypes.IS_SITTING, sitting);
-        asEntity().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SITTING, sitting);
+        asEntity().setDataFlag(EntityFlag.SITTING, sitting);
     }
 }

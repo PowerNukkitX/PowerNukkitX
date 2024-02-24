@@ -6,7 +6,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.memory.MemoryType;
-import cn.nukkit.entity.data.LongEntityData;
+import cn.nukkit.entity.data.EntityDataTypes;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityShootBowEvent;
@@ -215,12 +216,12 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     private void playBowAnimation(Entity entity) {
-        entity.setDataProperty(new LongEntityData(Entity.DATA_TARGET_EID, this.target.getId()));
-        entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_FACING_TARGET_TO_RANGE_ATTACK);
+        entity.setDataProperty(EntityDataTypes.TARGET_EID, this.target.getId());
+        entity.setDataFlag(EntityFlag.FACING_TARGET_TO_RANGE_ATTACK);
     }
 
     private void stopBowAnimation(Entity entity) {
-        entity.setDataProperty(new LongEntityData(Entity.DATA_TARGET_EID, 0L));
-        entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_FACING_TARGET_TO_RANGE_ATTACK, false);
+        entity.setDataProperty(EntityDataTypes.TARGET_EID, 0L);
+        entity.setDataFlag(EntityFlag.FACING_TARGET_TO_RANGE_ATTACK, false);
     }
 }

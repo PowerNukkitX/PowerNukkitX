@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 
@@ -15,16 +16,16 @@ public class CodeBuilderPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.url = this.getString();
-        this.isOpening = this.getBoolean();
+    public void decode(HandleByteBuf byteBuf) {
+        this.url = byteBuf.readString();
+        this.isOpening = byteBuf.readBoolean();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putString(url);
-        this.putBoolean(isOpening);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeString(url);
+        byteBuf.writeBoolean(isOpening);
     }
 
     public void handle(PacketHandler handler) {

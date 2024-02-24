@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.CommandOriginData;
 import cn.nukkit.network.protocol.types.CommandOutputMessage;
 import cn.nukkit.network.protocol.types.CommandOutputType;
@@ -25,34 +26,34 @@ public class CommandOutputPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
         //non
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        putUnsignedVarInt(this.commandOriginData.type.ordinal());
-        putUUID(this.commandOriginData.uuid);
-        putString(this.commandOriginData.requestId);// unknown
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeUnsignedVarInt(this.commandOriginData.type.ordinal());
+        byteBuf.writeUUID(this.commandOriginData.uuid);
+        byteBuf.writeString(this.commandOriginData.requestId);// unknown
         if (this.commandOriginData.type == CommandOriginData.Origin.DEV_CONSOLE || this.commandOriginData.type == CommandOriginData.Origin.TEST) {
-            putVarLong(this.commandOriginData.getVarLong().orElse(-1));// unknown
+            byteBuf.writeVarLong(this.commandOriginData.getVarLong().orElse(-1));// unknown
         }
 
-        putByte((byte) this.type.ordinal());
-        putUnsignedVarInt(this.successCount);
+        byteBuf.writeByte((byte) this.type.ordinal());
+        byteBuf.writeUnsignedVarInt(this.successCount);
 
-        this.putUnsignedVarInt(messages.size());
+        byteBuf.writeUnsignedVarInt(messages.size());
         for (var msg : messages) {
-            this.putBoolean(msg.isInternal());
-            this.putString(msg.getMessageId());
-            this.putUnsignedVarInt(msg.getParameters().length);
+            byteBuf.writeBoolean(msg.isInternal());
+            byteBuf.writeString(msg.getMessageId());
+            byteBuf.writeUnsignedVarInt(msg.getParameters().length);
             for (var param : msg.getParameters()) {
-                this.putString(param);
+                byteBuf.writeString(param);
             }
         }
         if (this.type == CommandOutputType.DATA_SET) {
-            putString(this.data);// unknown
+            byteBuf.writeString(this.data);// unknown
         }
     }
 

@@ -3,9 +3,6 @@ package cn.nukkit.entity.item;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.data.LongEntityData;
-import cn.nukkit.entity.data.NBTEntityData;
-import cn.nukkit.entity.data.Vector3fEntityData;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
@@ -31,16 +28,17 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityFireworksRocket extends Entity {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return FIREWORKS_ROCKET;
     }
-    
+
     private final int lifetime;
     private int fireworkAge;
     private Item firework;
     private boolean hadCollision;
 
-    
+
     public EntityFireworksRocket(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
 
@@ -72,19 +70,18 @@ public class EntityFireworksRocket extends Entity {
                     .putByte("FireworkType", ItemFireworkRocket.FireworkExplosion.ExplosionType.CREEPER_SHAPED.ordinal());
 
             tag.putCompound("Fireworks", new CompoundTag()
-                    .putList("Explosions",new ListTag<CompoundTag>().add(ex))
+                    .putList("Explosions", new ListTag<CompoundTag>().add(ex))
                     .putByte("Flight", 1)
             );
 
             firework.setNamedTag(tag);
         }
 
-        this.setDataProperty(new NBTEntityData(Entity.DATA_DISPLAY_ITEM, firework.getNamedTag()));
-        this.setDataProperty(new Vector3fEntityData(Entity.DATA_DISPLAY_OFFSET, new Vector3f(0, 1, 0)));
-        this.setDataProperty(new LongEntityData(Entity.DATA_HAS_DISPLAY, -1));
+//        this.setDataProperty(Entity.HORSE_FLAGS, firework.getNamedTag());//TODO FIXME
+        this.setDataProperty(DISPLAY_OFFSET, new Vector3f(0, 1, 0));
+        this.setDataProperty(CUSTOM_DISPLAY, -1);
     }
 
-    
 
     @Override
     public boolean onUpdate(int currentTick) {
@@ -167,7 +164,7 @@ public class EntityFireworksRocket extends Entity {
 
     public void setFirework(Item item) {
         this.firework = item;
-        this.setDataProperty(new NBTEntityData(Entity.DATA_DISPLAY_ITEM, item.getNamedTag()));
+//        this.setDataProperty(Entity.HORSE_FLAGS, item.getNamedTag());//TODO FIXME
     }
 
     @Override

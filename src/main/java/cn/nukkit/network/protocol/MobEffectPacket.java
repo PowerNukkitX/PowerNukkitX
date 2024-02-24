@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -27,19 +28,19 @@ public class MobEffectPacket extends DataPacket {
     public int duration = 0;
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putEntityRuntimeId(this.eid);
-        this.putByte((byte) this.eventId);
-        this.putVarInt(this.effectId);
-        this.putVarInt(this.amplifier);
-        this.putBoolean(this.particles);
-        this.putVarInt(this.duration);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeEntityRuntimeId(this.eid);
+        byteBuf.writeByte((byte) this.eventId);
+        byteBuf.writeVarInt(this.effectId);
+        byteBuf.writeVarInt(this.amplifier);
+        byteBuf.writeBoolean(this.particles);
+        byteBuf.writeVarInt(this.duration);
     }
 
     public void handle(PacketHandler handler) {

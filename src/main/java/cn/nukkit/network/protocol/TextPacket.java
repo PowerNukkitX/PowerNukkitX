@@ -1,6 +1,6 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.utils.BinaryStream;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import io.netty.util.internal.EmptyArrays;
 import lombok.ToString;
 
@@ -38,61 +38,61 @@ public class TextPacket extends DataPacket {
     public String platformChatId = "";
 
     @Override
-    public void decode() {
-        this.type = getByte();
-        this.isLocalized = this.getBoolean() || type == TYPE_TRANSLATION;
+    public void decode(HandleByteBuf byteBuf) {
+        this.type = byteBuf.readByte();
+        this.isLocalized = byteBuf.readBoolean() || type == TYPE_TRANSLATION;
         switch (type) {
             case TYPE_CHAT:
             case TYPE_WHISPER:
             case TYPE_ANNOUNCEMENT:
-                this.source = this.getString();
+                this.source = byteBuf.readString();
             case TYPE_RAW:
             case TYPE_TIP:
             case TYPE_SYSTEM:
             case TYPE_OBJECT:
             case TYPE_OBJECT_WHISPER:
-                this.message = this.getString();
+                this.message = byteBuf.readString();
                 break;
 
             case TYPE_TRANSLATION:
             case TYPE_POPUP:
             case TYPE_JUKEBOX_POPUP:
-                this.message = this.getString();
-                this.parameters = this.getArray(String.class, BinaryStream::getString);
+                this.message = byteBuf.readString();
+                this.parameters = byteBuf.readArray(String.class, HandleByteBuf::readString);
         }
-        this.xboxUserId = this.getString();
-        this.platformChatId = this.getString();
+        this.xboxUserId = byteBuf.readString();
+        this.platformChatId = byteBuf.readString();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putByte(this.type);
-        this.putBoolean(this.isLocalized || type == TYPE_TRANSLATION);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeByte(this.type);
+        byteBuf.writeBoolean(this.isLocalized || type == TYPE_TRANSLATION);
         switch (this.type) {
             case TYPE_CHAT:
             case TYPE_WHISPER:
             case TYPE_ANNOUNCEMENT:
-                this.putString(this.source);
+                byteBuf.writeString(this.source);
             case TYPE_RAW:
             case TYPE_TIP:
             case TYPE_SYSTEM:
             case TYPE_OBJECT:
             case TYPE_OBJECT_WHISPER:
-                this.putString(this.message);
+                byteBuf.writeString(this.message);
                 break;
 
             case TYPE_TRANSLATION:
             case TYPE_POPUP:
             case TYPE_JUKEBOX_POPUP:
-                this.putString(this.message);
-                this.putUnsignedVarInt(this.parameters.length);
+                byteBuf.writeString(this.message);
+                byteBuf.writeUnsignedVarInt(this.parameters.length);
                 for (String parameter : this.parameters) {
-                    this.putString(parameter);
+                    byteBuf.writeString(parameter);
                 }
         }
-        this.putString(this.xboxUserId);
-        this.putString(this.platformChatId);
+        byteBuf.writeString(this.xboxUserId);
+        byteBuf.writeString(this.platformChatId);
     }
 
     public void handle(PacketHandler handler) {

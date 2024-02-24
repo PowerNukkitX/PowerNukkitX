@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -17,14 +18,14 @@ public class ShowProfilePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.xuid = this.getString();
+    public void decode(HandleByteBuf byteBuf) {
+        this.xuid = byteBuf.readString();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putString(this.xuid);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeString(this.xuid);
     }
 
     public void handle(PacketHandler handler) {

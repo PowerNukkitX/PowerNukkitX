@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol.types.eventdata;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.EventData;
 import cn.nukkit.network.protocol.types.EventDataType;
 import cn.nukkit.utils.BinaryStream;
@@ -21,10 +22,10 @@ public class PlayerDiedEventData implements EventData {
     }
 
     @Override
-    public void write(BinaryStream stream) {
-        stream.putVarInt(attackerEntityId);
-        stream.putVarInt(attackerVariant);
-        stream.putVarInt(entityDamageCause);
-        stream.putBoolean(inRaid);
+    public void write(HandleByteBuf byteBuf) {
+        byteBuf.writeVarInt(attackerEntityId);
+        byteBuf.writeVarInt(attackerVariant);
+        byteBuf.writeVarInt(entityDamageCause);
+        byteBuf.writeBoolean(inRaid);
     }
 }

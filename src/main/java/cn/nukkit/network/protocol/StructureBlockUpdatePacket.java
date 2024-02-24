@@ -2,6 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.block.property.enums.StructureBlockType;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.*;
 import lombok.ToString;
 
@@ -18,80 +19,79 @@ public class StructureBlockUpdatePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.blockPosition = this.getBlockVector3();
-        this.editorData = readEditorData();
-        this.powered = this.getBoolean();
-        this.waterlogged = this.getBoolean();
+    public void decode(HandleByteBuf byteBuf) {
+        this.blockPosition = byteBuf.readBlockVector3();
+        this.editorData = readEditorData(byteBuf);
+        this.powered = byteBuf.readBoolean();
+        this.waterlogged = byteBuf.readBoolean();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putBlockVector3(blockPosition);
-        this.writeEditorData(editorData);
-        this.putBoolean(powered);
-        this.putBoolean(waterlogged);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeBlockVector3(blockPosition);
+        this.writeEditorData(byteBuf, editorData);
+        byteBuf.writeBoolean(powered);
+        byteBuf.writeBoolean(waterlogged);
     }
 
-    private StructureEditorData readEditorData() {
-        var name = this.getString();
-        var dataField = this.getString();
-        var isIncludingPlayers = this.getBoolean();
-        var isBoundingBoxVisible = this.getBoolean();
-        var type = this.getVarInt();
-        var structureSettings = readStructureSettings();
-        var redstoneSaveMode = this.getVarInt();
+    private StructureEditorData readEditorData(HandleByteBuf byteBuf) {
+        var name = byteBuf.readString();
+        var dataField = byteBuf.readString();
+        var isIncludingPlayers = byteBuf.readBoolean();
+        var isBoundingBoxVisible = byteBuf.readBoolean();
+        var type = byteBuf.readVarInt();
+        var structureSettings = readStructureSettings(byteBuf);
+        var redstoneSaveMode = byteBuf.readVarInt();
         return new StructureEditorData(name, dataField, isIncludingPlayers, isBoundingBoxVisible, StructureBlockType.from(type), structureSettings,
                 StructureRedstoneSaveMode.from(redstoneSaveMode));
     }
 
-    private StructureSettings readStructureSettings() {
-        var paletteName = this.getString();
-        var isIgnoringEntities = this.getBoolean();
-        var isIgnoringBlocks = this.getBoolean();
-        var isNonTickingPlayersAndTickingAreasEnabled = this.getBoolean();
-        var size = this.getBlockVector3();
-        var offset = this.getBlockVector3();
-        var lastEditedByEntityId = this.getVarLong();
-        var rotation = this.getByte();
-        var mirror = this.getByte();
-        var animationMode = this.getByte();
-        var animationSeconds = this.getLFloat();
-        var integrityValue = this.getLFloat();
-        var integritySeed = this.getLInt();
-        var pivot = this.getVector3f();
+    private StructureSettings readStructureSettings(HandleByteBuf byteBuf) {
+        var paletteName = byteBuf.readString();
+        var isIgnoringEntities = byteBuf.readBoolean();
+        var isIgnoringBlocks = byteBuf.readBoolean();
+        var isNonTickingPlayersAndTickingAreasEnabled = byteBuf.readBoolean();
+        var size = byteBuf.readBlockVector3();
+        var offset = byteBuf.readBlockVector3();
+        var lastEditedByEntityId = byteBuf.readVarLong();
+        var rotation = byteBuf.readByte();
+        var mirror = byteBuf.readByte();
+        var animationMode = byteBuf.readByte();
+        var animationSeconds = byteBuf.readFloatLE();
+        var integrityValue = byteBuf.readFloatLE();
+        var integritySeed = byteBuf.readIntLE();
+        var pivot = byteBuf.readVector3f();
         return new StructureSettings(paletteName, isIgnoringEntities, isIgnoringBlocks, isNonTickingPlayersAndTickingAreasEnabled, size, offset,
                 lastEditedByEntityId, StructureRotation.from(rotation), StructureMirror.from(mirror), StructureAnimationMode.from(animationMode),
                 animationSeconds, integrityValue, integritySeed, pivot
         );
     }
 
-    private void writeEditorData(StructureEditorData editorData) {
-        this.putString(editorData.getName());
-        this.putString(editorData.getDataField());
-        this.putBoolean(editorData.isIncludingPlayers());
-        this.putBoolean(editorData.isBoundingBoxVisible());
-        this.putVarInt(editorData.getType().ordinal());
-        writeStructureSettings(editorData.getSettings());
-        this.putVarInt(editorData.getRedstoneSaveMode().ordinal());
+    private void writeEditorData(HandleByteBuf byteBuf, StructureEditorData editorData) {
+        byteBuf.writeString(editorData.getName());
+        byteBuf.writeString(editorData.getDataField());
+        byteBuf.writeBoolean(editorData.isIncludingPlayers());
+        byteBuf.writeBoolean(editorData.isBoundingBoxVisible());
+        byteBuf.writeVarInt(editorData.getType().ordinal());
+        writeStructureSettings(byteBuf, editorData.getSettings());
+        byteBuf.writeVarInt(editorData.getRedstoneSaveMode().ordinal());
     }
 
-    private void writeStructureSettings(StructureSettings settings) {
-        this.putString(settings.getPaletteName());
-        this.putBoolean(settings.isIgnoringEntities());
-        this.putBoolean(settings.isIgnoringBlocks());
-        this.putBoolean(settings.isNonTickingPlayersAndTickingAreasEnabled());
-        this.putBlockVector3(settings.getSize());
-        this.putBlockVector3(settings.getOffset());
-        this.putVarLong(settings.getLastEditedByEntityId());
-        this.putByte((byte) settings.getRotation().ordinal());
-        this.putByte((byte) settings.getMirror().ordinal());
-        this.putByte((byte) settings.getAnimationMode().ordinal());
-        this.putLFloat(settings.getAnimationSeconds());
-        this.putLFloat(settings.getIntegrityValue());
-        this.putLInt(settings.getIntegritySeed());
-        this.putVector3f(settings.getPivot());
+    private void writeStructureSettings(HandleByteBuf byteBuf, StructureSettings settings) {
+        byteBuf.writeString(settings.getPaletteName());
+        byteBuf.writeBoolean(settings.isIgnoringEntities());
+        byteBuf.writeBoolean(settings.isIgnoringBlocks());
+        byteBuf.writeBoolean(settings.isNonTickingPlayersAndTickingAreasEnabled());
+        byteBuf.writeBlockVector3(settings.getSize());
+        byteBuf.writeBlockVector3(settings.getOffset());
+        byteBuf.writeVarLong(settings.getLastEditedByEntityId());
+        byteBuf.writeByte((byte) settings.getRotation().ordinal());
+        byteBuf.writeByte((byte) settings.getMirror().ordinal());
+        byteBuf.writeByte((byte) settings.getAnimationMode().ordinal());
+        byteBuf.writeFloatLE(settings.getAnimationSeconds());
+        byteBuf.writeFloatLE(settings.getIntegrityValue());
+        byteBuf.writeIntLE(settings.getIntegritySeed());
+        byteBuf.writeVector3f(settings.getPivot());
     }
 
     public void handle(PacketHandler handler) {

@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.AgentActionType;
 
 /**
@@ -19,17 +20,17 @@ public class AgentActionEventPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.requestId = getString();
-        this.actionType = AgentActionType.values()[getByte()];
-        this.responseJson = getString();
+    public void decode(HandleByteBuf byteBuf) {
+        this.requestId = byteBuf.readString();
+        this.actionType = AgentActionType.values()[byteBuf.readByte()];
+        this.responseJson = byteBuf.readString();
     }
 
     @Override
-    public void encode() {
-        putString(this.requestId);
-        putByte((byte) actionType.ordinal());
-        putString(responseJson);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeString(this.requestId);
+        byteBuf.writeByte((byte) actionType.ordinal());
+        byteBuf.writeString(responseJson);
     }
 
     public void handle(PacketHandler handler) {

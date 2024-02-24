@@ -2,6 +2,7 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityWalkable;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +13,8 @@ import org.jetbrains.annotations.NotNull;
 public class EntityEnderman extends EntityMob implements EntityWalkable {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return ENDERMAN;
     }
 
@@ -20,7 +22,6 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
         super(chunk, nbt);
     }
 
-    
 
     @Override
     protected void initEntity() {
@@ -45,6 +46,6 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
 
     @Override
     public boolean isPreventingSleep(Player player) {
-        return this.getDataPropertyBoolean(DATA_FLAG_ANGRY);
+        return this.getDataFlag(EntityFlag.ANGRY);
     }
 }

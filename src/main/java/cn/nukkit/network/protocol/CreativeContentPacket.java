@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 
@@ -17,17 +18,17 @@ public class CreativeContentPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putUnsignedVarInt(entries.length);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeUnsignedVarInt(entries.length);
         for (int i = 0; i < entries.length; i++) {
-            this.putUnsignedVarInt(i + 1);//netId
-            this.putSlot(entries[i], true);
+            byteBuf.writeUnsignedVarInt(i + 1);//netId
+            byteBuf.writeSlot(entries[i], true);
         }
     }
 

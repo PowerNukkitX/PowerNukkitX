@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.AbilityType;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import lombok.ToString;
@@ -16,15 +17,15 @@ public class RequestAbilityPacket extends DataPacket {
     public float floatValue;
 
     @Override
-    public void decode() {
-        this.ability = ABILITIES[this.getVarInt()];
-        this.type = ABILITY_TYPES[this.getByte()];
-        this.boolValue = this.getBoolean();
-        this.floatValue = this.getLFloat();
+    public void decode(HandleByteBuf byteBuf) {
+        this.ability = ABILITIES[byteBuf.readVarInt()];
+        this.type = ABILITY_TYPES[byteBuf.readByte()];
+        this.boolValue = byteBuf.readBoolean();
+        this.floatValue = byteBuf.readFloatLE();
     }
 
     @Override
-    public void encode() {
+    public void encode(HandleByteBuf byteBuf) {
         throw new UnsupportedOperationException();
     }
 

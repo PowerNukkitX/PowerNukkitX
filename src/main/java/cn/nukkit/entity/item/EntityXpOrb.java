@@ -119,7 +119,7 @@ public class EntityXpOrb extends Entity {
             this.exp = 1;
         }
 
-        this.dataProperties.putInt(DATA_EXPERIENCE_VALUE, this.exp);
+        this.entityDataMap.put(VALUE, this.exp);
 
         //call event item spawn event
     }

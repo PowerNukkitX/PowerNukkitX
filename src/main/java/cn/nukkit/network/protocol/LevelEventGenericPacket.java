@@ -2,6 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import io.netty.handler.codec.EncoderException;
 
 import java.io.IOException;
@@ -19,15 +20,15 @@ public class LevelEventGenericPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putVarInt(eventId);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeVarInt(eventId);
         try {
-            this.put(NBTIO.writeValue(tag, ByteOrder.LITTLE_ENDIAN, true));
+            byteBuf.writeBytes(NBTIO.writeValue(tag, ByteOrder.LITTLE_ENDIAN, true));
         } catch (IOException e) {
             throw new EncoderException(e);
         }

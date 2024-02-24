@@ -2,6 +2,8 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.connection.util.HandleByteBuf;
+import io.netty.buffer.ByteBufInputStream;
 
 import java.nio.ByteOrder;
 
@@ -24,19 +26,19 @@ public class SyncEntityPropertyPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        try {
-            this.data = NBTIO.read(this.get(), ByteOrder.BIG_ENDIAN, true);
+    public void decode(HandleByteBuf byteBuf) {
+        try (ByteBufInputStream stream = new ByteBufInputStream(byteBuf)){
+            this.data = NBTIO.read(stream, ByteOrder.BIG_ENDIAN, true);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void encode(){
-        this.reset();
+    public void encode(HandleByteBuf byteBuf){
+        
         try {
-            this.put(NBTIO.write(data, ByteOrder.BIG_ENDIAN, true));
+            byteBuf.writeBytes(NBTIO.write(data, ByteOrder.BIG_ENDIAN, true));
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.resourcepacks.ResourcePack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.ToString;
@@ -19,36 +20,36 @@ public class ResourcePackStackPacket extends DataPacket {
     public String gameVersion = "*";
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putBoolean(this.mustAccept);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeBoolean(this.mustAccept);
 
-        this.putUnsignedVarInt(this.behaviourPackStack.length);
+        byteBuf.writeUnsignedVarInt(this.behaviourPackStack.length);
         for (ResourcePack entry : this.behaviourPackStack) {
-            this.putString(entry.getPackId().toString());
-            this.putString(entry.getPackVersion());
-            this.putString(""); //TODO: subpack name
+            byteBuf.writeString(entry.getPackId().toString());
+            byteBuf.writeString(entry.getPackVersion());
+            byteBuf.writeString(""); //TODO: subpack name
         }
 
-        this.putUnsignedVarInt(this.resourcePackStack.length);
+        byteBuf.writeUnsignedVarInt(this.resourcePackStack.length);
         for (ResourcePack entry : this.resourcePackStack) {
-            this.putString(entry.getPackId().toString());
-            this.putString(entry.getPackVersion());
-            this.putString(""); //TODO: subpack name
+            byteBuf.writeString(entry.getPackId().toString());
+            byteBuf.writeString(entry.getPackVersion());
+            byteBuf.writeString(""); //TODO: subpack name
         }
 
-        this.putString(this.gameVersion);
-        this.putLInt(this.experiments.size()); // Experiments length
+        byteBuf.writeString(this.gameVersion);
+        byteBuf.writeIntLE(this.experiments.size()); // Experiments length
         for (ExperimentData experimentData : this.experiments) {
-            this.putString(experimentData.getName());
-            this.putBoolean(experimentData.isEnabled());
+            byteBuf.writeString(experimentData.getName());
+            byteBuf.writeBoolean(experimentData.isEnabled());
         }
-        this.putBoolean(true); // Were experiments previously toggled
+        byteBuf.writeBoolean(true); // Were experiments previously toggled
     }
 
     @Override

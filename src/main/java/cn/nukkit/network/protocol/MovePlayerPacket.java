@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -32,41 +33,41 @@ public class MovePlayerPacket extends DataPacket {
     public long frame;//tick
 
     @Override
-    public void decode() {
-        this.eid = this.getEntityRuntimeId();
-        Vector3f v = this.getVector3f();
+    public void decode(HandleByteBuf byteBuf) {
+        this.eid = byteBuf.readEntityRuntimeId();
+        Vector3f v = byteBuf.readVector3f();
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
-        this.pitch = this.getLFloat();
-        this.yaw = this.getLFloat();
-        this.headYaw = this.getLFloat();
-        this.mode = this.getByte();
-        this.onGround = this.getBoolean();
-        this.ridingEid = this.getEntityRuntimeId();
+        this.pitch = byteBuf.readFloatLE();
+        this.yaw = byteBuf.readFloatLE();
+        this.headYaw = byteBuf.readFloatLE();
+        this.mode = byteBuf.readByte();
+        this.onGround = byteBuf.readBoolean();
+        this.ridingEid = byteBuf.readEntityRuntimeId();
         if (this.mode == MODE_TELEPORT) {
-            this.int1 = this.getLInt();
-            this.int2 = this.getLInt();
+            this.int1 = byteBuf.readIntLE();
+            this.int2 = byteBuf.readIntLE();
         }
-        this.frame = this.getUnsignedVarLong();
+        this.frame = byteBuf.readUnsignedVarLong();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putEntityRuntimeId(this.eid);
-        this.putVector3f(this.x, this.y, this.z);
-        this.putLFloat(this.pitch);
-        this.putLFloat(this.yaw);
-        this.putLFloat(this.headYaw);
-        this.putByte((byte) this.mode);
-        this.putBoolean(this.onGround);
-        this.putEntityRuntimeId(this.ridingEid);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeEntityRuntimeId(this.eid);
+        byteBuf.writeVector3f(this.x, this.y, this.z);
+        byteBuf.writeFloatLE(this.pitch);
+        byteBuf.writeFloatLE(this.yaw);
+        byteBuf.writeFloatLE(this.headYaw);
+        byteBuf.writeByte((byte) this.mode);
+        byteBuf.writeBoolean(this.onGround);
+        byteBuf.writeEntityRuntimeId(this.ridingEid);
         if (this.mode == MODE_TELEPORT) {
-            this.putLInt(this.int1);
-            this.putLInt(this.int2);
+            byteBuf.writeIntLE(this.int1);
+            byteBuf.writeIntLE(this.int2);
         }
-        this.putUnsignedVarLong(this.frame);
+        byteBuf.writeUnsignedVarLong(this.frame);
     }
 
     @Override

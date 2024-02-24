@@ -1,18 +1,19 @@
 package cn.nukkit.level;
 
-import cn.nukkit.nbt.tag.*;
-import cn.nukkit.utils.BinaryStream;
-import lombok.NonNull;
-
+import cn.nukkit.nbt.tag.ByteTag;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.IntTag;
+import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
+import javax.annotation.Nonnull;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-
-import javax.annotation.Nonnull;
 
 import static cn.nukkit.level.GameRule.*;
 
@@ -177,29 +178,29 @@ public class GameRules {
     public enum Type {
         UNKNOWN {
             @Override
-            void write(BinaryStream pk, Value<?> value) {
+            void write(HandleByteBuf pk, Value<?> value) {
             }
         },
         BOOLEAN {
             @Override
-            void write(BinaryStream pk, Value<?> value) {
-                pk.putBoolean(value.getValueAsBoolean());
+            void write(HandleByteBuf pk, Value<?> value) {
+                pk.writeBoolean(value.getValueAsBoolean());
             }
         },
         INTEGER {
             @Override
-            void write(BinaryStream pk, Value<?> value) {
-                pk.putUnsignedVarInt(value.getValueAsInteger());
+            void write(HandleByteBuf pk, Value<?> value) {
+                pk.writeUnsignedVarInt(value.getValueAsInteger());
             }
         },
         FLOAT {
             @Override
-            void write(BinaryStream pk, Value<?> value) {
-                pk.putLFloat(value.getValueAsFloat());
+            void write(HandleByteBuf pk, Value<?> value) {
+                pk.writeFloatLE(value.getValueAsFloat());
             }
         };
 
-        abstract void write(BinaryStream pk, Value<?> value);
+        abstract void write(HandleByteBuf pk, Value<?> value);
     }
 
     public static class Value<T> {
@@ -261,9 +262,9 @@ public class GameRules {
             return (Float) value;
         }
 
-        public void write(BinaryStream stream) {
-            stream.putBoolean(this.canBeChanged);
-            stream.putUnsignedVarInt(type.ordinal());
+        public void write(HandleByteBuf stream) {
+            stream.writeBoolean(this.canBeChanged);
+            stream.writeUnsignedVarInt(type.ordinal());
             type.write(stream, this);
         }
     }

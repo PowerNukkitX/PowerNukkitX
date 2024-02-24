@@ -6,8 +6,9 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.connection.util.HandleByteBuf;
+import io.netty.buffer.ByteBufInputStream;
 import io.netty.handler.codec.EncoderException;
-import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -112,22 +113,21 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
     }
 
     @Override
-    public void encode() {
-        reset();
-        putByte((byte) action.ordinal());
-        putVarInt(trackingId);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeByte((byte) action.ordinal());
+        byteBuf.writeVarInt(trackingId);
         try {
-            put(NBTIO.writeNetwork(tag != null ? tag : new CompoundTag()));
+            byteBuf.writeBytes(NBTIO.writeNetwork(tag != null ? tag : new CompoundTag()));
         } catch (IOException e) {
             throw new EncoderException(e);
         }
     }
 
     @Override
-    public void decode() {
-        action = ACTIONS[getByte()];
-        trackingId = getVarInt();
-        try (FastByteArrayInputStream inputStream = new FastByteArrayInputStream(get())) {
+    public void decode(HandleByteBuf byteBuf) {
+        action = ACTIONS[byteBuf.readByte()];
+        trackingId = byteBuf.readVarInt();
+        try (ByteBufInputStream inputStream = new ByteBufInputStream(byteBuf)) {
             tag = NBTIO.readNetworkCompressed(inputStream);
         } catch (IOException e) {
             throw new EncoderException(e);

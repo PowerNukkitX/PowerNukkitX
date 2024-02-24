@@ -1212,21 +1212,21 @@ public class Level implements Metadatable {
             updateBlockPacket.z = (int) b.z;
             updateBlockPacket.flags = first ? flags : UpdateBlockPacket.FLAG_NONE;
             updateBlockPacket.dataLayer = dataLayer;
-            long runtimeId;
+            int runtimeId;
             if (b instanceof Block block) {
-                runtimeId = block.getBlockState().unsignedBlockStateHash();
+                runtimeId = block.getRuntimeId();
             } else if (b instanceof Vector3WithRuntimeId vRid) {
                 if (dataLayer == 0) {
-                    runtimeId = Integer.toUnsignedLong(vRid.getRuntimeIdLayer0());
+                    runtimeId = vRid.getRuntimeIdLayer0();
                 } else {
-                    runtimeId = Integer.toUnsignedLong(vRid.getRuntimeIdLayer1());
+                    runtimeId = vRid.getRuntimeIdLayer1();
                 }
             } else {
                 int hash = getBlockRuntimeId((int) b.x, (int) b.y, (int) b.z, dataLayer);
                 if (hash == Integer.MIN_VALUE) {
                     continue;
                 }
-                runtimeId = Integer.toUnsignedLong(hash);
+                runtimeId = hash;
             }
             try {
                 updateBlockPacket.blockRuntimeId = runtimeId;

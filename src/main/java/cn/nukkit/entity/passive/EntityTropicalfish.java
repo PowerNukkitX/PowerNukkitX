@@ -1,7 +1,5 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.entity.data.ByteEntityData;
-import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -75,9 +73,9 @@ public class EntityTropicalfish extends EntityFish {
         } else {
             this.color2 = getRandomColor2();
         }
-        this.setDataProperty(new IntEntityData(DATA_MARK_VARIANT, this.mark_variant));
-        this.setDataProperty(new IntEntityData(DATA_VARIANT, this.variant));
-        this.setDataProperty(new IntEntityData(DATA_COLOR_2, this.color2));
+        this.setDataProperty(MARK_VARIANT, this.mark_variant);
+        this.setDataProperty(VARIANT, this.variant);
+        this.setDataProperty(COLOR_2, this.color2);
     }
 
     private int getRandomColor() {
@@ -117,7 +115,7 @@ public class EntityTropicalfish extends EntityFish {
 
     public void setColor(int color) {
         this.color = color;
-        this.setDataProperty(new ByteEntityData(DATA_COLOR, color));
+        this.setDataProperty(COLOR, color);
         this.namedTag.putByte("Color", this.color);
     }
 

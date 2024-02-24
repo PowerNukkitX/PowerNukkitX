@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -20,7 +21,7 @@ public class UpdateBlockPacket extends DataPacket {
     public int x;
     public int z;
     public int y;
-    public long blockRuntimeId;
+    public int blockRuntimeId;
     public int flags;
     public int dataLayer = 0;
 
@@ -30,17 +31,16 @@ public class UpdateBlockPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putBlockVector3(x, y, z);
-        this.putUnsignedVarInt(blockRuntimeId);
-        this.putUnsignedVarInt(flags);
-        this.putUnsignedVarInt(dataLayer);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeBlockVector3(x, y, z);
+        byteBuf.writeUnsignedVarInt(blockRuntimeId);
+        byteBuf.writeUnsignedVarInt(flags);
+        byteBuf.writeUnsignedVarInt(dataLayer);
     }
 
     public static class Entry {

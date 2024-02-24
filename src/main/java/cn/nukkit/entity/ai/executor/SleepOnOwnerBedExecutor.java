@@ -1,17 +1,15 @@
 package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.Player;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityOwnable;
+import cn.nukkit.entity.data.EntityFlag;
 
 /**
  * 使有主人的生物在主人睡觉时睡到主人床上<br/>
  * 只能在实现了接口 {@link EntityOwnable} 的实体上使用<br/>
  * 需要保证实体的getOwner()方法返回非空
  */
-
-
 public class SleepOnOwnerBedExecutor implements IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {
@@ -44,7 +42,7 @@ public class SleepOnOwnerBedExecutor implements IBehaviorExecutor {
     }
 
     protected void setSleeping(EntityIntelligent entity, boolean sleeping) {
-        entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_RESTING, sleeping);
-        entity.setDataFlag(Entity.DATA_FLAGS_EXTENDED, Entity.DATA_FLAG_RESTING, sleeping);
+        entity.setDataFlag(EntityFlag.RESTING, sleeping);
+        entity.setDataFlagExtend(EntityFlag.RESTING, sleeping);
     }
 }

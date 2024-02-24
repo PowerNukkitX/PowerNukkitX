@@ -2,6 +2,7 @@ package cn.nukkit.network;
 
 import cn.nukkit.GameMockExtension;
 import cn.nukkit.network.connection.netty.initializer.BedrockChannelInitializer;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.RequestNetworkSettingsPacket;
@@ -98,10 +99,7 @@ public class RakNetInterfaceTest {
                         int header = ByteBufVarInt.readUnsignedInt(byteBuf);
                         assert header == ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET;
                         DataPacket dataPacket = Registries.PACKET.get(header);
-                        byte[] data = new byte[byteBuf.readableBytes()];
-                        byteBuf.readBytes(data);
-                        dataPacket.setBuffer(data);
-                        dataPacket.decode();
+                        dataPacket.decode(HandleByteBuf.of(Unpooled.wrappedBuffer(byteBuf)));
                         RequestNetworkSettingsPacket target = (RequestNetworkSettingsPacket) dataPacket;
                         assert target.protocolVersion == ProtocolInfo.CURRENT_PROTOCOL;
                         gameMockExtension.stop();

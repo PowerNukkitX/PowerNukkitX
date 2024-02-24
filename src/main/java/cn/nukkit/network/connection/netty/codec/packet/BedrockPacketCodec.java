@@ -1,14 +1,17 @@
 package cn.nukkit.network.connection.netty.codec.packet;
 
-import cn.nukkit.network.protocol.*;
+import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
+import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.registry.Registries;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
-import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
 
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class BedrockPacketCodec extends MessageToMessageCodec<ByteBuf, BedrockPacketWrapper> {
@@ -27,8 +30,10 @@ public abstract class BedrockPacketCodec extends MessageToMessageCodec<ByteBuf, 
                 DataPacket packet = msg.getPacket();
                 msg.setPacketId(packet.pid());
                 encodeHeader(buf, msg);
-                packet.tryEncode();
-                buf.writeBytes(packet.getBuffer());
+                packet.encode(HandleByteBuf.of(buf));
+                if (packet.pid() == ProtocolInfo.SET_ENTITY_DATA_PACKET && buf.writerIndex() <= 2) {
+                    System.out.println(buf.writerIndex());
+                }
                 msg.setPacketBuffer(buf.retain());
                 out.add(msg.retain());
             } catch (Throwable t) {
@@ -52,10 +57,7 @@ public abstract class BedrockPacketCodec extends MessageToMessageCodec<ByteBuf, 
                 log.info("Failed to decode packet for packetId {}", wrapper.getPacketId());
                 return;
             }
-            byte[] data = new byte[msg.readableBytes()];
-            msg.readBytes(data);
-            dataPacket.setBuffer(data);
-            dataPacket.decode();
+            dataPacket.decode(HandleByteBuf.of(msg));
             wrapper.setPacket(dataPacket);
             out.add(wrapper.retain());
         } catch (Throwable t) {

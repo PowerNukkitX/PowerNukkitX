@@ -18,6 +18,7 @@
 
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -51,24 +52,23 @@ public class NPCDialoguePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        runtimeEntityId = getLLong();
-        action = ACTIONS[getVarInt()];
-        dialogue = getString();
-        sceneName = getString();
-        npcName = getString();
-        actionJson = getString();
+    public void decode(HandleByteBuf byteBuf) {
+        runtimeEntityId = byteBuf.readLongLE();
+        action = ACTIONS[byteBuf.readVarInt()];
+        dialogue = byteBuf.readString();
+        sceneName = byteBuf.readString();
+        npcName = byteBuf.readString();
+        actionJson = byteBuf.readString();
     }
 
     @Override
-    public void encode() {
-        reset();
-        putLLong(runtimeEntityId);
-        putVarInt(action.ordinal());
-        putString(dialogue);
-        putString(sceneName);
-        putString(npcName);
-        putString(actionJson);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeLongLE(runtimeEntityId);
+        byteBuf.writeVarInt(action.ordinal());
+        byteBuf.writeString(dialogue);
+        byteBuf.writeString(sceneName);
+        byteBuf.writeString(npcName);
+        byteBuf.writeString(actionJson);
     }
 
     public long getRuntimeEntityId() {

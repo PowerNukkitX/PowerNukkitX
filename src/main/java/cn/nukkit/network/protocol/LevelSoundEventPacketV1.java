@@ -2,6 +2,7 @@ package cn.nukkit.network.protocol;
 
 
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -18,27 +19,27 @@ public class LevelSoundEventPacketV1 extends LevelSoundEventPacket {
     public boolean isGlobal;
 
     @Override
-    public void decode() {
-        this.sound = this.getByte();
-        Vector3f v = this.getVector3f();
+    public void decode(HandleByteBuf byteBuf) {
+        this.sound = byteBuf.readByte();
+        Vector3f v = byteBuf.readVector3f();
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
-        this.extraData = this.getVarInt();
-        this.pitch = this.getVarInt();
-        this.isBabyMob = this.getBoolean();
-        this.isGlobal = this.getBoolean();
+        this.extraData = byteBuf.readVarInt();
+        this.pitch = byteBuf.readVarInt();
+        this.isBabyMob = byteBuf.readBoolean();
+        this.isGlobal = byteBuf.readBoolean();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putByte((byte) this.sound);
-        this.putVector3f(this.x, this.y, this.z);
-        this.putVarInt(this.extraData);
-        this.putVarInt(this.pitch);
-        this.putBoolean(this.isBabyMob);
-        this.putBoolean(this.isGlobal);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeByte((byte) this.sound);
+        byteBuf.writeVector3f(this.x, this.y, this.z);
+        byteBuf.writeVarInt(this.extraData);
+        byteBuf.writeVarInt(this.pitch);
+        byteBuf.writeBoolean(this.isBabyMob);
+        byteBuf.writeBoolean(this.isGlobal);
     }
 
     @Override

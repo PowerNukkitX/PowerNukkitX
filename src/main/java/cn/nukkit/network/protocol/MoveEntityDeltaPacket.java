@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -32,68 +33,68 @@ public class MoveEntityDeltaPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.runtimeEntityId = this.getEntityRuntimeId();
-        this.flags = this.getLShort();
+    public void decode(HandleByteBuf byteBuf) {
+        this.runtimeEntityId = byteBuf.readEntityRuntimeId();
+        this.flags = byteBuf.readShortLE();
         if ((this.flags & FLAG_HAS_X) != 0) {
-            this.x = this.getCoordinate();
+            this.x = this.getCoordinate(byteBuf);
         }
         if ((this.flags & FLAG_HAS_Y) != 0) {
-            this.y = this.getCoordinate();
+            this.y = this.getCoordinate(byteBuf);
         }
         if ((this.flags & FLAG_HAS_Z) != 0) {
-            this.z = this.getCoordinate();
+            this.z = this.getCoordinate(byteBuf);
         }
         if ((this.flags & FLAG_HAS_PITCH) != 0) {
-            this.pitch = this.getRotation();
+            this.pitch = this.getRotation(byteBuf);
         }
         if ((this.flags & FLAG_HAS_YAW) != 0) {
-            this.yaw = this.getRotation();
+            this.yaw = this.getRotation(byteBuf);
         }
         if ((this.flags & FLAG_HAS_HEAD_YAW) != 0) {
-            this.headYaw = this.getRotation();
+            this.headYaw = this.getRotation(byteBuf);
         }
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putEntityRuntimeId(this.runtimeEntityId);
-        this.putLShort(this.flags);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeEntityRuntimeId(this.runtimeEntityId);
+        byteBuf.writeShortLE(this.flags);
         if ((this.flags & FLAG_HAS_X) != 0) {
-            this.putCoordinate(this.x);
+            this.putCoordinate(byteBuf, this.x);
         }
         if ((this.flags & FLAG_HAS_Y) != 0) {
-            this.putCoordinate(this.y);
+            this.putCoordinate(byteBuf, this.y);
         }
         if ((this.flags & FLAG_HAS_Z) != 0) {
-            this.putCoordinate(this.z);
+            this.putCoordinate(byteBuf, this.z);
         }
         if ((this.flags & FLAG_HAS_PITCH) != 0) {
-            this.putRotation(this.pitch);
+            this.putRotation(byteBuf, this.pitch);
         }
         if ((this.flags & FLAG_HAS_YAW) != 0) {
-            this.putRotation(this.yaw);
+            this.putRotation(byteBuf, this.yaw);
         }
         if ((this.flags & FLAG_HAS_HEAD_YAW) != 0) {
-            this.putRotation(this.headYaw);
+            this.putRotation(byteBuf, this.headYaw);
         }
     }
 
-    private float getCoordinate() {
-        return this.getLFloat();
+    private float getCoordinate(HandleByteBuf byteBuf) {
+        return byteBuf.readFloatLE();
     }
 
-    private void putCoordinate(float value) {
-        this.putLFloat(value);
+    private void putCoordinate(HandleByteBuf byteBuf, float value) {
+        byteBuf.writeFloatLE(value);
     }
 
-    private float getRotation() {
-        return this.getByte() * (360F / 256F);
+    private float getRotation(HandleByteBuf byteBuf) {
+        return byteBuf.readByte() * (360F / 256F);
     }
 
-    private void putRotation(float value) {
-        this.putByte((byte) (value / (360F / 256F)));
+    private void putRotation(HandleByteBuf byteBuf, float value) {
+        byteBuf.writeByte((byte) (value / (360F / 256F)));
     }
 
     public boolean hasFlag(int flag) {

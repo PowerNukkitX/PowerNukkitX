@@ -86,7 +86,6 @@ public class HumanOffHandInventory extends BaseInventory {
         pk.item = item;
         pk.inventorySlot = 1;
         pk.windowId = SpecialWindowId.OFFHAND.getId();
-        pk.tryEncode();
         return pk;
     }
 

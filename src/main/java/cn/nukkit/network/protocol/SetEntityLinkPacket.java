@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.EntityLink;
 import lombok.ToString;
 
@@ -18,18 +19,18 @@ public class SetEntityLinkPacket extends DataPacket {
     public boolean riderInitiated = false;
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putEntityUniqueId(this.vehicleUniqueId);
-        this.putEntityUniqueId(this.riderUniqueId);
-        this.putByte((byte) this.type.ordinal());
-        this.putByte(this.immediate);
-        this.putBoolean(this.riderInitiated);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeEntityUniqueId(this.vehicleUniqueId);
+        byteBuf.writeEntityUniqueId(this.riderUniqueId);
+        byteBuf.writeByte((byte) this.type.ordinal());
+        byteBuf.writeByte(this.immediate);
+        byteBuf.writeBoolean(this.riderInitiated);
     }
 
     @Override

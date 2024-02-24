@@ -3,6 +3,7 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.EntityWalkable;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
@@ -12,16 +13,16 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityZombiePigman extends EntityMob implements EntityWalkable, EntitySmite {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return ZOMBIE_PIGMAN;
     }
-    
+
 
     public EntityZombiePigman(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    
 
     @Override
     protected void initEntity() {
@@ -51,7 +52,7 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
 
     @Override
     public boolean isPreventingSleep(Player player) {
-        return this.getDataPropertyBoolean(DATA_FLAG_ANGRY);
+        return this.getDataFlag(EntityFlag.ANGRY);
     }
 
     @Override

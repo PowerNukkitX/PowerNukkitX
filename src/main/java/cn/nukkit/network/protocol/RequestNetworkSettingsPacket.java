@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -13,13 +14,13 @@ public class RequestNetworkSettingsPacket extends DataPacket {
     }
 
     @Override
-    public void encode() {
+    public void encode(HandleByteBuf byteBuf) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void decode() {
-        this.protocolVersion = this.getInt();
+    public void decode(HandleByteBuf byteBuf) {
+        this.protocolVersion = byteBuf.readInt();
     }
 
     public void handle(PacketHandler handler) {

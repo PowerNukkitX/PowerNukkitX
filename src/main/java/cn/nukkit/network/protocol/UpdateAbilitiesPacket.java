@@ -1,10 +1,10 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.AbilityLayer;
 import cn.nukkit.network.protocol.types.CommandPermission;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.network.protocol.types.PlayerPermission;
-import cn.nukkit.utils.BinaryStream;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.ToString;
 
@@ -50,25 +50,25 @@ public class UpdateAbilitiesPacket extends DataPacket {
     public final List<AbilityLayer> abilityLayers = new ObjectArrayList<>();
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putLLong(this.entityId);
-        this.putUnsignedVarInt(this.playerPermission.ordinal());
-        this.putUnsignedVarInt(this.commandPermission.ordinal());
-        this.putArray(this.abilityLayers, this::writeAbilityLayer);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeLongLE(this.entityId);
+        byteBuf.writeUnsignedVarInt(this.playerPermission.ordinal());
+        byteBuf.writeUnsignedVarInt(this.commandPermission.ordinal());
+        byteBuf.writeArray(this.abilityLayers, this::writeAbilityLayer);
     }
 
-    private void writeAbilityLayer(BinaryStream buffer, AbilityLayer abilityLayer) {
-        buffer.putLShort(abilityLayer.getLayerType().ordinal());
-        buffer.putLInt(getAbilitiesNumber(abilityLayer.getAbilitiesSet()));
-        buffer.putLInt(getAbilitiesNumber(abilityLayer.getAbilityValues()));
-        buffer.putLFloat(abilityLayer.getFlySpeed());
-        buffer.putLFloat(abilityLayer.getWalkSpeed());
+    private void writeAbilityLayer(HandleByteBuf byteBuf, AbilityLayer abilityLayer) {
+        byteBuf.writeShortLE(abilityLayer.getLayerType().ordinal());
+        byteBuf.writeIntLE(getAbilitiesNumber(abilityLayer.getAbilitiesSet()));
+        byteBuf.writeIntLE(getAbilitiesNumber(abilityLayer.getAbilityValues()));
+        byteBuf.writeFloatLE(abilityLayer.getFlySpeed());
+        byteBuf.writeFloatLE(abilityLayer.getWalkSpeed());
     }
 
     private static int getAbilitiesNumber(Set<PlayerAbility> abilities) {

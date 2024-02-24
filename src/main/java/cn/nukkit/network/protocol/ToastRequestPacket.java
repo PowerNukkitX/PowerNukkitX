@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -14,16 +15,16 @@ public class ToastRequestPacket extends DataPacket{
     }
 
     @Override
-    public void decode() {
-        this.title = this.getString();
-        this.content = this.getString();
+    public void decode(HandleByteBuf byteBuf) {
+        this.title = byteBuf.readString();
+        this.content = byteBuf.readString();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putString(this.title);
-        this.putString(this.content);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeString(this.title);
+        byteBuf.writeString(this.content);
     }
 
     public void handle(PacketHandler handler) {

@@ -6,9 +6,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.ai.memory.codec.BooleanMemoryCodec;
 import cn.nukkit.entity.ai.memory.codec.NumberMemoryCodec;
 import cn.nukkit.entity.ai.memory.codec.StringMemoryCodec;
-import cn.nukkit.entity.data.ByteEntityData;
-import cn.nukkit.entity.data.IntEntityData;
-import cn.nukkit.entity.data.LongEntityData;
+import cn.nukkit.entity.data.EntityDataTypes;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.math.Vector3;
 
@@ -168,27 +167,27 @@ public interface CoreMemoryTypes {
 
     // region 可持久化的记忆(会写入NBT)
     /**
-     * 代表愤怒状态 和{@link Entity#DATA_FLAG_ANGRY}绑定
+     * 代表愤怒状态 和{@link EntityFlag#ANGRY}绑定
      * <p>
      * 目前仅在wolf中使用
      */
     MemoryType<Boolean> IS_ANGRY = new MemoryType<>("minecraft:is_angry", false)
             .withCodec(new BooleanMemoryCodec("Angry")
-                    .onInit((data, entity) -> entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_ANGRY, data))
+                    .onInit((data, entity) -> entity.setDataFlag(EntityFlag.ANGRY, data))
             );
     /**
-     * 代表实体是否坐着的状态 和{@link Entity#DATA_FLAG_SITTING}绑定
+     * 代表实体是否坐着的状态 和{@link EntityFlag#SITTING}绑定
      * <p>
      * 目前仅在wolf中使用
      */
     MemoryType<Boolean> IS_SITTING = new MemoryType<>("minecraft:is_sitting", false)
             .withCodec(new BooleanMemoryCodec("Sitting")
                     .onInit((data, entity) -> {
-                        entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SITTING, data);
+                        entity.setDataFlag(EntityFlag.SITTING, data);
                     })
             );
     /**
-     * 代表实体主人 和{@link Entity#DATA_FLAG_TAMED} {@link Entity#DATA_OWNER_EID}绑定
+     * 代表实体主人 和{@link EntityFlag#TAMED} {@link EntityDataTypes#OWNER_EID}绑定
      * <p>
      * 目前仅在wolf中使用
      */
@@ -196,13 +195,13 @@ public interface CoreMemoryTypes {
             .withCodec(new StringMemoryCodec("OwnerName")
                     .onInit((data, entity) -> {
                         if (data == null) {
-                            entity.setDataProperty(new LongEntityData(Entity.DATA_OWNER_EID, 0L));
-                            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_TAMED, false);
+                            entity.setDataProperty(EntityDataTypes.OWNER_EID, 0L);
+                            entity.setDataFlag(EntityFlag.TAMED, false);
                         } else {
-                            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_TAMED, true);
+                            entity.setDataFlag(EntityFlag.TAMED, true);
                             var owner = entity.getServer().getPlayerExact(data);
                             if (owner != null && owner.isOnline()) {
-                                entity.setDataProperty(new LongEntityData(Entity.DATA_OWNER_EID, owner.getId()));
+                                entity.setDataProperty(EntityDataTypes.OWNER_EID, owner.getId());
                             }
                         }
                     })
@@ -214,36 +213,36 @@ public interface CoreMemoryTypes {
             .withCodec(new StringMemoryCodec("RiderName")
                     .onInit((data, entity) -> {
                         if (data == null) {
-                            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED, false);
+                            entity.setDataFlag(EntityFlag.WASD_CONTROLLED, false);
                         } else {
-                            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED);
+                            entity.setDataFlag(EntityFlag.WASD_CONTROLLED);
                         }
                     })
             );
     /**
-     * 代表实体的变种,和{@link Entity#DATA_VARIANT}绑定
+     * 代表实体的变种,和{@link EntityDataTypes#VARIANT}绑定
      */
     MemoryType<Integer> VARIANT = new MemoryType<Integer>("minecraft:variant")
             .withCodec(new NumberMemoryCodec<Integer>("Variant")
                     .onInit((data, entity) -> {
                         if (data != null) {
-                            entity.setDataProperty(new IntEntityData(Entity.DATA_VARIANT, data));
+                            entity.setDataProperty(EntityDataTypes.VARIANT, data);
                         }
                     })
             );
     /**
-     * 代表实体的次要变种,和{@link Entity#DATA_MARK_VARIANT}绑定
+     * 代表实体的次要变种,和{@link EntityDataTypes#MARK_VARIANT}绑定
      */
     MemoryType<Integer> MARK_VARIANT = new MemoryType<Integer>("minecraft:mark_variant")
             .withCodec(new NumberMemoryCodec<Integer>("MarkVariant")
                     .onInit((data, entity) -> {
                         if (data != null) {
-                            entity.setDataProperty(new IntEntityData(Entity.DATA_MARK_VARIANT, data));
+                            entity.setDataProperty(EntityDataTypes.MARK_VARIANT, data);
                         }
                     })
             );
     /**
-     * 代表实体的颜色，和{@link Entity#DATA_COLOR}绑定
+     * 代表实体的颜色，和{@link EntityDataTypes#COLOR}绑定
      * <br>
      * 例如狼的项圈
      * <br>
@@ -253,12 +252,12 @@ public interface CoreMemoryTypes {
             .withCodec(new NumberMemoryCodec<Byte>("Color")
                     .onInit((data, entity) -> {
                         if (data != null) {
-                            entity.setDataProperty(new ByteEntityData(Entity.DATA_COLOR, data));
+                            entity.setDataProperty(EntityDataTypes.COLOR, data);
                         }
                     })
             );
     /**
-     * 代表实体的颜第二色，和{@link Entity#DATA_COLOR_2}绑定
+     * 代表实体的颜第二色，和{@link EntityDataTypes#COLOR_2}绑定
      * <br>
      * Tropical Fish secondary color
      */
@@ -266,18 +265,18 @@ public interface CoreMemoryTypes {
             .withCodec(new NumberMemoryCodec<Byte>("Color2")
                     .onInit((data, entity) -> {
                         if (data != null) {
-                            entity.setDataProperty(new ByteEntityData(Entity.DATA_COLOR_2, data));
+                            entity.setDataProperty(EntityDataTypes.COLOR_2, data);
                         }
                     })
             );
     /**
-     * 和{@link Entity#DATA_FLAG_SHEARED}绑定
+     * 和{@link EntityFlag#SHEARED}绑定
      * <p>
      * Sheep, Snow Golem
      */
-    MemoryType<Boolean> IS_SHEARED= new MemoryType<>("minecraft:is_sheared", false)
+    MemoryType<Boolean> IS_SHEARED = new MemoryType<>("minecraft:is_sheared", false)
             .withCodec(new BooleanMemoryCodec("Sheared")
-                    .onInit((data, entity) -> entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SHEARED, data))
+                    .onInit((data, entity) -> entity.setDataFlag(EntityFlag.SHEARED, data))
             );
     // endregion
 }

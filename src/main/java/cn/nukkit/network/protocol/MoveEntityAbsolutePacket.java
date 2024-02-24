@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -30,25 +31,25 @@ public class MoveEntityAbsolutePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.eid = this.getEntityRuntimeId();
-        int flags = this.getByte();
+    public void decode(HandleByteBuf byteBuf) {
+        this.eid = byteBuf.readEntityRuntimeId();
+        int flags = byteBuf.readByte();
         onGround = (flags & 0x01) != 0;
         teleport = (flags & 0x02) != 0;
         forceMoveLocalEntity = (flags & 0x04) != 0;
-        Vector3f v = this.getVector3f();
+        Vector3f v = byteBuf.readVector3f();
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
-        this.pitch = this.getByte() * (360d / 256d);
-        this.headYaw = this.getByte() * (360d / 256d);
-        this.yaw = this.getByte() * (360d / 256d);
+        this.pitch = byteBuf.readByte() * (360d / 256d);
+        this.headYaw = byteBuf.readByte() * (360d / 256d);
+        this.yaw = byteBuf.readByte() * (360d / 256d);
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putEntityRuntimeId(this.eid);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeEntityRuntimeId(this.eid);
         byte flags = 0;
         if (onGround) {
             flags |= 0x01;
@@ -59,11 +60,11 @@ public class MoveEntityAbsolutePacket extends DataPacket {
         if (forceMoveLocalEntity) {
             flags |= 0x04;
         }
-        this.putByte(flags);
-        this.putVector3f((float) this.x, (float) this.y, (float) this.z);
-        this.putByte((byte) (this.pitch / (360d / 256d)));
-        this.putByte((byte) (this.headYaw / (360d / 256d)));
-        this.putByte((byte) (this.yaw / (360d / 256d)));
+        byteBuf.writeByte(flags);
+        byteBuf.writeVector3f((float) this.x, (float) this.y, (float) this.z);
+        byteBuf.writeByte((byte) (this.pitch / (360d / 256d)));
+        byteBuf.writeByte((byte) (this.headYaw / (360d / 256d)));
+        byteBuf.writeByte((byte) (this.yaw / (360d / 256d)));
     }
 
     public void handle(PacketHandler handler) {

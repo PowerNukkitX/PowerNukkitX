@@ -1,6 +1,8 @@
 package cn.nukkit.network.protocol;
 
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
+
 public class PlayerStartItemCoolDownPacket extends DataPacket {
     private String itemCategory;
     private int coolDownDuration;
@@ -11,16 +13,15 @@ public class PlayerStartItemCoolDownPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.itemCategory = getString();
-        this.coolDownDuration = getVarInt();
+    public void decode(HandleByteBuf byteBuf) {
+        this.itemCategory = byteBuf.readString();
+        this.coolDownDuration = byteBuf.readVarInt();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        putString(itemCategory);
-        putVarInt(coolDownDuration);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeString(itemCategory);
+        byteBuf.writeVarInt(coolDownDuration);
     }
 
     public String getItemCategory() {

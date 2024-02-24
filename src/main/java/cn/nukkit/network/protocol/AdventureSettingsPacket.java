@@ -1,12 +1,12 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.Player;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
  * @author Nukkit Project Team
  */
-@Deprecated
 @ToString
 public class AdventureSettingsPacket extends DataPacket {
 
@@ -47,36 +47,30 @@ public class AdventureSettingsPacket extends DataPacket {
     public static final int DEFAULT_LEVEL_PERMISSIONS = 0x200 | BITFLAG_SECOND_SET;
 
     public long flags = 0;
-
     public long commandPermission = PERMISSION_NORMAL;
-
     public long flags2 = 0;
-
     public long playerPermission = Player.PERMISSION_MEMBER;
-
     public long customFlags; //...
-
     public long entityUniqueId; //This is a little-endian long, NOT a var-long. (WTF Mojang)
 
     @Override
-    public void decode() {
-        this.flags = getUnsignedVarInt();
-        this.commandPermission = getUnsignedVarInt();
-        this.flags2 = getUnsignedVarInt();
-        this.playerPermission = getUnsignedVarInt();
-        this.customFlags = getUnsignedVarInt();
-        this.entityUniqueId = getLLong();
+    public void decode(HandleByteBuf byteBuf) {
+        this.flags = byteBuf.readUnsignedVarInt();
+        this.commandPermission = byteBuf.readUnsignedVarInt();
+        this.flags2 = byteBuf.readUnsignedVarInt();
+        this.playerPermission = byteBuf.readUnsignedVarInt();
+        this.customFlags = byteBuf.readUnsignedVarInt();
+        this.entityUniqueId = byteBuf.readLongLE();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putUnsignedVarInt(this.flags);
-        this.putUnsignedVarInt(this.commandPermission);
-        this.putUnsignedVarInt(this.flags2);
-        this.putUnsignedVarInt(this.playerPermission);
-        this.putUnsignedVarInt(this.customFlags);
-        this.putLLong(this.entityUniqueId);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeUnsignedVarInt((int) flags);
+        byteBuf.writeUnsignedVarInt((int) commandPermission);
+        byteBuf.writeUnsignedVarInt((int) flags2);
+        byteBuf.writeUnsignedVarInt((int) playerPermission);
+        byteBuf.writeUnsignedVarInt((int) customFlags);
+        byteBuf.writeLongLE(entityUniqueId);
     }
 
     public boolean getFlag(int flag) {

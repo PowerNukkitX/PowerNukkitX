@@ -20,8 +20,6 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
-import cn.nukkit.entity.data.IntEntityData;
-import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemID;
@@ -176,8 +174,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
         //同步owner eid
         if (hasOwner()) {
             Player owner = getOwner();
-            if (owner != null && getDataPropertyLong(Entity.DATA_OWNER_EID) != owner.getId()) {
-                this.setDataProperty(new LongEntityData(Entity.DATA_OWNER_EID, owner.getId()));
+            if (owner != null && getDataProperty(Entity.OWNER_EID) != owner.getId()) {
+                this.setDataProperty(Entity.OWNER_EID, owner.getId());
             }
         }
         return super.onUpdate(currentTick);
@@ -187,9 +185,10 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
     public void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
-        this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT));
         if (this.isBaby()) {
-            this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT_BABY));
+            this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT_BABY);
+        } else {
+            this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT);
         }
         if (!hasVariant()) {
             this.setVariant(randomVariant());

@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.LabTableReactionType;
 import cn.nukkit.network.protocol.types.LabTableType;
 import lombok.ToString;
@@ -19,16 +20,16 @@ public class LabTablePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putByte((byte) actionType.ordinal());
-        this.putBlockVector3(blockPosition);
-        this.putByte((byte) reactionType.ordinal());
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeByte((byte) actionType.ordinal());
+        byteBuf.writeBlockVector3(blockPosition);
+        byteBuf.writeByte((byte) reactionType.ordinal());
     }
 
     public void handle(PacketHandler handler) {

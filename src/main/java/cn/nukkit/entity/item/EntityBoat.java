@@ -8,8 +8,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.EntitySwimmable;
-import cn.nukkit.entity.data.ByteEntityData;
-import cn.nukkit.entity.data.FloatEntityData;
+import cn.nukkit.entity.data.EntityDataType;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.vehicle.VehicleMoveEvent;
@@ -63,7 +63,6 @@ public class EntityBoat extends EntityVehicle {
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
             reason = "Unreliable direct field access", replaceWith = "getVariant(), setVariant(int)")
-
     public int woodID;
     protected boolean sinking = true;
     private int ticksInWater;
@@ -84,22 +83,22 @@ public class EntityBoat extends EntityVehicle {
             woodID = this.namedTag.getByte("woodID");
         }
 
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_GRAVITY, true);
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_STACKABLE, true);
-        this.dataProperties.putInt(DATA_VARIANT, woodID);
-        this.dataProperties.putBoolean(DATA_IS_BUOYANT, true);
-        this.dataProperties.putString(DATA_BUOYANCY_DATA, "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"drag_down_on_buoyancy_removed\":0.0,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"simulate_waves\":true}");
-        this.dataProperties.putInt(DATA_MAX_AIR, 300);
-        this.dataProperties.putLong(DATA_OWNER_EID, -1);
-        this.dataProperties.putFloat(DATA_PADDLE_TIME_LEFT, 0);
-        this.dataProperties.putFloat(DATA_PADDLE_TIME_RIGHT, 0);
-        this.dataProperties.putByte(DATA_CONTROLLING_RIDER_SEAT_NUMBER, 0);
-        this.dataProperties.putInt(DATA_LIMITED_LIFE, -1);
-        this.dataProperties.putByte(DATA_ALWAYS_SHOW_NAMETAG, -1);
-        this.dataProperties.putFloat(DATA_AMBIENT_SOUND_INTERVAL, 8F);
-        this.dataProperties.putFloat(DATA_AMBIENT_SOUND_INTERVAL_RANGE, 16F);
-        this.dataProperties.putString(DATA_AMBIENT_SOUND_EVENT_NAME, "ambient");
-        this.dataProperties.putFloat(DATA_FALL_DAMAGE_MULTIPLIER, 1F);
+        this.setDataFlag(EntityFlag.HAS_GRAVITY);
+        this.setDataFlag(EntityFlag.STACKABLE);
+        this.entityDataMap.put(VARIANT, woodID);
+        this.entityDataMap.put(IS_BUOYANT, true);
+        this.entityDataMap.put(BUOYANCY_DATA, "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"drag_down_on_buoyancy_removed\":0.0,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"simulate_waves\":true}");
+        this.entityDataMap.put(AIR_SUPPLY, 300);
+        this.entityDataMap.put(OWNER_EID, -1);
+        this.entityDataMap.put(ROW_TIME_LEFT, 0);
+        this.entityDataMap.put(ROW_TIME_RIGHT, 0);
+        this.entityDataMap.put(CONTROLLING_RIDER_SEAT_INDEX, 0);
+        this.entityDataMap.put(DATA_LIFETIME_TICKS, -1);
+        this.entityDataMap.put(NAMETAG_ALWAYS_SHOW, -1);
+        this.entityDataMap.put(AMBIENT_SOUND_INTERVAL, 8F);
+        this.entityDataMap.put(AMBIENT_SOUND_INTERVAL_RANGE, 16F);
+        this.entityDataMap.put(AMBIENT_SOUND_EVENT_NAME, "ambient");
+        this.entityDataMap.put(FALL_DAMAGE_MULTIPLIER, 1F);
         entityCollisionReduction = -0.5;
     }
 
@@ -176,7 +175,7 @@ public class EntityBoat extends EntityVehicle {
         addEntity.speedX = (float) this.motionX;
         addEntity.speedY = (float) this.motionY;
         addEntity.speedZ = (float) this.motionZ;
-        addEntity.metadata = this.dataProperties;
+        addEntity.entityData = this.entityDataMap;
 
         addEntity.links = new EntityLink[this.passengers.size()];
         for (int i = 0; i < addEntity.links.length; i++) {
@@ -448,10 +447,10 @@ public class EntityBoat extends EntityVehicle {
         if (entity.riding == this) {
             updatePassengers(true);
 
-            entity.setDataProperty(new ByteEntityData(DATA_RIDER_ROTATION_LOCKED, 1));
-            entity.setDataProperty(new FloatEntityData(DATA_RIDER_MAX_ROTATION, 90));
-            entity.setDataProperty(new FloatEntityData(DATA_RIDER_MIN_ROTATION, this.passengers.indexOf(entity) == 1 ? -90 : 1));
-            entity.setDataProperty(new FloatEntityData(DATA_RIDER_ROTATION_OFFSET, -90));
+            entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION, 1);
+            entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION_DEGREES, 90);
+            entity.setDataProperty(SEAT_HAS_ROTATION, this.passengers.indexOf(entity) == 1 ? -90 : 1);
+            entity.setDataProperty(SEAT_ROTATION_OFFSET_DEGREES, -90);
             entity.setRotation(yaw, entity.pitch);
             entity.updateMovement();
         }
@@ -468,7 +467,7 @@ public class EntityBoat extends EntityVehicle {
         boolean r = super.dismountEntity(entity, sendLinks);
 
         updatePassengers();
-        entity.setDataProperty(new ByteEntityData(DATA_RIDER_ROTATION_LOCKED, 0));
+        entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION, 0);
         if (entity instanceof EntityHuman) {
             ignoreCollision.add(entity);
         }
@@ -497,10 +496,10 @@ public class EntityBoat extends EntityVehicle {
     }
 
     public void onPaddle(AnimatePacket.Action animation, float value) {
-        int propertyId = animation == AnimatePacket.Action.ROW_RIGHT ? DATA_PADDLE_TIME_RIGHT : DATA_PADDLE_TIME_LEFT;
+        EntityDataType<Float> propertyId = animation == AnimatePacket.Action.ROW_RIGHT ? ROW_TIME_RIGHT : ROW_TIME_LEFT;
 
-        if (Float.compare(getDataPropertyFloat(propertyId), value) != 0) {
-            this.setDataProperty(new FloatEntityData(propertyId, value));
+        if (Float.compare(getDataProperty(propertyId), value) != 0) {
+            this.setDataProperty(propertyId, value);
         }
     }
 
@@ -582,7 +581,7 @@ public class EntityBoat extends EntityVehicle {
 
     public void setVariant(int variant) {
         this.woodID = variant;
-        this.dataProperties.putInt(DATA_VARIANT, variant);
+        this.entityDataMap.put(VARIANT, variant);
     }
 
     @Override

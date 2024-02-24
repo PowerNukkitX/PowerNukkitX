@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -16,15 +17,15 @@ public class StopSoundPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putString(this.name);
-        this.putBoolean(this.stopAll);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeString(this.name);
+        byteBuf.writeBoolean(this.stopAll);
     }
 
     public void handle(PacketHandler handler) {

@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -21,14 +22,14 @@ public class RiderJumpPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.unknown = this.getVarInt();
+    public void decode(HandleByteBuf byteBuf) {
+        this.unknown = byteBuf.readVarInt();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putVarInt(this.unknown);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeVarInt(this.unknown);
     }
 
     public void handle(PacketHandler handler) {

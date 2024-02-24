@@ -1,7 +1,8 @@
 package cn.nukkit.level.particle;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.data.EntityMetadata;
+import cn.nukkit.entity.data.EntityDataMap;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
@@ -32,7 +33,7 @@ public class FloatingTextParticle extends Particle {
     protected UUID uuid = UUID.randomUUID();
     protected long entityId = -1;
     protected boolean invisible = false;
-    protected EntityMetadata metadata = new EntityMetadata();
+    protected EntityDataMap entityData = new EntityDataMap();
 
     public FloatingTextParticle(Location location, String title) {
         this(location, title, null);
@@ -54,45 +55,42 @@ public class FloatingTextParticle extends Particle {
         super(pos.x, pos.y, pos.z);
         this.level = level;
 
-        long flags = (
-                1L << Entity.DATA_FLAG_NO_AI
-        );
-        metadata.putLong(Entity.DATA_FLAGS, flags)
-                .putLong(Entity.DATA_LEAD_HOLDER_EID, -1)
-                .putFloat(Entity.DATA_SCALE, 0.01f) //zero causes problems on debug builds?
-                .putFloat(Entity.DATA_BOUNDING_BOX_HEIGHT, 0.01f)
-                .putFloat(Entity.DATA_BOUNDING_BOX_WIDTH, 0.01f);
+        entityData.setFlag(EntityFlag.NO_AI, true);
+        entityData.put(Entity.LEASH_HOLDER, -1);
+        entityData.put(Entity.SCALE, 0.01f); //zero causes problems on debug builds?
+        entityData.put(Entity.HEIGHT, 0.01f);
+        entityData.put(Entity.WIDTH, 0.01f);
         if (!Strings.isNullOrEmpty(title)) {
-            metadata.putString(Entity.DATA_NAMETAG, title);
+            entityData.put(Entity.NAME, title);
         }
         if (!Strings.isNullOrEmpty(text)) {
-            metadata.putString(Entity.DATA_SCORE_TAG, text);
+            entityData.put(Entity.SCORE, text);
         }
     }
 
     public String getText() {
-        return metadata.getString(Entity.DATA_SCORE_TAG);
+        return entityData.get(Entity.SCORE);
     }
 
     public void setText(String text) {
-        this.metadata.putString(Entity.DATA_SCORE_TAG, text);
-        sendMetadata();
+        this.entityData.put(Entity.SCORE, text);
+        sendentityData();
     }
 
     public String getTitle() {
-        return metadata.getString(Entity.DATA_NAMETAG);
+        return entityData.get(Entity.NAME);
     }
 
     public void setTitle(String title) {
-        this.metadata.putString(Entity.DATA_NAMETAG, title);
-        sendMetadata();
+        this.entityData.put(Entity.NAME, title);
+        sendentityData();
     }
 
-    private void sendMetadata() {
+    private void sendentityData() {
         if (level != null) {
             SetEntityDataPacket packet = new SetEntityDataPacket();
             packet.eid = entityId;
-            packet.metadata = metadata;
+            packet.entityData = entityData;
             level.addChunkPacket(getChunkX(), getChunkZ(), packet);
         }
     }
@@ -127,8 +125,9 @@ public class FloatingTextParticle extends Particle {
         }
 
         if (!this.invisible) {
-            PlayerListPacket.Entry[] entry = {new PlayerListPacket.Entry(uuid, entityId,
-                    metadata.getString(Entity.DATA_NAMETAG), EMPTY_SKIN)};
+            PlayerListPacket.Entry[] entry = {
+                    new PlayerListPacket.Entry(uuid, entityId, entityData.get(Entity.NAME), EMPTY_SKIN)
+            };
             PlayerListPacket playerAdd = new PlayerListPacket();
             playerAdd.entries = entry;
             playerAdd.type = PlayerListPacket.TYPE_ADD;
@@ -147,7 +146,7 @@ public class FloatingTextParticle extends Particle {
             pk.speedZ = 0;
             pk.yaw = 0;
             pk.pitch = 0;
-            pk.metadata = this.metadata;
+            pk.entityData = this.entityData;
             pk.item = Item.AIR;
             packets.add(pk);
 

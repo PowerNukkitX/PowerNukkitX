@@ -12,8 +12,6 @@ import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
-import cn.nukkit.entity.data.IntEntityData;
-import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.TradeInventory;
@@ -149,7 +147,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         } else {
             var profession = this.namedTag.getInt("profession");
             this.profession = profession;
-            this.setDataProperty(new IntEntityData(DATA_VARIANT, profession));
+            this.setDataProperty(VARIANT, profession);
         }
         if (!this.namedTag.contains("tradeSeed")) {
             this.setTradeSeed(new NukkitRandom().nextInt(Integer.MAX_VALUE));
@@ -176,14 +174,14 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         } else {
             var maxTradeTier = this.namedTag.getInt("maxTradeTier");
             this.maxTradeTier = maxTradeTier;
-            this.setDataProperty(new IntEntityData(DATA_MAX_TRADE_TIER, maxTradeTier));
+            this.setDataProperty(MAX_TRADE_TIER, maxTradeTier);
         }
         if (!this.namedTag.contains("tradeExp")) {
             this.setTradeExp(0);
         } else {
             var tradeExp = this.namedTag.getInt("tradeExp");
             this.tradeExp = tradeExp;
-            this.setDataProperty(new IntEntityData(DATA_TRADE_EXPERIENCE, tradeExp));
+            this.setDataProperty(TRADE_EXPERIENCE, tradeExp);
         }
         Profession profession = Profession.getProfession(this.profession);
         if (profession != null) applyProfession(profession);
@@ -240,7 +238,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
      */
     public void setProfession(int profession) {
         this.profession = profession;
-        this.setDataProperty(new IntEntityData(DATA_VARIANT, profession));
+        this.setDataProperty(VARIANT, profession);
         this.namedTag.putInt("profession", this.profession);
     }
 
@@ -248,7 +246,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
      * 这个方法插件一般不用
      */
     public void setTradingPlayer(Long eid) {
-        this.setDataProperty(new LongEntityData(DATA_TRADING_PLAYER_EID, eid));
+        this.setDataProperty(TRADE_TARGET_EID, eid);
     }
 
     /**
@@ -310,7 +308,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
      */
     public void setMaxTradeTier(int maxTradeTier) {
         this.maxTradeTier = maxTradeTier;
-        this.setDataProperty(new IntEntityData(DATA_MAX_TRADE_TIER, 5));
+        this.setDataProperty(MAX_TRADE_TIER, 5);
         this.namedTag.putInt("maxTradeTier", this.tradeTier);
     }
 
@@ -326,7 +324,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
      */
     public void setTradeExp(int tradeExp) {
         this.tradeExp = tradeExp;
-        this.setDataProperty(new IntEntityData(DATA_TRADE_EXPERIENCE, 10));
+        this.setDataProperty(TRADE_EXPERIENCE, 10);
         this.namedTag.putInt("tradeExp", this.tradeTier);
     }
 
@@ -354,7 +352,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     public void addExperience(int xp) {
         this.tradeExp += xp;
-        this.setDataProperty(new IntEntityData(DATA_TRADE_EXPERIENCE, this.tradeExp));
+        this.setDataProperty(TRADE_EXPERIENCE, this.tradeExp);
         int next = getTradeTier() + 1;
         if (next < this.tierExpRequirement.length) {
             if (tradeExp >= this.tierExpRequirement[next]) {

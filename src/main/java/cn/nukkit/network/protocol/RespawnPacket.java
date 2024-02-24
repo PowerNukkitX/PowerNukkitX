@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -22,21 +23,21 @@ public class RespawnPacket extends DataPacket {
     public long runtimeEntityId;
 
     @Override
-    public void decode() {
-        Vector3f v = this.getVector3f();
+    public void decode(HandleByteBuf byteBuf) {
+        Vector3f v = byteBuf.readVector3f();
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
-        this.respawnState = this.getByte();
-        this.runtimeEntityId = this.getEntityRuntimeId();
+        this.respawnState = byteBuf.readByte();
+        this.runtimeEntityId = byteBuf.readEntityRuntimeId();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putVector3f(this.x, this.y, this.z);
-        this.putByte((byte) respawnState);
-        this.putEntityRuntimeId(runtimeEntityId);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeVector3f(this.x, this.y, this.z);
+        byteBuf.writeByte((byte) respawnState);
+        byteBuf.writeEntityRuntimeId(runtimeEntityId);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 import java.util.UUID;
@@ -18,22 +19,22 @@ public class ResourcePackClientResponsePacket extends DataPacket {
     public Entry[] packEntries;
 
     @Override
-    public void decode() {
-        this.responseStatus = (byte) this.getByte();
-        this.packEntries = new Entry[this.getLShort()];
+    public void decode(HandleByteBuf byteBuf) {
+        this.responseStatus = (byte) byteBuf.readByte();
+        this.packEntries = new Entry[byteBuf.readShortLE()];
         for (int i = 0; i < this.packEntries.length; i++) {
-            String[] entry = this.getString().split("_");
+            String[] entry = byteBuf.readString().split("_");
             this.packEntries[i] = new Entry(UUID.fromString(entry[0]), entry[1]);
         }
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putByte(this.responseStatus);
-        this.putLShort(this.packEntries.length);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeByte(this.responseStatus);
+        byteBuf.writeShortLE(this.packEntries.length);
         for (Entry entry : this.packEntries) {
-            this.putString(entry.uuid.toString() + '_' + entry.version);
+            byteBuf.writeString(entry.uuid.toString() + '_' + entry.version);
         }
     }
 

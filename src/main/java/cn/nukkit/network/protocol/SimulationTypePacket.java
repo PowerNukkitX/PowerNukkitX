@@ -18,6 +18,7 @@
 
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -46,14 +47,13 @@ public class SimulationTypePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        type = TYPES[getByte()];
+    public void decode(HandleByteBuf byteBuf) {
+        type = TYPES[byteBuf.readByte()];
     }
 
     @Override
-    public void encode() {
-        reset();
-        putByte((byte) type.ordinal());
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeByte((byte) type.ordinal());
     }
 
     @NotNull public SimulationType getSimulationType() {

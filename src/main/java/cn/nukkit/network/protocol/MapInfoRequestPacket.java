@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -16,12 +17,12 @@ public class MapInfoRequestPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        mapId = this.getEntityUniqueId();
+    public void decode(HandleByteBuf byteBuf) {
+        mapId = byteBuf.readEntityUniqueId();
     }
 
     @Override
-    public void encode() {
+    public void encode(HandleByteBuf byteBuf) {
 
     }
 

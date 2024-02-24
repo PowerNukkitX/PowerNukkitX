@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -54,25 +55,25 @@ public class PlayerActionPacket extends DataPacket {
     public int face;
 
     @Override
-    public void decode() {
-        this.entityId = this.getEntityRuntimeId();
-        this.action = this.getVarInt();
-        BlockVector3 v = this.getBlockVector3();
+    public void decode(HandleByteBuf byteBuf) {
+        this.entityId = byteBuf.readEntityRuntimeId();
+        this.action = byteBuf.readVarInt();
+        BlockVector3 v = byteBuf.readBlockVector3();
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
-        this.resultPosition = this.getBlockVector3();
-        this.face = this.getVarInt();
+        this.resultPosition = byteBuf.readBlockVector3();
+        this.face = byteBuf.readVarInt();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putEntityRuntimeId(this.entityId);
-        this.putVarInt(this.action);
-        this.putBlockVector3(this.x, this.y, this.z);
-        this.putBlockVector3(this.resultPosition != null ? this.resultPosition : new BlockVector3());
-        this.putVarInt(this.face);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeEntityRuntimeId(this.entityId);
+        byteBuf.writeVarInt(this.action);
+        byteBuf.writeBlockVector3(this.x, this.y, this.z);
+        byteBuf.writeBlockVector3(this.resultPosition != null ? this.resultPosition : new BlockVector3());
+        byteBuf.writeVarInt(this.face);
     }
 
     @Override

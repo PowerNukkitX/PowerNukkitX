@@ -175,12 +175,12 @@ public class CompoundTagView extends CompoundTag {
     }
 
     @Override
-    public int getByte(String name) {
+    public byte getByte(String name) {
         return delegate.getByte(name);
     }
 
     @Override
-    public int getShort(String name) {
+    public short getShort(String name) {
         return delegate.getShort(name);
     }
 

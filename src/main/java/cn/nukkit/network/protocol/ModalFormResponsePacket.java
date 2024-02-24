@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -15,18 +16,18 @@ public class ModalFormResponsePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.formId = this.getVarInt();
-        if (this.getBoolean()) {
-            this.data = this.getString();
+    public void decode(HandleByteBuf byteBuf) {
+        this.formId = byteBuf.readVarInt();
+        if (byteBuf.readBoolean()) {
+            this.data = byteBuf.readString();
         }
-        if (this.getBoolean()) {
-            this.cancelReason = this.getByte();
+        if (byteBuf.readBoolean()) {
+            this.cancelReason = byteBuf.readByte();
         }
     }
 
     @Override
-    public void encode() {
+    public void encode(HandleByteBuf byteBuf) {
 
     }
 

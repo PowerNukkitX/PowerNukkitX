@@ -4,7 +4,7 @@ import cn.nukkit.block.*;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
-import cn.nukkit.entity.data.IntEntityData;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityBlockChangeEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -25,7 +25,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntityFallingBlock extends Entity {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return FALLING_BLOCK;
     }
 
@@ -88,9 +89,9 @@ public class EntityFallingBlock extends Entity {
             breakOnLava = namedTag.getBoolean("BreakOnLava");
             breakOnGround = namedTag.getBoolean("BreakOnGround");
             this.fireProof = true;
-            this.setDataFlag(DATA_FLAGS, DATA_FLAG_FIRE_IMMUNE, true);
+            this.setDataFlag(EntityFlag.FIRE_IMMUNE, true);
 
-            setDataProperty(new IntEntityData(DATA_VARIANT, blockState.blockStateHash()));
+            setDataProperty(VARIANT, blockState.blockStateHash());
         }
     }
 

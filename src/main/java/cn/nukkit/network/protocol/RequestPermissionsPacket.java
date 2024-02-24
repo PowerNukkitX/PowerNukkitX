@@ -2,6 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.network.protocol.types.PlayerPermission;
 
@@ -9,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class RequestPermissionsPacket extends DataPacket{
+public class RequestPermissionsPacket extends DataPacket {
     //权限列表中可控制的能力
     public static final PlayerAbility[] CONTROLLABLE_ABILITIES = new PlayerAbility[]{
             PlayerAbility.BUILD,
@@ -33,14 +34,14 @@ public class RequestPermissionsPacket extends DataPacket{
     }
 
     @Override
-    public void decode() {
-        this.uniqueEntityId = this.getLLong();
-        this.permissions = PlayerPermission.values()[getByte()/2];
-        this.customPermissions = this.getLShort();
+    public void decode(HandleByteBuf byteBuf) {
+        this.uniqueEntityId = byteBuf.readLongLE();
+        this.permissions = PlayerPermission.values()[byteBuf.readByte() / 2];
+        this.customPermissions = byteBuf.readShortLE();
     }
 
     @Override
-    public void encode() {
+    public void encode(HandleByteBuf byteBuf) {
         throw new UnsupportedOperationException();
     }
 

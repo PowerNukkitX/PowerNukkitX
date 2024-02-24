@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.GameType;
 import lombok.ToString;
 
@@ -16,16 +17,16 @@ public class UpdatePlayerGameTypePacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.gameType = GameType.from(this.getVarInt());
-        this.entityId = this.getVarLong();
+    public void decode(HandleByteBuf byteBuf) {
+        this.gameType = GameType.from(byteBuf.readVarInt());
+        this.entityId = byteBuf.readVarLong();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putVarInt(this.gameType.ordinal());
-        this.putVarLong(entityId);
+    public void encode(HandleByteBuf byteBuf) {
+
+        byteBuf.writeVarInt(this.gameType.ordinal());
+        byteBuf.writeVarLong(entityId);
     }
 
     public void handle(PacketHandler handler) {

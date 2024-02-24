@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 @ToString
@@ -20,17 +21,17 @@ public class BlockPickRequestPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        BlockVector3 v = this.getSignedBlockPosition();
+    public void decode(HandleByteBuf byteBuf) {
+        BlockVector3 v = byteBuf.readSignedBlockPosition();
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
-        this.addUserData = this.getBoolean();
-        this.selectedSlot = this.getByte();
+        this.addUserData = byteBuf.readBoolean();
+        this.selectedSlot = byteBuf.readByte();
     }
 
     @Override
-    public void encode() {
+    public void encode(HandleByteBuf byteBuf) {
 
     }
 

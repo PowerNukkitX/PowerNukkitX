@@ -1,7 +1,9 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.Player;
-import cn.nukkit.entity.data.IntPositionEntityData;
+import cn.nukkit.entity.data.EntityDataTypes;
+import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.entity.data.PlayerFlag;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.inventory.HumanOffHandInventory;
 import cn.nukkit.inventory.Inventory;
@@ -10,6 +12,7 @@ import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.HumanEnderChestInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -30,9 +33,9 @@ public interface IHuman extends InventoryHolder {
     int NETWORK_ID = 257;
 
     default void initHumanEntity(Entity human) {
-        human.setDataFlag(Entity.DATA_PLAYER_FLAGS, Entity.DATA_PLAYER_FLAG_SLEEP, false);
-        human.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_GRAVITY);
-        human.setDataProperty(new IntPositionEntityData(Entity.DATA_PLAYER_BED_POSITION, 0, 0, 0), false);
+        human.setPlayerFlag(PlayerFlag.SLEEP);
+        human.setDataFlag(EntityFlag.HAS_GRAVITY);
+        human.setDataProperty(EntityDataTypes.BED_POSITION, new BlockVector3(0, 0, 0), false);
 
         if (!(human instanceof Player)) {
             if (human.namedTag.contains("NameTag")) {

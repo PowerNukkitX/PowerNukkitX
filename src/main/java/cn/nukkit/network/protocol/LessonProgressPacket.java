@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.LessonAction;
 import lombok.ToString;
 
@@ -18,18 +19,18 @@ public class LessonProgressPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.action = LessonAction.values()[this.getVarInt()];
-        this.score = this.getVarInt();
-        this.activityId = this.getString();
+    public void decode(HandleByteBuf byteBuf) {
+        this.action = LessonAction.values()[byteBuf.readVarInt()];
+        this.score = byteBuf.readVarInt();
+        this.activityId = byteBuf.readString();
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putVarInt(action.ordinal());
-        this.putVarInt(score);
-        this.putString(activityId);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeVarInt(action.ordinal());
+        byteBuf.writeVarInt(score);
+        byteBuf.writeString(activityId);
     }
 
     public void handle(PacketHandler handler) {

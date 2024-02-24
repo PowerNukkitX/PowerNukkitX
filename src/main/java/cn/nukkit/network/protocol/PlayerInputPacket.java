@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -17,15 +18,15 @@ public class PlayerInputPacket extends DataPacket {
     public boolean sneaking;
 
     @Override
-    public void decode() {
-        this.motionX = this.getLFloat();
-        this.motionY = this.getLFloat();
-        this.jumping = this.getBoolean();
-        this.sneaking = this.getBoolean();
+    public void decode(HandleByteBuf byteBuf) {
+        this.motionX = byteBuf.readFloatLE();
+        this.motionY = byteBuf.readFloatLE();
+        this.jumping = byteBuf.readBoolean();
+        this.sneaking = byteBuf.readBoolean();
     }
 
     @Override
-    public void encode() {
+    public void encode(HandleByteBuf byteBuf) {
 
     }
 

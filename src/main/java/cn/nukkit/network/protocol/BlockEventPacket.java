@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 /**
@@ -21,16 +22,15 @@ public class BlockEventPacket extends DataPacket {
     public int case2;
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
 
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putBlockVector3(this.x, this.y, this.z);
-        this.putVarInt(this.case1);
-        this.putVarInt(this.case2);
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeBlockVector3(this.x, this.y, this.z);
+        byteBuf.writeVarInt(this.case1);
+        byteBuf.writeVarInt(this.case2);
     }
 
     public void handle(PacketHandler handler) {

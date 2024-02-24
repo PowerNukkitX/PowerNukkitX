@@ -3,6 +3,7 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector2f;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.*;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
 import lombok.Getter;
@@ -50,46 +51,46 @@ public class PlayerAuthInputPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.pitch = this.getLFloat();
-        this.yaw = this.getLFloat();
-        this.position = this.getVector3f();
-        this.motion = new Vector2(this.getLFloat(), this.getLFloat());
-        this.headYaw = this.getLFloat();
+    public void decode(HandleByteBuf byteBuf) {
+        this.pitch = byteBuf.readFloatLE();
+        this.yaw = byteBuf.readFloatLE();
+        this.position = byteBuf.readVector3f();
+        this.motion = new Vector2(byteBuf.readFloatLE(), byteBuf.readFloatLE());
+        this.headYaw = byteBuf.readFloatLE();
 
-        long inputData = this.getUnsignedVarLong();
+        long inputData = byteBuf.readUnsignedVarLong();
         for (int i = 0; i < AuthInputAction.size(); i++) {
             if ((inputData & (1L << i)) != 0) {
                 this.inputData.add(AuthInputAction.from(i));
             }
         }
 
-        this.inputMode = InputMode.fromOrdinal((int) this.getUnsignedVarInt());
-        this.playMode = ClientPlayMode.fromOrdinal((int) this.getUnsignedVarInt());
-        this.interactionModel = AuthInteractionModel.fromOrdinal((int) this.getUnsignedVarInt());
+        this.inputMode = InputMode.fromOrdinal((int) byteBuf.readUnsignedVarInt());
+        this.playMode = ClientPlayMode.fromOrdinal((int) byteBuf.readUnsignedVarInt());
+        this.interactionModel = AuthInteractionModel.fromOrdinal((int) byteBuf.readUnsignedVarInt());
 
         if (this.playMode == ClientPlayMode.REALITY) {
-            this.vrGazeDirection = this.getVector3f();
+            this.vrGazeDirection = byteBuf.readVector3f();
         }
 
-        this.tick = this.getUnsignedVarLong();
-        this.delta = this.getVector3f();
+        this.tick = byteBuf.readUnsignedVarLong();
+        this.delta = byteBuf.readVector3f();
 
         if (this.inputData.contains(AuthInputAction.PERFORM_ITEM_STACK_REQUEST)) {
-            this.itemStackRequest = readItemStackRequest();
+            this.itemStackRequest = byteBuf.readItemStackRequest();
         }
 
         if (this.inputData.contains(AuthInputAction.PERFORM_BLOCK_ACTIONS)) {
-            int arraySize = this.getVarInt();
+            int arraySize = byteBuf.readVarInt();
             for (int i = 0; i < arraySize; i++) {
-                PlayerActionType type = PlayerActionType.from(this.getVarInt());
+                PlayerActionType type = PlayerActionType.from(byteBuf.readVarInt());
                 switch (type) {
                     case START_DESTROY_BLOCK:
                     case ABORT_DESTROY_BLOCK:
                     case CRACK_BLOCK:
                     case PREDICT_DESTROY_BLOCK:
                     case CONTINUE_DESTROY_BLOCK:
-                        this.blockActionData.put(type, new PlayerBlockActionData(type, this.getSignedBlockPosition(), this.getVarInt()));
+                        this.blockActionData.put(type, new PlayerBlockActionData(type, byteBuf.readSignedBlockPosition(), byteBuf.readVarInt()));
                         break;
                     default:
                         this.blockActionData.put(type, new PlayerBlockActionData(type, null, -1));
@@ -98,15 +99,15 @@ public class PlayerAuthInputPacket extends DataPacket {
         }
 
         if (this.inputData.contains(AuthInputAction.IN_CLIENT_PREDICTED_IN_VEHICLE)) {
-            this.predictedVehicle = this.getVarLong();
+            this.predictedVehicle = byteBuf.readVarLong();
         }
 
         // since 1.19.70-r1, v575
-        this.analogMoveVector = this.getVector2f();
+        this.analogMoveVector = byteBuf.readVector2f();
     }
 
     @Override
-    public void encode() {
+    public void encode(HandleByteBuf byteBuf) {
         // Noop
     }
 

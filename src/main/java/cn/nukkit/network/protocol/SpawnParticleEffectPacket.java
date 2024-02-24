@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
 import java.util.Optional;
@@ -24,18 +25,18 @@ public class SpawnParticleEffectPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
+    public void decode(HandleByteBuf byteBuf) {
     }
 
     @Override
-    public void encode() {
-        this.reset();
-        this.putByte((byte) this.dimensionId);
-        this.putEntityUniqueId(uniqueEntityId);
-        this.putVector3f(this.position);
-        this.putString(this.identifier);
-        this.putBoolean(molangVariablesJson.isPresent());
-        molangVariablesJson.ifPresent(this::putString);
+    public void encode(HandleByteBuf byteBuf) {
+        
+        byteBuf.writeByte((byte) this.dimensionId);
+        byteBuf.writeEntityUniqueId(uniqueEntityId);
+        byteBuf.writeVector3f(this.position);
+        byteBuf.writeString(this.identifier);
+        byteBuf.writeBoolean(molangVariablesJson.isPresent());
+        molangVariablesJson.ifPresent(byteBuf::writeString);
     }
 
     public void handle(PacketHandler handler) {
