@@ -1,7 +1,5 @@
 package cn.nukkit.entity.data;
 
-import cn.nukkit.entity.Entity;
-
 /**
  * @author MagicDroidX (Nukkit Project)
  */
@@ -29,7 +27,7 @@ public class IntEntityData extends EntityData<Integer> {
 
     @Override
     public int getType() {
-        return Entity.DATA_TYPE_INT;
+        return EntityData.DATA_TYPE_INT;
     }
 
     @Override

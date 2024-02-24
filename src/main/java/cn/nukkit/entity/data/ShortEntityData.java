@@ -29,7 +29,7 @@ public class ShortEntityData extends EntityData<Integer> {
 
     @Override
     public int getType() {
-        return Entity.DATA_TYPE_SHORT;
+        return EntityData.DATA_TYPE_SHORT;
     }
 
     @Override

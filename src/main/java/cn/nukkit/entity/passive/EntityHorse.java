@@ -166,7 +166,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                     .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.entries = new Attribute[]{attr};
-            pk.entityId = this.id;
+            pk.entityId = this.getId();
             Server.broadcastPacket(this.getViewers().values().toArray(Player.EMPTY_ARRAY), pk);
         }
     }
@@ -181,7 +181,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         if (this.isAlive()) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.entries = new Attribute[]{attr};
-            pk.entityId = this.id;
+            pk.entityId = this.getId();
             Server.broadcastPacket(this.getViewers().values().toArray(Player.EMPTY_ARRAY), pk);
         }
     }
@@ -463,7 +463,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                 .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
         pk.entries = new Attribute[]{attr};
-        pk.entityId = this.id;
+        pk.entityId = this.getId();
         player.dataPacket(pk);
     }
 

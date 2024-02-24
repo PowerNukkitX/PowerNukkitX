@@ -3401,7 +3401,10 @@ public class Level implements Metadatable {
         if (tickingAreaManager != null && tickingAreaManager.getTickingAreaByChunk(this.getName(), new TickingArea.ChunkPos(getHashX(hash), getHashZ(hash))) != null) {
             return true;
         }
-        return this.chunkLoaders.containsKey(hash) && !this.chunkLoaders.get(hash).isEmpty();
+        Map<Integer, ChunkLoader> integerChunkLoaderMap = this.chunkLoaders.get(hash);
+        if (integerChunkLoaderMap != null) {
+            return this.chunkLoaders.containsKey(hash) && !integerChunkLoaderMap.isEmpty();
+        } else return false;
     }
 
     public IChunk getChunk(int chunkX, int chunkZ) {

@@ -3,7 +3,6 @@ package cn.nukkit.entity;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.custom.CustomEntity;
@@ -85,6 +84,7 @@ import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiPredicate;
 
 import static cn.nukkit.utils.Utils.dynamic;
@@ -97,21 +97,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     //region data
     //All DATA constants were made dynamic because they have tendency to change on Minecraft updates,
     //these dynamic calls will avoid the need of plugin recompilations after Minecraft updates that shifts the data values
-
-    public static final int DATA_TYPE_BYTE = 0;
-    public static final int DATA_TYPE_SHORT = 1;
-    public static final int DATA_TYPE_INT = 2;
-    public static final int DATA_TYPE_FLOAT = 3;
-    public static final int DATA_TYPE_STRING = 4;
-    public static final int DATA_TYPE_NBT = 5;
-    public static final int DATA_TYPE_POS = 6;
-    public static final int DATA_TYPE_LONG = 7;
-    public static final int DATA_TYPE_VECTOR3F = 8;
     public static final int DATA_FLAGS = dynamic(0);
     public static final int DATA_HEALTH = dynamic(1); //int (minecart/boat)
     public static final int DATA_VARIANT = dynamic(2); //int
     public static final int DATA_COLOR = dynamic(3); //byte
-    public static final int DATA_COLOUR = DATA_COLOR;
     public static final int DATA_NAMETAG = dynamic(4); //string
     public static final int DATA_OWNER_EID = dynamic(5); //long
     public static final int DATA_TARGET_EID = dynamic(6); //long
@@ -133,33 +122,26 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public static final int DATA_CHARGE_AMOUNT = dynamic(22);
     public static final int DATA_ENDERMAN_HELD_RUNTIME_ID = dynamic(23); //short
     public static final int DATA_CLIENT_EVENT = dynamic(24); //byte
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
-            reason = "Apparently this the ID 24 was reused to represent CLIENT_EVENT but Cloudburst Nukkit is still mapping it as age")
-    public static final int DATA_ENTITY_AGE = dynamic(DATA_CLIENT_EVENT); //short
+
     public static final int DATA_PLAYER_FLAG_SLEEP = 1;
     public static final int DATA_PLAYER_FLAG_DEAD = 2;
+    public static final int DATA_PLAYER_BUTTON_TEXT = 40;
+
     public static final int DATA_USING_ITEM = dynamic(25); //byte
     public static final int DATA_PLAYER_FLAGS = dynamic(26); //byte
     public static final int DATA_PLAYER_INDEX = dynamic(27);
     public static final int DATA_PLAYER_BED_POSITION = dynamic(28); //block coords
-    public static final int DATA_PLAYER_BUTTON_TEXT = 40;
 
     public static final int DATA_FIREBALL_POWER_X = dynamic(29); //float
     public static final int DATA_FIREBALL_POWER_Y = dynamic(30); //float
     public static final int DATA_FIREBALL_POWER_Z = dynamic(31); //float
-
     public static final int DATA_AUX_POWER = dynamic(32); //???
-
     public static final int DATA_FISH_X = dynamic(33); //float
-
     public static final int DATA_FISH_Z = dynamic(34); //float
-
     public static final int DATA_FISH_ANGLE = dynamic(35); //float
     public static final int DATA_POTION_AUX_VALUE = dynamic(36); //short
     public static final int DATA_LEAD_HOLDER_EID = dynamic(37); //long
     public static final int DATA_SCALE = dynamic(38); //float
-
     public static final int DATA_HAS_NPC_COMPONENT = dynamic(39); //byte
     public static final int DATA_NPC_SKIN_DATA = dynamic(40); //string
     public static final int DATA_NPC_ACTIONS = dynamic(41); //string
@@ -173,7 +155,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public static final int DATA_WITHER_TARGET_1 = dynamic(49); //long
     public static final int DATA_WITHER_TARGET_2 = dynamic(50); //long
     public static final int DATA_WITHER_TARGET_3 = dynamic(51); //long
-
     public static final int DATA_AERIAL_ATTACK = dynamic(52);
     public static final int DATA_BOUNDING_BOX_WIDTH = dynamic(53); //float
     public static final int DATA_BOUNDING_BOX_HEIGHT = dynamic(54); //float
@@ -182,126 +163,76 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public static final int DATA_RIDER_ROTATION_LOCKED = dynamic(57); //byte
     public static final int DATA_RIDER_MAX_ROTATION = dynamic(58); //float
     public static final int DATA_RIDER_MIN_ROTATION = dynamic(59); //float
-
     public static final int DATA_RIDER_ROTATION_OFFSET = dynamic(60);
     public static final int DATA_AREA_EFFECT_CLOUD_RADIUS = dynamic(61); //float
     public static final int DATA_AREA_EFFECT_CLOUD_WAITING = dynamic(62); //int
     public static final int DATA_AREA_EFFECT_CLOUD_PARTICLE_ID = dynamic(63); //int
-
     public static final int DATA_SHULKER_PEEK_ID = dynamic(64); //int
     public static final int DATA_SHULKER_ATTACH_FACE = dynamic(65); //byte
-
     public static final int DATA_SHULKER_ATTACHED = dynamic(66); //short
     public static final int DATA_SHULKER_ATTACH_POS = dynamic(67); //block coords
     public static final int DATA_TRADING_PLAYER_EID = dynamic(68); //long
-
     public static final int DATA_TRADING_CAREER = dynamic(69);
-
     public static final int DATA_HAS_COMMAND_BLOCK = dynamic(70); //byte
-
     public static final int DATA_COMMAND_BLOCK_COMMAND = dynamic(71); //string
     public static final int DATA_COMMAND_BLOCK_LAST_OUTPUT = dynamic(72); //string
     public static final int DATA_COMMAND_BLOCK_TRACK_OUTPUT = dynamic(73); //byte
     public static final int DATA_CONTROLLING_RIDER_SEAT_NUMBER = dynamic(74); //byte
     public static final int DATA_STRENGTH = dynamic(75); //int
     public static final int DATA_MAX_STRENGTH = dynamic(76); //int
-
     public static final int DATA_SPELL_CASTING_COLOR = dynamic(77); //int
     public static final int DATA_LIMITED_LIFE = dynamic(78); //int
     public static final int DATA_ARMOR_STAND_POSE_INDEX = dynamic(79); //int
     public static final int DATA_ENDER_CRYSTAL_TIME_OFFSET = dynamic(80); //int
     public static final int DATA_ALWAYS_SHOW_NAMETAG = dynamic(81); //byte
     public static final int DATA_COLOR_2 = dynamic(82); //byte
-
     public static final int DATA_NAME_AUTHOR = dynamic(83);
     public static final int DATA_SCORE_TAG = dynamic(84); //String
     public static final int DATA_BALLOON_ATTACHED_ENTITY = dynamic(85); //long
     public static final int DATA_PUFFERFISH_SIZE = dynamic(86); //byte
-
     public static final int DATA_BUBBLE_TIME = dynamic(87); //int
-
     public static final int DATA_AGENT = dynamic(88); //long
-
     public static final int DATA_SITTING_AMOUNT = dynamic(89); //??
-
     public static final int DATA_SITTING_AMOUNT_PREVIOUS = dynamic(90); //??
-
     public static final int DATA_EATING_COUNTER = dynamic(91); //int
     public static final int DATA_FLAGS_EXTENDED = dynamic(92); //flags
-
     public static final int DATA_LAYING_AMOUNT = dynamic(93); //??
-
     public static final int DATA_LAYING_AMOUNT_PREVIOUS = dynamic(94); //??
-
     public static final int DATA_DURATION = dynamic(95); //int
-
     public static final int DATA_SPAWN_TIME = dynamic(96); //int
-
     public static final int DATA_CHANGE_RATE = dynamic(97); //float
-
     public static final int DATA_CHANGE_ON_PICKUP = dynamic(98); //float
-
     public static final int DATA_PICKUP_COUNT = dynamic(99); //int
-
     public static final int DATA_INTERACTIVE_TAG = dynamic(100); //string (button text)
     public static final int DATA_TRADE_TIER = dynamic(101); //int 这个没啥用
     public static final int DATA_MAX_TRADE_TIER = dynamic(102); //int 这个控制村民最大等级
-
     public static final int DATA_TRADE_EXPERIENCE = dynamic(103); //int这个控制当前经验
-
     public static final int DATA_SKIN_ID = dynamic(104); //int
-
     public static final int DATA_SPAWNING_FRAMES = dynamic(105); //??
-
     public static final int DATA_COMMAND_BLOCK_TICK_DELAY = dynamic(106); //int
-
     public static final int DATA_COMMAND_BLOCK_EXECUTE_ON_FIRST_TICK = dynamic(107); //byte
-
     public static final int DATA_AMBIENT_SOUND_INTERVAL = dynamic(108); //float
-
     public static final int DATA_AMBIENT_SOUND_INTERVAL_RANGE = dynamic(109); //float
-
     public static final int DATA_AMBIENT_SOUND_EVENT_NAME = dynamic(110); //string
-
     public static final int DATA_FALL_DAMAGE_MULTIPLIER = dynamic(111); //float
-
     public static final int DATA_NAME_RAW_TEXT = dynamic(112); //string
-
     public static final int DATA_CAN_RIDE_TARGET = dynamic(113); //byte
-
     public static final int DATA_LOW_TIER_CURED_DISCOUNT = dynamic(114); //int
-
     public static final int DATA_HIGH_TIER_CURED_DISCOUNT = dynamic(115); //int
-
     public static final int DATA_NEARBY_CURED_DISCOUNT = dynamic(116); //int
-
     public static final int DATA_NEARBY_CURED_DISCOUNT_TIMESTAMP = dynamic(117); //int
-
     public static final int DATA_HITBOX = dynamic(118); //NBT
-
     public static final int DATA_IS_BUOYANT = dynamic(119); //byte
-
     public static final int DATA_FREEZING_EFFECT_STRENGTH = dynamic(120); //float
-
     public static final int DATA_BUOYANCY_DATA = dynamic(121); //string
-
     public static final int DATA_GOAT_HORN_COUNT = dynamic(122); // ???
-
     public static final int DATA_BASE_RUNTIME_ID = dynamic(123); // ???
     public static final int DATA_MOVEMENT_SOUND_DISTANCE_OFFSET = dynamic(124); // ???
-    //Deprecated
-    //
-    //public static final int DATA_UPDATE_PROPERTIES = dynamic(124); // ???
     public static final int DATA_HEARTBEAT_INTERVAL_TICKS = dynamic(125); // ???
     public static final int DATA_HEARTBEAT_SOUND_EVENT = dynamic(126); // ???
-
     public static final int DATA_PLAYER_LAST_DEATH_POS = 127;// ???
-
     public static final int DATA_PLAYER_LAST_DEATH_DIMENSION = 128;// ???
-
     public static final int DATA_PLAYER_HAS_DIED = 129;// ???
-
-
     public static final int DATA_COLLISION_BOX = 130; //vector3f
 
     // Flags
@@ -345,8 +276,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public static final int DATA_FLAG_CHESTED = dynamic(36);
     public static final int DATA_FLAG_STACKABLE = dynamic(37);
     public static final int DATA_FLAG_SHOWBASE = dynamic(38);
-    //STANDING
-    public static final int DATA_FLAG_REARING = dynamic(39);
+    public static final int DATA_FLAG_REARING = dynamic(39);  //STANDING
     public static final int DATA_FLAG_VIBRATING = dynamic(40);
     public static final int DATA_FLAG_IDLING = dynamic(41);
     public static final int DATA_FLAG_EVOKER_SPELL = dynamic(42);
@@ -354,7 +284,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public static final int DATA_FLAG_WASD_CONTROLLED = dynamic(44);
     public static final int DATA_FLAG_CAN_POWER_JUMP = dynamic(45);
     public static final int DATA_FLAG_CAN_DASH = dynamic(46);
-
     public static final int DATA_FLAG_LINGER = dynamic(47);
     public static final int DATA_FLAG_HAS_COLLISION = dynamic(48);
     public static final int DATA_FLAG_GRAVITY = dynamic(49);
@@ -363,29 +292,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public static final int DATA_FLAG_ENCHANTED = dynamic(52);
     public static final int DATA_FLAG_SHOW_TRIDENT_ROPE = dynamic(53); // tridents show an animated rope when enchanted with loyalty after they are thrown and return to their owner. To be combined with DATA_OWNER_EID
     public static final int DATA_FLAG_CONTAINER_PRIVATE = dynamic(54); //inventory is private, doesn't drop contents when killed if true
-
     public static final int DATA_FLAG_IS_TRANSFORMING = dynamic(55);
     public static final int DATA_FLAG_SPIN_ATTACK = dynamic(56);
     public static final int DATA_FLAG_SWIMMING = dynamic(57);
     public static final int DATA_FLAG_BRIBED = dynamic(58); //dolphins have this set when they go to find treasure for the player
     public static final int DATA_FLAG_PREGNANT = dynamic(59);
     public static final int DATA_FLAG_LAYING_EGG = dynamic(60);
-
     public static final int DATA_FLAG_RIDER_CAN_PICK = dynamic(61);
-
-
     public static final int DATA_FLAG_TRANSITION_SITTING = dynamic(62); // PowerNukkit but without typo
-    /**
-     * @see #DATA_FLAG_TRANSITION_SITTING
-     * @deprecated This is from NukkitX but it has a typo which we can't remove unless NukkitX removes from their side.
-     */
-    @Deprecated
-    @DeprecationDetails(
-            reason = "This is from NukkitX but it has a typo which we can't remove unless NukkitX removes from their side.",
-            since = "1.2.0.0-PN",
-            replaceWith = "DATA_FLAG_TRANSITION_SITTING")
-
-    public static final int DATA_FLAG_TRANSITION_SETTING = DATA_FLAG_TRANSITION_SITTING; // NukkitX with the same typo
     public static final int DATA_FLAG_EATING = dynamic(63);
     public static final int DATA_FLAG_LAYING_DOWN = dynamic(64);
     public static final int DATA_FLAG_SNEEZING = dynamic(65);
@@ -396,89 +310,52 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public static final int DATA_FLAG_OVER_SCAFFOLDING = dynamic(70);
     public static final int DATA_FLAG_FALL_THROUGH_SCAFFOLDING = dynamic(71);
     public static final int DATA_FLAG_BLOCKING = dynamic(72); //shield
-
     public static final int DATA_FLAG_TRANSITION_BLOCKING = dynamic(73);
-
     public static final int DATA_FLAG_BLOCKED_USING_SHIELD = dynamic(74);
-
     public static final int DATA_FLAG_BLOCKED_USING_DAMAGED_SHIELD = dynamic(75);
-
     public static final int DATA_FLAG_SLEEPING = dynamic(76);
-
     public static final int DATA_FLAG_ENTITY_GROW_UP = dynamic(77);
-
     public static final int DATA_FLAG_TRADE_INTEREST = dynamic(78);
-
     public static final int DATA_FLAG_DOOR_BREAKER = dynamic(79);
-
     public static final int DATA_FLAG_BREAKING_OBSTRUCTION = dynamic(80);
-
     public static final int DATA_FLAG_DOOR_OPENER = dynamic(81);
-
     public static final int DATA_FLAG_IS_ILLAGER_CAPTAIN = dynamic(82);
-
     public static final int DATA_FLAG_STUNNED = dynamic(83);
-
     public static final int DATA_FLAG_ROARING = dynamic(84);
-
     public static final int DATA_FLAG_DELAYED_ATTACK = dynamic(85);
-
     public static final int DATA_FLAG_IS_AVOIDING_MOBS = dynamic(86);
-
     public static final int DATA_FLAG_IS_AVOIDING_BLOCKS = dynamic(87);
-
     public static final int DATA_FLAG_FACING_TARGET_TO_RANGE_ATTACK = dynamic(88);
-
     public static final int DATA_FLAG_HIDDEN_WHEN_INVISIBLE = dynamic(89);
-
     public static final int DATA_FLAG_IS_IN_UI = dynamic(90);
-
     public static final int DATA_FLAG_STALKING = dynamic(91);
-
     public static final int DATA_FLAG_EMOTING = dynamic(92);
-
     public static final int DATA_FLAG_CELEBRATING = dynamic(93);
-
     public static final int DATA_FLAG_ADMIRING = dynamic(94);
-
     public static final int DATA_FLAG_CELEBRATING_SPECIAL = dynamic(95);
-
     public static final int DATA_FLAG_RAM_ATTACK = dynamic(97);
-
     public static final int DATA_FLAG_PLAYING_DEAD = dynamic(98);
-
     public static final int DATA_FLAG_IN_ASCENDABLE_BLOCK = dynamic(99);
-
     public static final int DATA_FLAG_OVER_DESCENDABLE_BLOCK = dynamic(100);
-
     public static final int DATA_FLAG_CROAKING = dynamic(101);
-
     public static final int DATA_FLAG_EAT_MOB = dynamic(102);
-
     public static final int DATA_FLAG_JUMP_GOAL_JUMP = dynamic(103);
-
     public static final int DATA_FLAG_EMERGING = dynamic(104);
-
     public static final int DATA_FLAG_SNIFFING = dynamic(105);
-
     public static final int DATA_FLAG_DIGGING = dynamic(106);
-
     public static final int DATA_FLAG_SONIC_BOOM = dynamic(107);
-
     public static final int DATA_FLAG_HAS_DASH_COOLDOWN = dynamic(108);
-
     public static final int DATA_FLAG_PUSH_TOWARDS_CLOSEST_SPACE = dynamic(109);
-
     public static final int DATA_FLAG_SCENTING = dynamic(110);
-
     public static final int DATA_FLAG_RISING = dynamic(111);
-
     public static final int DATA_FLAG_FEELING_HAPPY = dynamic(112);
-
     public static final int DATA_FLAG_SEARCHING = dynamic(113);
-
     public static final int DATA_FLAG_CRAWLING = dynamic(114);
-    public static long entityCount = 1;
+    public static final int DATA_FLAG_TIMER_FLAG_1 = dynamic(115);
+    public static final int DATA_FLAG_TIMER_FLAG_2 = dynamic(116);
+    public static final int DATA_FLAG_TIMER_FLAG_3 = dynamic(117);
+
+    public static AtomicLong entityCount = new AtomicLong(1);
     public final List<Entity> passengers = new ArrayList<>();
     public final AxisAlignedBB offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
     protected final Map<Integer, Player> hasSpawned = new ConcurrentHashMap<>();
@@ -552,7 +429,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     //player's UUID is sent by client,so this value cannot be used in Player
     protected UUID entityUniqueId;
     //runtime id (changed after you restart the server)
-    protected long id;
+    protected volatile long id;
     protected EntityDamageEvent lastDamageCause = null;
     protected int age = 0;
     protected float health = 20;
@@ -895,7 +772,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.isPlayer = this instanceof Player;
         this.temporalVector = new Vector3();
 
-        this.id = Entity.entityCount++;
+        this.id = Entity.entityCount.getAndIncrement();
         this.justCreated = true;
         this.namedTag = nbt;
 
@@ -1266,7 +1143,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.dataProperties.put(bbH);
         this.dataProperties.put(bbW);
         if (send) {
-            sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), new EntityMetadata().put(bbH).put(bbW));
+            if(this instanceof Player player){
+                sendData(player, new EntityMetadata().put(bbH).put(bbW));
+            }
         }
     }
 
@@ -2014,7 +1893,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      */
     public void addMotion(double motionX, double motionY, double motionZ) {
         SetEntityMotionPacket pk = new SetEntityMotionPacket();
-        pk.eid = this.id;
+        pk.eid = this.getId();
         pk.motionX = (float) motionX;
         pk.motionY = (float) motionY;
         pk.motionZ = (float) motionZ;
@@ -2205,7 +2084,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public final void scheduleUpdate() {
-        this.level.updateEntities.put(this.id, this);
+        this.level.updateEntities.put(this.getId(), this);
     }
 
     public boolean isOnFire() {
@@ -2232,14 +2111,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public void syncAttribute(Attribute attribute) {
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
         pk.entries = new Attribute[]{attribute};
-        pk.entityId = this.id;
+        pk.entityId = this.getId();
         Server.broadcastPacket(this.getViewers().values(), pk);
     }
 
     public void syncAttributes() {
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
         pk.entries = this.attributes.values().stream().filter(Attribute::isSyncable).toArray(Attribute[]::new);
-        pk.entityId = this.id;
+        pk.entityId = this.getId();
         Server.broadcastPacket(this.getViewers().values(), pk);
     }
 

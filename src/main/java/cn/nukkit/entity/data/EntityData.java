@@ -14,6 +14,16 @@ import java.util.TreeSet;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class EntityData<T> {
+    public static final int DATA_TYPE_BYTE = 0;
+    public static final int DATA_TYPE_SHORT = 1;
+    public static final int DATA_TYPE_INT = 2;
+    public static final int DATA_TYPE_FLOAT = 3;
+    public static final int DATA_TYPE_STRING = 4;
+    public static final int DATA_TYPE_NBT = 5;
+    public static final int DATA_TYPE_POS = 6;
+    public static final int DATA_TYPE_LONG = 7;
+    public static final int DATA_TYPE_VECTOR3F = 8;
+
     private static final Int2ObjectMap<String> KNOWN_ENTITY_DATA = new Int2ObjectOpenHashMap<>();
     private static final Int2ObjectMap<String> KNOWN_ENTITY_FLAGS = new Int2ObjectOpenHashMap<>();
 

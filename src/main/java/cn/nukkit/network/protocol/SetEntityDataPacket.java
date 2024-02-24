@@ -16,11 +16,8 @@ public class SetEntityDataPacket extends DataPacket {
     public int pid() {
         return NETWORK_ID;
     }
-
     public long eid;
     public EntityMetadata metadata;
-
-
     public PropertySyncData syncedProperties = new PropertySyncData(new int[]{}, new float[]{});
 
     public long frame;
@@ -33,7 +30,7 @@ public class SetEntityDataPacket extends DataPacket {
     @Override
     public void encode() {
         this.reset();
-        this.putEntityRuntimeId(this.eid);
+        this.putUnsignedVarLong(this.eid);
         this.put(Binary.writeMetadata(this.metadata));
         //syncedProperties
         this.putUnsignedVarInt(this.syncedProperties.intProperties().length);

@@ -26,7 +26,7 @@ public class NBTEntityData extends EntityData<CompoundTag> {
 
     @Override
     public int getType() {
-        return Entity.DATA_TYPE_NBT;
+        return EntityData.DATA_TYPE_NBT;
     }
 
     @Override

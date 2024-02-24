@@ -1,7 +1,5 @@
 package cn.nukkit.entity.data;
 
-import cn.nukkit.entity.Entity;
-
 /**
  * @author MagicDroidX (Nukkit Project)
  */
@@ -29,7 +27,7 @@ public class ByteEntityData extends EntityData<Integer> {
 
     @Override
     public int getType() {
-        return Entity.DATA_TYPE_BYTE;
+        return EntityData.DATA_TYPE_BYTE;
     }
 
     @Override

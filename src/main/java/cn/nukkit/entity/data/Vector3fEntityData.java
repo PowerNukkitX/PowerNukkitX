@@ -38,7 +38,7 @@ public class Vector3fEntityData extends EntityData<Vector3f> {
 
     @Override
     public int getType() {
-        return Entity.DATA_TYPE_VECTOR3F;
+        return EntityData.DATA_TYPE_VECTOR3F;
     }
 
     @Override

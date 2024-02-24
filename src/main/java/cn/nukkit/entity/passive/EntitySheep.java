@@ -196,7 +196,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
 
     public void setColor(int color) {
         this.color = color;
-        this.setDataProperty(new ByteEntityData(DATA_COLOUR, color));
+        this.setDataProperty(new ByteEntityData(DATA_COLOR, color));
         this.namedTag.putByte("Color", this.color);
     }
 

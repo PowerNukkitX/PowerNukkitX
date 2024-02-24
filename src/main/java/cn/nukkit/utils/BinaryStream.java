@@ -99,7 +99,6 @@ public class BinaryStream {
     }
 
     public byte[] getBuffer() {
-        if (count == 0) return null;
         return Arrays.copyOf(buffer, count);
     }
 

@@ -30,7 +30,7 @@ public class FloatEntityData extends EntityData<Float> {
 
     @Override
     public int getType() {
-        return Entity.DATA_TYPE_FLOAT;
+        return EntityData.DATA_TYPE_FLOAT;
     }
 
     @Override

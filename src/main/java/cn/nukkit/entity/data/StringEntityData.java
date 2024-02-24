@@ -25,6 +25,6 @@ public class StringEntityData extends EntityData<String> {
 
     @Override
     public int getType() {
-        return Entity.DATA_TYPE_STRING;
+        return EntityData.DATA_TYPE_STRING;
     }
 }

@@ -7,6 +7,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.Map;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
+@Slf4j
 public class EntityMetadata {
 
     private final Int2ObjectMap<EntityData<?>> map = Int2ObjectMaps.synchronize(new Int2ObjectOpenHashMap<>());
@@ -35,9 +37,13 @@ public class EntityMetadata {
         return this.map.containsKey(id);
     }
 
+    public void remove(int id) {
+        this.map.remove(id);
+    }
+
     public EntityMetadata put(EntityData<?> data) {
         this.map.put(data.getId(), data);
-        //log.info("Updated entity data {}", this::toString);
+//        log.info("Updated entity data {}", this);
         return this;
     }
 

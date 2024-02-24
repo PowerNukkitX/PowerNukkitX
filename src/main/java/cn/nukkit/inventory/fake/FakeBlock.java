@@ -1,9 +1,8 @@
-package cn.nukkit.block.fake;
+package cn.nukkit.inventory.fake;
 
 import cn.nukkit.Player;
 import cn.nukkit.math.Vector3;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -14,7 +13,6 @@ import java.util.List;
 
 
 public interface FakeBlock {
-
     /**
      * 给某玩家发送该假方块及其对应方块实体.
      * <p>
@@ -30,7 +28,7 @@ public interface FakeBlock {
      * Send the fake block and its corresponding BlockEntity to a player
      *
      * @param player    the player
-     * @param titleName 该方块实体的名称<br>the title name
+     * @param titleName 该方块实体的名称<br>the title name for blockentity
      */
     default void create(Player player, String titleName) {
         this.create(player);
@@ -43,11 +41,18 @@ public interface FakeBlock {
      */
     void remove(Player player);
 
-    default List<Vector3> getPositions(Player player) {
-        return Collections.singletonList(getOffset(player));
+    default List<Vector3> getPlacePositions(Player player) {
+        return List.of(getOffset(player));
     }
 
+    /**
+     * Get the place position of this fake block
+     */
     default Vector3 getOffset(Player player) {
-        return player.getPosition().floor().setY(player.getLevel().getMinHeight() + 1);
+        Vector3 offset = player.getDirectionVector();
+        offset.x *= -(2 + player.getWidth());
+        offset.y *= -(2 + player.getHeight());
+        offset.z *= -(2 + player.getWidth());
+        return player.getPosition().add(offset);
     }
 }

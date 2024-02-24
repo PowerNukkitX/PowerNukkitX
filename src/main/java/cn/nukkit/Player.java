@@ -388,6 +388,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         //set user name data flag
         this.setDataProperty(new StringEntityData(Entity.DATA_NAMETAG, info.getUsername()), false);
+        this.setDataProperty(new ByteEntityData(Entity.DATA_ALWAYS_SHOW_NAMETAG, 1), false);
         this.setSkin(info.getSkin());
     }
 
@@ -1240,6 +1241,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!this.server.isCheckMovement()) {
             this.checkMovement = false;
         }
+
+        log.info(server.getLanguage().tr("nukkit.player.logIn",
+                TextFormat.AQUA + this.getName() + TextFormat.WHITE,
+                this.getAddress(),
+                String.valueOf(this.getPort()),
+                String.valueOf(this.getId()),
+                this.level.getName(),
+                String.valueOf(NukkitMath.round(this.x, 4)),
+                String.valueOf(NukkitMath.round(this.y, 4)),
+                String.valueOf(NukkitMath.round(this.z, 4))));
     }
 
     public Vector3 getSafeSpawn() {
@@ -2115,6 +2126,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.setDataProperty(new StringEntityData(Entity.DATA_INTERACTIVE_TAG, this.buttonText));
     }
 
+    public void removettonText() {
+        this.buttonText = "";
+        this.getDataProperties().remove(Entity.DATA_INTERACTIVE_TAG);
+    }
+
     public void unloadChunk(int x, int z) {
         this.unloadChunk(x, z, null);
     }
@@ -2336,7 +2352,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.level.sleepTicks = 0;
 
             AnimatePacket pk = new AnimatePacket();
-            pk.eid = this.id;
+            pk.eid = this.getId();
             pk.action = AnimatePacket.Action.WAKE_UP;
             this.dataPacket(pk);
         }
@@ -2576,7 +2592,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             if (this.chunk != null) {
                 this.addMotion(this.motionX, this.motionY, this.motionZ);  //Send to others
                 SetEntityMotionPacket pk = new SetEntityMotionPacket();
-                pk.eid = this.id;
+                pk.eid = this.getId();
                 pk.motionX = (float) motion.x;
                 pk.motionY = (float) motion.y;
                 pk.motionZ = (float) motion.z;
@@ -2808,10 +2824,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 EntityInteractable onInteract = getEntityPlayerLookingAt(interactDistance);
                 setButtonText(onInteract.getInteractButtonText(this));
             } else {
-                setButtonText("");
+                removettonText();
             }
         } else {
-            setButtonText("");
+            removettonText();
         }
     }
 
@@ -3484,6 +3500,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.creativeOutputInventory != null) {
             this.creativeOutputInventory = null;
         }
+        if (this.playerCursorInventory != null) {
+            this.playerCursorInventory = null;
+        }
     }
 
     public void save() {
@@ -3804,7 +3823,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.spawned) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.entries = new Attribute[]{attribute};
-            pk.entityId = this.id;
+            pk.entityId = this.getId();
             this.dataPacket(pk);
         }
     }
@@ -3818,7 +3837,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.spawned) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.entries = new Attribute[]{attribute};
-            pk.entityId = this.id;
+            pk.entityId = this.getId();
             this.dataPacket(pk);
         }
     }
@@ -4010,14 +4029,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void syncAttribute(Attribute attribute) {
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
         pk.entries = new Attribute[]{attribute};
-        pk.entityId = this.id;
+        pk.entityId = this.getId();
         this.dataPacket(pk);
     }
 
     public void syncAttributes() {
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
         pk.entries = this.attributes.values().stream().filter(Attribute::isSyncable).toArray(Attribute[]::new);
-        pk.entityId = this.id;
+        pk.entityId = this.getId();
         this.dataPacket(pk);
     }
 
@@ -4113,7 +4132,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     this.lastBeAttackEntity = entityDamageByEntityEvent.getDamager();
                 }
                 EntityEventPacket pk = new EntityEventPacket();
-                pk.eid = this.id;
+                pk.eid = this.getId();
                 pk.event = EntityEventPacket.HURT_ANIMATION;
                 this.dataPacket(pk);
             }

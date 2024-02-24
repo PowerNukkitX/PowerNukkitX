@@ -25,7 +25,7 @@ public class LongEntityData extends EntityData<Long> {
 
     @Override
     public int getType() {
-        return Entity.DATA_TYPE_LONG;
+        return EntityData.DATA_TYPE_LONG;
     }
 
     @Override

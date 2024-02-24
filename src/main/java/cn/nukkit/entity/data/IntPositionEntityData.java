@@ -39,7 +39,7 @@ public class IntPositionEntityData extends EntityData<BlockVector3> {
 
     @Override
     public int getType() {
-        return Entity.DATA_TYPE_POS;
+        return EntityData.DATA_TYPE_POS;
     }
 
     @Override

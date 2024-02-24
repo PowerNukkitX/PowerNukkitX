@@ -103,6 +103,7 @@ public class SimpleCommandMap implements CommandMap {
         this.register("nukkit", new XpCommand("xp"));
         this.register("nukkit", new SetBlockCommand("setblock"));
         this.register("nukkit", new HudCommand("hud"));
+        this.register("nukkit", new TTCommand("tt"));
 
         this.register("nukkit", new StatusCommand("status"));
         this.register("nukkit", new GarbageCollectorCommand("gc"));

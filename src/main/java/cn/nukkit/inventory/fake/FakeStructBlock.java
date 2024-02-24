@@ -1,4 +1,4 @@
-package cn.nukkit.block.fake;
+package cn.nukkit.inventory.fake;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockStructureBlock;
@@ -13,7 +13,6 @@ import cn.nukkit.network.protocol.UpdateBlockPacket;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
-import java.util.List;
 
 
 public class FakeStructBlock extends SingleFakeBlock {
@@ -23,19 +22,25 @@ public class FakeStructBlock extends SingleFakeBlock {
     }
 
     @Override
+    public Vector3 getOffset(Player player) {
+        int floorX = player.getFloorX();
+        int floorZ = player.getFloorZ();
+        return new Vector3(floorX, player.getLevel().getMinHeight() + 1, floorZ);
+    }
+
+    @Override
     public void create(Player player) {
         var pos = player.getPosition().floor().asBlockVector3();
         create(pos, pos, player);
     }
 
     public void create(BlockVector3 targetStart, BlockVector3 targetEnd, Player player) {
-        List<Vector3> positions = this.getPositions(player);
-        this.lastPositions = positions;
+        this.lastPositions.add(this.getOffset(player));
 
-        positions.forEach(position -> {
+        lastPositions.forEach(position -> {
             UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-            updateBlockPacket.blockRuntimeId = block.getRuntimeId();
-            updateBlockPacket.flags = UpdateBlockPacket.FLAG_NETWORK;
+            updateBlockPacket.blockRuntimeId = block.getBlockState().unsignedBlockStateHash();
+            updateBlockPacket.flags = UpdateBlockPacket.FLAG_ALL;
             updateBlockPacket.x = position.getFloorX();
             updateBlockPacket.y = position.getFloorY();
             updateBlockPacket.z = position.getFloorZ();
@@ -59,13 +64,14 @@ public class FakeStructBlock extends SingleFakeBlock {
     public void remove(Player player) {
         this.lastPositions.forEach(position -> {
             UpdateBlockPacket packet = new UpdateBlockPacket();
-            packet.blockRuntimeId = player.getLevel().getBlock(position).getRuntimeId();
-            packet.flags = UpdateBlockPacket.FLAG_NETWORK;
+            packet.blockRuntimeId = player.getLevel().getBlock(position).getBlockState().unsignedBlockStateHash();
+            packet.flags = UpdateBlockPacket.FLAG_ALL;
             packet.x = position.getFloorX();
             packet.y = position.getFloorY();
             packet.z = position.getFloorZ();
             player.dataPacket(packet);
         });
+        this.lastPositions.clear();
     }
 
     private CompoundTag getBlockEntityDataAt(Vector3 base, BlockVector3 targetStart, BlockVector3 targetEnd) {

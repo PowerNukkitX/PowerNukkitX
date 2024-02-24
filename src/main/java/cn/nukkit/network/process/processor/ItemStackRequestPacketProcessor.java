@@ -2,6 +2,10 @@ package cn.nukkit.network.process.processor;
 
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
+import cn.nukkit.Server;
+import cn.nukkit.event.inventory.ItemStackRequestActionEvent;
+import cn.nukkit.inventory.fake.FakeInventory;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.request.*;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ItemStackRequestPacket;
@@ -21,6 +25,7 @@ import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemStackRequestPacket> {
@@ -59,7 +64,20 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
                     log.warn("Unhandled inventory action type " + action.getType());
                     continue;
                 }
-                var response = processor.handle(action, player, context);
+
+
+                ItemStackRequestActionEvent event = new ItemStackRequestActionEvent(player, action, context);
+                Server.getInstance().getPluginManager().callEvent(event);
+                Optional<Inventory> topWindow = player.getTopWindow();
+                if (topWindow.isPresent() && topWindow.get() instanceof FakeInventory fakeInventory) {
+                    fakeInventory.handle(event);
+                }
+                ActionResponse response;
+                if (event.getResponse() != null) {
+                    response = event.getResponse();
+                } else {
+                    response = processor.handle(action, player, context);
+                }
                 if (response != null) {
                     if (!response.ok()) {
                         itemStackResponse.setResult(ItemStackResponseStatus.ERROR);

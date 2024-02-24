@@ -1,7 +1,8 @@
-package cn.nukkit.block.fake;
+package cn.nukkit.inventory.fake;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -10,14 +11,23 @@ import cn.nukkit.network.protocol.UpdateBlockPacket;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
-import java.util.List;
+import java.util.HashSet;
 
 
 public class SingleFakeBlock implements FakeBlock {
-
     protected final Block block;
     protected final String tileId;
-    protected List<Vector3> lastPositions;
+    protected HashSet<Vector3> lastPositions = new HashSet<>();
+
+    public SingleFakeBlock(String blockId) {
+        this.block = Block.get(blockId);
+        this.tileId = "default";
+    }
+
+    public SingleFakeBlock(String blockId, String tileId) {
+        this.block = Block.get(blockId);
+        this.tileId = tileId;
+    }
 
     public SingleFakeBlock(Block block, String tileId) {
         this.block = block;
@@ -31,14 +41,12 @@ public class SingleFakeBlock implements FakeBlock {
 
     @Override
     public void create(Player player, String titleName) {
-        List<Vector3> positions = this.getPositions(player);
-
-        this.lastPositions = positions;
-
-        positions.forEach(position -> {
+        lastPositions.addAll(this.getPlacePositions(player));
+        lastPositions.forEach(position -> {
+            System.out.println(position.getFloorX() + ":" + position.getFloorY() + ":" + position.getFloorZ());
             UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-            updateBlockPacket.blockRuntimeId = block.getRuntimeId();
-            updateBlockPacket.flags = UpdateBlockPacket.FLAG_NETWORK;
+            updateBlockPacket.blockRuntimeId = block.getBlockState().unsignedBlockStateHash();
+            updateBlockPacket.flags = UpdateBlockPacket.FLAG_ALL;
             updateBlockPacket.x = position.getFloorX();
             updateBlockPacket.y = position.getFloorY();
             updateBlockPacket.z = position.getFloorZ();
@@ -62,18 +70,19 @@ public class SingleFakeBlock implements FakeBlock {
     public void remove(Player player) {
         this.lastPositions.forEach(position -> {
             UpdateBlockPacket packet = new UpdateBlockPacket();
-            packet.blockRuntimeId = player.getLevel().getBlock(position).getRuntimeId();
-            packet.flags = UpdateBlockPacket.FLAG_NETWORK;
+            packet.blockRuntimeId = player.getLevel().getBlock(position).getBlockState().unsignedBlockStateHash();
+            packet.flags = UpdateBlockPacket.FLAG_ALL;
             packet.x = position.getFloorX();
             packet.y = position.getFloorY();
             packet.z = position.getFloorZ();
             player.dataPacket(packet);
         });
+        lastPositions.clear();
     }
 
     protected CompoundTag getBlockEntityDataAt(Vector3 position, String title) {
-        return new CompoundTag()
-                .putString("id", tileId)
+        return BlockEntity.getDefaultCompound(position, title)
+                .putBoolean("isMovable", true)
                 .putString("CustomName", title);
     }
 }
