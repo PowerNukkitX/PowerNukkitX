@@ -13,6 +13,7 @@ import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.item.EntityArmorStand;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.player.PlayerDropItemEvent;
 import cn.nukkit.event.player.PlayerInteractEntityEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
@@ -92,6 +93,14 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         var count = action.newItem.getCount();
                         Item item = player.getInventory().getItemInHand();
                         if (item.isNull()) return;
+
+                        PlayerDropItemEvent ev;
+                        player.getServer().getPluginManager().callEvent(ev = new PlayerDropItemEvent(player, item));
+                        if (ev.isCancelled()) {
+                            player.getInventory().sendContents(player);
+                            return;
+                        }
+
                         HumanInventory inventory = player.getInventory();
                         int c = item.getCount() - count;
                         if (c <= 0) {

@@ -1,6 +1,7 @@
 package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
+import cn.nukkit.event.player.PlayerDropItemEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.types.itemstack.request.action.DropAction;
@@ -30,6 +31,13 @@ public class DropActionProcessor implements ItemStackRequestActionProcessor<Drop
         var count = action.getCount();
         var slot = inventory.fromNetworkSlot(action.getSource().getSlot());
         var item = inventory.getItem(slot);
+
+        PlayerDropItemEvent ev;
+        player.getServer().getPluginManager().callEvent(ev = new PlayerDropItemEvent(player, item));
+        if (ev.isCancelled()) {
+            return context.error();
+        }
+
         if (validateStackNetworkId(item.getNetId(), action.getSource().getStackNetworkId())) {
             log.warn("mismatch stack network id!");
             return context.error();
