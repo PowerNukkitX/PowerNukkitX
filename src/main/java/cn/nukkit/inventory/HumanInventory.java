@@ -118,6 +118,10 @@ public class HumanInventory extends BaseInventory {
         return this.setItem(this.getHeldItemIndex(), item);
     }
 
+    public boolean setItemInHand(Item item, boolean send) {
+        return this.setItem(this.getHeldItemIndex(), item, send);
+    }
+
     public void setHeldItemSlot(int slot) {
         if (!isHotbarSlot(slot)) {
             return;

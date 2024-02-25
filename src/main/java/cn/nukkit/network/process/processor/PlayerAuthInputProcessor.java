@@ -17,7 +17,9 @@ import cn.nukkit.level.Location;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.network.process.DataPacketManager;
 import cn.nukkit.network.process.DataPacketProcessor;
+import cn.nukkit.network.protocol.ItemStackRequestPacket;
 import cn.nukkit.network.protocol.PlayerAuthInputPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.types.AuthInputAction;
@@ -72,6 +74,16 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                         break;
                 }
                 playerHandle.setLastBlockAction(action);
+            }
+        }
+
+        // As of 1.18 this is now used for sending item stack requests such as when mining a block.
+        if (pk.getItemStackRequest() != null) {
+            DataPacketManager dataPacketManager = player.getSession().getDataPacketManager();
+            if (dataPacketManager != null) {
+                ItemStackRequestPacket itemStackRequestPacket = new ItemStackRequestPacket();
+                itemStackRequestPacket.getRequests().add(pk.getItemStackRequest());
+                dataPacketManager.processPacket(playerHandle, itemStackRequestPacket);
             }
         }
 

@@ -18,4 +18,8 @@ public class InGamePacketHandler extends BedrockSessionPacketHandler {
             manager.processPacket(handle, pk);
         }
     }
+
+    public DataPacketManager getManager() {
+        return manager;
+    }
 }

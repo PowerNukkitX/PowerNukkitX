@@ -31,7 +31,7 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
             log.warn("transfer an air item is not allowed");
             return context.error();
         }
-        if (failToValidateStackNetworkId(sourItem.getNetId(), sourceStackNetworkId)) {
+        if (validateStackNetworkId(sourItem.getNetId(), sourceStackNetworkId)) {
             log.warn("mismatch source stack network id!");
             return context.error();
         }
@@ -44,7 +44,7 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
             log.warn("transfer an item to a slot that has a different item is not allowed");
             return context.error();
         }
-        if (failToValidateStackNetworkId(destItem.getNetId(), destinationStackNetworkId)) {
+        if (validateStackNetworkId(destItem.getNetId(), destinationStackNetworkId)) {
             log.warn("mismatch destination stack network id!");
             return context.error();
         }

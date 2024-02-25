@@ -12,6 +12,7 @@ import cn.nukkit.network.connection.netty.BedrockBatchWrapper;
 import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
 import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.network.process.DataPacketManager;
 import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.process.handler.HandshakePacketHandler;
 import cn.nukkit.network.process.handler.InGamePacketHandler;
@@ -523,5 +524,14 @@ public class BedrockSession {
 
     public void setPacketHandler(@javax.annotation.Nullable final PacketHandler packetHandler) {
         this.packetHandler = packetHandler;
+    }
+
+    @Nullable
+    public DataPacketManager getDataPacketManager() {
+        if (packetHandler != null && packetHandler instanceof InGamePacketHandler inGamePacketHandler) {
+            return inGamePacketHandler.getManager();
+        } else {
+            return null;
+        }
     }
 }

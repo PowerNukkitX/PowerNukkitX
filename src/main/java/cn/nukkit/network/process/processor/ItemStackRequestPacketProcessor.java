@@ -44,6 +44,7 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
         PROCESSORS.put(ItemStackRequestActionType.TAKE, new TakeActionProcessor());
         PROCESSORS.put(ItemStackRequestActionType.CRAFT_RECIPE_OPTIONAL, new CraftRecipeOptionalProcessor());
         PROCESSORS.put(ItemStackRequestActionType.CRAFT_REPAIR_AND_DISENCHANT, new CraftGrindstoneActionProcessor());
+        PROCESSORS.put(ItemStackRequestActionType.MINE_BLOCK, new MineBlockActionProcessor());
     }
 
     @Override
@@ -64,7 +65,6 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
                     log.warn("Unhandled inventory action type " + action.getType());
                     continue;
                 }
-
 
                 ItemStackRequestActionEvent event = new ItemStackRequestActionEvent(player, action, context);
                 Server.getInstance().getPluginManager().callEvent(event);

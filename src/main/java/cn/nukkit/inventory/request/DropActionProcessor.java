@@ -30,7 +30,7 @@ public class DropActionProcessor implements ItemStackRequestActionProcessor<Drop
         var count = action.getCount();
         var slot = inventory.fromNetworkSlot(action.getSource().getSlot());
         var item = inventory.getItem(slot);
-        if (failToValidateStackNetworkId(item.getNetId(), action.getSource().getStackNetworkId())) {
+        if (validateStackNetworkId(item.getNetId(), action.getSource().getStackNetworkId())) {
             log.warn("mismatch stack network id!");
             return context.error();
         }

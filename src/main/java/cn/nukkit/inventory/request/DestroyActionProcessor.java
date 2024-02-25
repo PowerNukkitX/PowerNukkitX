@@ -41,7 +41,7 @@ public class DestroyActionProcessor implements ItemStackRequestActionProcessor<D
         var count = action.getCount();
         var slot = sourceInventory.fromNetworkSlot(action.getSource().getSlot());
         var item = sourceInventory.getItem(slot);
-        if (failToValidateStackNetworkId(item.getNetId(), action.getSource().getStackNetworkId())) {
+        if (validateStackNetworkId(item.getNetId(), action.getSource().getStackNetworkId())) {
             log.warn("mismatch stack network id!");
             return context.error();
         }
