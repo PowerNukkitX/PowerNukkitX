@@ -98,8 +98,10 @@ public class PlayerFood {
     public void sendFood(int food) {
         if (this.player.spawned) {
             Attribute attribute = player.getAttributes().computeIfAbsent(Attribute.FOOD, Attribute::getAttribute);
-            attribute.setValue(food);
-            this.player.syncAttribute(attribute);
+            if (attribute.getValue() != food) {
+                attribute.setValue(food);
+                this.player.syncAttribute(attribute);
+            }
         }
     }
 

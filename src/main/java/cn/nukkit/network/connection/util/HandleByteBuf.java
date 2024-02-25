@@ -1180,14 +1180,6 @@ public class HandleByteBuf extends ByteBuf {
         }
     }
 
-    private Item readUnknownItem(Item item) {
-        return null;//todo reimplement for customitem
-    }
-
-    private Item createFakeUnknownItem(Item item) {
-        return null;//todo reimplement for customitem
-    }
-
     public void writeSlot(Item item) {
         this.writeSlot(item, false);
     }
@@ -1461,7 +1453,7 @@ public class HandleByteBuf extends ByteBuf {
     @SuppressWarnings("unchecked")
     public <T> T[] readArray(Class<T> clazz, Function<HandleByteBuf, T> function) {
         ArrayDeque<T> deque = new ArrayDeque<>();
-        int count = (int) readUnsignedInt();
+        int count = readUnsignedVarInt();
         for (int i = 0; i < count; i++) {
             deque.add(function.apply(this));
         }
@@ -1469,7 +1461,7 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     public <T> void readArray(Collection<T> array, Function<HandleByteBuf, T> function) {
-        readArray(array, HandleByteBuf::readUnsignedInt, function);
+        readArray(array, HandleByteBuf::readUnsignedVarInt, function);
     }
 
     public <T> void readArray(Collection<T> array, ToLongFunction<HandleByteBuf> lengthReader, Function<HandleByteBuf, T> function) {
@@ -1509,21 +1501,21 @@ public class HandleByteBuf extends ByteBuf {
             case CRAFT_REPAIR_AND_DISENCHANT -> new CraftGrindstoneAction((int) readUnsignedInt(), readVarInt());
             case CRAFT_LOOM -> new CraftLoomAction(readString());
             case CRAFT_RECIPE_AUTO -> new AutoCraftRecipeAction(
-                    (int) readUnsignedInt(), readByte(), Collections.emptyList()
+                    (int) readUnsignedInt(), readUnsignedByte(), Collections.emptyList()
             );
             case CRAFT_RESULTS_DEPRECATED -> new CraftResultsDeprecatedAction(
                     readArray(Item.class, (s) -> s.readSlot(true)),
-                    readByte()
+                    readUnsignedByte()
             );
             case MINE_BLOCK -> new MineBlockAction(readVarInt(), readVarInt(), readVarInt());
             case CRAFT_RECIPE_OPTIONAL -> new CraftRecipeOptionalAction((int) readUnsignedInt(), readIntLE());
             case TAKE -> new TakeAction(
-                    readByte(),
+                    readUnsignedByte(),
                     readStackRequestSlotInfo(),
                     readStackRequestSlotInfo()
             );
             case PLACE -> new PlaceAction(
-                    readByte(),
+                    readUnsignedByte(),
                     readStackRequestSlotInfo(),
                     readStackRequestSlotInfo()
             );
@@ -1532,20 +1524,20 @@ public class HandleByteBuf extends ByteBuf {
                     readStackRequestSlotInfo()
             );
             case DROP -> new DropAction(
-                    readByte(),
+                    readUnsignedByte(),
                     readStackRequestSlotInfo(),
                     readBoolean()
             );
             case DESTROY -> new DestroyAction(
-                    readByte(),
+                    readUnsignedByte(),
                     readStackRequestSlotInfo()
             );
             case CONSUME -> new ConsumeAction(
-                    readByte(),
+                    readUnsignedByte(),
                     readStackRequestSlotInfo()
             );
             case CREATE -> new CreateAction(
-                    readByte()
+                    readUnsignedByte()
             );
             case LAB_TABLE_COMBINE -> new LabTableCombineAction();
             case BEACON_PAYMENT -> new BeaconPaymentAction(
@@ -1553,10 +1545,10 @@ public class HandleByteBuf extends ByteBuf {
                     readVarInt()
             );
             case CRAFT_RECIPE -> new CraftRecipeAction(
-                    (int) readUnsignedInt()
+                    readUnsignedVarInt()
             );
             case CRAFT_CREATIVE -> new CraftCreativeAction(
-                    (int) readUnsignedInt()
+                    readUnsignedVarInt()
             );
             case CRAFT_NON_IMPLEMENTED_DEPRECATED -> new CraftNonImplementedAction();
             default -> throw new UnsupportedOperationException("Unhandled stack request action type: " + type);
@@ -1566,7 +1558,7 @@ public class HandleByteBuf extends ByteBuf {
     private ItemStackRequestSlotData readStackRequestSlotInfo() {
         return new ItemStackRequestSlotData(
                 ContainerSlotType.fromId(readByte()),
-                readByte(),
+                readUnsignedByte(),
                 readVarInt()
         );
     }

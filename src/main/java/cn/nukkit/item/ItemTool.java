@@ -118,17 +118,22 @@ public abstract class ItemTool extends Item implements ItemDurable {
                 block.getToolType() == ItemTool.TYPE_SWORD && this.isSword() ||
                 block.getToolType() == ItemTool.TYPE_SHEARS && this.isShears()
         ) {
-            this.meta++;
+            incDamage(1);
         } else if (!this.isShears() && block.calculateBreakTime(this) > 0) {
-            this.meta += 2;
+            incDamage(2);
         } else if (this.isHoe()) {
             if (block.getId().equals(Block.GRASS) || block.getId().equals(Block.DIRT)) {
-                this.meta++;
+                incDamage(1);
             }
         } else {
-            this.meta++;
+            incDamage(1);
         }
         return true;
+    }
+
+    public void incDamage(int v) {
+        this.meta += v;
+        this.getOrCreateNamedTag().putInt("Damage", meta);
     }
 
     @Override
@@ -138,9 +143,9 @@ public abstract class ItemTool extends Item implements ItemDurable {
         }
 
         if ((entity != null) && !this.isSword()) {
-            this.meta += 2;
+            incDamage(2);
         } else {
-            this.meta++;
+            incDamage(1);
         }
 
         return true;

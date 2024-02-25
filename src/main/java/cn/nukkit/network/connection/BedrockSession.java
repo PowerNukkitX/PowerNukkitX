@@ -162,9 +162,24 @@ public class BedrockSession {
         this.peer.flush();
     }
 
-    public void sendPacket(@NonNull DataPacket packet) {
+    public void sendPacket(DataPacket packet) {
+        DataPacketSendEvent ev = new DataPacketSendEvent(this.getPlayer(), packet);
+        Server.getInstance().getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) {
+            return;
+        }
         this.peer.sendPacket(this.subClientId, 0, packet);
         this.logOutbound(packet);
+    }
+
+    public void sendPlayStatus(int status, boolean immediate) {
+        PlayStatusPacket pk = new PlayStatusPacket();
+        pk.status = status;
+        if (immediate) {
+            this.sendPacketImmediately(pk);
+        } else {
+            this.sendPacket(pk);
+        }
     }
 
     public void sendRawPacket(int pid, @NonNull ByteBuf buf2) {
@@ -178,13 +193,23 @@ public class BedrockSession {
         this.peer.sendRawPacket(msg);
     }
 
-    public void sendPacketImmediately(@NonNull DataPacket packet) {
+    public void sendPacketImmediately(@NotNull DataPacket packet) {
         DataPacketSendEvent ev = new DataPacketSendEvent(this.getPlayer(), packet);
         Server.getInstance().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             return;
         }
         this.peer.sendPacketImmediately(this.subClientId, 0, packet);
+        this.logOutbound(packet);
+    }
+
+    public void sendPacketSync(@NotNull DataPacket packet) {
+        DataPacketSendEvent ev = new DataPacketSendEvent(this.getPlayer(), packet);
+        Server.getInstance().getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) {
+            return;
+        }
+        this.peer.sendPacketSync(this.subClientId, 0, packet);
         this.logOutbound(packet);
     }
 
@@ -302,7 +327,7 @@ public class BedrockSession {
             reason = BedrockDisconnectReasons.DISCONNECTED;
         }
         packet.message = reason;
-        this.sendPacketImmediately(packet);
+        this.sendPacketSync(packet);
 
         if (isSubClient()) {
             // FIXME: Do sub-clients send a server-bound DisconnectPacket?
@@ -329,6 +354,7 @@ public class BedrockSession {
         if (player != null) {
             player.close(BedrockDisconnectReasons.DISCONNECTED);
         }
+        Server.getInstance().getNetwork().onSessionDisconnect(getAddress());
         this.peer.removeSession(this);
     }
 
@@ -352,25 +378,6 @@ public class BedrockSession {
             throw new IllegalStateException("attempt to notifyTerrainReady when the state is " + state.name());
         }
         handle.doFirstSpawn();
-    }
-
-    public void sendDataPacket(DataPacket packet) {
-        DataPacketSendEvent ev = new DataPacketSendEvent(this.getPlayer(), packet);
-        Server.getInstance().getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
-            return;
-        }
-        this.sendPacket(packet);
-    }
-
-    public void sendPlayStatus(int status, boolean immediate) {
-        PlayStatusPacket pk = new PlayStatusPacket();
-        pk.status = status;
-        if (immediate) {
-            this.sendPacketImmediately(pk);
-        } else {
-            this.sendDataPacket(pk);
-        }
     }
 
     public void onSessionStartSuccess() {
@@ -463,7 +470,7 @@ public class BedrockSession {
         if (count > 0) {
             //TODO: structure checking
             pk.commands = data;
-            this.sendDataPacket(pk);
+            this.sendPacket(pk);
         }
     }
 
@@ -474,7 +481,7 @@ public class BedrockSession {
     public void syncCreativeContent() {
         var pk = new CreativeContentPacket();
         pk.entries = Registries.CREATIVE.getCreativeItems();
-        this.sendDataPacket(pk);
+        this.sendPacket(pk);
     }
 
     public void syncInventory() {
@@ -491,7 +498,7 @@ public class BedrockSession {
     public void setEnableClientCommand(boolean enable) {
         var pk = new SetCommandsEnabledPacket();
         pk.enabled = enable;
-        this.sendDataPacket(pk);
+        this.sendPacket(pk);
         if (enable) {
             this.syncAvailableCommands();
         }

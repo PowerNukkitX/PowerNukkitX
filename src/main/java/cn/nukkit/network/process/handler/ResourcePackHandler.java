@@ -18,7 +18,7 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
         ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
         infoPacket.resourcePackEntries = session.getServer().getResourcePackManager().getResourceStack();
         infoPacket.mustAccept = session.getServer().getForceResources();
-        session.sendDataPacket(infoPacket);
+        session.sendPacket(infoPacket);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
                     dataInfoPacket.chunkCount = (int) Math.ceil(resourcePack.getPackSize() / (double) dataInfoPacket.maxChunkSize);
                     dataInfoPacket.compressedPackSize = resourcePack.getPackSize();
                     dataInfoPacket.sha256 = resourcePack.getSha256();
-                    session.sendDataPacket(dataInfoPacket);
+                    session.sendPacket(dataInfoPacket);
                 }
             }
             case ResourcePackClientResponsePacket.STATUS_HAVE_ALL_PACKS -> {
@@ -66,7 +66,7 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
                 stackPacket.experiments.add(
                         new ResourcePackStackPacket.ExperimentData("cameras", true)
                 );
-                session.sendDataPacket(stackPacket);
+                session.sendPacket(stackPacket);
             }
             case ResourcePackClientResponsePacket.STATUS_COMPLETED ->
                     this.session.getMachine().fire(SessionState.PRE_SPAWN);
@@ -89,6 +89,6 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
         dataPacket.chunkIndex = pk.chunkIndex;
         dataPacket.data = resourcePack.getPackChunk(maxChunkSize * pk.chunkIndex, maxChunkSize);
         dataPacket.progress = maxChunkSize * (long) pk.chunkIndex;
-        session.sendDataPacket(dataPacket);
+        session.sendPacket(dataPacket);
     }
 }

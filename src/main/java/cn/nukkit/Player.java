@@ -561,7 +561,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     return;
                 }
 
-                if (clone.getId() == handItem.getId() || handItem.isNull()) {
+                if (Objects.equals(clone.getId(), handItem.getId()) || handItem.isNull()) {
                     inventory.setItemInHand(handItem);
                 } else {
                     log.debug("Tried to set item " + handItem.getId() + " but " + this.username + " had item " + clone.getId() + " in their hand slot");
@@ -2288,7 +2288,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param packet 发送的数据包<br>packet to send
      */
     public void dataPacket(DataPacket packet) {
-        this.getSession().sendDataPacket(packet);
+        this.getSession().sendPacket(packet);
     }
 
     /**
@@ -3474,7 +3474,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         assert this.session != null;
         //close player network session
         this.session.close(reason);
-        this.server.getNetwork().onSessionDisconnect(getSocketAddress());
         this.session = null;
 
         if (this.perm != null) {

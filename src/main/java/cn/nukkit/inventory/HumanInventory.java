@@ -86,8 +86,8 @@ public class HumanInventory extends BaseInventory {
         return true;
     }
 
-    private boolean isHotbarSlot(int slot) {
-        return slot >= 0 && slot <= this.getHotbarSize();
+    public boolean isHotbarSlot(int slot) {
+        return slot >= 0 && slot < this.getHotbarSize();
     }
 
     public int getHeldItemIndex() {

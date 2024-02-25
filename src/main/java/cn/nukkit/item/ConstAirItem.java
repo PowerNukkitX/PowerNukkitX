@@ -3,17 +3,43 @@ package cn.nukkit.item;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 public class ConstAirItem extends Item {
     public ConstAirItem() {
         super("minecraft:air");
-        this.block = new BlockAir();
+        this.meta = 0;
         this.count = 0;
         this.netId = 0;
     }
 
     @Override
     public void setDamage(int meta) {
+    }
+
+    @Override
+    public int getDamage() {
+        return 0;
+    }
+
+    @Override
+    public Integer getNetId() {
+        return 0;
+    }
+
+    @Override
+    public int getCount() {
+        return 0;
+    }
+
+    @Override
+    public Block getBlockUnsafe() {
+        return new BlockAir();
+    }
+
+    @Override
+    public @NotNull Block getBlock() {
+        return  new BlockAir();
     }
 
     @Override

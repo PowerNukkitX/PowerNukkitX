@@ -22,14 +22,13 @@ public class InventorySlotPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        this.inventoryId = (int) byteBuf.readUnsignedVarInt();
-        this.slot = (int) byteBuf.readUnsignedVarInt();
+        this.inventoryId = byteBuf.readUnsignedVarInt();
+        this.slot = byteBuf.readUnsignedVarInt();
         this.item = byteBuf.readSlot();
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeUnsignedVarInt(this.inventoryId);
         byteBuf.writeUnsignedVarInt(this.slot);
         byteBuf.writeSlot(this.item);

@@ -175,7 +175,7 @@ public class GameMockExtension extends MockitoExtension {
                 mock(ClientChainData.class)
         );
         doNothing().when(serverSession).sendPacketImmediately(any());
-        doNothing().when(serverSession).sendDataPacket(any());
+        doNothing().when(serverSession).sendPacket(any());
         player = new Player(serverSession, info);
         player.loggedIn = true;
         player.username = "test";

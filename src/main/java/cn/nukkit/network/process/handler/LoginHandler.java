@@ -40,6 +40,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         //check the player login time
         if (pk.issueUnixTime != -1 && Server.getInstance().checkLoginTime && System.currentTimeMillis() - pk.issueUnixTime > 20000) {
             var message = "disconnectionScreen.noReason";
+            log.debug("disconnection due to noReason");
             session.sendPlayStatus(PlayStatusPacket.LOGIN_FAILED_CLIENT, true);
             session.close(message);
             return;
@@ -49,12 +50,14 @@ public class LoginHandler extends BedrockSessionPacketHandler {
 
         //verify the player if enable the xbox-auth
         if (!chainData.isXboxAuthed() && server.getPropertyBoolean("xbox-auth")) {
+            log.debug("disconnection due to notAuthenticated");
             session.close("disconnectionScreen.notAuthenticated");
             return;
         }
 
         //Verify the number of server player
         if (server.getOnlinePlayers().size() >= server.getMaxPlayers()) {
+            log.debug("disconnection due to serverFull");
             session.close("disconnectionScreen.serverFull");
             return;
         }
@@ -71,11 +74,13 @@ public class LoginHandler extends BedrockSessionPacketHandler {
 
         if (!usernameMatcher.matches() || Objects.equals(username, "rcon")
                 || Objects.equals(username, "console")) {
+            log.debug("disconnection due to invalidName");
             session.close("disconnectionScreen.invalidName");
             return;
         }
 
         if (!pk.skin.isValid()) {
+            log.debug("disconnection due to invalidSkin");
             session.close("disconnectionScreen.invalidSkin");
             return;
         }
@@ -105,6 +110,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         this.consumer.accept(info);
 
         if (!server.isWhitelisted((info.getUsername()).toLowerCase())) {
+            log.debug("disconnection due to white-listed");
             session.close("Server is white-listed");
             return;
         }
@@ -112,6 +118,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         var entry = server.getNameBans().getEntires().get(info.getUsername().toLowerCase());
         if (entry != null) {
             String reason = entry.getReason();
+            log.debug("disconnection due to named ban");
             session.close(!reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
             return;
         }

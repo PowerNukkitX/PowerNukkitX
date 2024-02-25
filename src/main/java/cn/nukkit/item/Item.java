@@ -69,7 +69,7 @@ public abstract class Item implements Cloneable, ItemID {
     protected int meta;
     protected boolean hasMeta = true;
     private byte[] tags = EmptyArrays.EMPTY_BYTES;
-    private transient CompoundTag cachedNBT = null;
+    private CompoundTag cachedNBT;
     public int count;
     protected String name;
     protected Integer netId;
@@ -179,25 +179,6 @@ public abstract class Item implements Cloneable, ItemID {
             });
         if (components.keepOnDeath != null)
             this.setKeepOnDeath(true);
-    }
-
-    public Item setCompoundTag(CompoundTag tag) {
-        this.setNamedTag(tag);
-        return this;
-    }
-
-    public Item setCompoundTag(byte[] tags) {
-        this.tags = tags;
-        this.cachedNBT = null;
-        return this;
-    }
-
-    public byte[] getCompoundTag() {
-        return tags;
-    }
-
-    public boolean hasCompoundTag() {
-        return this.tags != null && this.tags.length > 0;
     }
 
     public boolean hasCustomBlockData() {
@@ -710,6 +691,36 @@ public abstract class Item implements Cloneable, ItemID {
         return null;
     }
 
+
+    public Item setCompoundTag(CompoundTag tag) {
+        this.tags = writeCompoundTag(tag);
+        this.cachedNBT = tag;
+        return this;
+    }
+
+    public Item setCompoundTag(byte[] tags) {
+        this.tags = tags;
+        this.cachedNBT = parseCompoundTag(tags);
+        return this;
+    }
+
+    public Item setNamedTag(CompoundTag tag) {
+        this.cachedNBT = tag;
+        this.tags = writeCompoundTag(tag);
+        return this;
+    }
+
+    public byte[] getCompoundTag() {
+        return tags;
+    }
+
+    public boolean hasCompoundTag() {
+        if (tags.length > 0) {
+            if (cachedNBT == null) cachedNBT = parseCompoundTag(tags);
+            return !cachedNBT.isEmpty();
+        } else return false;
+    }
+
     public CompoundTag getNamedTag() {
         if (!this.hasCompoundTag()) {
             return null;
@@ -723,27 +734,20 @@ public abstract class Item implements Cloneable, ItemID {
 
     public CompoundTag getOrCreateNamedTag() {
         if (!hasCompoundTag()) {
-            return new CompoundTag();
+            setNamedTag(new CompoundTag());
+            return cachedNBT;
         }
         return getNamedTag();
     }
 
-    public Item setNamedTag(CompoundTag tag) {
-        if (tag.isEmpty()) {
-            return this.clearNamedTag();
-        }
-
-        this.cachedNBT = tag;
-        this.tags = writeCompoundTag(tag);
-
+    public Item clearNamedTag() {
+        this.tags = EmptyArrays.EMPTY_BYTES;
+        this.cachedNBT = null;
         return this;
     }
 
-    public Item clearNamedTag() {
-        return this.setCompoundTag(EmptyArrays.EMPTY_BYTES);
-    }
-
     public static CompoundTag parseCompoundTag(byte[] tag) {
+        if (tag == null || tag.length == 0) return null;
         try {
             return NBTIO.read(tag, ByteOrder.LITTLE_ENDIAN);
         } catch (IOException e) {
@@ -1321,11 +1325,12 @@ public abstract class Item implements Cloneable, ItemID {
     @Override
     public Item clone() {
         try {
-            Item item = (Item) super.clone();
-            if (this.tags != null) {
-                item.tags = this.tags.clone();//deep copy
+            byte[] tags = EmptyArrays.EMPTY_BYTES;
+            if (this.hasCompoundTag()) {
+                tags = this.tags.clone();
             }
-            item.cachedNBT = null;
+            Item item = (Item) super.clone();
+            item.tags = tags;
             return item;
         } catch (CloneNotSupportedException e) {
             return null;

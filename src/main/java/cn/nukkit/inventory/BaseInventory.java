@@ -561,7 +561,7 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public void sendSlot(int index, Player... players) {
         InventorySlotPacket pk = new InventorySlotPacket();
-        pk.slot = index;
+        pk.slot = toNetworkSlot(index);
         pk.item = this.getUnclonedItem(index);
 
         for (Player player : players) {

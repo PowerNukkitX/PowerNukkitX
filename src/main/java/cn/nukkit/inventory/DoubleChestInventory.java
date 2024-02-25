@@ -7,6 +7,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.BlockEventPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -43,6 +44,14 @@ public class DoubleChestInventory extends ContainerInventory {
         }
 
         this.setContents(items);
+    }
+
+    @Override
+    public void init() {
+        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        for (int i = 0; i < getSize(); i++) {
+            map.put(i, ContainerSlotType.LEVEL_ENTITY);
+        }
     }
 
     @Override
@@ -195,7 +204,8 @@ public class DoubleChestInventory extends ContainerInventory {
 
     public void sendSlot(Inventory inv, int index, Player... players) {
         InventorySlotPacket pk = new InventorySlotPacket();
-        pk.slot = inv == this.right ? this.left.getSize() + index : index;
+        int i = inv == this.right ? this.left.getSize() + index : index;
+        pk.slot = toNetworkSlot(i);
         pk.item = inv.getUnclonedItem(index);
 
         for (Player player : players) {

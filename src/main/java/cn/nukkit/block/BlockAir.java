@@ -12,12 +12,12 @@ import org.jetbrains.annotations.Nullable;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockAir extends BlockTransparent {
-
     public static final BlockProperties PROPERTIES = new BlockProperties(AIR);
     public static final BlockState STATE = PROPERTIES.getDefaultState();
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 

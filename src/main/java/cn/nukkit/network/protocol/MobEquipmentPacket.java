@@ -33,7 +33,6 @@ public class MobEquipmentPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeEntityRuntimeId(this.eid); //EntityRuntimeID
         byteBuf.writeSlot(this.item);
         byteBuf.writeByte((byte) this.inventorySlot);

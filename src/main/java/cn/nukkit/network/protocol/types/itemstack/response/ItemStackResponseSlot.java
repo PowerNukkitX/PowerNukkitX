@@ -28,4 +28,13 @@ public class ItemStackResponseSlot {
      * @since v428
      */
     int durabilityCorrection;
+
+    public ItemStackResponseSlot(int slot, int hotbarSlot, int count, int stackNetworkId, String customName, int durabilityCorrection) {
+        this.slot = slot;
+        this.hotbarSlot = hotbarSlot;
+        this.count = count;
+        this.stackNetworkId = stackNetworkId;
+        this.customName = customName;
+        this.durabilityCorrection = durabilityCorrection;
+    }
 }

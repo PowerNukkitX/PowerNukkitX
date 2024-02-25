@@ -24,7 +24,6 @@ public class InventoryContentPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeUnsignedVarInt(this.inventoryId);
         byteBuf.writeUnsignedVarInt(this.slots.length);
         for (Item slot : this.slots) {

@@ -123,15 +123,15 @@ public class InventoryTransactionPacket extends DataPacket {
     public void decode(HandleByteBuf byteBuf) {
         this.legacyRequestId = byteBuf.readVarInt();
         if (legacyRequestId != 0) {
-            int length = (int) byteBuf.readUnsignedVarInt();
+            int length = byteBuf.readUnsignedVarInt();
             for (int i = 0; i < length; i++) {
-                byte containerId = (byte) byteBuf.readByte();
+                byte containerId = byteBuf.readByte();
                 byte[] slots = byteBuf.readByteArray();
                 this.legacySlots.add(new LegacySetItemSlotData(containerId, slots));
             }
         }
         //InventoryTransactionType
-        this.transactionType = (int) byteBuf.readUnsignedVarInt();
+        this.transactionType = byteBuf.readUnsignedVarInt();
 
         int length = (int) byteBuf.readUnsignedVarInt();
         Collection<NetworkInventoryAction> actions = new ArrayDeque<>();
