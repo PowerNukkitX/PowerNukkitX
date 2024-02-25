@@ -21,6 +21,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,8 +35,7 @@ import java.util.function.Consumer;
  * <p>
  * CustomBlockDefinition is used to get the data of the block behavior_pack sent to the client. The methods provided in {@link CustomBlockDefinition.Builder} control the data sent to the client, if you need to control some of the server-side behavior, please override the methods in {@link Block Block}.
  */
-
-
+@Slf4j
 public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
     private static final Object2IntOpenHashMap<String> INTERNAL_ALLOCATION_ID_MAP = new Object2IntOpenHashMap<>();
     private static final AtomicInteger CUSTOM_BLOCK_RUNTIMEID = new AtomicInteger(10000);
@@ -184,7 +184,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          */
         public Builder creativeGroup(String creativeGroup) {
             if (creativeGroup.isBlank()) {
-                System.out.println("creativeGroup has an invalid value!");
+                log.error("creativeGroup has an invalid value!");
                 return this;
             }
             this.nbt.getCompound("components").getCompound("menu_category").putString("group", creativeGroup.toLowerCase(Locale.ENGLISH));
@@ -229,7 +229,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          */
         public Builder geometry(String geometry) {
             if (geometry.isBlank()) {
-                System.out.println("geometry has an invalid value!");
+                log.error("geometry has an invalid value!");
                 return this;
             }
             var components = this.nbt.getCompound("components");

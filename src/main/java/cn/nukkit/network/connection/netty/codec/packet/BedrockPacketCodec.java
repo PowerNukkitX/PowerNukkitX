@@ -3,7 +3,6 @@ package cn.nukkit.network.connection.netty.codec.packet;
 import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.registry.Registries;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -31,9 +30,6 @@ public abstract class BedrockPacketCodec extends MessageToMessageCodec<ByteBuf, 
                 msg.setPacketId(packet.pid());
                 encodeHeader(buf, msg);
                 packet.encode(HandleByteBuf.of(buf));
-                if (packet.pid() == ProtocolInfo.SET_ENTITY_DATA_PACKET && buf.writerIndex() <= 2) {
-                    System.out.println(buf.writerIndex());
-                }
                 msg.setPacketBuffer(buf.retain());
                 out.add(msg.retain());
             } catch (Throwable t) {

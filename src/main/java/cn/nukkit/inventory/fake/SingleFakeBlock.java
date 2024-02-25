@@ -43,7 +43,6 @@ public class SingleFakeBlock implements FakeBlock {
     public void create(Player player, String titleName) {
         lastPositions.addAll(this.getPlacePositions(player));
         lastPositions.forEach(position -> {
-            System.out.println(position.getFloorX() + ":" + position.getFloorY() + ":" + position.getFloorZ());
             UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
             updateBlockPacket.blockRuntimeId = block.getRuntimeId();
             updateBlockPacket.flags = UpdateBlockPacket.FLAG_NETWORK;

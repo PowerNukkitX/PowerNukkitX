@@ -1,6 +1,7 @@
 package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.entity.EntityIntelligent;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 
+@Slf4j
 public class MultipleExecutor implements IBehaviorExecutor {
 
     protected Set<IBehaviorExecutor> executors;
@@ -30,8 +32,7 @@ public class MultipleExecutor implements IBehaviorExecutor {
         try {
             return CompletableFuture.allOf(tasks.toArray(new CompletableFuture[executors.size()])).whenComplete((s, t) -> {
                 if (t != null) {
-                    System.out.println("阶段执行过程中存在异常：");
-                    t.printStackTrace();
+                    log.error("阶段执行过程中存在异常：",t);
                 }
             }).thenApply(v -> tasks.stream().map(task -> {
                 try {

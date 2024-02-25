@@ -16,6 +16,7 @@ import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackReques
 import cn.nukkit.network.protocol.types.itemstack.request.action.SwapAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.TransferItemStackRequestAction;
 import cn.nukkit.plugin.InternalPlugin;
+import com.google.common.collect.BiMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import org.jetbrains.annotations.ApiStatus;
@@ -33,13 +34,51 @@ public class FakeInventory extends BaseInventory {
     private String title;
     private ItemHandler defaultItemHandler;
 
-    public FakeInventory(Player player, FakeInventoryType inventoryType, @NotNull String title) {
-        super(player, inventoryType.inventoryType, inventoryType.size);
-
+    public FakeInventory(Player player, FakeInventoryType fakeInventoryType, @NotNull String title) {
+        super(player, fakeInventoryType.inventoryType, fakeInventoryType.size);
         this.title = title;
-        this.fakeBlock = inventoryType.fakeBlock;
+        this.fakeBlock = fakeInventoryType.fakeBlock;
         this.defaultItemHandler = (i, ii, e) -> {
         };
+
+        switch (fakeInventoryType) {
+            case CHEST, DOUBLE_CHEST, HOPPER, DISPENSER, DROPPER, ENDER_CHEST -> {
+                Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+                for (int i = 0; i < getSize(); i++) {
+                    map.put(i, ContainerSlotType.LEVEL_ENTITY);
+                }
+            }
+            case FURNACE -> {
+                Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+                map.put(0, ContainerSlotType.FURNACE_INGREDIENT);
+                map.put(1, ContainerSlotType.FURNACE_FUEL);
+                map.put(2, ContainerSlotType.FURNACE_RESULT);
+            }
+            case BREWING_STAND -> {
+                Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+                map.put(0, ContainerSlotType.BREWING_INPUT);
+                map.put(1, ContainerSlotType.BREWING_RESULT);
+                map.put(2, ContainerSlotType.BREWING_RESULT);
+                map.put(3, ContainerSlotType.BREWING_RESULT);
+                map.put(4, ContainerSlotType.BREWING_FUEL);
+            }
+            case SHULKER_BOX -> {
+                Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+                for (int i = 0; i < getSize(); i++) {
+                    map.put(i, ContainerSlotType.SHULKER_BOX);
+                }
+            }
+            case WORKBENCH -> {
+                BiMap<Integer, Integer> map = super.networkSlotMap();
+                for (int i = 0; i < getSize(); i++) {
+                    map.put(i, 32 + i);
+                }
+                Map<Integer, ContainerSlotType> map2 = super.slotTypeMap();
+                for (int i = 0; i < getSize(); i++) {
+                    map2.put(i, ContainerSlotType.CRAFTING_INPUT);
+                }
+            }
+        }
     }
 
     @Override

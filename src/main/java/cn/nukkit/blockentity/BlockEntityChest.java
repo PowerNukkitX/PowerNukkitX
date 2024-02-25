@@ -20,6 +20,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
 
     public BlockEntityChest(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+        movable = true;
     }
 
     @Override

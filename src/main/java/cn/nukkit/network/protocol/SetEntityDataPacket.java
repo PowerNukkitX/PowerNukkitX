@@ -32,9 +32,6 @@ public class SetEntityDataPacket extends DataPacket {
     @Override
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeUnsignedVarLong(this.eid);
-        if(entityData.isEmpty()){
-            System.out.println("entity data is empty");
-        }
         byteBuf.writeBytes(Binary.writeEntityData(this.entityData));
         //syncedProperties
         byteBuf.writeUnsignedVarInt(this.syncedProperties.intProperties().length);

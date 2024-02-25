@@ -15,6 +15,7 @@ import cn.nukkit.utils.Identifier;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -31,8 +32,7 @@ import java.util.function.Consumer;
  * <p>
  * CustomBlockDefinition is used to get the data of the item behavior_pack sent to the client. The methods provided in {@link CustomItemDefinition.SimpleBuilder} control the data sent to the client, if you need to control some of the server-side behavior, please override the methods in {@link cn.nukkit.item.Item Item}.
  */
-
-
+@Slf4j
 public record CustomItemDefinition(String identifier, CompoundTag nbt) implements BlockID {
     private static final Object2IntOpenHashMap<String> INTERNAL_ALLOCATION_ID_MAP = new Object2IntOpenHashMap<>();
     private static final AtomicInteger nextRuntimeId = new AtomicInteger(10000);
@@ -194,7 +194,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          */
         public SimpleBuilder creativeGroup(String creativeGroup) {
             if (creativeGroup.isBlank()) {
-                System.out.println("creativeGroup has an invalid value!");
+                log.error("creativeGroup has an invalid value!");
                 return this;
             }
             this.nbt.getCompound("components")
@@ -328,7 +328,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
         protected SimpleBuilder addRepairs(@NotNull List<String> repairItemNames, String molang) {
             if (molang.isBlank()) {
-                System.out.println("repairAmount has an invalid value!");
+                log.error("repairAmount has an invalid value!");
                 return this;
             }
 
@@ -450,7 +450,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          */
         public ToolBuilder speed(int speed) {
             if (speed < 0) {
-                System.out.println("speed has an invalid value!");
+                log.error("speed has an invalid value!");
                 return this;
             }
             if (item.isPickaxe() || item.isShovel() || item.isHoe() || item.isAxe() || item.isShears()) {
@@ -471,7 +471,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
         public ToolBuilder addExtraBlock(@NotNull String blockName, int speed) {
             if (speed < 0) {
-                System.out.println("speed has an invalid value!");
+                log.error("speed has an invalid value!");
                 return this;
             }
             this.blocks.add(new CompoundTag()
@@ -496,7 +496,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         public ToolBuilder addExtraBlocks(@NotNull Map<String, Integer> blocks) {
             blocks.forEach((blockName, speed) -> {
                 if (speed < 0) {
-                    System.out.println("speed has an invalid value!");
+                    log.error("speed has an invalid value!");
                     return;
                 }
                 this.blocks.add(new CompoundTag()
@@ -523,7 +523,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         public ToolBuilder addExtraBlocks(@NotNull String blockName, DigProperty property) {
             Integer propertySpeed;
             if ((propertySpeed = property.getSpeed()) != null && propertySpeed < 0) {
-                System.out.println("speed has an invalid value!");
+                log.error("speed has an invalid value!");
                 return this;
             }
             this.blocks.add(new CompoundTag()

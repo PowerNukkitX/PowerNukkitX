@@ -19,15 +19,15 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
 
         if (playerHandle.getWindowIndex().containsKey(pk.windowId)) {
             player.getServer().getPluginManager().callEvent(new InventoryCloseEvent(playerHandle.getWindowIndex().get(pk.windowId), player));
-            if (pk.windowId == SpecialWindowId.PLAYER.getId()) {
-                ContainerClosePacket pk2 = new ContainerClosePacket();
-                pk2.wasServerInitiated = false;
-                pk2.windowId = 0;
-                player.dataPacket(pk2);
-                playerHandle.setInventoryOpen(false);
-            }
             playerHandle.setClosingWindowId(pk.windowId);
-            playerHandle.removeWindow(playerHandle.getWindowIndex().get(pk.windowId));
+            if (pk.windowId == SpecialWindowId.PLAYER.getId()) {
+                player.getInventory().close(player);
+                playerHandle.setInventoryOpen(false);
+            } else if (pk.windowId == SpecialWindowId.ENDER_CHEST.getId()) {
+                player.getEnderChestInventory().close(player);
+            } else {
+                playerHandle.removeWindow(playerHandle.getWindowIndex().get(pk.windowId));
+            }
         }
         if (pk.windowId == -1) {
             player.resetCraftingGridType();

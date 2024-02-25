@@ -53,6 +53,6 @@ public interface FakeBlock {
         offset.x *= -(2 + player.getWidth());
         offset.y *= -(2 + player.getHeight());
         offset.z *= -(2 + player.getWidth());
-        return player.getPosition().add(offset);
+        return player.getPosition().add(offset).floor();
     }
 }

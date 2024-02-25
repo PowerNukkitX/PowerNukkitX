@@ -8,16 +8,22 @@ public class BlockEntityEnderChest extends BlockEntitySpawnable implements Block
 
     public BlockEntityEnderChest(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+        movable = true;
     }
 
     @Override
     public boolean isBlockEntityValid() {
-        return this.getBlock().getId() == Block.ENDER_CHEST;
+        return this.getBlock().getId().equals(Block.ENDER_CHEST);
     }
 
     @Override
     public CompoundTag getSpawnCompound() {
-        return super.getSpawnCompound().putBoolean("isMovable", this.isMovable());
+        CompoundTag spawnCompound = super.getSpawnCompound()
+                .putBoolean("isMovable", this.isMovable());
+        if (this.hasName()) {
+            spawnCompound.put("CustomName", this.namedTag.get("CustomName"));
+        }
+        return spawnCompound;
     }
 
     @Override

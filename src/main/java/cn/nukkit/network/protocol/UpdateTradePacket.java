@@ -37,7 +37,6 @@ public class UpdateTradePacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeByte(containerId);
         byteBuf.writeByte(containerType);
         byteBuf.writeVarInt(size);

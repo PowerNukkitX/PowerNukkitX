@@ -148,7 +148,7 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
 
         HumanEnderChestInventory enderChestInventory = player.getEnderChestInventory();
         enderChestInventory.setBlockEntityEnderChest(player, chest);
-        player.addWindow(enderChestInventory);
+        enderChestInventory.open(player);
         return true;
     }
 

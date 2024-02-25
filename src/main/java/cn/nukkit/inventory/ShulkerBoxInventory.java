@@ -6,19 +6,30 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.BlockEventPacket;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.tags.BlockTags;
+
+import java.util.Map;
 
 /**
  * @author PetteriM1
  */
 public class ShulkerBoxInventory extends ContainerInventory {
     public ShulkerBoxInventory(BlockEntityShulkerBox box) {
-        super(box, InventoryType.CONTAINER, 20);
+        super(box, InventoryType.CONTAINER, 27);
     }
 
     @Override
     public BlockEntityShulkerBox getHolder() {
         return (BlockEntityShulkerBox) this.holder;
+    }
+
+    @Override
+    public void init() {
+        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        for (int i = 0; i < getSize(); i++) {
+            map.put(i, ContainerSlotType.SHULKER_BOX);
+        }
     }
 
     @Override
@@ -68,11 +79,6 @@ public class ShulkerBoxInventory extends ContainerInventory {
             return false;
         }
         return super.canAddItem(item);
-    }
-
-    @Override
-    public void sendSlot(int index, Player... players) {
-        super.sendSlot(index, players);
     }
 
     @Override

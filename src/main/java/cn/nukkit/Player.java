@@ -6,7 +6,6 @@ import cn.nukkit.api.UsedByReflection;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBed;
 import cn.nukkit.block.BlockEndPortal;
-import cn.nukkit.block.BlockEnderChest;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.block.BlockRespawnAnchor;
@@ -286,12 +285,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private boolean wasInSoulSandCompatible;
     private float soulSpeedMultiplier = 1;
     private Entity killer = null;
-    /**
-     * 用来暂存放玩家打开的末影箱实例对象，当玩家打开末影箱时该值为指定为那个末影箱，当玩家关闭末影箱后重新设置回null.
-     * <p>
-     * This is used to temporarily store the player's open EnderChest instance object, when the player opens the EnderChest the value is specified as that EnderChest, when the player closes the EnderChest reset back to null.
-     */
-    private BlockEnderChest viewingEnderChest = null;
     private TaskHandler delayedPosTrackingUpdate;
     protected boolean showingCredits;
     protected static final int NO_SHIELD_DELAY = 10;
@@ -344,7 +337,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected CraftingGridInventory craftingGridInventory;
     protected PlayerCursorInventory playerCursorInventory;
     protected CreativeOutputInventory creativeOutputInventory;
-    protected boolean inventoryOpen;
+    protected boolean inventoryOpen;//Player opens it own inventory
+    protected boolean enderChestOpen;//Player open it own ender chest inventory
+    ///
     private final @NotNull PlayerInfo info;
 
     public @NotNull PlayerInfo getPlayerInfo() {
@@ -5388,5 +5383,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     public int getChunkSendCountPerTick() {
         return chunksPerTick;
+    }
+
+    public void setEnderChestOpen(boolean v) {
+        this.enderChestOpen = v;
+    }
+
+    public boolean getEnderChestOpen() {
+        return this.enderChestOpen;
     }
 }

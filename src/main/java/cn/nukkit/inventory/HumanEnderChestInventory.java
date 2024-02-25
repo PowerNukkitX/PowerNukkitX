@@ -9,9 +9,14 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.BlockEventPacket;
 import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
+
+@Slf4j
 public class HumanEnderChestInventory extends BaseInventory implements BlockEntityInventoryNameable {
     @Nullable
     private BlockEntityEnderChest enderChest;
@@ -21,8 +26,26 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
     }
 
     @Override
+    public void init() {
+        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        for (int i = 0; i < getSize(); i++) {
+            map.put(i, ContainerSlotType.LEVEL_ENTITY);
+        }
+    }
+
+    @Override
     public IHuman getHolder() {
         return (IHuman) this.holder;
+    }
+
+    public void setBlockEntityEnderChest(@NotNull Player player, BlockEntityEnderChest blockEntityEnderChest) {
+        if (blockEntityEnderChest == null) {
+            enderChest = null;
+            player.setEnderChestOpen(false);
+        } else {
+            player.setEnderChestOpen(true);
+            enderChest = blockEntityEnderChest;
+        }
     }
 
     @Override
@@ -30,17 +53,18 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
         if (who != this.getHolder()) {
             return;
         }
-        super.onOpen(who);
         ContainerOpenPacket containerOpenPacket = new ContainerOpenPacket();
-        containerOpenPacket.windowId = who.getWindowId(this);
+        containerOpenPacket.windowId = SpecialWindowId.ENDER_CHEST.getId();
         containerOpenPacket.type = this.getType().getNetworkType();
         if (enderChest != null) {
             containerOpenPacket.x = (int) enderChest.getX();
             containerOpenPacket.y = (int) enderChest.getY();
             containerOpenPacket.z = (int) enderChest.getZ();
         } else {
-            containerOpenPacket.x = containerOpenPacket.y = containerOpenPacket.z = 0;
+            log.error("Error when opening the ender chest, the block entity is not set using setBlockEntityEnderChest");
+            return;
         }
+        super.onOpen(who);
         who.dataPacket(containerOpenPacket);
         this.sendContents(who);
 
@@ -63,10 +87,9 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
     @Override
     public void onClose(Player who) {
         ContainerClosePacket containerClosePacket = new ContainerClosePacket();
-        containerClosePacket.windowId = who.getWindowId(this);
+        containerClosePacket.windowId =  SpecialWindowId.ENDER_CHEST.getId();
         containerClosePacket.wasServerInitiated = who.getClosingWindowId() != containerClosePacket.windowId;
         who.dataPacket(containerClosePacket);
-        super.onClose(who);
 
         if (enderChest != null) {
             BlockEventPacket blockEventPacket = new BlockEventPacket();
@@ -85,16 +108,6 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
             setBlockEntityEnderChest(who, null);
         }
         super.onClose(who);
-    }
-
-    public void setBlockEntityEnderChest(@NotNull Player player, BlockEntityEnderChest blockEntityEnderChest) {
-        if (blockEntityEnderChest == null) {
-            enderChest = null;
-            this.getViewers().remove(player);
-        } else {
-            enderChest = blockEntityEnderChest;
-            this.getViewers().add(player);
-        }
     }
 
     @Override
