@@ -135,6 +135,13 @@ public class ShapedRecipe extends CraftingRecipe {
         return this;
     }
 
+    /**
+     * Gets ingredient with a row number and col number.
+     *
+     * @param x the col
+     * @param y the row
+     * @return the ingredient
+     */
     public ItemDescriptor getIngredient(int x, int y) {
         var res = this.shapedIngredients.get(this.shape[y].charAt(x));
         return res == null ? new DefaultDescriptor(Item.AIR) : res;
@@ -151,12 +158,28 @@ public class ShapedRecipe extends CraftingRecipe {
         for (int i = 0; i < input.getRow(); i++) {
             for (int j = 0; j < input.getCol(); j++) {
                 ItemDescriptor ingredient = getIngredient(j, i);
-                if (!ingredient.match(data[j][i])) return false;
+                if (!ingredient.match(data[i][j])) return false;
             }
         }
         return true;
     }
 
+    /**
+     * Try shrink the item matrix.This will remove air item that does not participate in the craft.
+     * <p>
+     * Example:
+     * x represents air item, o represents valid items
+     * <p>
+     * <pre>
+     *     [              [
+     *      [x,x,x],
+     *      [x,o,o], =>    [o,o],
+     *      [x,o,o]        [o,o]
+     *     ]              ]
+     * </pre>
+     *
+     * @param input the input
+     */
     public static void tryShrinkMatrix(Input input) {
         Integer r = null, l = null;
         int row = input.getRow();
@@ -193,38 +216,38 @@ public class ShapedRecipe extends CraftingRecipe {
             int dl = left - 1, dr = right;
             pushQueue(row, col, data, bfsQueue, result, dl, dr);
         }
-        Integer minR = null, maxR = null, minL = null, maxL = null;
+        Integer minCol = null, maxCol = null, minRow = null, maxRow = null;
         for (var pair : result) {
             Integer left = pair.left();
             Integer right = pair.right();
-            if (minR == null) {
-                minR = right;
+            if (minCol == null) {
+                minCol = right;
             } else {
-                minR = Math.min(minR, right);
+                minCol = Math.min(minCol, right);
             }
-            if (maxR == null) {
-                maxR = right;
+            if (maxCol == null) {
+                maxCol = right;
             } else {
-                maxR = Math.max(maxR, right);
+                maxCol = Math.max(maxCol, right);
             }
-            if (minL == null) {
-                minL = left;
+            if (minRow == null) {
+                minRow = left;
             } else {
-                minL = Math.min(minL, left);
+                minRow = Math.min(minRow, left);
             }
-            if (maxL == null) {
-                maxL = left;
+            if (maxRow == null) {
+                maxRow = left;
             } else {
-                maxL = Math.max(maxL, left);
+                maxRow = Math.max(maxRow, left);
             }
         }
-        int newRow = maxR - minR + 1;//+1 because is index
-        int newCol = maxL - minL + 1;
+        int newRow = maxRow - minRow + 1;//+1 because is index
+        int newCol = maxCol - minCol + 1;
         if (newRow > 0 && newRow < row && newCol > 0 && newCol < col) {
-            Item[][] items = new Item[newCol][newRow];
-            for (int i = 0; i < newRow; i++) {
-                for (int j = 0; j < newCol; j++) {
-                    items[j][i] = data[minL + j][minR + i];
+            Item[][] items = new Item[newRow][newCol];
+            for (int i = 0; i < newCol; i++) {
+                for (int j = 0; j < newRow; j++) {
+                    items[j][i] = data[minRow + j][minCol + i];
                 }
             }
             input.setRow(newRow);

@@ -84,4 +84,18 @@ public class RecipeTest {
         Item[][] expected = items.clone();
         Assertions.assertArrayEquals(expected, items);
     }
+
+    @Test
+    void test_tryShrinkMatrix4() {
+        Item[] item1 = List.of(Item.get(ItemID.STICK), Item.AIR, Item.AIR).toArray(Item.EMPTY_ARRAY);
+        Item[] item2 = List.of(Item.get(ItemID.STICK), Item.AIR, Item.AIR).toArray(Item.EMPTY_ARRAY);
+        Item[] item3 = List.of(Item.AIR, Item.AIR, Item.AIR).toArray(Item.EMPTY_ARRAY);
+        Item[][] data = new Item[][]{item1, item2, item3};
+        Input input = new Input(3, 3, data);
+        ShapedRecipe.tryShrinkMatrix(input);
+        Item[][] items = input.getData();
+        //                                row0                      row1
+        Item[][] expected = new Item[][]{{Item.get(ItemID.STICK)}, {Item.get(ItemID.STICK)}};
+        Assertions.assertArrayEquals(expected, items);
+    }
 }
