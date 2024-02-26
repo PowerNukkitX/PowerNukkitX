@@ -46,11 +46,8 @@ public class InventorySlice implements Inventory {
         } else return rawInv.fromNetworkSlot(networkSlot);
     }
 
-    public void setSlotTypeMap(Map<Integer, ContainerSlotType> map) {
+    public void setNetworkMapping(Map<Integer, ContainerSlotType> map, BiMap<Integer, Integer> biMap) {
         slotTypeMap = map;
-    }
-
-    public void setNetworkSlotMap(BiMap<Integer, Integer> biMap) {
         networkSlotMap = biMap;
     }
 

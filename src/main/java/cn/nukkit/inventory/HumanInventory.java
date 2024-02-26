@@ -66,8 +66,7 @@ public class HumanInventory extends BaseInventory {
                     map.put(i, ContainerSlotType.ARMOR);
                     biMap.put(i, i);
                 }
-                this.setSlotTypeMap(map);
-                this.setNetworkSlotMap(biMap);
+                this.setNetworkMapping(map, biMap);
             }
         };
     }
