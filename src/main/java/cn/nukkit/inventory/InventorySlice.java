@@ -1,9 +1,9 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-
-
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import com.google.common.collect.BiMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -16,11 +16,42 @@ public class InventorySlice implements Inventory {
     private final Inventory rawInv;
     private int startSlot;
     private int endSlot;
+    private Map<Integer, ContainerSlotType> slotTypeMap;
+    private BiMap<Integer, Integer> networkSlotMap;
 
     public InventorySlice(@NotNull Inventory rawInv, int startSlot, int endSlot) {
         this.rawInv = rawInv;
         this.startSlot = startSlot;
         this.endSlot = endSlot;
+    }
+
+    @Override
+    public ContainerSlotType getSlotType(int nativeSlot) {
+        if (slotTypeMap != null) {
+            return slotTypeMap.get(nativeSlot);
+        } else return rawInv.getSlotType(nativeSlot);
+    }
+
+    @Override
+    public int toNetworkSlot(int nativeSlot) {
+        if (networkSlotMap != null) {
+            return networkSlotMap.getOrDefault(nativeSlot, nativeSlot);
+        } else return rawInv.toNetworkSlot(nativeSlot);
+    }
+
+    @Override
+    public int fromNetworkSlot(int networkSlot) {
+        if (networkSlotMap != null) {
+            return networkSlotMap.inverse().getOrDefault(networkSlot, networkSlot);
+        } else return rawInv.fromNetworkSlot(networkSlot);
+    }
+
+    public void setSlotTypeMap(Map<Integer, ContainerSlotType> map) {
+        slotTypeMap = map;
+    }
+
+    public void setNetworkSlotMap(BiMap<Integer, Integer> biMap) {
+        networkSlotMap = biMap;
     }
 
     public void setStartSlot(int startSlot) {

@@ -17,9 +17,12 @@ import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import org.jetbrains.annotations.Range;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -27,6 +30,11 @@ import java.util.Map;
  * 9-35 背包<br>
  * 36-39 盔甲栏<br>
  * 想获取副手库存请用{@link HumanOffHandInventory}<br>
+ * <p>
+ * 0-8 hotbar<br>
+ * 9-35 inventory<br>
+ * 36-39 Armor Inventory<br>
+ * To obtain the off-hand inventory, please use {@link HumanOffHandInventory}<br>
  *
  * @author MagicDroidX (Nukkit Project)
  */
@@ -39,18 +47,29 @@ public class HumanInventory extends BaseInventory {
         super(human, InventoryType.INVENTORY, 40);
     }//9+27+4
 
+    protected InventorySlice armorInventory;
+
     @Override
     public void init() {
         Map<Integer, ContainerSlotType> map = super.slotTypeMap();
-        for (int i = 0; i < 4; i++) {
-            map.put(ARMORS_INDEX + i, ContainerSlotType.ARMOR);
-        }
         for (int i = 0; i < 9; i++) {
             map.put(i, ContainerSlotType.HOTBAR);
         }
         for (int i = 9; i < 36; i++) {
             map.put(i, ContainerSlotType.INVENTORY);
         }
+        armorInventory = new InventorySlice(this, HumanInventory.ARMORS_INDEX, this.getSize()) {
+            {
+                HashMap<Integer, ContainerSlotType> map = new HashMap<>();
+                BiMap<Integer, Integer> biMap = HashBiMap.create();
+                for (int i = 0; i < 4; i++) {
+                    map.put(i, ContainerSlotType.ARMOR);
+                    biMap.put(i, i);
+                }
+                this.setSlotTypeMap(map);
+                this.setNetworkSlotMap(biMap);
+            }
+        };
     }
 
     /**
@@ -184,12 +203,16 @@ public class HumanInventory extends BaseInventory {
         return this.getItem(ARMORS_INDEX + index);
     }
 
-    public boolean setArmorItem(@Range(from = 1, to = 4) int index, Item item) {
+    public boolean setArmorItem(@Range(from = 0, to = 3) int index, Item item) {
         return this.setArmorItem(index, item, false);
     }
 
-    public boolean setArmorItem(@Range(from = 1, to = 4) int index, Item item, boolean ignoreArmorEvents) {
+    public boolean setArmorItem(@Range(from = 0, to = 3) int index, Item item, boolean ignoreArmorEvents) {
         return this.setItem(ARMORS_INDEX + index, item, ignoreArmorEvents);
+    }
+
+    public InventorySlice getArmorInventory() {
+        return armorInventory;
     }
 
     public Item getHelmet() {

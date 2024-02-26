@@ -2,9 +2,7 @@ package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
 import cn.nukkit.inventory.CraftingTableInventory;
-import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.Inventory;
-import cn.nukkit.inventory.InventorySlice;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import lombok.experimental.UtilityClass;
 
@@ -15,8 +13,7 @@ public class NetworkMapping {
             case CREATED_OUTPUT -> player.getCreativeOutputInventory();
             case CURSOR -> player.getCursorInventory();
             case INVENTORY, HOTBAR, HOTBAR_AND_INVENTORY -> player.getInventory();
-            case ARMOR ->
-                    new InventorySlice(player.getInventory(), HumanInventory.ARMORS_INDEX, player.getInventory().getSize());
+            case ARMOR -> player.getInventory().getArmorInventory();
             case BARREL, BREWING_RESULT, BREWING_FUEL, BREWING_INPUT,
                     FURNACE_FUEL, FURNACE_INGREDIENT, FURNACE_RESULT, SMOKER_INGREDIENT, BLAST_FURNACE_INGREDIENT,
                     ENCHANTING_INPUT, ENCHANTING_MATERIAL,
