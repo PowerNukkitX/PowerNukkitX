@@ -32,6 +32,7 @@ import java.util.Map;
 public class FakeInventory extends BaseInventory {
     private final Map<Integer, ItemHandler> handlers = new HashMap<>();
     private final FakeBlock fakeBlock;
+    private final FakeInventoryType fakeInventoryType;
     private String title;
     private ItemHandler defaultItemHandler;
 
@@ -42,6 +43,7 @@ public class FakeInventory extends BaseInventory {
     public FakeInventory(FakeInventoryType fakeInventoryType, @NotNull String title) {
         super(null, fakeInventoryType.inventoryType, fakeInventoryType.size);
         this.title = title;
+        this.fakeInventoryType = fakeInventoryType;
         this.fakeBlock = fakeInventoryType.fakeBlock;
         this.defaultItemHandler = (i, ii, e) -> {
         };
@@ -89,6 +91,10 @@ public class FakeInventory extends BaseInventory {
     @Override
     public InventoryHolder getHolder() {
         throw new UnsupportedOperationException();
+    }
+
+    public FakeInventoryType getFakeInventoryType() {
+        return fakeInventoryType;
     }
 
     @Override
