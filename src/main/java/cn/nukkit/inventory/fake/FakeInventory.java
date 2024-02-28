@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.event.inventory.ItemStackRequestActionEvent;
 import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.request.NetworkMapping;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
@@ -34,8 +35,12 @@ public class FakeInventory extends BaseInventory {
     private String title;
     private ItemHandler defaultItemHandler;
 
-    public FakeInventory(Player player, FakeInventoryType fakeInventoryType, @NotNull String title) {
-        super(player, fakeInventoryType.inventoryType, fakeInventoryType.size);
+    public FakeInventory(FakeInventoryType fakeInventoryType) {
+        this(fakeInventoryType, fakeInventoryType.name());
+    }
+
+    public FakeInventory(FakeInventoryType fakeInventoryType, @NotNull String title) {
+        super(null, fakeInventoryType.inventoryType, fakeInventoryType.size);
         this.title = title;
         this.fakeBlock = fakeInventoryType.fakeBlock;
         this.defaultItemHandler = (i, ii, e) -> {
@@ -82,12 +87,8 @@ public class FakeInventory extends BaseInventory {
     }
 
     @Override
-    public Player getHolder() {
-        return (Player) super.getHolder();
-    }
-
-    public int open() {
-        return this.getHolder().addWindow(this);
+    public InventoryHolder getHolder() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
