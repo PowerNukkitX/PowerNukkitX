@@ -108,7 +108,6 @@ public class EntityTnt extends Entity implements EntityExplosive {
 
     @Override
     public boolean onUpdate(int currentTick) {
-
         if (closed) {
             return false;
         }

@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="PNX" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="cn.nukkit.Nukkit" />
+    <module name="powernukkitx.main" />
+    <option name="VM_PARAMETERS" value="-Dfile.encoding=UTF-8 -Djansi.passthrough=true -Dterminal.ansi=true -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:+UseStringDeduplication -XX:+EnableJVMCI --module-path=.\libs\graal-sdk-23.0.0.jar;.\libs\truffle-api-23.0.0.jar; --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/build" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="cn.nukkit.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

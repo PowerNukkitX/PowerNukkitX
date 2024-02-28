@@ -1368,6 +1368,26 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public boolean entityBaseTick(int tickDiff) {
+        if (!this.isAlive()) {
+            //apply death smoke cloud only if it is a creature
+            if (this instanceof EntityCreature) {
+                //通过碰撞箱大小动态添加 death smoke cloud
+                server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+                    final var aabb = this.getBoundingBox();
+                    for (double x = aabb.getMinX(); x <= aabb.getMaxX(); x += 0.5) {
+                        for (double z = aabb.getMinZ(); z <= aabb.getMaxZ(); z += 0.5) {
+                            for (double y = aabb.getMinY(); y <= aabb.getMaxY(); y += 0.5) {
+                                this.getLevel().addParticle(new ExplodeParticle(new Vector3(x, y, z)));
+                            }
+                        }
+                    }
+                }, 10);
+            }
+            if (!this.isPlayer) {
+                this.close();
+            }
+            return false;
+        }
         if (!this.isPlayer) {
             this.blocksAround = null;
             this.collisionBlocks = null;
@@ -1618,33 +1638,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             return false;
         }
 
-        if (!this.isAlive()) {
-            //apply death smoke cloud only if it is a creature
-            if (this instanceof EntityCreature) {
-                //通过碰撞箱大小动态添加 death smoke cloud
-                server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
-                    final var aabb = this.getBoundingBox();
-                    for (double x = aabb.getMinX(); x <= aabb.getMaxX(); x += 0.5) {
-                        for (double z = aabb.getMinZ(); z <= aabb.getMaxZ(); z += 0.5) {
-                            for (double y = aabb.getMinY(); y <= aabb.getMaxY(); y += 0.5) {
-                                this.getLevel().addParticle(new ExplodeParticle(new Vector3(x, y, z)));
-                            }
-                        }
-                    }
-                }, 10);
-            }
-            if (!this.isPlayer) {
-                this.close();
-            }
-            return false;
-        }
-
         int tickDiff = currentTick - this.lastUpdate;
-
         if (tickDiff <= 0) {
             return false;
         }
-
         this.lastUpdate = currentTick;
 
         boolean hasUpdate = this.entityBaseTick(tickDiff);
