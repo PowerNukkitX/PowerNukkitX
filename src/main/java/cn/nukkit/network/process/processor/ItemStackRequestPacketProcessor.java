@@ -4,8 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.event.inventory.ItemStackRequestActionEvent;
-import cn.nukkit.inventory.fake.FakeInventory;
 import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.fake.FakeInventory;
 import cn.nukkit.inventory.request.*;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ItemStackRequestPacket;
@@ -75,6 +75,8 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
                 ActionResponse response;
                 if (event.getResponse() != null) {
                     response = event.getResponse();
+                } else if (event.isCancelled()) {
+                    response = context.error();
                 } else {
                     response = processor.handle(action, player, context);
                 }
