@@ -148,6 +148,7 @@ public abstract class Item implements Cloneable, ItemID {
 
     @NotNull
     public static Item get(String id, int meta, int count, byte[] tags, boolean autoAssignStackNetworkId) {
+        id = id.contains(":") ? id : "minecraft:" + id;
         Item item = Registries.ITEM.get(id, meta, count, tags);
         if (item == null) {
             BlockState itemBlockState = getItemBlockState(id, meta);
