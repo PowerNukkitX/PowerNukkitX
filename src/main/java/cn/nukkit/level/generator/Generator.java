@@ -46,7 +46,7 @@ public abstract class Generator implements BlockID {
     public abstract String getName();
 
     @NotNull
-    public final DimensionData getDimensionData() {
+    public DimensionData getDimensionData() {
         return dimensionData;
     }
 
