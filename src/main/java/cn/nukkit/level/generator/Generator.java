@@ -61,11 +61,12 @@ public abstract class Generator implements BlockID {
         }, start.getExecutor());
         GenerateStage now;
         while ((now = start.getNextStage()) != null) {
-            if (now == to || now.name().equals(to.name())) {
-                future = future.thenRunAsync(() -> start.getNextStage().apply(context), start.getExecutor());
+            final GenerateStage finalNow = now;
+            if (finalNow == to || finalNow.name().equals(to.name())) {
+                future = future.thenRunAsync(() -> finalNow.getNextStage().apply(context), now.getExecutor());
                 break;
             }
-            future = future.thenRunAsync(() -> start.getNextStage().apply(context), start.getExecutor());
+            future = future.thenRunAsync(() -> finalNow.getNextStage().apply(context), finalNow.getExecutor());
         }
         future.join();
         IChunk c = context.getChunk();

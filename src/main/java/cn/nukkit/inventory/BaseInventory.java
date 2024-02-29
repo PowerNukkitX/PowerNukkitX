@@ -136,8 +136,8 @@ public abstract class BaseInventory implements Inventory {
 
         item = item.clone();
         InventoryHolder holder = this.getHolder();
-        if (holder instanceof Entity) {
-            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent((Entity) holder, this.getItem(index), item, index);
+        if (holder instanceof Entity entity) {
+            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(entity, this.getItem(index), item, index);
             Server.getInstance().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
                 this.sendSlot(index, this.getViewers());
@@ -147,8 +147,8 @@ public abstract class BaseInventory implements Inventory {
             item = ev.getNewItem();
         }
 
-        if (holder instanceof BlockEntity) {
-            ((BlockEntity) holder).setDirty();
+        if (holder instanceof BlockEntity blockEntity) {
+            blockEntity.setDirty();
         }
 
         Item old = this.getUnclonedItem(index);

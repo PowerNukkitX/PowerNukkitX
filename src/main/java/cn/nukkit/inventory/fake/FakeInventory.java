@@ -90,7 +90,7 @@ public class FakeInventory extends BaseInventory {
 
     @Override
     public InventoryHolder getHolder() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     public FakeInventoryType getFakeInventoryType() {
