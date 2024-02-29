@@ -59,12 +59,12 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
     }
 
     @Override
-    protected BlockRedstoneComparator getUnpowered() {
+    public BlockRedstoneComparator getUnpowered() {
         return (BlockRedstoneComparator) Block.get(BlockID.UNPOWERED_COMPARATOR).setPropertyValues(blockstate.getBlockPropertyValues());
     }
 
     @Override
-    protected BlockRedstoneComparator getPowered() {
+    public BlockRedstoneComparator getPowered() {
         return (BlockRedstoneComparator) Block.get(BlockID.POWERED_COMPARATOR).setPropertyValues(blockstate.getBlockPropertyValues());
     }
 

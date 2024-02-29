@@ -20,7 +20,7 @@ public class BlockYellowFlower extends BlockRedFlower {
     }
 
     @Override
-    protected Block getUncommonFlower() {
+    public Block getUncommonFlower() {
         return get(RED_FLOWER);
     }
 

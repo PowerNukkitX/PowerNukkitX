@@ -7,7 +7,7 @@ import cn.nukkit.item.ItemTool;
  */
 public abstract class BlockPlanks extends BlockSolid {
 
-    protected BlockPlanks(BlockState blockState) {
+    public BlockPlanks(BlockState blockState) {
         super(blockState);
     }
 

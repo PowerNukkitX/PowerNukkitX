@@ -14,7 +14,7 @@ import java.util.Arrays;
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_BLOCK_FACE;
 
 public abstract class BlockAmethystBud extends BlockTransparent implements Faceable {
-    protected BlockAmethystBud(BlockState blockState) {
+    public BlockAmethystBud(BlockState blockState) {
         super(blockState);
     }
 

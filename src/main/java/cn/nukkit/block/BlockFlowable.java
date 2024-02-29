@@ -6,7 +6,7 @@ import cn.nukkit.math.AxisAlignedBB;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockFlowable extends BlockTransparent {
-    protected BlockFlowable(BlockState blockState) {
+    public BlockFlowable(BlockState blockState) {
         super(blockState);
     }
 

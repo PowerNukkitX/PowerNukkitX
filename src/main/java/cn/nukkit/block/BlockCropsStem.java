@@ -44,7 +44,7 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
         }
     }
 
-    protected BlockCropsStem(BlockState blockstate) {
+    public BlockCropsStem(BlockState blockstate) {
         super(blockstate);
     }
 

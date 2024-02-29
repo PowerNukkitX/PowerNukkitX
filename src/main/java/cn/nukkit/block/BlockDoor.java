@@ -48,7 +48,7 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
         DOOR_DIRECTION.put(BlockFace.NORTH, 3);
     }
 
-    protected BlockDoor(BlockState blockState) {
+    public BlockDoor(BlockState blockState) {
         super(blockState);
     }
 

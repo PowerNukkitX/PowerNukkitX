@@ -26,12 +26,12 @@ public class BlockUnpoweredRepeater extends BlockRedstoneRepeater {
     }
 
     @Override
-    protected Block getPowered() {
+    public Block getPowered() {
         return new BlockPoweredRepeater().setPropertyValues(blockstate.getBlockPropertyValues());
     }
 
     @Override
-    protected Block getUnpowered() {
+    public Block getUnpowered() {
         return this;
     }
 }

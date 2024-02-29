@@ -26,7 +26,7 @@ public class BlockPoweredComparator extends BlockRedstoneComparator {
     }
 
     @Override
-    protected BlockRedstoneComparator getPowered() {
+    public BlockRedstoneComparator getPowered() {
         return this;
     }
 }

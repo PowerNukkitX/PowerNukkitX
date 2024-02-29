@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 public abstract class BlockFroglight extends BlockSolid {
 
-    protected BlockFroglight(BlockState blockState) {
+    public BlockFroglight(BlockState blockState) {
         super(blockState);
     }
 

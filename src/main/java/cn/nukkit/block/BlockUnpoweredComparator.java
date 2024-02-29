@@ -25,7 +25,7 @@ public class BlockUnpoweredComparator  extends BlockRedstoneComparator {
     }
 
     @Override
-    protected BlockRedstoneComparator getUnpowered() {
+    public BlockRedstoneComparator getUnpowered() {
         return this;
     }
 }

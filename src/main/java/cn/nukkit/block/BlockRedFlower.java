@@ -109,7 +109,7 @@ public class BlockRedFlower extends BlockFlowable implements BlockFlowerPot.Flow
         return false;
     }
 
-    protected Block getUncommonFlower() {
+    public Block getUncommonFlower() {
         return get(YELLOW_FLOWER);
     }
 }

@@ -19,7 +19,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.GROWTH;
 public abstract class BlockCrops extends BlockFlowable {
     public static final int MINIMUM_LIGHT_LEVEL = 9;
 
-    protected BlockCrops(BlockState blockState) {
+    public BlockCrops(BlockState blockState) {
         super(blockState);
     }
 

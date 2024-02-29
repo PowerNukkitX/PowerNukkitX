@@ -8,7 +8,7 @@ import cn.nukkit.item.ItemTool;
  * @since 2015/11/25
  */
 public abstract class BlockStairsWood extends BlockStairs {
-    protected BlockStairsWood(BlockState blockState) {
+    public BlockStairsWood(BlockState blockState) {
         super(blockState);
     }
 

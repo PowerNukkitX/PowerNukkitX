@@ -12,7 +12,7 @@ import cn.nukkit.nbt.tag.*;
  */
 public abstract class BlockFallable extends BlockSolid {
 
-    protected BlockFallable(BlockState blockstate) {
+    public BlockFallable(BlockState blockstate) {
         super(blockstate);
     }
 

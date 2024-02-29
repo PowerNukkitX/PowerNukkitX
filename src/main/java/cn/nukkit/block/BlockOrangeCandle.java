@@ -20,7 +20,7 @@ public class BlockOrangeCandle extends BlockCandle {
     }
 
     @Override
-    protected Block toCakeForm() {
+    public Block toCakeForm() {
         return new BlockOrangeCandleCake();
     }
 }

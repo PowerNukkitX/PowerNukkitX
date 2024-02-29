@@ -14,7 +14,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
  * @since 2.6.2017
  */
 public abstract class BlockGlazedTerracotta extends BlockSolid implements Faceable {
-    protected BlockGlazedTerracotta(BlockState blockState) {
+    public BlockGlazedTerracotta(BlockState blockState) {
         super(blockState);
     }
 

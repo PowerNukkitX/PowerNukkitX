@@ -109,7 +109,7 @@ public class BlockCandleCake extends BlockTransparent {
         return 0;
     }
 
-    protected BlockCandle toCandleForm() {
+    public BlockCandle toCandleForm() {
         return new BlockCandle();
     }
 

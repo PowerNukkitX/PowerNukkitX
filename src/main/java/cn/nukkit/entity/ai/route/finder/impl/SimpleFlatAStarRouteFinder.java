@@ -392,7 +392,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     /**
      * 获取目标坐标最高有效点（沿Y轴往下检查）
      */
-    protected Block getHighestUnder(Vector3 vector3, int limit) {
+    public Block getHighestUnder(Vector3 vector3, int limit) {
         if (limit > 0) {
             for (int y = vector3.getFloorY(); y >= vector3.getFloorY() - limit; y--) {
                 Block block = this.entity.level.getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);

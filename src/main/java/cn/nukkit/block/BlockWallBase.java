@@ -28,7 +28,7 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
     private static final double MIN_POST_BB =  5.0/16;
     private static final double MAX_POST_BB = 11.0/16;
 
-    protected BlockWallBase(BlockState blockstate) {
+    public BlockWallBase(BlockState blockstate) {
         super(blockstate);
     }
 

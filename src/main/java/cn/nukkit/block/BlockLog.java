@@ -10,7 +10,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
 
 
 public abstract class BlockLog extends BlockSolid implements IBlockWood {
-    protected BlockLog(BlockState blockState) {
+    public BlockLog(BlockState blockState) {
         super(blockState);
     }
 

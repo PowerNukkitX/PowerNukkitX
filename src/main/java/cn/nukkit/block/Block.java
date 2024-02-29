@@ -174,7 +174,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         }
     }
 
-    protected Block(@Nullable BlockState blockState) {
+    public Block(@Nullable BlockState blockState) {
         super(0, 0, 0, null);
         if (blockState != null && getProperties().containBlockState(blockState)) {
             this.blockstate = blockState;

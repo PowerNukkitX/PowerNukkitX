@@ -6,12 +6,12 @@ import cn.nukkit.block.BlockState;
 
 public class LegacyCrimsonTree extends LegacyNetherTree{
     @Override
-    protected BlockState getTrunkBlockState() {
+    public BlockState getTrunkBlockState() {
         return BlockCrimsonStem.PROPERTIES.getDefaultState();
     }
 
     @Override
-    protected BlockState getLeafBlockState() {
+    public BlockState getLeafBlockState() {
         return BlockNetherWartBlock.PROPERTIES.getDefaultState();
     }
 }

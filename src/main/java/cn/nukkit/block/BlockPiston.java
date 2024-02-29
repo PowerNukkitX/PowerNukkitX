@@ -29,7 +29,7 @@ public class BlockPiston extends BlockPistonBase {
     }
 
     @Override
-    protected Block createHead(BlockFace blockFace) {
+    public Block createHead(BlockFace blockFace) {
         return new BlockPistonArmCollision().setPropertyValue(CommonBlockProperties.FACING_DIRECTION,blockFace.getIndex());
     }
 }

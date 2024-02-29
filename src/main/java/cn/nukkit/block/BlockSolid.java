@@ -7,7 +7,7 @@ import cn.nukkit.math.BlockFace;
  */
 public abstract class BlockSolid extends Block {
 
-    protected BlockSolid(BlockState blockState) {
+    public BlockSolid(BlockState blockState) {
         super(blockState);
     }
 

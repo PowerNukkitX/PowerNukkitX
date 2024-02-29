@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 public abstract class BlockSlab extends BlockTransparent {
     protected final String doubleSlab;
 
-    protected BlockSlab(BlockState blockState, String doubleSlab) {
+    public BlockSlab(BlockState blockState, String doubleSlab) {
         super(blockState);
         this.doubleSlab = doubleSlab;
     }

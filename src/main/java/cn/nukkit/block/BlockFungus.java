@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 
 
 public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
-    protected BlockFungus(BlockState blockState) {
+    public BlockFungus(BlockState blockState) {
         super(blockState);
     }
 

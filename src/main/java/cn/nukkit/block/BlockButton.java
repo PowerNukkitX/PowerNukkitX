@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
  */
 
 public abstract class BlockButton extends BlockFlowable implements RedstoneComponent, Faceable {
-    protected BlockButton(BlockState meta) {
+    public BlockButton(BlockState meta) {
         super(meta);
     }
 

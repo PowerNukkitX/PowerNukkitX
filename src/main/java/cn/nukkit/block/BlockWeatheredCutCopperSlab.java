@@ -20,7 +20,7 @@ public class BlockWeatheredCutCopperSlab extends BlockCutCopperSlab {
         super(blockstate, WEATHERED_DOUBLE_CUT_COPPER_SLAB);
     }
 
-    protected BlockWeatheredCutCopperSlab(BlockState blockstate, String doubleSlab) {
+    public BlockWeatheredCutCopperSlab(BlockState blockstate, String doubleSlab) {
         super(blockstate, doubleSlab);
     }
 

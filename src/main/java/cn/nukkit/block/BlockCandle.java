@@ -37,7 +37,7 @@ public class BlockCandle extends BlockFlowable {
         super(blockstate);
     }
 
-    protected Block toCakeForm() {
+    public Block toCakeForm() {
         return new BlockCandleCake();
     }
 

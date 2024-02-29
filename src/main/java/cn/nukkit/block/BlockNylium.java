@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 
 
 public abstract class BlockNylium extends BlockSolid {
-    protected BlockNylium(BlockState blockState) {
+    public BlockNylium(BlockState blockState) {
         super(blockState);
     }
 

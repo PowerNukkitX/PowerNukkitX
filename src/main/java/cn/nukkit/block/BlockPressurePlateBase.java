@@ -28,7 +28,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
     protected float onPitch;
     protected float offPitch;
 
-    protected BlockPressurePlateBase(BlockState blockState) {
+    public BlockPressurePlateBase(BlockState blockState) {
         super(blockState);
     }
 

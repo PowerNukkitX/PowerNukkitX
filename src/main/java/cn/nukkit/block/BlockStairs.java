@@ -18,7 +18,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.WEIRDO_DIRECTION;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockStairs extends BlockTransparent implements Faceable {
-    protected BlockStairs(BlockState blockState) {
+    public BlockStairs(BlockState blockState) {
         super(blockState);
     }
 

@@ -7,7 +7,7 @@ import cn.nukkit.item.ItemTool;
  * @since 2.6.2017
  */
 public abstract class BlockConcrete extends BlockSolid {
-    protected BlockConcrete(BlockState blockState) {
+    public BlockConcrete(BlockState blockState) {
         super(blockState);
     }
 

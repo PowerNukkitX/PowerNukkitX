@@ -23,7 +23,7 @@ public class BlockStickyPiston extends BlockPistonBase {
     }
 
     @Override
-    protected Block createHead(BlockFace blockFace) {
+    public Block createHead(BlockFace blockFace) {
         return new BlockStickyPistonArmCollision().setPropertyValue(CommonBlockProperties.FACING_DIRECTION, blockFace.getIndex());
     }
 
