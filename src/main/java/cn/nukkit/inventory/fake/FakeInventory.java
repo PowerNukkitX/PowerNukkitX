@@ -218,33 +218,31 @@ public class FakeInventory extends BaseInventory {
 
     @ApiStatus.Internal
     public void handle(ItemStackRequestActionEvent event) {
-        if (event.getPlayer().equals(getHolder())) {
-            ItemStackRequestAction action = event.getAction();
-            ItemStackRequestSlotData source = null;
-            ItemStackRequestSlotData destination = null;
-            if (action instanceof TransferItemStackRequestAction transferItemStackRequestAction) {
-                source = transferItemStackRequestAction.getSource();
-                destination = transferItemStackRequestAction.getDestination();
-            } else if (action instanceof SwapAction swapAction) {
-                source = swapAction.getSource();
-                destination = swapAction.getDestination();
-            }
-            if (source != null && destination != null) {
-                ContainerSlotType sourceSlotType = source.getContainer();
-                ContainerSlotType destinationSlotType = destination.getContainer();
-                Inventory sourceI = NetworkMapping.getInventory(event.getPlayer(), sourceSlotType);
-                Inventory destinationI = NetworkMapping.getInventory(event.getPlayer(), destinationSlotType);
-                int sourceSlot = sourceI.fromNetworkSlot(source.getSlot());
-                int destinationSlot = destinationI.fromNetworkSlot(destination.getSlot());
-                var sourItem = sourceI.getItem(sourceSlot);
-                var destItem = destinationI.getItem(destinationSlot);
-                if (sourceI.equals(this)) {
-                    ItemHandler handler = this.handlers.getOrDefault(sourceSlot, this.defaultItemHandler);
-                    handler.handle(sourceSlot, sourItem, event);
-                } else if (destinationI.equals(this)) {
-                    ItemHandler handler = this.handlers.getOrDefault(destinationSlot, this.defaultItemHandler);
-                    handler.handle(destinationSlot, destItem, event);
-                }
+        ItemStackRequestAction action = event.getAction();
+        ItemStackRequestSlotData source = null;
+        ItemStackRequestSlotData destination = null;
+        if (action instanceof TransferItemStackRequestAction transferItemStackRequestAction) {
+            source = transferItemStackRequestAction.getSource();
+            destination = transferItemStackRequestAction.getDestination();
+        } else if (action instanceof SwapAction swapAction) {
+            source = swapAction.getSource();
+            destination = swapAction.getDestination();
+        }
+        if (source != null && destination != null) {
+            ContainerSlotType sourceSlotType = source.getContainer();
+            ContainerSlotType destinationSlotType = destination.getContainer();
+            Inventory sourceI = NetworkMapping.getInventory(event.getPlayer(), sourceSlotType);
+            Inventory destinationI = NetworkMapping.getInventory(event.getPlayer(), destinationSlotType);
+            int sourceSlot = sourceI.fromNetworkSlot(source.getSlot());
+            int destinationSlot = destinationI.fromNetworkSlot(destination.getSlot());
+            var sourItem = sourceI.getItem(sourceSlot);
+            var destItem = destinationI.getItem(destinationSlot);
+            if (sourceI.equals(this)) {
+                ItemHandler handler = this.handlers.getOrDefault(sourceSlot, this.defaultItemHandler);
+                handler.handle(sourceSlot, sourItem, event);
+            } else if (destinationI.equals(this)) {
+                ItemHandler handler = this.handlers.getOrDefault(destinationSlot, this.defaultItemHandler);
+                handler.handle(destinationSlot, destItem, event);
             }
         }
     }
