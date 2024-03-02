@@ -36,7 +36,7 @@ public class TTCommand extends TestCommand {
                 Player player = sender.asPlayer();
                 if (v.equals("1")) {
                     FakeInventory fakeInventory = new FakeInventory(FakeInventoryType.DOUBLE_CHEST);
-                    fakeInventory.setDefaultItemHandler((slot, item, e) -> {
+                    fakeInventory.setDefaultItemHandler((inv, slot, item, e) -> {
                         e.setCancelled();
                     });
                     player.addWindow(fakeInventory);
