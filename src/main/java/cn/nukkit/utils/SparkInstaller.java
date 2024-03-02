@@ -8,7 +8,6 @@ import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.util.Arrays;
 
@@ -25,7 +24,8 @@ public class SparkInstaller {
         }
 
         if (download) {
-            try (InputStream in = new URL("https://github.com/PowerNukkitX-Bundle/spark/releases/download/" + version + "/spark-pnx.jar").openStream()) {
+            try (InputStream in = SparkInstaller.class.getClassLoader().getResourceAsStream("spark.jar")) {
+                assert in != null;
                 File targetPath = new File(server.getPluginPath() + "/spark.jar");
                 Files.copy(in, targetPath.toPath());
                 server.getPluginManager().enablePlugin(server.getPluginManager().loadPlugin(targetPath));
