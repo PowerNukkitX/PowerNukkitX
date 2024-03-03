@@ -61,7 +61,7 @@ public class Nukkit {
     public static List<String> JS_DEBUG_LIST = new LinkedList<>();
 
     public static void main(String[] args) {
-        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED);
+        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
 
         AtomicBoolean disableSentry = new AtomicBoolean(false);
         disableSentry.set(Boolean.parseBoolean(System.getProperty("disableSentry", "false")));
@@ -91,7 +91,6 @@ public class Nukkit {
 
         // Netty logger for debug info
         InternalLoggerFactory.setDefaultFactory(Log4J2LoggerFactory.INSTANCE);
-        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.PARANOID);
 
         // Define args
         OptionParser parser = new OptionParser();

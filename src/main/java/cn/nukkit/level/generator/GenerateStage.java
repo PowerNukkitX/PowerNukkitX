@@ -22,9 +22,9 @@ public abstract class GenerateStage {
 
     private void next(GenerateStage stage) {
         if (this.next == null) {
-            this.next = stage;
+            this.next = stage;//next -> null
         } else {
-            this.next.next(stage);
+            this.next.next(stage);//next -> next
         }
     }
 

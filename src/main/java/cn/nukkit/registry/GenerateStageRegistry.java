@@ -1,22 +1,26 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.level.generator.GenerateStage;
-import cn.nukkit.level.generator.GenerateStages;
+import cn.nukkit.level.generator.stages.FinishedStage;
+import cn.nukkit.level.generator.stages.FlatGenerateStage;
+import cn.nukkit.level.generator.stages.LightPopulationStage;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class GenerateStageRegistry implements IRegistry<String, GenerateStage, GenerateStage> {
-    private static final Object2ObjectOpenHashMap<String, GenerateStage> REGISTRY = new Object2ObjectOpenHashMap<>();
+public class GenerateStageRegistry implements IRegistry<String, GenerateStage, Class<? extends GenerateStage>> {
+    private static final Object2ObjectOpenHashMap<String, Class<? extends GenerateStage>> REGISTRY = new Object2ObjectOpenHashMap<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+
     @Override
     public void init() {
         if (isLoad.getAndSet(true)) return;
         try {
-            this.register(GenerateStages.FINISHED.name(), GenerateStages.FINISHED);
-            this.register(GenerateStages.FLAT_GENERATE.name(), GenerateStages.FLAT_GENERATE);
-            this.register(GenerateStages.LIGHT_POPULATION.name(), GenerateStages.LIGHT_POPULATION);
+            this.register(FinishedStage.NAME, FinishedStage.class);
+            this.register(FlatGenerateStage.NAME, FlatGenerateStage.class);
+            this.register(LightPopulationStage.NAME, LightPopulationStage.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }
@@ -24,8 +28,13 @@ public class GenerateStageRegistry implements IRegistry<String, GenerateStage, G
 
     public GenerateStage get(Class<? extends GenerateStage> c) {
         for (var entry : REGISTRY.entrySet()) {
-            if (entry.getValue().getClass().equals(c)) {
-                return entry.getValue();
+            if (entry.getValue().equals(c)) {
+                try {
+                    return entry.getValue().getConstructor().newInstance();
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                         NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         return null;
@@ -33,6 +42,15 @@ public class GenerateStageRegistry implements IRegistry<String, GenerateStage, G
 
     @Override
     public GenerateStage get(String key) {
+        try {
+            return REGISTRY.get(key.toLowerCase(Locale.ENGLISH)).getConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Class<? extends GenerateStage> getStageByName(String key) {
         return REGISTRY.get(key.toLowerCase(Locale.ENGLISH));
     }
 
@@ -42,7 +60,7 @@ public class GenerateStageRegistry implements IRegistry<String, GenerateStage, G
     }
 
     @Override
-    public void register(String key, GenerateStage value) throws RegisterException {
+    public void register(String key, Class<? extends GenerateStage> value) throws RegisterException {
         if (REGISTRY.putIfAbsent(key.toLowerCase(Locale.ENGLISH), value) != null) {
             throw new RegisterException("This generator has already been registered with the key: " + key);
         }

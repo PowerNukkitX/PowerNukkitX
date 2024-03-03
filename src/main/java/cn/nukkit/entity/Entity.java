@@ -63,7 +63,6 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.PropertySyncData;
-import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.Task;
@@ -110,6 +109,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public double motionX;
     public double motionY;
     public double motionZ;
+    public int deadTicks = 0;
     /**
      * 临时向量，其值没有任何含义
      */
@@ -1369,11 +1369,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public boolean entityBaseTick(int tickDiff) {
         if (!this.isAlive()) {
-            //apply death smoke cloud only if it is a creature
-            if (this instanceof EntityCreature) {
-                //通过碰撞箱大小动态添加 death smoke cloud
-                server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
-                    final var aabb = this.getBoundingBox();
+            this.deadTicks+=tickDiff;
+            if (this.deadTicks >= 15) {
+                //apply death smoke cloud only if it is a creature
+                if (this instanceof EntityCreature) {
+                    //通过碰撞箱大小动态添加 death smoke cloud
+                    var aabb = this.getBoundingBox();
                     for (double x = aabb.getMinX(); x <= aabb.getMaxX(); x += 0.5) {
                         for (double z = aabb.getMinZ(); z <= aabb.getMaxZ(); z += 0.5) {
                             for (double y = aabb.getMinY(); y <= aabb.getMaxY(); y += 0.5) {
@@ -1381,12 +1382,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                             }
                         }
                     }
-                }, 10);
+                }
+                this.despawnFromAll();
+                if (!this.isPlayer) {
+                    this.close();
+                }
             }
-            if (!this.isPlayer) {
-                this.close();
-            }
-            return false;
+            return this.deadTicks < 10;
         }
         if (!this.isPlayer) {
             this.blocksAround = null;

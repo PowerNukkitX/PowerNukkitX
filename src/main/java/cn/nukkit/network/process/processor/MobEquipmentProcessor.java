@@ -35,7 +35,12 @@ public class MobEquipmentProcessor extends DataPacketProcessor<MobEquipmentPacke
         Item item = inv.getItem(pk.hotbarSlot);
 
         if (!item.equals(pk.item, false, true)) {
-            log.debug("Tried to equip {} but have {} in target slot", pk.item.getNamedTag().toSNBT(), item.getNamedTag().toSNBT());
+            Item fixItem = Item.get(item.getId(), item.getDamage(), item.getCount());
+            if (!fixItem.equals(pk.item, false, true)) {
+                log.debug("Tried to equip {} but have {} in target slot", pk.item, fixItem);
+            } else {
+                inv.setItem(pk.hotbarSlot, fixItem);
+            }
             inv.sendContents(player);
             return;
         }

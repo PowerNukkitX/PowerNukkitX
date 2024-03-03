@@ -17,7 +17,7 @@ import static cn.nukkit.recipe.RecipeType.SHULKER_BOX;
  */
 public class ShulkerBoxRecipe extends ShapelessRecipe {
     public ShulkerBoxRecipe(Item result, Collection<Item> ingredients) {
-        super(result, ingredients);
+        this(null, 10, result, ingredients);
     }
 
     public ShulkerBoxRecipe(String recipeId, int priority, Item result, Collection<Item> ingredients) {

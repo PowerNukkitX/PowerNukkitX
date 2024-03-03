@@ -3505,7 +3505,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             namedTag.putInt("SpawnBlockPositionX", spawnBlockPosition.getFloorX())
                     .putInt("SpawnBlockPositionY", spawnBlockPosition.getFloorY())
                     .putInt("SpawnBlockPositionZ", spawnBlockPosition.getFloorZ())
-                    .putString("SpawnBlockLevel", this.spawnBlockPosition.getLevel().getFolderPath());
+                    .putString("SpawnBlockLevel", this.spawnBlockPosition.getLevel().getName());
         }
 
         if (spawnPosition == null) {
@@ -3519,10 +3519,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     .putInt("SpawnY", this.spawnPosition.getFloorY())
                     .putInt("SpawnZ", this.spawnPosition.getFloorZ());
             if (this.spawnPosition.getLevel() != null) {
-                this.namedTag.putString("SpawnLevel", this.spawnPosition.getLevel().getFolderPath());
+                this.namedTag.putString("SpawnLevel", this.spawnPosition.getLevel().getName());
                 this.namedTag.putInt("SpawnDimension", this.spawnPosition.getLevel().getDimension());
             } else {
-                this.namedTag.putString("SpawnLevel", this.server.getDefaultLevel().getFolderPath());
+                this.namedTag.putString("SpawnLevel", this.server.getDefaultLevel().getName());
                 this.namedTag.putInt("SpawnDimension", this.server.getDefaultLevel().getDimension());
             }
         }

@@ -4,7 +4,6 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.registry.Registries;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -75,15 +74,16 @@ public abstract class Generator implements BlockID {
     }
 
     public final void asyncGenerate(IChunk chunk) {
-        asyncGenerate(chunk, end, (c) -> {
+        asyncGenerate(chunk, end.name(), (c) -> {
         });
     }
 
     public final void asyncGenerate(IChunk chunk, Consumer<ChunkGenerateContext> callback) {
-        asyncGenerate(chunk, end, callback);
+        asyncGenerate(chunk, end.name(), callback);
     }
 
-    public final void asyncGenerate(IChunk chunk, GenerateStage to, Consumer<ChunkGenerateContext> callback) {
+    public final void asyncGenerate(IChunk chunk, String to, Consumer<ChunkGenerateContext> callback) {
+        Preconditions.checkNotNull(to);
         final ChunkGenerateContext context = new ChunkGenerateContext(this, level, chunk);
         asyncGenerate0(context, start, to, () -> {
             IChunk c = context.getChunk();
@@ -92,21 +92,10 @@ public abstract class Generator implements BlockID {
         });
     }
 
-    public final void asyncGenerate(IChunk chunk, String to, Consumer<ChunkGenerateContext> callback) {
-        GenerateStage generateStage = Registries.GENERATE_STAGE.get(to);
-        Preconditions.checkNotNull(generateStage);
-        final ChunkGenerateContext context = new ChunkGenerateContext(this, level, chunk);
-        asyncGenerate0(context, start, generateStage, () -> {
-            IChunk c = context.getChunk();
-            level.setChunk(c.getX(), c.getZ(), c);
-            callback.accept(context);
-        });
-    }
 
-
-    private void asyncGenerate0(final ChunkGenerateContext context, final GenerateStage start, final GenerateStage to, final Runnable callback) {
+    private void asyncGenerate0(final ChunkGenerateContext context, final GenerateStage start, String to, final Runnable callback) {
         if (start == null || to == null) return;
-        if (to == start || to.name().equals(start.name())) {
+        if (to.equals(start.name())) {
             start.getExecutor().execute(() -> {
                 start.apply(context);
                 callback.run();

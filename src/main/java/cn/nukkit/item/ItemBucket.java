@@ -41,7 +41,7 @@ public class ItemBucket extends Item {
     }
 
     public ItemBucket(Integer meta, int count) {
-        super(BUCKET, meta, count, getName(meta));
+        super(mapping(meta), 0, count, getName(meta));
     }
 
     public ItemBucket(String id) {
@@ -54,6 +54,22 @@ public class ItemBucket extends Item {
 
     public ItemBucket(String id, int count, String name) {
         super(id, 0, count, name);
+    }
+
+    protected static String mapping(int meta) {
+        return switch (meta) {
+            case 1 -> MILK_BUCKET;
+            case 2 -> COD_BUCKET;
+            case 3 -> SALMON_BUCKET;
+            case 4 -> TROPICAL_FISH_BUCKET;
+            case 5 -> PUFFERFISH_BUCKET;
+            case 8 -> WATER_BUCKET;
+            case 10 -> LAVA_BUCKET;
+            case 11 -> POWDER_SNOW_BUCKET;
+            case 12 -> AXOLOTL_BUCKET;
+            case 13 -> TADPOLE_BUCKET;
+            default -> BUCKET;
+        };
     }
 
     protected static String getName(int meta) {
