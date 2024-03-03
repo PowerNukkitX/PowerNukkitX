@@ -2295,7 +2295,7 @@ public class Server {
      * @return 世界是否已经加载<br>Is the world already loaded
      */
     public boolean isLevelLoaded(String name) {
-        if (!name.matches("Dim[0-9]$")) {
+        if (!name.matches("^.*Dim[0-9]$")) {
             for (int i = 0; i < 3; i++) {
                 if (this.getLevelByName(name + " Dim" + i) != null) {
                     return true;
@@ -2331,7 +2331,7 @@ public class Server {
      * @return level实例<br>level instance
      */
     public Level getLevelByName(String name) {
-        if (!name.matches("Dim[0-9]$")) {
+        if (!name.matches("^.*Dim[0-9]$")) {
             name = name + " Dim0";
         }
         for (Level level : this.levelArray) {
