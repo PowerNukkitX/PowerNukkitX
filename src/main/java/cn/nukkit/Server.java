@@ -72,8 +72,7 @@ import cn.nukkit.plugin.service.NKServiceManager;
 import cn.nukkit.plugin.service.ServiceManager;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.recipe.Recipe;
-import cn.nukkit.registry.RecipeRegistry;
-import cn.nukkit.registry.Registries;
+import cn.nukkit.registry.*;
 import cn.nukkit.resourcepacks.ResourcePackManager;
 import cn.nukkit.resourcepacks.loader.JarPluginResourcePackLoader;
 import cn.nukkit.resourcepacks.loader.ZippedResourcePackLoader;
@@ -694,31 +693,33 @@ public class Server {
         // Initialize metrics
         NukkitMetrics.startNow(this);
 
+
         {//init
             Registries.POTION.init();
             Registries.PACKET.init();
             Registries.ENTITY.init();
-            Profession.init();
             Registries.BLOCKENTITY.init();
-            String a = BlockTags.ACACIA;
-            String b = ItemTags.ARROW;
-            String c = BiomeTags.WARM;
-            Updater d = BlockStateUpdaterBase.INSTANCE;
             Registries.BLOCKSTATE_ITEMMETA.init();
+            Registries.BLOCKSTATE.init();
             Registries.ITEM_RUNTIMEID.init();
             Registries.BLOCK.init();
             Registries.ITEM.init();
             Registries.CREATIVE.init();
-            Enchantment.init();
             Registries.BIOME.init();
             Registries.FUEL.init();
             Registries.GENERATOR.init();
             Registries.GENERATE_STAGE.init();
             Registries.EFFECT.init();
+            Registries.RECIPE.init();
+            Profession.init();
+            String a = BlockTags.ACACIA;
+            String b = ItemTags.ARROW;
+            String c = BiomeTags.WARM;
+            Updater d = BlockStateUpdaterBase.INSTANCE;
+            Enchantment.init();
             Attribute.init();
             BlockComposter.init();
             DispenseBehaviorRegister.init();
-            Registries.RECIPE.init();
         }
 
         freezableArrayManager = new FreezableArrayManager(
@@ -775,6 +776,7 @@ public class Server {
             Registries.ENTITY.trim();
             Registries.BLOCKENTITY.trim();
             Registries.BLOCKSTATE_ITEMMETA.trim();
+            Registries.BLOCKSTATE.trim();
             Registries.ITEM_RUNTIMEID.trim();
             Registries.BLOCK.trim();
             Registries.ITEM.trim();
@@ -873,7 +875,6 @@ public class Server {
      */
     public void reload() {
         log.info("Reloading...");
-
         log.info("Saving levels...");
 
         for (Level level : this.levelArray) {
@@ -881,7 +882,6 @@ public class Server {
         }
 
         this.scoreboardManager.save();
-
         this.pluginManager.disablePlugins();
         this.pluginManager.clearPlugins();
         this.commandMap.clearCommands();
@@ -889,7 +889,6 @@ public class Server {
         log.info("Reloading properties...");
         this.properties.reload();
         this.maxPlayers = this.getPropertyInt("max-players", 20);
-
         if (this.getPropertyBoolean("hardcore", false) && this.getDifficulty() < 3) {
             this.setPropertyInt("difficulty", difficulty = 3);
         }
@@ -915,7 +914,46 @@ public class Server {
         this.pluginManager.registerInterface(JSPluginLoader.class);
         this.pluginManager.loadPlugins(this.pluginPath);
         this.functionManager.reload();
+
+        log.info("Reloading Registries...");
+        {
+            Registries.POTION.reload();
+            Registries.PACKET.reload();
+            Registries.ENTITY.reload();
+            Registries.BLOCKENTITY.reload();
+            Registries.BLOCKSTATE_ITEMMETA.reload();
+            Registries.BLOCKSTATE.reload();
+            Registries.ITEM_RUNTIMEID.reload();
+            Registries.BLOCK.reload();
+            Registries.ITEM.reload();
+            Registries.CREATIVE.reload();
+            Registries.BIOME.reload();
+            Registries.FUEL.reload();
+            Registries.GENERATOR.reload();
+            Registries.GENERATE_STAGE.reload();
+            Registries.EFFECT.reload();
+            Registries.RECIPE.reload();
+            Enchantment.reload();
+        }
         this.enablePlugins(PluginLoadOrder.STARTUP);
+        {
+            Registries.POTION.trim();
+            Registries.PACKET.trim();
+            Registries.ENTITY.trim();
+            Registries.BLOCKENTITY.trim();
+            Registries.BLOCKSTATE_ITEMMETA.trim();
+            Registries.BLOCKSTATE.trim();
+            Registries.ITEM_RUNTIMEID.trim();
+            Registries.BLOCK.trim();
+            Registries.ITEM.trim();
+            Registries.CREATIVE.trim();
+            Registries.BIOME.trim();
+            Registries.FUEL.trim();
+            Registries.GENERATOR.trim();
+            Registries.GENERATE_STAGE.trim();
+            Registries.EFFECT.trim();
+            Registries.RECIPE.trim();
+        }
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
         ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
         getPluginManager().callEvent(serverStartedEvent);

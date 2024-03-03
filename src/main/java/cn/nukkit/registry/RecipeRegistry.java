@@ -438,6 +438,20 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         allRecipeMaps.trim();
     }
 
+    public void reload() {
+        isLoad.set(false);
+        RECIPE_COUNT = 0;
+        if (buffer != null) {
+            buffer.release();
+            buffer = null;
+        }
+        recipeMaps.clear();
+        recipeXpMap.clear();
+        allRecipeMaps.clear();
+        networkIdRecipeList.clear();
+        init();
+    }
+
     @Override
     public void register(String key, Recipe recipe) throws RegisterException {
         if (recipe instanceof CraftingRecipe craftingRecipe) {

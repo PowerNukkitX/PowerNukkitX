@@ -17,9 +17,12 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Cool_Loong | Mcayear | KoshakMineDEV | WWMB | Draglis
@@ -30,7 +33,9 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     private static final Set<String> KEYSET = new HashSet<>();
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Block>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
     private static final Object2ObjectOpenHashMap<String, BlockProperties> PROPERTIES = new Object2ObjectOpenHashMap<>();
-    private static final List<CustomBlockDefinition> CUSTOM_BLOCK_DEFINITIONS = new ArrayList<>();
+    private static final Map<Plugin, List<CustomBlockDefinition>> CUSTOM_BLOCK_DEFINITIONS = new LinkedHashMap<>();
+
+    private static final ReentrantLock lock = new ReentrantLock();
 
     @Override
     public void init() {
@@ -1070,6 +1075,8 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
                 FastConstructor<? extends Block> c = FastConstructor.create(value.getConstructor(BlockState.class));
                 if (CACHE_CONSTRUCTORS.putIfAbsent(blockProperties.getIdentifier(), c) != null) {
                     throw new RegisterException("This block has already been registered with the identifier: " + blockProperties.getIdentifier());
+                } else {
+                    blockProperties.getSpecialValueMap().values().forEach(Registries.BLOCKSTATE::registerInternal);
                 }
             } else {
                 throw new RegisterException("There block: %s must define a field `public static final BlockProperties PROPERTIES` in this class!".formatted(key));
@@ -1124,18 +1131,21 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) == null) {
                 if (CustomBlock.class.isAssignableFrom(value)) {
                     CustomBlock customBlock = (CustomBlock) c.invoke((Object) null);
-                    CUSTOM_BLOCK_DEFINITIONS.add(customBlock.getDefinition());
+                    List<CustomBlockDefinition> customBlockDefinitions = CUSTOM_BLOCK_DEFINITIONS.computeIfAbsent(plugin, (p) -> new ArrayList<>());
+                    customBlockDefinitions.add(customBlock.getDefinition());
                     int rid = 255 - CustomBlockDefinition.getRuntimeId(customBlock.getId());
                     Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(customBlock.getId(), rid, false));
                     if (customBlock.shouldBeRegisteredInCreative()) {
-//                        Registries.CREATIVE.addCreativeItem(new ItemBlock(customBlock.toBlock()));
                         ItemBlock itemBlock = new ItemBlock(customBlock.toBlock());
                         itemBlock.setNetId(null);
                         Registries.CREATIVE.addCreativeItem(itemBlock);
                     }
+                    KEYSET.add(key);
+                    PROPERTIES.put(key, blockProperties);
+                    blockProperties.getSpecialValueMap().values().forEach(Registries.BLOCKSTATE::registerInternal);
+                }else{
+                    throw new RegisterException("Register Error,must implement the CustomBlock interface!");
                 }
-                KEYSET.add(key);
-                PROPERTIES.put(key, blockProperties);
             } else {
                 throw new RegisterException("There custom block has already been registered with the identifier: " + key);
             }
@@ -1156,7 +1166,16 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
 
     @UnmodifiableView
     public List<CustomBlockDefinition> getCustomBlockDefinitionList() {
-        return Collections.unmodifiableList(CUSTOM_BLOCK_DEFINITIONS);
+        return CUSTOM_BLOCK_DEFINITIONS.values().stream().flatMap(List::stream).toList();
+    }
+
+    public void reload() {
+        isLoad.set(false);
+        KEYSET.clear();
+        CACHE_CONSTRUCTORS.clear();
+        PROPERTIES.clear();
+        CUSTOM_BLOCK_DEFINITIONS.clear();
+        init();
     }
 
     public BlockProperties getBlockProperties(String identifier) {

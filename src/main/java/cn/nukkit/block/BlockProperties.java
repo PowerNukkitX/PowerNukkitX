@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.type.BlockPropertyType;
-import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.Identifier;
@@ -14,7 +13,11 @@ import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import lombok.Getter;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -51,7 +54,6 @@ public final class BlockProperties {
                     .values()
                     .stream()
                     .collect(Collectors.toMap(BlockStateImpl::specialValue, Function.identity(), (v1, v2) -> v1, Short2ObjectOpenHashMap::new));
-            blockStateHashMap.values().forEach(Registries.BLOCKSTATE::registerInternal);
         } else {
             throw new IllegalArgumentException();
         }
@@ -158,5 +160,10 @@ public final class BlockProperties {
     @UnmodifiableView
     public Set<BlockPropertyType<?>> getPropertyTypeSet() {
         return Collections.unmodifiableSet(propertyTypeSet);
+    }
+
+    @UnmodifiableView
+    public Map<Short, BlockState> getSpecialValueMap() {
+        return Collections.unmodifiableMap(specialValueMap);
     }
 }

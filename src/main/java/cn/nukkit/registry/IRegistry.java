@@ -15,6 +15,7 @@ public interface IRegistry<K, V, R> {
 
     void trim();
 
-    void register(K key, R value) throws RegisterException;
+    void reload();
 
+    void register(K key, R value) throws RegisterException;
 }

@@ -68,7 +68,7 @@ public class ChunkTest {
         chunk.addEntity(itemEntity);
 
         List<Entity> list = chunk.getEntities().values().stream().filter(e -> e.getIdentifier().equals(EntityID.ITEM)).toList();
-        Assertions.assertEquals(2, chunk.getEntities().values().size());
+        Assertions.assertEquals(2, chunk.getEntities().values().size());//player test and item entity
         Assertions.assertEquals(1, list.size());
         Assertions.assertEquals(EntityID.ITEM, list.get(0).getIdentifier());
 

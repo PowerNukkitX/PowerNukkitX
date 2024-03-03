@@ -247,6 +247,12 @@ public abstract class Enchantment implements Cloneable {
         };
     }
 
+    public static void reload() {
+        enchantments = new Enchantment[256];
+        namedEnchantments.clear();
+        init();
+    }
+
     public static OK<?> register(Enchantment enchantment, boolean registerItem) {
         Objects.requireNonNull(enchantment);
         Objects.requireNonNull(enchantment.getIdentifier());
@@ -461,6 +467,7 @@ public abstract class Enchantment implements Cloneable {
         this.type = type;
         this.name = name;
     }
+
     /**
      * 自定义附魔使用的构造函数
      *

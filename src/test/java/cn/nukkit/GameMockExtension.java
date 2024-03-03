@@ -85,6 +85,7 @@ public class GameMockExtension extends MockitoExtension {
         Registries.CREATIVE.init();
         Registries.BIOME.init();
         Registries.FUEL.init();
+        Registries.GENERATE_STAGE.init();
         Registries.GENERATOR.init();
         Registries.RECIPE.init();
         Registries.EFFECT.init();

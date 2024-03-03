@@ -32,6 +32,11 @@ public final class BlockStateRegistry implements IRegistry<Integer, BlockState, 
     }
 
     @Override
+    public void reload() {
+        REGISTRY.clear();
+    }
+
+    @Override
     public void register(Integer key, BlockState value) throws RegisterException {
         if (REGISTRY.putIfAbsent(key, value) == null) {
         } else {

@@ -83,6 +83,15 @@ public class EffectRegistry implements IRegistry<EffectType, Effect, Class<? ext
     }
 
     @Override
+    public void reload() {
+        isLoad.set(false);
+        INT_ID_2_TYPE.clear();
+        STRING_ID_2_TYPE.clear();
+        CACHE_CONSTRUCTORS.clear();
+        init();
+    }
+
+    @Override
     public void register(EffectType type, Class<? extends Effect> effect) throws RegisterException {
         try {
             FastConstructor<? extends Effect> c = FastConstructor.create(effect.getConstructor());
