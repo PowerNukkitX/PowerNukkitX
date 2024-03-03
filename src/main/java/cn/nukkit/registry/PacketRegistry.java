@@ -49,6 +49,12 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         PACKET_POOL.trim();
     }
 
+    public void reload() {
+        isLoad.set(false);
+        PACKET_POOL.clear();
+        init();
+    }
+
     /**
      * Register a packet to the pool. Using from 1.19.70.
      *

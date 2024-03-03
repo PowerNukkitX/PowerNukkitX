@@ -23,16 +23,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefinition, BiomeRegistry.BiomeDefinition> {
     private static final Int2ObjectOpenHashMap<BiomeDefinition> DEFINITIONS = new Int2ObjectOpenHashMap<>(0xFF);
     private static final Object2IntOpenHashMap<String> NAME2ID = new Object2IntOpenHashMap<>(0xFF);
     private static final List<CompoundTag> REGISTRY = new ArrayList<>(0xFF);
-
+    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
 
     @Override
     public void init() {
+        if (isLoad.getAndSet(true)) return;
         try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("biome_id_and_type.json")) {
             Gson gson = new GsonBuilder().setObjectToNumberStrategy(JsonReader::nextInt).create();
             Map<String, ?> map = gson.fromJson(new InputStreamReader(stream), Map.class);
@@ -110,6 +112,15 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
     public void trim() {
         DEFINITIONS.trim();
         NAME2ID.trim();
+    }
+
+    @Override
+    public void reload() {
+        isLoad.set(false);
+        DEFINITIONS.clear();
+        REGISTRY.clear();
+        NAME2ID.clear();
+        init();
     }
 
     @Override

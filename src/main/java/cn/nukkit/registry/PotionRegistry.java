@@ -79,7 +79,14 @@ public class PotionRegistry implements IRegistry<String, PotionType, PotionType>
 
     @Override
     public void trim() {
-        REGISTRY.trim();;
+        REGISTRY.trim();
+    }
+
+    public void reload() {
+        isLoad.set(false);
+        REGISTRY.clear();
+        ID_2_POTION.clear();
+        init();
     }
 
     @Override
@@ -91,7 +98,7 @@ public class PotionRegistry implements IRegistry<String, PotionType, PotionType>
         }
     }
 
-    private void register0(PotionType value){
+    private void register0(PotionType value) {
         try {
             register(value.stringId(), value);
         } catch (RegisterException e) {

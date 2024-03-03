@@ -41,6 +41,13 @@ public class GeneratorRegistry implements IRegistry<String, Class<? extends Gene
     }
 
     @Override
+    public void reload() {
+        isLoad.set(false);
+        REGISTRY.clear();
+        init();
+    }
+
+    @Override
     public void register(String key, Class<? extends Generator> value) throws RegisterException {
         if (REGISTRY.putIfAbsent(key.toLowerCase(Locale.ENGLISH), value) == null) {
         } else {

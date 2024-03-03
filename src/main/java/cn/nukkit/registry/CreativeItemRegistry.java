@@ -23,9 +23,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Slf4j
 public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, Item> {
-    private static final Int2ObjectLinkedOpenHashMap<Item> MAP = new Int2ObjectLinkedOpenHashMap<>();
-    private static final Int2ObjectOpenHashMap<Item> INTERNAL_DIFF_ITEM = new Int2ObjectOpenHashMap<>();
-    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    static final Int2ObjectLinkedOpenHashMap<Item> MAP = new Int2ObjectLinkedOpenHashMap<>();
+    static final Int2ObjectOpenHashMap<Item> INTERNAL_DIFF_ITEM = new Int2ObjectOpenHashMap<>();
+    static final AtomicBoolean isLoad = new AtomicBoolean(false);
 
     @Override
     public void init() {
@@ -161,6 +161,14 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     public void trim() {
         MAP.trim();
         INTERNAL_DIFF_ITEM.trim();
+    }
+
+    @Override
+    public void reload() {
+        isLoad.set(false);
+        MAP.clear();
+        INTERNAL_DIFF_ITEM.clear();
+        init();
     }
 
     @Override

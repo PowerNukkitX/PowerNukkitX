@@ -31,6 +31,13 @@ public class BlockState2ItemMetaRegistry implements IRegistry<String, Integer, I
     }
 
     @Override
+    public void reload() {
+        isLoad.set(false);
+        MAP.clear();
+        init();
+    }
+
+    @Override
     public Integer get(String key) {
         return MAP.get(key);
     }

@@ -292,6 +292,18 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     }
 
     @Override
+    public void reload() {
+        isLoad.set(false);
+        CLASS.clear();
+        FAST_NEW.clear();
+        ID2RID.clear();
+        RID2ID.clear();
+        DEFINITIONS.clear();
+        CUSTOM_ENTITY_DEFINITIONS.clear();
+        init();
+    }
+
+    @Override
     public void register(EntityDefinition key, Class<? extends Entity> value) throws RegisterException {
         if (CLASS.putIfAbsent(key.id(), value) == null) {
             try {

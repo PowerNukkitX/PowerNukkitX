@@ -60,6 +60,13 @@ public class GenerateStageRegistry implements IRegistry<String, GenerateStage, C
     }
 
     @Override
+    public void reload() {
+        isLoad.set(false);
+        REGISTRY.clear();
+        init();
+    }
+
+    @Override
     public void register(String key, Class<? extends GenerateStage> value) throws RegisterException {
         if (REGISTRY.putIfAbsent(key.toLowerCase(Locale.ENGLISH), value) != null) {
             throw new RegisterException("This generator has already been registered with the key: " + key);

@@ -171,6 +171,13 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
     }
 
     @Override
+    public void reload() {
+        isLoad.set(false);
+        REGISTRY.clear();
+        init();
+    }
+
+    @Override
     public void register(Item key, Integer value) throws RegisterException {
         String hash;
         if (key.isBlock()) hash = key.getBlockId() + "#" + key.getDamage();

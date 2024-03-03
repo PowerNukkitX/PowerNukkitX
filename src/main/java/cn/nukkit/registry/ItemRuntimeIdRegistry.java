@@ -17,13 +17,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer> {
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
     private static final Object2IntOpenHashMap<String> REGISTRY = new Object2IntOpenHashMap<>();
-    private static final Object2ObjectOpenHashMap<String, RuntimeEntry> CUSTOM_REGISTRY = new Object2ObjectOpenHashMap<>();
+    static final Object2ObjectOpenHashMap<String, RuntimeEntry> CUSTOM_REGISTRY = new Object2ObjectOpenHashMap<>();
 
     static {
         REGISTRY.defaultReturnValue(Integer.MAX_VALUE);
     }
 
-    private static final Int2ObjectOpenHashMap<String> ID2NAME = new Int2ObjectOpenHashMap<>();
+    static final Int2ObjectOpenHashMap<String> ID2NAME = new Int2ObjectOpenHashMap<>();
     private static byte[] itemPalette;
 
     public byte[] getItemPalette() {
@@ -100,6 +100,13 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
         REGISTRY.trim();
         CUSTOM_REGISTRY.trim();
         generatePalette();
+    }
+
+    public void reload() {
+        isLoad.set(false);
+        REGISTRY.clear();
+        CUSTOM_REGISTRY.clear();
+        init();
     }
 
     @Override

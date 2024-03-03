@@ -70,7 +70,13 @@ public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Cla
 
     @Override
     public void trim() {
+    }
 
+    @Override
+    public void reload() {
+        isLoad.set(false);
+        knownBlockEntities.clear();
+        init();
     }
 
     @Override

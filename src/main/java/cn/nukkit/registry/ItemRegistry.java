@@ -589,6 +589,14 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     }
 
     @Override
+    public void reload() {
+        isLoad.set(false);
+        CACHE_CONSTRUCTORS.clear();
+        CUSTOM_ITEM_DEFINITIONS.clear();
+        init();
+    }
+
+    @Override
     public void register(String key, Class<? extends Item> value) throws RegisterException {
         try {
             FastConstructor<? extends Item> c = FastConstructor.create(value.getConstructor());
