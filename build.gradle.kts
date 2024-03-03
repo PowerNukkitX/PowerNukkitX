@@ -205,6 +205,9 @@ tasks.shadowJar {
                 "Main-Class" to "cn.nukkit.JarStart"
         )
     }
+
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer::class.java) //required to fix shadowJar log4j2 issue
+
     destinationDirectory = layout.buildDirectory
 }
 
