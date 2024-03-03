@@ -94,14 +94,13 @@ public class Utils {
         if (!file.exists()) {
             file.createNewFile();
         }
-        try (FileOutputStream stream = new FileOutputStream(file)) {
+        try (content; FileOutputStream stream = new FileOutputStream(file)) {
             byte[] buffer = new byte[1024];
             int length;
             while ((length = content.read(buffer)) != -1) {
                 stream.write(buffer, 0, length);
             }
         }
-        content.close();
     }
 
     public static String readFile(File file) throws IOException {

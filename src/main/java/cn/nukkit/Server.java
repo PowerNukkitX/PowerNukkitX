@@ -2174,6 +2174,10 @@ public class Server {
         return Nukkit.GIT_COMMIT;
     }
 
+    public String getCodename() {
+        return Nukkit.CODENAME;
+    }
+
     public String getVersion() {
         return ProtocolInfo.MINECRAFT_VERSION;
     }
