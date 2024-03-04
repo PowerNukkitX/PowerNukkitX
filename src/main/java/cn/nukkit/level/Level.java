@@ -96,6 +96,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.io.File;
 import java.lang.ref.SoftReference;
 import java.util.List;
 import java.util.Queue;
@@ -3676,6 +3677,10 @@ public class Level implements Metadatable {
 
     public String getFolderPath() {
         return this.folderPath;
+    }
+
+    public String getFolderName() {
+        return new File(folderPath).getName();
     }
 
     public void stopTime() {

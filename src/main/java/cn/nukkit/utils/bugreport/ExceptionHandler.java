@@ -16,12 +16,6 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
     public void handle(Thread thread, Throwable throwable) {
         throwable.printStackTrace();
-
-        try {
-            new BugReportGenerator(throwable).start();
-        } catch (Exception exception) {
-            // Fail Safe
-        }
     }
 
 }
