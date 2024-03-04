@@ -68,7 +68,7 @@ public class LevelDat {
     @Builder.Default
     boolean spawnV1Villagers = false;
     @Builder.Default
-    BlockVector3 spawnPoint = new BlockVector3(128, 70, 128);
+    BlockVector3 spawnPoint = new BlockVector3(0, 70, 0);
     @Builder.Default
     int storageVersion = 10;
     @Builder.Default

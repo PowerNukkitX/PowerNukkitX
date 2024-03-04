@@ -5,15 +5,11 @@ import cn.nukkit.PlayerHandle;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.BlockEntityDataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
-import java.nio.ByteOrder;
 
 public class BlockEntityDataProcessor extends DataPacketProcessor<BlockEntityDataPacket> {
     @Override
@@ -32,13 +28,7 @@ public class BlockEntityDataProcessor extends DataPacketProcessor<BlockEntityDat
 
         BlockEntity t = player.level.getBlockEntity(pos);
         if (t instanceof BlockEntitySpawnable) {
-            CompoundTag nbt;
-            try {
-                nbt = NBTIO.read(pk.namedTag, ByteOrder.LITTLE_ENDIAN, true);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
+            CompoundTag nbt = pk.namedTag;
             if (!((BlockEntitySpawnable) t).updateCompoundTag(nbt, player)) {
                 ((BlockEntitySpawnable) t).spawnTo(player);
             }

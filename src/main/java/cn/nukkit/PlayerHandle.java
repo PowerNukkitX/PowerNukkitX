@@ -149,19 +149,11 @@ public final class PlayerHandle {
     }
 
     public Position getSpawnPosition() {
-        return player.spawnPosition;
+        return player.spawnPoint;
     }
 
     public void setSpawnPosition(Position spawnPosition) {
-        player.spawnPosition = spawnPosition;
-    }
-
-    public Position getSpawnBlockPosition() {
-        return player.spawnBlockPosition;
-    }
-
-    public void setSpawnBlockPosition(Position spawnBlockPosition) {
-        player.spawnBlockPosition = spawnBlockPosition;
+        player.spawnPoint = spawnPosition;
     }
 
     public void setInAirTicks(int inAirTicks) {

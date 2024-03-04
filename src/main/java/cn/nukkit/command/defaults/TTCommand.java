@@ -5,9 +5,8 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.inventory.fake.FakeInventory;
-import cn.nukkit.inventory.fake.FakeInventoryType;
 import cn.nukkit.inventory.fake.FakeStructBlock;
+import cn.nukkit.level.Level;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;
@@ -35,11 +34,12 @@ public class TTCommand extends TestCommand {
             if (isPlayer) {
                 Player player = sender.asPlayer();
                 if (v.equals("1")) {
-                    FakeInventory fakeInventory = new FakeInventory(FakeInventoryType.DOUBLE_CHEST);
-                    fakeInventory.setDefaultItemHandler((inv, slot, item, e) -> {
-                        e.setCancelled();
-                    });
-                    player.addWindow(fakeInventory);
+                    Level level = player.getLevel();
+                    System.out.println(level.getBlock(player.getPosition()));
+                    System.out.println(level.getBlock(player.getPosition().add(1, 0, 0)));
+                    System.out.println(level.getBlock(player.getPosition().add(0, 0, 1)));
+                    System.out.println(level.getBlock(player.getPosition().add(0, 0, -1)));
+                    System.out.println(level.getBlock(player.getPosition().add(-1, 0, 0)));
                 } else if (v.equals("2")) {
                 }
             }

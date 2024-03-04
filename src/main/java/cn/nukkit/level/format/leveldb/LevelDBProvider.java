@@ -106,19 +106,29 @@ public class LevelDBProvider implements LevelProvider {
     public static boolean isValid(String path) {
         boolean isValid = (new File(path, "level.dat").exists()) && new File(path, "db").isDirectory();
         if (isValid) {
+            boolean data = false, log = false, current = false, lock = false, manifest = false;
             for (File file : Objects.requireNonNull(new File(path, "db").listFiles())) {
-                if (!(file.getName().endsWith(".ldb") || file.getName().endsWith(".log") ||
-                        file.getName().equals("CURRENT") || file.getName().startsWith("MANIFEST-")
-                        || file.getName().equals("FIXED_MANIFEST") || file.getName().equals("LOCK")
-                        || file.getName().equals("LOG") || file.getName().equals("LOG.old")
-                        || file.getName().equals("lost")
-                )) {
-                    isValid = false;
-                    break;
+                if (data && log && current && lock && manifest) {
+                    return false;
+                }
+                if (!data && file.getName().endsWith(".ldb")) {
+                    data = true;
+                }
+                if (!log && file.getName().equals("LOG")) {
+                    log = true;
+                }
+                if (!current && file.getName().equals("CURRENT")) {
+                    current = true;
+                }
+                if (!lock && file.getName().equals("LOCK")) {
+                    lock = true;
+                }
+                if (!manifest && file.getName().startsWith("MANIFEST-")) {
+                    manifest = true;
                 }
             }
         }
-        return isValid;
+        return true;
     }
 
     public static void writeLevelDat(String pathName, DimensionData dimensionData, LevelDat levelDat) {
@@ -268,7 +278,8 @@ public class LevelDBProvider implements LevelProvider {
                 final List<CompoundTag> tagList = new ArrayList<>();
                 for (BlockEntity blockEntity : tiles) {
                     if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
-                        tagList.add(blockEntitySpawnable.getSpawnCompound());
+                        System.out.println(blockEntity.getName());
+//                        tagList.add(blockEntitySpawnable.getSpawnCompound());
                         //Adding NBT to a chunk pack does not show some block entities, and you have to send block entity packets to the player
                         level.addChunkPacket(blockEntitySpawnable.getChunkX(), blockEntitySpawnable.getChunkZ(), blockEntitySpawnable.getSpawnPacket());
                     }

@@ -13,7 +13,7 @@ public class ShowCreditsProcessor extends DataPacketProcessor<ShowCreditsPacket>
         if (pk.status == ShowCreditsPacket.STATUS_END_CREDITS) {
             if (playerHandle.getShowingCredits()) {
                 playerHandle.player.setShowingCredits(false);
-                playerHandle.player.teleport(playerHandle.player.getSpawn(), PlayerTeleportEvent.TeleportCause.END_PORTAL);
+                playerHandle.player.teleport(playerHandle.player.getSpawn().left(), PlayerTeleportEvent.TeleportCause.END_PORTAL);
             }
         }
     }

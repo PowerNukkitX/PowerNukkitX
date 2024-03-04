@@ -19,6 +19,8 @@ import java.util.Objects;
 public class BlockEntitySign extends BlockEntitySpawnable {
     public static final String TAG_TEXT_BLOB = "Text";
     public static final String TAG_TEXT_LINE = "Text%d";
+    public static final String TAG_HIDE_GLOW_OUTLINE = "HideGlowOutline";
+    public static final String TAG_TEXT_OWNER = "TextOwner";
     public static final String TAG_TEXT_COLOR = "SignTextColor";
     public static final String TAG_GLOWING_TEXT = "IgnoreLighting";
     public static final String TAG_PERSIST_FORMATTING = "PersistFormatting";
@@ -33,6 +35,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
 
     public BlockEntitySign(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+        movable = true;
     }
 
     @Override
@@ -269,17 +272,22 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     @Override
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
+                .putBoolean("isMovable", isMovable())
                 .putCompound(TAG_FRONT_TEXT, new CompoundTag()
                         .putString(TAG_TEXT_BLOB, this.namedTag.getCompound(TAG_FRONT_TEXT).getString(TAG_TEXT_BLOB))
                         .putInt(TAG_TEXT_COLOR, this.getColor(true).getARGB())
                         .putBoolean(TAG_GLOWING_TEXT, this.isGlowing())
                         .putBoolean(TAG_PERSIST_FORMATTING, true)
+                        .putBoolean(TAG_HIDE_GLOW_OUTLINE, false)
+                        .putString(TAG_TEXT_OWNER, "")
                 )
                 .putCompound(TAG_BACK_TEXT, new CompoundTag()
                         .putString(TAG_TEXT_BLOB, this.namedTag.getCompound(TAG_BACK_TEXT).getString(TAG_TEXT_BLOB))
                         .putInt(TAG_TEXT_COLOR, this.getColor(false).getARGB())
                         .putBoolean(TAG_GLOWING_TEXT, this.isGlowing(false))
                         .putBoolean(TAG_PERSIST_FORMATTING, true)
+                        .putBoolean(TAG_HIDE_GLOW_OUTLINE, false)
+                        .putString(TAG_TEXT_OWNER, "")
                 )
                 .putBoolean(TAG_LEGACY_BUG_RESOLVE, true)
                 .putByte(TAG_WAXED, 0)

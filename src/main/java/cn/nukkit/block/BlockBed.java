@@ -17,6 +17,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.player.info.SpawnPointType;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.TextFormat;
@@ -153,7 +154,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
 
         Location spawn = Location.fromObject(head.add(0.5, 0.5, 0.5), player.getLevel(), player.getYaw(), player.getPitch());
         if (!player.getSpawn().equals(spawn)) {
-            player.setSpawnBlock(this);
+            player.setSpawn(this, SpawnPointType.BLOCK);
         }
         player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.bed.respawnSet"));
 
