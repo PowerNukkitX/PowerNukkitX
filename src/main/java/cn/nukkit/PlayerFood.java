@@ -113,6 +113,24 @@ public class PlayerFood {
         return exhaustion;
     }
 
+    public void setExhaustion(float exhaustion) {
+        while (exhaustion >= 4.0f) {
+            exhaustion -= 4.0f;
+            float saturation = this.saturation;
+            if (saturation > 0) {
+                saturation = Math.max(0, saturation - 1.0f);
+                this.setSaturation(saturation);
+            } else {
+                int food = this.food;
+                if (food > 0) {
+                    food--;
+                    this.setFood(Math.max(food, 0));
+                }
+            }
+        }
+        this.exhaustion = exhaustion;
+    }
+
     public void exhaust(double amount) {
         if (!this.isEnabled() || Server.getInstance().getDifficulty() == 0 || player.hasEffect(EffectType.SATURATION)) {
             return;
