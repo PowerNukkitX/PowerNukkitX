@@ -42,7 +42,6 @@ dependencies {
 
 
     compileOnly(libs.lombok)
-    compileOnlyApi(libs.lombok)
     annotationProcessor(libs.lombok)
 
     implementation(libs.rng.simple)
