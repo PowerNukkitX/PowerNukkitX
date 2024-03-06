@@ -54,6 +54,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     @NotNull
     public static Block get(String id) {
+        id = id.contains(":") ? id : "minecraft:" + id;
         Block block = Registries.BLOCK.get(id);
         if (block == null) return new BlockAir();
         return block;
@@ -61,6 +62,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     @NotNull
     public static Block get(String id, Position pos) {
+        id = id.contains(":") ? id : "minecraft:" + id;
         Block block = Registries.BLOCK.get(id, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), pos.level);
         if (block == null) {
             BlockAir blockAir = new BlockAir();
@@ -75,6 +77,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     @NotNull
     public static Block get(String id, Position pos, int layer) {
+        id = id.contains(":") ? id : "minecraft:" + id;
         Block block = get(id, pos);
         block.layer = layer;
         return block;
@@ -82,6 +85,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     @NotNull
     public static Block get(String id, Level level, int x, int y, int z) {
+        id = id.contains(":") ? id : "minecraft:" + id;
         Block block = Registries.BLOCK.get(id, x, y, z, level);
         if (block == null) {
             BlockAir blockAir = new BlockAir();
@@ -96,6 +100,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     @NotNull
     public static Block get(String id, Level level, int x, int y, int z, int layer) {
+        id = id.contains(":") ? id : "minecraft:" + id;
         Block block = get(id, level, x, y, z);
         block.layer = layer;
         return block;
@@ -154,6 +159,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     @NotNull
     public static Block getWithState(String id, BlockState blockState) {
+        id = id.contains(":") ? id : "minecraft:" + id;
         Block block = get(id);
         block.setPropertyValues(blockState.getBlockPropertyValues());
         return block;

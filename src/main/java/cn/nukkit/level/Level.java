@@ -8,7 +8,6 @@ import cn.nukkit.block.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityAsyncPrepare;
 import cn.nukkit.entity.EntityID;
@@ -3607,7 +3606,7 @@ public class Level implements Metadatable {
         int minY = isOverWorld() ? -64 : 0;
 
         for (int horizontalOffset = 0; horizontalOffset <= horizontalMaxOffset; horizontalOffset++) {
-            for (int y = maxY; y > minY; y--) {
+            for (int y = maxY; y >= minY; y--) {
                 Position pos = Position.fromObject(spawn, this);
                 pos.setY(y);
                 Position newSpawn;
@@ -3640,7 +3639,7 @@ public class Level implements Metadatable {
                     && (block.isAir() || block.canPassThrough())
                     && (blockUpper.isAir() || block.canPassThrough());
         else
-            return (!blockUnder.canPassThrough() || blockUnder.getId().equals(BlockID.FLOWING_WATER) || blockUnder.getId().equals(BlockID.WATERLILY) || blockUnder.getId().equals(BlockID.WATER))
+            return (!blockUnder.canPassThrough() || blockUnder instanceof BlockFlowingWater)
                     && (block.isAir() || block.canPassThrough())
                     && (blockUpper.isAir() || block.canPassThrough());
     }
@@ -4581,7 +4580,7 @@ public class Level implements Metadatable {
         return this.vibrationManager;
     }
 
-    private int ensureY(final int y) {
+    public int ensureY(final int y) {
         return Math.max(Math.min(y, getDimensionData().getMaxHeight()), getDimensionData().getMinHeight());
     }
 

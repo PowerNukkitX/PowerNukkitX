@@ -278,7 +278,6 @@ public class LevelDBProvider implements LevelProvider {
                 final List<CompoundTag> tagList = new ArrayList<>();
                 for (BlockEntity blockEntity : tiles) {
                     if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
-                        System.out.println(blockEntity.getName());
 //                        tagList.add(blockEntitySpawnable.getSpawnCompound());
                         //Adding NBT to a chunk pack does not show some block entities, and you have to send block entity packets to the player
                         level.addChunkPacket(blockEntitySpawnable.getChunkX(), blockEntitySpawnable.getChunkZ(), blockEntitySpawnable.getSpawnPacket());
