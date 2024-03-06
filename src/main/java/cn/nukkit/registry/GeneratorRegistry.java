@@ -5,11 +5,13 @@ import cn.nukkit.level.generator.Generator;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GeneratorRegistry implements IRegistry<String, Class<? extends Generator>, Class<? extends Generator>> {
     private static final Object2ObjectOpenHashMap<String, Class<? extends Generator>> REGISTRY = new Object2ObjectOpenHashMap<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+
     @Override
     public void init() {
         if (isLoad.getAndSet(true)) return;
@@ -28,6 +30,10 @@ public class GeneratorRegistry implements IRegistry<String, Class<? extends Gene
             }
         }
         return "unknown";
+    }
+
+    public Set<String> getGeneratorList() {
+        return REGISTRY.keySet();
     }
 
     @Override
