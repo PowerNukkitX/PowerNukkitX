@@ -4,13 +4,10 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.BlockEntityDataPacket;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
 
-import java.io.IOException;
-import java.nio.ByteOrder;
 import java.util.HashSet;
 
 
@@ -55,11 +52,7 @@ public class SingleFakeBlock implements FakeBlock {
             blockEntityDataPacket.x = position.getFloorX();
             blockEntityDataPacket.y = position.getFloorY();
             blockEntityDataPacket.z = position.getFloorZ();
-            try {
-                blockEntityDataPacket.namedTag = NBTIO.write(this.getBlockEntityDataAt(position, titleName), ByteOrder.LITTLE_ENDIAN, true);
-            } catch (IOException exception) {
-                exception.printStackTrace();
-            }
+            blockEntityDataPacket.namedTag = this.getBlockEntityDataAt(position, titleName);
 
             player.dataPacket(blockEntityDataPacket);
         });

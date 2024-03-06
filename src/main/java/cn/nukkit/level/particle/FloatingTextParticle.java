@@ -2,6 +2,7 @@ package cn.nukkit.level.particle;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.EntityDataMap;
+import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.item.Item;
@@ -60,6 +61,7 @@ public class FloatingTextParticle extends Particle {
         entityData.put(Entity.SCALE, 0.01f); //zero causes problems on debug builds?
         entityData.put(Entity.HEIGHT, 0.01f);
         entityData.put(Entity.WIDTH, 0.01f);
+        entityData.put(EntityDataTypes.NAMETAG_ALWAYS_SHOW, (byte) 1);
         if (!Strings.isNullOrEmpty(title)) {
             entityData.put(Entity.NAME, title);
         }

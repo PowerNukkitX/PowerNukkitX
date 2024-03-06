@@ -11,6 +11,7 @@ public class BlockEntityBarrel extends BlockEntitySpawnableContainer{
 
     public BlockEntityBarrel(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+        movable = true;
     }
 
     @Override

@@ -6,13 +6,9 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.IStructBlock;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.BlockEntityDataPacket;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
-
-import java.io.IOException;
-import java.nio.ByteOrder;
 
 
 public class FakeStructBlock extends SingleFakeBlock {
@@ -50,11 +46,7 @@ public class FakeStructBlock extends SingleFakeBlock {
             blockEntityDataPacket.x = position.getFloorX();
             blockEntityDataPacket.y = position.getFloorY();
             blockEntityDataPacket.z = position.getFloorZ();
-            try {
-                blockEntityDataPacket.namedTag = NBTIO.write(this.getBlockEntityDataAt(position, targetStart, targetEnd), ByteOrder.LITTLE_ENDIAN, true);
-            } catch (IOException exception) {
-                exception.printStackTrace();
-            }
+            blockEntityDataPacket.namedTag = this.getBlockEntityDataAt(position, targetStart, targetEnd);
 
             player.dataPacket(blockEntityDataPacket);
         });
