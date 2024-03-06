@@ -1324,9 +1324,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         //level spawn point < block spawn = self spawn
         Pair<Position, SpawnPointType> spawnPair = this.getSpawn();
-        PlayerRespawnEvent playerRespawnEvent = new PlayerRespawnEvent(this, spawnPair.left());
+        PlayerRespawnEvent playerRespawnEvent = new PlayerRespawnEvent(this, spawnPair);
         if (spawnPair.right() == SpawnPointType.BLOCK) {//block spawn
-            Block spawnBlock = playerRespawnEvent.getRespawnPosition().getLevelBlock();
+            Block spawnBlock = playerRespawnEvent.getRespawnPosition().first().getLevelBlock();
             if (spawnBlock != null && isValidRespawnBlock(spawnBlock)) {
                 // handle RESPAWN_ANCHOR state change when consume charge is true
                 if (spawnBlock.getId().equals(BlockID.RESPAWN_ANCHOR)) {
@@ -1342,14 +1342,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             } else {//block not available
                 Position defaultSpawn = this.getServer().getDefaultLevel().getSpawnLocation();
                 this.setSpawn(defaultSpawn, SpawnPointType.WORLD);
-                playerRespawnEvent.setRespawnPosition(defaultSpawn);
+                playerRespawnEvent.setRespawnPosition(Pair.of(defaultSpawn, SpawnPointType.WORLD));
                 // handle spawn point change when block spawn not available
                 sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile." + (this.getLevel().getDimension() == Level.DIMENSION_OVERWORLD ? "bed" : "respawn_anchor") + ".notValid"));
             }
         }
 
         this.server.getPluginManager().callEvent(playerRespawnEvent);
-        Position respawnPos = playerRespawnEvent.getRespawnPosition();
+        Position respawnPos = playerRespawnEvent.getRespawnPosition().first();
 
         this.sendExperience();
         this.sendExperienceLevel();
