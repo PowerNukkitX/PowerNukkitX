@@ -216,7 +216,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public long lastSkinChange;
     protected long breakingBlockTime = 0;
     protected double blockBreakProgress = 0;
-    protected @Nullable BedrockSession session;
+    protected final BedrockSession session;
     protected final InetSocketAddress rawSocketAddress;
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
     protected final int chunksPerTick;
@@ -392,9 +392,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public @NotNull BedrockSession getSession() {
-        if (this.session == null) {
-            throw new RuntimeException("Player is not connected");
-        }
         return this.session;
     }
 
@@ -3422,7 +3419,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         assert this.session != null;
         //close player network session
         this.session.close(reason);
-        this.session = null;
 
         if (this.perm != null) {
             this.perm.clearPermissions();
