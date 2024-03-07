@@ -3352,6 +3352,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!this.connected.compareAndSet(true, false) && this.closed) {
             return;
         }
+
+        if(!reason.isEmpty())
+        {
+            DisconnectPacket pk = new DisconnectPacket();
+            pk.message = reason;
+            this.getSession().sendPacketImmediately(pk);
+        }
+
         var scoreboardManager = this.getServer().getScoreboardManager();
         if (scoreboardManager != null) {
             scoreboardManager.beforePlayerQuit(this);
@@ -3374,7 +3382,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.save();
         }
         super.close();
-        this.removeAllWindows(false);
         this.removeAllWindows(true);
         this.windows.clear();
         this.hiddenPlayers.clear();
@@ -3421,6 +3428,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         assert this.session != null;
         //close player network session
+        log.debug("Closing player network session");
+        log.debug(reason);
         this.session.close(reason);
         this.session = null;
 
