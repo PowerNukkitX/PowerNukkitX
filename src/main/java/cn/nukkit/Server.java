@@ -2414,7 +2414,7 @@ public class Server {
         if (name.contains("/") || name.contains("\\")) {
             path = name;
         } else {
-            path = this.getDataPath() + "worlds/" + name + "/";
+            path = new File(this.getDataPath(), "worlds/" + name).getAbsolutePath();
         }
         Path jpath = Path.of(path);
         path = jpath.toString();

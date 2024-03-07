@@ -108,9 +108,6 @@ public class LevelDBProvider implements LevelProvider {
         if (isValid) {
             boolean data = false, log = false, current = false, lock = false, manifest = false;
             for (File file : Objects.requireNonNull(new File(path, "db").listFiles())) {
-                if (data && log && current && lock && manifest) {
-                    return false;
-                }
                 if (!data && file.getName().endsWith(".ldb")) {
                     data = true;
                 }
@@ -126,9 +123,12 @@ public class LevelDBProvider implements LevelProvider {
                 if (!manifest && file.getName().startsWith("MANIFEST-")) {
                     manifest = true;
                 }
+                if (data && log && current && lock && manifest) {
+                    return true;
+                }
             }
         }
-        return true;
+        return false;
     }
 
     public static void writeLevelDat(String pathName, DimensionData dimensionData, LevelDat levelDat) {
