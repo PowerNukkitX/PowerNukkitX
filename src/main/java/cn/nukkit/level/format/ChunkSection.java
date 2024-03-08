@@ -4,11 +4,13 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.biome.BiomeID;
+import cn.nukkit.level.format.bitarray.BitArrayVersion;
 import cn.nukkit.level.format.palette.Palette;
 import cn.nukkit.level.util.NibbleArray;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.registry.Registries;
 import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.ArrayList;
@@ -36,7 +38,8 @@ public record ChunkSection(byte y,
 
     public ChunkSection(byte sectionY) {
         this(sectionY,
-                new Palette[]{new Palette<>(BlockAir.PROPERTIES.getDefaultState()), new Palette<>(BlockAir.PROPERTIES.getDefaultState())},
+                new Palette[]{new Palette<>(BlockAir.PROPERTIES.getDefaultState(), new ReferenceArrayList<>(16), BitArrayVersion.V2),
+                        new Palette<>(BlockAir.PROPERTIES.getDefaultState(), new ReferenceArrayList<>(16), BitArrayVersion.V2)},
                 new Palette<>(BiomeID.PLAINS),
                 new NibbleArray(SIZE),
                 new NibbleArray(SIZE),
@@ -45,7 +48,7 @@ public record ChunkSection(byte y,
 
     public ChunkSection(byte sectionY, Palette<BlockState>[] blockLayer) {
         this(sectionY, blockLayer,
-                new Palette<>(1),
+                new Palette<>(BiomeID.PLAINS),
                 new NibbleArray(SIZE),
                 new NibbleArray(SIZE),
                 new AtomicLong(0));

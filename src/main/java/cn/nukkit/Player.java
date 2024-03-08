@@ -3383,22 +3383,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.windows.clear();
         this.hiddenPlayers.clear();
 
-        //save player data
-        //unload chunk for the player
-        LongIterator iterator = this.playerChunkManager.getUsedChunks().iterator();
-        while (iterator.hasNext()) {
-            long l = iterator.nextLong();
-            int chunkX = Level.getHashX(l);
-            int chunkZ = Level.getHashZ(l);
-            this.level.unregisterChunkLoader(this, chunkX, chunkZ);
-            iterator.remove();
-            for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
-                if (entity != this) {
-                    entity.getViewers().remove(getLoaderId());
-                }
-            }
-        }
-        this.playerChunkManager.getUsedChunks().clear();
+        unloadAllUsedChunk();
+
         //remove player from playerlist
         this.server.removeOnlinePlayer(this);
         //remove player from players map
@@ -3448,6 +3434,26 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.playerCursorInventory != null) {
             this.playerCursorInventory = null;
         }
+    }
+
+    public void unloadAllUsedChunk() {
+        //save player data
+        //unload chunk for the player
+        LongIterator iterator = this.playerChunkManager.getUsedChunks().iterator();
+        while (iterator.hasNext()) {
+            long l = iterator.nextLong();
+            int chunkX = Level.getHashX(l);
+            int chunkZ = Level.getHashZ(l);
+            if (level.unregisterChunkLoader(this, chunkX, chunkZ)) {
+                for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
+                    if (entity != this) {
+                        entity.despawnFrom(this);
+                    }
+                }
+                iterator.remove();
+            }
+        }
+        this.playerChunkManager.getUsedChunks().clear();
     }
 
     public void save() {
@@ -4239,9 +4245,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.positionChanged = true;
 
         this.nextChunkOrderRun = 0;
+        if (!to.getLevel().equals(from.getLevel())) {
+            unloadAllUsedChunk();
+            this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> refreshChunkView(), 10, true);
+        } else if (from.distance(to) >= this.getViewDistance() * 16) {
+            this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> refreshChunkView(), 10, true);
+        }
         this.playerChunkManager.handleTeleport();
         //refresh chunks for client
-        this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> refreshChunkView(), 10, true);
         //DummyBossBar
         this.getDummyBossBars().values().forEach(DummyBossBar::reshow);
         //Weather
