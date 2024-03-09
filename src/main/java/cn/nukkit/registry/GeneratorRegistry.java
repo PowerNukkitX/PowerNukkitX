@@ -3,6 +3,7 @@ package cn.nukkit.registry;
 import cn.nukkit.level.generator.Flat;
 import cn.nukkit.level.generator.Generator;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -38,6 +39,10 @@ public class GeneratorRegistry implements IRegistry<String, Class<? extends Gene
     @Override
     public void trim() {
         REGISTRY.trim();
+    }
+
+    public ObjectSet<String> getGeneratorList() {
+        return REGISTRY.keySet();
     }
 
     @Override
