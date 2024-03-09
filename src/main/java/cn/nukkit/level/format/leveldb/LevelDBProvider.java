@@ -108,9 +108,6 @@ public class LevelDBProvider implements LevelProvider {
         if (isValid) {
             boolean data = false, log = false, current = false, lock = false, manifest = false;
             for (File file : Objects.requireNonNull(new File(path, "db").listFiles())) {
-                if (data && log && current && lock && manifest) {
-                    return false;
-                }
                 if (!data && file.getName().endsWith(".ldb")) {
                     data = true;
                 }
@@ -126,9 +123,12 @@ public class LevelDBProvider implements LevelProvider {
                 if (!manifest && file.getName().startsWith("MANIFEST-")) {
                     manifest = true;
                 }
+                if (data && log && current && lock && manifest) {
+                    return true;
+                }
             }
         }
-        return true;
+        return false;
     }
 
     public static void writeLevelDat(String pathName, DimensionData dimensionData, LevelDat levelDat) {
@@ -278,8 +278,7 @@ public class LevelDBProvider implements LevelProvider {
                 final List<CompoundTag> tagList = new ArrayList<>();
                 for (BlockEntity blockEntity : tiles) {
                     if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
-                        System.out.println(blockEntity.getName());
-//                        tagList.add(blockEntitySpawnable.getSpawnCompound());
+                        tagList.add(blockEntitySpawnable.getSpawnCompound());
                         //Adding NBT to a chunk pack does not show some block entities, and you have to send block entity packets to the player
                         level.addChunkPacket(blockEntitySpawnable.getChunkX(), blockEntitySpawnable.getChunkZ(), blockEntitySpawnable.getSpawnPacket());
                     }

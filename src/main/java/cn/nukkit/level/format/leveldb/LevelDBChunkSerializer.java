@@ -12,6 +12,7 @@ import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.IChunkBuilder;
 import cn.nukkit.level.format.UnsafeChunk;
+import cn.nukkit.level.format.bitarray.BitArrayVersion;
 import cn.nukkit.level.format.palette.Palette;
 import cn.nukkit.level.util.LevelDBKeyUtil;
 import cn.nukkit.nbt.NBTIO;
@@ -23,6 +24,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.WriteBatch;
@@ -137,7 +139,7 @@ public class LevelDBChunkSerializer {
                                 section = new ChunkSection((byte) ySection);
                             } else {
                                 @SuppressWarnings("rawtypes") Palette[] palettes = new Palette[layers];
-                                Arrays.fill(palettes, new Palette<>(BlockAir.PROPERTIES.getDefaultState()));
+                                Arrays.fill(palettes, new Palette<>(BlockAir.PROPERTIES.getDefaultState(), new ReferenceArrayList<>(16), BitArrayVersion.V2));
                                 section = new ChunkSection((byte) ySection, palettes);
                             }
                             for (int layer = 0; layer < layers; layer++) {
@@ -168,12 +170,12 @@ public class LevelDBChunkSerializer {
             for (short height : chunk.getHeightMapArray()) {
                 heightAndBiomesBuffer.writeShortLE(height);
             }
-            Palette<Integer> biomePalette;
+            Palette<Integer> biomePalette = null;
             for (int ySection = chunk.getProvider().getDimensionData().getMinSectionY(); ySection <= chunk.getProvider().getDimensionData().getMaxSectionY(); ySection++) {
                 ChunkSection section = chunk.getSection(ySection);
                 if (section == null) continue;
+                section.biomes().writeToStorageRuntime(heightAndBiomesBuffer, Integer::intValue, biomePalette);
                 biomePalette = section.biomes();
-                biomePalette.writeToStorageRuntime(heightAndBiomesBuffer, Integer::intValue);
             }
             if (heightAndBiomesBuffer.readableBytes() > 0) {
                 writeBatch.put(LevelDBKeyUtil.DATA_3D.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData()), Utils.convertByteBuf2Array(heightAndBiomesBuffer));
@@ -196,13 +198,13 @@ public class LevelDBChunkSerializer {
                     heights[i] = heightAndBiomesBuffer.readShortLE();
                 }
                 builder.heightMap(heights);
-                Palette<Integer> biomePalette;
+                Palette<Integer> lastPalette = null;
                 var minSectionY = builder.getDimensionData().getMinSectionY();
                 for (int y = minSectionY; y <= builder.getDimensionData().getMaxSectionY(); y++) {
                     ChunkSection section = builder.getSections()[y - minSectionY];
                     if (section == null) continue;
-                    biomePalette = section.biomes();
-                    biomePalette.readFromStorageRuntime(heightAndBiomesBuffer, Integer::valueOf);
+                    section.biomes().readFromStorageRuntime(heightAndBiomesBuffer, Integer::valueOf, lastPalette);
+                    lastPalette = section.biomes();
                 }
             } else {
                 byte[] bytes2D = db.get(LevelDBKeyUtil.DATA_2D.getKey(builder.getChunkX(), builder.getChunkZ(), dimensionInfo));

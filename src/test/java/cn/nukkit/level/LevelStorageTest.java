@@ -90,7 +90,7 @@ public class LevelStorageTest {
     void testLoadChunk() {
         IChunk chunk = levelDBProvider.getChunk(0, 0);
         Assertions.assertNotNull(chunk);
-        Assertions.assertEquals("minecraft:double_plant", chunk.getBlockState(9,68,1).getIdentifier());
+        Assertions.assertEquals("minecraft:stone", chunk.getBlockState(9,68,1).getIdentifier());
     }
 
     @Order(5)
@@ -119,7 +119,7 @@ public class LevelStorageTest {
     @Test
     void testSaveAndReadChunk() {
         IChunk chunk = levelDBProvider.getChunk(0, 0);
-        Assertions.assertEquals("minecraft:double_plant", chunk.getBlockState(9,68,1).getIdentifier());
+        Assertions.assertEquals("minecraft:stone", chunk.getBlockState(9,68,1).getIdentifier());
         chunk.setBlockState(9,68,1, BlockWoodenButton.PROPERTIES.getDefaultState());
         levelDBProvider.saveChunk(0, 0, chunk);
         IChunk newChunk = levelDBProvider.getChunk(0, 0);
@@ -132,7 +132,7 @@ public class LevelStorageTest {
     @Test
     void testSaveAndReadChunkBiome() {
         IChunk chunk = levelDBProvider.getChunk(0, 0);
-        Assertions.assertEquals(BiomeID.FOREST, chunk.getBiomeId(0,68,0));
+        Assertions.assertEquals(BiomeID.SUNFLOWER_PLAINS, chunk.getBiomeId(0,68,0));
         chunk.setBiomeId(0,68,0, BiomeID.BASALT_DELTAS);
         levelDBProvider.saveChunk(0, 0, chunk);
         IChunk newChunk = levelDBProvider.getChunk(0, 0);

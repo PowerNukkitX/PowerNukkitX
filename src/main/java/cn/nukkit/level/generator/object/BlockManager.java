@@ -10,24 +10,27 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
 import cn.nukkit.network.protocol.UpdateSubChunkBlocksPacket;
 import cn.nukkit.network.protocol.types.BlockChangeEntry;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.function.Predicate;
 
 public class BlockManager {
     private final Level level;
-    private final Int2ObjectOpenHashMap<Block> caches;
-    private final Int2ObjectOpenHashMap<Block> places;
+    private final Long2ObjectOpenHashMap<Block> caches;
+    private final Long2ObjectOpenHashMap<Block> places;
 
-    private int hashXYZ(int x, int y, int z, int layer) {
-        return Level.localBlockHash(x, y, z, layer, level);
+    private long hashXYZ(int x, int y, int z, int layer) {
+        long v = layer == 1 ? 0xFFFFFFF : 0x7FFFFFF;
+        return (((long) x & v) << 37) | ((long) (level.ensureY(y) + 64) << 28) | ((long) z & (long) 0xFFFFFFF);
     }
 
     public BlockManager(Level level) {
         this.level = level;
-        this.caches = new Int2ObjectOpenHashMap<>();
-        this.places = new Int2ObjectOpenHashMap<>();
+        this.caches = new Long2ObjectOpenHashMap<>();
+        this.places = new Long2ObjectOpenHashMap<>();
     }
 
     public String getBlockIdAt(int x, int y, int z) {
@@ -52,21 +55,21 @@ public class BlockManager {
     }
 
     public void setBlockStateAt(int x, int y, int z, BlockState state) {
-        int hashXYZ = hashXYZ(x, y, z, 0);
+        long hashXYZ = hashXYZ(x, y, z, 0);
         Block block = Block.get(state, level, x, y, z, 0);
         places.put(hashXYZ, block);
         caches.put(hashXYZ, block);
     }
 
     public void setBlockStateAt(int x, int y, int z, int layer, BlockState state) {
-        int hashXYZ = hashXYZ(x, y, z, layer);
+        long hashXYZ = hashXYZ(x, y, z, layer);
         Block block = Block.get(state, level, x, y, z, layer);
         places.put(hashXYZ, block);
         caches.put(hashXYZ, block);
     }
 
     public void setBlockStateAt(int x, int y, int z, String blockId) {
-        int hashXYZ = hashXYZ(x, y, z, 0);
+        long hashXYZ = hashXYZ(x, y, z, 0);
         Block block = Block.get(blockId, level, x, y, z, 0);
         places.put(hashXYZ, block);
         caches.put(hashXYZ, block);

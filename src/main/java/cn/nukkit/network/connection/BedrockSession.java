@@ -160,10 +160,16 @@ public class BedrockSession {
     }
 
     public void flush() {
+        if (isDisconnected()) {
+            return;
+        }
         this.peer.flush();
     }
 
     public void sendPacket(DataPacket packet) {
+        if (isDisconnected()) {
+            return;
+        }
         DataPacketSendEvent ev = new DataPacketSendEvent(this.getPlayer(), packet);
         Server.getInstance().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
@@ -184,6 +190,9 @@ public class BedrockSession {
     }
 
     public void sendRawPacket(int pid, @NonNull ByteBuf buf2) {
+        if (isDisconnected()) {
+            return;
+        }
         BedrockPacketCodec bedrockPacketCodec = this.peer.channel.pipeline().get(BedrockPacketCodec.class);
         ByteBuf buf1 = ByteBufAllocator.DEFAULT.ioBuffer(4);
         BedrockPacketWrapper msg = new BedrockPacketWrapper(pid, this.subClientId, 0, null, null);
@@ -195,6 +204,9 @@ public class BedrockSession {
     }
 
     public void sendPacketImmediately(@NotNull DataPacket packet) {
+        if (isDisconnected()) {
+            return;
+        }
         DataPacketSendEvent ev = new DataPacketSendEvent(this.getPlayer(), packet);
         Server.getInstance().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
@@ -205,6 +217,9 @@ public class BedrockSession {
     }
 
     public void sendPacketSync(@NotNull DataPacket packet) {
+        if (isDisconnected()) {
+            return;
+        }
         DataPacketSendEvent ev = new DataPacketSendEvent(this.getPlayer(), packet);
         Server.getInstance().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
@@ -241,6 +256,9 @@ public class BedrockSession {
     }
 
     public void flushSendBuffer() {
+        if (isDisconnected()) {
+            return;
+        }
         this.peer.flushSendQueue();
     }
 
@@ -364,6 +382,9 @@ public class BedrockSession {
     }
 
     public long getPing() {
+        if (isDisconnected()) {
+            return -1L;
+        }
         return peer.getPing();
     }
 
@@ -487,13 +508,14 @@ public class BedrockSession {
 
     public void syncInventory() {
         var player = getPlayer();
-        player.getInventory().sendHeldItem(player);
-
-        player.getInventory().sendContents(player);
-        player.getInventory().sendArmorContents(player);
-        player.getCursorInventory().sendContents(player);
-        player.getOffhandInventory().sendContents(player);
-        player.getEnderChestInventory().sendContents(player);
+        if(player!=null){
+            player.getInventory().sendHeldItem(player);
+            player.getInventory().sendContents(player);
+            player.getInventory().sendArmorContents(player);
+            player.getCursorInventory().sendContents(player);
+            player.getOffhandInventory().sendContents(player);
+            player.getEnderChestInventory().sendContents(player);
+        }
     }
 
     public void setEnableClientCommand(boolean enable) {
