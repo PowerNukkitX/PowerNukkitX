@@ -17,6 +17,27 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.COAL_BLOCK, 16000);
         register0(ItemID.COAL, 1600);
         register0(BlockID.WOOD, 300);
+        register0(BlockID.OAK_LOG, 300);
+        register0(BlockID.DARK_OAK_LOG, 300);
+        register0(BlockID.BIRCH_LOG, 300);
+        register0(BlockID.SPRUCE_LOG, 300);
+        register0(BlockID.JUNGLE_LOG, 300);
+        register0(BlockID.ACACIA_LOG, 300);
+        register0(BlockID.MANGROVE_LOG, 300);
+        register0(BlockID.CHERRY_LOG, 300);
+        register0(BlockID.CRIMSON_STEM, 300);
+        register0(BlockID.WARPED_STEM, 300);
+
+        register0(BlockID.STRIPPED_OAK_LOG, 300);
+        register0(BlockID.STRIPPED_DARK_OAK_LOG, 300);
+        register0(BlockID.STRIPPED_BIRCH_LOG, 300);
+        register0(BlockID.STRIPPED_SPRUCE_LOG, 300);
+        register0(BlockID.STRIPPED_JUNGLE_LOG, 300);
+        register0(BlockID.STRIPPED_ACACIA_LOG, 300);
+        register0(BlockID.STRIPPED_MANGROVE_LOG, 300);
+        register0(BlockID.STRIPPED_CHERRY_LOG, 300);
+        register0(BlockID.STRIPPED_CRIMSON_STEM, 300);
+        register0(BlockID.STRIPPED_WARPED_STEM, 300);
 
         register0(BlockID.ACACIA_PLANKS, 300);
         register0(BlockID.BAMBOO_PLANKS, 300);
