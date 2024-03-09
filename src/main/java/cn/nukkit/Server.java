@@ -912,8 +912,6 @@ public class Server {
         JSFeatures.initInternalFeatures();
         this.scoreboardManager.read();
         this.pluginManager.registerInterface(JSPluginLoader.class);
-        this.pluginManager.loadPlugins(this.pluginPath);
-        this.functionManager.reload();
 
         log.info("Reloading Registries...");
         {
@@ -935,6 +933,10 @@ public class Server {
             Registries.RECIPE.reload();
             Enchantment.reload();
         }
+
+        this.pluginManager.loadPlugins(this.pluginPath);
+        this.functionManager.reload();
+
         this.enablePlugins(PluginLoadOrder.STARTUP);
         {
             Registries.POTION.trim();

@@ -104,11 +104,17 @@ public class BedrockSession {
                 .permit(SessionState.RESOURCE_PACK, SessionState.RESOURCE_PACK);
 
         cfg.configure(SessionState.ENCRYPTION)
-                .onEntry(() -> this.setPacketHandler(new HandshakePacketHandler(this)))
+                .onEntry(() -> {
+                    log.debug("Player {} enter ENCRYPTION stage", getPeer().getSocketAddress().toString());
+                    this.setPacketHandler(new HandshakePacketHandler(this));
+                })
                 .permit(SessionState.RESOURCE_PACK, SessionState.RESOURCE_PACK);
 
         cfg.configure(SessionState.RESOURCE_PACK)
-                .onEntry(() -> this.setPacketHandler(new ResourcePackHandler(this)))
+                .onEntry(() -> {
+                    log.debug("Player {} enter RESOURCE_PACK stage", getPeer().getSocketAddress().toString());
+                    this.setPacketHandler(new ResourcePackHandler(this));
+                })
                 .permit(SessionState.PRE_SPAWN, SessionState.PRE_SPAWN);
 
         cfg.configure(SessionState.PRE_SPAWN)
@@ -508,7 +514,7 @@ public class BedrockSession {
 
     public void syncInventory() {
         var player = getPlayer();
-        if(player!=null){
+        if (player != null) {
             player.getInventory().sendHeldItem(player);
             player.getInventory().sendContents(player);
             player.getInventory().sendArmorContents(player);
