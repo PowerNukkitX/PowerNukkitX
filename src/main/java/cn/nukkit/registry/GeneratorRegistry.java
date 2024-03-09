@@ -47,10 +47,6 @@ public class GeneratorRegistry implements IRegistry<String, Class<? extends Gene
         REGISTRY.trim();
     }
 
-    public ObjectSet<String> getGeneratorList() {
-        return REGISTRY.keySet();
-    }
-
     @Override
     public void reload() {
         isLoad.set(false);
