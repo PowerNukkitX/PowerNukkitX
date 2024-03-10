@@ -14,11 +14,11 @@ import javax.annotation.Nullable;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockSlab extends BlockTransparent {
-    protected final String doubleSlab;
+    protected final BlockState blockState;
 
-    public BlockSlab(BlockState blockState, String doubleSlab) {
+    public BlockSlab(BlockState blockState, String Doubleslab) {
         super(blockState);
-        this.doubleSlab = doubleSlab;
+        this.blockState = blockState;
     }
 
     public abstract String getSlabName();
@@ -67,18 +67,17 @@ public abstract class BlockSlab extends BlockTransparent {
     public boolean isSolid(BlockFace side) {
         return side == BlockFace.UP && isOnTop() || side == BlockFace.DOWN && !isOnTop();
     }
-
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         setOnTop(false);
         if (face == BlockFace.DOWN) {
             if (target instanceof BlockSlab slab && slab.isOnTop() && isSameType((BlockSlab) target)) {
 
-                this.getLevel().setBlock(target, Block.get(doubleSlab), true);
+                this.getLevel().setBlock(target, Block.get(blockState), true);
 
                 return true;
             } else if (block instanceof BlockSlab && isSameType((BlockSlab) block)) {
-                this.getLevel().setBlock(block, Block.get(doubleSlab), true);
+                this.getLevel().setBlock(block, Block.get(blockState), true);
 
                 return true;
             } else {
@@ -86,11 +85,11 @@ public abstract class BlockSlab extends BlockTransparent {
             }
         } else if (face == BlockFace.UP) {
             if (target instanceof BlockSlab slab && !slab.isOnTop() && isSameType((BlockSlab) target)) {
-                this.getLevel().setBlock(target, Block.get(doubleSlab), true);
+                this.getLevel().setBlock(target, Block.get(blockState), true);
 
                 return true;
             } else if (block instanceof BlockSlab && isSameType((BlockSlab) block)) {
-                this.getLevel().setBlock(block, Block.get(doubleSlab), true);
+                this.getLevel().setBlock(block, Block.get(blockState), true);
 
                 return true;
             }
@@ -98,7 +97,7 @@ public abstract class BlockSlab extends BlockTransparent {
         } else {
             if (block instanceof BlockSlab) {
                 if (isSameType((BlockSlab) block)) {
-                    this.getLevel().setBlock(block, Block.get(doubleSlab), true);
+                    this.getLevel().setBlock(block, Block.get(blockState), true);
 
                     return true;
                 }
