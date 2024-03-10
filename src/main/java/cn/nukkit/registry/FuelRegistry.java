@@ -1,6 +1,9 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockWoodenSlab;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -11,6 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
     private static final Object2IntOpenHashMap<String> REGISTRY = new Object2IntOpenHashMap<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+
     @Override
     public void init() {
         if (isLoad.getAndSet(true)) return;
@@ -128,6 +132,9 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.JUKEBOX, 300);
         register0(BlockID.NOTEBLOCK, 300);
         register0(BlockID.WOODEN_SLAB, 300);
+
+        register0(BlockWoodenSlab.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE.createValue(WoodType.ACACIA)).toItem(), 300);
+
         register0(BlockID.DOUBLE_WOODEN_SLAB, 300);
         register0(ItemID.BOAT, 1200);
         register0(ItemID.BLAZE_ROD, 2400);
@@ -161,9 +168,9 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
     @Override
     public Integer get(Item key) {
         String hash;
-        if (key.isBlock()) hash = key.getBlockId() + "#" + key.getDamage();
+        if (key.isBlock()) hash = String.valueOf(key.getBlockUnsafe().getRuntimeId());
         else hash = key.getId() + "#" + key.getDamage();
-        return REGISTRY.get(hash);
+        return REGISTRY.getInt(hash);
     }
 
     /**
@@ -201,11 +208,19 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
     @Override
     public void register(Item key, Integer value) throws RegisterException {
         String hash;
-        if (key.isBlock()) hash = key.getBlockId() + "#" + key.getDamage();
+        if (key.isBlock()) hash = String.valueOf(key.getBlockUnsafe().getRuntimeId());
         else hash = key.getId() + "#" + key.getDamage();
         if (REGISTRY.putIfAbsent(hash, value.intValue()) == 0) {
         } else {
             throw new RegisterException("This Fuel has already been registered with the key: " + key);
+        }
+    }
+
+    private void register0(Item key, Integer value) {
+        try {
+            register(key, value);
+        } catch (RegisterException e) {
+            throw new RuntimeException(e);
         }
     }
 
