@@ -29,8 +29,6 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.ACACIA_LOG, 300);
         register0(BlockID.MANGROVE_LOG, 300);
         register0(BlockID.CHERRY_LOG, 300);
-        register0(BlockID.CRIMSON_STEM, 300);
-        register0(BlockID.WARPED_STEM, 300);
 
         register0(BlockID.STRIPPED_OAK_LOG, 300);
         register0(BlockID.STRIPPED_DARK_OAK_LOG, 300);
@@ -40,17 +38,13 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.STRIPPED_ACACIA_LOG, 300);
         register0(BlockID.STRIPPED_MANGROVE_LOG, 300);
         register0(BlockID.STRIPPED_CHERRY_LOG, 300);
-        register0(BlockID.STRIPPED_CRIMSON_STEM, 300);
-        register0(BlockID.STRIPPED_WARPED_STEM, 300);
 
         register0(BlockID.ACACIA_PLANKS, 300);
         register0(BlockID.BAMBOO_PLANKS, 300);
         register0(BlockID.BIRCH_PLANKS, 300);
         register0(BlockID.CHERRY_PLANKS, 300);
-        register0(BlockID.CRIMSON_PLANKS, 300);
         register0(BlockID.JUNGLE_PLANKS, 300);
         register0(BlockID.OAK_PLANKS, 300);
-        register0(BlockID.WARPED_PLANKS, 300);
         register0(BlockID.MANGROVE_PLANKS, 300);
         register0(BlockID.SPRUCE_PLANKS, 300);
         register0(BlockID.DARK_OAK_PLANKS, 300);
@@ -59,10 +53,8 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.BAMBOO_FENCE, 300);
         register0(BlockID.BIRCH_FENCE, 300);
         register0(BlockID.CHERRY_FENCE, 300);
-        register0(BlockID.CRIMSON_FENCE, 300);
         register0(BlockID.JUNGLE_FENCE, 300);
         register0(BlockID.OAK_FENCE, 300);
-        register0(BlockID.WARPED_FENCE, 300);
         register0(BlockID.MANGROVE_FENCE, 300);
         register0(BlockID.SPRUCE_FENCE, 300);
         register0(BlockID.DARK_OAK_FENCE, 300);
@@ -71,10 +63,8 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.BAMBOO_FENCE_GATE, 300);
         register0(BlockID.BIRCH_FENCE_GATE, 300);
         register0(BlockID.CHERRY_FENCE_GATE, 300);
-        register0(BlockID.CRIMSON_FENCE_GATE, 300);
         register0(BlockID.JUNGLE_FENCE_GATE, 300);
         register0(BlockID.FENCE_GATE, 300);
-        register0(BlockID.WARPED_FENCE_GATE, 300);
         register0(BlockID.MANGROVE_FENCE_GATE, 300);
         register0(BlockID.SPRUCE_FENCE_GATE, 300);
         register0(BlockID.DARK_OAK_FENCE_GATE, 300);
@@ -84,23 +74,41 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.BAMBOO_STAIRS, 300);
         register0(BlockID.BIRCH_STAIRS, 300);
         register0(BlockID.CHERRY_STAIRS, 300);
-        register0(BlockID.CRIMSON_STAIRS, 300);
         register0(BlockID.JUNGLE_STAIRS, 300);
-        register0(BlockID.WARPED_STAIRS, 300);
         register0(BlockID.MANGROVE_STAIRS, 300);
         register0(BlockID.SPRUCE_STAIRS, 300);
         register0(BlockID.DARK_OAK_STAIRS, 300);
+        register0(BlockID.BAMBOO_MOSAIC_STAIRS, 300);
 
         register0(ItemID.ACACIA_SIGN, 200);
         register0(ItemID.BAMBOO_SIGN, 200);
         register0(ItemID.BIRCH_SIGN, 200);
         register0(ItemID.CHERRY_SIGN, 200);
-        register0(ItemID.CRIMSON_SIGN, 200);
         register0(ItemID.JUNGLE_SIGN, 200);
-        register0(ItemID.WARPED_SIGN, 200);
         register0(ItemID.MANGROVE_SIGN, 200);
         register0(ItemID.SPRUCE_SIGN, 200);
         register0(ItemID.DARK_OAK_SIGN, 200);
+        register0(ItemID.OAK_SIGN, 200);
+
+        register0(ItemID.ACACIA_HANGING_SIGN, 200);
+        register0(ItemID.BAMBOO_HANGING_SIGN, 200);
+        register0(ItemID.BIRCH_HANGING_SIGN, 200);
+        register0(ItemID.CHERRY_HANGING_SIGN, 200);
+        register0(ItemID.JUNGLE_HANGING_SIGN, 200);
+        register0(ItemID.MANGROVE_HANGING_SIGN, 200);
+        register0(ItemID.SPRUCE_HANGING_SIGN, 200);
+        register0(ItemID.DARK_OAK_HANGING_SIGN, 200);
+        register0(ItemID.OAK_HANGING_SIGN, 200);
+
+        register0(BlockID.WOODEN_PRESSURE_PLATE, 300);
+        register0(BlockID.SPRUCE_PRESSURE_PLATE, 300);
+        register0(BlockID.BIRCH_PRESSURE_PLATE, 300);
+        register0(BlockID.JUNGLE_PRESSURE_PLATE, 300);
+        register0(BlockID.ACACIA_PRESSURE_PLATE, 300);
+        register0(BlockID.DARK_OAK_PRESSURE_PLATE, 300);
+        register0(BlockID.MANGROVE_PRESSURE_PLATE, 300);
+        register0(BlockID.CHERRY_PRESSURE_PLATE, 300);
+        register0(BlockID.BAMBOO_PRESSURE_PLATE, 300);
 
         register0(BlockID.SAPLING, 100);
         register0(ItemID.STICK, 100);
@@ -114,7 +122,6 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(ItemID.WOODEN_HOE, 200);
         register0(ItemID.BOW, 200);
 
-        register0(BlockID.TRAPDOOR, 300);
         register0(BlockID.CRAFTING_TABLE, 300);
         register0(BlockID.BOOKSHELF, 300);
         register0(BlockID.CHEST, 300);
@@ -125,15 +132,22 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.MANGROVE_WOOD, 300);
         register0(BlockID.STRIPPED_CHERRY_WOOD, 300);
         register0(BlockID.STRIPPED_MANGROVE_WOOD, 300);
-        register0(BlockID.WOODEN_PRESSURE_PLATE, 300);
         register0(BlockID.TRAPPED_CHEST, 300);
         register0(BlockID.DAYLIGHT_DETECTOR, 300);
         register0(BlockID.DAYLIGHT_DETECTOR_INVERTED, 300);
         register0(BlockID.JUKEBOX, 300);
         register0(BlockID.NOTEBLOCK, 300);
-        register0(BlockID.WOODEN_SLAB, 300);
 
+        register0(BlockID.WOODEN_SLAB, 300);
+        register0(BlockID.BAMBOO_MOSAIC_SLAB, 300);
+        register0(BlockID.BAMBOO_SLAB, 300);
+        register0(BlockID.CHERRY_SLAB, 300);
+        register0(BlockID.MANGROVE_SLAB, 300);
         register0(BlockWoodenSlab.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE.createValue(WoodType.ACACIA)).toItem(), 300);
+        register0(BlockWoodenSlab.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE.createValue(WoodType.JUNGLE)).toItem(), 300);
+        register0(BlockWoodenSlab.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE.createValue(WoodType.SPRUCE)).toItem(), 300);
+        register0(BlockWoodenSlab.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE.createValue(WoodType.BIRCH)).toItem(), 300);
+        register0(BlockWoodenSlab.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE.createValue(WoodType.DARK_OAK)).toItem(), 300);
 
         register0(BlockID.DOUBLE_WOODEN_SLAB, 300);
         register0(ItemID.BOAT, 1200);
@@ -141,13 +155,38 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.BROWN_MUSHROOM_BLOCK, 300);
         register0(BlockID.RED_MUSHROOM_BLOCK, 300);
         register0(ItemID.FISHING_ROD, 300);
+
+
         register0(BlockID.WOODEN_BUTTON, 100);
+        register0(BlockID.SPRUCE_BUTTON, 100);
+        register0(BlockID.BIRCH_BUTTON, 100);
+        register0(BlockID.JUNGLE_BUTTON, 100);
+        register0(BlockID.ACACIA_BUTTON, 100);
+        register0(BlockID.DARK_OAK_BUTTON, 100);
+        register0(BlockID.MANGROVE_BUTTON, 100);
+        register0(BlockID.CHERRY_BUTTON, 100);
+        register0(BlockID.BAMBOO_BUTTON, 100);
+
         register0(ItemID.WOODEN_DOOR, 200);
         register0(ItemID.SPRUCE_DOOR, 200);
         register0(ItemID.BIRCH_DOOR, 200);
         register0(ItemID.JUNGLE_DOOR, 200);
         register0(ItemID.ACACIA_DOOR, 200);
         register0(ItemID.DARK_OAK_DOOR, 200);
+        register0(ItemID.BAMBOO_DOOR, 200);
+        register0(ItemID.MANGROVE_DOOR, 200);
+        register0(ItemID.CHERRY_DOOR, 200);
+
+        register0(BlockID.TRAPDOOR, 300);
+        register0(BlockID.SPRUCE_TRAPDOOR, 300);
+        register0(BlockID.BIRCH_TRAPDOOR, 300);
+        register0(BlockID.JUNGLE_TRAPDOOR, 300);
+        register0(BlockID.ACACIA_TRAPDOOR, 300);
+        register0(BlockID.DARK_OAK_TRAPDOOR, 300);
+        register0(BlockID.MANGROVE_TRAPDOOR, 300);
+        register0(BlockID.CHERRY_TRAPDOOR, 300);
+        register0(BlockID.BAMBOO_TRAPDOOR, 300);
+
         register0(ItemID.BANNER, 300);
         register0(BlockID.DEADBUSH, 100);
         register0(BlockID.DRIED_KELP_BLOCK, 4000);
