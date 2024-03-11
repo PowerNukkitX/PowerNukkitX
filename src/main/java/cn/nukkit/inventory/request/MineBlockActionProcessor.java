@@ -37,8 +37,7 @@ public class MineBlockActionProcessor implements ItemStackRequestActionProcessor
         }
 
         if (itemInHand.getDamage() != action.getPredictedDurability()) {
-            log.warn("Durability predicted by the client does not match that of the server");
-            return context.error();
+            log.warn("Durability predicted by the client does not match that of the server client {} server {} player {}", action.getPredictedDurability(), itemInHand.getDamage(), player.getName());
         }
         var itemStackResponseSlot =
                 new ItemStackResponseContainer(

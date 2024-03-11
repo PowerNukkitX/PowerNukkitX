@@ -9,21 +9,23 @@ public class BlockWoodenSlab extends BlockSlab {
     public static final BlockProperties PROPERTIES = new BlockProperties(WOODEN_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF, CommonBlockProperties.WOOD_TYPE);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    public BlockWoodenSlab() {
-        this(PROPERTIES.getDefaultState());
+    public BlockWoodenSlab(BlockState blockstate) {
+        super(blockstate, getDoubleBlockState(blockstate));
     }
 
-    public BlockWoodenSlab(BlockState blockstate) {
-        super(blockstate, DOUBLE_WOODEN_SLAB);
+    static BlockState getDoubleBlockState(BlockState blockState) {
+        WoodType propertyValue = blockState.getPropertyValue(CommonBlockProperties.WOOD_TYPE);
+        return BlockDoubleWoodenSlab.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE, propertyValue);
     }
 
     @Override
     public String getName() {
-        return (isOnTop()? "Upper " : "") + getSlabName() + " Wood Slab";
+        return (isOnTop() ? "Upper " : "") + getSlabName() + " Wood Slab";
     }
 
     @Override

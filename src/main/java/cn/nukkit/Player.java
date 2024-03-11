@@ -216,7 +216,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public long lastSkinChange;
     protected long breakingBlockTime = 0;
     protected double blockBreakProgress = 0;
-    protected @Nullable BedrockSession session;
+    protected final BedrockSession session;
     protected final InetSocketAddress rawSocketAddress;
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
     protected final int chunksPerTick;
@@ -392,9 +392,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public @NotNull BedrockSession getSession() {
-        if (this.session == null) {
-            throw new RuntimeException("Player is not connected");
-        }
         return this.session;
     }
 
@@ -692,7 +689,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         var scoreboardManager = this.getServer().getScoreboardManager();
-        if (scoreboardManager != null) {//in test environment sometimes the scoreboard manager is null
+        if (scoreboardManager != null) {//in test environment sometimes the scoreboard level is null
             scoreboardManager.onPlayerJoin(this);
         }
 
@@ -1324,9 +1321,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         //level spawn point < block spawn = self spawn
         Pair<Position, SpawnPointType> spawnPair = this.getSpawn();
-        PlayerRespawnEvent playerRespawnEvent = new PlayerRespawnEvent(this, spawnPair.left());
+        PlayerRespawnEvent playerRespawnEvent = new PlayerRespawnEvent(this, spawnPair);
         if (spawnPair.right() == SpawnPointType.BLOCK) {//block spawn
-            Block spawnBlock = playerRespawnEvent.getRespawnPosition().getLevelBlock();
+            Block spawnBlock = playerRespawnEvent.getRespawnPosition().first().getLevelBlock();
             if (spawnBlock != null && isValidRespawnBlock(spawnBlock)) {
                 // handle RESPAWN_ANCHOR state change when consume charge is true
                 if (spawnBlock.getId().equals(BlockID.RESPAWN_ANCHOR)) {
@@ -1342,14 +1339,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             } else {//block not available
                 Position defaultSpawn = this.getServer().getDefaultLevel().getSpawnLocation();
                 this.setSpawn(defaultSpawn, SpawnPointType.WORLD);
-                playerRespawnEvent.setRespawnPosition(defaultSpawn);
+                playerRespawnEvent.setRespawnPosition(Pair.of(defaultSpawn, SpawnPointType.WORLD));
                 // handle spawn point change when block spawn not available
                 sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile." + (this.getLevel().getDimension() == Level.DIMENSION_OVERWORLD ? "bed" : "respawn_anchor") + ".notValid"));
             }
         }
 
         this.server.getPluginManager().callEvent(playerRespawnEvent);
-        Position respawnPos = playerRespawnEvent.getRespawnPosition();
+        Position respawnPos = playerRespawnEvent.getRespawnPosition().first();
 
         this.sendExperience();
         this.sendExperienceLevel();
@@ -2201,16 +2198,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             playerActionPacket.entityId = this.getId();
             this.dataPacket(playerActionPacket);
         }
-    }
-
-    public void sendChunk(int x, int z, int dim, int subChunkCount, byte[] payload) {
-        LevelChunkPacket pk = new LevelChunkPacket();
-        pk.chunkX = x;
-        pk.chunkZ = z;
-        pk.dimension = dim;
-        pk.subChunkCount = subChunkCount;
-        pk.data = payload;
-        this.sendChunk(x, z, pk);
     }
 
 
@@ -3352,6 +3339,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!this.connected.compareAndSet(true, false) && this.closed) {
             return;
         }
+
+        if (!reason.isEmpty()) {
+            DisconnectPacket pk = new DisconnectPacket();
+            pk.message = reason;
+            this.getSession().sendPacketImmediately(pk);
+        }
+
         var scoreboardManager = this.getServer().getScoreboardManager();
         if (scoreboardManager != null) {
             scoreboardManager.beforePlayerQuit(this);
@@ -3374,27 +3368,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.save();
         }
         super.close();
-        this.removeAllWindows(false);
         this.removeAllWindows(true);
         this.windows.clear();
         this.hiddenPlayers.clear();
 
-        //save player data
-        //unload chunk for the player
-        LongIterator iterator = this.playerChunkManager.getUsedChunks().iterator();
-        while (iterator.hasNext()) {
-            long l = iterator.nextLong();
-            int chunkX = Level.getHashX(l);
-            int chunkZ = Level.getHashZ(l);
-            this.level.unregisterChunkLoader(this, chunkX, chunkZ);
-            iterator.remove();
-            for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
-                if (entity != this) {
-                    entity.getViewers().remove(getLoaderId());
-                }
-            }
-        }
-        this.playerChunkManager.getUsedChunks().clear();
+        unloadAllUsedChunk();
+
         //remove player from playerlist
         this.server.removeOnlinePlayer(this);
         //remove player from players map
@@ -3421,8 +3400,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         assert this.session != null;
         //close player network session
+        log.debug("Closing player network session");
+        log.debug(reason);
         this.session.close(reason);
-        this.session = null;
 
         if (this.perm != null) {
             this.perm.clearPermissions();
@@ -3443,6 +3423,26 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.playerCursorInventory != null) {
             this.playerCursorInventory = null;
         }
+    }
+
+    public void unloadAllUsedChunk() {
+        //save player data
+        //unload chunk for the player
+        LongIterator iterator = this.playerChunkManager.getUsedChunks().iterator();
+        while (iterator.hasNext()) {
+            long l = iterator.nextLong();
+            int chunkX = Level.getHashX(l);
+            int chunkZ = Level.getHashZ(l);
+            if (level.unregisterChunkLoader(this, chunkX, chunkZ)) {
+                for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
+                    if (entity != this) {
+                        entity.despawnFrom(this);
+                    }
+                }
+                iterator.remove();
+            }
+        }
+        this.playerChunkManager.getUsedChunks().clear();
     }
 
     public void save() {
@@ -4219,6 +4219,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return false;
         }
         this.setMotion(this.temporalVector.setComponents(0, 0, 0));
+
+        if (!to.getLevel().equals(from.getLevel())) {
+            unloadAllUsedChunk();
+        }
         //switch level, update pos and rotation, update aabb
         if (setPositionAndRotation(to, to.getYaw(), to.getPitch(), to.getHeadYaw())) {
             this.resetFallDistance();
@@ -4233,10 +4237,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         //state update
         this.positionChanged = true;
 
+        if (!to.getLevel().equals(from.getLevel())) {
+            this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, this::refreshChunkView, 10, true);
+        } else if (from.distance(to) >= this.getViewDistance() * 16) {
+            this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, this::refreshChunkView, 10, true);
+        }
         this.nextChunkOrderRun = 0;
         this.playerChunkManager.handleTeleport();
         //refresh chunks for client
-        this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> refreshChunkView(), 10, true);
         //DummyBossBar
         this.getDummyBossBars().values().forEach(DummyBossBar::reshow);
         //Weather

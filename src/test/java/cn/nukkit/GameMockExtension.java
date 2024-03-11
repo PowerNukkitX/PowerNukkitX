@@ -115,6 +115,7 @@ public class GameMockExtension extends MockitoExtension {
         pluginManager = new PluginManager(server, simpleCommandMap);
         pluginManager.registerInterface(JavaPluginLoader.class);
         when(server.getPluginManager()).thenReturn(pluginManager);
+        pluginManager.loadInternalPlugin();
 
         freezableArrayManager = new FreezableArrayManager(
                 server.getConfig("memory-compression.enable", true),

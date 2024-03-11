@@ -6,6 +6,7 @@ import cn.nukkit.block.property.enums.MinecraftVerticalHalf;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -14,11 +15,16 @@ import javax.annotation.Nullable;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockSlab extends BlockTransparent {
-    protected final String doubleSlab;
+    protected final BlockState doubleSlab;
+
+    public BlockSlab(BlockState blockState, BlockState doubleSlab) {
+        super(blockState);
+        this.doubleSlab = doubleSlab;
+    }
 
     public BlockSlab(BlockState blockState, String doubleSlab) {
         super(blockState);
-        this.doubleSlab = doubleSlab;
+        this.doubleSlab = Registries.BLOCK.get(doubleSlab).getBlockState();
     }
 
     public abstract String getSlabName();

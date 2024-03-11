@@ -11,6 +11,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
 import cn.nukkit.network.protocol.types.itemstack.request.action.CraftRecipeOptionalAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
+import cn.nukkit.level.Sound;
 import io.netty.util.internal.StringUtil;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectIntMutablePair;
@@ -103,6 +104,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
                 }
             } else {
                 if (!enchantedBook && (!Objects.equals(result.getId(), sacrifice.getId()) || result.getMaxDurability() == -1)) {//Anvil - ench
+                    player.getLevel().addSound(player, Sound.RANDOM_ANVIL_USE, 1, 1);
                     return null;
                 }
 
@@ -204,6 +206,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
 
         //Anvil - rename
         if (StringUtil.isNullOrEmpty(filterString)) {
+            player.getLevel().addSound(player, Sound.RANDOM_ANVIL_USE, 1, 1);
             if (target.hasCustomName()) {
                 costHelper = 1;
                 extraCost += costHelper;

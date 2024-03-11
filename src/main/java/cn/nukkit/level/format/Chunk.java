@@ -412,7 +412,7 @@ public class Chunk implements IChunk {
                             nextDecrease += 1; // skylight value decreases by one for each block under a block
                             // that diffuses skylight. The block itself has a value of 15 (if it's a top-most block)
                         } else {
-                            nextDecrease -= block.getLightFilter(); // blocks under a light filtering block will have a skylight value
+                            nextDecrease += block.getLightFilter(); // blocks under a light filtering block will have a skylight value
                             // decreased by the lightFilter value of that block. The block itself
                             // has a value of 15 (if it's a top-most block)
                         }
@@ -763,6 +763,14 @@ public class Chunk implements IChunk {
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    @Override
+    public String toString() {
+        return "Chunk{" +
+                "x=" + x +
+                ", z=" + z +
+                '}';
     }
 
     public static class Builder implements IChunkBuilder {

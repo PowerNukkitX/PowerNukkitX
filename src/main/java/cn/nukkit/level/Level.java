@@ -8,7 +8,6 @@ import cn.nukkit.block.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityAsyncPrepare;
 import cn.nukkit.entity.EntityID;
@@ -67,10 +66,10 @@ import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
-import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.BlockUpdateScheduler;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.BlockUpdateEntry;
+import cn.nukkit.utils.GameLoop;
 import cn.nukkit.utils.Hash;
 import cn.nukkit.utils.LevelException;
 import cn.nukkit.utils.RedstoneComponent;
@@ -295,6 +294,10 @@ public class Level implements Metadatable {
     private Iterator<cn.nukkit.utils.collection.nb.LongObjectEntry<Long>> lastUsingUnloadingIter;
     private final int dimensionCount;
 
+    ///sub tick system
+    private final Thread subTickThread;
+    private final GameLoop gameLoop;
+
     public Level(Server server, String name, String path, int dimSum, Class<? extends LevelProvider> provider, LevelConfig.GeneratorConfig generatorConfig) {
         this.levelId = levelIdCounter++;
         this.dimensionCount = dimSum;
@@ -302,6 +305,9 @@ public class Level implements Metadatable {
         this.server = server;
         this.autoSave = server.getAutoSave();
         this.generatorClass = Registries.GENERATOR.get(generatorConfig.name());
+        if (generatorClass == null) {
+            throw new NullPointerException("Cant find generator for " + generatorConfig.name() + " The level " + name + " cant be load!");
+        }
         try {
             this.generator = generatorClass.getConstructor(DimensionData.class, Map.class).newInstance(
                     generatorConfig.dimensionData(),
@@ -350,6 +356,23 @@ public class Level implements Metadatable {
         this.tickRate = 1;
 
         this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
+        final String levelName = getName();
+        gameLoop = GameLoop.builder()
+                .onTick(this::subTick)
+                .onStop(() -> log.info(levelName + " SubTick is closed!"))
+                .loopCountPerSec(20)
+                .build();
+        this.subTickThread = new Thread() {
+            {
+                setName("Level " + Level.this.getName() + " SubTick Thread");
+            }
+
+            @Override
+            public void run() {
+                gameLoop.startLoop();
+            }
+        };
+        this.subTickThread.start();
     }
 
     public static boolean canRandomTick(String blockId) {
@@ -510,6 +533,7 @@ public class Level implements Metadatable {
     }
 
     public void close() {
+        this.gameLoop.stop();
         LevelProvider levelProvider = this.provider;
         if (levelProvider != null) {
             if (this.getAutoSave()) {
@@ -517,7 +541,6 @@ public class Level implements Metadatable {
             }
             levelProvider.close();
         }
-
         this.provider = null;
         this.blockMetadata = null;
         this.server.getLevels().remove(this.levelId);
@@ -1073,7 +1096,7 @@ public class Level implements Metadatable {
             }
 
             var b = this.getBlock(vector.getFloorX(), vector.getFloorY(), vector.getFloorZ());
-            if (b.getProperties() != BlockTallgrass.PROPERTIES && b.getProperties() != BlockWater.PROPERTIES)
+            if (b.getProperties() != BlockTallgrass.PROPERTIES && !(b instanceof BlockFlowingWater))
                 vector.y += 1;
             CompoundTag nbt = new CompoundTag()
                     .putList("Pos", new ListTag<DoubleTag>().add(new DoubleTag(vector.x))
@@ -3293,35 +3316,29 @@ public class Level implements Metadatable {
         this.chunkSendQueue.remove(index);
     }
 
-    private final ArrayList<CompletableFuture<?>> allChunkRequestTask = new ArrayList<>(
-            Server.getInstance().getConfig("chunk-sending.per-tick", 8) * Server.getInstance().getMaxPlayers()
-    );
+    public void subTick(GameLoop currentTick) {
+        processChunkRequest();
+    }
 
     private void processChunkRequest() {
         for (long index : this.chunkSendQueue.keySet()) {
             int x = getHashX(index);
             int z = getHashZ(index);
-            AsyncTask task = this.requireProvider().requestChunkTask(x, z);
-            if (task != null) {
-                allChunkRequestTask.add(CompletableFuture.runAsync(task, server.getComputeThreadPool()));
+            DataPacket lcp = this.requireProvider().requestChunkPacket(x, z);
+            Int2ObjectNonBlockingMap<Player> players = this.chunkSendQueue.get(index);
+            if (players != null) {
+                for (Player player : Objects.requireNonNull(players).values()) {
+                    if (player.isConnected()) {
+                        NetworkChunkPublisherUpdatePacket ncp = new NetworkChunkPublisherUpdatePacket();
+                        ncp.position = new BlockVector3(x << 4, 100, z << 4);
+                        ncp.radius = player.getViewDistance() << 4;
+                        player.dataPacket(ncp);
+                        player.sendChunk(x, z, lcp);
+                    }
+                }
+                this.chunkSendQueue.remove(index);
             }
         }
-        if (!allChunkRequestTask.isEmpty()) {
-            CompletableFuture.allOf(allChunkRequestTask.toArray(CompletableFuture<?>[]::new)).join();
-            allChunkRequestTask.clear();
-        }
-    }
-
-    public void chunkRequestCallback(long timestamp, int x, int z, int subChunkCount, byte[] payload) {
-        long index = Level.chunkHash(x, z);
-
-        for (Player player : this.chunkSendQueue.get(index).values()) {
-            if (player.isConnected() && player.getUsedChunks().contains(index)) {
-                player.sendChunk(x, z, getDimension(), subChunkCount, payload);
-            }
-        }
-
-        this.chunkSendQueue.remove(index);
     }
 
     public void removeEntity(Entity entity) {
@@ -3442,7 +3459,7 @@ public class Level implements Metadatable {
                 chunk = this.forceLoadChunk(index, chunkX, chunkZ, create);
             }
             return chunk;
-        }, Server.getInstance().getScheduler().getAsyncPool());
+        }, Server.getInstance().getScheduler().getAsyncTaskThreadPool());
     }
 
 
@@ -3607,7 +3624,7 @@ public class Level implements Metadatable {
         int minY = isOverWorld() ? -64 : 0;
 
         for (int horizontalOffset = 0; horizontalOffset <= horizontalMaxOffset; horizontalOffset++) {
-            for (int y = maxY; y > minY; y--) {
+            for (int y = maxY; y >= minY; y--) {
                 Position pos = Position.fromObject(spawn, this);
                 pos.setY(y);
                 Position newSpawn;
@@ -3640,7 +3657,7 @@ public class Level implements Metadatable {
                     && (block.isAir() || block.canPassThrough())
                     && (blockUpper.isAir() || block.canPassThrough());
         else
-            return (!blockUnder.canPassThrough() || blockUnder.getId().equals(BlockID.FLOWING_WATER) || blockUnder.getId().equals(BlockID.WATERLILY) || blockUnder.getId().equals(BlockID.WATER))
+            return (!blockUnder.canPassThrough() || blockUnder instanceof BlockFlowingWater)
                     && (block.isAir() || block.canPassThrough())
                     && (blockUpper.isAir() || block.canPassThrough());
     }
@@ -3727,6 +3744,14 @@ public class Level implements Metadatable {
         long index = Level.chunkHash(x, z);
         if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
             this.generator.asyncGenerate(chunk, (c) -> chunkGenerationQueue.remove(c.getChunk().getIndex()));//async
+        }
+    }
+
+    public void syncGenerateChunk(int x, int z) {
+        IChunk chunk = this.getChunk(x, z, true);
+        long index = Level.chunkHash(x, z);
+        if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
+            this.generator.syncGenerate(chunk);
         }
     }
 
@@ -4581,7 +4606,7 @@ public class Level implements Metadatable {
         return this.vibrationManager;
     }
 
-    private int ensureY(final int y) {
+    public int ensureY(final int y) {
         return Math.max(Math.min(y, getDimensionData().getMaxHeight()), getDimensionData().getMinHeight());
     }
 

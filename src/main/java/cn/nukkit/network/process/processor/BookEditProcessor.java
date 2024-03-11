@@ -22,8 +22,10 @@ public class BookEditProcessor extends DataPacketProcessor<BookEditPacket> {
             return;
         }
 
-        if (pk.text == null || pk.text.length() > 512) {
-            return;
+        if(pk.action != BookEditPacket.Action.SIGN_BOOK){
+            if (pk.text == null || pk.text.length() > 512) {
+                return;
+            }
         }
 
         Item newBook = oldBook.clone();

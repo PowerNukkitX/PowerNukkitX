@@ -447,7 +447,7 @@ public class EntityBoat extends EntityVehicle {
         if (entity.riding == this) {
             updatePassengers(true);
 
-            entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION, 1);
+            entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION, true);
             entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION_DEGREES, 90);
             entity.setDataProperty(SEAT_HAS_ROTATION, this.passengers.indexOf(entity) == 1 ? -90 : 1);
             entity.setDataProperty(SEAT_ROTATION_OFFSET_DEGREES, -90);
@@ -467,7 +467,7 @@ public class EntityBoat extends EntityVehicle {
         boolean r = super.dismountEntity(entity, sendLinks);
 
         updatePassengers();
-        entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION, 0);
+        entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION, false);
         if (entity instanceof EntityHuman) {
             ignoreCollision.add(entity);
         }

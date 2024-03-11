@@ -225,6 +225,9 @@ public class Network {
 
     public void process() {
         for (BedrockSession session : this.sessionMap.values()) {
+            if (session.isDisconnected()) {
+                return;
+            }
             session.tick();
         }
     }

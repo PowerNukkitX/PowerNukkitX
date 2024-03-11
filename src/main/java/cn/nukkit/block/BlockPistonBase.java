@@ -548,7 +548,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
 
         protected boolean addBranchingBlocks(Block block) {
             for (BlockFace face : BlockFace.values()) {
-                if (face.getAxis() != this.moveDirection.getAxis() && !this.addBlockLine(block.getSide(face), block, false))
+                if (face.getAxis() == this.moveDirection.getAxis() && !this.addBlockLine(block.getSide(face), block, false))
                     return false;
             }
             return true;

@@ -7,6 +7,7 @@ import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.request.NetworkMapping;
+import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
@@ -39,7 +40,7 @@ public class FakeInventory extends BaseInventory {
         this.title = title;
         this.fakeInventoryType = fakeInventoryType;
         this.fakeBlock = fakeInventoryType.fakeBlock;
-        this.defaultItemHandler = (a, b, c, d) -> {
+        this.defaultItemHandler = (a, b, c, d, e) -> {
         };
 
         switch (fakeInventoryType) {
@@ -162,10 +163,10 @@ public class FakeInventory extends BaseInventory {
             var destItem = destinationI.getItem(destinationSlot);
             if (sourceI.equals(this)) {
                 ItemHandler handler = this.handlers.getOrDefault(sourceSlot, this.defaultItemHandler);
-                handler.handle(this, sourceSlot, sourItem, event);
+                handler.handle(this, sourceSlot, sourItem, Item.AIR, event);
             } else if (destinationI.equals(this)) {
                 ItemHandler handler = this.handlers.getOrDefault(destinationSlot, this.defaultItemHandler);
-                handler.handle(this, destinationSlot, destItem, event);
+                handler.handle(this, destinationSlot, destItem, sourItem, event);
             }
         }
     }

@@ -50,27 +50,25 @@ public abstract class Generator implements BlockID {
     }
 
     public final IChunk syncGenerate(IChunk chunk) {
-        return this.syncGenerate(chunk, end);
+        return this.syncGenerate(chunk, end.name());
     }
 
-    public final IChunk syncGenerate(IChunk chunk, GenerateStage to) {
+    public final IChunk syncGenerate(IChunk chunk, String to) {
         final ChunkGenerateContext context = new ChunkGenerateContext(this, level, chunk);
         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
             start.apply(context);
         }, start.getExecutor());
-        GenerateStage now;
-        while ((now = start.getNextStage()) != null) {
+        GenerateStage now = start;
+        while ((now = now.getNextStage()) != null) {
             final GenerateStage finalNow = now;
-            if (finalNow == to || finalNow.name().equals(to.name())) {
+            if (finalNow.name().equals(to)) {
                 future = future.thenRunAsync(() -> finalNow.apply(context), now.getExecutor());
                 break;
             }
             future = future.thenRunAsync(() -> finalNow.getNextStage().apply(context), finalNow.getExecutor());
         }
         future.join();
-        IChunk c = context.getChunk();
-        level.setChunk(c.getX(), c.getZ(), c);
-        return c;
+        return context.getChunk();
     }
 
     public final void asyncGenerate(IChunk chunk) {
