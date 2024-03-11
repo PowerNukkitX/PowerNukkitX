@@ -69,6 +69,7 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.BlockUpdateScheduler;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.BlockUpdateEntry;
+import cn.nukkit.utils.GameLoop;
 import cn.nukkit.utils.Hash;
 import cn.nukkit.utils.LevelException;
 import cn.nukkit.utils.RedstoneComponent;
@@ -293,6 +294,10 @@ public class Level implements Metadatable {
     private Iterator<cn.nukkit.utils.collection.nb.LongObjectEntry<Long>> lastUsingUnloadingIter;
     private final int dimensionCount;
 
+    ///sub tick system
+    private final Thread subTickThread;
+    private final GameLoop gameLoop;
+
     public Level(Server server, String name, String path, int dimSum, Class<? extends LevelProvider> provider, LevelConfig.GeneratorConfig generatorConfig) {
         this.levelId = levelIdCounter++;
         this.dimensionCount = dimSum;
@@ -351,6 +356,23 @@ public class Level implements Metadatable {
         this.tickRate = 1;
 
         this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
+        final String levelName = getName();
+        gameLoop = GameLoop.builder()
+                .onTick(this::subTick)
+                .onStop(() -> log.info(levelName + " SubTick is closed!"))
+                .loopCountPerSec(20)
+                .build();
+        this.subTickThread = new Thread() {
+            {
+                setName("Level " + Level.this.getName() + " SubTick Thread");
+            }
+
+            @Override
+            public void run() {
+                gameLoop.startLoop();
+            }
+        };
+        this.subTickThread.start();
     }
 
     public static boolean canRandomTick(String blockId) {
@@ -511,6 +533,7 @@ public class Level implements Metadatable {
     }
 
     public void close() {
+        this.gameLoop.stop();
         LevelProvider levelProvider = this.provider;
         if (levelProvider != null) {
             if (this.getAutoSave()) {
@@ -518,7 +541,6 @@ public class Level implements Metadatable {
             }
             levelProvider.close();
         }
-
         this.provider = null;
         this.blockMetadata = null;
         this.server.getLevels().remove(this.levelId);
@@ -3294,27 +3316,29 @@ public class Level implements Metadatable {
         this.chunkSendQueue.remove(index);
     }
 
+    public void subTick(GameLoop currentTick) {
+        processChunkRequest();
+    }
+
     private void processChunkRequest() {
-        Server.getInstance().getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
-            for (long index : this.chunkSendQueue.keySet()) {
-                int x = getHashX(index);
-                int z = getHashZ(index);
-                DataPacket lcp = this.requireProvider().requestChunkPacket(x, z);
-                Int2ObjectNonBlockingMap<Player> players = this.chunkSendQueue.get(index);
-                if (players != null) {
-                    for (Player player : players.values()) {
-                        if (player.isConnected()) {
-                            NetworkChunkPublisherUpdatePacket ncp = new NetworkChunkPublisherUpdatePacket();
-                            ncp.position = player.asBlockVector3();
-                            ncp.radius = player.getViewDistance() << 4;
-                            player.dataPacket(ncp);
-                            player.sendChunk(x, z, lcp);
-                        }
+        for (long index : this.chunkSendQueue.keySet()) {
+            int x = getHashX(index);
+            int z = getHashZ(index);
+            DataPacket lcp = this.requireProvider().requestChunkPacket(x, z);
+            Int2ObjectNonBlockingMap<Player> players = this.chunkSendQueue.get(index);
+            if (players != null) {
+                for (Player player : Objects.requireNonNull(players).values()) {
+                    if (player.isConnected()) {
+                        NetworkChunkPublisherUpdatePacket ncp = new NetworkChunkPublisherUpdatePacket();
+                        ncp.position = new BlockVector3(x << 4, 100, z << 4);
+                        ncp.radius = player.getViewDistance() << 4;
+                        player.dataPacket(ncp);
+                        player.sendChunk(x, z, lcp);
                     }
-                    this.chunkSendQueue.remove(index);
                 }
+                this.chunkSendQueue.remove(index);
             }
-        }, true);
+        }
     }
 
     public void removeEntity(Entity entity) {
