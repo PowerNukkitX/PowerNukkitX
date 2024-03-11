@@ -52,7 +52,7 @@ public class BlockKelp extends BlockFlowable {
         if ((down.getId().equals(KELP) || down.isSolid()) && !down.getId().equals(MAGMA) && !down.getId().equals(ICE) && !down.getId().equals(SOUL_SAND) &&
                 (layer1Block instanceof BlockFlowingWater flowingWater && flowingWater.isSourceOrFlowingDown())
         ) {
-            if (((BlockWater) layer1Block).isFlowingDown()) {
+            if (((BlockFlowingWater) layer1Block).isFlowingDown()) {
                 this.getLevel().setBlock(this, 1, get(FLOWING_WATER), true, false);
             }
 
@@ -76,7 +76,7 @@ public class BlockKelp extends BlockFlowable {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block blockLayer1 = getLevelBlockAtLayer(1);
             if (!(blockLayer1 instanceof BlockFrostedIce) &&
-                    (!(blockLayer1 instanceof BlockFlowingWater) || !((BlockWater) blockLayer1).isSourceOrFlowingDown())) {
+                    (!(blockLayer1 instanceof BlockFlowingWater) || !((BlockFlowingWater) blockLayer1).isSourceOrFlowingDown())) {
                 this.getLevel().useBreakOn(this);
                 return type;
             }

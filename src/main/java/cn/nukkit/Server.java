@@ -34,6 +34,7 @@ import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.LevelProviderManager;
 import cn.nukkit.level.format.leveldb.LevelDBProvider;
+import cn.nukkit.level.generator.terra.PNXPlatform;
 import cn.nukkit.level.tickingarea.manager.SimpleTickingAreaManager;
 import cn.nukkit.level.tickingarea.manager.TickingAreaManager;
 import cn.nukkit.level.tickingarea.storage.JSONTickingAreaStorage;
@@ -720,6 +721,10 @@ public class Server {
             Attribute.init();
             BlockComposter.init();
             DispenseBehaviorRegister.init();
+        }
+
+        if (useTerra) {//load terra
+            PNXPlatform instance = PNXPlatform.getInstance();
         }
 
         freezableArrayManager = new FreezableArrayManager(
@@ -1966,7 +1971,12 @@ public class Server {
 
     public CompoundTag getOfflinePlayerData(String name, boolean create) {
         Optional<UUID> uuid = lookupName(name);
-        return getOfflinePlayerDataInternal(uuid.orElse(null), create);
+        if (uuid.isEmpty()) {
+            log.warn("Invalid uuid in name lookup database detected! Removing");
+            playerDataDB.delete(name.getBytes(StandardCharsets.UTF_8));
+            return null;
+        }
+        return getOfflinePlayerDataInternal(uuid.get(), create);
     }
 
     public boolean hasOfflinePlayerData(UUID uuid) {

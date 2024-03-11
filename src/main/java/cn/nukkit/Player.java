@@ -689,7 +689,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         var scoreboardManager = this.getServer().getScoreboardManager();
-        if (scoreboardManager != null) {//in test environment sometimes the scoreboard manager is null
+        if (scoreboardManager != null) {//in test environment sometimes the scoreboard level is null
             scoreboardManager.onPlayerJoin(this);
         }
 
@@ -2200,16 +2200,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-    public void sendChunk(int x, int z, int dim, int subChunkCount, byte[] payload) {
-        LevelChunkPacket pk = new LevelChunkPacket();
-        pk.chunkX = x;
-        pk.chunkZ = z;
-        pk.dimension = dim;
-        pk.subChunkCount = subChunkCount;
-        pk.data = payload;
-        this.sendChunk(x, z, pk);
-    }
-
 
     public void updateTrackingPositions() {
         updateTrackingPositions(false);
@@ -3350,8 +3340,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return;
         }
 
-        if(!reason.isEmpty())
-        {
+        if (!reason.isEmpty()) {
             DisconnectPacket pk = new DisconnectPacket();
             pk.message = reason;
             this.getSession().sendPacketImmediately(pk);
@@ -4230,6 +4219,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return false;
         }
         this.setMotion(this.temporalVector.setComponents(0, 0, 0));
+
+        if (!to.getLevel().equals(from.getLevel())) {
+            unloadAllUsedChunk();
+        }
         //switch level, update pos and rotation, update aabb
         if (setPositionAndRotation(to, to.getYaw(), to.getPitch(), to.getHeadYaw())) {
             this.resetFallDistance();
@@ -4244,13 +4237,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         //state update
         this.positionChanged = true;
 
-        this.nextChunkOrderRun = 0;
         if (!to.getLevel().equals(from.getLevel())) {
-            unloadAllUsedChunk();
-            this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> refreshChunkView(), 10, true);
+            this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, this::refreshChunkView, 10, true);
         } else if (from.distance(to) >= this.getViewDistance() * 16) {
-            this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> refreshChunkView(), 10, true);
+            this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, this::refreshChunkView, 10, true);
         }
+        this.nextChunkOrderRun = 0;
         this.playerChunkManager.handleTeleport();
         //refresh chunks for client
         //DummyBossBar

@@ -17,8 +17,9 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.LevelChunkPacket;
 import cn.nukkit.network.protocol.types.GameType;
-import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.SemVersion;
 import cn.nukkit.utils.Utils;
@@ -49,7 +50,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.BiConsumer;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -221,6 +222,7 @@ public class LevelDBProvider implements LevelProvider {
         if (this.chunks.containsKey(index) && !this.chunks.get(index).equals(chunk)) {
             this.unloadChunk(chunkX, chunkZ, false);
         }
+        this.lastChunk.remove();
         this.chunks.put(index, chunk);
     }
 
@@ -230,22 +232,13 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
-    public AsyncTask requestChunkTask(int X, int Z) {
+    public DataPacket requestChunkPacket(int X, int Z) {
         IChunk chunk = this.getChunk(X, Z, false);
         if (chunk == null) {
             throw new ChunkException("Invalid Chunk Set");
         }
-        long timestamp = chunk.getChanges();
-        BiConsumer<byte[], Integer> callback = (stream, subchunks) -> this.getLevel().chunkRequestCallback(timestamp, X, Z, subchunks, stream);
-        return new AsyncTask() {
-            @Override
-            public void onRun() {
-                serializeToNetwork(chunk, callback);
-            }
-        };
-    }
-
-    public final void serializeToNetwork(IChunk chunk, BiConsumer<byte[], Integer> callback) {
+        AtomicReference<byte[]> data = new AtomicReference<>();
+        AtomicReference<Integer> subChunkCountRef = new AtomicReference<>();
         chunk.batchProcess(unsafeChunk -> {
             final var byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
             try {
@@ -288,13 +281,21 @@ public class LevelDBProvider implements LevelProvider {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                byte[] data = Utils.convertByteBuf2Array(byteBuf);
-                callback.accept(data, total);
+                data.set(Utils.convertByteBuf2Array(byteBuf));
+                subChunkCountRef.set(subChunkCount);
             } finally {
                 byteBuf.release();
             }
         });
+        LevelChunkPacket pk = new LevelChunkPacket();
+        pk.chunkX = X;
+        pk.chunkZ = Z;
+        pk.dimension = getDimensionData().getDimensionId();
+        pk.subChunkCount = subChunkCountRef.get();
+        pk.data = data.get();
+        return pk;
     }
+
 
     @Override
     public String getPath() {

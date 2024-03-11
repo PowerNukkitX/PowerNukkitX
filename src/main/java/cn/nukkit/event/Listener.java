@@ -10,7 +10,7 @@ package cn.nukkit.event;
  * If a plugin need to listen events, there must be a class implement this interface. This class is called a <b>listener class</b>.
  * Methods with specified parameters should be written in order to listen events. This method is called a <b>handler</b>.
  * One listener class could contain many different handlers.
- * After implemented the listener class, plugin should register it in plugin manager.</p>
+ * After implemented the listener class, plugin should register it in plugin level.</p>
  *
  * <p>事件监听器被注册后，Nukkit会在需要监听的事件发生时，使用反射来调用监听类中对应的处理器。<br>
  * After registered, Nukkit will call the handler in the listener classes by reflection when a event happens.</p>

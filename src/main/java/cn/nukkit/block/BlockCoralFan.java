@@ -116,7 +116,7 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
         }
 
         if (hasWater && layer1.blockstate.specialValue() == 8) {
-            this.getLevel().setBlock(this, 1, new BlockWater(), true, false);
+            this.getLevel().setBlock(this, 1, new BlockFlowingWater(), true, false);
         }
 
         if (!target.isSolid() || target.getId().equals(MAGMA) || target.getId().equals(SOUL_SAND)) {

@@ -5,7 +5,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.player.PlayerChunkRequestEvent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.network.protocol.NetworkChunkPublisherUpdatePacket;
 import com.google.common.collect.Sets;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayFIFOQueue;
@@ -70,21 +69,18 @@ public final class PlayerChunkManager {
             removeOutOfRadiusChunks();
             updateChunkSendingQueue();
         }
-        loadQueuedChunks(trySendChunkCountPerTick);
+        loadQueuedChunks(trySendChunkCountPerTick, false);
         sendChunk();
     }
 
     public void handleTeleport() {
         if (!player.isConnected()) return;
-        long currentLoaderChunkPosHashed;
         BlockVector3 floor = player.asBlockVector3();
-        if ((currentLoaderChunkPosHashed = Level.chunkHash(floor.x >> 4, floor.z >> 4)) != lastLoaderChunkPosHashed) {
-            lastLoaderChunkPosHashed = currentLoaderChunkPosHashed;
-            updateInRadiusChunks(4, floor);
-            removeOutOfRadiusChunks();
-            updateChunkSendingQueue();
-        }
-        loadQueuedChunks(Integer.MAX_VALUE);
+        inRadiusChunks.clear();
+        inRadiusChunks.add(Level.chunkHash(floor.x >> 4, floor.z >> 4));
+        removeOutOfRadiusChunks();
+        updateChunkSendingQueue();
+        loadQueuedChunks(Integer.MAX_VALUE, true);
         sendChunk();
     }
 
@@ -138,7 +134,7 @@ public final class PlayerChunkManager {
         difference.stream().sorted(chunkDistanceComparator).forEachOrdered(v -> chunkSendQueue.enqueue(v.longValue()));
     }
 
-    private void loadQueuedChunks(int trySendChunkCountPerTick) {
+    private void loadQueuedChunks(int trySendChunkCountPerTick, boolean force) {
         if (chunkSendQueue.isEmpty()) return;
         int triedSendChunkCount = 0;
         do {
@@ -151,7 +147,7 @@ public final class PlayerChunkManager {
                 try {
                     IChunk chunk = chunkTask.get(10, TimeUnit.MICROSECONDS);
                     if (chunk == null || !chunk.getChunkState().canSend()) {
-                        player.level.generateChunk(chunkX, chunkZ);
+                        player.level.generateChunk(chunkX, chunkZ, force);
                         chunkSendQueue.enqueue(chunkHash);
                         continue;
                     }
@@ -170,10 +166,6 @@ public final class PlayerChunkManager {
 
     private void sendChunk() {
         if (!chunkReadyToSend.isEmpty()) {
-            NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
-            packet.position = player.asBlockVector3();
-            packet.radius = player.getViewDistance() << 4;
-            player.dataPacket(packet);
             for (var e : chunkReadyToSend.long2ObjectEntrySet()) {
                 int chunkX = Level.getHashX(e.getLongKey());
                 int chunkZ = Level.getHashZ(e.getLongKey());

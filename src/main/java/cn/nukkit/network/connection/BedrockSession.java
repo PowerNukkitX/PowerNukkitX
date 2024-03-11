@@ -487,13 +487,16 @@ public class BedrockSession {
         AvailableCommandsPacket pk = new AvailableCommandsPacket();
         Map<String, CommandDataVersions> data = new HashMap<>();
         int count = 0;
-        for (Command command : Server.getInstance().getCommandMap().getCommands().values()) {
-            if (!command.testPermissionSilent(this.getPlayer()) || !command.isRegistered() || command.isServerSideOnly()) {
-                continue;
+        final Map<String, Command> commands = Server.getInstance().getCommandMap().getCommands();
+        synchronized (commands) {
+            for (Command command : commands.values()) {
+                if (!command.testPermissionSilent(this.getPlayer()) || !command.isRegistered() || command.isServerSideOnly()) {
+                    continue;
+                }
+                ++count;
+                CommandDataVersions data0 = command.generateCustomCommandData(this.getPlayer());
+                data.put(command.getName(), data0);
             }
-            ++count;
-            CommandDataVersions data0 = command.generateCustomCommandData(this.getPlayer());
-            data.put(command.getName(), data0);
         }
         if (count > 0) {
             //TODO: structure checking

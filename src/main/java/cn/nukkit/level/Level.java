@@ -66,7 +66,6 @@ import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
-import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.BlockUpdateScheduler;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.BlockUpdateEntry;
@@ -301,6 +300,9 @@ public class Level implements Metadatable {
         this.server = server;
         this.autoSave = server.getAutoSave();
         this.generatorClass = Registries.GENERATOR.get(generatorConfig.name());
+        if (generatorClass == null) {
+            throw new NullPointerException("Cant find generator for " + generatorConfig.name() + " The level " + name + " cant be load!");
+        }
         try {
             this.generator = generatorClass.getConstructor(DimensionData.class, Map.class).newInstance(
                     generatorConfig.dimensionData(),
@@ -1072,7 +1074,7 @@ public class Level implements Metadatable {
             }
 
             var b = this.getBlock(vector.getFloorX(), vector.getFloorY(), vector.getFloorZ());
-            if (b.getProperties() != BlockTallgrass.PROPERTIES && b.getProperties() != BlockWater.PROPERTIES)
+            if (b.getProperties() != BlockTallgrass.PROPERTIES && !(b instanceof BlockFlowingWater))
                 vector.y += 1;
             CompoundTag nbt = new CompoundTag()
                     .putList("Pos", new ListTag<DoubleTag>().add(new DoubleTag(vector.x))
@@ -3292,35 +3294,27 @@ public class Level implements Metadatable {
         this.chunkSendQueue.remove(index);
     }
 
-    private final ArrayList<CompletableFuture<?>> allChunkRequestTask = new ArrayList<>(
-            Server.getInstance().getConfig("chunk-sending.per-tick", 8) * Server.getInstance().getMaxPlayers()
-    );
-
     private void processChunkRequest() {
-        for (long index : this.chunkSendQueue.keySet()) {
-            int x = getHashX(index);
-            int z = getHashZ(index);
-            AsyncTask task = this.requireProvider().requestChunkTask(x, z);
-            if (task != null) {
-                allChunkRequestTask.add(CompletableFuture.runAsync(task, server.getComputeThreadPool()));
+        Server.getInstance().getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
+            for (long index : this.chunkSendQueue.keySet()) {
+                int x = getHashX(index);
+                int z = getHashZ(index);
+                DataPacket lcp = this.requireProvider().requestChunkPacket(x, z);
+                Int2ObjectNonBlockingMap<Player> players = this.chunkSendQueue.get(index);
+                if (players != null) {
+                    for (Player player : players.values()) {
+                        if (player.isConnected()) {
+                            NetworkChunkPublisherUpdatePacket ncp = new NetworkChunkPublisherUpdatePacket();
+                            ncp.position = player.asBlockVector3();
+                            ncp.radius = player.getViewDistance() << 4;
+                            player.dataPacket(ncp);
+                            player.sendChunk(x, z, lcp);
+                        }
+                    }
+                    this.chunkSendQueue.remove(index);
+                }
             }
-        }
-        if (!allChunkRequestTask.isEmpty()) {
-            CompletableFuture.allOf(allChunkRequestTask.toArray(CompletableFuture<?>[]::new)).join();
-            allChunkRequestTask.clear();
-        }
-    }
-
-    public void chunkRequestCallback(long timestamp, int x, int z, int subChunkCount, byte[] payload) {
-        long index = Level.chunkHash(x, z);
-
-        for (Player player : this.chunkSendQueue.get(index).values()) {
-            if (player.isConnected() && player.getUsedChunks().contains(index)) {
-                player.sendChunk(x, z, getDimension(), subChunkCount, payload);
-            }
-        }
-
-        this.chunkSendQueue.remove(index);
+        }, true);
     }
 
     public void removeEntity(Entity entity) {
@@ -3441,7 +3435,7 @@ public class Level implements Metadatable {
                 chunk = this.forceLoadChunk(index, chunkX, chunkZ, create);
             }
             return chunk;
-        }, Server.getInstance().getScheduler().getAsyncPool());
+        }, Server.getInstance().getScheduler().getAsyncTaskThreadPool());
     }
 
 
@@ -3726,6 +3720,14 @@ public class Level implements Metadatable {
         long index = Level.chunkHash(x, z);
         if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
             this.generator.asyncGenerate(chunk, (c) -> chunkGenerationQueue.remove(c.getChunk().getIndex()));//async
+        }
+    }
+
+    public void syncGenerateChunk(int x, int z) {
+        IChunk chunk = this.getChunk(x, z, true);
+        long index = Level.chunkHash(x, z);
+        if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
+            this.generator.syncGenerate(chunk);
         }
     }
 
