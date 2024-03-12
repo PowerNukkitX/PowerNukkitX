@@ -116,9 +116,6 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
             chunk.setLightPopulated();
 
             chunk.setChunkState(ChunkState.FINISHED);
-            Server.getInstance().getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
-                context.getLevel().setChunk(chunk.getX(), chunk.getZ(), chunk, false);
-            });
         }
 
         @Override

@@ -30,14 +30,7 @@ public abstract class GenerateStage {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(this.name());
-        GenerateStage next = this.next;
-        while (next != null) {
-            builder.append(next.name());
-            next = next.next;
-        }
-        return builder.toString();
+        return name();
     }
 
     public static class Builder {

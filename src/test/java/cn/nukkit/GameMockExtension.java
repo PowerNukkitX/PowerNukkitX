@@ -24,6 +24,7 @@ import cn.nukkit.permission.BanList;
 import cn.nukkit.player.info.PlayerInfo;
 import cn.nukkit.plugin.JavaPluginLoader;
 import cn.nukkit.plugin.PluginManager;
+import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.registry.BlockRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.ServerScheduler;
@@ -39,6 +40,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,6 +50,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.LockSupport;
 
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -151,6 +154,12 @@ public class GameMockExtension extends MockitoExtension {
         when(server.getCommandMap()).thenReturn(simpleCommandMap);
         when(server.getScoreboardManager()).thenReturn(null);
         when(server.getChunkUnloadDelay()).thenReturn(100);
+        try {
+            PositionTrackingService positionTrackingService = new PositionTrackingService(new File(Nukkit.DATA_PATH, "services/position_tracking_db"));
+            when(server.getPositionTrackingService()).thenReturn(positionTrackingService);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         doNothing().when(server).sendRecipeList(any());
         try {
             FieldUtils.writeDeclaredField(server, "levelArray", Level.EMPTY_ARRAY, true);
@@ -181,6 +190,7 @@ public class GameMockExtension extends MockitoExtension {
         player = new Player(serverSession, info);
         player.loggedIn = true;
         player.username = "test";
+        player.temporalVector = new Vector3(0, 0, 0);
         player.setInventories(new Inventory[]{
                 new HumanInventory(player),
                 new HumanOffHandInventory(player),
