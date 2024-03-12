@@ -3059,72 +3059,54 @@ public class Level implements Metadatable {
         return this.requireProvider().getLoadedChunk(index);
     }
 
-    public void setChunk(int chunkX, int chunkZ) {
-        this.setChunk(chunkX, chunkZ, null);
-    }
-
-    public void setChunk(int chunkX, int chunkZ, IChunk chunk) {
-        this.setChunk(chunkX, chunkZ, chunk, true);
-    }
-
     /**
      * Set chunk to the level provider
-     *
-     * @param unload Whether to unload old chunk on the current chunk pos
      */
-    public void setChunk(int chunkX, int chunkZ, IChunk chunk, boolean unload) {
+    public void setChunk(int chunkX, int chunkZ, @NotNull IChunk chunk) {
         if (chunk == null) {
             return;
         }
-
-        long index = Level.chunkHash(chunkX, chunkZ);
         IChunk oldChunk = this.getChunk(chunkX, chunkZ, false);
 
         if (oldChunk != chunk) {
-            if (unload && oldChunk != null) {
-                this.unloadChunk(chunkX, chunkZ, false, false);
+            long index = Level.chunkHash(chunkX, chunkZ);
+            Map<Long, Entity> oldEntities = oldChunk != null ? oldChunk.getEntities() : Collections.emptyMap();
 
-                this.requireProvider().setChunk(chunkX, chunkZ, chunk);
-            } else {
-                Map<Long, Entity> oldEntities = oldChunk != null ? oldChunk.getEntities() : Collections.emptyMap();
+            Map<Long, BlockEntity> oldBlockEntities = oldChunk != null ? oldChunk.getBlockEntities() : Collections.emptyMap();
 
-                Map<Long, BlockEntity> oldBlockEntities = oldChunk != null ? oldChunk.getBlockEntities() : Collections.emptyMap();
-
-                if (!oldEntities.isEmpty()) {
-                    Iterator<Map.Entry<Long, Entity>> iter = oldEntities.entrySet().iterator();
-                    while (iter.hasNext()) {
-                        Map.Entry<Long, Entity> entry = iter.next();
-                        Entity entity = entry.getValue();
-                        chunk.addEntity(entity);
-                        iter.remove();
-                        oldChunk.removeEntity(entity);
-                        entity.chunk = chunk;
-                    }
+            //move oldChunk to new Chunk
+            if (!oldEntities.isEmpty()) {
+                Iterator<Map.Entry<Long, Entity>> iter = oldEntities.entrySet().iterator();
+                while (iter.hasNext()) {
+                    Map.Entry<Long, Entity> entry = iter.next();
+                    Entity entity = entry.getValue();
+                    chunk.addEntity(entity);
+                    iter.remove();
+                    oldChunk.removeEntity(entity);
+                    entity.chunk = chunk;
                 }
-
-                if (!oldBlockEntities.isEmpty()) {
-                    Iterator<Map.Entry<Long, BlockEntity>> iter = oldBlockEntities.entrySet().iterator();
-                    while (iter.hasNext()) {
-                        Map.Entry<Long, BlockEntity> entry = iter.next();
-                        BlockEntity blockEntity = entry.getValue();
-                        chunk.addBlockEntity(blockEntity);
-                        iter.remove();
-                        oldChunk.removeBlockEntity(blockEntity);
-                        blockEntity.chunk = chunk;
-                    }
-                }
-
-                this.requireProvider().setChunk(chunkX, chunkZ, chunk);
             }
-        }
 
-        chunk.setChanged();
+            if (!oldBlockEntities.isEmpty()) {
+                Iterator<Map.Entry<Long, BlockEntity>> iter = oldBlockEntities.entrySet().iterator();
+                while (iter.hasNext()) {
+                    Map.Entry<Long, BlockEntity> entry = iter.next();
+                    BlockEntity blockEntity = entry.getValue();
+                    chunk.addBlockEntity(blockEntity);
+                    iter.remove();
+                    oldChunk.removeBlockEntity(blockEntity);
+                    blockEntity.chunk = chunk;
+                }
+            }
 
-        if (!this.isChunkInUse(index)) {
-            this.unloadChunkRequest(chunkX, chunkZ);
-        } else {
-            for (ChunkLoader loader : this.getChunkLoaders(chunkX, chunkZ)) {
-                loader.onChunkChanged(chunk);
+            this.requireProvider().setChunk(chunkX, chunkZ, chunk);
+            chunk.setChanged();
+            if (!this.isChunkInUse(index)) {
+                this.unloadChunkRequest(chunkX, chunkZ);
+            } else {
+                for (ChunkLoader loader : this.getChunkLoaders(chunkX, chunkZ)) {
+                    loader.onChunkChanged(chunk);
+                }
             }
         }
     }
@@ -3318,22 +3300,35 @@ public class Level implements Metadatable {
 
     public void subTick(GameLoop currentTick) {
         processChunkRequest();
+
+        if (currentTick.getTick() % 100 == 0) {
+            doLevelGarbageCollection(false);
+        }
     }
 
     private void processChunkRequest() {
         for (long index : this.chunkSendQueue.keySet()) {
             int x = getHashX(index);
             int z = getHashZ(index);
-            DataPacket lcp = this.requireProvider().requestChunkPacket(x, z);
-            Int2ObjectNonBlockingMap<Player> players = this.chunkSendQueue.get(index);
+            final Int2ObjectNonBlockingMap<Player> players = this.chunkSendQueue.get(index);
             if (players != null) {
+                final var pair = this.requireProvider().requestChunkData(x, z);
                 for (Player player : Objects.requireNonNull(players).values()) {
                     if (player.isConnected()) {
-                        NetworkChunkPublisherUpdatePacket ncp = new NetworkChunkPublisherUpdatePacket();
-                        ncp.position = new BlockVector3(x << 4, 100, z << 4);
-                        ncp.radius = player.getViewDistance() << 4;
-                        player.dataPacket(ncp);
-                        player.sendChunk(x, z, lcp);
+                        Server.getInstance().getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
+                            NetworkChunkPublisherUpdatePacket ncp = new NetworkChunkPublisherUpdatePacket();
+                            ncp.position = player.asBlockVector3();
+                            ncp.radius = player.getViewDistance() << 4;
+                            player.dataPacket(ncp);
+
+                            LevelChunkPacket pk = new LevelChunkPacket();
+                            pk.chunkX = x;
+                            pk.chunkZ = z;
+                            pk.dimension = getDimensionData().getDimensionId();
+                            pk.subChunkCount = pair.right();
+                            pk.data = pair.left();
+                            player.sendChunk(x, z, pk);
+                        });
                     }
                 }
                 this.chunkSendQueue.remove(index);
@@ -3513,6 +3508,14 @@ public class Level implements Metadatable {
         return this.unloadChunkRequest(x, z, true);
     }
 
+    /**
+     * submit a unload chunk request.
+     *
+     * @param x    the x
+     * @param z    the z
+     * @param safe if true,will check the chunk whether is used
+     * @return whether the request commit was successful
+     */
     public boolean unloadChunkRequest(int x, int z, boolean safe) {
         if ((safe && this.isChunkInUse(x, z))) {
             return false;
@@ -3740,17 +3743,17 @@ public class Level implements Metadatable {
         if (this.chunkGenerationQueue.size() >= this.chunkGenerationQueueSize && !force) {
             return;
         }
-        IChunk chunk = this.getChunk(x, z, true);
         long index = Level.chunkHash(x, z);
         if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
+            IChunk chunk = this.getChunk(x, z, true);
             this.generator.asyncGenerate(chunk, (c) -> chunkGenerationQueue.remove(c.getChunk().getIndex()));//async
         }
     }
 
     public void syncGenerateChunk(int x, int z) {
-        IChunk chunk = this.getChunk(x, z, true);
         long index = Level.chunkHash(x, z);
         if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
+            IChunk chunk = this.getChunk(x, z, true);
             this.generator.syncGenerate(chunk);
         }
     }
@@ -3762,71 +3765,20 @@ public class Level implements Metadatable {
      *
      * @return the list
      */
-    public List<CompletableFuture<Void>> asyncChunkGarbageCollection() {
-        var gcBlockInventoryMetaData = CompletableFuture.runAsync(() -> {
-            for (var entry : this.getBlockMetadata().getBlockMetadataMap().entrySet()) {
-                String key = entry.getKey();
-                String[] split = key.split(":");
-                Map<Plugin, MetadataValue> value = entry.getValue();
-                if (split[3].equals("inventory") && value.containsKey(InternalPlugin.INSTANCE)) {
-                    Block block = getBlock(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
-                    if (!(block instanceof BlockInventoryHolder)) {
-                        this.getBlockMetadata().removeMetadata(block, key, InternalPlugin.INSTANCE);
-                    }
+    public void doLevelGarbageCollection(boolean force) {
+        //gcBlockInventoryMetaData
+        for (var entry : this.getBlockMetadata().getBlockMetadataMap().entrySet()) {
+            String key = entry.getKey();
+            String[] split = key.split(":");
+            Map<Plugin, MetadataValue> value = entry.getValue();
+            if (split[3].equals("inventory") && value.containsKey(InternalPlugin.INSTANCE)) {
+                Block block = getBlock(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
+                if (!(block instanceof BlockInventoryHolder)) {
+                    this.getBlockMetadata().removeMetadata(block, key, InternalPlugin.INSTANCE);
                 }
             }
-        });
-        var gcBlockEntities = CompletableFuture.runAsync(() -> {
-            // remove all invaild block entities.
-            if (!blockEntities.isEmpty()) {
-                var iter = blockEntities.values().iterator();
-                while (iter.hasNext()) {
-                    BlockEntity blockEntity = iter.next();
-                    if (blockEntity != null) {
-                        if (!blockEntity.isValid()) {
-                            iter.remove();
-                            blockEntity.close();
-                        }
-                    } else {
-                        iter.remove();
-                    }
-                }
-            }
-        });
-        var gcDeadChunks = CompletableFuture.runAsync(() -> {
-            for (Map.Entry<Long, ? extends IChunk> entry : requireProvider().getLoadedChunks().entrySet()) {
-                long index = entry.getKey();
-                if (!this.unloadQueue.containsKey(index)) {
-                    IChunk chunk = entry.getValue();
-                    int X = chunk.getX();
-                    int Z = chunk.getZ();
-                    this.unloadChunkRequest(X, Z, true);
-                }
-            }
-            this.unloadChunks();
-        });
-        var gcSuper = CompletableFuture.runAsync(() -> this.requireProvider().doGarbageCollection());
-        return List.of(gcBlockInventoryMetaData, gcBlockEntities, gcDeadChunks, gcSuper);
-    }
+        }
 
-    /**
-     * 异步执行服务器内存垃圾收集
-     * <p>
-     * Run server memory garbage collection synchronously
-     */
-
-    public void doChunkGarbageCollection() {
-        doChunkGarbageCollection(false);
-    }
-
-    /**
-     * 同步执行服务器内存垃圾收集
-     * <p>
-     * Run server memory garbage collection synchronously
-     *
-     * @param force the force
-     */
-    public void doChunkGarbageCollection(boolean force) {
         // remove all invaild block entities.
         if (!blockEntities.isEmpty()) {
             var iter = blockEntities.values().iterator();
@@ -3843,6 +3795,7 @@ public class Level implements Metadatable {
             }
         }
 
+        //gcDeadChunks
         for (Map.Entry<Long, ? extends IChunk> entry : requireProvider().getLoadedChunks().entrySet()) {
             long index = entry.getKey();
             if (!this.unloadQueue.containsKey(index)) {
@@ -3852,8 +3805,9 @@ public class Level implements Metadatable {
                 this.unloadChunkRequest(X, Z, true);
             }
         }
-        this.unloadChunks(force);
+        this.unloadChunks();
 
+        //gcSuper
         this.requireProvider().doGarbageCollection();
     }
 
@@ -3890,8 +3844,6 @@ public class Level implements Metadatable {
                 if (isChunkInUse(index)) {
                     continue;
                 }
-                int hashX = Level.getHashX(index);
-                int hashZ = Level.getHashZ(index);
                 if (!force) {
                     long time = entry.getValue();
                     if (maxUnload <= 0) {

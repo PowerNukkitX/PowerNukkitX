@@ -189,6 +189,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public final HashSet<String> achievements = new HashSet<>();
     public boolean playedBefore;
     public boolean spawned = false;
+    public boolean locallyInitialized = false;
     public boolean loggedIn = false;
     public int gamemode;
     public long lastBreak;
@@ -1257,6 +1258,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * 玩家客户端初始化完成后调用
      */
     protected void onPlayerLocallyInitialized() {
+        locallyInitialized = true;
         PlayerJoinEvent playerJoinEvent = new PlayerJoinEvent(this,
                 new TranslationContainer(TextFormat.YELLOW + "%multiplayer.player.joined", new String[]{
                         this.getDisplayName()
@@ -4230,6 +4232,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             //send to client
             this.sendPosition(to, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
             this.newPosition = to;
+
+            if (!to.getLevel().equals(from.getLevel())) {
+                this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, this::refreshChunkView, 10, true);
+            } else if (from.distance(to) >= this.getViewDistance() * 16) {
+                this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, this::refreshChunkView, 10, true);
+            }
+            this.nextChunkOrderRun = 0;
+            this.playerChunkManager.handleTeleport();
+
         } else {
             this.sendPosition(this, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
             this.newPosition = this;
@@ -4237,13 +4248,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         //state update
         this.positionChanged = true;
 
-        if (!to.getLevel().equals(from.getLevel())) {
-            this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, this::refreshChunkView, 10, true);
-        } else if (from.distance(to) >= this.getViewDistance() * 16) {
-            this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, this::refreshChunkView, 10, true);
-        }
-        this.nextChunkOrderRun = 0;
-        this.playerChunkManager.handleTeleport();
         //refresh chunks for client
         //DummyBossBar
         this.getDummyBossBars().values().forEach(DummyBossBar::reshow);

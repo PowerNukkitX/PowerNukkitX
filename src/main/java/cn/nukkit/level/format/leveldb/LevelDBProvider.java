@@ -17,7 +17,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
-import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.LevelChunkPacket;
 import cn.nukkit.network.protocol.types.GameType;
 import cn.nukkit.utils.ChunkException;
@@ -26,6 +25,7 @@ import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
+import it.unimi.dsi.fastutil.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.Options;
@@ -219,10 +219,10 @@ public class LevelDBProvider implements LevelProvider {
     public void setChunk(int chunkX, int chunkZ, IChunk chunk) {
         chunk.setPosition(chunkX, chunkZ);
         long index = Level.chunkHash(chunkX, chunkZ);
-        if (this.chunks.containsKey(index) && !this.chunks.get(index).equals(chunk)) {
+        if (this.chunks.containsKey(index) && !Objects.equals(this.chunks.get(index), chunk)) {
             this.unloadChunk(chunkX, chunkZ, false);
         }
-        this.lastChunk.remove();
+        this.lastChunk.remove();//remove cache
         this.chunks.put(index, chunk);
     }
 
@@ -232,7 +232,7 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
-    public DataPacket requestChunkPacket(int X, int Z) {
+    public Pair<byte[], Integer> requestChunkData(int X, int Z) {
         IChunk chunk = this.getChunk(X, Z, false);
         if (chunk == null) {
             throw new ChunkException("Invalid Chunk Set");
@@ -282,18 +282,12 @@ public class LevelDBProvider implements LevelProvider {
                     throw new RuntimeException(e);
                 }
                 data.set(Utils.convertByteBuf2Array(byteBuf));
-                subChunkCountRef.set(subChunkCount);
+                subChunkCountRef.set(total);
             } finally {
                 byteBuf.release();
             }
         });
-        LevelChunkPacket pk = new LevelChunkPacket();
-        pk.chunkX = X;
-        pk.chunkZ = Z;
-        pk.dimension = getDimensionData().getDimensionId();
-        pk.subChunkCount = subChunkCountRef.get();
-        pk.data = data.get();
-        return pk;
+        return Pair.of(data.get(),subChunkCountRef.get());
     }
 
 

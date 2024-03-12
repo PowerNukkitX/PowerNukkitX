@@ -1,9 +1,11 @@
 package cn.nukkit.level.generator.stages;
 
+import cn.nukkit.Server;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
+import cn.nukkit.plugin.InternalPlugin;
 
 import java.util.concurrent.Executor;
 
@@ -14,12 +16,11 @@ public class FinishedStage extends GenerateStage {
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
         chunk.setChunkState(ChunkState.FINISHED);
-        context.getLevel().setChunk(chunk.getX(), chunk.getZ(), chunk, false);
     }
 
     @Override
     public Executor getExecutor() {
-        return Runnable::run;
+        return (r) -> Server.getInstance().getScheduler().scheduleTask(InternalPlugin.INSTANCE, r);//run in main thread
     }
 
     @Override
