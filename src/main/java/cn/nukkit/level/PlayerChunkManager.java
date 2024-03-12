@@ -5,7 +5,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.player.PlayerChunkRequestEvent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.network.protocol.LevelChunkPacket;
 import cn.nukkit.network.protocol.NetworkChunkPublisherUpdatePacket;
 import com.google.common.collect.Sets;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -73,36 +72,6 @@ public final class PlayerChunkManager {
         }
         loadQueuedChunks(trySendChunkCountPerTick, false);
         sendChunk();
-    }
-
-    public void handleTeleport() {
-        if (!player.isConnected() && !player.locallyInitialized) return;
-        BlockVector3 floor = player.asBlockVector3();
-        inRadiusChunks.clear();
-        int x = floor.x >> 4;
-        int z = floor.z >> 4;
-        inRadiusChunks.add(Level.chunkHash(x, z));
-        removeOutOfRadiusChunks();
-        updateChunkSendingQueue();
-        loadQueuedChunks(Integer.MAX_VALUE, true);//load chunk
-
-        //get chunk data
-        var pair = player.getLevel().requireProvider().requestChunkData(floor.getChunkX(), floor.getChunkZ());
-
-        //send ncp
-        NetworkChunkPublisherUpdatePacket ncp = new NetworkChunkPublisherUpdatePacket();
-        ncp.position = player.asBlockVector3();
-        ncp.radius = player.getViewDistance() << 4;
-        player.dataPacket(ncp);
-
-        //send lcp
-        LevelChunkPacket pk = new LevelChunkPacket();
-        pk.chunkX = player.getChunkX();
-        pk.chunkZ = player.getChunkZ();
-        pk.dimension = player.getLevel().getDimensionData().getDimensionId();
-        pk.subChunkCount = pair.right();
-        pk.data = pair.left();
-        player.sendChunk(player.getChunkX(), player.getChunkZ(), pk);
     }
 
     @ApiStatus.Internal
