@@ -5,10 +5,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.LevelChunkPacket;
 import cn.nukkit.network.protocol.MovePlayerPacket;
-import cn.nukkit.network.protocol.NetworkChunkPublisherUpdatePacket;
 import cn.nukkit.utils.GameLoop;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
@@ -18,15 +15,9 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import org.mockito.hamcrest.MockitoHamcrest;
-
-import java.lang.reflect.Method;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(GameMockExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -45,8 +36,6 @@ public class PlayerTest {
         player.teleport(new Vector3(10000, 6, 10000));
         Assertions.assertTrue(level.isChunkLoaded(10000 >> 4, 10000 >> 4));//verify target chunk is load
         InOrder orderSendPk = Mockito.inOrder(player.getSession());
-        orderSendPk.verify(player.getSession(), times(1)).sendPacket(any(NetworkChunkPublisherUpdatePacket.class));//verify pk order
-        orderSendPk.verify(player.getSession(), times(1)).sendPacket(any(LevelChunkPacket.class));
         orderSendPk.verify(player.getSession(), times(1)).sendPacket(any(MovePlayerPacket.class));
         loop.stop();
     }

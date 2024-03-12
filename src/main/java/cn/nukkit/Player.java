@@ -4233,14 +4233,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.sendPosition(to, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
             this.newPosition = to;
 
-            if (!to.getLevel().equals(from.getLevel())) {
-                this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, this::refreshChunkView, 10, true);
-            } else if (from.distance(to) >= this.getViewDistance() * 16) {
-                this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, this::refreshChunkView, 10, true);
-            }
             this.nextChunkOrderRun = 0;
-            this.playerChunkManager.handleTeleport();
-
         } else {
             this.sendPosition(this, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
             this.newPosition = this;
