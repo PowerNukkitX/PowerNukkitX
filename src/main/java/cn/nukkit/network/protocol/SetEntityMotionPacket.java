@@ -14,6 +14,7 @@ public class SetEntityMotionPacket extends DataPacket {
     public float motionX;
     public float motionY;
     public float motionZ;
+    public long tick;
 
     @Override
     public int pid() {
@@ -30,6 +31,7 @@ public class SetEntityMotionPacket extends DataPacket {
 
         byteBuf.writeEntityRuntimeId(this.eid);
         byteBuf.writeVector3f(this.motionX, this.motionY, this.motionZ);
+        byteBuf.writeUnsignedVarLong(this.tick);
     }
 
     public void handle(PacketHandler handler) {
