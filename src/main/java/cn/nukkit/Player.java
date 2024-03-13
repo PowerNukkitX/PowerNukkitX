@@ -4655,11 +4655,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
-    public void onBlockChanged(Vector3 block) {
-
-    }
-
-    @Override
     public int getLoaderId() {
         return this.loaderId;
     }

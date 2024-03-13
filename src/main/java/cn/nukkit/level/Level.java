@@ -3005,9 +3005,6 @@ public class Level implements Metadatable {
         chunk.setBlockState(x & 0x0f, ensureY(y), z & 0x0f, state, layer);
         addBlockChange(x, y, z);
         temporalVector.setComponents(x, y, z);
-        for (ChunkLoader loader : this.getChunkLoaders(x >> 4, z >> 4)) {
-            loader.onBlockChanged(temporalVector);
-        }
     }
 
     public BlockState getBlockStateAt(int x, int y, int z, int layer) {
