@@ -2198,9 +2198,6 @@ public class Level implements Metadatable {
         } else {
             addBlockChange(index, x, y, z);
         }
-        for (ChunkLoader loader : this.getChunkLoaders(cx, cz)) {
-            loader.onBlockChanged(block);
-        }
         if (update) {
             updateAllLight(block);
             BlockUpdateEvent ev = new BlockUpdateEvent(block);
