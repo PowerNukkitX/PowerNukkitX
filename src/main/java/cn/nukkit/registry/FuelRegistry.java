@@ -1,9 +1,11 @@
 package cn.nukkit.registry;
 
+import cn.nukkit.block.BlockAcaciaSlab;
+import cn.nukkit.block.BlockBirchSlab;
+import cn.nukkit.block.BlockDarkOakSlab;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockWoodenSlab;
-import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.property.enums.WoodType;
+import cn.nukkit.block.BlockJungleSlab;
+import cn.nukkit.block.BlockSpruceSlab;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -21,7 +23,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.COAL_BLOCK, 16000);
         register0(ItemID.COAL, 1600);
         register0(ItemID.CHARCOAL, 1600);
-        register0(BlockID.WOOD, 300);
+        register0(ItemID.WOOD, 300);
 
         register0(BlockID.WHITE_WOOL, 100);
         register0(BlockID.LIGHT_GRAY_WOOL, 100);
@@ -173,16 +175,16 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.JUKEBOX, 300);
         register0(BlockID.NOTEBLOCK, 300);
 
-        register0(BlockID.WOODEN_SLAB, 300);
+        register0(ItemID.WOODEN_SLAB, 300);
         register0(BlockID.BAMBOO_MOSAIC_SLAB, 300);
         register0(BlockID.BAMBOO_SLAB, 300);
         register0(BlockID.CHERRY_SLAB, 300);
         register0(BlockID.MANGROVE_SLAB, 300);
-        register0(BlockWoodenSlab.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE.createValue(WoodType.ACACIA)).toItem(), 300);
-        register0(BlockWoodenSlab.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE.createValue(WoodType.JUNGLE)).toItem(), 300);
-        register0(BlockWoodenSlab.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE.createValue(WoodType.SPRUCE)).toItem(), 300);
-        register0(BlockWoodenSlab.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE.createValue(WoodType.BIRCH)).toItem(), 300);
-        register0(BlockWoodenSlab.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE.createValue(WoodType.DARK_OAK)).toItem(), 300);
+        register0(BlockAcaciaSlab.PROPERTIES.getDefaultState().toItem(), 300);
+        register0(BlockJungleSlab.PROPERTIES.getDefaultState().toItem(), 300);
+        register0(BlockSpruceSlab.PROPERTIES.getDefaultState().toItem(), 300);
+        register0(BlockBirchSlab.PROPERTIES.getDefaultState().toItem(), 300);
+        register0(BlockDarkOakSlab.PROPERTIES.getDefaultState().toItem(), 300);
 
         register0(BlockID.DOUBLE_WOODEN_SLAB, 300);
         register0(ItemID.BLAZE_ROD, 2400);

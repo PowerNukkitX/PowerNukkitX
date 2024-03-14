@@ -2,6 +2,7 @@ package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockLeaves;
 import cn.nukkit.block.BlockSolid;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.math.Vector3;
@@ -65,9 +66,9 @@ public class ObjectBigMushroom extends ObjectGenerator {
                     for (int i1 = position.getFloorZ() - k; i1 <= position.getZ() + k && flag; ++i1) {
                         if (j >= 0 && j < 256) {
                             pos.setComponents(l, j, i1);
-                            String material = level.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
+                            Block material = level.getBlockAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
 
-                            if (!material.equals(Block.AIR) && !material.equals(Block.LEAVES)) {
+                            if (!material.getId().equals(Block.AIR) && !(material instanceof BlockLeaves)) {
                                 flag = false;
                             }
                         } else {
@@ -83,7 +84,7 @@ public class ObjectBigMushroom extends ObjectGenerator {
                 Vector3 pos2 = position.down();
                 String block1 = level.getBlockIdAt(pos2.getFloorX(), pos2.getFloorY(), pos2.getFloorZ());
 
-                if (!block1.equals(Block.DIRT) && !block1.equals(Block.GRASS) && !block1.equals(Block.MYCELIUM)) {
+                if (!block1.equals(Block.DIRT) && !block1.equals(Block.GRASS_BLOCK) && !block1.equals(Block.MYCELIUM)) {
                     return false;
                 } else {
                     int k2 = position.getFloorY() + i;

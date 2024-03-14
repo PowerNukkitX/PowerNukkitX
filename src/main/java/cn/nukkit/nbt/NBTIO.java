@@ -3,6 +3,8 @@ package cn.nukkit.nbt;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.level.updater.block.BlockStateUpdaters;
+import cn.nukkit.level.updater.item.ItemUpdaters;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
@@ -32,6 +34,8 @@ import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 
+import static cn.nukkit.network.protocol.ProtocolInfo.BLOCK_STATE_VERSION_NO_REVISION;
+
 /**
  * A Named Binary Tag library for Nukkit Project
  */
@@ -56,6 +60,7 @@ public class NBTIO {
         if (item.isBlock()) {
             tag.putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag().copy());
         }
+        tag.putInt("version", BLOCK_STATE_VERSION_NO_REVISION);
         return tag;
     }
 
@@ -63,6 +68,15 @@ public class NBTIO {
         if (!tag.containsByte("Count")) {
             return Item.AIR;
         }
+
+        //upgrade item
+        if (tag.contains("version")) {
+            int ver = tag.getInt("version");
+            if (ver < BLOCK_STATE_VERSION_NO_REVISION) {
+                tag = ItemUpdaters.updateItem(tag, BLOCK_STATE_VERSION_NO_REVISION);
+            }
+        }
+
         String name;
         Preconditions.checkNotNull((name = tag.getString("Name")));
 
@@ -78,6 +92,13 @@ public class NBTIO {
             } else return Item.AIR;
         } else if (tag.containsCompound("Block")) {
             CompoundTag block = tag.getCompound("Block");
+            //upgrade block
+            if (block.contains("version")) {
+                int ver = block.getInt("version");
+                if (ver < BLOCK_STATE_VERSION_NO_REVISION) {
+                    block = BlockStateUpdaters.updateBlockState(block, BLOCK_STATE_VERSION_NO_REVISION);
+                }
+            }
             BlockState blockState = getBlockStateHelper(block);
             if (blockState != null) item.setBlockUnsafe(blockState.toBlock());
         }

@@ -452,7 +452,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     public boolean canHarvest(Item item) {
-        return getToolTier() == 0 || getToolType() == 0 || correctTool0(getToolType(), item, getId()) && item.getTier() >= getToolTier();
+        return getToolTier() == 0 || getToolType() == 0 || correctTool0(getToolType(), item, this) && item.getTier() >= getToolTier();
     }
 
     /**
@@ -564,7 +564,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     private double toolBreakTimeBonus0(Item item) {
         if (item instanceof ItemCustomTool itemCustomTool && itemCustomTool.getSpeed() != null) {
             return customToolBreakTimeBonus(customToolType(item), itemCustomTool.getSpeed());
-        } else return toolBreakTimeBonus0(toolType0(item, getProperties().getIdentifier()), item.getTier(), getId());
+        } else return toolBreakTimeBonus0(toolType0(item, this), item.getTier(), getId());
     }
 
     private double customToolBreakTimeBonus(int toolType, @Nullable Integer speed) {
@@ -640,9 +640,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return 1.0 + (0.2 * hasteLoreLevel);
     }
 
-    private static int toolType0(Item item, String blockId) {
-        if ((blockId.equals(LEAVES) && item.isHoe()) || (blockId.equals(LEAVES2) && item.isHoe()))
+    private static int toolType0(Item item, Block b) {
+        if (b instanceof BlockLeaves && item.isHoe()) {
             return ItemTool.TYPE_SHEARS;
+        }
         if (item.isSword()) return ItemTool.TYPE_SWORD;
         if (item.isShovel()) return ItemTool.TYPE_SHOVEL;
         if (item.isPickaxe()) return ItemTool.TYPE_PICKAXE;
@@ -652,10 +653,11 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return ItemTool.TYPE_NONE;
     }
 
-    private static boolean correctTool0(int blockToolType, Item item, String blockId) {
-        if ((blockId.equals(LEAVES) && item.isHoe()) || (blockId.equals(LEAVES2) && item.isHoe())) {
+    private static boolean correctTool0(int blockToolType, Item item, Block b) {
+        String block = b.getId();
+        if (b instanceof BlockLeaves && item.isHoe()) {
             return (blockToolType == ItemTool.TYPE_SHEARS && item.isHoe());
-        } else if (blockId.equals(BAMBOO) && item.isSword()) {
+        } else if (block.equals(BAMBOO) && item.isSword()) {
             return (blockToolType == ItemTool.TYPE_AXE && item.isSword());
         } else return (blockToolType == ItemTool.TYPE_SWORD && item.isSword()) ||
                 (blockToolType == ItemTool.TYPE_SHOVEL && item.isShovel()) ||
@@ -664,7 +666,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
                 (blockToolType == ItemTool.TYPE_HOE && item.isHoe()) ||
                 (blockToolType == ItemTool.TYPE_SHEARS && item.isShears()) ||
                 blockToolType == ItemTool.TYPE_NONE ||
-                (blockId.equals(WEB) && item.isShears());
+                (block.equals(WEB) && item.isShears());
     }
 
     public double getBreakTime(Item item, Player player) {
@@ -736,7 +738,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
                     .map(Effect::getAmplifier).orElse(0);
         }
 
-        if (correctTool0(getToolType(), item, getId())) {
+        if (correctTool0(getToolType(), item, this)) {
             speedMultiplier = toolBreakTimeBonus0(item);
 
             int efficiencyLevel = Optional.ofNullable(item.getEnchantment(Enchantment.ID_EFFICIENCY))

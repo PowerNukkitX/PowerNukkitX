@@ -37,10 +37,6 @@ public class BlockMangroveWood extends BlockWood {
     }
 
     @Override
-    public void setWoodType(WoodType woodType) {
-    }
-
-    @Override
     public WoodType getWoodType() {
         throw new UnsupportedOperationException();
     }

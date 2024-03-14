@@ -2,8 +2,6 @@ package cn.nukkit.level.generator.object.legacytree;
 
 import cn.nukkit.block.*;
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.property.enums.NewLeafType;
-import cn.nukkit.block.property.enums.OldLeafType;
 import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.block.property.type.EnumPropertyType;
 import cn.nukkit.level.generator.object.BlockManager;
@@ -36,19 +34,25 @@ public abstract class LegacyTreeGenerator {
         }
     }
 
-    protected boolean overridable(String id) {
-        return switch (id) {
-            case Block.AIR, Block.SAPLING, Block.WOOD, Block.LEAVES, Block.SNOW_LAYER, Block.LEAVES2 -> true;
+    protected boolean overridable(Block b) {
+        if (b instanceof BlockWood) return true;
+        return switch (b.getId()) {
+            case Block.AIR, Block.SAPLING, BlockID.ACACIA_LEAVES,
+                    BlockID.AZALEA_LEAVES,
+                    BlockID.BIRCH_LEAVES,
+                    BlockID.AZALEA_LEAVES_FLOWERED,
+                    BlockID.CHERRY_LEAVES,
+                    BlockID.DARK_OAK_LEAVES,
+                    BlockID.JUNGLE_LEAVES,
+                    BlockID.MANGROVE_LEAVES,
+                    BlockID.OAK_LEAVES,
+                    BlockID.SPRUCE_LEAVES, Block.SNOW_LAYER -> true;
             default -> false;
         };
     }
 
     public WoodType getType() {
         return WoodType.OAK;
-    }
-
-    public String getLeafBlock() {
-        return Block.LEAVES;
     }
 
     public int getTreeHeight() {
@@ -63,7 +67,7 @@ public abstract class LegacyTreeGenerator {
             }
             for (int xx = -radiusToCheck; xx < (radiusToCheck + 1); ++xx) {
                 for (int zz = -radiusToCheck; zz < (radiusToCheck + 1); ++zz) {
-                    if (!this.overridable(level.getBlockIdAt(x + xx, y + yy, z + zz))) {
+                    if (!this.overridable(level.getBlockAt(x + xx, y + yy, z + zz))) {
                         return false;
                     }
                 }
@@ -101,8 +105,8 @@ public abstract class LegacyTreeGenerator {
         level.setBlockStateAt(x, y - 1, z, Block.DIRT);
 
         for (int yy = 0; yy < trunkHeight; ++yy) {
-            String blockId = level.getBlockIdAt(x, y + yy, z);
-            if (this.overridable(blockId)) {
+            Block b = level.getBlockAt(x, y + yy, z);
+            if (this.overridable(b)) {
                 level.setBlockStateAt(x, y + yy, z, getTrunkBlockState());
             }
         }
@@ -121,15 +125,26 @@ public abstract class LegacyTreeGenerator {
     }
 
     protected BlockState getLeafBlockState() {
-        boolean newLeaf;
         switch (getType()) {
-            case ACACIA, DARK_OAK -> newLeaf = true;
-            default -> newLeaf = false;
-        }
-        if (newLeaf) {
-            return BlockLeaves2.PROPERTIES.getBlockState(CommonBlockProperties.NEW_LEAF_TYPE, NewLeafType.valueOf(getType().name().toUpperCase()));
-        } else {
-            return BlockLeaves.PROPERTIES.getBlockState(CommonBlockProperties.OLD_LEAF_TYPE, OldLeafType.valueOf(getType().name().toUpperCase()));
+            case OAK -> {
+                return BlockOakLeaves.PROPERTIES.getDefaultState();
+            }
+            case BIRCH -> {
+                return BlockBirchLeaves.PROPERTIES.getDefaultState();
+            }
+            case ACACIA -> {
+                return BlockAcaciaLeaves.PROPERTIES.getDefaultState();
+            }
+            case JUNGLE -> {
+                return BlockJungleLeaves.PROPERTIES.getDefaultState();
+            }
+            case SPRUCE -> {
+                return BlockSpruceLeaves.PROPERTIES.getDefaultState();
+            }
+            case DARK_OAK -> {
+                return BlockDarkOakLeaves.PROPERTIES.getDefaultState();
+            }
+            default -> throw new IllegalArgumentException();
         }
     }
 }

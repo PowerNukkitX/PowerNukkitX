@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.stages;
 
 import cn.nukkit.block.BlockBedrock;
 import cn.nukkit.block.BlockDirt;
-import cn.nukkit.block.BlockGrass;
+import cn.nukkit.block.BlockGrassBlock;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.ChunkState;
@@ -14,7 +14,7 @@ public class FlatGenerateStage extends GenerateStage {
     public static final String NAME = "flat_generate";
 
     static final BlockState bedrock = BlockBedrock.PROPERTIES.getDefaultState();
-    static final BlockState grass = BlockGrass.PROPERTIES.getDefaultState();
+    static final BlockState grass = BlockGrassBlock.PROPERTIES.getDefaultState();
     static final BlockState dirt = BlockDirt.PROPERTIES.getDefaultState();
 
     @Override

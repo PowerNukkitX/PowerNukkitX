@@ -40,7 +40,7 @@ public class LegacyTallGrass {
             for (int z = minz; z <= maxz; z++) {
                 int newY = y + random.nextInt(2) * (random.nextBoolean() ? -1 : 1);
                 if (random.nextBoolean()) {
-                    if (Objects.equals(level.getBlockIdAt(x, newY, z), Block.AIR) && Objects.equals(level.getBlockIdAt(x, newY - 1, z), Block.GRASS)) {
+                    if (Objects.equals(level.getBlockIdAt(x, newY, z), Block.AIR) && Objects.equals(level.getBlockIdAt(x, newY - 1, z), Block.GRASS_BLOCK)) {
                         int ranNumber = (int) Math.round(random.nextGaussian() * 1000);
                         int absRn = Math.abs(ranNumber);
                         if (-300 <= ranNumber && ranNumber <= 300) {

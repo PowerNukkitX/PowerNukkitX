@@ -397,7 +397,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                         .append('_')
                         .append(item.getCount())
                         .append('_')
-                        .append(item.isBlock() ? item.getBlockUnsafe().getRuntimeId() : item.getDamage())
+                        .append(item.getDamage() != 0 ? item.getDamage() : item.isBlock() ? item.getBlockUnsafe().getRuntimeId() : 0)
                         .append("_and_");
             }
         }
@@ -745,7 +745,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                     meta = Utils.toInt(data.get("auxValue"));
                 }
                 if (meta != null) {
-                    if (meta == Short.MAX_VALUE) {
+                    if (meta == Short.MAX_VALUE || meta == -1) {
                         item = Item.get(name, 0, count, nbtBytes, false);
                         item.disableMeta();
                     } else {
