@@ -1104,8 +1104,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         Player oldPlayer = null;
         for (Player p : new ArrayList<>(this.server.getOnlinePlayers().values())) {
-            if (p != this && p.getName() != null && p.getName().equalsIgnoreCase(this.getName()) ||
-                    this.getUniqueId().equals(p.getUniqueId())) {
+            if (p != this && p.getName().equalsIgnoreCase(this.getName()) || this.getUniqueId().equals(p.getUniqueId())) {
                 oldPlayer = p;
                 break;
             }
@@ -1116,7 +1115,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             nbt = oldPlayer.namedTag;
             oldPlayer.close("disconnectionScreen.loggedinOtherLocation");
         } else {
-            boolean existData = Server.getInstance().hasOfflinePlayerData(uuid);
+            boolean existData = Server.getInstance().hasOfflinePlayerData(this.username);
             if (existData) {
                 nbt = this.server.getOfflinePlayerData(this.username, false);
             } else {
@@ -4651,11 +4650,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public void onChunkUnloaded(IChunk chunk) {
-
-    }
-
-    @Override
-    public void onBlockChanged(Vector3 block) {
 
     }
 

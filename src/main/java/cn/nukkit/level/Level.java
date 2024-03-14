@@ -2198,9 +2198,6 @@ public class Level implements Metadatable {
         } else {
             addBlockChange(index, x, y, z);
         }
-        for (ChunkLoader loader : this.getChunkLoaders(cx, cz)) {
-            loader.onBlockChanged(block);
-        }
         if (update) {
             updateAllLight(block);
             BlockUpdateEvent ev = new BlockUpdateEvent(block);
@@ -3005,9 +3002,6 @@ public class Level implements Metadatable {
         chunk.setBlockState(x & 0x0f, ensureY(y), z & 0x0f, state, layer);
         addBlockChange(x, y, z);
         temporalVector.setComponents(x, y, z);
-        for (ChunkLoader loader : this.getChunkLoaders(x >> 4, z >> 4)) {
-            loader.onBlockChanged(temporalVector);
-        }
     }
 
     public BlockState getBlockStateAt(int x, int y, int z, int layer) {

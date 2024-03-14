@@ -1973,6 +1973,16 @@ public class Server {
         return getOfflinePlayerDataInternal(uuid.get(), create);
     }
 
+    public boolean hasOfflinePlayerData(String name) {
+        Optional<UUID> uuid = lookupName(name);
+        if (uuid.isEmpty()) {
+            log.warn("Invalid uuid in name lookup database detected! Removing");
+            playerDataDB.delete(name.getBytes(StandardCharsets.UTF_8));
+            return false;
+        }
+        return hasOfflinePlayerData(uuid.get());
+    }
+
     public boolean hasOfflinePlayerData(UUID uuid) {
         ByteBuffer buffer = ByteBuffer.allocate(16);
         buffer.putLong(uuid.getMostSignificantBits());
