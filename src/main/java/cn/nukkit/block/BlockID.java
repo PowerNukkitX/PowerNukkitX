@@ -980,10 +980,6 @@ public interface BlockID {
 
     String HARD_GLASS_PANE = "minecraft:hard_glass_pane";
 
-    String HARD_STAINED_GLASS = "minecraft:hard_stained_glass";
-
-    String HARD_STAINED_GLASS_PANE = "minecraft:hard_stained_glass_pane";
-
     String HARDENED_CLAY = "minecraft:hardened_clay";
 
     String HAY_BLOCK = "minecraft:hay_block";

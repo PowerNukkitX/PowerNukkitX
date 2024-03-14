@@ -44,6 +44,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 String name = tag.get("id").toString();
                 Item item = Item.get(name, damage, 1, nbt, false);
                 if (item.isNull() || (item.isBlock() && item.getBlockUnsafe().isAir())) {
+                    item = Item.AIR;
                     log.warn("load creative item {} damage {} is null", name, damage);
                 }
                 var isBlock = tag.containsKey("block_state_b64");
@@ -52,10 +53,12 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                     CompoundTag blockCompoundTag = NBTIO.read(blockTag, ByteOrder.LITTLE_ENDIAN);
                     int blockHash = blockCompoundTag.getInt("network_id");
                     BlockState block = Registries.BLOCKSTATE.get(blockHash);
-                    if(block==null){
-                        System.out.println(blockCompoundTag.toSNBT());
+                    if (block == null) {
+                        item = Item.AIR;
+                        log.warn("load creative item {} blockHash {} is null", name, blockHash);
+                    } else {
+                        item.setBlockUnsafe(block.toBlock());
                     }
-                    item.setBlockUnsafe(block.toBlock());
                 } else {
                     INTERNAL_DIFF_ITEM.put(i, item.clone());
                     item.setBlockUnsafe(null);

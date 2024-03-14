@@ -34,13 +34,12 @@ public class MobEffectPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeEntityRuntimeId(this.eid);
         byteBuf.writeByte((byte) this.eventId);
         byteBuf.writeVarInt(this.effectId);
         byteBuf.writeVarInt(this.amplifier);
         byteBuf.writeBoolean(this.particles);
-        byteBuf.writeVarInt(this.duration);
+        byteBuf.writeLongLE(this.duration);
     }
 
     public void handle(PacketHandler handler) {

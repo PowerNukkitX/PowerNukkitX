@@ -68,7 +68,6 @@ public class PlayerActionPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeEntityRuntimeId(this.entityId);
         byteBuf.writeVarInt(this.action);
         byteBuf.writeBlockVector3(this.x, this.y, this.z);
