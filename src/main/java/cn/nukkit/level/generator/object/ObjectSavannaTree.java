@@ -1,9 +1,11 @@
 package cn.nukkit.level.generator.object;
 
-import cn.nukkit.block.*;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockAcaciaLeaves;
+import cn.nukkit.block.BlockAcaciaWood;
+import cn.nukkit.block.BlockLeaves;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.property.enums.NewLeafType;
-import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.RandomSourceProvider;
@@ -12,12 +14,12 @@ public class ObjectSavannaTree extends TreeGenerator {
     /**
      * The metadata value of the wood to use in tree generation.
      */
-    private final BlockState TRUNK = BlockWood.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE, WoodType.ACACIA);
+    private final BlockState TRUNK = BlockAcaciaWood.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y);
 
     /**
      * The metadata value of the leaves to use in tree generation.
      */
-    private final BlockState LEAF = BlockLeaves2.PROPERTIES.getBlockState(CommonBlockProperties.NEW_LEAF_TYPE, NewLeafType.ACACIA);
+    private final BlockState LEAF = BlockAcaciaLeaves.PROPERTIES.getDefaultState();
 
     @Override
     public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position) {
@@ -59,7 +61,7 @@ public class ObjectSavannaTree extends TreeGenerator {
                 Vector3 down = position.down();
                 String block = level.getBlockIdAt(down.getFloorX(), down.getFloorY(), down.getFloorZ());
 
-                if ((block.equals(Block.GRASS) || block.equals(Block.DIRT)) && position.getY() < 256 - i - 1) {
+                if ((block.equals(Block.GRASS_BLOCK) || block.equals(Block.DIRT)) && position.getY() < 256 - i - 1) {
                     this.setDirtAt(level, position.down());
                     BlockFace face = BlockFace.Plane.HORIZONTAL.random(rand);
                     int k2 = i - rand.nextInt(4) - 1;
@@ -78,9 +80,9 @@ public class ObjectSavannaTree extends TreeGenerator {
                         }
 
                         Vector3 blockpos = new Vector3(i3, i2, j1);
-                        String material = level.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
-
-                        if (material.equals(Block.AIR) || material.equals(Block.LEAVES)) {
+                        Block b = level.getBlockAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
+                        String material = b.getId();
+                        if (material.equals(Block.AIR) || b instanceof BlockLeaves) {
                             this.placeLogAt(level, blockpos);
                             k1 = i2;
                         }
@@ -123,9 +125,10 @@ public class ObjectSavannaTree extends TreeGenerator {
                                 i3 += face1.getXOffset();
                                 j1 += face1.getZOffset();
                                 Vector3 blockpos1 = new Vector3(i3, j2, j1);
-                                String material1 = level.getBlockIdAt(blockpos1.getFloorX(), blockpos1.getFloorY(), blockpos1.getFloorZ());
+                                Block b = level.getBlockAt(blockpos1.getFloorX(), blockpos1.getFloorY(), blockpos1.getFloorZ());
+                                String material1 = b.getId();
 
-                                if (material1.equals(Block.AIR) || material1.equals(Block.LEAVES)) {
+                                if (material1.equals(Block.AIR) || b instanceof BlockLeaves) {
                                     this.placeLogAt(level, blockpos1);
                                     k1 = j2;
                                 }
@@ -170,8 +173,9 @@ public class ObjectSavannaTree extends TreeGenerator {
     }
 
     private void placeLeafAt(BlockManager worldIn, Vector3 pos) {
-        String material = worldIn.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
-        if (material.equals(Block.AIR) || material.equals(Block.LEAVES)) {
+        Block b = worldIn.getBlockAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
+        String material = b.getId();
+        if (material.equals(Block.AIR) || b instanceof BlockLeaves) {
             worldIn.setBlockStateAt(pos, LEAF);
         }
     }

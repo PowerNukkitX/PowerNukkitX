@@ -230,7 +230,7 @@ public class BlockComposter extends BlockSolid {
         registerItems(100, ItemID.CAKE, ItemID.PUMPKIN_PIE);
 
         registerBlocks(30, PINK_PETALS, LEAVES, LEAVES2, SAPLING, SEAGRASS, SWEET_BERRY_BUSH, MOSS_CARPET, HANGING_ROOTS, SMALL_DRIPLEAF_BLOCK);
-        registerBlocks(50, GLOW_LICHEN, GRASS, CACTUS, DRIED_KELP_BLOCK, VINE, NETHER_SPROUTS,
+        registerBlocks(50, GLOW_LICHEN, GRASS_BLOCK, CACTUS, DRIED_KELP_BLOCK, VINE, NETHER_SPROUTS,
                 TWISTING_VINES, WEEPING_VINES, GLOW_LICHEN);
         registerBlock(50, TALLGRASS, 0);
         registerBlock(50, TALLGRASS, 1);

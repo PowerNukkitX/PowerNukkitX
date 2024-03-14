@@ -15,10 +15,19 @@ public abstract class TreeGenerator extends ObjectGenerator {
      */
     protected boolean canGrowInto(String id) {
         return switch (id) {
-            case Block.AIR, Block.LEAVES, Block.GRASS, Block.DIRT, Block.ACACIA_LOG, Block.BIRCH_LOG, Block.OAK_LOG, Block.DARK_OAK_LOG,
+            case Block.AIR, BlockID.ACACIA_LEAVES,
+                    BlockID.AZALEA_LEAVES,
+                    BlockID.BIRCH_LEAVES,
+                    BlockID.AZALEA_LEAVES_FLOWERED,
+                    BlockID.CHERRY_LEAVES,
+                    BlockID.DARK_OAK_LEAVES,
+                    BlockID.JUNGLE_LEAVES,
+                    BlockID.MANGROVE_LEAVES,
+                    BlockID.OAK_LEAVES,
+                    BlockID.SPRUCE_LEAVES, Block.GRASS_BLOCK, Block.DIRT, Block.ACACIA_LOG, Block.BIRCH_LOG, Block.OAK_LOG, Block.DARK_OAK_LOG,
                     Block.JUNGLE_LOG, Block.MANGROVE_LOG, Block.SPRUCE_LOG, Block.SAPLING, Block.VINE,
-                    Block.DIRT_WITH_ROOTS, Block.AZALEA_LEAVES, Block.AZALEA_LEAVES_FLOWERED, Block.CHERRY_LEAVES,
-                    Block.CHERRY_LOG, Block.CHERRY_SAPLING, Block.MANGROVE_LEAVES, Block.MANGROVE_ROOTS, Block.MANGROVE_PROPAGULE ->
+                    Block.DIRT_WITH_ROOTS,
+                    Block.CHERRY_LOG, Block.CHERRY_SAPLING,Block.MANGROVE_ROOTS, Block.MANGROVE_PROPAGULE ->
                     true;
             default -> false;
         };

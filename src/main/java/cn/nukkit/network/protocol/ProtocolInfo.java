@@ -1,9 +1,6 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.utils.SemVersion;
-import com.google.common.primitives.Ints;
-
-import java.util.List;
 
 import static cn.nukkit.utils.Utils.dynamic;
 
@@ -15,11 +12,11 @@ public interface ProtocolInfo {
     /**
      * Actual Minecraft: PE protocol version
      */
-    int CURRENT_PROTOCOL = dynamic(649);
+    int CURRENT_PROTOCOL = dynamic(662);
 
-    String MINECRAFT_VERSION_NETWORK = dynamic("1.20.60");
+    String MINECRAFT_VERSION_NETWORK = dynamic("1.20.70");
 
-    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 20, 60, 0, 0);
+    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 20, 70, 0, 0);
 
     int BLOCK_STATE_VERSION_NO_REVISION = (MINECRAFT_SEMVERSION.major() << 24) | //major
             (MINECRAFT_SEMVERSION.minor() << 16) | //minor

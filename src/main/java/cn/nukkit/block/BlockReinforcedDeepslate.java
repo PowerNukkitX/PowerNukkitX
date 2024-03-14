@@ -3,7 +3,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockReinForcedDeepSlate extends BlockSolid {
+public class BlockReinforcedDeepslate extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(REINFORCED_DEEPSLATE);
 
     @Override
@@ -11,11 +11,11 @@ public class BlockReinForcedDeepSlate extends BlockSolid {
         return PROPERTIES;
     }
 
-    public BlockReinForcedDeepSlate() {
+    public BlockReinforcedDeepslate() {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockReinForcedDeepSlate(BlockState blockstate) {
+    public BlockReinforcedDeepslate(BlockState blockstate) {
         super(blockstate);
     }
 

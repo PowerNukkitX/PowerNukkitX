@@ -1,12 +1,11 @@
 package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockLeaves2;
+import cn.nukkit.block.BlockDarkOakLeaves;
+import cn.nukkit.block.BlockDarkOakWood;
+import cn.nukkit.block.BlockLeaves;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.block.BlockWood;
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.property.enums.NewLeafType;
-import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.RandomSourceProvider;
@@ -19,12 +18,12 @@ public class ObjectDarkOakTree extends TreeGenerator {
     /**
      * The metadata value of the wood to use in tree generation.
      */
-    private final BlockState DARK_OAK_LOG = BlockWood.PROPERTIES.getBlockState(CommonBlockProperties.WOOD_TYPE, WoodType.DARK_OAK);
+    private final BlockState DARK_OAK_WOOD = BlockDarkOakWood.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y);
 
     /**
      * The metadata value of the leaves to use in tree generation.
      */
-    private final BlockState DARK_OAK_LEAVES = BlockLeaves2.PROPERTIES.getBlockState(CommonBlockProperties.NEW_LEAF_TYPE, NewLeafType.DARK_OAK);
+    private final BlockState DARK_OAK_LEAVES = BlockDarkOakLeaves.PROPERTIES.getDefaultState();
 
     @Override
     public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position) {
@@ -37,7 +36,7 @@ public class ObjectDarkOakTree extends TreeGenerator {
             Vector3 blockpos = position.down();
             String block = level.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
 
-            if (!block.equals(Block.GRASS) && !block.equals(Block.DIRT)) {
+            if (!block.equals(Block.GRASS_BLOCK) && !block.equals(Block.DIRT)) {
                 return false;
             } else if (!this.placeTreeOfHeight(level, position, i)) {
                 return false;
@@ -62,9 +61,9 @@ public class ObjectDarkOakTree extends TreeGenerator {
 
                     int k2 = k + j2;
                     Vector3 blockpos1 = new Vector3(k1, k2, l1);
-                    String material = level.getBlockIdAt(blockpos1.getFloorX(), blockpos1.getFloorY(), blockpos1.getFloorZ());
+                    Block material = level.getBlockAt(blockpos1.getFloorX(), blockpos1.getFloorY(), blockpos1.getFloorZ());
 
-                    if (material.equals(Block.AIR) || material.equals(Block.LEAVES)) {
+                    if (material.isAir() || material instanceof BlockLeaves) {
                         this.placeLogAt(level, blockpos1);
                         this.placeLogAt(level, blockpos1.east());
                         this.placeLogAt(level, blockpos1.south());
@@ -170,7 +169,7 @@ public class ObjectDarkOakTree extends TreeGenerator {
 
     private void placeLogAt(BlockManager worldIn, Vector3 pos) {
         if (this.canGrowInto(worldIn.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()))) {
-            worldIn.setBlockStateAt(pos, DARK_OAK_LOG);
+            worldIn.setBlockStateAt(pos, DARK_OAK_WOOD);
         }
     }
 

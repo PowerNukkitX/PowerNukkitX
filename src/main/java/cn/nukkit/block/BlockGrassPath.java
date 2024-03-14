@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
@@ -12,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  * @author xtypr
  * @since 2015/11/22
  */
-public class BlockGrassPath extends BlockGrass {
+public class BlockGrassPath extends BlockGrassBlock {
     public static final BlockProperties PROPERTIES = new BlockProperties(GRASS_PATH);
 
     public BlockGrassPath() {
@@ -34,16 +33,6 @@ public class BlockGrassPath extends BlockGrass {
     }
 
     @Override
-    public int getToolType() {
-        return ItemTool.TYPE_SHOVEL;
-    }
-
-    @Override
-    public double getMaxY() {
-        return this.y + 1;
-    }
-    
-    @Override
     public double getHardness() {
         return 0.65;
     }
@@ -54,17 +43,12 @@ public class BlockGrassPath extends BlockGrass {
     }
 
     @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
-    @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (this.up().isSolid()) {
                 this.level.setBlock(this, Block.get(BlockID.DIRT), false, true);
             }
-            
+
             return Level.BLOCK_UPDATE_NORMAL;
         }
         return 0;
@@ -82,11 +66,6 @@ public class BlockGrassPath extends BlockGrass {
         }
 
         return false;
-    }
-
-    @Override
-    public boolean isSolid(BlockFace side) {
-        return true;
     }
 
     @Override

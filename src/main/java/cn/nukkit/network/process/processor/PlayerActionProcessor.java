@@ -3,7 +3,17 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
-import cn.nukkit.event.player.*;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockFrame;
+import cn.nukkit.block.BlockLectern;
+import cn.nukkit.event.player.PlayerJumpEvent;
+import cn.nukkit.event.player.PlayerKickEvent;
+import cn.nukkit.event.player.PlayerToggleFlightEvent;
+import cn.nukkit.event.player.PlayerToggleGlideEvent;
+import cn.nukkit.event.player.PlayerToggleSneakEvent;
+import cn.nukkit.event.player.PlayerToggleSpinAttackEvent;
+import cn.nukkit.event.player.PlayerToggleSprintEvent;
+import cn.nukkit.event.player.PlayerToggleSwimEvent;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
@@ -86,6 +96,14 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 }
             }
             case PlayerActionPacket.ACTION_CREATIVE_PLAYER_DESTROY_BLOCK -> {
+                // Used by client to get book from lecterns and items from item frame in creative mode since 1.20.70
+                Block blockLectern = playerHandle.player.getLevel().getBlock(pos);
+                if (blockLectern instanceof BlockLectern blockLecternI && blockLectern.distance(playerHandle.player) <= 6) {
+                    blockLecternI.dropBook(playerHandle.player);
+                }
+                if (blockLectern instanceof BlockFrame blockFrame && blockFrame.getBlockEntity() != null) {
+                    blockFrame.getBlockEntity().dropItem(playerHandle.player);
+                }
                 if (player.getServer().getServerAuthoritativeMovement() > 0) break;//ServerAuthorInput not use player
                 playerHandle.onBlockBreakComplete(new BlockVector3(pk.x, pk.y, pk.z), face);
             }

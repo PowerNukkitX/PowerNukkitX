@@ -67,7 +67,7 @@ public class BlockMossBlock extends BlockSolid {
 
     public boolean canConvertToMoss(Block block) {
         String id = block.getId();
-        return id.equals(BlockID.GRASS) ||
+        return id.equals(BlockID.GRASS_BLOCK) ||
                 id.equals(BlockID.DIRT) ||
                 id.equals(BlockID.DIRT_WITH_ROOTS) ||
                 id.equals(BlockID.STONE) ||
@@ -148,7 +148,7 @@ public class BlockMossBlock extends BlockSolid {
 
     public boolean canGrowPlant(Position pos) {
         return switch (pos.add(0, -1, 0).getLevelBlock().getId()) {
-            case GRASS, DIRT, PODZOL, FARMLAND, MYCELIUM, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
+            case GRASS_BLOCK, DIRT, PODZOL, FARMLAND, MYCELIUM, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
             default -> false;
         };
     }

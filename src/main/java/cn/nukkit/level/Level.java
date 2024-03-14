@@ -151,12 +151,20 @@ public class Level implements Metadatable {
     private static final Entity[] ENTITY_BUFFER = new Entity[512];
 
     static {
-        randomTickBlocks.add(BlockID.GRASS);
+        randomTickBlocks.add(BlockID.GRASS_BLOCK);
         randomTickBlocks.add(BlockID.FARMLAND);
         randomTickBlocks.add(BlockID.MYCELIUM);
         randomTickBlocks.add(BlockID.SAPLING);
-        randomTickBlocks.add(BlockID.LEAVES);
-        randomTickBlocks.add(BlockID.LEAVES2);
+        randomTickBlocks.add(BlockID.ACACIA_LEAVES);
+        randomTickBlocks.add(BlockID.AZALEA_LEAVES);
+        randomTickBlocks.add(BlockID.BIRCH_LEAVES);
+        randomTickBlocks.add(BlockID.AZALEA_LEAVES_FLOWERED);
+        randomTickBlocks.add(BlockID.CHERRY_LEAVES);
+        randomTickBlocks.add(BlockID.DARK_OAK_LEAVES);
+        randomTickBlocks.add(BlockID.JUNGLE_LEAVES);
+        randomTickBlocks.add(BlockID.MANGROVE_LEAVES);
+        randomTickBlocks.add(BlockID.OAK_LEAVES);
+        randomTickBlocks.add(BlockID.SPRUCE_LEAVES);
         randomTickBlocks.add(BlockID.SNOW_LAYER);
         randomTickBlocks.add(BlockID.ICE);
         randomTickBlocks.add(BlockID.FLOWING_LAVA);
