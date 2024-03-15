@@ -155,7 +155,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
 
     public static boolean isSupportValid(Block block) {
         return switch (block.getId()) {
-            case GRASS, DIRT, PODZOL, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
+            case GRASS_BLOCK, DIRT, PODZOL, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
             default -> false;
         };
     }

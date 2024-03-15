@@ -140,7 +140,7 @@ public class BlockSnowLayer extends BlockFallable {
             case BARRIER, STRUCTURE_VOID -> {
                 return false;
             }
-            case GRASS -> setCovered(true);
+            case GRASS_BLOCK -> setCovered(true);
             case TALLGRASS -> {
                 if (!level.setBlock(this, 0, this, true)) {
                     return false;
@@ -202,7 +202,7 @@ public class BlockSnowLayer extends BlockFallable {
                 return Level.BLOCK_UPDATE_RANDOM;
             }
         } else if (type == Level.BLOCK_UPDATE_NORMAL) {
-            boolean covered = down().getId().equals(GRASS);
+            boolean covered = down().getId().equals(GRASS_BLOCK);
             if (isCovered() != covered) {
                 setCovered(covered);
                 level.setBlock(this, this, true);

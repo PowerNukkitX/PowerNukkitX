@@ -968,4 +968,30 @@ public interface ItemID {
     String ZOMBIE_SPAWN_EGG = "minecraft:zombie_spawn_egg";
 
     String ZOMBIE_VILLAGER_SPAWN_EGG = "minecraft:zombie_villager_spawn_egg";
+
+    String LEAVES = "minecraft:leaves";
+
+    String LEAVES2 = "minecraft:leaves2";
+
+    String ARMADILLO_SCUTE = "minecraft:armadillo_scute";
+
+    String ARMADILLO_SPAWN_EGG = "minecraft:armadillo_spawn_egg";
+
+    String BOGGED_SPAWN_EGG = "minecraft:bogged_spawn_egg";
+
+    String BREEZE_SPAWN_EGG = "minecraft:breeze_spawn_egg";
+
+    String HARD_STAINED_GLASS = "minecraft:hard_stained_glass";
+
+    String HARD_STAINED_GLASS_PANE = "minecraft:hard_stained_glass_pane";
+
+    String TRIAL_KEY = "minecraft:trial_key";
+
+    String WIND_CHARGE = "minecraft:wind_charge";
+
+    String WOLF_ARMOR = "minecraft:wolf_armor";
+
+    String WOOD = "minecraft:wood";
+
+    String WOODEN_SLAB = "minecraft:wooden_slab";
 }

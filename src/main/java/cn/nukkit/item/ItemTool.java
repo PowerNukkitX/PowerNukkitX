@@ -122,7 +122,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
         } else if (!this.isShears() && block.calculateBreakTime(this) > 0) {
             incDamage(2);
         } else if (this.isHoe()) {
-            if (block.getId().equals(Block.GRASS) || block.getId().equals(Block.DIRT)) {
+            if (block.getId().equals(Block.GRASS_BLOCK) || block.getId().equals(Block.DIRT)) {
                 incDamage(1);
             }
         } else {

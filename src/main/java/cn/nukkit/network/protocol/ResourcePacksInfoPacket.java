@@ -15,6 +15,7 @@ public class ResourcePacksInfoPacket extends DataPacket {
 
     public boolean mustAccept;
     public boolean scripting;
+    public boolean hasAddonPacks;
 
     public boolean forceServerPacks;
     public ResourcePack[] behaviourPackEntries = ResourcePack.EMPTY_ARRAY;
@@ -32,6 +33,7 @@ public class ResourcePacksInfoPacket extends DataPacket {
     @Override
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeBoolean(this.mustAccept);
+        byteBuf.writeBoolean(this.hasAddonPacks);
         byteBuf.writeBoolean(this.scripting);
         byteBuf.writeBoolean(this.forceServerPacks);
         this.encodePacks(byteBuf, this.behaviourPackEntries, true);

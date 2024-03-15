@@ -18,6 +18,7 @@ public class BlockStoneBlockSlab2 extends BlockSlab {
     }
 
     static BlockState getDoubleBlockState(BlockState blockState) {
+        if (blockState == null) return BlockDoubleStoneBlockSlab2.PROPERTIES.getDefaultState();
         StoneSlabType2 propertyValue = blockState.getPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE_2);
         return BlockDoubleStoneBlockSlab2.PROPERTIES.getBlockState(CommonBlockProperties.STONE_SLAB_TYPE_2, propertyValue);
     }

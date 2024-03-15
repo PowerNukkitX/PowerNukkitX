@@ -135,6 +135,10 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
             return Instrument.BASS_DRUM;
         }
 
+        if (down instanceof BlockWoodenSlab || down instanceof BlockDoubleWoodenSlab) {
+            return Instrument.BASS;
+        }
+
         return switch (down.getId()) {
             case GOLD_BLOCK -> Instrument.GLOCKENSPIEL;
             case CLAY, HONEYCOMB_BLOCK -> Instrument.FLUTE;
@@ -146,7 +150,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
             case EMERALD_BLOCK -> Instrument.SQUARE_WAVE;
             case HAY_BLOCK -> Instrument.BANJO;
             case GLOWSTONE -> Instrument.ELECTRIC_PIANO;
-            case DOUBLE_WOODEN_SLAB, WOODEN_SLAB, OAK_STAIRS, SPRUCE_STAIRS, BIRCH_STAIRS, JUNGLE_STAIRS,
+            case OAK_STAIRS, SPRUCE_STAIRS, BIRCH_STAIRS, JUNGLE_STAIRS,
                     ACACIA_STAIRS, DARK_OAK_STAIRS, CRIMSON_STAIRS, WARPED_STAIRS,
                     WOODEN_DOOR, SPRUCE_DOOR, BIRCH_DOOR, JUNGLE_DOOR,
                     ACACIA_DOOR, DARK_OAK_DOOR, CRIMSON_DOOR, WARPED_DOOR,

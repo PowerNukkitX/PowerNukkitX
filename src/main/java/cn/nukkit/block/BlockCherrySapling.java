@@ -129,7 +129,7 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
 
     private boolean isSupportInvalid() {
         String downId = down().getId();
-        return !(downId.equals(DIRT) || downId.equals(GRASS) || downId.equals(SAND) || downId.equals(GRAVEL) || downId.equals(PODZOL));
+        return !(downId.equals(DIRT) || downId.equals(GRASS_BLOCK) || downId.equals(SAND) || downId.equals(GRAVEL) || downId.equals(PODZOL));
     }
 
     public boolean isAge() {

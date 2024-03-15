@@ -143,7 +143,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
                     vector3 = this.add(vector2.getFloorX(), 0, vector2.getFloorY());
                     generator = new ObjectJungleBigTree(10, 20,
                             BlockJungleLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y),
-                            BlockLeaves.PROPERTIES.getBlockState(CommonBlockProperties.OLD_LEAF_TYPE, OldLeafType.JUNGLE)
+                            BlockJungleLeaves.PROPERTIES.getDefaultState()
                     );
                     bigTree = true;
                 }
