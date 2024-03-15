@@ -2652,8 +2652,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
                         Block block = level.getBlock(this);
                         String blockId = block.getId();
-                        boolean ignore = blockId == Block.LADDER || blockId == Block.VINE || blockId == Block.WEB
-                                || blockId == Block.SCAFFOLDING;// || (blockId == Block.SWEET_BERRY_BUSH && block.getDamage() > 0);
+                        boolean ignore = blockId.equals(Block.LADDER) || blockId.equals(Block.VINE) || blockId.equals(Block.WEB)
+                                || blockId.equals(Block.SCAFFOLDING);// || (blockId == Block.SWEET_BERRY_BUSH && block.getDamage() > 0);
 
                         if (!this.hasEffect(EffectType.JUMP_BOOST) && diff > 0.6 && expectedVelocity < this.speed.y && !ignore) {
                             if (this.inAirTicks < 150) {

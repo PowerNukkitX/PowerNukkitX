@@ -3771,7 +3771,7 @@ public class Level implements Metadatable {
             String key = entry.getKey();
             String[] split = key.split(":");
             Map<Plugin, MetadataValue> value = entry.getValue();
-            if (split[3].equals("inventory") && value.containsKey(InternalPlugin.INSTANCE)) {
+            if (split[3].equals(BlockInventoryHolder.KEY) && value.containsKey(InternalPlugin.INSTANCE)) {
                 Block block = getBlock(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
                 if (!(block instanceof BlockInventoryHolder)) {
                     this.getBlockMetadata().removeMetadata(block, key, InternalPlugin.INSTANCE);
