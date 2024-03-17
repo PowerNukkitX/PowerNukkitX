@@ -1,7 +1,6 @@
 package cn.nukkit.level;
 
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.math.Vector3;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -28,6 +27,4 @@ public interface ChunkLoader {
     void onChunkLoaded(IChunk chunk);
 
     void onChunkUnloaded(IChunk chunk);
-
-    void onBlockChanged(Vector3 block);
 }

@@ -41,7 +41,7 @@ public class BlockRedFlower extends BlockFlowable implements BlockFlowerPot.Flow
 
     public static boolean isSupportValid(Block block) {
         return switch (block.getId()) {
-            case GRASS, DIRT, FARMLAND, PODZOL, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
+            case GRASS_BLOCK, DIRT, FARMLAND, PODZOL, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
             default -> false;
         };
     }
@@ -94,7 +94,7 @@ public class BlockRedFlower extends BlockFlowable implements BlockFlowerPot.Flow
                         ThreadLocalRandom.current().nextInt(-1, 2),
                         ThreadLocalRandom.current().nextInt(-3, 4));
 
-                if (level.getBlock(vec).getId().equals(AIR) && level.getBlock(vec.down()).getId().equals(GRASS) && vec.getY() >= level.getDimensionData().getMinHeight() && vec.getY() < level.getDimensionData().getMaxHeight()) {
+                if (level.getBlock(vec).getId().equals(AIR) && level.getBlock(vec.down()).getId().equals(GRASS_BLOCK) && vec.getY() >= level.getDimensionData().getMinHeight() && vec.getY() < level.getDimensionData().getMaxHeight()) {
                     if (ThreadLocalRandom.current().nextInt(10) == 0) {
                         this.level.setBlock(vec, this.getUncommonFlower(), true);
                     } else {

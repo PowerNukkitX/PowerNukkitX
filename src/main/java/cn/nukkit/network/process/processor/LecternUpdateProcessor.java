@@ -17,23 +17,16 @@ public class LecternUpdateProcessor extends DataPacketProcessor<LecternUpdatePac
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull LecternUpdatePacket pk) {
         BlockVector3 blockPosition = pk.blockPosition;
         playerHandle.player.temporalVector.setComponents(blockPosition.x, blockPosition.y, blockPosition.z);
-        if (pk.dropBook) {
-            Block blockLectern = playerHandle.player.getLevel().getBlock(playerHandle.player.temporalVector);
-            if (blockLectern instanceof BlockLectern && blockLectern.distance(playerHandle.player) <= 6) {
-                ((BlockLectern) blockLectern).dropBook(playerHandle.player);
-            }
-        } else {
-            BlockEntity blockEntityLectern = playerHandle.player.level.getBlockEntity(playerHandle.player.temporalVector);
-            if (blockEntityLectern instanceof BlockEntityLectern lectern) {
-                LecternPageChangeEvent lecternPageChangeEvent = new LecternPageChangeEvent(playerHandle.player, lectern, pk.page);
-                playerHandle.player.getServer().getPluginManager().callEvent(lecternPageChangeEvent);
-                if (!lecternPageChangeEvent.isCancelled()) {
-                    lectern.setRawPage(lecternPageChangeEvent.getNewRawPage());
-                    lectern.spawnToAll();
-                    Block blockLectern = lectern.getBlock();
-                    if (blockLectern instanceof BlockLectern) {
-                        ((BlockLectern) blockLectern).executeRedstonePulse();
-                    }
+        BlockEntity blockEntityLectern = playerHandle.player.level.getBlockEntity(playerHandle.player.temporalVector);
+        if (blockEntityLectern instanceof BlockEntityLectern lectern) {
+            LecternPageChangeEvent lecternPageChangeEvent = new LecternPageChangeEvent(playerHandle.player, lectern, pk.page);
+            playerHandle.player.getServer().getPluginManager().callEvent(lecternPageChangeEvent);
+            if (!lecternPageChangeEvent.isCancelled()) {
+                lectern.setRawPage(lecternPageChangeEvent.getNewRawPage());
+                lectern.spawnToAll();
+                Block blockLectern = lectern.getBlock();
+                if (blockLectern instanceof BlockLectern) {
+                    ((BlockLectern) blockLectern).executeRedstonePulse();
                 }
             }
         }

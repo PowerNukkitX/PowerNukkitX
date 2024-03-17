@@ -119,7 +119,7 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
         BlockFace sideFace = BlockFace.Plane.HORIZONTAL.random();
         Block side = this.getSide(sideFace);
         Block d = side.down();
-        if (side.isAir() && (d.getId().equals(FARMLAND) || d.getId().equals(GRASS) || d.getId().equals(DIRT))) {
+        if (side.isAir() && (d.getId().equals(FARMLAND) || d.getId().equals(GRASS_BLOCK) || d.getId().equals(DIRT))) {
             BlockGrowEvent ev = new BlockGrowEvent(side, Block.get(fruitId));
             Server.getInstance().getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {

@@ -10,6 +10,7 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.HashUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
 
@@ -17,6 +18,7 @@ import javax.annotation.Nullable;
  * @author CreeperFace
  * @since 11.4.2017
  */
+@Slf4j
 public class BlockEntityMovingBlock extends BlockEntitySpawnable {
     protected Block block;
     protected BlockVector3 piston;
@@ -59,7 +61,11 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
             CompoundTag movingBlock = namedTag.getCompound("movingBlock");
             int blockhash = HashUtils.fnv1a_32_nbt_palette(movingBlock);
             BlockState blockState = Registries.BLOCKSTATE.get(blockhash);
-            this.block = blockState.toBlock();
+            if(blockState==null){
+                log.error("cant load moving block {}",movingBlock.toSNBT());
+            }else{
+                this.block = blockState.toBlock();
+            }
             this.block.x = x;
             this.block.y = y;
             this.block.z = z;

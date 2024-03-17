@@ -104,11 +104,17 @@ public class BedrockSession {
                 .permit(SessionState.RESOURCE_PACK, SessionState.RESOURCE_PACK);
 
         cfg.configure(SessionState.ENCRYPTION)
-                .onEntry(() -> this.setPacketHandler(new HandshakePacketHandler(this)))
+                .onEntry(() -> {
+                    log.debug("Player {} enter ENCRYPTION stage", getPeer().getSocketAddress().toString());
+                    this.setPacketHandler(new HandshakePacketHandler(this));
+                })
                 .permit(SessionState.RESOURCE_PACK, SessionState.RESOURCE_PACK);
 
         cfg.configure(SessionState.RESOURCE_PACK)
-                .onEntry(() -> this.setPacketHandler(new ResourcePackHandler(this)))
+                .onEntry(() -> {
+                    log.debug("Player {} enter RESOURCE_PACK stage", getPeer().getSocketAddress().toString());
+                    this.setPacketHandler(new ResourcePackHandler(this));
+                })
                 .permit(SessionState.PRE_SPAWN, SessionState.PRE_SPAWN);
 
         cfg.configure(SessionState.PRE_SPAWN)
@@ -481,13 +487,16 @@ public class BedrockSession {
         AvailableCommandsPacket pk = new AvailableCommandsPacket();
         Map<String, CommandDataVersions> data = new HashMap<>();
         int count = 0;
-        for (Command command : Server.getInstance().getCommandMap().getCommands().values()) {
-            if (!command.testPermissionSilent(this.getPlayer()) || !command.isRegistered() || command.isServerSideOnly()) {
-                continue;
+        final Map<String, Command> commands = Server.getInstance().getCommandMap().getCommands();
+        synchronized (commands) {
+            for (Command command : commands.values()) {
+                if (!command.testPermissionSilent(this.getPlayer()) || !command.isRegistered() || command.isServerSideOnly()) {
+                    continue;
+                }
+                ++count;
+                CommandDataVersions data0 = command.generateCustomCommandData(this.getPlayer());
+                data.put(command.getName(), data0);
             }
-            ++count;
-            CommandDataVersions data0 = command.generateCustomCommandData(this.getPlayer());
-            data.put(command.getName(), data0);
         }
         if (count > 0) {
             //TODO: structure checking
@@ -508,7 +517,7 @@ public class BedrockSession {
 
     public void syncInventory() {
         var player = getPlayer();
-        if(player!=null){
+        if (player != null) {
             player.getInventory().sendHeldItem(player);
             player.getInventory().sendContents(player);
             player.getInventory().sendArmorContents(player);

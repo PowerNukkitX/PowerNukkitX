@@ -46,7 +46,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
         }
 
         try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("biome_definitions.nbt")) {
-            TreeMapCompoundTag compoundTag = NBTIO.readCompressedTreeMapCompoundTag(stream, ByteOrder.BIG_ENDIAN);
+            TreeMapCompoundTag compoundTag = NBTIO.readTreeMapCompoundTag(stream, ByteOrder.BIG_ENDIAN, true);
             Map<String, Tag> tags = compoundTag.getTags();
             for (var e : tags.entrySet()) {
                 int id = NAME2ID.getInt(e.getKey());
@@ -95,7 +95,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
 
     public byte[] getBiomeDefinitionListPacketData() {
         //todo Figure out the mapping of custom biomes
-        try (InputStream resourceAsStream = BiomeRegistry.class.getClassLoader().getResourceAsStream("biome_definitions_vanilla.nbt")){
+        try (InputStream resourceAsStream = BiomeRegistry.class.getClassLoader().getResourceAsStream("biome_definitions.nbt")) {
             assert resourceAsStream != null;
             return resourceAsStream.readAllBytes();
         } catch (IOException e) {
@@ -159,7 +159,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeRegistry.BiomeDefi
         public CompoundTag toNBT() {
             ListTag<StringTag> stringTagListTag = new ListTag<>();
             for (var s : tags) {
-                stringTagListTag.add(new StringTag( s));
+                stringTagListTag.add(new StringTag(s));
             }
             return new CompoundTag()
                     .putFloat("ash", ash)

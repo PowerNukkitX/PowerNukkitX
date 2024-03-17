@@ -34,6 +34,7 @@ import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.LevelProviderManager;
 import cn.nukkit.level.format.leveldb.LevelDBProvider;
+import cn.nukkit.level.generator.terra.PNXPlatform;
 import cn.nukkit.level.tickingarea.manager.SimpleTickingAreaManager;
 import cn.nukkit.level.tickingarea.manager.TickingAreaManager;
 import cn.nukkit.level.tickingarea.storage.JSONTickingAreaStorage;
@@ -72,7 +73,8 @@ import cn.nukkit.plugin.service.NKServiceManager;
 import cn.nukkit.plugin.service.ServiceManager;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.recipe.Recipe;
-import cn.nukkit.registry.*;
+import cn.nukkit.registry.RecipeRegistry;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.resourcepacks.ResourcePackManager;
 import cn.nukkit.resourcepacks.loader.JarPluginResourcePackLoader;
 import cn.nukkit.resourcepacks.loader.ZippedResourcePackLoader;
@@ -126,7 +128,6 @@ import java.security.Permissions;
 import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
@@ -722,6 +723,10 @@ public class Server {
             DispenseBehaviorRegister.init();
         }
 
+        if (useTerra) {//load terra
+            PNXPlatform instance = PNXPlatform.getInstance();
+        }
+
         freezableArrayManager = new FreezableArrayManager(
                 this.getConfig("memory-compression.enable", true),
                 this.getConfig("memory-compression.slots", 32),
@@ -912,8 +917,6 @@ public class Server {
         JSFeatures.initInternalFeatures();
         this.scoreboardManager.read();
         this.pluginManager.registerInterface(JSPluginLoader.class);
-        this.pluginManager.loadPlugins(this.pluginPath);
-        this.functionManager.reload();
 
         log.info("Reloading Registries...");
         {
@@ -935,6 +938,10 @@ public class Server {
             Registries.RECIPE.reload();
             Enchantment.reload();
         }
+
+        this.pluginManager.loadPlugins(this.pluginPath);
+        this.functionManager.reload();
+
         this.enablePlugins(PluginLoadOrder.STARTUP);
         {
             Registries.POTION.trim();
@@ -1235,12 +1242,6 @@ public class Server {
         if (this.sendUsageTicker > 0 && --this.sendUsageTicker == 0) {
             this.sendUsageTicker = 6000;
             //todo sendUsage
-        }
-
-        if (this.tickCounter % 100 == 0) {
-            CompletableFuture.allOf(Arrays.stream(this.levelArray).parallel()
-                    .flatMap(l -> l.asyncChunkGarbageCollection().stream())
-                    .toArray(CompletableFuture[]::new));
         }
 
         // 处理可冻结数组
@@ -1964,7 +1965,22 @@ public class Server {
 
     public CompoundTag getOfflinePlayerData(String name, boolean create) {
         Optional<UUID> uuid = lookupName(name);
-        return getOfflinePlayerDataInternal(uuid.orElse(null), create);
+        if (uuid.isEmpty()) {
+            log.warn("Invalid uuid in name lookup database detected! Removing");
+            playerDataDB.delete(name.getBytes(StandardCharsets.UTF_8));
+            return null;
+        }
+        return getOfflinePlayerDataInternal(uuid.get(), create);
+    }
+
+    public boolean hasOfflinePlayerData(String name) {
+        Optional<UUID> uuid = lookupName(name);
+        if (uuid.isEmpty()) {
+            log.warn("Invalid uuid in name lookup database detected! Removing");
+            playerDataDB.delete(name.getBytes(StandardCharsets.UTF_8));
+            return false;
+        }
+        return hasOfflinePlayerData(uuid.get());
     }
 
     public boolean hasOfflinePlayerData(UUID uuid) {
@@ -2531,10 +2547,6 @@ public class Server {
                 }
                 level = new Level(this, levelName, path, levelConfig.generators().size(), provider, generatorConfig);
 
-                //first generate, set a safe spawn point
-                Position safeSpawn = level.getSafeSpawn(level.getProvider().getSpawn());
-                level.getProvider().setSpawn(safeSpawn);
-
                 this.levels.put(level.getId(), level);
                 level.initLevel();
                 level.setTickRate(this.baseTickRate);
@@ -3055,6 +3067,9 @@ public class Server {
         return maxCompressionBufferSize;
     }
 
+    /**
+     * This chunk will be unloaded after how many milliseconds It is not used,define whether is used through {@link Level#isChunkInUse(long)}
+     */
     public int getChunkUnloadDelay() {
         return chunkUnloadDelay;
     }

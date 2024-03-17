@@ -75,7 +75,7 @@ public class BlockSoulSand extends BlockSolid {
                 BlockFormEvent event = new BlockFormEvent(up, new BlockBubbleColumn());
                 if (!event.isCancelled()) {
                     if (event.getNewState().getWaterloggingLevel() > 0) {
-                        this.getLevel().setBlock(up, 1, new BlockWater(), true, false);
+                        this.getLevel().setBlock(up, 1, new BlockFlowingWater(), true, false);
                     }
                     this.getLevel().setBlock(up, 0, event.getNewState(), true, true);
                 }

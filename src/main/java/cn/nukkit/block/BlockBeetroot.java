@@ -55,7 +55,7 @@ public class BlockBeetroot extends BlockCrops {
         }
 
         return new Item[]{
-                Item.get(ItemID.BEETROOT),
+                Item.get(BlockID.BEETROOT),
                 Item.get(ItemID.BEETROOT_SEEDS, 0, seeds)
         };
     }

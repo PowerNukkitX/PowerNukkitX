@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
-import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockSkull;
+import cn.nukkit.block.property.CommonBlockProperties;
 
 /**
  * @author Snake1999
@@ -23,19 +24,44 @@ public class ItemSkull extends Item {
     }
 
     public ItemSkull(Integer meta, int count) {
-        super(SKULL, meta, count, "Skull");
-        this.block = Block.get(Block.SKULL);
-        updateName();
+        super(SKULL, meta, count);
+        adjust();
     }
 
     @Override
     public void setDamage(int meta) {
         super.setDamage(meta);
-        updateName();
+        adjust();
     }
 
-    private void updateName() {
-        name = getItemSkullName(getDamage());
+    public void adjust() {
+        switch (getDamage()) {
+            case 0, 6, 7 -> {
+                name = "Skeleton Skull";
+                block = BlockSkull.PROPERTIES.getBlockState(CommonBlockProperties.FACING_DIRECTION.createValue(0)).toBlock();
+            }
+            case 1 -> {
+                name = "Wither Skeleton Skull";
+                block = BlockSkull.PROPERTIES.getBlockState(CommonBlockProperties.FACING_DIRECTION.createValue(1)).toBlock();
+            }
+            case 2 -> {
+                name = "Zombie Head";
+                block = BlockSkull.PROPERTIES.getBlockState(CommonBlockProperties.FACING_DIRECTION.createValue(2)).toBlock();
+            }
+            case 3 -> {
+                name = "Head";
+                block = BlockSkull.PROPERTIES.getBlockState(CommonBlockProperties.FACING_DIRECTION.createValue(3)).toBlock();
+            }
+            case 4 -> {
+                name = "Creeper Head";
+                block = BlockSkull.PROPERTIES.getBlockState(CommonBlockProperties.FACING_DIRECTION.createValue(4)).toBlock();
+            }
+            case 5 -> {
+                name = "Dragon Head";
+                block = BlockSkull.PROPERTIES.getBlockState(CommonBlockProperties.FACING_DIRECTION.createValue(5)).toBlock();
+            }
+            default -> throw new IllegalArgumentException("Invalid damage: " + getDamage());
+        }
     }
 
     public static String getItemSkullName(int meta) {

@@ -306,7 +306,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     private boolean isValidSupportBlock(String id) {
         return Objects.equals(id, BIG_DRIPLEAF) ||
-                Objects.equals(id, GRASS) ||
+                Objects.equals(id, GRASS_BLOCK) ||
                 Objects.equals(id, DIRT) ||
                 Objects.equals(id, MYCELIUM) ||
                 Objects.equals(id, PODZOL) ||

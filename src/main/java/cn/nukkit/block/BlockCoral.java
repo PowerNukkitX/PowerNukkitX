@@ -70,7 +70,7 @@ public abstract class BlockCoral extends BlockFlowable {
         }
 
         if (hasWater && layer1.getPropertyValue(LIQUID_DEPTH) == 8) {
-            this.getLevel().setBlock(this, 1, new BlockWater(), true, false);
+            this.getLevel().setBlock(this, 1, new BlockFlowingWater(), true, false);
         }
 
         if (down.isSolid()) {

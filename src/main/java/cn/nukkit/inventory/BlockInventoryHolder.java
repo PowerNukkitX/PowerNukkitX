@@ -8,6 +8,9 @@ import cn.nukkit.plugin.InternalPlugin;
 import java.util.function.Supplier;
 
 public interface BlockInventoryHolder extends InventoryHolder {
+    String KEY = "inventory";
+
+
     Supplier<ContainerInventory> blockInventorySupplier();
 
     default Block getBlock() {
@@ -21,10 +24,10 @@ public interface BlockInventoryHolder extends InventoryHolder {
 
     default Inventory getOrCreateInventory() {
         Block block = getBlock();
-        MetadataValue meta = block.getMetadata("inventory", InternalPlugin.INSTANCE);
+        MetadataValue meta = block.getMetadata(KEY, InternalPlugin.INSTANCE);
         if (meta == null) {
             ContainerInventory containerInventory = blockInventorySupplier().get();
-            block.setMetadata("inventory", new FixedMetadataValue(InternalPlugin.INSTANCE, containerInventory));
+            block.setMetadata(KEY, new FixedMetadataValue(InternalPlugin.INSTANCE, containerInventory));
             return containerInventory;
         } else {
             return (ContainerInventory) meta.value();

@@ -9,16 +9,19 @@ public class BlockStoneBlockSlab4 extends BlockSlab {
     public static final BlockProperties PROPERTIES = new BlockProperties(STONE_BLOCK_SLAB4, CommonBlockProperties.MINECRAFT_VERTICAL_HALF, CommonBlockProperties.STONE_SLAB_TYPE_4);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    public BlockStoneBlockSlab4() {
-        this(PROPERTIES.getDefaultState());
+    public BlockStoneBlockSlab4(BlockState blockstate) {
+        super(blockstate, getDoubleBlockState(blockstate));
     }
 
-    public BlockStoneBlockSlab4(BlockState blockstate) {
-        super(blockstate, DOUBLE_STONE_BLOCK_SLAB4);
+    static BlockState getDoubleBlockState(BlockState blockState) {
+        if (blockState == null) return BlockDoubleStoneBlockSlab4.PROPERTIES.getDefaultState();
+        StoneSlabType4 propertyValue = blockState.getPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE_4);
+        return BlockDoubleStoneBlockSlab4.PROPERTIES.getBlockState(CommonBlockProperties.STONE_SLAB_TYPE_4, propertyValue);
     }
 
     @Override

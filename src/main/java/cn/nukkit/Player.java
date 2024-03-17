@@ -189,6 +189,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public final HashSet<String> achievements = new HashSet<>();
     public boolean playedBefore;
     public boolean spawned = false;
+    public boolean locallyInitialized = false;
     public boolean loggedIn = false;
     public int gamemode;
     public long lastBreak;
@@ -689,7 +690,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         var scoreboardManager = this.getServer().getScoreboardManager();
-        if (scoreboardManager != null) {//in test environment sometimes the scoreboard manager is null
+        if (scoreboardManager != null) {//in test environment sometimes the scoreboard level is null
             scoreboardManager.onPlayerJoin(this);
         }
 
@@ -1103,8 +1104,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         Player oldPlayer = null;
         for (Player p : new ArrayList<>(this.server.getOnlinePlayers().values())) {
-            if (p != this && p.getName() != null && p.getName().equalsIgnoreCase(this.getName()) ||
-                    this.getUniqueId().equals(p.getUniqueId())) {
+            if (p != this && p.getName().equalsIgnoreCase(this.getName()) || this.getUniqueId().equals(p.getUniqueId())) {
                 oldPlayer = p;
                 break;
             }
@@ -1115,7 +1115,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             nbt = oldPlayer.namedTag;
             oldPlayer.close("disconnectionScreen.loggedinOtherLocation");
         } else {
-            boolean existData = Server.getInstance().hasOfflinePlayerData(uuid);
+            boolean existData = Server.getInstance().hasOfflinePlayerData(this.username);
             if (existData) {
                 nbt = this.server.getOfflinePlayerData(this.username, false);
             } else {
@@ -1257,6 +1257,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * 玩家客户端初始化完成后调用
      */
     protected void onPlayerLocallyInitialized() {
+        locallyInitialized = true;
         PlayerJoinEvent playerJoinEvent = new PlayerJoinEvent(this,
                 new TranslationContainer(TextFormat.YELLOW + "%multiplayer.player.joined", new String[]{
                         this.getDisplayName()
@@ -2200,16 +2201,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-    public void sendChunk(int x, int z, int dim, int subChunkCount, byte[] payload) {
-        LevelChunkPacket pk = new LevelChunkPacket();
-        pk.chunkX = x;
-        pk.chunkZ = z;
-        pk.dimension = dim;
-        pk.subChunkCount = subChunkCount;
-        pk.data = payload;
-        this.sendChunk(x, z, pk);
-    }
-
 
     public void updateTrackingPositions() {
         updateTrackingPositions(false);
@@ -2661,8 +2652,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
                         Block block = level.getBlock(this);
                         String blockId = block.getId();
-                        boolean ignore = blockId == Block.LADDER || blockId == Block.VINE || blockId == Block.WEB
-                                || blockId == Block.SCAFFOLDING;// || (blockId == Block.SWEET_BERRY_BUSH && block.getDamage() > 0);
+                        boolean ignore = blockId.equals(Block.LADDER) || blockId.equals(Block.VINE) || blockId.equals(Block.WEB)
+                                || blockId.equals(Block.SCAFFOLDING);// || (blockId == Block.SWEET_BERRY_BUSH && block.getDamage() > 0);
 
                         if (!this.hasEffect(EffectType.JUMP_BOOST) && diff > 0.6 && expectedVelocity < this.speed.y && !ignore) {
                             if (this.inAirTicks < 150) {
@@ -3350,8 +3341,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return;
         }
 
-        if(!reason.isEmpty())
-        {
+        if (!reason.isEmpty()) {
             DisconnectPacket pk = new DisconnectPacket();
             pk.message = reason;
             this.getSession().sendPacketImmediately(pk);
@@ -4230,6 +4220,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return false;
         }
         this.setMotion(this.temporalVector.setComponents(0, 0, 0));
+
+        if (!to.getLevel().equals(from.getLevel())) {
+            unloadAllUsedChunk();
+        }
         //switch level, update pos and rotation, update aabb
         if (setPositionAndRotation(to, to.getYaw(), to.getPitch(), to.getHeadYaw())) {
             this.resetFallDistance();
@@ -4237,6 +4231,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             //send to client
             this.sendPosition(to, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
             this.newPosition = to;
+
+            this.nextChunkOrderRun = 0;
         } else {
             this.sendPosition(this, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
             this.newPosition = this;
@@ -4244,14 +4240,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         //state update
         this.positionChanged = true;
 
-        this.nextChunkOrderRun = 0;
-        if (!to.getLevel().equals(from.getLevel())) {
-            unloadAllUsedChunk();
-            this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> refreshChunkView(), 10, true);
-        } else if (from.distance(to) >= this.getViewDistance() * 16) {
-            this.server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> refreshChunkView(), 10, true);
-        }
-        this.playerChunkManager.handleTeleport();
         //refresh chunks for client
         //DummyBossBar
         this.getDummyBossBars().values().forEach(DummyBossBar::reshow);
@@ -4662,11 +4650,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public void onChunkUnloaded(IChunk chunk) {
-
-    }
-
-    @Override
-    public void onBlockChanged(Vector3 block) {
 
     }
 

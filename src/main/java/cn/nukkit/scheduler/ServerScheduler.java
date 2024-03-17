@@ -402,7 +402,7 @@ public class ServerScheduler {
     }
 
     @ApiStatus.Internal
-    public AsyncPool getAsyncPool() {
+    public AsyncPool getAsyncTaskThreadPool() {
         return asyncPool;
     }
 }

@@ -26,7 +26,7 @@ public class SparkInstaller {
         if (download) {
             try (InputStream in = SparkInstaller.class.getClassLoader().getResourceAsStream("spark.jar")) {
                 assert in != null;
-                File targetPath = new File(server.getPluginPath() + "/spark.jar");
+                File targetPath = new File(server.getPluginPath(), "spark.jar");
                 Files.copy(in, targetPath.toPath());
                 server.getPluginManager().enablePlugin(server.getPluginManager().loadPlugin(targetPath));
                 log.info("Spark has been installed.");

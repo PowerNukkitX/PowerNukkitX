@@ -130,8 +130,8 @@ public abstract class LegacyNetherTree extends LegacyTreeGenerator {
             if (checkY(level, y + yy)) { // 防止长出下界顶部基岩层
                 continue;
             }
-            String blockId = level.getBlockIdAt(x, y + yy, z);
-            if (this.overridable(blockId)) {
+            Block b = level.getBlockAt(x, y + yy, z);
+            if (this.overridable(b)) {
                 level.setBlockStateAt(x, y + yy, z, this.getTrunkBlockState());
             }
         }

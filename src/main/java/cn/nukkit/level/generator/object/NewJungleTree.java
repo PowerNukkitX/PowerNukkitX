@@ -1,8 +1,14 @@
 package cn.nukkit.level.generator.object;
 
-import cn.nukkit.block.*;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockCocoa;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockJungleLeaves;
+import cn.nukkit.block.BlockJungleLog;
+import cn.nukkit.block.BlockLeaves;
+import cn.nukkit.block.BlockState;
+import cn.nukkit.block.BlockVine;
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.property.enums.OldLeafType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
@@ -29,7 +35,7 @@ public class NewJungleTree extends TreeGenerator {
     /**
      * The metadata value of the leaves to use in tree generation.
      */
-    private final BlockState metaLeaves = BlockLeaves.PROPERTIES.getBlockState(CommonBlockProperties.OLD_LEAF_TYPE, OldLeafType.JUNGLE);
+    private final BlockState metaLeaves = BlockJungleLeaves.PROPERTIES.getDefaultState();
 
     public NewJungleTree(int minTreeHeight, int maxTreeHeight) {
         this.minTreeHeight = minTreeHeight;
@@ -78,7 +84,7 @@ public class NewJungleTree extends TreeGenerator {
                 BlockVector3 down = position.down();
                 String block = level.getBlockIdAt(down.x, down.y, down.z);
 
-                if ((block.equals(Block.GRASS) || block.equals(Block.DIRT) || block.equals(Block.FARMLAND)) && position.getY() < level.getMaxHeight() - i - 1) {
+                if ((block.equals(Block.GRASS_BLOCK) || block.equals(Block.DIRT) || block.equals(Block.FARMLAND)) && position.getY() < level.getMaxHeight() - i - 1) {
                     this.setDirtAt(level, down);
 
                     //Add leaves
@@ -94,9 +100,9 @@ public class NewJungleTree extends TreeGenerator {
 
                                 if (Math.abs(l1) != j1 || Math.abs(j2) != j1 || rand.nextInt(2) != 0 && i4 != 0) {
                                     BlockVector3 blockpos = new BlockVector3(k1, i3, i2);
-                                    String id = level.getBlockIdAt(blockpos.x, blockpos.y, blockpos.z);
+                                    Block id = level.getBlockAt(blockpos.x, blockpos.y, blockpos.z);
 
-                                    if (id.equals(Block.AIR) || id.equals(Block.LEAVES) || id.equals(Block.VINE)) {
+                                    if (id.getId().equals(Block.AIR) || id instanceof BlockLeaves || id.getId().equals(Block.VINE)) {
                                         level.setBlockStateAt(blockpos, metaLeaves);
                                     }
                                 }
@@ -107,9 +113,10 @@ public class NewJungleTree extends TreeGenerator {
                     //Add vine
                     for (int j3 = 0; j3 < i; ++j3) {
                         BlockVector3 up = position.up(j3);
-                        String id = level.getBlockIdAt(up.x, up.y, up.z);
+                        Block b = level.getBlockAt(up.x, up.y, up.z);
+                        String id = b.getId();
 
-                        if (id.equals(Block.AIR) || id.equals(Block.LEAVES) || id.equals(Block.VINE)) {
+                        if (id.equals(Block.AIR) || b instanceof BlockLeaves || id.equals(Block.VINE)) {
                             //Add tree trunks
                             level.setBlockStateAt(up, metaWood);
                             if (j3 > 0) {
@@ -141,7 +148,7 @@ public class NewJungleTree extends TreeGenerator {
                             for (int i5 = position.getZ() - k4; i5 <= position.getZ() + k4; ++i5) {
                                 pos2.setComponents(l4, k3, i5);
 
-                                if (level.getBlockIdAt(pos2.x, pos2.y, pos2.z).equals(Block.LEAVES)) {
+                                if (level.getBlockAt(pos2.x, pos2.y, pos2.z) instanceof BlockLeaves) {
                                     BlockVector3 blockpos2 = pos2.west();
                                     BlockVector3 blockpos3 = pos2.east();
                                     BlockVector3 blockpos4 = pos2.north();

@@ -101,7 +101,7 @@ public class BlockSeaPickle extends BlockFlowable {
                 }
 
                 if (w.getLiquidDepth() == 8) {
-                    this.getLevel().setBlock(block, 1, new BlockWater(), true, false);
+                    this.getLevel().setBlock(block, 1, new BlockFlowingWater(), true, false);
                 }
             } else {
                 setDead(true);
@@ -152,7 +152,7 @@ public class BlockSeaPickle extends BlockFlowable {
                             random.nextInt(6) == 0 && new Vector2(up.x, up.z).distance(new Vector2(this.x, this.z)) <= 2) {
                         BlockSpreadEvent blockSpreadEvent = new BlockSpreadEvent(up, this, new BlockSeaPickle().setPropertyValue(CLUSTER_COUNT, random.nextInt(3)));
                         if (!blockSpreadEvent.isCancelled()) {
-                            this.getLevel().setBlock(up, 1, new BlockWater(), true, false);
+                            this.getLevel().setBlock(up, 1, new BlockFlowingWater(), true, false);
                             this.getLevel().setBlock(up, blockSpreadEvent.getNewState(), true, true);
                         }
                     }

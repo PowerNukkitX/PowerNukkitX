@@ -43,7 +43,7 @@ public class BlockSeagrass extends BlockFlowable {
                 (layer1Block instanceof BlockFlowingWater water && ((waterDamage = (water.getLiquidDepth())) == 0 || waterDamage == 8))
         ) {
             if (waterDamage == 8) {
-                this.getLevel().setBlock(this, 1, new BlockWater(), true, false);
+                this.getLevel().setBlock(this, 1, new BlockFlowingWater(), true, false);
             }
             this.getLevel().setBlock(this, 0, this, true, true);
             return true;

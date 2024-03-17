@@ -1,9 +1,9 @@
 package cn.nukkit.level;
 
 import cn.nukkit.GameMockExtension;
+import cn.nukkit.block.BlockOakWood;
 import cn.nukkit.block.BlockObserver;
 import cn.nukkit.block.BlockRedstoneWire;
-import cn.nukkit.block.BlockWood;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -27,7 +27,7 @@ public class LevelTest {
         Assertions.assertEquals(15, level.getRedstonePower(new Vector3(1, 0, 0).getSide(BlockFace.WEST), BlockFace.WEST));
         Assertions.assertEquals(0, level.getRedstonePower(new Vector3(1, 0, 0).getSide(BlockFace.EAST), BlockFace.EAST));//observer cant output on east
 
-        level.setBlockStateAt(1, 0, 0, BlockWood.PROPERTIES.getDefaultState());
+        level.setBlockStateAt(1, 0, 0, BlockOakWood.PROPERTIES.getDefaultState());
         Assertions.assertEquals(15, level.getRedstonePower(new Vector3(1, 0, 0), BlockFace.WEST));//wood be strong power with observer
     }
 }
