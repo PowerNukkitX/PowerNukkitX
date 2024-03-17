@@ -23,7 +23,7 @@ public class BlockMetadataStore extends MetadataStore {
         if (!(block instanceof Block b)) {
             throw new IllegalArgumentException("Argument must be a Block instance");
         }
-        return b.x + ":" + b.y + ":" + b.z + ":" + metadataKey;
+        return b.getFloorX() + ":" + b.getFloorY() + ":" + b.getFloorZ() + ":" + metadataKey;
     }
 
     @Override

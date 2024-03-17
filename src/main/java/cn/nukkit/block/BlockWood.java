@@ -1,64 +1,24 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.registry.Registries;
-import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
-import static cn.nukkit.block.property.CommonBlockProperties.WOOD_TYPE;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 
-public class BlockWood extends BlockLog {
-    public static final BlockProperties PROPERTIES = new BlockProperties(WOOD, PILLAR_AXIS, CommonBlockProperties.STRIPPED_BIT, WOOD_TYPE);
-
-    @Override
-    @NotNull public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
-    public BlockWood() {
-        this(PROPERTIES.getDefaultState());
-    }
-
+public abstract class BlockWood extends BlockLog {
     public BlockWood(BlockState blockstate) {
         super(blockstate);
     }
 
-    @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 2;
-    }
-
-    public WoodType getWoodType() {
-        return getPropertyValue(WOOD_TYPE);
-    }
-
-    public void setWoodType(WoodType woodType) {
-        setPropertyValue(WOOD_TYPE, woodType);
-    }
+    public abstract WoodType getWoodType();
 
     @Override
     public String getName() {
         return getWoodType().name() + " Wood";
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 5;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 10;
     }
 
     @Override

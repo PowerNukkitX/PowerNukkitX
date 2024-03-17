@@ -34,7 +34,7 @@ public class GarbageCollectorCommand extends TestCommand implements CoreCommand 
             int chunksCount = level.getChunks().size();
             int entitiesCount = level.getEntities().length;
             int tilesCount = level.getBlockEntities().size();
-            level.doChunkGarbageCollection(true);
+            level.doLevelGarbageCollection(true);
             chunksCollected += chunksCount - level.getChunks().size();
             entitiesCollected += entitiesCount - level.getEntities().length;
             tilesCollected += tilesCount - level.getBlockEntities().size();

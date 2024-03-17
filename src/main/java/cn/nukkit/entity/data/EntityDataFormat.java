@@ -2,6 +2,7 @@ package cn.nukkit.entity.data;
 
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.RequiredArgsConstructor;
 
@@ -34,7 +35,7 @@ public enum EntityDataFormat {
             return VECTOR3I;
         } else if (clazz == Long.class) {
             return LONG;
-        } else if (clazz == Vector3.class) {
+        } else if (clazz == Vector3.class || clazz == Vector3f.class) {
             return VECTOR3F;
         }
         throw new IllegalArgumentException("Unknown EntityDataType: " + clazz);

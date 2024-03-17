@@ -43,6 +43,10 @@ public class PlayerAuthInputPacket extends DataPacket {
      * @since 649
      */
     private long predictedVehicle;
+    /**
+     * @since 662
+     */
+    private Vector2f vehicleRotation;
 
 
     @Override
@@ -99,6 +103,7 @@ public class PlayerAuthInputPacket extends DataPacket {
         }
 
         if (this.inputData.contains(AuthInputAction.IN_CLIENT_PREDICTED_IN_VEHICLE)) {
+            this.vehicleRotation = byteBuf.readVector2f();
             this.predictedVehicle = byteBuf.readVarLong();
         }
 

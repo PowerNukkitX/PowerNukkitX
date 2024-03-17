@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemID;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockNetherSprouts extends BlockRoots {
@@ -23,11 +22,6 @@ public class BlockNetherSprouts extends BlockRoots {
     @Override
     public String getName() {
         return "Nether Sprouts Block";
-    }
-
-    @Override
-    public Item toItem() {
-        return Item.get(ItemID.NETHER_SPROUTS);
     }
 
     @Override

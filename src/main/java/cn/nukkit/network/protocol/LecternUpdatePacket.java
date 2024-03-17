@@ -6,13 +6,11 @@ import lombok.ToString;
 
 @ToString
 public class LecternUpdatePacket extends DataPacket {
-
     public static final int NETWORK_ID = ProtocolInfo.LECTERN_UPDATE_PACKET;
 
     public int page;
     public int totalPages;
     public BlockVector3 blockPosition;
-    public boolean dropBook;
 
     @Override
     public int pid() {
@@ -21,10 +19,9 @@ public class LecternUpdatePacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        this.page = byteBuf.readByte();
-        this.totalPages = byteBuf.readByte();
+        this.page = byteBuf.readUnsignedByte();
+        this.totalPages = byteBuf.readUnsignedByte();
         this.blockPosition = byteBuf.readBlockVector3();
-        this.dropBook = byteBuf.readBoolean();
     }
 
     @Override

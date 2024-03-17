@@ -3,7 +3,7 @@
 
 [versions]
 cn-powernukkitx-libdeflate-java = "0.0.2-PNX"
-cn-powernukkitx-terra-binary = "6.3.0-BETA-CONFIG-1.3.3"
+cn-powernukkitx-terra-binary = "6.4.3"
 com-github-daniellansun-fast-reflection = "08ec134a5c"
 com-github-oshi-oshi-core = "6.4.10"
 com-google-code-findbugs-jsr305 = "3.0.2"
@@ -47,7 +47,7 @@ com-github-stateless4j = "2.6.0"
 
 [libraries]
 libdeflate = { module = "cn.powernukkitx:libdeflate-java", version.ref = "cn-powernukkitx-libdeflate-java" }
-terra = { module = "cn.powernukkitx:Terra-Binary", version.ref = "cn-powernukkitx-terra-binary" }
+terra = { module = "com.github.PowerNukkitX:Terra-Binary", version.ref = "cn-powernukkitx-terra-binary" }
 fastreflection = { module = "com.github.daniellansun:fast-reflection", version.ref = "com-github-daniellansun-fast-reflection" }
 oshi = { module = "com.github.oshi:oshi-core", version.ref = "com-github-oshi-oshi-core" }
 jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "com-google-code-findbugs-jsr305" }

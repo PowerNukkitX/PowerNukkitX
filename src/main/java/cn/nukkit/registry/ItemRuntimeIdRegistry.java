@@ -1,14 +1,16 @@
 package cn.nukkit.registry;
 
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BinaryStream;
+import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -58,11 +60,12 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
     @Override
     public void init() {
         if (isLoad.getAndSet(true)) return;
-        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("item_data.nbt")) {
+        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("runtime_item_states.json")) {
             assert stream != null;
-            CompoundTag compoundTag = NBTIO.readCompressed(stream);
-            for (var tag : compoundTag.getList("item", CompoundTag.class).getAll()) {
-                register0(tag.getString("name"), (int) tag.getShort("id"));
+            Gson gson = new Gson();
+            List<Map<String, Object>> data = gson.fromJson(new InputStreamReader(stream), List.class);
+            for (var tag : data) {
+                register0(tag.get("name").toString(), ((Number) tag.get("id")).intValue());
             }
             trim();
         } catch (IOException e) {

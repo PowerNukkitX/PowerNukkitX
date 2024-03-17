@@ -93,6 +93,6 @@ public class BlockDirt extends BlockSolid {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{toItem()};
+        return new Item[]{Block.get(DIRT).toItem()};
     }
 }

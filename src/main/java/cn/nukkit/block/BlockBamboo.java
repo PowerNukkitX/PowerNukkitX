@@ -34,7 +34,8 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
     }
 
     @Override
-    @NotNull public  BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -206,7 +207,7 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
 
     private boolean isSupportInvalid() {
         return switch (down().getId()) {
-            case BAMBOO, DIRT, GRASS, SAND, GRAVEL, PODZOL, BAMBOO_SAPLING, MOSS_BLOCK -> false;
+            case BAMBOO, DIRT, GRASS_BLOCK, SAND, GRAVEL, PODZOL, BAMBOO_SAPLING, MOSS_BLOCK -> false;
             default -> true;
         };
     }

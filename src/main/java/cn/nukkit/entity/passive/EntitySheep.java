@@ -84,7 +84,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
                                         )
                                 ),
                                 any(
-                                        new BlockCheckEvaluator(Block.GRASS, new Vector3(0, -1, 0)),
+                                        new BlockCheckEvaluator(Block.GRASS_BLOCK, new Vector3(0, -1, 0)),
                                         new BlockCheckEvaluator(Block.TALLGRASS, Vector3.ZERO))),
                                 3, 1, 100
                         ),

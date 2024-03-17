@@ -140,7 +140,7 @@ public class BlockBubbleColumn extends BlockTransparent {
         if (down().getId().equals(MAGMA)) {
             setDragDown(true);
         }
-        this.getLevel().setBlock(this, 1, new BlockWater(), true, false);
+        this.getLevel().setBlock(this, 1, new BlockFlowingWater(), true, false);
         this.getLevel().setBlock(this, this, true, true);
         return true;
     }
@@ -203,7 +203,7 @@ public class BlockBubbleColumn extends BlockTransparent {
             if (up instanceof BlockFlowingWater && (up.blockstate.specialValue() == 0 || up.blockstate.specialValue() == 8)) {
                 BlockFromToEvent event = new BlockFromToEvent(this, up);
                 if (!event.isCancelled()) {
-                    this.getLevel().setBlock(up, 1, new BlockWater(), true, false);
+                    this.getLevel().setBlock(up, 1, new BlockFlowingWater(), true, false);
                     this.getLevel().setBlock(up, 0, new BlockBubbleColumn(this.blockstate), true, true);
                 }
             }

@@ -227,11 +227,15 @@ public interface IChunk {
     }
 
     default boolean isGenerated() {
-        return this.getChunkState() == ChunkState.GENERATED;
+        return this.getChunkState().ordinal() >= ChunkState.GENERATED.ordinal();
     }
 
     default boolean isPopulated() {
-        return this.getChunkState() == ChunkState.POPULATED;
+        return this.getChunkState().ordinal() >= ChunkState.POPULATED.ordinal();
+    }
+
+    default boolean isFinished() {
+        return this.getChunkState().ordinal() == ChunkState.FINISHED.ordinal();
     }
 
     default void setGenerated() {

@@ -99,7 +99,7 @@ public class BlockDoublePlant extends BlockFlowable {
 
     private boolean isSupportValid(Block support) {
         return switch (support.getId()) {
-            case GRASS, DIRT, PODZOL, FARMLAND, MYCELIUM, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
+            case GRASS_BLOCK, DIRT, PODZOL, FARMLAND, MYCELIUM, DIRT_WITH_ROOTS, MOSS_BLOCK -> true;
             default -> false;
         };
     }

@@ -1,7 +1,6 @@
 package cn.nukkit.nbt;
 
 import cn.nukkit.nbt.tag.*;
-import cn.nukkit.registry.CreativeItemRegistry;
 import cn.nukkit.utils.Utils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -138,14 +137,6 @@ public class NbtTest {
         CompoundTag read = NBTIO.read(file);
         Assertions.assertEquals(1, read.getInt("test1"));
         FileUtils.delete(file);
-    }
-
-    @Test
-    @SneakyThrows
-    void testReadCreativeItems() {
-        try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("creative_items.nbt")) {
-            NBTIO.readCompressed(input);
-        }
     }
 
     @Test

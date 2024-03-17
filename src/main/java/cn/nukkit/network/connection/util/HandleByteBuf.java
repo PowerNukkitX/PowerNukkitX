@@ -43,6 +43,7 @@ import io.netty.buffer.ByteBufInputStream;
 import io.netty.util.ByteProcessor;
 import io.netty.util.internal.ObjectUtil;
 import io.netty.util.internal.StringUtil;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.SneakyThrows;
 import lombok.val;
 
@@ -1498,17 +1499,25 @@ public class HandleByteBuf extends ByteBuf {
 
     protected ItemStackRequestAction readRequestActionData(ItemStackRequestActionType type) {
         return switch (type) {
-            case CRAFT_REPAIR_AND_DISENCHANT -> new CraftGrindstoneAction((int) readUnsignedInt(), readVarInt());
+            case CRAFT_REPAIR_AND_DISENCHANT -> new CraftGrindstoneAction(readUnsignedVarInt(), readVarInt());
             case CRAFT_LOOM -> new CraftLoomAction(readString());
-            case CRAFT_RECIPE_AUTO -> new AutoCraftRecipeAction(
-                    (int) readUnsignedInt(), readUnsignedByte(), Collections.emptyList()
-            );
+            case CRAFT_RECIPE_AUTO -> {
+                int recipeId = readUnsignedVarInt();
+                int timesCrafted = readUnsignedByte();
+                List<Item> ingredients = new ObjectArrayList<>();
+                readArray(ingredients, HandleByteBuf::readUnsignedByte, HandleByteBuf::readSlot);
+                yield  new AutoCraftRecipeAction(
+                        recipeId,
+                        timesCrafted,
+                        ingredients
+                );
+            }
             case CRAFT_RESULTS_DEPRECATED -> new CraftResultsDeprecatedAction(
                     readArray(Item.class, (s) -> s.readSlot(true)),
                     readUnsignedByte()
             );
             case MINE_BLOCK -> new MineBlockAction(readVarInt(), readVarInt(), readVarInt());
-            case CRAFT_RECIPE_OPTIONAL -> new CraftRecipeOptionalAction((int) readUnsignedInt(), readIntLE());
+            case CRAFT_RECIPE_OPTIONAL -> new CraftRecipeOptionalAction(readUnsignedVarInt(), readIntLE());
             case TAKE -> new TakeAction(
                     readUnsignedByte(),
                     readStackRequestSlotInfo(),

@@ -26,6 +26,10 @@ public class MobEffectPacket extends DataPacket {
     public int amplifier = 0;
     public boolean particles = true;
     public int duration = 0;
+    /**
+     * @since v662
+     */
+    public long tick;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -34,13 +38,13 @@ public class MobEffectPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeEntityRuntimeId(this.eid);
         byteBuf.writeByte((byte) this.eventId);
         byteBuf.writeVarInt(this.effectId);
         byteBuf.writeVarInt(this.amplifier);
         byteBuf.writeBoolean(this.particles);
         byteBuf.writeVarInt(this.duration);
+        byteBuf.writeLongLE(this.tick);
     }
 
     public void handle(PacketHandler handler) {

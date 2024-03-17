@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -29,6 +30,11 @@ public class BlockMangroveLeaves extends BlockLeaves {
 
     public BlockMangroveLeaves(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public WoodType getType() {
+        return null;
     }
 
     @Override

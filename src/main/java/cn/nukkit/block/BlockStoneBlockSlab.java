@@ -13,12 +13,14 @@ public class BlockStoneBlockSlab extends BlockSlab {
         return PROPERTIES;
     }
 
-    public BlockStoneBlockSlab() {
-        this(PROPERTIES.getDefaultState());
+    public BlockStoneBlockSlab(BlockState blockstate) {
+        super(blockstate, getDoubleBlockState(blockstate));
     }
 
-    public BlockStoneBlockSlab(BlockState blockstate) {
-        super(blockstate, DOUBLE_STONE_BLOCK_SLAB);
+    static BlockState getDoubleBlockState(BlockState blockState) {
+        if (blockState == null) return BlockDoubleStoneBlockSlab.PROPERTIES.getDefaultState();
+        StoneSlabType propertyValue = blockState.getPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE);
+        return BlockDoubleStoneBlockSlab.PROPERTIES.getBlockState(CommonBlockProperties.STONE_SLAB_TYPE, propertyValue);
     }
 
     @Override

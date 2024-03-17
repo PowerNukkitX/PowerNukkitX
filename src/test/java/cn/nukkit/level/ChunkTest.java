@@ -94,7 +94,7 @@ public class ChunkTest {
     }
 
     @Test
-    void testMutiThreadOperate(LevelProvider levelDBProvider) {
+    void testMultiThreadOperate(LevelProvider levelDBProvider) {
         final IChunk chunk = levelDBProvider.getChunk(0, 0);
         Set<Thread> threadSet = new HashSet<>();
         for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
