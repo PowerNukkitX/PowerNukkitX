@@ -6,7 +6,6 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.inventory.fake.FakeStructBlock;
-import cn.nukkit.level.particle.FloatingTextParticle;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;
@@ -33,11 +32,7 @@ public class TTCommand extends TestCommand {
             boolean isPlayer = sender.isPlayer();
             if (isPlayer) {
                 Player player = sender.asPlayer();
-                if (v.equals("1")) {
-                    FloatingTextParticle particle = new FloatingTextParticle(player,"test");
-                    player.getLevel().addParticle(particle);
-                } else if (v.equals("2")) {
-                }
+                player.setNameTag("adflhkdasjkhf");
             }
             return 1;
         } else return 0;
