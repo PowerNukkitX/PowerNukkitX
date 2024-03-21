@@ -116,15 +116,19 @@ jobs:
           name: PowerNukkitX-Shaded
           path: build/powernukkitx-shaded.jar
 
+      - name: Download PNX CLI
+        run: |
+          wget -O cli.jar https://github.com/PowerNukkitX/PNX-CLI/releases/download/0.2.1/PNX-CLI-0.2.1.jar
+
       - name: Archive PNX RUN Full
         uses: actions/upload-artifact@v3
         if: success()
         with:
-          name: PowerNukkitX-Run-Full
+          name: PowerNukkitX-Run
           path: |
             build/libs
             build/powernukkitx.jar
-            build/start.bat build/start.sh
+            build/cli.jar
 
       - name: Archive Libraries
         uses: actions/upload-artifact@v3
