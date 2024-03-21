@@ -375,20 +375,17 @@ public class Chunk implements IChunk {
                     int top = unsafe.getHeightMap(x, z) - 1; // top-most block
 
                     int y;
-
                     for (y = getDimensionData().getMaxHeight(); y > top; --y) {
                         // all the blocks above & including the top-most block in a column are exposed to sun and
                         // thus have a skylight value of 15
                         unsafe.setBlockSkyLight(x, y, z, 15);
                     }
 
-                    int nextLight = 15; // light value that will be applied starting with the next block
+                    int light = 15; // light value that will be applied starting with the next block
                     int nextDecrease = 0; // decrease that that will be applied starting with the next block
 
-                    // TODO: remove nextLight & nextDecrease, use only light & decrease variables
-                    for (y = top; y >= 0; --y) { // going under the top-most block
-                        nextLight -= nextDecrease;
-                        int light = nextLight; // this light value will be applied for this block. The following checks are all about the next blocks
+                    for (y = top; y >= getDimensionData().getMinHeight(); --y) { // going under the top-most block
+                        light -= nextDecrease; // this light value will be applied for this block. The following checks are all about the next blocks
 
                         if (light < 0) {
                             light = 0;
@@ -402,12 +399,11 @@ public class Chunk implements IChunk {
                         }
 
                         // START of checks for the next block
-                        BlockState blockState = unsafe.getBlockState(x, y, z);
-                        Block block = Block.get(blockState);
+                        Block block = unsafe.getBlockState(x, y, z).toBlock();
 
                         if (!block.isTransparent()) { // if we encounter an opaque block, all the blocks under it will
                             // have a skylight value of 0 (the block itself has a value of 15, if it's a top-most block)
-                            nextLight = 0;
+                            light = 0;
                         } else if (block.diffusesSkyLight()) {
                             nextDecrease += 1; // skylight value decreases by one for each block under a block
                             // that diffuses skylight. The block itself has a value of 15 (if it's a top-most block)

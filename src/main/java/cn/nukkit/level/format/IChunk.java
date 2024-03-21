@@ -108,10 +108,22 @@ public interface IChunk {
         setBlockState(x, y, z, blockstate, 0);
     }
 
+    /**
+     * @param x the x 0~15
+     * @param y the y
+     * @param z the z 0~15
+     * @return The block skylight at this location
+     */
     int getBlockSkyLight(int x, int y, int z);
 
     void setBlockSkyLight(int x, int y, int z, int level);
 
+    /**
+     * @param x the x 0~15
+     * @param y the y
+     * @param z the z 0~15
+     * @return The block light at this location
+     */
     int getBlockLight(int x, int y, int z);
 
     void setBlockLight(int x, int y, int z, int level);

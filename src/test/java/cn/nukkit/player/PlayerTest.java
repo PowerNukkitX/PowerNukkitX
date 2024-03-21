@@ -89,4 +89,13 @@ public class PlayerTest {
         Assertions.assertTrue(player.getUsedChunks().contains(Level.chunkHash(61, 61)), "the chunk should be loaded for player");
         Assertions.assertFalse(level.getChunks().containsKey(Level.chunkHash(1, 1)), "This chunk should not be loaded");
     }
+
+    @Test
+    void test_setNameTag(Player player){
+        String oldNameTag = player.getNameTag();
+        player.setNameTag("test nameTag");
+        String newNameTag = player.getNameTag();
+        System.out.println("Old name tag: " + oldNameTag);
+        System.out.println("New name tag: " + newNameTag);
+    }
 }

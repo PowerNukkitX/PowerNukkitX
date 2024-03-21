@@ -1267,7 +1267,7 @@ public abstract class Item implements Cloneable, ItemID {
         if (checkBlock && this.isBlock() && item.isBlock()) {
             if (this.getBlockUnsafe().getBlockState() != item.getBlockUnsafe().getBlockState()) return false;
         }
-        if (checkCompound && this.hasCompoundTag() && item.hasCompoundTag()) {
+        if (checkCompound && (this.hasCompoundTag() || item.hasCompoundTag())) {
             return Objects.equals(this.getNamedTag(), item.getNamedTag());
         }
         return true;
