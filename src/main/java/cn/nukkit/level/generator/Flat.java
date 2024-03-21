@@ -20,7 +20,7 @@ public class Flat extends Generator {
     @Override
     public void stages(GenerateStage.Builder builder) {
         builder.start(Registries.GENERATE_STAGE.get(FlatGenerateStage.NAME));
-        if (Server.getInstance().getConfig("chunk-ticking.light-updates", false)) {
+        if (Server.getInstance().getConfig("chunk-ticking.light-updates", true)) {
             builder.next(Registries.GENERATE_STAGE.get(LightPopulationStage.NAME));
         }
         builder.next(Registries.GENERATE_STAGE.get(FinishedStage.NAME));

@@ -1934,7 +1934,7 @@ public class Level implements Metadatable {
         return this.getChunk(x >> 4, z >> 4, true).getBlockState(x & 0x0f, ensureY(y), z & 0x0f, layer).getIdentifier();
     }
 
-    public synchronized void updateAllLight(Vector3 pos) {
+    public void updateAllLight(Vector3 pos) {
         this.updateBlockSkyLight((int) pos.x, (int) pos.y, (int) pos.z);
         this.addLightUpdate((int) pos.x, (int) pos.y, (int) pos.z);
     }
@@ -1979,7 +1979,6 @@ public class Level implements Metadatable {
     /**
      * Returns the highest block skylight level available in the positions adjacent to the specified block coordinates.
      */
-
     public int getHighestAdjacentBlockSkyLight(int x, int y, int z) {
         int[] lightLevels = new int[]{
                 getBlockSkyLightAt(x + 1, y, z),
@@ -2207,7 +2206,9 @@ public class Level implements Metadatable {
             addBlockChange(index, x, y, z);
         }
         if (update) {
-            updateAllLight(block);
+            if (Server.getInstance().getConfig("chunk-ticking.light-updates", true)) {
+                updateAllLight(block);
+            }
             BlockUpdateEvent ev = new BlockUpdateEvent(block);
             this.server.getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
@@ -3020,19 +3021,31 @@ public class Level implements Metadatable {
         return getBlockStateAt(x, y, z, 0);
     }
 
-    public synchronized int getBlockSkyLightAt(int x, int y, int z) {
+    /**
+     * @param x the x
+     * @param y the y
+     * @param z the z
+     * @return The block skylight at this location
+     */
+    public int getBlockSkyLightAt(int x, int y, int z) {
         return this.getChunk(x >> 4, z >> 4, true).getBlockSkyLight(x & 0x0f, ensureY(y), z & 0x0f);
     }
 
-    public synchronized void setBlockSkyLightAt(int x, int y, int z, int level) {
+    public void setBlockSkyLightAt(int x, int y, int z, int level) {
         this.getChunk(x >> 4, z >> 4, true).setBlockSkyLight(x & 0x0f, ensureY(y), z & 0x0f, level & 0x0f);
     }
 
-    public synchronized int getBlockLightAt(int x, int y, int z) {
+    /**
+     * @param x the x
+     * @param y the y
+     * @param z the z
+     * @return The block light at this location
+     */
+    public int getBlockLightAt(int x, int y, int z) {
         return this.getChunk(x >> 4, z >> 4, true).getBlockLight(x & 0x0f, ensureY(y), z & 0x0f);
     }
 
-    public synchronized void setBlockLightAt(int x, int y, int z, int level) {
+    public void setBlockLightAt(int x, int y, int z, int level) {
         this.getChunk(x >> 4, z >> 4, true).setBlockLight(x & 0x0f, ensureY(y), z & 0x0f, level & 0x0f);
     }
 

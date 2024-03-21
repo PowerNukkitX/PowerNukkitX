@@ -8,10 +8,12 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
 import cn.nukkit.level.generator.Generator;
+import cn.nukkit.level.generator.stages.LightPopulationStage;
 import cn.nukkit.level.generator.terra.delegate.PNXProtoChunk;
 import cn.nukkit.level.generator.terra.delegate.PNXProtoWorld;
 import cn.nukkit.level.generator.terra.delegate.PNXServerWorld;
 import cn.nukkit.plugin.InternalPlugin;
+import cn.nukkit.registry.Registries;
 import com.dfsek.terra.api.config.ConfigPack;
 import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
@@ -111,9 +113,11 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
             }
             chunk.setChunkState(ChunkState.POPULATED);
 
-            chunk.recalculateHeightMap();
-            chunk.populateSkyLight();
-            chunk.setLightPopulated();
+            if (Server.getInstance().getConfig("chunk-ticking.light-updates", true)) {
+                chunk.recalculateHeightMap();
+                chunk.populateSkyLight();
+                chunk.setLightPopulated();
+            }
 
             chunk.setChunkState(ChunkState.FINISHED);
         }

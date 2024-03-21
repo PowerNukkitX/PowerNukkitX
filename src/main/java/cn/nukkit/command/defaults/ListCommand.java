@@ -33,7 +33,7 @@ public class ListCommand extends VanillaCommand {
                 ++onlineCount;
             }
         }
-        if (online.length() > 0) {
+        if (!online.isEmpty()) {
             online = new StringBuilder(online.substring(0, online.length() - 2));
         }
         sender.sendMessage(new TranslationContainer("commands.players.list",

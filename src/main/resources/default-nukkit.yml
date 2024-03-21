@@ -40,7 +40,7 @@ chunk-sending:
 chunk-ticking:
   per-tick: 40
   tick-radius: 3
-  light-updates: false
+  light-updates: true
   clear-tick-list: false
 
 chunk-generation:
