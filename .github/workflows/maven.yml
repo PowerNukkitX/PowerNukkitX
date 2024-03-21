@@ -153,7 +153,7 @@ jobs:
         name: Release new version
         if: success() && contains(github.event.commits[0].message, '+u') && github.repository == 'PowerNukkitX/PowerNukkitX' && contains(github.ref_name, 'master')
         with:
-          artifacts: "build/powernukkitx.jar,build/libs.tar.gz,build/hash/sha256/powernukkitx.jar.sha256,build/hash/sha256/libs.tar.gz.sha256,build/hash/md5/powernukkitx.jar.md5,build/hash/md5/libs.tar.gz.md5"
+          artifacts: "build/powernukkitx-all.zip,build/powernukkitx.jar,build/libs.tar.gz,build/hash/sha256/powernukkitx.jar.sha256,build/hash/sha256/libs.tar.gz.sha256,build/hash/md5/powernukkitx.jar.md5,build/hash/md5/libs.tar.gz.md5"
           tag: ${{ steps.read_version.outputs.git-build-version }}
           body: ${{ steps.read_version.outputs.git-build-version }} - ${{ github.ref_name }} - ${{ steps.vars.outputs.sha_short }}
           token: ${{ secrets.GITHUB_TOKEN }}
