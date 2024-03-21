@@ -120,6 +120,7 @@ jobs:
         run: |
           wget -O cli.jar https://github.com/PowerNukkitX/PNX-CLI/releases/download/0.2.1/PNX-CLI-0.2.1.jar
           zip -q -r powernukkitx-all.zip /build/powernukkitx.jar /build/cli.jar build/libs
+          ls -l
 
       - name: Archive PNX RUN Full
         uses: actions/upload-artifact@v3
