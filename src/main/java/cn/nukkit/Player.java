@@ -2816,7 +2816,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             playerChunkManager.tick();
         }
 
-        if (this.chunkLoadCount >= this.spawnThreshold && !this.spawned && loggedIn) {
+        if (this.chunkLoadCount <= this.spawnThreshold && !this.spawned && loggedIn) {
             this.getSession().notifyTerrainReady();
         }
     }
