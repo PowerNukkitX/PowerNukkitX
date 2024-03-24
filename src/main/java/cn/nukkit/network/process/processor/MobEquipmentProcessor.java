@@ -35,14 +35,13 @@ public class MobEquipmentProcessor extends DataPacketProcessor<MobEquipmentPacke
         Item item = inv.getItem(pk.hotbarSlot);
 
         if (!item.equals(pk.item, false, true)) {
-            Item fixItem = Item.get(item.getId(), item.getDamage(), item.getCount(),item.getCompoundTag());
-            if (!fixItem.equals(pk.item, false, true)) {
-                log.debug("Tried to equip {} but have {} in target slot", pk.item, fixItem);
-            } else {
+            Item fixItem = Item.get(item.getId(), item.getDamage(), item.getCount(), item.getCompoundTag());
+            if (fixItem.equals(pk.item, false, true)) {
                 inv.setItem(pk.hotbarSlot, fixItem);
+            } else {
+                log.debug("Tried to equip {} but have {} in target slot", pk.item, fixItem);
+                inv.sendContents(player);
             }
-            inv.sendContents(player);
-            return;
         }
 
         if (inv instanceof HumanInventory inventory) {
@@ -50,7 +49,6 @@ public class MobEquipmentProcessor extends DataPacketProcessor<MobEquipmentPacke
         }
 
         player.setDataFlag(EntityFlag.USING_ITEM, false);
-
     }
 
     @Override

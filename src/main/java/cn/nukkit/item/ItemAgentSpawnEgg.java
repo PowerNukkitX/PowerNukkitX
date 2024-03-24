@@ -7,7 +7,6 @@ public class ItemAgentSpawnEgg extends ItemSpawnEgg {
 
     @Override
     public void setDamage(int meta) {
-        
     }
 
     @Override

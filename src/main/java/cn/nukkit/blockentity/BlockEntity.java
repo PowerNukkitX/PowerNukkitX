@@ -20,7 +20,7 @@ import java.util.List;
  * @author MagicDroidX
  */
 @Slf4j
-public abstract class BlockEntity extends Position implements BlockEntityID{
+public abstract class BlockEntity extends Position implements BlockEntityID {
     public static long count = 1;
     public IChunk chunk;
     public String name;
@@ -76,13 +76,13 @@ public abstract class BlockEntity extends Position implements BlockEntityID{
 
             }
             if (blockEntity == null) {
-                Exception cause = new IllegalArgumentException("Could not create a block entity of type "+type, exceptions != null && exceptions.size() > 0? exceptions.get(0) : null);
+                Exception cause = new IllegalArgumentException("Could not create a block entity of type " + type, exceptions != null && exceptions.size() > 0 ? exceptions.get(0) : null);
                 if (exceptions != null && exceptions.size() > 1) {
                     for (int i = 1; i < exceptions.size(); i++) {
                         cause.addSuppressed(exceptions.get(i));
                     }
                 }
-                log.error("Could not create a block entity of type {} with {} args", type, args == null? 0 : args.length, cause);
+                log.error("Could not create a block entity of type {} with {} args", type, args == null ? 0 : args.length, cause);
             }
         } else {
             log.debug("Block entity type {} is unknown", type);
@@ -115,11 +115,11 @@ public abstract class BlockEntity extends Position implements BlockEntityID{
         }
 
         this.initBlockEntity();
-        
+
         if (closed) {
-            throw new IllegalStateException("Could not create the entity "+getClass().getName()+", the initializer closed it on construction.");
+            throw new IllegalStateException("Could not create the entity " + getClass().getName() + ", the initializer closed it on construction.");
         }
-        
+
         this.chunk.addBlockEntity(this);
         this.getLevel().addBlockEntity(this);
     }
@@ -131,7 +131,8 @@ public abstract class BlockEntity extends Position implements BlockEntityID{
     /**
      * 从方块实体的namedtag中读取数据
      */
-    public void loadNBT() {}
+    public void loadNBT() {
+    }
 
     /**
      * 存储方块实体数据到namedtag

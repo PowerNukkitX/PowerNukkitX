@@ -230,6 +230,7 @@ public class EntityFallingBlock extends Entity {
 
     @Override
     public void saveNBT() {
+        super.saveNBT();
         namedTag.putCompound("Block", blockState.getBlockStateTag());
     }
 

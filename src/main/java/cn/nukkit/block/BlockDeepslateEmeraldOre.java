@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockDeepslateEmeraldOre extends Block {
+public class BlockDeepslateEmeraldOre extends BlockEmeraldOre  {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_EMERALD_ORE);
 
     @Override

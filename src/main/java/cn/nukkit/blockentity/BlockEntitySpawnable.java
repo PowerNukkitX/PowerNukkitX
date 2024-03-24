@@ -20,15 +20,12 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
         this.spawnToAll();
     }
 
-    /***
-     * This method cannot call any chunk-related and level-related methods, otherwise it will cause a deadlock
-     */
     public CompoundTag getSpawnCompound() {
         return new CompoundTag()
                 .putString("id", namedTag.getString("id"))
-                .putInt("x", (int) x)
-                .putInt("y", (int) y)
-                .putInt("z", (int) z);
+                .putInt("x", getFloorX())
+                .putInt("y", getFloorY())
+                .putInt("z", getFloorZ());
     }
 
     public void spawnTo(Player player) {
@@ -49,9 +46,9 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
         }
 
         BlockEntityDataPacket pk = new BlockEntityDataPacket();
-        pk.x = (int) this.x;
-        pk.y = (int) this.y;
-        pk.z = (int) this.z;
+        pk.x = this.getFloorX();
+        pk.y = this.getFloorY();
+        pk.z = this.getFloorZ();
         pk.namedTag = nbt;
 
         return pk;

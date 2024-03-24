@@ -14,74 +14,59 @@ public class ItemWool extends Item {
 
     public ItemWool(Integer aux, int count) {
         super(WOOL, aux, count);
-        adjust();
     }
 
     public void adjust() {
         switch (getDamage()) {
             case 0:
                 this.name = "White Wool";
-                this.block = Block.get(BlockID.WHITE_WOOL);
-                return;
+                setBlockUnsafe(Block.get(BlockID.WHITE_WOOL));
             case 1:
                 this.name = "Orange Wool";
-                this.block = Block.get(BlockID.ORANGE_WOOL);
-                return;
+                setBlockUnsafe(Block.get(BlockID.ORANGE_WOOL));
             case 2:
                 this.name = "Magenta Wool";
-                this.block = Block.get(BlockID.MAGENTA_WOOL);
-                return;
+                setBlockUnsafe(Block.get(BlockID.MAGENTA_WOOL));
             case 3:
                 this.name = "Light Blue Wool";
-                this.block = Block.get(BlockID.LIGHT_BLUE_WOOL);
-                return;
+                setBlockUnsafe(Block.get(BlockID.LIGHT_BLUE_WOOL));
             case 4:
                 this.name = "Yellow Wool";
-                this.block = Block.get(BlockID.YELLOW_WOOL);
-                return;
+                setBlockUnsafe(Block.get(BlockID.YELLOW_WOOL));
             case 5:
                 this.name = "Lime Wool";
-                this.block = Block.get(BlockID.LIME_WOOL);
-                return;
+                setBlockUnsafe(Block.get(BlockID.LIME_WOOL));
             case 6:
                 this.name = "Pink Wool";
-                this.block = Block.get(BlockID.PINK_WOOL);
-                return;
+                setBlockUnsafe(Block.get(BlockID.PINK_WOOL));
             case 7:
                 this.name = "Gray Wool";
-                this.block = Block.get(BlockID.GRAY_WOOL);
-                return;
+                setBlockUnsafe(Block.get(BlockID.GRAY_WOOL));
             case 8:
                 this.name = "Light Gray Wool";
-                this.block = Block.get(BlockID.LIGHT_GRAY_WOOL);
-                return;
+                setBlockUnsafe(Block.get(BlockID.LIGHT_GRAY_WOOL));
             case 9:
                 this.name = "Cyan Wool";
-                this.block = Block.get(BlockID.CYAN_WOOL);
-                return;
+                setBlockUnsafe(Block.get(BlockID.CYAN_WOOL));
             case 10:
                 this.name = "Purple Wool";
-                this.block = Block.get(BlockID.PURPLE_WOOL);
-                return;
+                setBlockUnsafe(Block.get(BlockID.PURPLE_WOOL));
             case 11:
                 this.name = "Blue Wool";
-                this.block = Block.get(BlockID.BLUE_WOOL);
-                return;
+                setBlockUnsafe(Block.get(BlockID.BLUE_WOOL));
             case 12:
                 this.name = "Brown Wool";
-                this.block = Block.get(BlockID.BROWN_WOOL);
-                return;
+                setBlockUnsafe(Block.get(BlockID.BROWN_WOOL));
             case 13:
                 this.name = "Green Wool";
-                this.block = Block.get(BlockID.GREEN_WOOL);
-                return;
+                setBlockUnsafe(Block.get(BlockID.GREEN_WOOL));
             case 14:
                 this.name = "Red Wool";
-                this.block = Block.get(BlockID.RED_WOOL);
-                return;
+                setBlockUnsafe(Block.get(BlockID.RED_WOOL));
             case 15:
                 this.name = "Black Wool";
-                this.block = Block.get(BlockID.BLACK_WOOL);
+                setBlockUnsafe(Block.get(BlockID.BLACK_WOOL));
         }
+        this.meta = 0;
     }
 }

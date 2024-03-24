@@ -68,7 +68,6 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-
         this.namedTag.putInt("Age", this.age);
         this.namedTag.putList("ExitPortal", new ListTag<IntTag>()
                 .add(new IntTag(this.exitPortal.x))

@@ -61,10 +61,10 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
 
     @Override
     public void saveNBT() {
+        super.saveNBT();
         Entity targetEntity = this.targetEntity;
         namedTag.putLong("Target", targetEntity != null ? targetEntity.getId() : -1);
         namedTag.putBoolean("Active", active);
-        super.saveNBT();
     }
 
     @Override

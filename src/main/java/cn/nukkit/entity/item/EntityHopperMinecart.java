@@ -183,7 +183,6 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     @Override
     public void saveNBT() {
         super.saveNBT();
-
         this.namedTag.putList("Items",new ListTag<CompoundTag>());
         if (this.inventory != null) {
             for (int slot = 0; slot < 5; ++slot) {

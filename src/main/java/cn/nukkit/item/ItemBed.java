@@ -18,13 +18,6 @@ public class ItemBed extends Item {
 
     public ItemBed(Integer meta, int count) {
         super(BED, meta, count);
-        adjust();
-    }
-
-    @Override
-    public void setDamage(int meta) {
-        super.setDamage(meta);
-        adjust();
     }
 
     public void adjust() {

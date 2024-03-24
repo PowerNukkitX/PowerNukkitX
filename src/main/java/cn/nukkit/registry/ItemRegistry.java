@@ -516,8 +516,8 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
-            item.setDamage(meta);
             item.setCount(count);
+            item.setDamage(meta);
             return item;
         } catch (Throwable e) {
             throw new RuntimeException(e);
@@ -529,9 +529,9 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
-            item.setDamage(meta);
             item.setCount(count);
             item.setCompoundTag(tags);
+            item.setDamage(meta);
             return item;
         } catch (Throwable e) {
             throw new RuntimeException(e);
@@ -543,11 +543,11 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
-            item.setDamage(meta);
             item.setCount(count);
             if (tags != null) {
                 item.setCompoundTag(tags);
             }
+            item.setDamage(meta);
             return item;
         } catch (Throwable e) {
             throw new RuntimeException(e);

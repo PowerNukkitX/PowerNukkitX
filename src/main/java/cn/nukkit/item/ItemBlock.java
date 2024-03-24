@@ -18,8 +18,7 @@ public class ItemBlock extends Item {
     }
 
     public ItemBlock(Block block, int aux, int count) {
-        super(block.getItemId(), aux, count, block.getName());
-        this.block = block;
+        super(block, aux, count, block.getName(), true);
     }
 
     @Override
@@ -39,7 +38,8 @@ public class ItemBlock extends Item {
     }
 
     @Override
-    @NotNull public Block getBlock() {
+    @NotNull
+    public Block getBlock() {
         return this.block.clone();
     }
 

@@ -106,18 +106,11 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
     }
 
     public boolean isTriggered() {
-        return (getPropertyValue(FACING_DIRECTION) & 8) > 0;
+        return getPropertyValue(CommonBlockProperties.TRIGGERED_BIT);
     }
 
     public void setTriggered(boolean value) {
-        int i = 0;
-        i |= getBlockFace().getIndex();
-
-        if (value) {
-            i |= 8;
-        }
-
-        setPropertyValue(FACING_DIRECTION, i);
+        setPropertyValue(CommonBlockProperties.TRIGGERED_BIT, value);
     }
 
     @Override

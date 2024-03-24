@@ -30,6 +30,7 @@ public class NetworkMapping {
                     throw new IllegalArgumentException("error when there is no currently open container when an ItemStackRequest is received");
                 }
             }
+            case OFFHAND -> player.getOffhandInventory();
             case CRAFTING_INPUT -> {
                 if (player.getTopWindow().isPresent() && player.getTopWindow().get() instanceof CraftingTableInventory) {
                     yield player.getTopWindow().get();

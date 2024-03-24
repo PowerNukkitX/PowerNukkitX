@@ -8,6 +8,7 @@ import cn.nukkit.block.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityAsyncPrepare;
 import cn.nukkit.entity.EntityID;
@@ -1058,8 +1059,6 @@ public class Level implements Metadatable {
                     this.changedBlocks.clear();
                 }
             }
-
-            this.processChunkRequest();
 
             if (this.sleepTicks > 0 && --this.sleepTicks <= 0) {
                 this.checkSleep();

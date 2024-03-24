@@ -57,6 +57,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
 
     @Override
     public void saveNBT() {
+        super.saveNBT();
         this.namedTag.putList("Items", new ListTag<CompoundTag>());
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
@@ -144,6 +145,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
         CompoundTag c = getDefaultCompound(this, SHULKER_BOX)
                 .putBoolean("isMovable", this.isMovable())
                 .putBoolean("Findable", false)
+                .putList("Items", this.namedTag.getList("Items", CompoundTag.class))
                 .putByte("facing", this.namedTag.getByte("facing"));
 
         if (this.hasName()) {

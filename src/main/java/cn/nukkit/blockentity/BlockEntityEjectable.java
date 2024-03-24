@@ -95,12 +95,11 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
 
     @Override
     public void saveNBT() {
+        super.saveNBT();
         this.namedTag.putList("Items", new ListTag<CompoundTag>());
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
-
-        super.saveNBT();
     }
 
     @Override

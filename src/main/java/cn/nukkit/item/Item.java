@@ -64,8 +64,8 @@ public abstract class Item implements Cloneable, ItemID {
 
     public static String UNKNOWN_STR = "Unknown";
     protected Block block = null;
-    protected final String id;
-    protected final Identifier identifier;
+    protected String id;
+    protected Identifier identifier;
     protected int meta;
     protected boolean hasMeta = true;
     private byte[] tags = EmptyArrays.EMPTY_BYTES;
@@ -111,14 +111,32 @@ public abstract class Item implements Cloneable, ItemID {
     public Item(@NotNull String id, int meta, int count, @Nullable String name, boolean autoAssignStackNetworkId) {
         this.id = id.intern();
         this.identifier = new Identifier(id);
-        this.meta = meta & 0xffff;
         this.count = count;
         if (name != null) {
             this.name = name.intern();
         }
+        setDamage(meta);
         if (autoAssignStackNetworkId) {
             this.autoAssignStackNetworkId();
         }
+    }
+
+    protected Item(@NotNull Block block, int meta, int count, @Nullable String name, boolean autoAssignStackNetworkId) {
+        this.id = block.getItemId().intern();
+        this.identifier = new Identifier(id);
+        this.count = count;
+        if (name != null) {
+            this.name = name.intern();
+        }
+        this.block = block;
+        setDamage(meta);
+        if (autoAssignStackNetworkId) {
+            this.autoAssignStackNetworkId();
+        }
+    }
+
+    @ApiStatus.Internal
+    public void adjust() {
     }
 
     public boolean hasMeta() {
@@ -841,8 +859,12 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     @ApiStatus.Internal
-    public void setBlockUnsafe(Block block) {
+    public void setBlockUnsafe(@Nullable Block block) {
         this.block = block;
+        if (block != null) {
+            this.id = block.getItemId().intern();
+            this.identifier = new Identifier(id);
+        }
     }
 
     public final String getId() {
@@ -897,6 +919,9 @@ public abstract class Item implements Cloneable, ItemID {
     public void setDamage(int damage) {
         this.meta = damage & 0xffff;
         this.hasMeta = true;
+        if (damage != 0) {
+            adjust();
+        }
     }
 
     /**

@@ -15,26 +15,28 @@ public class ItemLeaves extends Item {
 
     public ItemLeaves(Integer meta, int count) {
         super(LEAVES, meta, count);
-        adjust();
     }
 
     public void adjust() {
         switch (getDamage()) {
             case 0 -> {
                 name = "Oak Leaves";
-                block = Block.get(BlockID.OAK_LEAVES);
+                setBlockUnsafe(Block.get(BlockID.OAK_LEAVES));
             }
             case 1 -> {
                 name = "Spruce Leaves";
-                block = Block.get(BlockID.SPRUCE_LEAVES);
+                setBlockUnsafe(Block.get(BlockID.SPRUCE_LEAVES));
+                this.meta = 0;
             }
             case 2 -> {
                 name = "Birch Leaves";
-                block = Block.get(BlockID.BIRCH_LEAVES);
+                setBlockUnsafe(Block.get(BlockID.BIRCH_LEAVES));
+                this.meta = 0;
             }
             case 3 -> {
                 name = "Jungle Leaves";
-                block = Block.get(BlockID.JUNGLE_LEAVES);
+                setBlockUnsafe(Block.get(BlockID.JUNGLE_LEAVES));
+                this.meta = 0;
             }
             default -> throw new IllegalArgumentException("Invalid damage: " + getDamage());
         }

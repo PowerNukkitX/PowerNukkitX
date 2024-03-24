@@ -14,74 +14,59 @@ public class ItemStainedHardenedClay extends Item {
 
     public ItemStainedHardenedClay(Integer meta, int count) {
         super(STAINED_HARDENED_CLAY, meta, count);
-        adjust();
     }
 
-    private void adjust() {
+    public void adjust() {
         switch (getDamage()) {
             case 0:
                 this.name = "White Terracotta";
-                this.block = Block.get(BlockID.WHITE_TERRACOTTA);
-                return;
+                setBlockUnsafe(Block.get(BlockID.WHITE_TERRACOTTA));
             case 1:
                 this.name = "Orange Terracotta";
-                this.block = Block.get(BlockID.ORANGE_TERRACOTTA);
-                return;
+                setBlockUnsafe(Block.get(BlockID.ORANGE_TERRACOTTA));
             case 2:
                 this.name = "Magenta Terracotta";
-                this.block = Block.get(BlockID.MAGENTA_TERRACOTTA);
-                return;
+                setBlockUnsafe(Block.get(BlockID.MAGENTA_TERRACOTTA));
             case 3:
                 this.name = "Light Blue Terracotta";
-                this.block = Block.get(BlockID.LIGHT_BLUE_TERRACOTTA);
-                return;
+                setBlockUnsafe(Block.get(BlockID.LIGHT_BLUE_TERRACOTTA));
             case 4:
                 this.name = "Yellow Terracotta";
-                this.block = Block.get(BlockID.YELLOW_TERRACOTTA);
-                return;
+                setBlockUnsafe(Block.get(BlockID.YELLOW_TERRACOTTA));
             case 5:
                 this.name = "Lime Terracotta";
-                this.block = Block.get(BlockID.LIME_TERRACOTTA);
-                return;
+                setBlockUnsafe(Block.get(BlockID.LIME_TERRACOTTA));
             case 6:
                 this.name = "Pink Terracotta";
-                this.block = Block.get(BlockID.PINK_TERRACOTTA);
-                return;
+                setBlockUnsafe(Block.get(BlockID.PINK_TERRACOTTA));
             case 7:
                 this.name = "Gray Terracotta";
-                this.block = Block.get(BlockID.GRAY_TERRACOTTA);
-                return;
+                setBlockUnsafe(Block.get(BlockID.GRAY_TERRACOTTA));
             case 8:
                 this.name = "Light Gray Terracotta";
-                this.block = Block.get(BlockID.LIGHT_GRAY_TERRACOTTA);
-                return;
+                setBlockUnsafe(Block.get(BlockID.LIGHT_GRAY_TERRACOTTA));
             case 9:
                 this.name = "Cyan Terracotta";
-                this.block = Block.get(BlockID.CYAN_TERRACOTTA);
-                return;
+                setBlockUnsafe(Block.get(BlockID.CYAN_TERRACOTTA));
             case 10:
                 this.name = "Purple Terracotta";
-                this.block = Block.get(BlockID.PURPLE_TERRACOTTA);
-                return;
+                setBlockUnsafe(Block.get(BlockID.PURPLE_TERRACOTTA));
             case 11:
                 this.name = "Blue Terracotta";
-                this.block = Block.get(BlockID.BLUE_TERRACOTTA);
-                return;
+                setBlockUnsafe(Block.get(BlockID.BLUE_TERRACOTTA));
             case 12:
                 this.name = "Brown Terracotta";
-                this.block = Block.get(BlockID.BROWN_TERRACOTTA);
-                return;
+                setBlockUnsafe(Block.get(BlockID.BROWN_TERRACOTTA));
             case 13:
                 this.name = "Green Terracotta";
-                this.block = Block.get(BlockID.GREEN_TERRACOTTA);
-                return;
+                setBlockUnsafe(Block.get(BlockID.GREEN_TERRACOTTA));
             case 14:
                 this.name = "Red Terracotta";
-                this.block = Block.get(BlockID.RED_TERRACOTTA);
-                return;
+                setBlockUnsafe(Block.get(BlockID.RED_TERRACOTTA));
             case 15:
                 this.name = "Black Terracotta";
-                this.block = Block.get(BlockID.BLACK_TERRACOTTA);
+                setBlockUnsafe(Block.get(BlockID.BLACK_TERRACOTTA));
         }
+        this.meta = 0;
     }
 }

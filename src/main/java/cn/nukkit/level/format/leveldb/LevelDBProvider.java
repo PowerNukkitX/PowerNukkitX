@@ -2,7 +2,6 @@ package cn.nukkit.level.format.leveldb;
 
 import cn.nukkit.api.UsedByReflection;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
@@ -17,7 +16,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
-import cn.nukkit.network.protocol.LevelChunkPacket;
 import cn.nukkit.network.protocol.types.GameType;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.SemVersion;
@@ -259,8 +257,7 @@ public class LevelDBProvider implements LevelProvider {
                     sections[i].writeToBuf(byteBuf);
                 }
                 // Write biomes
-                int last = total - 1;
-                for (int i = 0; i < last; i++) {
+                for (int i = 0; i < total; i++) {
                     sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue);
                 }
 
@@ -269,13 +266,12 @@ public class LevelDBProvider implements LevelProvider {
                 // Block entities
                 final Collection<BlockEntity> tiles = unsafeChunk.getBlockEntities().values();
                 final List<CompoundTag> tagList = new ArrayList<>();
-                for (BlockEntity blockEntity : tiles) {
-                    if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
-//                        tagList.add(blockEntitySpawnable.getSpawnCompound());
-                        //Adding NBT to a chunk pack does not show some block entities, and you have to send block entity packets to the player
-                        level.addChunkPacket(blockEntitySpawnable.getChunkX(), blockEntitySpawnable.getChunkZ(), blockEntitySpawnable.getSpawnPacket());
-                    }
-                }
+//                for (BlockEntity blockEntity : tiles) {
+//                    if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
+//                        level.setBlock(blockEntitySpawnable, blockEntitySpawnable.getBlock());
+//                        blockEntitySpawnable.spawnToAll();
+//                    }
+//                }
                 try (ByteBufOutputStream stream = new ByteBufOutputStream(byteBuf)) {
                     NBTIO.write(tagList, stream, ByteOrder.LITTLE_ENDIAN, true);
                 } catch (IOException e) {
@@ -287,13 +283,13 @@ public class LevelDBProvider implements LevelProvider {
                 byteBuf.release();
             }
         });
-        return Pair.of(data.get(),subChunkCountRef.get());
+        return Pair.of(data.get(), subChunkCountRef.get());
     }
 
 
     @Override
     public String getPath() {
-        return path.toString();
+        return path;
     }
 
     @Override

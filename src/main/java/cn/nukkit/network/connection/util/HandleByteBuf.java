@@ -1316,7 +1316,7 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     public BlockVector3 readBlockVector3() {
-        return new BlockVector3(this.readVarInt(), (int) this.readUnsignedVarInt(), this.readVarInt());
+        return new BlockVector3(this.readVarInt(), this.readUnsignedVarInt(), this.readVarInt());
     }
 
     public void writeBlockVector3(BlockVector3 v) {
@@ -1325,7 +1325,7 @@ public class HandleByteBuf extends ByteBuf {
 
     public void writeBlockVector3(int x, int y, int z) {
         this.writeVarInt(x);
-        this.writeUnsignedVarInt((int) Integer.toUnsignedLong(y));
+        this.writeUnsignedVarInt(y);
         this.writeVarInt(z);
     }
 
@@ -1506,7 +1506,7 @@ public class HandleByteBuf extends ByteBuf {
                 int timesCrafted = readUnsignedByte();
                 List<Item> ingredients = new ObjectArrayList<>();
                 readArray(ingredients, HandleByteBuf::readUnsignedByte, HandleByteBuf::readSlot);
-                yield  new AutoCraftRecipeAction(
+                yield new AutoCraftRecipeAction(
                         recipeId,
                         timesCrafted,
                         ingredients

@@ -122,7 +122,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
 
     @Override
     public void saveNBT() {
-
+        super.saveNBT();
         for (int i = 1; i <= burnTime.length; i++) {
             Item item = inventory.getItem(i - 1);
             if (item == null || item.getId() == BlockID.AIR || item.getCount() <= 0) {
@@ -135,8 +135,6 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
                 namedTag.putBoolean("KeepItem" + i, keepItem[i - 1]);
             }
         }
-
-        super.saveNBT();
     }
 
     public void setRecipe(int index, CampfireRecipe recipe) {
