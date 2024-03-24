@@ -4,6 +4,7 @@ import cn.nukkit.AdventureSettings.Type;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.UsedByReflection;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockBed;
 import cn.nukkit.block.BlockEndPortal;
 import cn.nukkit.block.BlockID;
@@ -1281,6 +1282,30 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.setDataProperty(NAMETAG_ALWAYS_SHOW, 1, false);
         this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
         this.spawnToAll();
+
+        Server.getInstance().getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
+            //TODO: Remove this is hacky When it is fixed by the client, Used to fix bug where block entities were not rendered normally
+            for (var b : this.level.getBlockEntities().values()) {
+                if (b instanceof BlockEntitySpawnable blockEntitySpawnable) {
+                    UpdateBlockPacket setAir = new UpdateBlockPacket();
+                    setAir.blockRuntimeId = BlockAir.STATE.blockStateHash();
+                    setAir.flags = UpdateBlockPacket.FLAG_NETWORK;
+                    setAir.x = b.getFloorX();
+                    setAir.y = b.getFloorY();
+                    setAir.z = b.getFloorZ();
+                    this.dataPacket(setAir);
+
+                    UpdateBlockPacket revertAir = new UpdateBlockPacket();
+                    revertAir.blockRuntimeId = b.getBlock().getRuntimeId();
+                    revertAir.flags = UpdateBlockPacket.FLAG_NETWORK;
+                    revertAir.x = b.getFloorX();
+                    revertAir.y = b.getFloorY();
+                    revertAir.z = b.getFloorZ();
+                    this.dataPacket(revertAir);
+                    blockEntitySpawnable.spawnTo(this);
+                }
+            }
+        }, true);
     }
 
     /**

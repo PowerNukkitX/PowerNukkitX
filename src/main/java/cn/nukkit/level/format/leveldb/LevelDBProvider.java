@@ -2,6 +2,7 @@ package cn.nukkit.level.format.leveldb;
 
 import cn.nukkit.api.UsedByReflection;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
@@ -42,7 +43,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -264,14 +264,14 @@ public class LevelDBProvider implements LevelProvider {
                 byteBuf.writeByte(0); // edu- border blocks
 
                 // Block entities
-                final Collection<BlockEntity> tiles = unsafeChunk.getBlockEntities().values();
                 final List<CompoundTag> tagList = new ArrayList<>();
-//                for (BlockEntity blockEntity : tiles) {
-//                    if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
-//                        level.setBlock(blockEntitySpawnable, blockEntitySpawnable.getBlock());
-//                        blockEntitySpawnable.spawnToAll();
-//                    }
-//                }
+                for (BlockEntity blockEntity : unsafeChunk.getBlockEntities().values()) {
+                    if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
+                        tagList.add(blockEntitySpawnable.getSpawnCompound());
+                        //Adding NBT to a chunk pack does not show some block entities, and you have to send block entity packets to the player
+                        level.addChunkPacket(blockEntitySpawnable.getChunkX(), blockEntitySpawnable.getChunkZ(), blockEntitySpawnable.getSpawnPacket());
+                    }
+                }
                 try (ByteBufOutputStream stream = new ByteBufOutputStream(byteBuf)) {
                     NBTIO.write(tagList, stream, ByteOrder.LITTLE_ENDIAN, true);
                 } catch (IOException e) {
