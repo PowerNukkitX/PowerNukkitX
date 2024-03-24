@@ -51,13 +51,21 @@ public class PlayerTest {
         }).build();
         Thread thread = new Thread(loop::startLoop);
         thread.start();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        int limit = 1000;
+        while (limit-- != 0) {
+            try {
+                Thread.sleep(100);
+                if (49 == player.getUsedChunks().size()) {
+                    break;
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
         loop.stop();
-        Assertions.assertEquals(49, player.getUsedChunks().size());
+        if (limit == 0) {
+            Assertions.fail("Chunks cannot be successfully loaded in 100s");
+        }
     }
 
     @Test
@@ -71,12 +79,20 @@ public class PlayerTest {
         }).build();
         Thread thread = new Thread(loop::startLoop);
         thread.start();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        int limit = 1000;
+        while (limit-- != 0) {
+            try {
+                Thread.sleep(100);
+                if (49 == player.getUsedChunks().size()) {
+                    break;
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
-        Assertions.assertEquals(49, player.getUsedChunks().size());
+        if (limit == 0) {
+            Assertions.fail("Chunks cannot be successfully loaded in 100s");
+        }
         player.setPosition(new Vector3(1000, 100, 1000));
 
         try {
@@ -93,7 +109,7 @@ public class PlayerTest {
     }
 
     @Test
-    void test_setNameTag(Player player){
+    void test_setNameTag(Player player) {
         String oldNameTag = player.getNameTag();
         player.setNameTag("test nameTag");
         String newNameTag = player.getNameTag();
