@@ -11,7 +11,11 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.*;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Utils;
 
 import java.util.Objects;
@@ -38,7 +42,9 @@ public class ItemCrossbow extends ItemTool {
     }
 
     public boolean onUse(Player player, int ticksUsed) {
-        int needTickUsed = 20;
+        if (isLoaded()) return true;
+        this.loadTick = Server.getInstance().getTick();
+        int needTickUsed = 25;
         Enchantment enchantment = this.getEnchantment(Enchantment.ID_CROSSBOW_QUICK_CHARGE);
         if (enchantment != null) {
             needTickUsed -= enchantment.getLevel() * 5; //0.25s
@@ -99,45 +105,7 @@ public class ItemCrossbow extends ItemTool {
     }
 
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        return !this.launchArrow(player);
-    }
-
-    public boolean onRelease(Player player, int ticksUsed) {
-        return true;
-    }
-
-    public void loadArrow(Player player, Item arrow) {
-        if (arrow != null) {
-            CompoundTag tag = this.getNamedTag() == null ? new CompoundTag() : this.getNamedTag();
-            tag.putBoolean("Charged", true)
-                    .putCompound("chargedItem", new CompoundTag()
-                            .putByte("Count", arrow.getCount())
-                            .putShort("Damage", arrow.getDamage())
-                            .putString("Name", "minecraft:" + arrow.getDisplayName()));
-            this.setCompoundTag(tag);
-            this.loadTick = Server.getInstance().getTick();
-            player.getInventory().setItemInHand(this);
-            player.getLevel().addSound(player, Sound.CROSSBOW_LOADING_END);
-        }
-    }
-
-    public void useArrow(Player player) {
-        this.setCompoundTag(this.getNamedTag().putBoolean("Charged", false).remove("chargedItem"));
-        player.getInventory().setItemInHand(this);
-    }
-
-    public boolean isLoaded() {
-        Tag itemInfo = this.getNamedTagEntry("chargedItem");
-        if (itemInfo == null) {
-            return false;
-        } else {
-            CompoundTag tag = (CompoundTag) itemInfo;
-            return tag.getByte("Count") > 0 && tag.getString("Name") != null;
-        }
-    }
-
-    public boolean launchArrow(Player player) {
-        if (this.isLoaded() && Server.getInstance().getTick() - this.loadTick > 20) {
+        if (this.isLoaded() && Server.getInstance().getTick() - this.loadTick > 5) {
             double mX;
             double mY;
             double mZ;
@@ -159,9 +127,9 @@ public class ItemCrossbow extends ItemTool {
                 entity.setMotion(new Vector3(mX, mY, mZ));
                 entity.spawnToAll();
                 player.getLevel().addSound(player, Sound.CROSSBOW_SHOOT);
-                this.useArrow(player);
+                removeChargedItem(player);
             } else {
-                EntityArrow entity = new EntityArrow(player.chunk, nbt, player, false);
+                EntityArrow entity = new EntityArrow(player.chunk, nbt, player, true);
                 EntityShootCrossbowEvent entityShootBowEvent = new EntityShootCrossbowEvent(player, this, entity);
                 Server.getInstance().getPluginManager().callEvent(entityShootBowEvent);
                 if (entityShootBowEvent.isCancelled()) {
@@ -178,15 +146,46 @@ public class ItemCrossbow extends ItemTool {
                         } else {
                             proj.spawnToAll();
                             player.getLevel().addSound(player, Sound.CROSSBOW_SHOOT);
-                            this.useArrow(player);
+                            removeChargedItem(player);
                         }
                     }
                 }
             }
+        }
+        return true;
+    }
 
-            return true;
-        } else {
+    public void removeChargedItem(Player player) {
+        this.setCompoundTag(this.getNamedTag().remove("chargedItem"));
+        player.getInventory().setItemInHand(this);
+    }
+
+    public boolean onRelease(Player player, int ticksUsed) {
+        return true;
+    }
+
+    public void loadArrow(Player player, Item arrow) {
+        if (arrow != null) {
+            CompoundTag tag = this.getNamedTag() == null ? new CompoundTag() : this.getNamedTag();
+            tag.putCompound("chargedItem", new CompoundTag()
+                    .putByte("Count", arrow.getCount())
+                    .putShort("Damage", arrow.getDamage())
+                    .putString("Name", arrow.getId())
+                    .putByte("WasPickedUp", 0)
+            );
+            this.setCompoundTag(tag);
+            player.getInventory().setItemInHand(this);
+            player.getLevel().addSound(player, Sound.CROSSBOW_LOADING_END);
+        }
+    }
+
+    public boolean isLoaded() {
+        Tag itemInfo = this.getNamedTagEntry("chargedItem");
+        if (itemInfo == null) {
             return false;
+        } else {
+            CompoundTag tag = (CompoundTag) itemInfo;
+            return tag.getByte("Count") > 0 && tag.getString("Name") != null;
         }
     }
 

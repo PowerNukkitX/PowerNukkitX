@@ -17,7 +17,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityArrow extends SlenderProjectile {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return ARROW;
     }
 
@@ -28,7 +29,7 @@ public class EntityArrow extends SlenderProjectile {
     }
 
     public EntityArrow(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
-        this(chunk, nbt, shootingEntity, false);
+        this(chunk, nbt, shootingEntity, true);
     }
 
     public EntityArrow(IChunk chunk, CompoundTag nbt, Entity shootingEntity, boolean critical) {
@@ -36,7 +37,6 @@ public class EntityArrow extends SlenderProjectile {
         this.setCritical(critical);
     }
 
-    
 
     @Override
     public float getLength() {
@@ -86,7 +86,7 @@ public class EntityArrow extends SlenderProjectile {
     }
 
     public void setCritical(boolean value) {
-        this.setDataFlag(EntityFlag.CRITICAL);
+        this.setDataFlag(EntityFlag.CRITICAL, value);
     }
 
     @Override
@@ -153,7 +153,6 @@ public class EntityArrow extends SlenderProjectile {
         packet.event = EntityEventPacket.ARROW_SHAKE;
         packet.data = 7; // TODO Magic value. I have no idea why we have to set it to 7 here...
         Server.broadcastPacket(this.hasSpawned.values(), packet);
-
         onGround = true;
     }
 
