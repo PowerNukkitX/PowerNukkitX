@@ -112,7 +112,6 @@ public class EntityThrownTrident extends SlenderProjectile {
         this.closeOnCollide = false;
 
         this.pickupMode = namedTag.contains(TAG_PICKUP) ? namedTag.getByte(TAG_PICKUP) : PICKUP_ANY;
-        this.damage = namedTag.contains("damage") ? namedTag.getDouble("damage") : 8;
         this.favoredSlot = namedTag.contains(TAG_FAVORED_SLOT) ? namedTag.getInt(TAG_FAVORED_SLOT) : -1;
         this.player = !namedTag.contains(TAG_PLAYER) || namedTag.getBoolean(TAG_PLAYER);
 

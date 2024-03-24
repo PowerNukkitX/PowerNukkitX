@@ -55,7 +55,6 @@ public class ItemSkull extends Item {
             }
             default -> throw new IllegalArgumentException("Invalid damage: " + getDamage());
         }
-        this.meta = 0;
     }
 
     public static String getItemSkullName(int meta) {
