@@ -46,12 +46,13 @@ public class PlayerTest {
         player.setViewDistance(4);//view 4
         GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
             Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
+            level.subTick(d);
             player.checkNetwork();
         }).build();
         Thread thread = new Thread(loop::startLoop);
         thread.start();
         try {
-            Thread.sleep(1000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -65,12 +66,13 @@ public class PlayerTest {
         player.setViewDistance(4);//view 4
         GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
             Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
+            level.subTick(d);
             player.checkNetwork();
         }).build();
         Thread thread = new Thread(loop::startLoop);
         thread.start();
         try {
-            Thread.sleep(1000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
