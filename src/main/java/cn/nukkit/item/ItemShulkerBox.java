@@ -16,7 +16,7 @@ public class ItemShulkerBox extends Item {
         super(SHULKER_BOX, meta, count);
     }
 
-    public void adjust() {
+    public void internalAdjust() {
         switch (getDamage()) {
             case 0:
                 this.name = "White Shulker Box";

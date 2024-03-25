@@ -16,7 +16,7 @@ public class ItemPlanks extends Item {
         super(PLANKS, meta, count);
     }
 
-    public void adjust() {
+    public void internalAdjust() {
         switch (getDamage()) {
             case 0:
                 this.name = "Oak Planks";

@@ -16,7 +16,7 @@ public class ItemStainedGlass extends Item {
         super(STAINED_GLASS, meta, count);
     }
 
-    public void adjust() {
+    public void internalAdjust() {
         switch (getDamage()) {
             case 0:
                 this.name = "White Stained Glass";

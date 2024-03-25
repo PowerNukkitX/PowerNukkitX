@@ -136,7 +136,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     @ApiStatus.Internal
-    public void adjust() {
+    public void internalAdjust() {
     }
 
     public boolean hasMeta() {
@@ -920,7 +920,7 @@ public abstract class Item implements Cloneable, ItemID {
         this.meta = damage & 0xffff;
         this.hasMeta = true;
         if (damage != 0) {
-            adjust();
+            internalAdjust();
         }
     }
 

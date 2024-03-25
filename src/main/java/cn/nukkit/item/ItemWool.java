@@ -16,7 +16,7 @@ public class ItemWool extends Item {
         super(WOOL, aux, count);
     }
 
-    public void adjust() {
+    public void internalAdjust() {
         switch (getDamage()) {
             case 0:
                 this.name = "White Wool";

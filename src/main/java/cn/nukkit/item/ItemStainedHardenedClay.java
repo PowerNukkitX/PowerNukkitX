@@ -16,7 +16,7 @@ public class ItemStainedHardenedClay extends Item {
         super(STAINED_HARDENED_CLAY, meta, count);
     }
 
-    public void adjust() {
+    public void internalAdjust() {
         switch (getDamage()) {
             case 0:
                 this.name = "White Terracotta";

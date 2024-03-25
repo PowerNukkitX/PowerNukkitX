@@ -27,7 +27,7 @@ public class ItemSkull extends Item {
         super(SKULL, meta, count);
     }
 
-    public void adjust() {
+    public void internalAdjust() {
         switch (getDamage()) {
             case 0, 6, 7 -> {
                 name = "Skeleton Skull";

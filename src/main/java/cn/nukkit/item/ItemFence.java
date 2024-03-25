@@ -16,7 +16,7 @@ public class ItemFence extends Item {
         super(FENCE, meta, count);
     }
 
-    public void adjust() {
+    public void internalAdjust() {
         switch (getDamage()) {
             case 0:
                 this.name = "Oak Fence";
