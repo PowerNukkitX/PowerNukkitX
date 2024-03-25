@@ -26,6 +26,7 @@ public class PlayerTest {
     @Test
     @Order(1)
     void player_teleport(Player player, Level level) {
+        player.level = level;
         player.setViewDistance(4);//view 4
         GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
             Server.getInstance().getNetwork().process();
@@ -35,6 +36,11 @@ public class PlayerTest {
         Thread thread = new Thread(loop::startLoop);
         thread.start();
         player.teleport(new Vector3(10000, 6, 10000));
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         Assertions.assertTrue(level.isChunkLoaded(10000 >> 4, 10000 >> 4));//verify target chunk is load
         InOrder orderSendPk = Mockito.inOrder(player.getSession());
         orderSendPk.verify(player.getSession(), times(1)).sendPacket(any(MovePlayerPacket.class));
@@ -44,6 +50,7 @@ public class PlayerTest {
     @Test
     @Order(2)
     void player_chunk_load(Player player, Level level) {
+        player.level = level;
         player.setViewDistance(4);//view 4
         GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
             Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
@@ -72,6 +79,7 @@ public class PlayerTest {
     @Test
     @Order(3)
     void player_chunk_unload(Player player, Level level) {
+        player.level = level;
         player.setViewDistance(4);//view 4
         GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
             Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
@@ -80,10 +88,10 @@ public class PlayerTest {
         }).build();
         Thread thread = new Thread(loop::startLoop);
         thread.start();
-        int limit = 1000;
+        int limit = 100;
         while (limit-- != 0) {
             try {
-                Thread.sleep(100);
+                Thread.sleep(1000);
                 if (49 == player.getUsedChunks().size()) {
                     break;
                 }
@@ -94,11 +102,11 @@ public class PlayerTest {
         if (limit == 0) {
             Assertions.fail("Chunks cannot be successfully loaded in 100s");
         }
-        int limit2 = 1000;
+        int limit2 = 100;
         player.setPosition(new Vector3(1000, 100, 1000));
         while (limit2-- != 0) {
             try {
-                Thread.sleep(100);
+                Thread.sleep(1000);
                 //Some chunks may need to be processed next tick by doLevelGarbageCollection, and I don't want to wait too long for the test
                 if (49 <= level.getChunks().size() && level.getChunks().size() <= 51) {
                     break;
