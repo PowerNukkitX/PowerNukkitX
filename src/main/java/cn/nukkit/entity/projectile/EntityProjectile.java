@@ -51,7 +51,7 @@ public abstract class EntityProjectile extends Entity {
         super(chunk, nbt);
         this.shootingEntity = shootingEntity;
         if (shootingEntity != null) {
-            this.setDataProperty(TARGET_EID, shootingEntity.getId());
+            this.setDataProperty(OWNER_EID, shootingEntity.getId());
         }
     }
 
