@@ -150,6 +150,11 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
     }
 
     @Override
+    public @NotNull String getItemId() {
+        return ItemID.BANNER;
+    }
+
+    @Override
     public Item toItem() {
         BlockEntityBanner banner = getBlockEntity();
         Item item = Item.get(ItemID.BANNER);

@@ -15,7 +15,8 @@ public class BlockWallBanner extends BlockStandingBanner {
     public static final BlockProperties PROPERTIES = new BlockProperties(WALL_BANNER, FACING_DIRECTION);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
