@@ -2,7 +2,6 @@ package cn.nukkit.player;
 
 import cn.nukkit.GameMockExtension;
 import cn.nukkit.Player;
-import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
@@ -36,15 +35,25 @@ public class PlayerTest {
         Thread thread = new Thread(loop::startLoop);
         thread.start();
         player.teleport(new Vector3(10000, 6, 10000));
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+
+        int limit = 1000;
+        while (limit-- != 0) {
+            try {
+                Thread.sleep(100);
+                if (level.isChunkLoaded(10000 >> 4, 10000 >> 4)) {
+                    break;
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
-        Assertions.assertTrue(level.isChunkLoaded(10000 >> 4, 10000 >> 4));//verify target chunk is load
+        loop.stop();
+        //verify target chunk is load
+        if (limit == 0) {
+            Assertions.fail("Chunks cannot be successfully loaded in 100s");
+        }
         InOrder orderSendPk = Mockito.inOrder(player.getSession());
         orderSendPk.verify(player.getSession(), times(1)).sendPacket(any(MovePlayerPacket.class));
-        loop.stop();
     }
 
     @Test
