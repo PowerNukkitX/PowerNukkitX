@@ -31,7 +31,8 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
     public static final BlockProperties PROPERTIES = new BlockProperties(CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -44,12 +45,14 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityChest> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityChest> getBlockEntityClass() {
         return BlockEntityChest.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.CHEST;
     }
 
@@ -117,7 +120,7 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH);
 
-        CompoundTag nbt = new CompoundTag().putList("Items",new ListTag<>());
+        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>());
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
@@ -206,6 +209,8 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
         if (player == null) {
             return false;
         }
+        Item itemInHand = player.getInventory().getItemInHand();
+        if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) return false;
 
         Block top = up();
         if (!top.isTransparent()) {

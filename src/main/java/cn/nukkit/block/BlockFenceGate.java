@@ -145,7 +145,11 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        return toggle(player);
+        if (player != null) {
+            Item itemInHand = player.getInventory().getItemInHand();
+            if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) return false;
+            return toggle(player);
+        } else return false;
     }
 
     public boolean toggle(Player player) {
