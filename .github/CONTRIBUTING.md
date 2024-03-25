@@ -33,15 +33,13 @@ Scan through our [existing issues](https://github.com/PowerNukkitX/PowerNukkitX/
 1. Fork the repository.  
    - [Fork the repo](https://www.jetbrains.com/help/idea/fork-github-projects.html#fork)
    - [Clone your fork](https://www.jetbrains.com/help/idea/manage-projects-hosted-on-github.html#clone-from-GitHub)
-
 2. Install **JDK17**.
-
-3. Build the project using `buildSkipChores` task  
+3. Make some changes.
+4. First build the project using `buildSkipChores` task  
 Apply changes using `buildFast` task  
 Clean build folder using `clean` task  
 <img alt="build.png"  src="img/001.png" width="250px"/>
-
-4. Start the server to preview your changes.  
+5. Start the server to preview your changes.  
 <img alt="img.png" height="100" src="img/002.png"/>
 
 ### Pull Request
@@ -57,7 +55,7 @@ When you're finished with the changes, create a pull request, also known as a PR
 
 ### Your PR is merged!
 
-Congratulations :tada::tada: The GitHub team thanks you :sparkles:.
+Congratulations :tada::tada: The PowerNukkitX team thanks you :sparkles:.
 
 Once your PR is merged, your contributions will be publicly visible on the PowerNukkitX.
 
