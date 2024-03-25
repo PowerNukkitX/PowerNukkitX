@@ -56,11 +56,11 @@ public class PlayerAuthInputPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        this.headYaw = byteBuf.readFloatLE();
+        this.pitch = byteBuf.readFloatLE();
         this.yaw = byteBuf.readFloatLE();
         this.position = byteBuf.readVector3f();
         this.motion = new Vector2(byteBuf.readFloatLE(), byteBuf.readFloatLE());
-        this.pitch = byteBuf.readFloatLE();
+        this.headYaw = byteBuf.readFloatLE();
 
         long inputData = byteBuf.readUnsignedVarLong();
         for (int i = 0; i < AuthInputAction.size(); i++) {

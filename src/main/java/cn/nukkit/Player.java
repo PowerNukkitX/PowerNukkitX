@@ -4248,13 +4248,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.onGround = !this.noClip;
 
             //if switch level or the distance teleported is too far
-            if (from.level.equals(to.level)) {
-                this.playerChunkManager.teleport();
+            if (!from.level.equals(to.level)) {
+                this.playerChunkManager.handleTeleport();
                 //set nextChunkOrderRun is zero means that the next tick immediately execute the playerChunkManager#tick
                 this.nextChunkOrderRun = 0;
             } else if ((Math.abs(from.getChunkX() - to.getChunkX()) >= this.getViewDistance())
                     || (Math.abs(from.getChunkZ() - to.getChunkZ()) >= this.getViewDistance())) {
-                this.playerChunkManager.teleport();
+                this.playerChunkManager.handleTeleport();
                 this.nextChunkOrderRun = 0;
             }
 
