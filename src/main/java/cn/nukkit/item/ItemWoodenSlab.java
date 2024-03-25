@@ -24,7 +24,7 @@ public class ItemWoodenSlab extends Item {
         super(WOODEN_SLAB, meta, count);
     }
 
-    public void adjust() {
+    public void internalAdjust() {
         switch (getDamage()) {
             case 0, 6, 7 -> {
                 name = "Oak Slab";

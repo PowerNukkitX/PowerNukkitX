@@ -16,7 +16,7 @@ public class ItemWood extends Item {
         super(WOOD, meta, count);
     }
 
-    public void adjust() {
+    public void internalAdjust() {
         switch (getDamage()) {
             case 0, 6, 7, 14, 15 -> {
                 name = "Oak Wood";

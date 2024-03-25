@@ -29,7 +29,7 @@ public class EntityArrow extends SlenderProjectile {
     }
 
     public EntityArrow(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
-        this(chunk, nbt, shootingEntity, true);
+        this(chunk, nbt, shootingEntity, false);
     }
 
     public EntityArrow(IChunk chunk, CompoundTag nbt, Entity shootingEntity, boolean critical) {

@@ -20,7 +20,7 @@ public class ItemBed extends Item {
         super(BED, meta, count);
     }
 
-    public void adjust() {
+    public void internalAdjust() {
         name = DyeColor.getByWoolData(meta).getName() + " Bed";
         block = BlockBed.PROPERTIES.getDefaultState().toBlock();
     }

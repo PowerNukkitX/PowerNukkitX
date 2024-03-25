@@ -16,7 +16,7 @@ public class ItemLog extends Item {
         super(LOG, meta, count);
     }
 
-    public void adjust() {
+    public void internalAdjust() {
         switch (getDamage()) {
             case 0:
                 this.name = "Oak Log";

@@ -98,9 +98,10 @@ public class ItemBow extends ItemTool {
                 .putDouble("damage", damage);
 
         double p = (double) ticksUsed / 20;
-        double f = Math.min((p * p + p * 2) / 3, 1) * 3.5;
+        final double maxForce = 3.5;
+        double f = Math.min((p * p + p * 2) / 3, 1) * maxForce;
 
-        EntityArrow arrow = (EntityArrow) Entity.createEntity(Entity.ARROW, player.chunk, nbt, player, f == 2);
+        EntityArrow arrow = (EntityArrow) Entity.createEntity(Entity.ARROW, player.chunk, nbt, player, f == maxForce);
 
         if (arrow == null) {
             return false;

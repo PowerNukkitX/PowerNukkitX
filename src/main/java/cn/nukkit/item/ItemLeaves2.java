@@ -16,7 +16,7 @@ public class ItemLeaves2 extends Item {
         super(LEAVES2, meta, count);
     }
 
-    public void adjust() {
+    public void internalAdjust() {
         switch (getDamage()) {
             case 0 -> {
                 name = "Acacia Leaves";

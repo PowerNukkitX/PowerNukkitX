@@ -57,16 +57,6 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     }
 
     @Override
-    public double getHardness() {
-        return 0;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0;
-    }
-
-    @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!BlockLever.isSupportValid(down(), BlockFace.UP)) {
@@ -269,10 +259,9 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
          */
         default CompoundTag getPlantBlockTag() {
             var block = (Block) this;
-            var tag = block.getBlockState().getBlockStateTag();
+            var tag = block.getBlockState().getBlockStateTag().copy();
             var item = block.toItem();
-            return new CompoundTag().putCompound("PlantBlock", tag)
-                    .putString("itemId", item.getId())
+            return tag.putString("itemId", item.getId())
                     .putInt("itemMeta", item.getDamage()); //only exist in PNX
         }
 

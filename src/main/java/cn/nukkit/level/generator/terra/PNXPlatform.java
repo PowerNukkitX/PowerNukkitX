@@ -95,8 +95,8 @@ public class PNXPlatform extends AbstractPlatform {
     }
 
     @Override
-    public @NotNull
-    WorldHandle getWorldHandle() {
+    @NotNull
+    public WorldHandle getWorldHandle() {
         return pnxWorldHandle;
     }
 

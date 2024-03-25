@@ -864,7 +864,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (distance > 128) {
             invalidMotion = true;
         } else if (this.chunk == null || !chunk.getChunkState().canSend()) {
-            IChunk chunk = this.level.getChunk(clientPos.getChunkX() >> 4, clientPos.getChunkX() >> 4, false);
+            IChunk chunk = this.level.getChunk(clientPos.getChunkX(), clientPos.getChunkZ(), false);
             this.chunk = chunk;
             if (this.chunk == null || !chunk.getChunkState().canSend()) {
                 invalidMotion = true;
@@ -981,8 +981,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     protected void offerMovementTask(Location newPosition) {
-        var distance = newPosition.distanceSquared(this);
-        var updatePosition = (float) Math.sqrt(distance) > MOVEMENT_DISTANCE_THRESHOLD;//sqrt distance
+        var distance = newPosition.distance(this);
+        var updatePosition = distance > MOVEMENT_DISTANCE_THRESHOLD;//sqrt distance
         var updateRotation = (float) Math.abs(this.getPitch() - newPosition.pitch) > ROTATION_UPDATE_THRESHOLD
                 || (float) Math.abs(this.getYaw() - newPosition.yaw) > ROTATION_UPDATE_THRESHOLD
                 || (float) Math.abs(this.getHeadYaw() - newPosition.headYaw) > ROTATION_UPDATE_THRESHOLD;
@@ -4211,13 +4211,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-    public void refreshChunkView() {
-        final int dis = this.getViewDistance();
-        this.setViewDistance(1);
-        this.setViewDistance(30);
-        this.setViewDistance(dis);
-    }
-
     @Override
     public boolean teleport(Location location, TeleportCause cause) {
         if (!this.isOnline()) {
@@ -4253,11 +4246,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (setPositionAndRotation(to, to.getYaw(), to.getPitch(), to.getHeadYaw())) {
             this.resetFallDistance();
             this.onGround = !this.noClip;
+
+            //if switch level or the distance teleported is too far
+            if (!from.level.equals(to.level)) {
+                this.playerChunkManager.handleTeleport();
+                //set nextChunkOrderRun is zero means that the next tick immediately execute the playerChunkManager#tick
+                this.nextChunkOrderRun = 0;
+            } else if ((Math.abs(from.getChunkX() - to.getChunkX()) >= this.getViewDistance())
+                    || (Math.abs(from.getChunkZ() - to.getChunkZ()) >= this.getViewDistance())) {
+                this.playerChunkManager.handleTeleport();
+                this.nextChunkOrderRun = 0;
+            }
+
             //send to client
             this.sendPosition(to, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
             this.newPosition = to;
-
-            this.nextChunkOrderRun = 0;
         } else {
             this.sendPosition(this, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
             this.newPosition = this;
@@ -5038,8 +5041,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                         .add(new FloatTag((float) pitch)));
         double f = 1.1;
         EntityFishingHook fishingHook = new EntityFishingHook(chunk, nbt, this);
-        fishingHook.setMotion(new Vector3(-Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)) * f * f, -Math.sin(Math.toRadians(pitch)) * f * f,
-                Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)) * f * f));
+        fishingHook.setMotion(new Vector3(-Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)) * f * f,
+                -Math.sin(Math.toRadians(pitch)) * f * f,
+                Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)) * f * f)
+        );
         ProjectileLaunchEvent ev = new ProjectileLaunchEvent(fishingHook, this);
         this.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {

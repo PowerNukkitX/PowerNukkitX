@@ -60,6 +60,30 @@ public final class PlayerChunkManager {
         this.chunkReadyToSend = new Long2ObjectOpenHashMap<>();
     }
 
+    /**
+     * Handle chunk loading when the player teleported
+     */
+    public void handleTeleport() {
+        if (!player.isConnected()) return;
+        BlockVector3 floor = player.asBlockVector3();
+        inRadiusChunks.clear();
+        var loaderChunkX = floor.x >> 4;
+        var loaderChunkZ = floor.z >> 4;
+        for (int rx = -1; rx <= 1; rx++) {
+            for (int rz = -1; rz <= 1; rz++) {
+                if (ifChunkNotInRadius(rx, rz, 1)) continue;
+                var chunkX = loaderChunkX + rx;
+                var chunkZ = loaderChunkZ + rz;
+                var hashXZ = Level.chunkHash(chunkX, chunkZ);
+                inRadiusChunks.add(hashXZ);
+            }
+        }
+        removeOutOfRadiusChunks();
+        updateChunkSendingQueue();
+        loadQueuedChunks(5, true);
+        sendChunk();
+    }
+
     public void tick() {
         if (!player.isConnected()) return;
         long currentLoaderChunkPosHashed;
@@ -154,7 +178,7 @@ public final class PlayerChunkManager {
         } while (!chunkSendQueue.isEmpty() && triedSendChunkCount < trySendChunkCountPerTick);
     }
 
-    private void sendChunk() {
+    private synchronized void sendChunk() {
         if (!chunkReadyToSend.isEmpty()) {
             NetworkChunkPublisherUpdatePacket ncp = new NetworkChunkPublisherUpdatePacket();
             ncp.position = player.asBlockVector3();

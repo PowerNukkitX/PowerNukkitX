@@ -8,10 +8,8 @@ import org.jetbrains.annotations.NotNull;
  * @author MagicDroidX (Nukkit Project)
  */
 public class Location extends Position {
-
     public double yaw;
     public double pitch;
-
     public double headYaw;
 
     public Location() {

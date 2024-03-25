@@ -1,7 +1,6 @@
 package cn.nukkit.item;
 
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockStandingBanner;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.BannerPattern;
@@ -9,6 +8,8 @@ import cn.nukkit.utils.DyeColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+
+import static cn.nukkit.block.property.CommonBlockProperties.GROUND_SIGN_DIRECTION;
 
 /**
  * @author PetteriM1
@@ -27,8 +28,12 @@ public class ItemBanner extends Item {
 
     public ItemBanner(Integer meta, int count) {
         super(BANNER, meta, count, "Banner");
-        this.block = Block.get(Block.STANDING_BANNER);
         updateName();
+    }
+
+    @Override
+    public void internalAdjust() {
+        block = BlockStandingBanner.PROPERTIES.getBlockState(GROUND_SIGN_DIRECTION.createValue(getDamage())).toBlock();
     }
 
     @Override
@@ -99,12 +104,5 @@ public class ItemBanner extends Item {
 
     public boolean hasPattern() {
         return (this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag()).contains("Patterns");
-    }
-
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN",
-            reason = "Does nothing, used to do a backward compatibility but the content and usage were removed by Cloudburst")
-    public void correctNBT() {
-
     }
 }

@@ -2682,6 +2682,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return this.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
     }
 
+    /**
+     * Teleport the entity to another location
+     *
+     * @param location the another location
+     * @param cause    the teleported cause
+     * @return the boolean
+     */
     public boolean teleport(Location location, PlayerTeleportEvent.TeleportCause cause) {
         double yaw = location.yaw;
         double pitch = location.pitch;
@@ -2717,12 +2724,17 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return false;
     }
 
-    //return runtime id (changed after restart the server)
+    /**
+     * return runtime id (changed after restart the server),the id is incremental number
+     */
     public long getId() {
         return this.id;
     }
 
 
+    /**
+     * Gets unique id(UUID)
+     */
     public UUID getUniqueId() {
         return this.entityUniqueId;
     }

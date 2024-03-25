@@ -63,7 +63,7 @@ public class ItemFireworkRocket extends Item {
                     -Math.sin(Math.toRadians(player.pitch)) * 2,
                     Math.cos(Math.toRadians(player.yaw)) * Math.cos(Math.toRadians(player.pitch)) * 2));
 
-            spawnElytraFirework(player.getLevel(), player, player);
+            spawnElytraFirework(player, player);
             if (!player.isCreative()) {
                 this.count--;
             }
@@ -127,7 +127,7 @@ public class ItemFireworkRocket extends Item {
         }
     }
 
-    private void spawnElytraFirework(Level level, Vector3 pos, Player player) {
+    private void spawnElytraFirework(Vector3 pos, Player player) {
         CompoundTag nbt = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
                         .add(new DoubleTag(pos.x + 0.5))
@@ -143,9 +143,7 @@ public class ItemFireworkRocket extends Item {
                 .putCompound("FireworkItem", NBTIO.putItemHelper(this));
 
         EntityElytraFirework entity = new EntityElytraFirework(player.getChunk(), nbt, player);
-        if (entity != null) {
-            entity.spawnToAll();
-        }
+        entity.spawnToAll();
     }
 
     public static class FireworkExplosion {
