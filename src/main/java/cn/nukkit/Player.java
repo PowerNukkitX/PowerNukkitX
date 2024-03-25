@@ -1258,6 +1258,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * 玩家客户端初始化完成后调用
      */
     protected void onPlayerLocallyInitialized() {
+        //init entity data property
+        this.setDataProperty(NAME, info.getUsername(), false);
+        this.setDataProperty(NAMETAG_ALWAYS_SHOW, 1, false);
+        
         locallyInitialized = true;
         PlayerJoinEvent playerJoinEvent = new PlayerJoinEvent(this,
                 new TranslationContainer(TextFormat.YELLOW + "%multiplayer.player.joined", new String[]{
@@ -1277,9 +1281,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
           强制更新游戏模式以确保客户端会收到模式更新包
          */
         this.setGamemode(this.gamemode, false, null, true);
-        //init entity data property
-        this.setDataProperty(NAME, info.getUsername(), false);
-        this.setDataProperty(NAMETAG_ALWAYS_SHOW, 1, false);
         this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
         this.spawnToAll();
 
