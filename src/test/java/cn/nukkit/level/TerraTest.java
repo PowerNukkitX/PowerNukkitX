@@ -6,6 +6,7 @@ import cn.nukkit.Server;
 import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.leveldb.LevelDBProvider;
 import cn.nukkit.level.generator.terra.PNXPlatform;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.GameLoop;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
@@ -42,17 +43,17 @@ public class TerraTest {
     void test_terra(Player player) {
         player.level = level;
         player.setViewDistance(1);
-        GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
+        GameLoop loop = GameLoop.builder().loopCountPerSec(200).onTick((d) -> {
             Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
             level.subTick(d);
             player.checkNetwork();
         }).build();
         Thread thread = new Thread(loop::startLoop);
         thread.start();
-        int limit = 1000;
+        int limit = 10;
         while (limit-- != 0) {
             try {
-                Thread.sleep(100);
+                Thread.sleep(1000);
                 if (5 == player.getUsedChunks().size()) {
                     break;
                 }
@@ -60,8 +61,8 @@ public class TerraTest {
                 throw new RuntimeException(e);
             }
         }
-        if (limit == 0) {
-            Assertions.fail("Chunks cannot be successfully loaded in 100s");
+        if (limit <= 0) {
+            Assertions.fail("Chunks cannot be successfully loaded in 10s");
         }
         //teleport
         player.teleport(player.getLocation().setComponents(10000, 100, 10000));
@@ -81,6 +82,7 @@ public class TerraTest {
             Assertions.fail("Players are unable to load Terra generator chunks normally");
         }
         loop.stop();
+        player.setPosition(new Vector3(0, 100, 0));
     }
 
     @SneakyThrows

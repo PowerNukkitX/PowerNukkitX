@@ -178,7 +178,7 @@ public final class PlayerChunkManager {
         } while (!chunkSendQueue.isEmpty() && triedSendChunkCount < trySendChunkCountPerTick);
     }
 
-    private void sendChunk() {
+    private synchronized void sendChunk() {
         if (!chunkReadyToSend.isEmpty()) {
             NetworkChunkPublisherUpdatePacket ncp = new NetworkChunkPublisherUpdatePacket();
             ncp.position = player.asBlockVector3();

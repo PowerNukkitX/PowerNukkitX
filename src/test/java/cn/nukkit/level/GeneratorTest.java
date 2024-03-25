@@ -17,7 +17,7 @@ import java.util.HashMap;
 public class GeneratorTest {
     @Test
     void testCreate(Level level, LevelProvider levelProvider) {
-        GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
+        GameLoop loop = GameLoop.builder().loopCountPerSec(200).onTick((d) -> {
             Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
         }).build();
         Thread thread = new Thread(loop::startLoop);
@@ -34,7 +34,7 @@ public class GeneratorTest {
 
     @Test
     void testLight(Level level, LevelProvider levelProvider) {
-        GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
+        GameLoop loop = GameLoop.builder().loopCountPerSec(200).onTick((d) -> {
             Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
         }).build();
         Thread thread = new Thread(loop::startLoop);

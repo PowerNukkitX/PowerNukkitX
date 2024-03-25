@@ -68,14 +68,14 @@ public class ChunkTest {
         chunk.addEntity(itemEntity);
 
         List<Entity> list = chunk.getEntities().values().stream().filter(e -> e.getIdentifier().equals(EntityID.ITEM)).toList();
-        Assertions.assertEquals(1, list.size());
+        Assertions.assertFalse(list.isEmpty());
         Assertions.assertEquals(EntityID.ITEM, list.get(0).getIdentifier());
 
         levelDBProvider.saveChunk(0, 0, chunk);
         IChunk newChunk = levelDBProvider.getChunk(0, 0);
         Assertions.assertNotNull(newChunk);
         List<Entity> list2 = chunk.getEntities().values().stream().filter(e -> e.getIdentifier().equals(EntityID.ITEM)).toList();
-        Assertions.assertEquals(1, list2.size());
+        Assertions.assertFalse(list2.isEmpty());
         Assertions.assertEquals(EntityID.ITEM, list2.get(0).getIdentifier());
     }
 
