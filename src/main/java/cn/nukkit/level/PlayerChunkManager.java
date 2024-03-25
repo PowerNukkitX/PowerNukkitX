@@ -60,6 +60,20 @@ public final class PlayerChunkManager {
         this.chunkReadyToSend = new Long2ObjectOpenHashMap<>();
     }
 
+    public void teleport() {
+        if (!player.isConnected()) return;
+        long currentLoaderChunkPosHashed;
+        BlockVector3 floor = player.asBlockVector3();
+        if ((currentLoaderChunkPosHashed = Level.chunkHash(floor.x >> 4, floor.z >> 4)) != lastLoaderChunkPosHashed) {
+            lastLoaderChunkPosHashed = currentLoaderChunkPosHashed;
+            updateInRadiusChunks(player.getViewDistance(), floor);
+            removeOutOfRadiusChunks();
+            updateChunkSendingQueue();
+        }
+        loadQueuedChunks(trySendChunkCountPerTick, true);
+        sendChunk();
+    }
+
     public void tick() {
         if (!player.isConnected()) return;
         long currentLoaderChunkPosHashed;

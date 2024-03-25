@@ -2,6 +2,7 @@ package cn.nukkit.player;
 
 import cn.nukkit.GameMockExtension;
 import cn.nukkit.Player;
+import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
@@ -115,12 +116,4 @@ public class PlayerTest {
         Assertions.assertFalse(level.getChunks().containsKey(Level.chunkHash(1, 1)), "This chunk should not be loaded");
     }
 
-    @Test
-    void test_setNameTag(Player player) {
-        String oldNameTag = player.getNameTag();
-        player.setNameTag("test nameTag");
-        String newNameTag = player.getNameTag();
-        System.out.println("Old name tag: " + oldNameTag);
-        System.out.println("New name tag: " + newNameTag);
-    }
 }

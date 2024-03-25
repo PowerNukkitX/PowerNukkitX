@@ -100,7 +100,6 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
                     }
                 }
             }
-            chunk.setChunkState(ChunkState.GENERATED);
             var tmp = new PNXProtoWorld(new PNXServerWorld(TerraGenerator.this, context.getLevel()), chunkX, chunkZ);
             try {
                 for (var generationStage : configPack.getStages()) {
@@ -111,7 +110,6 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
             } catch (Exception e) {
                 //TODO: 未知原因的 ConcurrentModificationException
             }
-            chunk.setChunkState(ChunkState.POPULATED);
 
             if (Server.getInstance().getConfig("chunk-ticking.light-updates", true)) {
                 chunk.recalculateHeightMap();

@@ -42,6 +42,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -73,6 +74,7 @@ public class GameMockExtension extends MockitoExtension {
     final static BlockRegistry BLOCK_REGISTRY;
     final static Player player;
     static Level level;
+    static Level terra;
 
     static {
         Registries.PACKET.init();
@@ -204,7 +206,6 @@ public class GameMockExtension extends MockitoExtension {
             level = new Level(Server.getInstance(), "newlevel", "src/test/resources/newlevel",
                     1, LevelDBProvider.class, new LevelConfig.GeneratorConfig("flat", 114514, DimensionEnum.OVERWORLD.getDimensionData(), new HashMap<>()));
             level.initLevel();
-
             player.level = level;
             player.setPosition(new Vector3(0, 100, 0));
         } catch (IllegalAccessException e) {
@@ -216,7 +217,14 @@ public class GameMockExtension extends MockitoExtension {
         Thread t = new Thread(() -> {
             level.close();
             try {
-                FileUtils.deleteDirectory(new File("src/test/resources/newlevel"));
+                File file1 = Path.of("services").toFile();
+                if (file1.exists()) {
+                    FileUtils.deleteDirectory(file1);
+                }
+                File file2 = Path.of("src/test/resources/newlevel").toFile();
+                if (file2.exists()) {
+                    FileUtils.deleteDirectory(file2);
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

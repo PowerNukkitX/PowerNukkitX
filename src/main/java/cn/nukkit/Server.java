@@ -2438,23 +2438,31 @@ public class Server {
             log.warn(this.getLanguage().tr("nukkit.level.notFound", name));
             return false;
         }
-        //verify the provider
-        Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(path);
-        if (provider == null) {
-            log.error(this.getLanguage().tr("nukkit.level.loadError", name, "Unknown provider"));
-            return false;
-        }
 
         File config = jpath.resolve("config.json").toFile();
         LevelConfig levelConfig;
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        Class<? extends LevelProvider> provider = null;
         if (config.exists()) {
             try {
                 levelConfig = gson.fromJson(new FileReader(config), LevelConfig.class);
+                provider = LevelProviderManager.getProviderByName(levelConfig.format());
+                if (provider == null) {
+                    log.error(this.getLanguage().tr("nukkit.level.loadError", name, "Unknown provider"));
+                    return false;
+                }
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
         } else {
+            //verify the provider
+            provider = LevelProviderManager.getProvider(path);
+            if (provider == null) {
+                log.error(this.getLanguage().tr("nukkit.level.loadError", name, "Unknown provider"));
+                return false;
+            }
+
             Map<Integer, LevelConfig.GeneratorConfig> map = new HashMap<>();
             //todo nether the_end overworld
             map.put(0, new LevelConfig.GeneratorConfig("flat", System.currentTimeMillis(), DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
@@ -2466,11 +2474,7 @@ public class Server {
                 throw new RuntimeException(e);
             }
         }
-        Class<? extends LevelProvider> providerByName = LevelProviderManager.getProviderByName(levelConfig.format());
-        if (provider != providerByName) {
-            log.error(this.getLanguage().tr("nukkit.level.loadError", name, "Unknown provider"));
-            return false;
-        }
+
         Map<Integer, LevelConfig.GeneratorConfig> generators = levelConfig.generators();
         for (var entry : generators.entrySet()) {
             String levelName = name + " Dim" + entry.getKey();
