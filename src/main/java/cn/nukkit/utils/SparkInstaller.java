@@ -14,8 +14,6 @@ import java.util.Arrays;
 
 @Slf4j
 public class SparkInstaller {
-    private static final String version = "0.0.1";
-
     public static boolean initSpark(@Nonnull Server server) {
         boolean download = false;
         Plugin spark = server.getPluginManager().getPlugin("spark");
