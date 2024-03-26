@@ -532,7 +532,7 @@ public class Server {
         this.properties = new Config(this.dataPath + "server.properties", Config.PROPERTIES, new ConfigSection() {
             {
                 put("motd", "PowerNukkitX Server");
-                put("sub-motd", "https://powernukkitx.cn");
+                put("sub-motd", "v2.powernukkitx.com");
                 put("server-port", 19132);
                 put("server-ip", "0.0.0.0");
                 put("view-distance", 12);
@@ -911,11 +911,12 @@ public class Server {
         }
 
         this.pluginManager.registerInterface(JavaPluginLoader.class);
-        JSIInitiator.reset();
-        JSFeatures.clearFeatures();
-        JSFeatures.initInternalFeatures();
+        //todo enable js plugin when adapt
+//        JSIInitiator.reset();
+//        JSFeatures.clearFeatures();
+//        JSFeatures.initInternalFeatures();
+//        this.pluginManager.registerInterface(JSPluginLoader.class);
         this.scoreboardManager.read();
-        this.pluginManager.registerInterface(JSPluginLoader.class);
 
         log.info("Reloading Registries...");
         {
