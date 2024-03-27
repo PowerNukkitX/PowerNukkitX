@@ -77,4 +77,8 @@ public class SingleFakeBlock implements FakeBlock {
                 .putBoolean("isMovable", true)
                 .putString("CustomName", title);
     }
+
+    public HashSet<Vector3> getLastPositions() {
+        return lastPositions;
+    }
 }

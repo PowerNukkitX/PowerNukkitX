@@ -5,6 +5,8 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
+import cn.nukkit.inventory.fake.FakeInventory;
+import cn.nukkit.inventory.fake.FakeInventoryType;
 import cn.nukkit.inventory.fake.FakeStructBlock;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -32,7 +34,8 @@ public class TTCommand extends TestCommand {
             boolean isPlayer = sender.isPlayer();
             if (isPlayer) {
                 Player player = sender.asPlayer();
-                player.setNameTag("adflhkdasjkhf");
+                FakeInventory fakeInventory = new FakeInventory(FakeInventoryType.DOUBLE_CHEST);
+                player.addWindow(fakeInventory);
             }
             return 1;
         } else return 0;

@@ -2063,21 +2063,25 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 设置指定itemCategory物品的冷却显示效果，注意该方法仅为客户端显示效果，冷却逻辑实现仍需自己实现
-     * <p>
-     * Set the cooling display effect of the specified itemCategory items, note that this method is only for client-side display effect, cooling logic implementation still needs to be implemented by itself
+     * Sets the cooldown time for the specified item to use
      *
-     * @param coolDown the cool down
-     * @param itemId   the item id
+     * @param coolDownTick the cool down tick
+     * @param itemId       the item id
      */
-    public void setItemCoolDown(int coolDown, Identifier itemId) {
+    public void setItemCoolDown(int coolDownTick, Identifier itemId) {
         var pk = new PlayerStartItemCoolDownPacket();
-        pk.setCoolDownDuration(coolDown);
-        pk.setItemCategory(itemId.getPath());
-        this.cooldownTickMap.put(itemId.toString(), this.server.getTick() + coolDown);
+        pk.setCoolDownDuration(coolDownTick);
+        pk.setItemCategory(itemId.toString());
+        this.cooldownTickMap.put(itemId.toString(), this.server.getTick() + coolDownTick);
         this.dataPacket(pk);
     }
 
+    /**
+     * the cooldown of specified item is end
+     *
+     * @param itemId the item
+     * @return the boolean
+     */
     public boolean isItemCoolDownEnd(Identifier itemId) {
         Integer tick = this.cooldownTickMap.getOrDefault(itemId.toString(), 0);
         boolean result = this.getServer().getTick() - tick > 0;

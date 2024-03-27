@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class FakeInventory extends BaseInventory {
     private final Map<Integer, ItemHandler> handlers = new HashMap<>();
@@ -100,15 +101,19 @@ public class FakeInventory extends BaseInventory {
             packet.windowId = player.getWindowId(this);
             packet.type = this.getType().getNetworkType();
 
-            Vector3 position = this.fakeBlock.getPlacePositions(player).get(0);
-            packet.x = position.getFloorX();
-            packet.y = position.getFloorY();
-            packet.z = position.getFloorZ();
-            player.dataPacket(packet);
+            Optional<Vector3> first = this.fakeBlock.getLastPositions().stream().findFirst();
+            if(first.isPresent()){
+                Vector3 position = first.get();
+                packet.x = position.getFloorX();
+                packet.y = position.getFloorY();
+                packet.z = position.getFloorZ();
+                player.dataPacket(packet);
 
-            super.onOpen(player);
-
-            this.sendContents(player);
+                super.onOpen(player);
+                this.sendContents(player);
+            }else{
+                this.fakeBlock.remove(player);
+            }
         }, 5);
     }
 
