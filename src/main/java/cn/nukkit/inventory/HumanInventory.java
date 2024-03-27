@@ -19,10 +19,15 @@ import cn.nukkit.network.protocol.MobEquipmentPacket;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import org.jetbrains.annotations.Range;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -192,6 +197,98 @@ public class HumanInventory extends BaseInventory {
         } else {
             super.onSlotChange(index, before, send);
         }
+    }
+
+    @Override
+    public boolean canAddItem(Item item) {
+        item = item.clone();
+        boolean checkDamage = item.hasMeta();
+        boolean checkBlock = item.isBlock();
+        boolean checkTag = item.getCompoundTag() != null;
+        for (int i = 0; i < ARMORS_INDEX; ++i) {
+            Item slot = this.getUnclonedItem(i);
+            if (item.equals(slot, checkDamage, checkBlock, checkTag)) {
+                int diff;
+                if ((diff = Math.min(slot.getMaxStackSize(), this.getMaxStackSize()) - slot.getCount()) > 0) {
+                    item.setCount(item.getCount() - diff);
+                }
+            } else if (slot.isNull()) {
+                item.setCount(item.getCount() - Math.min(slot.getMaxStackSize(), this.getMaxStackSize()));
+            }
+
+            if (item.getCount() <= 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public Item[] addItem(Item... slots) {
+        List<Item> itemSlots = new ArrayList<>();
+        for (Item slot : slots) {
+            if (!slot.isNull()) {
+                //todo: clone only if necessary
+                itemSlots.add(slot.clone());
+            }
+        }
+
+        //使用FastUtils的IntArrayList提高性能
+        IntList emptySlots = new IntArrayList(this.getSize());
+
+        for (int i = 0; i < ARMORS_INDEX; ++i) {
+            //获取未克隆Item对象
+            Item item = this.getUnclonedItem(i);
+            if (item.isNull() || item.getCount() <= 0) {
+                emptySlots.add(i);
+            }
+
+            //使用迭代器而不是新建一个ArrayList
+            for (Iterator<Item> iterator = itemSlots.iterator(); iterator.hasNext(); ) {
+                Item slot = iterator.next();
+                if (slot.equals(item)) {
+                    int maxStackSize = Math.min(this.getMaxStackSize(), item.getMaxStackSize());
+                    if (item.getCount() < maxStackSize) {
+                        int amount = Math.min(maxStackSize - item.getCount(), slot.getCount());
+                        amount = Math.min(amount, this.getMaxStackSize());
+                        if (amount > 0) {
+                            //在需要clone时再clone
+                            item = item.clone();
+                            slot.setCount(slot.getCount() - amount);
+                            item.setCount(item.getCount() + amount);
+                            this.setItem(i, item);
+                            if (slot.getCount() <= 0) {
+                                iterator.remove();
+                            }
+                        }
+                    }
+                }
+            }
+            if (itemSlots.isEmpty()) {
+                break;
+            }
+        }
+
+        if (!itemSlots.isEmpty() && !emptySlots.isEmpty()) {
+            for (int slotIndex : emptySlots) {
+                if (!itemSlots.isEmpty()) {
+                    Item slot = itemSlots.get(0);
+                    int maxStackSize = Math.min(slot.getMaxStackSize(), this.getMaxStackSize());
+                    int amount = Math.min(maxStackSize, slot.getCount());
+                    amount = Math.min(amount, this.getMaxStackSize());
+                    slot.setCount(slot.getCount() - amount);
+                    Item item = slot.clone();
+                    item.setCount(amount);
+                    this.setItem(slotIndex, item);
+                    if (slot.getCount() <= 0) {
+                        itemSlots.remove(slot);
+                    }
+                }
+            }
+        }
+
+        return itemSlots.toArray(Item.EMPTY_ARRAY);
     }
 
     public int getHotbarSize() {
