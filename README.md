@@ -27,7 +27,8 @@
 2. [Select the version you want to use](https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess)
 3. Make sure you have a github account, login it, if not [sign up](https://docs.github.com/en/get-started/start-your-journey/creating-an-account-on-github)!
 4. Click to the version you want to use and scroll down to find artifacts.
-5. Download the `PowerNukkitX-Run.zip`![img.png](.github/img/003.png)
+5. Download the `PowerNukkitX-Run.zip`  
+![img.png](.github/img/003.png)
 6. Unzip `PowerNukkitX-Run.zip` to the directory you want.
 
 ## Usage
@@ -47,8 +48,11 @@ the [contributing guide](.github/CONTRIBUTING.md).
 
 ## Show your support
 
-Give a ⭐️ if this project helped you!
+Give a ⭐️ if this project helped you!  
 
+### Donate
+- [Patreon](https://www.patreon.com/coolloong)
+- Ethereum: 0x140fc5f4c1fb00270c3491275d316470abc887f0
 ## 📝 License
 
 This project is [LGPL-3](https://www.gnu.org/licenses/lgpl-3.0.html) licensed.
