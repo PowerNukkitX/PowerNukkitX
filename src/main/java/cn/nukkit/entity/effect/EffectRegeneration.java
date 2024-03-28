@@ -13,7 +13,8 @@ public class EffectRegeneration extends Effect {
 
     @Override
     public boolean canTick() {
-        int interval = 40 >> this.getAmplifier();
+        int amplifier = Math.min(5, this.getAmplifier());
+        int interval = 50 >> amplifier;
         return interval > 0 && this.getDuration() % interval == 0;
     }
 
