@@ -13,6 +13,7 @@ public abstract class ItemCustomBookEnchanted extends ItemEnchantedBook implemen
     @Override
     public CustomItemDefinition getDefinition() {
         return CustomItemDefinition.customBuilder(this)
+                .name(name)
                 .texture("book_enchanted")
                 .allowOffHand(false)
                 .creativeCategory(CreativeCategory.ITEMS)

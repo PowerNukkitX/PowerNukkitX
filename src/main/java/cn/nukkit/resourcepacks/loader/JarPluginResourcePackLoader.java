@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-
-
 public class JarPluginResourcePackLoader implements ResourcePackLoader {
 
     protected final File jarPath;

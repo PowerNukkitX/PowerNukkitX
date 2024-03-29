@@ -1,6 +1,7 @@
 package cn.nukkit.block.customblock;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.customblock.data.CraftingTable;
 import cn.nukkit.block.customblock.data.Geometry;
 import cn.nukkit.block.customblock.data.Materials;
 import cn.nukkit.block.customblock.data.Permutation;
@@ -200,6 +201,14 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          */
         public Builder creativeGroup(CreativeGroup creativeGroup) {
             this.nbt.getCompound("components").getCompound("menu_category").putString("group", creativeGroup.getGroupName());
+            return this;
+        }
+
+        /**
+         * @see <a href="https://wiki.bedrock.dev/blocks/block-components.html#crafting-table">wiki.bedrock.dev</a>
+         */
+        public Builder craftingTable(CraftingTable craftingTable) {
+            this.nbt.getCompound("components").putCompound("minecraft:crafting_table", craftingTable.toCompoundTag());
             return this;
         }
 
