@@ -12,6 +12,6 @@ public class RedstoneParticle extends GenericParticle {
     }
 
     public RedstoneParticle(Vector3 pos, int lifetime) {
-        super(pos, Particle.TYPE_REDSTONE, lifetime);
+        super(pos, Particle.TYPE_RED_DUST, lifetime);
     }
 }

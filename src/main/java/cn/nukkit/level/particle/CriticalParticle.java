@@ -12,6 +12,6 @@ public class CriticalParticle extends GenericParticle {
     }
 
     public CriticalParticle(Vector3 pos, int scale) {
-        super(pos, Particle.TYPE_CRITICAL, scale);
+        super(pos, Particle.TYPE_CRIT, scale);
     }
 }
