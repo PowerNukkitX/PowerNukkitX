@@ -68,6 +68,7 @@ public class PlayerTest {
             level.subTick(d);
             player.checkNetwork();
         }).build();
+        player.setPosition(new Vector3(0, 100, 0));
         Thread thread = new Thread(loop::startLoop);
         thread.start();
         int limit = 10;
@@ -85,6 +86,7 @@ public class PlayerTest {
         if (limit <= 0) {
             Assertions.fail("Chunks cannot be successfully loaded in 10s,the number of chunks that are now loaded: " + player.getUsedChunks().size());
         }
+        player.setPosition(new Vector3(0, 100, 0));
     }
 
     @Test
@@ -97,6 +99,7 @@ public class PlayerTest {
             level.subTick(d);
             player.checkNetwork();
         }).build();
+        player.setPosition(new Vector3(0, 100, 0));
         Thread thread = new Thread(loop::startLoop);
         thread.start();
         int limit = 10;

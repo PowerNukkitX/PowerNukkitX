@@ -52,7 +52,10 @@ public interface FakeBlock {
      * Get the place position of this fake block
      */
     default Vector3 getOffset(Player player) {
-        Vector3 offset = new Vector3(0,2,0);
-        return player.getPosition().add(offset).floor();
+        Vector3 offset = player.getDirectionVector();
+        offset.x *= -(1 + player.getWidth());
+        offset.y *= -(1 + player.getHeight());
+        offset.z *= -(1 + player.getWidth());
+        return player.getPosition().add(offset);
     }
 }

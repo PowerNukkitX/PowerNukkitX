@@ -344,14 +344,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected CreativeOutputInventory creativeOutputInventory;
     protected boolean inventoryOpen;//Player opens it own inventory
     protected boolean enderChestOpen;//Player open it own ender chest inventory
+    protected boolean fakeInventoryOpen;//Player open a fake Inventory
     ///
-    private final @NotNull PlayerInfo info;
 
+    private final @NotNull PlayerInfo info;
     public @NotNull PlayerInfo getPlayerInfo() {
         return this.info;
     }
 
-    ///
     @UsedByReflection
     public Player(@NotNull BedrockSession session, @NotNull PlayerInfo info) {
         super(null, new CompoundTag());
@@ -5372,5 +5372,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     public boolean getEnderChestOpen() {
         return this.enderChestOpen;
+    }
+
+    public boolean getFakeInventoryOpen() {
+        return fakeInventoryOpen;
+    }
+
+    public void setFakeInventoryOpen(boolean fakeInventoryOpen) {
+        this.fakeInventoryOpen = fakeInventoryOpen;
     }
 }

@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.inventory.ItemStackRequestActionEvent;
 import cn.nukkit.inventory.BaseInventory;
+import cn.nukkit.inventory.InputInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.request.NetworkMapping;
@@ -17,15 +18,17 @@ import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackReques
 import cn.nukkit.network.protocol.types.itemstack.request.action.SwapAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.TransferItemStackRequestAction;
 import cn.nukkit.plugin.InternalPlugin;
+import cn.nukkit.recipe.Input;
 import com.google.common.collect.BiMap;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class FakeInventory extends BaseInventory {
+public class FakeInventory extends BaseInventory implements InputInventory {
     private final Map<Integer, ItemHandler> handlers = new HashMap<>();
     private final FakeBlock fakeBlock;
     private final FakeInventoryType fakeInventoryType;
@@ -95,6 +98,7 @@ public class FakeInventory extends BaseInventory {
 
     @Override
     public void onOpen(Player player) {
+        player.setFakeInventoryOpen(true);
         this.fakeBlock.create(player, this.getTitle());
         Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
             ContainerOpenPacket packet = new ContainerOpenPacket();
@@ -102,7 +106,7 @@ public class FakeInventory extends BaseInventory {
             packet.type = this.getType().getNetworkType();
 
             Optional<Vector3> first = this.fakeBlock.getLastPositions().stream().findFirst();
-            if(first.isPresent()){
+            if (first.isPresent()) {
                 Vector3 position = first.get();
                 packet.x = position.getFloorX();
                 packet.y = position.getFloorY();
@@ -111,7 +115,7 @@ public class FakeInventory extends BaseInventory {
 
                 super.onOpen(player);
                 this.sendContents(player);
-            }else{
+            } else {
                 this.fakeBlock.remove(player);
             }
         }, 5);
@@ -127,6 +131,7 @@ public class FakeInventory extends BaseInventory {
             this.fakeBlock.remove(player);
         }, 5);
         super.onClose(player);
+        player.setFakeInventoryOpen(false);
     }
 
     public String getTitle() {
@@ -173,6 +178,19 @@ public class FakeInventory extends BaseInventory {
                 ItemHandler handler = this.handlers.getOrDefault(destinationSlot, this.defaultItemHandler);
                 handler.handle(this, destinationSlot, destItem, sourItem, event);
             }
+        }
+    }
+
+    @Override
+    public Input getInput() {
+        if (fakeInventoryType == FakeInventoryType.WORKBENCH) {
+            Item[] item1 = List.of(getItem(0), getItem(1), getItem(2)).toArray(Item.EMPTY_ARRAY);
+            Item[] item2 = List.of(getItem(3), getItem(4), getItem(5)).toArray(Item.EMPTY_ARRAY);
+            Item[] item3 = List.of(getItem(6), getItem(7), getItem(8)).toArray(Item.EMPTY_ARRAY);
+            Item[][] items = new Item[][]{item1, item2, item3};
+            return new Input(3, 3, items);
+        } else {
+            return new Input(3, 3, new Item[3][3]);
         }
     }
 }

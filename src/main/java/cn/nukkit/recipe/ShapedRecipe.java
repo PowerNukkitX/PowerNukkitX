@@ -241,9 +241,9 @@ public class ShapedRecipe extends CraftingRecipe {
                 maxRow = Math.max(maxRow, left);
             }
         }
-        int newRow = maxRow - minRow + 1;//+1 because is index
-        int newCol = maxCol - minCol + 1;
-        if (newRow > 0 && newRow < row && newCol > 0 && newCol < col) {
+        int newRow = maxRow - minRow + 1;//+1 because is index (0~3)
+        int newCol = maxCol - minCol + 1; //(0~3)
+        if (newRow > 0 && newRow <= row && newCol > 0 && newCol <= col) {
             Item[][] items = new Item[newRow][newCol];
             for (int i = 0; i < newCol; i++) {
                 for (int j = 0; j < newRow; j++) {

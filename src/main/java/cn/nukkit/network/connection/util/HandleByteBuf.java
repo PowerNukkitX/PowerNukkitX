@@ -1425,7 +1425,7 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     public <T> void writeArray(Collection<T> collection, Consumer<T> writer) {
-        if (collection == null) {
+        if (collection == null || collection.isEmpty()) {
             writeUnsignedVarInt(0);
             return;
         }
@@ -1434,7 +1434,7 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     public <T> void writeArray(T[] collection, Consumer<T> writer) {
-        if (collection == null) {
+        if (collection == null || collection.length == 0) {
             writeUnsignedVarInt(0);
             return;
         }

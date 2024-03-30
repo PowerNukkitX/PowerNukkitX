@@ -5,8 +5,9 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
+import cn.nukkit.inventory.fake.FakeInventory;
+import cn.nukkit.inventory.fake.FakeInventoryType;
 import cn.nukkit.inventory.fake.FakeStructBlock;
-import cn.nukkit.level.particle.HeartParticle;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;
@@ -28,7 +29,8 @@ public class TTCommand extends TestCommand {
             boolean isPlayer = sender.isPlayer();
             if (isPlayer) {
                 Player player = sender.asPlayer();
-                player.getLevel().addParticle(new HeartParticle(player.add(0, 2), 4));
+                FakeInventory fakeInventory = new FakeInventory(FakeInventoryType.WORKBENCH);
+                player.addWindow(fakeInventory);
             }
             return 1;
         } else return 0;

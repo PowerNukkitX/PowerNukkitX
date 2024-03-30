@@ -3,6 +3,7 @@ package cn.nukkit.inventory.request;
 import cn.nukkit.Player;
 import cn.nukkit.inventory.CraftingTableInventory;
 import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.fake.FakeInventory;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import lombok.experimental.UtilityClass;
 
@@ -22,7 +23,9 @@ public class NetworkMapping {
                     STONECUTTER_INPUT, STONECUTTER_RESULT,
                     GRINDSTONE_ADDITIONAL, GRINDSTONE_INPUT, GRINDSTONE_RESULT,
                     LEVEL_ENTITY, SHULKER_BOX -> {
-                if (player.getEnderChestOpen()) {
+                if (player.getFakeInventoryOpen() && player.getTopWindow().isPresent() && player.getTopWindow().get() instanceof FakeInventory) {
+                    yield player.getTopWindow().get();
+                } else if (player.getEnderChestOpen()) {
                     yield player.getEnderChestInventory();
                 } else if (player.getTopWindow().isPresent()) {
                     yield player.getTopWindow().get();
@@ -32,7 +35,9 @@ public class NetworkMapping {
             }
             case OFFHAND -> player.getOffhandInventory();
             case CRAFTING_INPUT -> {
-                if (player.getTopWindow().isPresent() && player.getTopWindow().get() instanceof CraftingTableInventory) {
+                if (player.getFakeInventoryOpen() && player.getTopWindow().isPresent() && player.getTopWindow().get() instanceof FakeInventory) {
+                    yield player.getTopWindow().get();
+                } else if (player.getTopWindow().isPresent() && player.getTopWindow().get() instanceof CraftingTableInventory) {
                     yield player.getTopWindow().get();
                 } else {
                     yield player.getCraftingGrid();
