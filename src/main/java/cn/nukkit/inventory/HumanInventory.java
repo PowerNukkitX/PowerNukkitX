@@ -203,11 +203,10 @@ public class HumanInventory extends BaseInventory {
     public boolean canAddItem(Item item) {
         item = item.clone();
         boolean checkDamage = item.hasMeta();
-        boolean checkBlock = item.isBlock();
         boolean checkTag = item.getCompoundTag() != null;
         for (int i = 0; i < ARMORS_INDEX; ++i) {
             Item slot = this.getUnclonedItem(i);
-            if (item.equals(slot, checkDamage, checkBlock, checkTag)) {
+            if (item.equals(slot, checkDamage, checkTag)) {
                 int diff;
                 if ((diff = Math.min(slot.getMaxStackSize(), this.getMaxStackSize()) - slot.getCount()) > 0) {
                     item.setCount(item.getCount() - diff);

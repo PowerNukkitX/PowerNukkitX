@@ -19,7 +19,8 @@ public class BlockCoralBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(CORAL_BLOCK, CORAL_COLOR, DEAD_BIT);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -42,9 +43,9 @@ public class BlockCoralBlock extends BlockSolid {
     @Override
     public String getName() {
         if (isDead()) {
-            return "Dead " + this.getPropertyValue(CORAL_COLOR).name() +" Coral Block";
+            return "Dead " + this.getPropertyValue(CORAL_COLOR).name() + " Coral Block";
         } else {
-            return this.getPropertyValue(CORAL_COLOR).name() +" Coral Block";
+            return this.getPropertyValue(CORAL_COLOR).name() + " Coral Block";
         }
     }
 
@@ -106,4 +107,11 @@ public class BlockCoralBlock extends BlockSolid {
             return Item.EMPTY_ARRAY;
         }
     }
+
+    @Override
+    public Item toItem() {
+        int aux = this.getPropertyValue(CORAL_COLOR).ordinal();
+        return new ItemBlock(this, aux);
+    }
+
 }

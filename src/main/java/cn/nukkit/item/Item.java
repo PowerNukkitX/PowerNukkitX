@@ -39,7 +39,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
-import java.util.regex.Pattern;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -48,19 +47,6 @@ import java.util.regex.Pattern;
 public abstract class Item implements Cloneable, ItemID {
     public static final Item AIR = new ConstAirItem();
     public static final Item[] EMPTY_ARRAY = new Item[0];
-
-    /**
-     * Groups:
-     * <ol>
-     *     <li>namespace (optional)</li>
-     *     <li>item name (choice)</li>
-     *     <li>damage (optional, for item name)</li>
-     * </ol>
-     */
-    private static final Pattern ITEM_STRING_PATTERN = Pattern.compile(
-            //       1:namespace    2:name           3:damage
-            "^(?:(?:([a-z_]\\w*):)?([a-z._]\\w*)(?::(-?\\d+))?)$"
-    );
 
     public static String UNKNOWN_STR = "Unknown";
     protected Block block = null;
@@ -173,7 +159,7 @@ public abstract class Item implements Cloneable, ItemID {
             if (itemBlockState == null || itemBlockState == BlockAir.STATE) {
                 return Item.AIR;
             }
-            item = new ItemBlock(Registries.BLOCK.get(itemBlockState));
+            item = new ItemBlock(Registries.BLOCK.get(itemBlockState), meta);
             item.setCount(count);
             if (tags != null) {
                 item.setCompoundTag(tags);
@@ -1270,7 +1256,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public final boolean equals(Item item, boolean checkDamage, boolean checkCompound) {
-        return equals(item, checkDamage, true, checkCompound);
+        return equals(item, checkDamage, false, checkCompound);
     }
 
     /**
