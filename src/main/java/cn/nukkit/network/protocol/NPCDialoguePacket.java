@@ -19,7 +19,9 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import org.jetbrains.annotations.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * @author joserobjr
@@ -27,24 +29,20 @@ import org.jetbrains.annotations.NotNull;
  */
 
 
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class NPCDialoguePacket extends DataPacket {
-
-
     public static final int NETWORK_ID = ProtocolInfo.NPC_DIALOGUE_PACKET;
     
     private static final NPCDialogAction[] ACTIONS = NPCDialogAction.values();
     
-    private long runtimeEntityId;
-    private NPCDialogAction action = NPCDialogAction.OPEN;
-    private String dialogue = "";//content
-    private String sceneName = "";
-    private String npcName = "";
-    private String actionJson = "";
-
-
-    public NPCDialoguePacket() {
-        // Indicates when this public constructor were accessible
-    }
+    public long runtimeEntityId;
+    public NPCDialogAction action = NPCDialogAction.OPEN;
+    public String dialogue = "";//content
+    public String sceneName = "";
+    public String npcName = "";
+    public String actionJson = "";
 
     @Override
     public int pid() {
@@ -69,54 +67,6 @@ public class NPCDialoguePacket extends DataPacket {
         byteBuf.writeString(sceneName);
         byteBuf.writeString(npcName);
         byteBuf.writeString(actionJson);
-    }
-
-    public long getRuntimeEntityId() {
-        return runtimeEntityId;
-    }
-
-    public void setRuntimeEntityId(long runtimeEntityId) {
-        this.runtimeEntityId = runtimeEntityId;
-    }
-
-    @NotNull public NPCDialogAction getAction() {
-        return action;
-    }
-
-    public void setAction(@NotNull NPCDialogAction action) {
-        this.action = action;
-    }
-
-    @NotNull public String getDialogue() {
-        return dialogue;
-    }
-
-    public void setDialogue(@NotNull String dialogue) {
-        this.dialogue = dialogue;
-    }
-
-    @NotNull public String getSceneName() {
-        return sceneName;
-    }
-
-    public void setSceneName(@NotNull String sceneName) {
-        this.sceneName = sceneName;
-    }
-
-    @NotNull public String getNpcName() {
-        return npcName;
-    }
-
-    public void setNpcName(@NotNull String npcName) {
-        this.npcName = npcName;
-    }
-
-    @NotNull public String getActionJson() {
-        return actionJson;
-    }
-
-    public void setActionJson(@NotNull String actionJson) {
-        this.actionJson = actionJson;
     }
 
     public enum NPCDialogAction {

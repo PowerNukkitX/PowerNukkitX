@@ -1,6 +1,8 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -8,6 +10,8 @@ import lombok.ToString;
  * @since 30. 10. 2016
  */
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class BossEventPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.BOSS_EVENT_PACKET;

@@ -5,11 +5,16 @@ import cn.nukkit.Server;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.network.protocol.types.PlayerPermission;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.HashSet;
 import java.util.Set;
 
-
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class RequestPermissionsPacket extends DataPacket {
     //权限列表中可控制的能力
     public static final PlayerAbility[] CONTROLLABLE_ABILITIES = new PlayerAbility[]{

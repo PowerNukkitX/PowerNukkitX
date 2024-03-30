@@ -2,9 +2,13 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class LevelSoundEventPacketV2 extends LevelSoundEventPacket {
     public static final int NETWORK_ID = ProtocolInfo.LEVEL_SOUND_EVENT_PACKET_V2;
 

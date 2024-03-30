@@ -2,9 +2,11 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.ToString;
+import lombok.*;
 
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class PlayerHotbarPacket extends DataPacket {
 
     public int selectedHotbarSlot;

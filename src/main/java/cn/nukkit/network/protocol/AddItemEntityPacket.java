@@ -4,12 +4,16 @@ import cn.nukkit.entity.data.EntityDataMap;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.utils.Binary;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/**
- * @author MagicDroidX (Nukkit Project)
- */
+import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.*;
+
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class AddItemEntityPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.ADD_ITEM_ENTITY_PACKET;
 

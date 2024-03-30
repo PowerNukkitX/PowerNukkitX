@@ -6,6 +6,8 @@ import cn.nukkit.network.protocol.types.CommandPermission;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.network.protocol.types.PlayerPermission;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.EnumMap;
@@ -14,6 +16,8 @@ import java.util.Set;
 
 
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateAbilitiesPacket extends DataPacket {
     public static final PlayerAbility[] VALID_FLAGS = {
             PlayerAbility.BUILD,

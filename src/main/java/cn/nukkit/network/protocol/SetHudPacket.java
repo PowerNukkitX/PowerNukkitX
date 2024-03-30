@@ -4,9 +4,15 @@ import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.hud.HudElement;
 import cn.nukkit.network.protocol.types.hud.HudVisibility;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.Set;
 
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class SetHudPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.SET_HUD;

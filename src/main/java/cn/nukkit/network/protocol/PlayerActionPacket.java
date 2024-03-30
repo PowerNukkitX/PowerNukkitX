@@ -2,12 +2,16 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/**
- * @author Nukkit Project Team
- */
+import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.*;
+
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class PlayerActionPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.PLAYER_ACTION_PACKET;

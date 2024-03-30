@@ -13,6 +13,8 @@ import cn.nukkit.utils.SequencedHashSet;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.Collection;
@@ -30,6 +32,8 @@ import static com.google.common.base.Preconditions.checkArgument;
  */
 
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class AvailableCommandsPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.AVAILABLE_COMMANDS_PACKET;

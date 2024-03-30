@@ -4,9 +4,15 @@ import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector2f;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import cn.nukkit.network.protocol.types.*;
+import cn.nukkit.network.protocol.types.AuthInputAction;
+import cn.nukkit.network.protocol.types.AuthInteractionModel;
+import cn.nukkit.network.protocol.types.ClientPlayMode;
+import cn.nukkit.network.protocol.types.InputMode;
+import cn.nukkit.network.protocol.types.PlayerActionType;
+import cn.nukkit.network.protocol.types.PlayerBlockActionData;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.EnumMap;
@@ -15,38 +21,39 @@ import java.util.Map;
 import java.util.Set;
 
 @ToString
-@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PlayerAuthInputPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.PLAYER_AUTH_INPUT_PACKET;
 
-    private float yaw;
-    private float pitch;
-    private float headYaw;
-    private Vector3f position;
-    private Vector2 motion;
-    private Set<AuthInputAction> inputData = EnumSet.noneOf(AuthInputAction.class);
-    private InputMode inputMode;
-    private ClientPlayMode playMode;
-    private AuthInteractionModel interactionModel;
-    private Vector3f vrGazeDirection;
-    private long tick;
-    private Vector3f delta;
+    public float yaw;
+    public float pitch;
+    public float headYaw;
+    public Vector3f position;
+    public Vector2 motion;
+    public Set<AuthInputAction> inputData = EnumSet.noneOf(AuthInputAction.class);
+    public InputMode inputMode;
+    public ClientPlayMode playMode;
+    public AuthInteractionModel interactionModel;
+    public Vector3f vrGazeDirection;
+    public long tick;
+    public Vector3f delta;
     /**
      * {@link #inputData} must contain {@link AuthInputAction#PERFORM_ITEM_STACK_REQUEST} in order for this to not be null.
      *
      * @since v428
      */
-    private ItemStackRequest itemStackRequest;
-    private final Map<PlayerActionType, PlayerBlockActionData> blockActionData = new EnumMap<>(PlayerActionType.class);
-    private Vector2f analogMoveVector;
+    public ItemStackRequest itemStackRequest;
+    public final Map<PlayerActionType, PlayerBlockActionData> blockActionData = new EnumMap<>(PlayerActionType.class);
+    public Vector2f analogMoveVector;
     /**
      * @since 649
      */
-    private long predictedVehicle;
+    public long predictedVehicle;
     /**
      * @since 662
      */
-    private Vector2f vehicleRotation;
+    public Vector2f vehicleRotation;
 
 
     @Override

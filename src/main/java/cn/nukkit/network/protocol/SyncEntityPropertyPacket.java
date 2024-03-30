@@ -4,21 +4,22 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import io.netty.buffer.ByteBufInputStream;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.nio.ByteOrder;
 
 
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class SyncEntityPropertyPacket extends DataPacket {
 
 
     public static final int NETWORK_ID = ProtocolInfo.SYNC_ENTITY_PROPERTY_PACKET;
 
     private CompoundTag data;
-
-
-    public SyncEntityPropertyPacket() {
-        // Does nothing
-    }
 
     @Override
     public int pid() {

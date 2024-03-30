@@ -2,10 +2,16 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.AgentActionType;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * @since v503
  */
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class AgentActionEventPacket extends DataPacket {
     public String requestId;
     public AgentActionType actionType;

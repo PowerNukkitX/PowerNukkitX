@@ -3,7 +3,13 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class SetDisplayObjectivePacket extends DataPacket {
 
     public DisplaySlot displaySlot;

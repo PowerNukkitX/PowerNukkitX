@@ -2,9 +2,11 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.registry.Registries;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @ToString
+@NoArgsConstructor
 public class BiomeDefinitionListPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.BIOME_DEFINITION_LIST_PACKET;
 

@@ -1,10 +1,12 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.ToString;
-
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;import lombok.*;
 
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class CodeBuilderPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.CODE_BUILDER_PACKET;
     public boolean isOpening;

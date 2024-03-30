@@ -2,10 +2,16 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.scoreboard.data.ScorerType;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class SetScorePacket extends DataPacket {
     public Action action;
     public List<ScoreInfo> infos = new ArrayList<>();

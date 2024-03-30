@@ -1,7 +1,11 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.*;
 
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class TickingAreasLoadStatusPacket extends DataPacket {
     boolean waitingForPreload;
 

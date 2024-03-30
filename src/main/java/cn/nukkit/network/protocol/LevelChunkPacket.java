@@ -1,12 +1,16 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 @ToString(exclude = "data")
+@NoArgsConstructor
+@AllArgsConstructor
 public class LevelChunkPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.FULL_CHUNK_DATA_PACKET;
 

@@ -8,13 +8,17 @@ import cn.nukkit.network.protocol.types.inventory.transaction.TransactionData;
 import cn.nukkit.network.protocol.types.inventory.transaction.UseItemData;
 import cn.nukkit.network.protocol.types.inventory.transaction.UseItemOnEntityData;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.List;
 
-@ToString()
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class InventoryTransactionPacket extends DataPacket {
     //InventoryTransactionType 0-5
     public static final int TYPE_NORMAL = 0;

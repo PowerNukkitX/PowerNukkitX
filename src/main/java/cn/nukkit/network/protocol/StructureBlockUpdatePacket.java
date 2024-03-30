@@ -3,10 +3,19 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.block.property.enums.StructureBlockType;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import cn.nukkit.network.protocol.types.*;
+import cn.nukkit.network.protocol.types.StructureAnimationMode;
+import cn.nukkit.network.protocol.types.StructureEditorData;
+import cn.nukkit.network.protocol.types.StructureMirror;
+import cn.nukkit.network.protocol.types.StructureRedstoneSaveMode;
+import cn.nukkit.network.protocol.types.StructureRotation;
+import cn.nukkit.network.protocol.types.StructureSettings;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class StructureBlockUpdatePacket extends DataPacket {
     public BlockVector3 blockPosition;
     public StructureEditorData editorData;

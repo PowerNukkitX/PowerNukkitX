@@ -2,7 +2,9 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.UUID;
@@ -10,8 +12,10 @@ import java.util.UUID;
 /**
  * @author Nukkit Project Team
  */
-@ToString
 @EqualsAndHashCode(callSuper = false)
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class CraftingEventPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.CRAFTING_EVENT_PACKET;
 

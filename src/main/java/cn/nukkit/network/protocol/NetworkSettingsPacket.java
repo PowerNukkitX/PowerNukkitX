@@ -2,11 +2,15 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-
 @ToString
-public class NetworkSettingsPacket extends DataPacket {
+@NoArgsConstructor
+@AllArgsConstructor
+public class NetworkSettingsPacket
+        extends DataPacket {
 
     public int compressionThreshold;
     public PacketCompressionAlgorithm compressionAlgorithm;

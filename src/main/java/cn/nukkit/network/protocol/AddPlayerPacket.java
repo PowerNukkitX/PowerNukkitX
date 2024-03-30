@@ -6,14 +6,18 @@ import cn.nukkit.item.Item;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.PropertySyncData;
 import cn.nukkit.utils.Binary;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.UUID;
 
-/**
- * @author MagicDroidX (Nukkit Project)
- */
+import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.*;
+
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class AddPlayerPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.ADD_PLAYER_PACKET;
 

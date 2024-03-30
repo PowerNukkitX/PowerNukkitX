@@ -4,19 +4,19 @@ import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.TrimMaterial;
 import cn.nukkit.network.protocol.types.TrimPattern;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.List;
 
-@Data
 @EqualsAndHashCode(doNotUseGetters = true, callSuper = false)
 @ToString(doNotUseGetters = true)
+@NoArgsConstructor
 public class TrimDataPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.TRIM_DATA;
-    private final List<TrimPattern> patterns = new ObjectArrayList<>();
-    private final List<TrimMaterial> materials = new ObjectArrayList<>();
+    public final List<TrimPattern> patterns = new ObjectArrayList<>();
+    public final List<TrimMaterial> materials = new ObjectArrayList<>();
 
     public int pid() {
         return NETWORK_ID;

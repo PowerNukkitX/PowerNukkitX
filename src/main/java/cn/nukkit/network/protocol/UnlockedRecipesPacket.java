@@ -2,12 +2,18 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
 
 @Getter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class UnlockedRecipesPacket extends DataPacket {
     public boolean unlockedNotification;
     public final List<String> unlockedRecipes = new ObjectArrayList<>();

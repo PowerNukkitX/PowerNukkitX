@@ -1,6 +1,8 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -8,6 +10,8 @@ import lombok.ToString;
  * @since 5.3.2017
  */
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class MapInfoRequestPacket extends DataPacket {
     public long mapId;
 

@@ -6,6 +6,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.registry.Registries;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.BufferedInputStream;
@@ -13,6 +14,7 @@ import java.io.InputStream;
 import java.nio.ByteOrder;
 
 @ToString(exclude = {"tag"})
+@NoArgsConstructor
 public class AvailableEntityIdentifiersPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.AVAILABLE_ENTITY_IDENTIFIERS_PACKET;
 

@@ -3,10 +3,13 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.AbilityType;
 import cn.nukkit.network.protocol.types.PlayerAbility;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class RequestAbilityPacket extends DataPacket {
     public static final PlayerAbility[] ABILITIES = UpdateAbilitiesPacket.VALID_FLAGS;
     public static final AbilityType[] ABILITY_TYPES = AbilityType.values();

@@ -4,10 +4,12 @@ import cn.nukkit.entity.Attribute;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
-/**
- * @author Nukkit Project Team
- */
+import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.*;
+
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateAttributesPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.UPDATE_ATTRIBUTES_PACKET;

@@ -2,13 +2,17 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.Player;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/**
- * @author Nukkit Project Team
- */
+import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.*;
+
 @ToString
-public class AdventureSettingsPacket extends DataPacket {
+@NoArgsConstructor
+@AllArgsConstructor
+public class AdventureSettingsPacket  extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.ADVENTURE_SETTINGS_PACKET;
 

@@ -1,11 +1,15 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.UUID;
 
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class ResourcePackClientResponsePacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET;

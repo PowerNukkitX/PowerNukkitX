@@ -1,25 +1,19 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.NoArgsConstructor;
 import cn.nukkit.utils.version.Version;
 
 import java.util.UUID;
 
 
-@NoArgsConstructor(onConstructor = @__())
 public abstract class AbstractResourcePackDataPacket extends DataPacket {
     public abstract Version getPackVersion();
 
-
     public abstract void setPackVersion(Version version);
-
 
     public abstract UUID getPackId();
 
-
     public abstract void setPackId(UUID uuid);
-
 
     protected void decodePackInfo(HandleByteBuf byteBuf) {
         String packInfo = byteBuf.readString();

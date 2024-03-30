@@ -32,8 +32,8 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerAuthInputPacket pk) {
         Player player = playerHandle.player;
         /*if (!player.locallyInitialized) return;*/
-        if (!pk.getBlockActionData().isEmpty()) {
-            for (PlayerBlockActionData action : pk.getBlockActionData().values()) {
+        if (!pk.blockActionData.isEmpty()) {
+            for (PlayerBlockActionData action : pk.blockActionData.values()) {
                 //hack 自从1.19.70开始，创造模式剑客户端不会发送PREDICT_DESTROY_BLOCK，但仍然发送START_DESTROY_BLOCK，过滤掉
                 if (player.getInventory().getItemInHand().isSword() && player.isCreative() && action.getAction() == PlayerActionType.START_DESTROY_BLOCK) {
                     continue;
@@ -78,16 +78,16 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
         }
 
         // As of 1.18 this is now used for sending item stack requests such as when mining a block.
-        if (pk.getItemStackRequest() != null) {
+        if (pk.itemStackRequest != null) {
             DataPacketManager dataPacketManager = player.getSession().getDataPacketManager();
             if (dataPacketManager != null) {
                 ItemStackRequestPacket itemStackRequestPacket = new ItemStackRequestPacket();
-                itemStackRequestPacket.getRequests().add(pk.getItemStackRequest());
+                itemStackRequestPacket.requests.add(pk.itemStackRequest);
                 dataPacketManager.processPacket(playerHandle, itemStackRequestPacket);
             }
         }
 
-        if (pk.getInputData().contains(AuthInputAction.START_SPRINTING)) {
+        if (pk.inputData.contains(AuthInputAction.START_SPRINTING)) {
             PlayerToggleSprintEvent event = new PlayerToggleSprintEvent(player, true);
             player.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
@@ -96,7 +96,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.setSprinting(true);
             }
         }
-        if (pk.getInputData().contains(AuthInputAction.STOP_SPRINTING)) {
+        if (pk.inputData.contains(AuthInputAction.STOP_SPRINTING)) {
             PlayerToggleSprintEvent event = new PlayerToggleSprintEvent(player, false);
             player.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
@@ -105,7 +105,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.setSprinting(false);
             }
         }
-        if (pk.getInputData().contains(AuthInputAction.START_SNEAKING)) {
+        if (pk.inputData.contains(AuthInputAction.START_SNEAKING)) {
             PlayerToggleSneakEvent event = new PlayerToggleSneakEvent(player, true);
             player.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
@@ -114,7 +114,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.setSneaking(true);
             }
         }
-        if (pk.getInputData().contains(AuthInputAction.STOP_SNEAKING)) {
+        if (pk.inputData.contains(AuthInputAction.STOP_SNEAKING)) {
             PlayerToggleSneakEvent event = new PlayerToggleSneakEvent(player, false);
             player.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
@@ -124,15 +124,15 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             }
         }
         if (player.getAdventureSettings().get(AdventureSettings.Type.FLYING)) {
-            if (pk.getInputData().contains(AuthInputAction.SNEAKING)) {
+            if (pk.inputData.contains(AuthInputAction.SNEAKING)) {
                 player.setFlySneaking(true);
             } else player.setFlySneaking(false);
         }
-        if (pk.getInputData().contains(AuthInputAction.START_JUMPING)) {
+        if (pk.inputData.contains(AuthInputAction.START_JUMPING)) {
             PlayerJumpEvent playerJumpEvent = new PlayerJumpEvent(player);
             player.getServer().getPluginManager().callEvent(playerJumpEvent);
         }
-        if (pk.getInputData().contains(AuthInputAction.START_SWIMMING)) {
+        if (pk.inputData.contains(AuthInputAction.START_SWIMMING)) {
             var playerSwimmingEvent = new PlayerToggleSwimEvent(player, true);
             player.getServer().getPluginManager().callEvent(playerSwimmingEvent);
             if (playerSwimmingEvent.isCancelled()) {
@@ -141,7 +141,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.setSwimming(true);
             }
         }
-        if (pk.getInputData().contains(AuthInputAction.STOP_SWIMMING)) {
+        if (pk.inputData.contains(AuthInputAction.STOP_SWIMMING)) {
             var playerSwimmingEvent = new PlayerToggleSwimEvent(player, false);
             player.getServer().getPluginManager().callEvent(playerSwimmingEvent);
             if (playerSwimmingEvent.isCancelled()) {
@@ -150,7 +150,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.setSwimming(false);
             }
         }
-        if (pk.getInputData().contains(AuthInputAction.START_GLIDING)) {
+        if (pk.inputData.contains(AuthInputAction.START_GLIDING)) {
             var playerToggleGlideEvent = new PlayerToggleGlideEvent(player, true);
             player.getServer().getPluginManager().callEvent(playerToggleGlideEvent);
             if (playerToggleGlideEvent.isCancelled()) {
@@ -159,7 +159,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.setGliding(true);
             }
         }
-        if (pk.getInputData().contains(AuthInputAction.STOP_GLIDING)) {
+        if (pk.inputData.contains(AuthInputAction.STOP_GLIDING)) {
             var playerToggleGlideEvent = new PlayerToggleGlideEvent(player, false);
             player.getServer().getPluginManager().callEvent(playerToggleGlideEvent);
             if (playerToggleGlideEvent.isCancelled()) {
@@ -168,7 +168,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.setGliding(false);
             }
         }
-        if (pk.getInputData().contains(AuthInputAction.START_FLYING)) {
+        if (pk.inputData.contains(AuthInputAction.START_FLYING)) {
             if (!player.getServer().getAllowFlight() && !player.getAdventureSettings().get(AdventureSettings.Type.ALLOW_FLIGHT)) {
                 player.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
                 return;
@@ -181,7 +181,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.getAdventureSettings().set(AdventureSettings.Type.FLYING, playerToggleFlightEvent.isFlying());
             }
         }
-        if (pk.getInputData().contains(AuthInputAction.STOP_FLYING)) {
+        if (pk.inputData.contains(AuthInputAction.STOP_FLYING)) {
             PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(player, false);
             player.getServer().getPluginManager().callEvent(playerToggleFlightEvent);
             if (playerToggleFlightEvent.isCancelled()) {
@@ -190,10 +190,10 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.getAdventureSettings().set(AdventureSettings.Type.FLYING, playerToggleFlightEvent.isFlying());
             }
         }
-        Vector3 clientPosition = pk.getPosition().asVector3().subtract(0, playerHandle.getBaseOffset(), 0);
-        float yaw = pk.getYaw() % 360;
-        float pitch = pk.getPitch() % 360;
-        float headYaw = pk.getHeadYaw() % 360;
+        Vector3 clientPosition = pk.position.asVector3().subtract(0, playerHandle.getBaseOffset(), 0);
+        float yaw = pk.yaw % 360;
+        float pitch = pk.pitch % 360;
+        float headYaw = pk.headYaw % 360;
         if (headYaw < 0) {
             headYaw += 360;
         }
@@ -203,12 +203,12 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
         Location clientLoc = Location.fromObject(clientPosition, player.level, yaw, pitch, headYaw);
         // Proper player.isPassenger() check may be needed
         if (player.riding instanceof EntityMinecartAbstract entityMinecartAbstract) {
-            double inputY = pk.getMotion().getY();
+            double inputY = pk.motion.getY();
             if (inputY >= -1.001 && inputY <= 1.001) {
                 entityMinecartAbstract.setCurrentSpeed(inputY);
             }
-        } else if (player.riding instanceof EntityBoat boat && pk.getInputData().contains(AuthInputAction.IN_CLIENT_PREDICTED_IN_VEHICLE)) {
-            if (player.riding.getId() == pk.getPredictedVehicle() && player.riding.isControlling(player)) {
+        } else if (player.riding instanceof EntityBoat boat && pk.inputData.contains(AuthInputAction.IN_CLIENT_PREDICTED_IN_VEHICLE)) {
+            if (player.riding.getId() == pk.predictedVehicle && player.riding.isControlling(player)) {
                 var distance = clientLoc.distanceSquared(player);
                 var updatePosition = (float) Math.sqrt(distance) > 0.1f;
                 var updateRotation = (float) Math.abs(player.getPitch() - clientLoc.pitch) > 1

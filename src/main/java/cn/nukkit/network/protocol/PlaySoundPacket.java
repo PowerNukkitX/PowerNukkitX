@@ -1,9 +1,11 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.ToString;
+import lombok.*;
 
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class PlaySoundPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.PLAY_SOUND_PACKET;

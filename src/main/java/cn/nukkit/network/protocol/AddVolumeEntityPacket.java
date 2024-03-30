@@ -2,8 +2,14 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-
-
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.ToString;
+import lombok.ToString;
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class AddVolumeEntityPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.ADD_VOLUME_ENTITY_PACKET;
 
@@ -21,10 +27,6 @@ public class AddVolumeEntityPacket extends DataPacket {
      * @since v485
      */
     public String instanceName;
-
-    public AddVolumeEntityPacket() {
-        // Does nothing
-    }
 
     @Override
     public int pid() {

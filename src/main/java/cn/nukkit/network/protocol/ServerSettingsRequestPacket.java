@@ -1,9 +1,10 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.ToString;
+import lombok.*;
 
 @ToString
+@NoArgsConstructor
 public class ServerSettingsRequestPacket extends DataPacket {
 
     @Override

@@ -4,10 +4,12 @@ import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
-/**
- * @author Nukkit Project Team
- */
+import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.*;
+
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class RespawnPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.RESPAWN_PACKET;

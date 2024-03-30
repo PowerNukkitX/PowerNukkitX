@@ -342,7 +342,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities, Collection<Player> players) {
         var pk = new AnimateEntityPacket();
         pk.parseFromAnimation(animation);
-        entities.forEach(entity -> pk.getEntityRuntimeIds().add(entity.getId()));
+        entities.forEach(entity -> pk.entityRuntimeIds.add(entity.getId()));
         Server.broadcastPacket(players, pk);
     }
 
@@ -3100,7 +3100,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public void playAnimation(AnimateEntityPacket.Animation animation, Collection<Player> players) {
         var pk = new AnimateEntityPacket();
         pk.parseFromAnimation(animation);
-        pk.getEntityRuntimeIds().add(this.getId());
+        pk.entityRuntimeIds.add(this.getId());
         Server.broadcastPacket(players, pk);
     }
 

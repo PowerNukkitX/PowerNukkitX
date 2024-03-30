@@ -9,6 +9,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.handler.codec.EncoderException;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -21,10 +22,9 @@ import java.io.IOException;
 
 
 @ToString
-@NoArgsConstructor(onConstructor = @__())
+@NoArgsConstructor
+@AllArgsConstructor
 public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
-
-
     public static final int NETWORK_ID = ProtocolInfo.POS_TRACKING_SERVER_BROADCAST_PACKET;
     private static final Action[] ACTIONS = Action.values();
 

@@ -2,11 +2,15 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.Optional;
 
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class SpawnParticleEffectPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.SPAWN_PARTICLE_EFFECT_PACKET;
 
