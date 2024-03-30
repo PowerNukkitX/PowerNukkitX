@@ -21,7 +21,7 @@ public class ItemBreakParticle extends Particle {
     @Override
     public DataPacket[] encode() {
         LevelEventPacket packet = new LevelEventPacket();
-        packet.evid = (short) (LevelEventPacket.EVENT_ADD_PARTICLE_MASK | Particle.TYPE_ITEM_BREAK);
+        packet.evid = (short) (LevelEventPacket.EVENT_ADD_PARTICLE_MASK | Particle.TYPE_ICON_CRACK);
         packet.x = (float) this.x;
         packet.y = (float) this.y;
         packet.z = (float) this.z;

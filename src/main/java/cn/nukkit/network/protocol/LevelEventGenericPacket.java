@@ -4,10 +4,16 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import io.netty.handler.codec.EncoderException;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
 
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class LevelEventGenericPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.LEVEL_EVENT_GENERIC_PACKET;
 

@@ -3,14 +3,18 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.Server;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.UUID;
 
-/**
- * @author Nukkit Project Team
- */
+import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.*;
+
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class PlayerListPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.PLAYER_LIST_PACKET;

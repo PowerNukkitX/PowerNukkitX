@@ -5,11 +5,15 @@ import cn.nukkit.network.protocol.types.CommandOriginData;
 import cn.nukkit.network.protocol.types.CommandOutputMessage;
 import cn.nukkit.network.protocol.types.CommandOutputType;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.List;
 
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class CommandOutputPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.COMMAND_OUTPUT_PACKET;
 

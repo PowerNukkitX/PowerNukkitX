@@ -2,12 +2,16 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
  * @since 15-10-14
  */
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class MovePlayerPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.MOVE_PLAYER_PACKET;

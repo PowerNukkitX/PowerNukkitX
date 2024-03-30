@@ -52,7 +52,7 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ItemStackRequestPacket pk) {
         Player player = playerHandle.player;
         List<ItemStackResponse> responses = new ArrayList<>();
-        for (var request : pk.getRequests()) {
+        for (var request : pk.requests) {
             ItemStackRequestAction[] actions = request.getActions();
             ItemStackRequestContext context = new ItemStackRequestContext(request);
             ItemStackResponse itemStackResponse = new ItemStackResponse(ItemStackResponseStatus.OK, request.getRequestId(), new ArrayList<>());

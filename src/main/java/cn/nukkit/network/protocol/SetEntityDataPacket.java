@@ -6,10 +6,12 @@ import cn.nukkit.network.protocol.types.PropertySyncData;
 import cn.nukkit.utils.Binary;
 import lombok.ToString;
 
-/**
- * @author MagicDroidX (Nukkit Project)
- */
+import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.*;
+
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class SetEntityDataPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.SET_ENTITY_DATA_PACKET;
 

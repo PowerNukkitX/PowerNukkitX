@@ -2,12 +2,16 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.DisconnectFailReason;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
  * @since 15-10-12
  */
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class DisconnectPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.DISCONNECT_PACKET;
 

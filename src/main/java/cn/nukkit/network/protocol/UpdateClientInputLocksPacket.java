@@ -2,16 +2,18 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.Data;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@Data
 @EqualsAndHashCode(doNotUseGetters = true, callSuper = false)
 @ToString(doNotUseGetters = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateClientInputLocksPacket extends DataPacket {
-    private int lockComponentData;
-    private Vector3f serverPosition;
+    public int lockComponentData;
+    public Vector3f serverPosition;
 
 
     @Override
@@ -27,7 +29,6 @@ public class UpdateClientInputLocksPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         byteBuf.writeVarInt(lockComponentData);
         byteBuf.writeVector3f(serverPosition);
     }

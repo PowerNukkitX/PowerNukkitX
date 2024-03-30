@@ -1,9 +1,11 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.ToString;
+import lombok.*;
 
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class SetLocalPlayerAsInitializedPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET;
 

@@ -7,6 +7,8 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.registry.Registries;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,6 +24,8 @@ import java.util.UUID;
  */
 @Slf4j
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class StartGamePacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.START_GAME_PACKET;

@@ -1,10 +1,13 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class PhotoInfoRequestPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.PHOTO_INFO_REQUEST_PACKET;
     public long photoId;

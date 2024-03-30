@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -10,25 +11,15 @@ import lombok.ToString;
 
 
 @ToString
-@NoArgsConstructor(onConstructor = @__())
+@NoArgsConstructor
+@AllArgsConstructor
 public class PositionTrackingDBClientRequestPacket extends DataPacket {
-
-
     public static final int NETWORK_ID = ProtocolInfo.POS_TRACKING_CLIENT_REQUEST_PACKET;
 
     private static final Action[] ACTIONS = Action.values();
 
-    private Action action;
-    private int trackingId;
-
-
-    public Action getAction() {
-        return action;
-    }
-
-    public int getTrackingId() {
-        return trackingId;
-    }
+    public Action action;
+    public int trackingId;
 
     @Override
     public void encode(HandleByteBuf byteBuf) {

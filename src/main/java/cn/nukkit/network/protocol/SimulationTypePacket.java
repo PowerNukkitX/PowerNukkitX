@@ -19,7 +19,8 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import org.jetbrains.annotations.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 
 /**
  * @author joserobjr
@@ -27,14 +28,14 @@ import org.jetbrains.annotations.NotNull;
  */
 
 
+@ToString
+@AllArgsConstructor
 public class SimulationTypePacket extends DataPacket {
-
-
     public static final int NETWORK_ID = ProtocolInfo.NPC_DIALOGUE_PACKET;
 
     private static final SimulationType[] TYPES = SimulationType.values();
 
-    private SimulationType type;
+    public SimulationType type;
 
 
     public SimulationTypePacket() {
@@ -54,14 +55,6 @@ public class SimulationTypePacket extends DataPacket {
     @Override
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeByte((byte) type.ordinal());
-    }
-
-    @NotNull public SimulationType getSimulationType() {
-        return type;
-    }
-
-    public void setSimulationType(@NotNull SimulationType type) {
-        this.type = type;
     }
 
     public enum SimulationType {

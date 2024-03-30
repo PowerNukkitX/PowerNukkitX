@@ -19,6 +19,8 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -27,18 +29,12 @@ import lombok.ToString;
  */
 
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class FilterTextPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.FILTER_TEXT_PACKET;
     public String text;
     public boolean fromServer;
-
-    public FilterTextPacket() {
-    }
-
-    public FilterTextPacket(String text, boolean fromServer) {
-        this.text = text;
-        this.fromServer = fromServer;
-    }
 
     @Override
     public int pid() {

@@ -1261,7 +1261,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         //init entity data property
         this.setDataProperty(NAME, info.getUsername(), false);
         this.setDataProperty(NAMETAG_ALWAYS_SHOW, 1, false);
-        
+
         locallyInitialized = true;
         PlayerJoinEvent playerJoinEvent = new PlayerJoinEvent(this,
                 new TranslationContainer(TextFormat.YELLOW + "%multiplayer.player.joined", new String[]{
@@ -2589,13 +2589,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     public void sendFogStack() {
         var pk = new PlayerFogPacket();
-        pk.setFogStack(this.fogStack);
+        pk.fogStack = this.fogStack;
         this.dataPacket(pk);
     }
 
     public void sendCameraPresets() {
         var pk = new CameraPresetsPacket();
-        pk.getPresets().addAll(CameraPreset.getPresets().values());
+        pk.presets.addAll(CameraPreset.getPresets().values());
         dataPacket(pk);
     }
 
@@ -4350,12 +4350,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         dialog.getBindEntity().setDataProperty(INTERACT_TEXT, dialog.getContent());
 
         NPCDialoguePacket packet = new NPCDialoguePacket();
-        packet.setRuntimeEntityId(dialog.getEntityId());
-        packet.setAction(NPCDialoguePacket.NPCDialogAction.OPEN);
-        packet.setDialogue(dialog.getContent());
-        packet.setNpcName(dialog.getTitle());
-        if (book) packet.setSceneName(dialog.getSceneName());
-        packet.setActionJson(dialog.getButtonJSONData());
+        packet.runtimeEntityId = dialog.getEntityId();
+        packet.action = NPCDialoguePacket.NPCDialogAction.OPEN;
+        packet.dialogue = dialog.getContent();
+        packet.npcName = dialog.getTitle();
+        if (book) packet.sceneName = dialog.getSceneName();
+        packet.actionJson = dialog.getButtonJSONData();
         if (book) this.dialogWindows.put(dialog.getSceneName(), dialog);
         this.dataPacket(packet);
     }
@@ -5342,8 +5342,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 if (blockEntitySign.getEditorEntityRuntimeId() == -1) {
                     blockEntitySign.setEditorEntityRuntimeId(this.getId());
                     OpenSignPacket openSignPacket = new OpenSignPacket();
-                    openSignPacket.setPosition(position.asBlockVector3());
-                    openSignPacket.setFrontSide(frontSide);
+                    openSignPacket.position = position.asBlockVector3();
+                    openSignPacket.frontSide = frontSide;
                     this.dataPacket(openSignPacket);
                     setOpenSignFront(frontSide);
                 }

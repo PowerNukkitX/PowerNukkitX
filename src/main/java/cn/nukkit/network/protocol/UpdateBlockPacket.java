@@ -4,10 +4,12 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
-/**
- * @author MagicDroidX (Nukkit Project)
- */
+import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.*;
+
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateBlockPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.UPDATE_BLOCK_PACKET;
     public static final int FLAG_NONE = 0b0000;

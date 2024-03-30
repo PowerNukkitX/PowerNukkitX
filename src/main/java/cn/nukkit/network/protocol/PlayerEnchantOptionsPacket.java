@@ -2,6 +2,8 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -11,6 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class PlayerEnchantOptionsPacket extends DataPacket {
     public static final ConcurrentHashMap<Integer, EnchantOptionData> RECIPE_MAP = new ConcurrentHashMap<>();
     public static final int NETWORK_ID = ProtocolInfo.PLAYER_ENCHANT_OPTIONS_PACKET;

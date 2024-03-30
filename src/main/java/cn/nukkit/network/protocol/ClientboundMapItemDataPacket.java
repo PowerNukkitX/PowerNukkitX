@@ -3,10 +3,11 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import cn.nukkit.utils.Utils;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.awt.*;
@@ -18,6 +19,8 @@ import java.util.List;
  * @since 5.3.2017
  */
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClientboundMapItemDataPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.CLIENTBOUND_MAP_ITEM_DATA_PACKET;

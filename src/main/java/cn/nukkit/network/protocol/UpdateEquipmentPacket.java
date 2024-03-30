@@ -1,9 +1,13 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @ToString(exclude = "namedtag")
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateEquipmentPacket extends DataPacket {
 
     public int windowId;

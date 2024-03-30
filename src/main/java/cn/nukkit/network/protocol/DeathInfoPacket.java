@@ -2,8 +2,12 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;import lombok.*;
 
-
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class DeathInfoPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.DEATH_INFO_PACKET;

@@ -1,19 +1,25 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * Server-bound packet to change the properties of a mob.
  *
  * @since v503
  */
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class ChangeMobPropertyPacket extends DataPacket {
-    private long uniqueEntityId;
-    private String property;
-    private boolean boolValue;
-    private String stringValue;
-    private int intValue;
-    private float floatValue;
+    public long uniqueEntityId;
+    public String property;
+    public boolean boolValue;
+    public String stringValue;
+    public int intValue;
+    public float floatValue;
 
     @Override
     public int pid() {

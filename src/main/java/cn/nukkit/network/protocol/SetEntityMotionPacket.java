@@ -3,10 +3,12 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import lombok.ToString;
 
-/**
- * @author MagicDroidX (Nukkit Project)
- */
+import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.*;
+
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class SetEntityMotionPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.SET_ENTITY_MOTION_PACKET;
 

@@ -1,13 +1,16 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
  * Deprecated since v594
  */
-@Deprecated(since = "1.20.10-r1")
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class ScriptCustomEventPacket extends DataPacket {
 
     public String eventName;
@@ -26,7 +29,6 @@ public class ScriptCustomEventPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeString(this.eventName);
         byteBuf.writeByteArray(this.eventData);
     }

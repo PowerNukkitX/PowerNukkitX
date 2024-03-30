@@ -1,8 +1,10 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,19 +12,19 @@ import java.util.List;
 /**
  * @author IWareQ
  */
-
-
-@NoArgsConstructor(onConstructor = @__())
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class AnimateEntityPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.ANIMATE_ENTITY_PACKET;
 
-    private String animation;
-    private String nextState;
-    private String stopExpression;
-    private int stopExpressionVersion;
-    private String controller;
-    private float blendOutTime;
-    private List<Long> entityRuntimeIds = new ArrayList<>();
+    public String animation;
+    public String nextState;
+    public String stopExpression;
+    public int stopExpressionVersion;
+    public String controller;
+    public float blendOutTime;
+    public List<Long> entityRuntimeIds = new ArrayList<>();
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -31,86 +33,30 @@ public class AnimateEntityPacket extends DataPacket {
         this.stopExpression = byteBuf.readString();
         this.stopExpressionVersion = byteBuf.readInt();
         this.controller = byteBuf.readString();
-		this.blendOutTime = byteBuf.readFloatLE();
-		for (int i = 0, len = (int) byteBuf.readUnsignedVarInt(); i < len; i++) {
-			this.entityRuntimeIds.add(byteBuf.readEntityRuntimeId());
-		}
+        this.blendOutTime = byteBuf.readFloatLE();
+        for (int i = 0, len = (int) byteBuf.readUnsignedVarInt(); i < len; i++) {
+            this.entityRuntimeIds.add(byteBuf.readEntityRuntimeId());
+        }
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
+
         byteBuf.writeString(this.animation);
-		byteBuf.writeString(this.nextState);
+        byteBuf.writeString(this.nextState);
         byteBuf.writeString(this.stopExpression);
         byteBuf.writeInt(this.stopExpressionVersion);
         byteBuf.writeString(this.controller);
-		byteBuf.writeFloatLE(this.blendOutTime);
-		byteBuf.writeUnsignedVarInt(this.entityRuntimeIds.size());
-		for (long entityRuntimeId : this.entityRuntimeIds){
-			byteBuf.writeEntityRuntimeId(entityRuntimeId);
-		}
+        byteBuf.writeFloatLE(this.blendOutTime);
+        byteBuf.writeUnsignedVarInt(this.entityRuntimeIds.size());
+        for (long entityRuntimeId : this.entityRuntimeIds) {
+            byteBuf.writeEntityRuntimeId(entityRuntimeId);
+        }
     }
-    
+
     @Override
     public int pid() {
         return NETWORK_ID;
-    }
-
-    public String getAnimation() {
-        return this.animation;
-    }
-
-    public void setAnimation(String animation) {
-        this.animation = animation;
-    }
-
-    public String getNextState() {
-        return this.nextState;
-    }
-
-    public void setNextState(String nextState) {
-        this.nextState = nextState;
-    }
-
-    public String getStopExpression() {
-        return this.stopExpression;
-    }
-
-    public void setStopExpression(String stopExpression) {
-        this.stopExpression = stopExpression;
-    }
-
-    public String getController() {
-        return this.controller;
-    }
-
-    public void setController(String controller) {
-        this.controller = controller;
-    }
-
-    public float getBlendOutTime() {
-        return this.blendOutTime;
-    }
-
-    public void setBlendOutTime(float blendOutTime) {
-        this.blendOutTime = blendOutTime;
-    }
-
-    public List<Long> getEntityRuntimeIds() {
-        return this.entityRuntimeIds;
-    }
-
-    public void setEntityRuntimeIds(List<Long> entityRuntimeIds) {
-        this.entityRuntimeIds = entityRuntimeIds;
-    }
-
-    public int getStopExpressionVersion() {
-        return stopExpressionVersion;
-    }
-
-    public void setStopExpressionVersion(int stopExpressionVersion) {
-        this.stopExpressionVersion = stopExpressionVersion;
     }
 
     /**

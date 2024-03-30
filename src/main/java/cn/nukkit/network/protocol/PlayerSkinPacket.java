@@ -3,11 +3,15 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.Server;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.UUID;
 
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class PlayerSkinPacket extends DataPacket {
 
     public UUID uuid;

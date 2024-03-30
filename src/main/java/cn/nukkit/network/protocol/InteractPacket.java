@@ -1,12 +1,16 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
  * @since 15-10-15
  */
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class InteractPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.INTERACT_PACKET;

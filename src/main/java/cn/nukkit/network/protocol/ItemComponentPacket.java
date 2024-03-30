@@ -4,6 +4,8 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.utils.MainLogger;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.IOException;
@@ -13,6 +15,8 @@ import java.nio.ByteOrder;
  * @author GoodLucky777
  */
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class ItemComponentPacket extends DataPacket {
 
 

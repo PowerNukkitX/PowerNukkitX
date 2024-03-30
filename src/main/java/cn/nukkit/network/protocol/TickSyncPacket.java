@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -10,7 +11,8 @@ import lombok.ToString;
 
 
 @ToString
-@NoArgsConstructor(onConstructor = @__())
+@NoArgsConstructor
+@AllArgsConstructor
 public class TickSyncPacket extends DataPacket {
 
 

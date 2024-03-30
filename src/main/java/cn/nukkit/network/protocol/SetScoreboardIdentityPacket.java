@@ -2,15 +2,20 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 import java.util.UUID;
 
-//May be obsolete, this package is not used now
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class SetScoreboardIdentityPacket extends DataPacket {
 
-    private final List<Entry> entries = new ObjectArrayList<>();
-    private Action action;
+    public final List<Entry> entries = new ObjectArrayList<>();
+    public Action action;
 
     @Override
     public int pid() {

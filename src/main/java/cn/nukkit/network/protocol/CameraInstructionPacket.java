@@ -7,18 +7,20 @@ import cn.nukkit.camera.instruction.impl.ClearInstruction;
 import cn.nukkit.camera.instruction.impl.FadeInstruction;
 import cn.nukkit.camera.instruction.impl.SetInstruction;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.awt.*;
 
 
-@Getter
-@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class CameraInstructionPacket extends DataPacket {
-    private SetInstruction setInstruction;
-    private FadeInstruction fadeInstruction;
-    private ClearInstruction clearInstruction;
+    public SetInstruction setInstruction;
+    public FadeInstruction fadeInstruction;
+    public ClearInstruction clearInstruction;
 
     @Override
     public int pid() {

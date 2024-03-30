@@ -2,10 +2,12 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.LessonAction;
-import lombok.ToString;
-
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;import lombok.*;
 
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class LessonProgressPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.LESSON_PROGRESS_PACKET;
 

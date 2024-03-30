@@ -12,16 +12,24 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 
 /**
  * @since on 15-10-13
  */
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.LOGIN_PACKET;

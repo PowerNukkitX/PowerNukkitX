@@ -7,12 +7,16 @@ import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.PropertySyncData;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.Binary;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/**
- * @author MagicDroidX (Nukkit Project)
- */
+import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.*;
+
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class AddEntityPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.ADD_ENTITY_PACKET;
 
@@ -77,9 +81,6 @@ public class AddEntityPacket extends DataPacket {
         for (EntityLink link : links) {
             byteBuf.writeEntityLink(link);
         }
-    }
-
-    public AddEntityPacket() {
     }
 
     public void handle(PacketHandler handler) {

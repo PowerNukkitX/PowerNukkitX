@@ -3,16 +3,16 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.camera.data.CameraPreset;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
 
-@Getter
-@Setter
+@ToString
+@NoArgsConstructor
 public class CameraPresetsPacket extends DataPacket {
-    private final List<CameraPreset> presets = new ObjectArrayList<>();
+    public final List<CameraPreset> presets = new ObjectArrayList<>();
 
     @Override
     public int pid() {

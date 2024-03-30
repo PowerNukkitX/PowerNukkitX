@@ -1,14 +1,18 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.ToString;
 import cn.nukkit.utils.version.Version;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.UUID;
 
 @ToString(exclude = "sha256")
-
-public class ResourcePackDataInfoPacket extends AbstractResourcePackDataPacket {
+@NoArgsConstructor
+@AllArgsConstructor
+public class ResourcePackDataInfoPacket
+ extends AbstractResourcePackDataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.RESOURCE_PACK_DATA_INFO_PACKET;
 
@@ -61,15 +65,11 @@ public class ResourcePackDataInfoPacket extends AbstractResourcePackDataPacket {
     }
 
     @Override
-
-
     public Version getPackVersion() {
         return packVersion;
     }
 
     @Override
-
-
     public void setPackVersion(Version packVersion) {
         this.packVersion = packVersion;
     }

@@ -4,10 +4,12 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.LabTableReactionType;
 import cn.nukkit.network.protocol.types.LabTableType;
-import lombok.ToString;
-
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;import lombok.*;
 
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class LabTablePacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.LAB_TABLE_PACKET;
     public LabTableType actionType;

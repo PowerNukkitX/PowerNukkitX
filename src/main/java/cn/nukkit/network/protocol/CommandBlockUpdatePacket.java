@@ -2,9 +2,13 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class CommandBlockUpdatePacket extends DataPacket {
 
     public boolean isBlock;

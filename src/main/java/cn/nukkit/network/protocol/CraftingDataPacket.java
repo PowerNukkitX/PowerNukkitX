@@ -5,16 +5,20 @@ import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.recipe.*;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * @author Nukkit Project Team
- */
+import cn.nukkit.network.connection.util.HandleByteBuf;
+import lombok.*;
+
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class CraftingDataPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.CRAFTING_DATA_PACKET;
     public static final String CRAFTING_TAG_CRAFTING_TABLE = "crafting_table";

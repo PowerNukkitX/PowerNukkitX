@@ -2,10 +2,12 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.EduSharedUriResource;
-import lombok.ToString;
-
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;import lombok.*;
 
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class EduUriResourcePacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.EDU_URI_RESOURCE_PACKET;
     public EduSharedUriResource eduSharedUriResource;
