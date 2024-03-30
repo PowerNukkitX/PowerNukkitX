@@ -2,6 +2,7 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockGrindstone;
+import cn.nukkit.event.inventory.InventoryCloseEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
@@ -39,6 +40,8 @@ public class GrindstoneInventory extends ContainerInventory implements CraftType
 
     @Override
     public void close(Player who) {
+        InventoryCloseEvent ev = new InventoryCloseEvent(this, who);
+        who.getServer().getPluginManager().callEvent(ev);
         onClose(who);
     }
 

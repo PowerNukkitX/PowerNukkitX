@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 
 
 import cn.nukkit.blockentity.BlockEntityStructBlock;
+import cn.nukkit.event.inventory.InventoryCloseEvent;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
@@ -210,6 +211,8 @@ public class StructBlockInventory implements Inventory {
 
     @Override
     public void close(Player who) {
+        InventoryCloseEvent ev = new InventoryCloseEvent(this, who);
+        who.getServer().getPluginManager().callEvent(ev);
         this.onClose(who);
     }
 
