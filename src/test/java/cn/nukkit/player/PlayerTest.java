@@ -83,7 +83,7 @@ public class PlayerTest {
         }
         loop.stop();
         if (limit <= 0) {
-            Assertions.fail("Chunks cannot be successfully loaded in 10s");
+            Assertions.fail("Chunks cannot be successfully loaded in 10s,the number of chunks that are now loaded: " + player.getUsedChunks().size());
         }
     }
 
@@ -118,8 +118,7 @@ public class PlayerTest {
         while (limit2-- != 0) {
             try {
                 Thread.sleep(1000);
-                //Some chunks may need to be processed next tick by doLevelGarbageCollection, and I don't want to wait too long for the test
-                if (49 <= level.getChunks().size() && level.getChunks().size() <= 51) {
+                if (level.getChunks().size() == 50) {
                     break;
                 }
             } catch (InterruptedException e) {
@@ -130,9 +129,9 @@ public class PlayerTest {
             Assertions.fail("Chunks cannot be successfully unloaded in 10s");
         }
         loop.stop();
-        Assertions.assertTrue(level.getChunks().containsKey(0L), "spawn chunk should keep load");
-        Assertions.assertTrue(player.getUsedChunks().contains(Level.chunkHash(61, 61)), "the chunk should be loaded for player");
-        Assertions.assertFalse(level.getChunks().containsKey(Level.chunkHash(1, 1)), "This chunk should not be loaded");
+        Assertions.assertTrue(level.getChunks().containsKey(0L), "spawn chunk 0,0 should keep load");
+        Assertions.assertTrue(player.getUsedChunks().contains(Level.chunkHash(61, 61)), "the chunk 61,61 should be loaded for player");
+        Assertions.assertFalse(level.getChunks().containsKey(Level.chunkHash(1, 1)), "This chunk 1,1 should not be loaded");
         player.setPosition(new Vector3(0, 100, 0));
     }
 

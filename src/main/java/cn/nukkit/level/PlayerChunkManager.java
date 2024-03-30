@@ -63,7 +63,7 @@ public final class PlayerChunkManager {
     /**
      * Handle chunk loading when the player teleported
      */
-    public void handleTeleport() {
+    public synchronized void handleTeleport() {
         if (!player.isConnected()) return;
         BlockVector3 floor = player.asBlockVector3();
         inRadiusChunks.clear();
@@ -84,7 +84,7 @@ public final class PlayerChunkManager {
         sendChunk();
     }
 
-    public void tick() {
+    public synchronized void tick() {
         if (!player.isConnected()) return;
         long currentLoaderChunkPosHashed;
         BlockVector3 floor = player.asBlockVector3();
@@ -178,7 +178,7 @@ public final class PlayerChunkManager {
         } while (!chunkSendQueue.isEmpty() && triedSendChunkCount < trySendChunkCountPerTick);
     }
 
-    private synchronized void sendChunk() {
+    private void sendChunk() {
         if (!chunkReadyToSend.isEmpty()) {
             NetworkChunkPublisherUpdatePacket ncp = new NetworkChunkPublisherUpdatePacket();
             ncp.position = player.asBlockVector3();

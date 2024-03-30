@@ -16,6 +16,7 @@ import cn.nukkit.registry.Registries;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -64,9 +65,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         Item[][] data = input.getData();
         ArrayList<Item> items = new ArrayList<>();
         for (var d : data) {
-            for (var r : d) {
-                items.add(r);
-            }
+            Collections.addAll(items, d);
         }
         CraftItemEvent craftItemEvent = new CraftItemEvent(player, items.toArray(Item.EMPTY_ARRAY), recipe);
         player.getServer().getPluginManager().callEvent(craftItemEvent);
