@@ -1,6 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.enums.FlowerType;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockYellowFlower extends BlockRedFlower {
@@ -32,5 +34,10 @@ public class BlockYellowFlower extends BlockRedFlower {
     @Override
     public FlowerType getFlowerType() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Item toItem() {
+        return new ItemBlock(this);
     }
 }

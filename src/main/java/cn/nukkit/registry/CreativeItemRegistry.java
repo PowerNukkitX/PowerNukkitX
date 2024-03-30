@@ -58,6 +58,10 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                         log.warn("load creative item {} blockHash {} is null", name, blockHash);
                     } else {
                         item.setBlockUnsafe(block.toBlock());
+                        Item updateDamage = block.toBlock().toItem();
+                        if (updateDamage.getDamage() != 0) {
+                            item.setDamage(updateDamage.getDamage());
+                        }
                     }
                 } else {
                     INTERNAL_DIFF_ITEM.put(i, item.clone());

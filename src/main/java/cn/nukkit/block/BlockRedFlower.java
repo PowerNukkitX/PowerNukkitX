@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.FlowerType;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
@@ -19,7 +20,8 @@ public class BlockRedFlower extends BlockFlowable implements BlockFlowerPot.Flow
     public static final BlockProperties PROPERTIES = new BlockProperties(RED_FLOWER, CommonBlockProperties.FLOWER_TYPE);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -59,6 +61,12 @@ public class BlockRedFlower extends BlockFlowable implements BlockFlowerPot.Flow
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Item toItem() {
+        int aux = getFlowerType().ordinal();
+        return new ItemBlock(this, aux);
     }
 
     @Override

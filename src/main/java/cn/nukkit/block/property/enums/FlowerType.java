@@ -7,25 +7,15 @@ package cn.nukkit.block.property.enums;
  * @author daoge_cmd
  */
 public enum FlowerType {
-    ALLIUM,
-
-    CORNFLOWER,
-
-    HOUSTONIA,
-
-    LILY_OF_THE_VALLEY,
-
-    ORCHID,
-
-    OXEYE,
-
     POPPY,
-
-    TULIP_ORANGE,
-
-    TULIP_PINK,
-
+    ORCHID,
+    ALLIUM,
+    HOUSTONIA,
     TULIP_RED,
-
-    TULIP_WHITE
+    TULIP_ORANGE,
+    TULIP_WHITE,
+    TULIP_PINK,
+    OXEYE,
+    CORNFLOWER,
+    LILY_OF_THE_VALLEY,
 }

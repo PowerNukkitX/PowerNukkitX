@@ -7,15 +7,10 @@ package cn.nukkit.block.property.enums;
  * @author daoge_cmd
  */
 public enum DoublePlantType {
-    FERN,
-
-    GRASS,
-
-    PAEONIA,
-
-    ROSE,
-
     SUNFLOWER,
-
-    SYRINGA
+    SYRINGA,
+    GRASS,
+    FERN,
+    ROSE,
+    PAEONIA
 }

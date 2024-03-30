@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.block.property.enums.DoublePlantType;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
@@ -51,6 +52,12 @@ public class BlockDoublePlant extends BlockFlowable {
     }
 
     @Override
+    public Item toItem() {
+        int aux = getDoublePlantType().ordinal();
+        return new ItemBlock(this, aux);
+    }
+
+    @Override
     public boolean canBeReplaced() {
         return getDoublePlantType() == DoublePlantType.GRASS || getDoublePlantType() == DoublePlantType.FERN;
     }
@@ -65,13 +72,13 @@ public class BlockDoublePlant extends BlockFlowable {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (isTopHalf()) {
                 // Top
-                if (this.down().getId() != DOUBLE_PLANT) {
+                if (!this.down().getId().equals(DOUBLE_PLANT)) {
                     this.getLevel().setBlock(this, Block.get(BlockID.AIR), false, true);
                     return Level.BLOCK_UPDATE_NORMAL;
                 }
             } else {
                 // Bottom
-                if (this.up().getId() != DOUBLE_PLANT || !isSupportValid(down())) {
+                if (!this.up().getId().equals(DOUBLE_PLANT) || !isSupportValid(down())) {
                     this.getLevel().useBreakOn(this);
                     return Level.BLOCK_UPDATE_NORMAL;
                 }

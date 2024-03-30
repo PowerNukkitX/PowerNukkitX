@@ -57,7 +57,7 @@ public class NBTIO {
         if (item.hasCompoundTag()) {
             tag.putCompound("tag", item.getNamedTag());
         }
-        if (item.isBlock()) {
+        if (item.isBlock() && item.getBlockId().equals(item.getId())) {
             tag.putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag().copy());
         }
         tag.putInt("version", BLOCK_STATE_VERSION_NO_REVISION);
