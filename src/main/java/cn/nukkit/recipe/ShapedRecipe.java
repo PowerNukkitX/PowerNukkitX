@@ -7,15 +7,11 @@ import cn.nukkit.registry.Registries;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.netty.util.collection.CharObjectHashMap;
-import it.unimi.dsi.fastutil.Pair;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.UUID;
 
 import static cn.nukkit.recipe.RecipeType.SHAPED;
@@ -181,89 +177,73 @@ public class ShapedRecipe extends CraftingRecipe {
      * @param input the input
      */
     public static void tryShrinkMatrix(Input input) {
-        Integer r = null, l = null;
-        int row = input.getRow();
-        int col = input.getCol();
-        Item[][] data = input.getData();
-        end:
-        for (int i = 0; i < row; i++) {
-            for (int j = 0; j < col; j++) {
-                if (!data[j][i].isNull()) {
-                    r = i;
-                    l = j;
-                    break end;
-                }
+        Item[][] inputs = input.getData();
+        int startRow = 0, endRow = inputs.length - 1;
+        for (int row = 0; row < inputs.length; row++) {
+            if (notAllEmptyRow(inputs[row])) {
+                startRow = row;
+                break;
+            }
+            // 发现全部都是空气，直接返回空数组
+            if (row == inputs.length - 1) {
+                input.setCol(0);
+                input.setRow(0);
+                input.setData(Input.EMPTY_INPUT_ARRAY);
+                return;
             }
         }
-        if (r == null) {
+        for (int row = inputs.length - 1; row >= 0; row--) {
+            if (notAllEmptyRow(inputs[row])) {
+                endRow = row;
+                break;
+            }
+        }
+        int startColumn = 0, endColumn = inputs[0].length - 1;
+        for (int column = 0; column < inputs[0].length; column++) {
+            if (notAllEmptyColumn(inputs, column)) {
+                startColumn = column;
+                break;
+            }
+        }
+        for (int column = inputs[0].length - 1; column >= 0; column--) {
+            if (notAllEmptyColumn(inputs, column)) {
+                endColumn = column;
+                break;
+            }
+        }
+
+        if (startRow == 0 && endRow == inputs.length - 1 && startColumn == 0 && endColumn == inputs[0].length - 1) {
+            input.setData(inputs);
             return;
         }
-        Queue<Pair<Integer, Integer>> bfsQueue = new ArrayDeque<>(row * col);
-        HashSet<Pair<Integer, Integer>> result = new HashSet<>();
-        bfsQueue.add(Pair.of(l, r));
-        while (!bfsQueue.isEmpty()) {
-            Pair<Integer, Integer> poll = bfsQueue.poll();
-            if (result.contains(poll)) continue;
-            result.add(poll);
-            Integer left = poll.left();
-            Integer right = poll.right();
-            int al = left, ar = right + 1;
-            pushQueue(row, col, data, bfsQueue, result, al, ar);
-            int bl = left, br = right - 1;
-            pushQueue(row, col, data, bfsQueue, result, bl, br);
-            int cl = left + 1, cr = right;
-            pushQueue(row, col, data, bfsQueue, result, cl, cr);
-            int dl = left - 1, dr = right;
-            pushQueue(row, col, data, bfsQueue, result, dl, dr);
+        int newRow = endRow - startRow + 1;
+        int newCol = endColumn - startColumn + 1;
+        Item[][] result = new Item[newRow][newCol];
+        for (int row = startRow; row <= endRow; row++) {
+            if (endColumn + 1 - startColumn >= 0)
+                System.arraycopy(inputs[row], startColumn, result[row - startRow], 0, endColumn + 1 - startColumn);
         }
-        Integer minCol = null, maxCol = null, minRow = null, maxRow = null;
-        for (var pair : result) {
-            Integer left = pair.left();
-            Integer right = pair.right();
-            if (minCol == null) {
-                minCol = right;
-            } else {
-                minCol = Math.min(minCol, right);
-            }
-            if (maxCol == null) {
-                maxCol = right;
-            } else {
-                maxCol = Math.max(maxCol, right);
-            }
-            if (minRow == null) {
-                minRow = left;
-            } else {
-                minRow = Math.min(minRow, left);
-            }
-            if (maxRow == null) {
-                maxRow = left;
-            } else {
-                maxRow = Math.max(maxRow, left);
-            }
-        }
-        int newRow = maxRow - minRow + 1;//+1 because is index (0~3)
-        int newCol = maxCol - minCol + 1; //(0~3)
-        if (newRow > 0 && newRow <= row && newCol > 0 && newCol <= col) {
-            Item[][] items = new Item[newRow][newCol];
-            for (int i = 0; i < newCol; i++) {
-                for (int j = 0; j < newRow; j++) {
-                    items[j][i] = data[minRow + j][minCol + i];
-                }
-            }
-            input.setRow(newRow);
-            input.setCol(newCol);
-            input.setData(items);
-        }
+        input.setRow(newRow);
+        input.setCol(newCol);
+        input.setData(result);
     }
 
-    private static void pushQueue(int row, int col, Item[][] data, Queue<Pair<Integer, Integer>> bfsQueue, HashSet<Pair<Integer, Integer>> result, int l, int r) {
-        Pair<Integer, Integer> pair = Pair.of(l, r);
-        if (!result.contains(pair) && l >= 0 && l < col && r >= 0 && r < row) {
-            Item item = data[l][r];
+    private static boolean notAllEmptyRow(Item[] inputs) {
+        for (var item : inputs) {
             if (!item.isNull()) {
-                bfsQueue.add(pair);
+                return true;
             }
         }
+        return false;
+    }
+
+    private static boolean notAllEmptyColumn(Item[][] inputs, int column) {
+        for (var row : inputs) {
+            if (!row[column].isNull()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

@@ -6,6 +6,7 @@ import cn.nukkit.item.Item;
  * craft input,Upper left is origin point (0,0)
  */
 public class Input {
+    public static final Item[][] EMPTY_INPUT_ARRAY = new Item[0][0];
     int col;
     int row;
     Item[][] data;

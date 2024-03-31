@@ -156,7 +156,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         return ItemStackRequestActionType.CRAFT_RECIPE;
     }
 
-    protected List<ConsumeAction> findAllConsumeActions(ItemStackRequestAction[] actions, int startIndex) {
+    public static List<ConsumeAction> findAllConsumeActions(ItemStackRequestAction[] actions, int startIndex) {
         var found = new ArrayList<ConsumeAction>();
         for (int i = startIndex; i < actions.length; i++) {
             var action = actions[i];
