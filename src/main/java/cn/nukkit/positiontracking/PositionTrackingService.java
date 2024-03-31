@@ -236,7 +236,7 @@ public class PositionTrackingService implements Closeable {
     }
 
     private Iterable<Inventory> inventories(Player player) {
-        return () -> new Iterator<Inventory>() {
+        return () -> new Iterator<>() {
             int next = 0;
 
             @Override

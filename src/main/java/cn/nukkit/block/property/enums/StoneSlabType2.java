@@ -7,19 +7,12 @@ package cn.nukkit.block.property.enums;
  * @author daoge_cmd
  */
 public enum StoneSlabType2 {
-    MOSSY_COBBLESTONE,
-
-    PRISMARINE_BRICK,
-
-    PRISMARINE_DARK,
-
-    PRISMARINE_ROUGH,
-
-    PURPUR,
-
-    RED_NETHER_BRICK,
-
     RED_SANDSTONE,
-
-    SMOOTH_SANDSTONE
+    PURPUR,
+    PRISMARINE_ROUGH,
+    PRISMARINE_DARK,
+    PRISMARINE_BRICK,
+    MOSSY_COBBLESTONE,
+    SMOOTH_SANDSTONE,
+    RED_NETHER_BRICK
 }

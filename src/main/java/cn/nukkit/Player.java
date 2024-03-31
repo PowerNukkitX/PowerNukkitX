@@ -169,6 +169,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class Player extends EntityHuman implements CommandSender, ChunkLoader, IPlayer, IScoreboardViewer {
+    /// static fields
     /**
      * 一个承载玩家的空数组静态常量
      * <p>
@@ -187,18 +188,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public static final int PERMISSION_OPERATOR = 2;
     public static final int PERMISSION_MEMBER = 1;
     public static final int PERMISSION_VISITOR = 0;
-    public final HashSet<String> achievements = new HashSet<>();
+    /// static fields
+
     public boolean playedBefore;
     public boolean spawned = false;
     public boolean locallyInitialized = false;
     public boolean loggedIn = false;
+
+    public final HashSet<String> achievements = new HashSet<>();
     public int gamemode;
     public long lastBreak;
-    /**
-     * 每tick 当前位置与移动目标位置向量之差
-     * <p>
-     * The difference between the current position and the moving target position vector per tick
-     */
     public Vector3 speed = null;
     public long creationTime = 0;
     /**
@@ -276,7 +275,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private static final float MOVEMENT_DISTANCE_THRESHOLD = 0.1f;
     private final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
     private final AtomicReference<Locale> locale = new AtomicReference<>(null);
-    private int unverifiedPackets;
     private int timeSinceRest;
     private String buttonText = "Button";
     private PermissibleBase perm = null;
@@ -348,6 +346,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     ///
 
     private final @NotNull PlayerInfo info;
+
     public @NotNull PlayerInfo getPlayerInfo() {
         return this.info;
     }
@@ -4471,7 +4470,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param inventory the inventory
      * @return the window id
      */
-    public int getWindowId(Inventory inventory) {
+    public int getWindowId(@NotNull Inventory inventory) {
+        Preconditions.checkNotNull(inventory);
         if (this.windows.containsKey(inventory)) {
             return this.windows.get(inventory);
         }
@@ -4490,7 +4490,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.windowIndex.get(id);
     }
 
-    public int addWindow(Inventory inventory) {
+    public int addWindow(@NotNull Inventory inventory) {
+        Preconditions.checkNotNull(inventory);
         if (this.windows.containsKey(inventory)) {
             return this.windows.get(inventory);
         }
@@ -4510,7 +4511,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-    public int addWindow(Inventory inventory, Integer forceId) {
+    public int addWindow(@NotNull Inventory inventory, Integer forceId) {
+        Preconditions.checkNotNull(inventory);
         if (this.windows.containsKey(inventory)) {
             return this.windows.get(inventory);
         }
@@ -4554,6 +4556,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param inventory the inventory
      */
     public void removeWindow(Inventory inventory) {
+        Preconditions.checkNotNull(inventory);
         if (!this.permanentWindows.contains(windows.get(inventory))) {
             inventory.close(this);
             this.windows.remove(inventory);
@@ -4603,15 +4606,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public void resetCraftingGridType() {
         if (spawned) {
-            //todo more drop
             List<Item> drops = new ArrayList<>(this.getCraftingGrid().getContents().values());//small craft
 
             drops.add(this.getCursorInventory().getItem(0));//cursor
 
             Optional<Inventory> topWindow = getTopWindow();
             Inventory value;
-            if (topWindow.isPresent() && (value = topWindow.get()) instanceof CraftTypeInventory) {
-                drops.addAll(value.getContents().values());
+            if (topWindow.isPresent()) {
+                if ((value = topWindow.get()) instanceof CraftTypeInventory) {
+                    drops.addAll(value.getContents().values());
+                }
+                removeWindow(value);
             }
             for (Item drop : drops) {
                 if (!drop.isNull()) {

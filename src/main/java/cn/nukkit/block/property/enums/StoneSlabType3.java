@@ -7,19 +7,12 @@ package cn.nukkit.block.property.enums;
  * @author daoge_cmd
  */
 public enum StoneSlabType3 {
-    ANDESITE,
-
-    DIORITE,
-
     END_STONE_BRICK,
-
-    GRANITE,
-
+    SMOOTH_RED_SANDSTONE,
     POLISHED_ANDESITE,
-
+    ANDESITE,
+    DIORITE,
     POLISHED_DIORITE,
-
-    POLISHED_GRANITE,
-
-    SMOOTH_RED_SANDSTONE
+    GRANITE,
+    POLISHED_GRANITE
 }

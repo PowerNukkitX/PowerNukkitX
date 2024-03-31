@@ -235,9 +235,4 @@ public class EntityHuman extends EntityHumanType {
             getOffhandInventory().setItem(0, shieldOffhand);
         }
     }
-
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
 }

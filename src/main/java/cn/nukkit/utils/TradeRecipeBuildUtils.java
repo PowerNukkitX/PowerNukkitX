@@ -3,14 +3,19 @@ package cn.nukkit.utils;
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class RecipeBuildUtils {
+
+public class TradeRecipeBuildUtils {
     private final CompoundTag recipe;
     private final int size;
 
-    private static int netId = 3000;
+    public static final int TRADE_RECIPEID = 10000;
+    public static final ConcurrentHashMap<Integer, CompoundTag> RECIPE_MAP = new ConcurrentHashMap<>();
+    private static final AtomicInteger TRADE_RECIPE_NETID = new AtomicInteger(TRADE_RECIPEID);
 
-    public RecipeBuildUtils(CompoundTag tag, int size) {
+    public TradeRecipeBuildUtils(CompoundTag tag, int size) {
         this.recipe = tag;
         this.size = size;
     }
@@ -20,7 +25,7 @@ public class RecipeBuildUtils {
      * @param output 交易结果
      * @return 配方构造工具
      */
-    public static RecipeBuildUtils of(Item buyA, Item output) {
+    public static TradeRecipeBuildUtils of(Item buyA, Item output) {
         var cmp = new CompoundTag()
                 .putCompound("buyA", new CompoundTag()
                         .putByte("Count", buyA.getCount())
@@ -30,7 +35,7 @@ public class RecipeBuildUtils {
                 .putInt("buyCountA", buyA.getCount())
                 .putInt("buyCountB", 0)
                 .putInt("demand", 0)//未知
-                .putInt("netId", netId++)
+                .putInt("netId", TRADE_RECIPE_NETID.getAndIncrement())
                 .putFloat("priceMultiplierB", 0)
                 .putCompound("sell", new CompoundTag()
                         .putByte("Count", output.getCount())
@@ -44,7 +49,7 @@ public class RecipeBuildUtils {
         if (output.hasCompoundTag()) {
             cmp.getCompound("sell").putCompound("tag", output.getNamedTag());
         }
-        return new RecipeBuildUtils(cmp, 2);
+        return new TradeRecipeBuildUtils(cmp, 2);
     }
 
     /**
@@ -53,7 +58,7 @@ public class RecipeBuildUtils {
      * @param output 交易结果
      * @return 配方构造工具
      */
-    public static RecipeBuildUtils of(Item buyA, Item buyB, Item output) {
+    public static TradeRecipeBuildUtils of(Item buyA, Item buyB, Item output) {
         var cmp = new CompoundTag()
                 .putCompound("buyA", new CompoundTag()
                         .putByte("Count", buyA.getCount())
@@ -68,7 +73,7 @@ public class RecipeBuildUtils {
                 .putInt("buyCountA", buyA.getCount())
                 .putInt("buyCountA", buyB.getCount())
                 .putInt("demand", 0)//未知
-                .putInt("netId", netId++)
+                .putInt("netId", TRADE_RECIPE_NETID.getAndIncrement())
                 .putCompound("sell", new CompoundTag()
                         .putByte("Count", output.getCount())
                         .putShort("Damage", output.getDamage())
@@ -84,13 +89,13 @@ public class RecipeBuildUtils {
         if (output.hasCompoundTag()) {
             cmp.getCompound("sell").putCompound("tag", output.getNamedTag());
         }
-        return new RecipeBuildUtils(cmp, 3);
+        return new TradeRecipeBuildUtils(cmp, 3);
     }
 
     /**
      * @param maxUses 设置该交易配方最大交易次数
      */
-    public RecipeBuildUtils setMaxUses(int maxUses) {
+    public TradeRecipeBuildUtils setMaxUses(int maxUses) {
         recipe.putInt("maxUses", maxUses);//最大交易次数
         return this;
     }
@@ -98,7 +103,7 @@ public class RecipeBuildUtils {
     /**
      * @param priceMultiplierA 设置该交易配方价格增长系数(第一个交易物品)
      */
-    public RecipeBuildUtils setPriceMultiplierA(float priceMultiplierA) {
+    public TradeRecipeBuildUtils setPriceMultiplierA(float priceMultiplierA) {
         recipe.putFloat("priceMultiplierA", priceMultiplierA);//价格增长？
         return this;
     }
@@ -106,7 +111,7 @@ public class RecipeBuildUtils {
     /**
      * @param priceMultiplierB 设置该交易配方价格增长系数(第二个交易物品)
      */
-    public RecipeBuildUtils setPriceMultiplierB(float priceMultiplierB) {
+    public TradeRecipeBuildUtils setPriceMultiplierB(float priceMultiplierB) {
         if (size == 3) {
             recipe.putFloat("priceMultiplierB", priceMultiplierB);//价格增长？
             return this;
@@ -117,7 +122,7 @@ public class RecipeBuildUtils {
     /**
      * @param rewardExp 设置该交易配方奖励玩家的经验值
      */
-    public RecipeBuildUtils setRewardExp(Byte rewardExp) {
+    public TradeRecipeBuildUtils setRewardExp(Byte rewardExp) {
         recipe.putByte("rewardExp", rewardExp);
         return this;
     }
@@ -125,7 +130,7 @@ public class RecipeBuildUtils {
     /**
      * @param tier 该配方需要的交易等级 从1开始
      */
-    public RecipeBuildUtils setTier(int tier) {
+    public TradeRecipeBuildUtils setTier(int tier) {
         recipe.putInt("tier", --tier);//需要村民等级
         return this;
     }
@@ -133,12 +138,13 @@ public class RecipeBuildUtils {
     /**
      * @param traderExp 设置该交易配方给予村民的经验
      */
-    public RecipeBuildUtils setTraderExp(int traderExp) {
+    public TradeRecipeBuildUtils setTraderExp(int traderExp) {
         recipe.putInt("traderExp", traderExp);//村民增加的经验
         return this;
     }
 
     public CompoundTag build() {
+        RECIPE_MAP.put(recipe.getInt("netId"), recipe);
         return recipe;
     }
 }

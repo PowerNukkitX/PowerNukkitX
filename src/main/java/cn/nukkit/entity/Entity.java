@@ -1193,7 +1193,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public int getNetworkId() {
-        return Registries.ENTITY.getEntityNetworkId(getIdentifier().toString());
+        return Registries.ENTITY.getEntityNetworkId(getIdentifier());
     }
 
     public void heal(EntityRegainHealthEvent source) {
