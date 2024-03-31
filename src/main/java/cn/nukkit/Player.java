@@ -169,6 +169,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class Player extends EntityHuman implements CommandSender, ChunkLoader, IPlayer, IScoreboardViewer {
+    /// static fields
     /**
      * 一个承载玩家的空数组静态常量
      * <p>
@@ -187,18 +188,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public static final int PERMISSION_OPERATOR = 2;
     public static final int PERMISSION_MEMBER = 1;
     public static final int PERMISSION_VISITOR = 0;
-    public final HashSet<String> achievements = new HashSet<>();
+    /// static fields
+
     public boolean playedBefore;
     public boolean spawned = false;
     public boolean locallyInitialized = false;
     public boolean loggedIn = false;
+
+    public final HashSet<String> achievements = new HashSet<>();
     public int gamemode;
     public long lastBreak;
-    /**
-     * 每tick 当前位置与移动目标位置向量之差
-     * <p>
-     * The difference between the current position and the moving target position vector per tick
-     */
     public Vector3 speed = null;
     public long creationTime = 0;
     /**
@@ -276,7 +275,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private static final float MOVEMENT_DISTANCE_THRESHOLD = 0.1f;
     private final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
     private final AtomicReference<Locale> locale = new AtomicReference<>(null);
-    private int unverifiedPackets;
     private int timeSinceRest;
     private String buttonText = "Button";
     private PermissibleBase perm = null;
@@ -348,6 +346,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     ///
 
     private final @NotNull PlayerInfo info;
+
     public @NotNull PlayerInfo getPlayerInfo() {
         return this.info;
     }
