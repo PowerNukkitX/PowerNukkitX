@@ -13,6 +13,7 @@ import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
 import cn.nukkit.network.protocol.UpdateEquipmentPacket;
+import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 
 import java.io.IOException;
 import java.util.List;
@@ -50,6 +51,12 @@ public class HorseInventory extends BaseInventory {
 
     public Item getHorseArmor() {
         return this.getItem(1);
+    }
+
+    @Override
+    public void init() {
+        slotTypeMap.put(0, ContainerSlotType.HORSE_EQUIP);
+        slotTypeMap.put(1, ContainerSlotType.HORSE_EQUIP);
     }
 
     @Override

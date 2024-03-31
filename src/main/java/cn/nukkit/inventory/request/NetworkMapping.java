@@ -1,8 +1,10 @@
 package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.CraftingTableInventory;
 import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.TradeInventory;
 import cn.nukkit.inventory.fake.FakeInventory;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
@@ -12,6 +14,14 @@ import lombok.experimental.UtilityClass;
 public class NetworkMapping {
     public Inventory getInventory(Player player, ContainerSlotType containerSlotType) {
         return switch (containerSlotType) {
+            case HORSE_EQUIP -> {
+                Entity riding = player.getRiding();
+                if (riding instanceof InventoryHolder inventoryHolder) {
+                    yield inventoryHolder.getInventory();
+                } else {
+                    throw new IllegalArgumentException("Cant handle horse inventory: %s when an ItemStackRequest is received!".formatted(containerSlotType.name().toUpperCase()));
+                }
+            }
             case CREATED_OUTPUT -> player.getCreativeOutputInventory();
             case CURSOR -> player.getCursorInventory();
             case INVENTORY, HOTBAR, HOTBAR_AND_INVENTORY -> player.getInventory();
