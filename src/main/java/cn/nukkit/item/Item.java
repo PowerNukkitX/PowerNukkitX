@@ -1243,12 +1243,12 @@ public abstract class Item implements Cloneable, ItemID {
      * @return equal
      */
     public final boolean equalsExact(Item other) {
-        return this.equals(other, true, true, true) && this.count == other.count;
+        return this.equals(other, true, true) && this.count == other.count;
     }
 
     @Override
     public final boolean equals(Object item) {
-        return item instanceof Item && this.equals((Item) item, true);
+        return item instanceof Item it && this.equals(it, true);
     }
 
     public final boolean equals(Item item, boolean checkDamage) {
@@ -1256,31 +1256,20 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public final boolean equals(Item item, boolean checkDamage, boolean checkCompound) {
-        return equals(item, checkDamage, false, checkCompound);
-    }
-
-    /**
-     * if two items are equal
-     *
-     * @param item          the item
-     * @param checkDamage   Whether to check the data values
-     * @param checkBlock    Whether to check the item blockstate
-     * @param checkCompound Whether to check the NBT
-     * @return the boolean
-     */
-    public final boolean equals(Item item, boolean checkDamage, boolean checkBlock, boolean checkCompound) {
         if (!Objects.equals(this.getId(), item.getId())) return false;
         if (checkDamage && this.hasMeta() && item.hasMeta()) {
-            if (this.getDamage() != item.getDamage()) return false;
-        }
-        if (checkBlock && this.isBlock() && item.isBlock()) {
-            if (this.getBlockUnsafe().getBlockState() != item.getBlockUnsafe().getBlockState()) return false;
+            if (this.getDamage() != item.getDamage()) {
+                if (this.isBlock() && item.isBlock()) {
+                    if (this.getBlockUnsafe().getBlockState() != item.getBlockUnsafe().getBlockState()) return false;
+                } else return false;
+            }
         }
         if (checkCompound && (this.hasCompoundTag() || item.hasCompoundTag())) {
             return Objects.equals(this.getNamedTag(), item.getNamedTag());
         }
         return true;
     }
+
 
     /**
      * Same as {@link #equals(Item, boolean)} but the enchantment order of the items does not affect the result.
