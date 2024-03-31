@@ -4,8 +4,8 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
 
 import java.util.Random;
@@ -17,8 +17,8 @@ public class ProfessionFisherman extends Profession {
     }
 
     @Override
-    public ListTag<Tag> buildTrades(int seed) {
-        ListTag<Tag> recipes = new ListTag<>();
+    public ListTag<CompoundTag> buildTrades(int seed) {
+        ListTag<CompoundTag> recipes = new ListTag<>();
         Random random = new Random(seed);
 
         Item rod = Item.get(ItemID.FISHING_ROD);

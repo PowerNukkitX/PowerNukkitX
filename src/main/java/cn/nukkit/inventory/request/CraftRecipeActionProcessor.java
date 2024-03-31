@@ -73,7 +73,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             player.regenerateEnchantmentSeed();
             context.put(ENCH_RECIPE_KEY, true);
             return null;
-        } else if (action.getRecipeNetworkId() >= TradeRecipeBuildUtils.TRADE_RECIPEID) {
+        } else if (action.getRecipeNetworkId() >= TradeRecipeBuildUtils.TRADE_RECIPEID) {//handle village trade recipe
             CompoundTag tradeRecipe = TradeRecipeBuildUtils.RECIPE_MAP.get(action.getRecipeNetworkId());
             if (tradeRecipe == null) {
                 log.error("cant find trade recipe from netId " + action.getRecipeNetworkId());

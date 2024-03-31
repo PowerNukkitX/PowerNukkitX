@@ -1,7 +1,7 @@
 package cn.nukkit.entity.data.profession;
 
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.Tag;
 
 import java.util.HashMap;
 
@@ -32,7 +32,7 @@ public abstract class Profession {
         this.name = name;
     }
 
-    public ListTag<Tag> buildTrades(int seed) {
+    public ListTag<CompoundTag> buildTrades(int seed) {
         return new ListTag<>();
     }
 

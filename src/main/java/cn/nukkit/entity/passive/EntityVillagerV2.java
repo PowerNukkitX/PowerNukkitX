@@ -20,7 +20,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.utils.TradeRecipeBuildUtils;
 import cn.nukkit.utils.random.NukkitRandom;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,14 +34,14 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         return VILLAGER_V2;
     }
 
-    public ListTag<Tag> getRecipes() {
+    public ListTag<CompoundTag> getRecipes() {
         return recipes;
     }
 
     /**
      * 代表交易配方
      */
-    protected ListTag<Tag> recipes = new ListTag<>();
+    protected ListTag<CompoundTag> recipes;
     /**
      * 用于控制村民的等级成长所需要的经验
      * 例如[0,10,20,30,40] 村民达到1级所需经验0,2级为10,这里的经验是{@link EntityVillagerV2#tradeExp}.
@@ -313,6 +313,15 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         this.namedTag.putInt("maxTradeTier", this.tradeTier);
     }
 
+    @Override
+    public void close() {
+        for (var r : recipes.getAll()) {
+            int netId = r.getInt("netId");
+            TradeRecipeBuildUtils.RECIPE_MAP.remove(netId);
+        }
+        super.close();
+    }
+
     /**
      * @return 村民当前的经验值
      */
@@ -406,6 +415,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     public void applyProfession(Profession profession) {
+        if (recipes == null) recipes = new ListTag<>();
         setDisplayName(profession.getName());
         recipes = profession.buildTrades(getTradeSeed());
         this.setCanTrade(true);

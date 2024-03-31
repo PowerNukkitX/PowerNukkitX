@@ -2,6 +2,7 @@ package cn.nukkit.entity.data.profession;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.*;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.DyeColor;
@@ -14,8 +15,8 @@ public class ProfessionLeather extends Profession {
     }
 
     @Override
-    public ListTag<Tag> buildTrades(int seed) {
-        ListTag<Tag> recipes = new ListTag<>();
+    public ListTag<CompoundTag> buildTrades(int seed) {
+        ListTag<CompoundTag> recipes = new ListTag<>();
 
         recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.LEATHER, 0, 6), Item.get(Item.EMERALD))
                         .setMaxUses(16)

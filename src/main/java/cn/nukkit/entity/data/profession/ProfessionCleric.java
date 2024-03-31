@@ -2,6 +2,7 @@ package cn.nukkit.entity.data.profession;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
@@ -13,8 +14,8 @@ public class ProfessionCleric extends Profession {
     }
 
     @Override
-    public ListTag<Tag> buildTrades(int seed) {
-        ListTag<Tag> recipes = new ListTag<>();
+    public ListTag<CompoundTag> buildTrades(int seed) {
+        ListTag<CompoundTag> recipes = new ListTag<>();
 
         recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.ROTTEN_FLESH,0,32), Item.get(Item.EMERALD, 0 , 2))
                         .setMaxUses(16)

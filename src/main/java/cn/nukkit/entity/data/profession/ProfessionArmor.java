@@ -3,8 +3,8 @@ package cn.nukkit.entity.data.profession;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
 
 import java.util.Random;
@@ -16,8 +16,8 @@ public class ProfessionArmor extends Profession {
     }
 
     @Override
-    public ListTag<Tag> buildTrades(int seed) {
-        ListTag<Tag> recipes = new ListTag<>();
+    public ListTag<CompoundTag> buildTrades(int seed) {
+        ListTag<CompoundTag> recipes = new ListTag<>();
         Random random = new Random(seed);
 
         int[] enchantments = new int[] {Enchantment.ID_DURABILITY, Enchantment.ID_THORNS, Enchantment.ID_PROTECTION_ALL, Enchantment.ID_PROTECTION_EXPLOSION, Enchantment.ID_PROTECTION_PROJECTILE, Enchantment.ID_PROTECTION_FIRE, Enchantment.ID_VANISHING_CURSE};
