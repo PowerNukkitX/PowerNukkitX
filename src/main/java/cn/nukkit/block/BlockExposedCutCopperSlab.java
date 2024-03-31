@@ -8,7 +8,8 @@ public class BlockExposedCutCopperSlab extends BlockCutCopperSlab {
     public static final BlockProperties PROPERTIES = new BlockProperties(EXPOSED_CUT_COPPER_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -17,15 +18,16 @@ public class BlockExposedCutCopperSlab extends BlockCutCopperSlab {
     }
 
     public BlockExposedCutCopperSlab(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, EXPOSED_DOUBLE_CUT_COPPER_SLAB);
     }
 
-    public BlockExposedCutCopperSlab(BlockState blockstate,String doubleSlabId) {
+    protected BlockExposedCutCopperSlab(BlockState blockstate, String doubleSlabId) {
         super(blockstate, doubleSlabId);
     }
 
     @Override
-    @NotNull public OxidizationLevel getOxidizationLevel() {
+    @NotNull
+    public OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.EXPOSED;
     }
 }

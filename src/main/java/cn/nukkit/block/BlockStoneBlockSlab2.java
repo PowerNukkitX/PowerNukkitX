@@ -61,7 +61,8 @@ public class BlockStoneBlockSlab2 extends BlockSlab {
 
     @Override
     public Item toItem() {
-        int aux = getSlabType().ordinal();
-        return new ItemBlock(this, aux);
+        ItemBlock itemBlock = new ItemBlock(this);
+        itemBlock.setBlockUnsafe(this);
+        return itemBlock;
     }
 }

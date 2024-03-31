@@ -58,9 +58,9 @@ public class BlockStoneBlockSlab3 extends BlockSlab {
         setPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE_3, type);
     }
 
-    @Override
     public Item toItem() {
-        int aux = getSlabType().ordinal();
-        return new ItemBlock(this, aux);
+        ItemBlock itemBlock = new ItemBlock(this);
+        itemBlock.setBlockUnsafe(this);
+        return itemBlock;
     }
 }
