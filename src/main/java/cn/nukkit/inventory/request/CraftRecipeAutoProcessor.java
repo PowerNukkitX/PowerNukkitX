@@ -2,8 +2,6 @@ package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
 import cn.nukkit.event.inventory.CraftItemEvent;
-import cn.nukkit.inventory.InputInventory;
-import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.types.itemstack.request.action.AutoCraftRecipeAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
@@ -29,11 +27,6 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
     @Nullable
     @Override
     public ActionResponse handle(AutoCraftRecipeAction action, Player player, ItemStackRequestContext context) {
-        Inventory inventory = player.getTopWindow().get();
-        if (!(player.getTopWindow().isPresent() && inventory instanceof InputInventory craft)) {
-            log.error("cant find craft table");
-            return context.error();
-        }
         var recipe = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetworkId());
         List<ItemDescriptor> ingredients = action.getIngredients();
         Item[] eventItems = new Item[9];

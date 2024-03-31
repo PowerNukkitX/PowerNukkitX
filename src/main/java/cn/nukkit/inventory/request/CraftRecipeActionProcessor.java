@@ -53,7 +53,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
 
     @Override
     public ActionResponse handle(CraftRecipeAction action, Player player, ItemStackRequestContext context) {
-        Inventory inventory = player.getTopWindow().get();
+        Inventory inventory = player.getTopWindow().orElseGet(player::getCraftingGrid);
         if (action.getRecipeNetworkId() >= PlayerEnchantOptionsPacket.ENCH_RECIPEID) {  //handle ench recipe
             PlayerEnchantOptionsPacket.EnchantOptionData enchantOptionData = PlayerEnchantOptionsPacket.RECIPE_MAP.get(action.getRecipeNetworkId());
             if (enchantOptionData == null) {
