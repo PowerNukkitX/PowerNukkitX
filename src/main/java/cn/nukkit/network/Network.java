@@ -166,6 +166,7 @@ public class Network {
             }
         }
         netWorkStatisticDataList.add(new NetWorkStatisticData(upload, download));
+        setPong(server.getMotd());
     }
 
     public void processInterfaces() {
