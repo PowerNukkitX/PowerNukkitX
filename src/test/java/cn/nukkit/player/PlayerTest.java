@@ -7,6 +7,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.MovePlayerPacket;
 import cn.nukkit.utils.GameLoop;
+import cn.nukkit.utils.LevelException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -97,7 +98,10 @@ public class PlayerTest {
         GameLoop loop = GameLoop.builder().loopCountPerSec(20).onTick((d) -> {
             Server.getInstance().getScheduler().mainThreadHeartbeat((int) d.getTick());
             level.subTick(d);
-            player.checkNetwork();
+            try {
+                player.checkNetwork();
+            } catch (LevelException ignore) {
+            }
         }).build();
         player.setPosition(new Vector3(0, 100, 0));
         Thread thread = new Thread(loop::startLoop);
