@@ -2,6 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.StoneSlabType2;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
@@ -55,5 +57,11 @@ public class BlockStoneBlockSlab2 extends BlockSlab {
 
     public void setSlabType(StoneSlabType2 type) {
         setPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE_2, type);
+    }
+
+    @Override
+    public Item toItem() {
+        int aux = getSlabType().ordinal();
+        return new ItemBlock(this, aux);
     }
 }

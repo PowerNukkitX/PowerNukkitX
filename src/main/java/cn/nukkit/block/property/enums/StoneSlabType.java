@@ -7,19 +7,12 @@ package cn.nukkit.block.property.enums;
  * @author daoge_cmd
  */
 public enum StoneSlabType {
-    BRICK,
-
-    COBBLESTONE,
-
-    NETHER_BRICK,
-
-    QUARTZ,
-
-    SANDSTONE,
-
     SMOOTH_STONE,
-
+    SANDSTONE,
+    WOOD,
+    COBBLESTONE,
+    BRICK,
     STONE_BRICK,
-
-    WOOD
+    QUARTZ,
+    NETHER_BRICK,
 }
