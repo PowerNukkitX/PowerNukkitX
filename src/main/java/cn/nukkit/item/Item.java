@@ -115,7 +115,7 @@ public abstract class Item implements Cloneable, ItemID {
             this.name = name.intern();
         }
         this.block = block;
-        setDamage(meta);
+        this.meta = meta;
         if (autoAssignStackNetworkId) {
             this.autoAssignStackNetworkId();
         }
@@ -159,7 +159,7 @@ public abstract class Item implements Cloneable, ItemID {
             if (itemBlockState == null || itemBlockState == BlockAir.STATE) {
                 return Item.AIR;
             }
-            item = new ItemBlock(Registries.BLOCK.get(itemBlockState), meta);
+            item = new ItemBlock(Registries.BLOCK.get(itemBlockState));
             item.setCount(count);
             if (tags != null) {
                 item.setCompoundTag(tags);

@@ -23,7 +23,9 @@ import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequestSlotDa
 import cn.nukkit.network.protocol.types.itemstack.request.TextProcessingEventOrigin;
 import cn.nukkit.network.protocol.types.itemstack.request.action.*;
 import cn.nukkit.recipe.descriptor.ComplexAliasDescriptor;
+import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.DeferredDescriptor;
+import cn.nukkit.recipe.descriptor.InvalidDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptorType;
 import cn.nukkit.recipe.descriptor.ItemTagDescriptor;
@@ -1099,7 +1101,7 @@ public class HandleByteBuf extends ByteBuf {
         }
 
         int count = readShortLE();
-        int damage = (int) readUnsignedVarInt();
+        int damage = readUnsignedVarInt();
 
         Integer netId = null;
         if (!instanceItem) {
@@ -1242,7 +1244,33 @@ public class HandleByteBuf extends ByteBuf {
         }
     }
 
-    public void writeRecipeIngredient(ItemDescriptor itemDescriptor) {
+    public ItemDescriptor readRecipeIngredient() {
+        ItemDescriptorType type = ItemDescriptorType.values()[readUnsignedByte()];
+        ItemDescriptor descriptor;
+        switch (type) {
+            case DEFAULT:
+                int itemId = readShortLE();
+                int auxValue = itemId != 0 ? readShortLE() : 0;
+                Item item = itemId == 0 ? Item.AIR : Item.get(Registries.ITEM_RUNTIMEID.getIdentifier(itemId), auxValue, readVarInt());
+                descriptor = new DefaultDescriptor(item);
+                break;
+            case MOLANG:
+                descriptor = new MolangDescriptor(this.readString(), readUnsignedByte(), readVarInt());
+                break;
+            case ITEM_TAG:
+                descriptor = new ItemTagDescriptor(this.readString(), readVarInt());
+                break;
+            case DEFERRED:
+                descriptor = new DeferredDescriptor(this.readString(), readShortLE(), readVarInt());
+                break;
+            default:
+                descriptor = InvalidDescriptor.INSTANCE;
+                break;
+        }
+        return descriptor;
+    }
+
+    public void writeRecipeIngredient(cn.nukkit.recipe.descriptor.ItemDescriptor itemDescriptor) {
         ItemDescriptorType type = itemDescriptor.getType();
         this.writeByte((byte) type.ordinal());
         switch (type) {
@@ -1504,8 +1532,8 @@ public class HandleByteBuf extends ByteBuf {
             case CRAFT_RECIPE_AUTO -> {
                 int recipeId = readUnsignedVarInt();
                 int timesCrafted = readUnsignedByte();
-                List<Item> ingredients = new ObjectArrayList<>();
-                readArray(ingredients, HandleByteBuf::readUnsignedByte, HandleByteBuf::readSlot);
+                List<ItemDescriptor> ingredients = new ObjectArrayList<>();
+                readArray(ingredients, HandleByteBuf::readUnsignedByte, HandleByteBuf::readRecipeIngredient);
                 yield new AutoCraftRecipeAction(
                         recipeId,
                         timesCrafted,
