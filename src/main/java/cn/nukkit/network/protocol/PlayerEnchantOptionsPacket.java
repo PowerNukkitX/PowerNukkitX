@@ -16,10 +16,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlayerEnchantOptionsPacket extends DataPacket {
-    public static final ConcurrentHashMap<Integer, EnchantOptionData> RECIPE_MAP = new ConcurrentHashMap<>();
     public static final int NETWORK_ID = ProtocolInfo.PLAYER_ENCHANT_OPTIONS_PACKET;
-    public static final int ENCH_RECIPEID = 100000;
+
     public List<EnchantOptionData> options = new ArrayList<>();
+
+    public static final int ENCH_RECIPEID = 100000;
+    public static final ConcurrentHashMap<Integer, EnchantOptionData> RECIPE_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger ENCH_RECIPE_NETID = new AtomicInteger(ENCH_RECIPEID);
 
     @Override

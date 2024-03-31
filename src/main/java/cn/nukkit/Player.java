@@ -4470,7 +4470,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param inventory the inventory
      * @return the window id
      */
-    public int getWindowId(Inventory inventory) {
+    public int getWindowId(@NotNull Inventory inventory) {
+        Preconditions.checkNotNull(inventory);
         if (this.windows.containsKey(inventory)) {
             return this.windows.get(inventory);
         }
@@ -4489,7 +4490,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.windowIndex.get(id);
     }
 
-    public int addWindow(Inventory inventory) {
+    public int addWindow(@NotNull Inventory inventory) {
+        Preconditions.checkNotNull(inventory);
         if (this.windows.containsKey(inventory)) {
             return this.windows.get(inventory);
         }
@@ -4509,7 +4511,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-    public int addWindow(Inventory inventory, Integer forceId) {
+    public int addWindow(@NotNull Inventory inventory, Integer forceId) {
+        Preconditions.checkNotNull(inventory);
         if (this.windows.containsKey(inventory)) {
             return this.windows.get(inventory);
         }
@@ -4553,6 +4556,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param inventory the inventory
      */
     public void removeWindow(Inventory inventory) {
+        Preconditions.checkNotNull(inventory);
         if (!this.permanentWindows.contains(windows.get(inventory))) {
             inventory.close(this);
             this.windows.remove(inventory);
@@ -4602,15 +4606,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public void resetCraftingGridType() {
         if (spawned) {
-            //todo more drop
             List<Item> drops = new ArrayList<>(this.getCraftingGrid().getContents().values());//small craft
 
             drops.add(this.getCursorInventory().getItem(0));//cursor
 
             Optional<Inventory> topWindow = getTopWindow();
             Inventory value;
-            if (topWindow.isPresent() && (value = topWindow.get()) instanceof CraftTypeInventory) {
-                drops.addAll(value.getContents().values());
+            if (topWindow.isPresent()) {
+                if ((value = topWindow.get()) instanceof CraftTypeInventory) {
+                    drops.addAll(value.getContents().values());
+                }
+                removeWindow(value);
             }
             for (Item drop : drops) {
                 if (!drop.isNull()) {

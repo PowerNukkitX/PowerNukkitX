@@ -3,6 +3,7 @@ package cn.nukkit.inventory.request;
 import cn.nukkit.Player;
 import cn.nukkit.inventory.CraftingTableInventory;
 import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.TradeInventory;
 import cn.nukkit.inventory.fake.FakeInventory;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import lombok.experimental.UtilityClass;
@@ -15,6 +16,15 @@ public class NetworkMapping {
             case CURSOR -> player.getCursorInventory();
             case INVENTORY, HOTBAR, HOTBAR_AND_INVENTORY -> player.getInventory();
             case ARMOR -> player.getInventory().getArmorInventory();
+            case TRADE2_INGREDIENT_1, TRADE2_INGREDIENT_2, TRADE2_RESULT -> {
+                if (player.getFakeInventoryOpen() && player.getTopWindow().isPresent() && player.getTopWindow().get() instanceof FakeInventory) {
+                    yield player.getTopWindow().get();
+                } else if (player.getTopWindow().isPresent() && player.getTopWindow().get() instanceof TradeInventory) {
+                    yield player.getTopWindow().get();
+                } else {
+                    throw new IllegalArgumentException("Cant handle trade inventory: %s when an ItemStackRequest is received!".formatted(containerSlotType.name().toUpperCase()));
+                }
+            }
             case BARREL, BREWING_RESULT, BREWING_FUEL, BREWING_INPUT,
                     FURNACE_FUEL, FURNACE_INGREDIENT, FURNACE_RESULT, SMOKER_INGREDIENT, BLAST_FURNACE_INGREDIENT,
                     ENCHANTING_INPUT, ENCHANTING_MATERIAL,
