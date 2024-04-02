@@ -934,23 +934,15 @@ public class Level implements Metadatable {
             if (this.getDimension() != DIMENSION_NETHER && this.getDimension() != DIMENSION_THE_END && gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE)) {
                 this.rainTime--;
                 if (this.rainTime <= 0) {
-                    if (!this.setRaining(!this.raining)) {
-                        if (this.raining) {
-                            setRainTime(ThreadLocalRandom.current().nextInt(12000) + 12000);
-                        } else {
-                            setRainTime(ThreadLocalRandom.current().nextInt(168000) + 12000);
-                        }
+                    if (!this.setRaining(!this.raining)) {//if raining,set false
+                        setRaining(!raining);// and if event cancel,revert raining change
                     }
                 }
 
                 this.thunderTime--;
                 if (this.thunderTime <= 0) {
                     if (!this.setThundering(!this.thundering)) {
-                        if (this.thundering) {
-                            setThunderTime(ThreadLocalRandom.current().nextInt(12000) + 3600);
-                        } else {
-                            setThunderTime(ThreadLocalRandom.current().nextInt(168000) + 12000);
-                        }
+                        setThundering(!thundering);
                     }
                 }
 
@@ -1385,14 +1377,6 @@ public class Level implements Metadatable {
 
     public void saveChunks() {
         requireProvider().saveChunks();
-    }
-
-    @Deprecated
-    @DeprecationDetails(reason = "Was moved to RedstoneComponent", since = "1.4.0.0-PN",
-            replaceWith = "RedstoneComponent#updateAroundRedstone", by = "PowerNukkit")
-    public void updateAroundRedstone(Vector3 pos, BlockFace face) {
-        Location loc = new Location(pos.x, pos.y, pos.z, this);
-        RedstoneComponent.updateAroundRedstone(loc, face);
     }
 
     public void updateComparatorOutputLevel(Vector3 v) {

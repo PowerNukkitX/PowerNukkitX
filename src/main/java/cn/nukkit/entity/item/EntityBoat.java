@@ -60,9 +60,6 @@ public class EntityBoat extends EntityVehicle {
     public static final double SINKING_SPEED = 0.0005;
     public static final double SINKING_MAX_SPEED = 0.005;
     private final Set<Entity> ignoreCollision = new HashSet<>(2);
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
-            reason = "Unreliable direct field access", replaceWith = "getVariant(), setVariant(int)")
     public int woodID;
     protected boolean sinking = true;
     private int ticksInWater;

@@ -72,8 +72,6 @@ public class AvailableCommandsPacket extends DataPacket {
     public static final int ARG_TYPE_COMMAND = dynamic(87);
 
     public Map<String, CommandDataVersions> commands;
-    @Deprecated
-    public final Map<String, List<String>> softEnums = new HashMap<>();
     public final List<CommandEnumConstraintData> constraints = new ObjectArrayList<>();
 
     @Override

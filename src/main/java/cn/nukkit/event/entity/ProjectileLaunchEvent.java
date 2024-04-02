@@ -14,11 +14,6 @@ public class ProjectileLaunchEvent extends EntityEvent implements Cancellable {
 
     protected Entity shooter;
 
-    @Deprecated //保留这个方法，兼容nk插件
-    public ProjectileLaunchEvent(EntityProjectile entity) {
-        this(entity, entity.shootingEntity);
-    }
-
     public ProjectileLaunchEvent(EntityProjectile entity, Entity shooter) {
         this.shooter = shooter;
         this.entity = entity;

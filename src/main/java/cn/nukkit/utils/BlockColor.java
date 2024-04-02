@@ -190,7 +190,6 @@ public class BlockColor {
         return new Color(this.red, this.green, this.blue, this.alpha);
     }
 
-    @Deprecated
     public static BlockColor getDyeColor(int dyeColorMeta) {
         return DyeColor.getByDyeData(dyeColorMeta).getColor();
     }

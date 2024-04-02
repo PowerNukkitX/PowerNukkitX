@@ -78,12 +78,6 @@ public class EntityThrownTrident extends SlenderProjectile {
         super(chunk, nbt, shootingEntity);
     }
 
-    @Deprecated
-    public EntityThrownTrident(IChunk chunk, CompoundTag nbt, Entity shootingEntity, boolean critical) {
-        this(chunk, nbt, shootingEntity);
-    }
-
-
     @Override
     public float getLength() {
         return 0.25f;
@@ -365,17 +359,6 @@ public class EntityThrownTrident extends SlenderProjectile {
 
     public boolean isCreative() {
         return getPickupMode() == EntityProjectile.PICKUP_CREATIVE;
-    }
-
-    @Deprecated
-    @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", replaceWith = "setPickupMode(EntityProjectile.PICKUP_<MODE>)",
-            reason = "Nukkit added this API in 3-states, NONE, ANY, and CREATIVE")
-    public void setCreative(boolean isCreative) {
-        if (isCreative) {
-            setPickupMode(EntityProjectile.PICKUP_CREATIVE);
-        } else if (getPickupMode() == EntityProjectile.PICKUP_CREATIVE) {
-            setPickupMode(EntityProjectile.PICKUP_ANY);
-        }
     }
 
     public boolean isPlayer() {

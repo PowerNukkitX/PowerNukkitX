@@ -3,6 +3,7 @@ package cn.nukkit.lang;
 
 import cn.nukkit.Server;
 import cn.nukkit.plugin.PluginBase;
+import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import io.netty.util.internal.EmptyArrays;
 import lombok.extern.slf4j.Slf4j;
@@ -23,11 +24,11 @@ public class PluginI18n {
      */
     private LangCode fallback;
     private final Pattern split = Pattern.compile("%[A-Za-z0-9_.-]+");
-    private final String pluginName;
+    private final PluginBase plugin;
     private final Map<LangCode, Map<String, String>> MULTI_LANGUAGE;
 
     public PluginI18n(PluginBase plugin) {
-        this.pluginName = plugin.getFile().getName();
+        this.plugin = plugin;
         this.MULTI_LANGUAGE = new HashMap<>();
         this.fallback = LangCode.en_US;
     }
@@ -159,9 +160,10 @@ public class PluginI18n {
     public void addLang(LangCode langName, String path) {
         try {
             File file = new File(path);
-            if (!file.exists() || file.isDirectory()) {
+            if (!file.exists()) {
                 throw new FileNotFoundException();
             }
+            Preconditions.checkArgument(file.getName().endsWith(".json"));
             try (FileInputStream stream = new FileInputStream(file)) {
                 this.MULTI_LANGUAGE.put(langName, parseLang(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
             }
@@ -182,6 +184,25 @@ public class PluginI18n {
         } catch (IOException e) {
             log.error("Failed to parse the language input stream", e);
         }
+    }
+
+    /**
+     * Reload all lang for the i18n.
+     *
+     * @return whether reload success
+     */
+    public boolean reloadLangAll() {
+        return PluginI18nManager.reload(plugin);
+    }
+
+    /**
+     * Reload all lang for the i18n from the path folder.
+     *
+     * @param path the folder
+     * @return whether reload success
+     */
+    public boolean reloadLangAll(String path) {
+        return PluginI18nManager.reload(plugin, path);
     }
 
     /**
@@ -240,12 +261,12 @@ public class PluginI18n {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PluginI18n that = (PluginI18n) o;
-        return Objects.equals(pluginName, that.pluginName);
+        return Objects.equals(plugin, that.plugin);
     }
 
     @Override
     public int hashCode() {
-        return pluginName.hashCode();
+        return plugin.hashCode();
     }
 
     protected String parseArg(Object arg) {
@@ -279,7 +300,13 @@ public class PluginI18n {
 
     private boolean reloadLang(LangCode lang, BufferedReader reader) {
         Map<String, String> d = this.MULTI_LANGUAGE.get(lang);
-        d.putAll((Map<String, String>) new Gson().fromJson(reader, Map.class));
+        Map<String, String> map = new Gson().fromJson(reader, Map.class);
+        if (d == null) {
+            this.MULTI_LANGUAGE.put(lang, map);
+        } else {
+            d.clear();
+            d.putAll(map);
+        }
         return true;
     }
 

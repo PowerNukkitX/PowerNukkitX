@@ -72,11 +72,6 @@ public class PositionTracking extends NamedPosition {
     }
 
     @Override
-    public PositionTracking subtract() {
-        return new PositionTracking(levelName, x, y, z);
-    }
-
-    @Override
     public PositionTracking subtract(double x) {
         return subtract(x, 0, 0);
     }

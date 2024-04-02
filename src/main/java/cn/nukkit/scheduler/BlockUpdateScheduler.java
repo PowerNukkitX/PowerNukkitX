@@ -128,15 +128,4 @@ public class BlockUpdateScheduler {
         }
         return false;
     }
-
-    @Deprecated(since = "1.20.10-r1", forRemoval = true)
-    @SuppressWarnings("SuspiciousMethodCalls")
-    public boolean remove(Vector3 pos) {
-        for (var tickUpdateSet : queuedUpdates.values()) {
-            if (tickUpdateSet.remove(pos)) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

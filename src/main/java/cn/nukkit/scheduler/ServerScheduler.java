@@ -49,13 +49,6 @@ public class ServerScheduler {
         return addTask(task, 0, 0, false);
     }
 
-    /**
-     * @deprecated Use {@link #scheduleTask(Plugin, Runnable)}
-     */
-    @Deprecated
-    public TaskHandler scheduleTask(Runnable task) {
-        return addTask(null, task, 0, 0, false);
-    }
 
     /**
      * 设置一个只执行一次的任务 delay=0 period=0 asynchronous=false
@@ -68,14 +61,6 @@ public class ServerScheduler {
      */
     public TaskHandler scheduleTask(Plugin plugin, Runnable task) {
         return addTask(plugin, task, 0, 0, false);
-    }
-
-    /**
-     * @deprecated Use {@link #scheduleTask(Plugin, Runnable, boolean)}
-     */
-    @Deprecated
-    public TaskHandler scheduleTask(Runnable task, boolean asynchronous) {
-        return addTask(null, task, 0, 0, asynchronous);
     }
 
     /**
@@ -93,14 +78,6 @@ public class ServerScheduler {
     }
 
     /**
-     * @deprecated Use {@link #scheduleAsyncTask(Plugin, AsyncTask)}
-     */
-    @Deprecated
-    public TaskHandler scheduleAsyncTask(AsyncTask task) {
-        return addTask(null, task, 0, 0, true);
-    }
-
-    /**
      * 设置一个只执行一次的异步任务
      * Set up an asynchronous task to be executed only once
      *
@@ -111,17 +88,8 @@ public class ServerScheduler {
         return addTask(plugin, task, 0, 0, true);
     }
 
-    @Deprecated
-    public void scheduleAsyncTaskToWorker(AsyncTask task, int worker) {
-        scheduleAsyncTask(task);
-    }
-
     public int getAsyncTaskPoolSize() {
         return asyncPool.getCorePoolSize();
-    }
-
-    public void increaseAsyncTaskPoolSize(int newSize) {
-        throw new UnsupportedOperationException("Cannot increase a working pool size."); //wtf?
     }
 
     /**
@@ -170,37 +138,14 @@ public class ServerScheduler {
         return addTask(plugin, task, delay, 0, false);
     }
 
-    /**
-     * @deprecated Use {@link #scheduleDelayedTask(Plugin, Runnable, int, boolean)}
-     */
-    @Deprecated
-    public TaskHandler scheduleDelayedTask(Runnable task, int delay, boolean asynchronous) {
-        return addTask(null, task, delay, 0, asynchronous);
-    }
-
     public TaskHandler scheduleDelayedTask(Plugin plugin, Runnable task, int delay, boolean asynchronous) {
         return addTask(plugin, task, delay, 0, asynchronous);
-    }
-
-    /**
-     * @deprecated Use {@link #scheduleRepeatingTask(Plugin, Runnable, int)}
-     */
-    @Deprecated
-    public TaskHandler scheduleRepeatingTask(Runnable task, int period) {
-        return addTask(null, task, 0, period, false);
     }
 
     public TaskHandler scheduleRepeatingTask(Plugin plugin, Runnable task, int period) {
         return addTask(plugin, task, 0, period, false);
     }
 
-    /**
-     * @deprecated Use {@link #scheduleRepeatingTask(Plugin, Runnable, int, boolean)}
-     */
-    @Deprecated
-    public TaskHandler scheduleRepeatingTask(Runnable task, int period, boolean asynchronous) {
-        return addTask(null, task, 0, period, asynchronous);
-    }
 
     public TaskHandler scheduleRepeatingTask(Plugin plugin, Runnable task, int period, boolean asynchronous) {
         return addTask(plugin, task, 0, period, asynchronous);
@@ -222,25 +167,11 @@ public class ServerScheduler {
         return addTask(task, delay, period, asynchronous);
     }
 
-    /**
-     * @deprecated Use {@link #scheduleDelayedRepeatingTask(Plugin, Runnable, int, int)}
-     */
-    @Deprecated
-    public TaskHandler scheduleDelayedRepeatingTask(Runnable task, int delay, int period) {
-        return addTask(null, task, delay, period, false);
-    }
 
     public TaskHandler scheduleDelayedRepeatingTask(Plugin plugin, Runnable task, int delay, int period) {
         return addTask(plugin, task, delay, period, false);
     }
 
-    /**
-     * @deprecated Use {@link #scheduleDelayedRepeatingTask(Plugin, Runnable, int, int, boolean)}
-     */
-    @Deprecated
-    public TaskHandler scheduleDelayedRepeatingTask(Runnable task, int delay, int period, boolean asynchronous) {
-        return addTask(null, task, delay, period, asynchronous);
-    }
 
     /**
      * 设置一个延迟周期任务

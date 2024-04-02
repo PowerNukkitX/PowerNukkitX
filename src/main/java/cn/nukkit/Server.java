@@ -758,7 +758,7 @@ public class Server {
         this.pluginManager = new PluginManager(this, this.commandMap);
         this.pluginManager.subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this.consoleSender);
         this.pluginManager.registerInterface(JavaPluginLoader.class);
-        this.pluginManager.registerInterface(JSPluginLoader.class);
+        //this.pluginManager.registerInterface(JSPluginLoader.class);
 
         try {
             log.debug("Loading position tracking service");

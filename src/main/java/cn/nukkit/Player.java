@@ -992,12 +992,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
 
-    //NK原始处理移动的方法
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "use handleMovement")
-    protected void processMovement(int tickDiff) {
-    }
-
     protected void handleLogicInMove(boolean invalidMotion, double distance) {
         if (!invalidMotion) {
             //处理饱食度更新

@@ -195,11 +195,6 @@ public class Position extends NamedPosition {
     }
 
     @Override
-    public Position subtract() {
-        return this.subtract(0, 0, 0);
-    }
-
-    @Override
     public Position subtract(double x) {
         return this.subtract(x, 0, 0);
     }

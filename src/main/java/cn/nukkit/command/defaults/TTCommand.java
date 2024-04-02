@@ -12,7 +12,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;
 
-@ApiStatus.Internal
+
 public class TTCommand extends TestCommand {
     FakeStructBlock fakeStructBlock;
 

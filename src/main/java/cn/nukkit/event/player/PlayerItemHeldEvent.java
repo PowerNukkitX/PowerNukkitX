@@ -29,11 +29,6 @@ public class PlayerItemHeldEvent extends PlayerEvent implements Cancellable {
         return this.hotbarSlot;
     }
 
-    @Deprecated
-    public int getInventorySlot() {
-        return hotbarSlot;
-    }
-
     public Item getItem() {
         return item;
     }

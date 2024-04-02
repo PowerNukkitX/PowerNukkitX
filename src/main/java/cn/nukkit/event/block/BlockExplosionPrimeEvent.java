@@ -44,11 +44,6 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
     private double fireChance;
     private final Player player;
 
-    @Deprecated
-    public BlockExplosionPrimeEvent(Block block, double force) {
-        this(block, force, 0);
-    }
-
     public BlockExplosionPrimeEvent(Block block, double force, double fireChance) {
         this(block, null, force, fireChance);
     }

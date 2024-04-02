@@ -3,7 +3,6 @@ package cn.nukkit.level;
 import java.util.Optional;
 
 public enum GameRule {
-
     COMMAND_BLOCKS_ENABLED("commandBlocksEnabled"),
     COMMAND_BLOCK_OUTPUT("commandBlockOutput"),
     DO_DAYLIGHT_CYCLE("doDaylightCycle"),

@@ -137,12 +137,6 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
         return super.getComparatorInputOverride();
     }
 
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", replaceWith = "getBlockFace()", reason = "Duplicated")
-    public BlockFace getFacing() {
-        return getBlockFace();
-    }
-
     public boolean isEnabled() {
         return !getPropertyValue(TOGGLE_BIT);
     }

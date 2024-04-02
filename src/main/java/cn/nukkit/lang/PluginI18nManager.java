@@ -55,7 +55,7 @@ public final class PluginI18nManager {
                     // 开始读取文件内容
                     InputStream inputStream = plugin.getResource(name);
                     assert inputStream != null;
-                    i18n.reloadLang(LangCode.valueOf(name.substring(9, name.indexOf("."))), inputStream);
+                    i18n.reloadLang(LangCode.from(name.substring(9, name.indexOf("."))), inputStream);
                     count++;
                     inputStream.close();
                 }
@@ -85,7 +85,7 @@ public final class PluginI18nManager {
             int count = 0;
             for (var f : files) {
                 try (InputStream inputStream = new FileInputStream(f)) {
-                    i18n.reloadLang(LangCode.valueOf(f.getName().replace(".json", "")), inputStream);
+                    i18n.reloadLang(LangCode.from(f.getName().replace(".json", "")), inputStream);
                     count++;
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -157,8 +157,8 @@ public final class PluginI18nManager {
         }
     }
 
-    public @Nullable
-    static PluginI18n getI18n(PluginBase plugin) {
+    @Nullable
+    public static PluginI18n getI18n(PluginBase plugin) {
         return PLUGINS_MULTI_LANGUAGE.get(plugin.getFile().getName());
     }
 }

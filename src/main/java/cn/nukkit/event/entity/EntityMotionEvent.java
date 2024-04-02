@@ -22,11 +22,6 @@ public class EntityMotionEvent extends EntityEvent implements Cancellable {
         this.motion = motion;
     }
 
-    @Deprecated
-    public Vector3 getVector() {
-        return this.motion;
-    }
-
     public Vector3 getMotion() {
         return this.motion;
     }

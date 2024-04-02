@@ -84,14 +84,6 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
         return namedTag.getShort("PotionType") == PotionType.SPLASH.potionTypeData;
     }
 
-    /**
-     * @deprecated Use {@link #setPotionType(int)} instead.
-     */
-    @Deprecated
-    public void setSplashPotion(boolean value) {
-        namedTag.putShort("PotionType", value ? 1 : 0);
-    }
-
     public BlockColor getCustomColor() {
         if (isCustomColor()) {
             int color = namedTag.getInt("CustomColor");

@@ -89,7 +89,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
         } else if (pk.transactionType == InventoryTransactionPacket.TYPE_NORMAL) {
             for (var action : pk.actions) {
                 if (action.getInventorySource().getType().equals(InventorySource.Type.WORLD_INTERACTION)) {
-                    if (action.getInventorySource().getFlag().equals(InventorySource.Flag.DROP_ITEM)) {
+                    if (action.getInventorySource().getFlag().equals(InventorySource.Flag.DROP_ITEM)) {//handle throw item such as enter Q
                         var count = action.newItem.getCount();
                         Item item = player.getInventory().getItemInHand();
                         if (item.isNull()) return;

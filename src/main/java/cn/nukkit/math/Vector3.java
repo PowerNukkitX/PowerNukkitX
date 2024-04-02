@@ -126,12 +126,6 @@ public class Vector3 implements Cloneable {
         return new Vector3(this.x + x.getX(), this.y + x.getY(), this.z + x.getZ());
     }
 
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Makes no sense", replaceWith = "clone()")
-    public Vector3 subtract() {
-        return this.subtract(0, 0, 0);
-    }
-
     public Vector3 subtract(double x) {
         return this.subtract(x, 0, 0);
     }

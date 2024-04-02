@@ -90,16 +90,13 @@ public class StartGamePacket extends DataPacket {
     public String vanillaVersion = ProtocolInfo.MINECRAFT_VERSION_NETWORK;
     //HACK: For now we can specify this version, since the new chunk changes are not relevant for our Anvil format.
     //However, it could be that Microsoft will prevent this in a new update.
-
     public CompoundTag playerPropertyData = new CompoundTag();
 
     public String levelId = ""; //base64 string, usually the same as world folder name in vanilla
     public String worldName;
     public String premiumWorldTemplateId = "";
     public boolean isTrial = false;
-    @Deprecated
     public boolean isMovementServerAuthoritative;
-
 
     public Integer serverAuthoritativeMovement;
 

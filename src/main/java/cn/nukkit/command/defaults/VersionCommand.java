@@ -7,6 +7,7 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginDescription;
 import cn.nukkit.utils.TextFormat;
@@ -39,7 +40,7 @@ public class VersionCommand extends Command implements CoreCommand {
     private JsonArray listVersionCache = null;
 
     {
-        Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
+        Server.getInstance().getScheduler().scheduleRepeatingTask(null, () -> {
             try {
                 for (Query query : queryQueue.toArray(new Query[queryQueue.size()])) {
                     if (query.jsonArrayFuture.isDone()) {

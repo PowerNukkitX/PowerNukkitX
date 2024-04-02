@@ -158,11 +158,6 @@ public class Location extends Position {
     }
 
     @Override
-    public Location subtract() {
-        return this.subtract(0, 0, 0);
-    }
-
-    @Override
     public Location subtract(double x) {
         return this.subtract(x, 0, 0);
     }

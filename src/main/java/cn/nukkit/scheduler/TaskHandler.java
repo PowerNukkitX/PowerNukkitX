@@ -84,11 +84,6 @@ public class TaskHandler {
         this.cancelled = true;
     }
 
-    @Deprecated
-    public void remove() {
-        this.cancelled = true;
-    }
-
     public void run(int currentTick) {
         try {
             setLastRunTick(currentTick);
@@ -96,11 +91,6 @@ public class TaskHandler {
         } catch (RuntimeException ex) {
             log.error("Exception while invoking run", ex);
         }
-    }
-
-    @Deprecated
-    public String getTaskName() {
-        return "Unknown";
     }
 
     public boolean isAsynchronous() {

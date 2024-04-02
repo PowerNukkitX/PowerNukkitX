@@ -16,6 +16,8 @@ import java.io.File;
 import java.nio.ByteOrder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NbtTest {
     @Test
@@ -184,7 +186,37 @@ public class NbtTest {
         CompoundTag read1 = NBTIO.readCompressed(bytes);
         CompoundTag read2 = NBTIO.readCompressed(inputStream);
         inputStream.close();
-        Assertions.assertFalse(read1.getBoolean("Invulnerable"));
-        Assertions.assertFalse(read2.getBoolean("Invulnerable"));
+        assertFalse(read1.getBoolean("Invulnerable"));
+        assertFalse(read2.getBoolean("Invulnerable"));
+    }
+
+    @Test
+    @SneakyThrows
+    void testContain() {
+        var write = new LinkedCompoundTag()
+                .putInt("test1", 1)
+                .putString("test2", "hahaha")
+                .putBoolean("test3", false)
+                .putByte("test4", 12)
+                .putFloat("test5", (float) 1.22)
+                .putDouble("test6", 2.333)
+                .putByteArray("test7",new byte[]{1,2,3})
+                .putCompound("test8",new CompoundTag())
+                .putList("test9",new ListTag<>())
+                .putShort("test10",213)
+                .putIntArray("test11",new int[]{12,12,12});
+        assertTrue(write.contains("test1"));
+        assertTrue(write.containsInt("test1"));
+        assertTrue(write.containsByte("test4"));
+        assertTrue(write.containsDouble("test6"));
+        assertFalse(write.containsDouble("test5"));
+        assertTrue(write.containsFloat("test5"));
+
+        assertTrue(write.containsByteArray("test7"));
+        assertTrue(write.containsCompound("test8"));
+        assertTrue(write.containsList("test9"));
+        assertTrue(write.containsShort("test10"));
+        assertTrue(write.containsIntArray("test11"));
+        assertTrue(write.containsNumber("test6"));
     }
 }

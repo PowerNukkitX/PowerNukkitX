@@ -6,6 +6,7 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.level.Level;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.plugin.InternalPlugin;
 import org.jetbrains.annotations.NotNull;
 
 public interface ICommandBlock extends CommandSender, InventoryHolder {
@@ -61,7 +62,7 @@ public interface ICommandBlock extends CommandSender, InventoryHolder {
 
         int delay = this.getTickDelay();
         if (delay > 0) {
-            Server.getInstance().getScheduler().scheduleDelayedTask(new CommandBlockTrigger(this, chain), delay);
+            Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, new CommandBlockTrigger(this, chain), delay);
             return false;
         }
 
