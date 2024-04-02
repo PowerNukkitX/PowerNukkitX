@@ -174,10 +174,15 @@ public class ItemBucket extends Item {
         return Block.get(getDamageByTarget(getId()));
     }
 
-    @SuppressWarnings("DuplicatedCode")
+
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) {
+            return false;
+        }
+        if (player.isItemCoolDownEnd(BUCKET)) {
+            player.setItemCoolDown(5,BUCKET);
+        } else {
             return false;
         }
 
@@ -198,7 +203,9 @@ public class ItemBucket extends Item {
             }
             if ((target instanceof BlockLiquid || target instanceof BlockPowderSnow) && target.isDefaultState()) {
                 Item result;
-                if (target instanceof BlockPowderSnow) {
+                if (player.isCreative()) {
+                    result = Item.get(BUCKET, 0, 1);
+                } else if (target instanceof BlockPowderSnow) {
                     result = Item.get(BUCKET, 11, 1);
                 } else if (target instanceof BlockLava) {
                     result = Item.get(BUCKET, 10, 1);
@@ -286,21 +293,9 @@ public class ItemBucket extends Item {
 
             if (!ev.isCancelled()) {
                 player.getLevel().setBlock(placementBlock, placementBlock.layer, targetBlock, true, true);
+                player.getLevel().sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
                 target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PLACE));
-                if (player.isSurvival()) {
-                    if (this.getCount() - 1 <= 0) {
-                        player.getInventory().setItemInHand(ev.getItem());
-                    } else {
-                        Item clone = this.clone();
-                        clone.setCount(this.getCount() - 1);
-                        player.getInventory().setItemInHand(clone);
-                        if (player.getInventory().canAddItem(ev.getItem())) {
-                            player.getInventory().addItem(ev.getItem());
-                        } else {
-                            player.dropItem(ev.getItem());
-                        }
-                    }
-                }
+                updateBucketItem(player, ev);
 
                 afterUse(level, block);
 
@@ -329,26 +324,30 @@ public class ItemBucket extends Item {
                 target.getLevel().setBlock(target, targetBlock, true, true);
                 player.getLevel().addSound(target, Sound.BUCKET_FILL_POWDER_SNOW);
 
-                if (player.isSurvival()) {
-                    if (this.getCount() - 1 <= 0) {
-                        player.getInventory().setItemInHand(ev.getItem());
-                    } else {
-                        Item clone = this.clone();
-                        clone.setCount(this.getCount() - 1);
-                        player.getInventory().setItemInHand(clone);
-                        if (player.getInventory().canAddItem(ev.getItem())) {
-                            player.getInventory().addItem(ev.getItem());
-                        } else {
-                            player.dropItem(ev.getItem());
-                        }
-                    }
-                }
+                updateBucketItem(player, ev);
 
                 target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.BLOCK_PLACE));
             }
         }
 
-        return false;
+        return true;
+    }
+
+    private void updateBucketItem(Player player, PlayerBucketEmptyEvent ev) {
+        if (player.isSurvival()) {
+            if (this.getCount() - 1 <= 0) {
+                player.getInventory().setItemInHand(ev.getItem());
+            } else {
+                Item clone = this.clone();
+                clone.setCount(this.getCount() - 1);
+                player.getInventory().setItemInHand(clone);
+                if (player.getInventory().canAddItem(ev.getItem())) {
+                    player.getInventory().addItem(ev.getItem());
+                } else {
+                    player.dropItem(ev.getItem());
+                }
+            }
+        }
     }
 
     protected boolean canBeUsedOnDimension(int dimension) {

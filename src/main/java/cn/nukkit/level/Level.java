@@ -983,7 +983,7 @@ public class Level implements Metadatable {
                 CompletableFuture.runAsync(() -> updateEntities.keySet()
                         .longParallelStream().forEach(id -> {
                             var entity = this.updateEntities.get(id);
-                            if (entity!=null && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
+                            if (entity != null && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
                                 entityAsyncPrepare.asyncPrepare(currentTick);
                             }
                         }), Server.getInstance().computeThreadPool).join();
@@ -2602,10 +2602,6 @@ public class Level implements Metadatable {
                 }
                 return null;
             }
-
-            if ((item instanceof ItemBucket itemBucket) && itemBucket.isWater()) {
-                player.getLevel().sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
-            }
         } else if (!target.isAir() && target.canBeActivated() && target.onActivate(item, null, face, fx, fy, fz)) {
             if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
                 item = Item.AIR;
@@ -2620,7 +2616,7 @@ public class Level implements Metadatable {
     private Item placeBlock(Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound, Block block, Block target) {
         Block hand;
         if (item.canBePlaced()) {
-            hand = item.getBlock();
+            hand = item.getBlockUnsafe();
             hand.position(block);
         } else {
             return null;
