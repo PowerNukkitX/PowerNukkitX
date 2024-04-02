@@ -2,13 +2,11 @@ package cn.nukkit.level;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.NonComputationAtomic;
 import cn.nukkit.block.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityAsyncPrepare;
 import cn.nukkit.entity.EntityID;
@@ -73,7 +71,6 @@ import cn.nukkit.utils.BlockUpdateEntry;
 import cn.nukkit.utils.GameLoop;
 import cn.nukkit.utils.Hash;
 import cn.nukkit.utils.LevelException;
-import cn.nukkit.utils.RedstoneComponent;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.collection.nb.Int2ObjectNonBlockingMap;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
@@ -984,16 +981,11 @@ public class Level implements Metadatable {
 
             if (!this.updateEntities.isEmpty()) {
                 CompletableFuture.runAsync(() -> updateEntities.keySet()
-                        .longParallelStream().mapToObj(id -> {
+                        .longParallelStream().forEach(id -> {
                             var entity = this.updateEntities.get(id);
-                            if (entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
-                                return entityAsyncPrepare;
-                            } else {
-                                return null;
-                            }
-                        }).forEach(entityAsyncPrepare -> {
-                            if (entityAsyncPrepare != null)
+                            if (entity!=null && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
                                 entityAsyncPrepare.asyncPrepare(currentTick);
+                            }
                         }), Server.getInstance().computeThreadPool).join();
                 for (long id : this.updateEntities.keySetLong()) {
                     Entity entity = this.updateEntities.get(id);

@@ -1,7 +1,6 @@
 package cn.nukkit;
 
 import cn.nukkit.AdventureSettings.Type;
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.UsedByReflection;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
@@ -2667,8 +2666,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     }
                 } else {
                     this.lastInAirTick = server.getTick();
-                    //检测玩家是否异常飞行
-                    if (this.checkMovement && !this.isGliding() && !server.getAllowFlight() && !this.getAdventureSettings().get(Type.ALLOW_FLIGHT) && this.inAirTicks > 20 && !this.isSleeping() && !this.isImmobile() && !this.isSwimming() && this.riding == null && !this.hasEffect(EffectType.LEVITATION) && !this.hasEffect(EffectType.SLOW_FALLING)) {
+                    //check fly for player
+                    if (this.checkMovement && !this.isGliding() && !server.getAllowFlight() &&
+                            !this.getAdventureSettings().get(Type.ALLOW_FLIGHT) &&
+                            this.inAirTicks > 20 && !this.isSleeping() && !this.isImmobile() && !this.isSwimming() &&
+                            this.riding == null && !this.hasEffect(EffectType.LEVITATION) && !this.hasEffect(EffectType.SLOW_FALLING)) {
                         double expectedVelocity = (-this.getGravity()) / ((double) this.getDrag()) - ((-this.getGravity()) / ((double) this.getDrag())) * Math.exp(-((double) this.getDrag()) * ((double) (this.inAirTicks - this.startAirTicks)));
                         double diff = (this.speed.y - expectedVelocity) * (this.speed.y - expectedVelocity);
 
@@ -2700,7 +2702,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     }
 
                     ++this.inAirTicks;
-
                 }
 
                 if (this.getFoodData() != null) {
@@ -4066,7 +4067,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             //source.setCancelled();
             return false;
         } else if (source.getCause() == DamageCause.FALL) {
-            if (this.getLevel().getBlock(this.getPosition().floor().add(0.5, -1, 0.5)).getId() == Block.SLIME) {
+            if (this.getLevel().getBlock(this.getPosition().floor().add(0.5, -1, 0.5)).getId().equals(Block.SLIME)) {
                 if (!this.isSneaking()) {
                     //source.setCancelled();
                     this.resetFallDistance();

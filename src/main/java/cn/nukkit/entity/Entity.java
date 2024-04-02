@@ -21,6 +21,7 @@ import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.item.EntityArmorStand;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.mob.EntityEnderDragon;
+import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.block.FarmLandDecayEvent;
@@ -484,20 +485,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.entityDataMap.put(STRUCTURAL_INTEGRITY, (int) this.getHealth());
         this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
         this.setDataFlags(EnumSet.of(EntityFlag.CAN_CLIMB, EntityFlag.BREATHING, EntityFlag.HAS_COLLISION, EntityFlag.HAS_GRAVITY));
-        this.scheduleUpdate();
     }
 
     protected final void init(IChunk chunk, CompoundTag nbt) {
         if ((chunk == null || chunk.getProvider() == null)) {
             throw new ChunkException("Invalid garbage Chunk given to Entity");
         }
-
-        if (this.initialized) {
-            // We've already initialized this entity
-            return;
-        }
-        this.initialized = true;
-        this.id = Entity.entityCount.getAndIncrement();
         this.isPlayer = this instanceof Player;
         this.temporalVector = new Vector3();
         this.justCreated = true;
@@ -556,21 +549,24 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.scale = this.namedTag.getFloat("Scale");
 
         try {
+            this.initEntity();
+            if (this.initialized) {
+                // We've already initialized this entity
+                return;
+            }
+            this.initialized = true;
+
+            this.id = Entity.entityCount.getAndIncrement();
             this.chunk.addEntity(this);
             this.level.addEntity(this);
 
-            this.initEntity();
-
-            this.lastUpdate = this.server.getTick();
-
             EntitySpawnEvent event = new EntitySpawnEvent(this);
-
             this.server.getPluginManager().callEvent(event);
-
             if (event.isCancelled()) {
                 this.close(false);
             } else {
                 this.scheduleUpdate();
+                this.lastUpdate = this.server.getTick();
             }
         } catch (Exception e) {
             this.close(false);
@@ -1614,8 +1610,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         var pk = new MoveEntityAbsolutePacket();
         pk.eid = this.getId();
         pk.x = this.x;
-        //因为以前处理MOVE_PLAYER_PACKET的时候是y - this.getBaseOffset()
-        //现在统一 MOVE_PLAYER_PACKET和PLAYER_AUTH_INPUT_PACKET 均为this.y - this.getEyeHeight()，所以这里不再需要对两种移动方式分别处理
         pk.y = this.y + this.getBaseOffset();
         pk.z = this.z;
         pk.headYaw = yaw;
@@ -1717,7 +1711,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             broadcastLinkPacket(entity, EntityLink.Type.REMOVE);
         }
 
-        // Refurbish the entity
+        // refresh the entity
         entity.riding = null;
         entity.setDataFlag(EntityFlag.RIDING, false);
         passengers.remove(entity);
@@ -1725,6 +1719,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         entity.setSeatPosition(new Vector3f());
         updatePassengerPosition(entity);
 
+        if (entity instanceof Player player) {
+            player.resetFallDistance();
+        }
         return true;
     }
 
@@ -1855,8 +1852,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 // check if we fell into at least 1 block of water
                 var lb = this.getLevelBlock();
                 var lb2 = this.getLevelBlockAtLayer(1);
-                if (this instanceof EntityLiving && !(lb instanceof BlockFlowingWater || lb instanceof BlockFence ||
-                        (lb2 instanceof BlockFlowingWater && lb2.getMaxY() == 1d))) {
+                if (this instanceof EntityLiving &&
+                        this.riding == null &&
+                        !(lb instanceof BlockFlowingWater ||
+                                lb instanceof BlockFence ||
+                                (lb2 instanceof BlockFlowingWater && lb2.getMaxY() == 1d))) {
                     this.fall(fallDistance);
                 }
                 this.resetFallDistance();
@@ -3220,5 +3220,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public Map<Integer, Attribute> getAttributes() {
         return attributes;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
     }
 }

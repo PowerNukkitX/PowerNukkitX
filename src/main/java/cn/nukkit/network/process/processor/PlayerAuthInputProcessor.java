@@ -218,8 +218,9 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             }
         } else if (playerHandle.player.riding instanceof EntityHorse entityHorse) {
             if (check(clientLoc, player)) {
-                entityHorse.onInput(clientLoc);
-                playerHandle.handleMovement(clientLoc);
+                Location playerLoc = clientLoc.add(0, playerHandle.getBaseOffset() + entityHorse.getHeight(), 0);
+                entityHorse.onInput(clientLoc.add(0, entityHorse.getHeight(), 0));
+                playerHandle.handleMovement(playerLoc);
             }
             return;
         }
