@@ -59,8 +59,6 @@ public class GrindstoneInventory extends ContainerInventory implements CraftType
 
         clear(SLOT_FIRST_ITEM);
         clear(SLOT_SECOND_ITEM);
-
-        who.resetCraftingGridType();
     }
 
     public Item getFirstItem() {
