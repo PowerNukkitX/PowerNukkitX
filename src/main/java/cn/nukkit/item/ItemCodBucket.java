@@ -5,8 +5,4 @@ public class ItemCodBucket extends ItemBucket {
         super(COD_BUCKET);
     }
 
-    @Override
-    public int getBucketType() {
-        return 2;
-    }
 }

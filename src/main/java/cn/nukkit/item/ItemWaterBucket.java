@@ -5,8 +5,4 @@ public class ItemWaterBucket extends ItemBucket {
         super(WATER_BUCKET);
     }
 
-    @Override
-    public int getBucketType() {
-        return 8;
-    }
 }

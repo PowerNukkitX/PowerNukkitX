@@ -6,11 +6,6 @@ public class ItemPufferfishBucket extends ItemBucket {
     }
 
     @Override
-    public int getBucketType() {
-        return 5;
-    }
-
-    @Override
     public void setDamage(int meta) {
 
     }

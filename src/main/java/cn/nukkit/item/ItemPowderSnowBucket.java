@@ -5,10 +5,6 @@ public class ItemPowderSnowBucket extends ItemBucket {
         super(POWDER_SNOW_BUCKET);
     }
 
-    public int getBucketType() {
-        return 11;
-    }
-
     @Override
     public void setDamage(int meta) {
 

@@ -5,8 +5,4 @@ public class ItemTadpoleBucket extends ItemBucket {
         super(TADPOLE_BUCKET);
     }
 
-    @Override
-    public int getBucketType() {
-        return 13;
-    }
 }
