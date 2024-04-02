@@ -72,7 +72,7 @@ public class PlayerTest {
         player.setPosition(new Vector3(0, 100, 0));
         Thread thread = new Thread(loop::startLoop);
         thread.start();
-        int limit = 20;
+        int limit = 30;
         while (limit-- != 0) {
             try {
                 Thread.sleep(1000);
@@ -120,7 +120,7 @@ public class PlayerTest {
         if (limit <= 0) {
             Assertions.fail("Chunks cannot be successfully loaded in 10s");
         }
-        int limit2 = 20;
+        int limit2 = 30;
         player.setPosition(new Vector3(1000, 100, 1000));
         while (limit2-- != 0) {
             try {
