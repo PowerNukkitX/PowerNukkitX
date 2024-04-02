@@ -91,14 +91,7 @@ public class EntityEventPacket extends DataPacket {
 
 
     public static final int ENTITY_GROW_UP = 76;
-    @Deprecated
-    @DeprecationDetails(reason = "wrong key name", since = "1.19.21-r4")
-
-
-    public static final int VIBRATION_DETECTE = 77;
-
-
-    public static final int VIBRATION_DETECTED = VIBRATION_DETECTE;
+    public static final int VIBRATION_DETECTED = 77;
 
     public static final int DRINK_MILK = 78;
 

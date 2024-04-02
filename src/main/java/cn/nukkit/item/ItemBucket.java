@@ -24,6 +24,7 @@ import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
+import cn.nukkit.utils.Identifier;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -41,7 +42,7 @@ public class ItemBucket extends Item {
     }
 
     public ItemBucket(Integer meta, int count) {
-        super(mapping(meta), 0, count, getName(meta));
+        super(BUCKET, meta, count);
     }
 
     public ItemBucket(String id) {
@@ -56,82 +57,109 @@ public class ItemBucket extends Item {
         super(id, 0, count, name);
     }
 
-    protected static String mapping(int meta) {
-        return switch (meta) {
-            case 1 -> MILK_BUCKET;
-            case 2 -> COD_BUCKET;
-            case 3 -> SALMON_BUCKET;
-            case 4 -> TROPICAL_FISH_BUCKET;
-            case 5 -> PUFFERFISH_BUCKET;
-            case 8 -> WATER_BUCKET;
-            case 10 -> LAVA_BUCKET;
-            case 11 -> POWDER_SNOW_BUCKET;
-            case 12 -> AXOLOTL_BUCKET;
-            case 13 -> TADPOLE_BUCKET;
-            default -> BUCKET;
-        };
+    @Override
+    public void internalAdjust() {
+        if (this.id.equals(BUCKET)) {
+            switch (getDamage()) {
+                case 1 -> {
+                    this.id = MILK_BUCKET;
+                    this.identifier = new Identifier(MILK_BUCKET);
+                }
+                case 2 -> {
+                    this.id = COD_BUCKET;
+                    this.identifier = new Identifier(COD_BUCKET);
+                }
+                case 3 -> {
+                    this.id = SALMON_BUCKET;
+                    this.identifier = new Identifier(SALMON_BUCKET);
+                }
+                case 4 -> {
+                    this.id = TROPICAL_FISH_BUCKET;
+                    this.identifier = new Identifier(TROPICAL_FISH_BUCKET);
+                }
+                case 5 -> {
+                    this.id = PUFFERFISH_BUCKET;
+                    this.identifier = new Identifier(PUFFERFISH_BUCKET);
+                }
+                case 8 -> {
+                    this.id = WATER_BUCKET;
+                    this.identifier = new Identifier(WATER_BUCKET);
+                }
+                case 10 -> {
+                    this.id = LAVA_BUCKET;
+                    this.identifier = new Identifier(LAVA_BUCKET);
+                }
+                case 11 -> {
+                    this.id = POWDER_SNOW_BUCKET;
+                    this.identifier = new Identifier(POWDER_SNOW_BUCKET);
+                }
+                case 12 -> {
+                    this.id = AXOLOTL_BUCKET;
+                    this.identifier = new Identifier(AXOLOTL_BUCKET);
+                }
+                case 13 -> {
+                    this.id = TADPOLE_BUCKET;
+                    this.identifier = new Identifier(TADPOLE_BUCKET);
+                }
+                default -> {
+                    this.id = BUCKET;
+                    this.identifier = new Identifier(BUCKET);
+                }
+            }
+            this.meta = 0;
+            this.name = null;
+        }
     }
 
-    protected static String getName(int meta) {
-        return switch (meta) {
-            case 1 -> "Milk";
-            case 2 -> "Bucket of Cod";
-            case 3 -> "Bucket of Salmon";
-            case 4 -> "Bucket of Tropical Fish";
-            case 5 -> "Bucket of Pufferfish";
-            case 8 -> "Water Bucket";
-            case 10 -> "Lava Bucket";
-            case 11 -> "Powder Snow Bucket";
-            case 12 -> "Bucket of Axolotl";
-            case 13 -> "Bucket of Tadpole";
-            default -> "Bucket";
-        };
-    }
-
-    public int getBucketType() {
-        return this.meta;
-    }
-
-    public static String getDamageByTarget(int target) {
+    public static String getDamageByTarget(String target) {
         return switch (target) {
-            case 2, 3, 4, 5, 8, 9, 12, 13 -> BlockID.FLOWING_WATER;
-            case 10 -> BlockID.FLOWING_LAVA;
-            case 11 -> BlockID.POWDER_SNOW;
+            case COD_BUCKET, SALMON_BUCKET, TROPICAL_FISH_BUCKET, PUFFERFISH_BUCKET, WATER_BUCKET, AXOLOTL_BUCKET, TADPOLE_BUCKET ->
+                    BlockID.FLOWING_WATER;
+            case LAVA_BUCKET -> BlockID.FLOWING_LAVA;
+            case POWDER_SNOW_BUCKET -> BlockID.POWDER_SNOW;
             default -> BlockID.AIR;
         };
     }
 
     public boolean isEmpty() {
-        return Objects.equals(getId(), BUCKET) && getBucketType() == 0;
+        return Objects.equals(getId(), BUCKET) && meta == 0;
     }
 
     public boolean isWater() {
-        return getTargetBlock().getId().equals(BlockID.FLOWING_WATER);
+        return switch (getId()) {
+            case COD_BUCKET, SALMON_BUCKET, TROPICAL_FISH_BUCKET, PUFFERFISH_BUCKET, WATER_BUCKET, AXOLOTL_BUCKET, TADPOLE_BUCKET ->
+                    true;
+            default -> false;
+        };
+    }
+
+    public boolean isMilk() {
+        return getId().equals(MILK_BUCKET);
     }
 
     public boolean isLava() {
-        return getTargetBlock().getId().equals(BlockID.FLOWING_LAVA);
+        return getId().equals(LAVA_BUCKET);
     }
 
     public boolean isPowderSnow() {
-        return getTargetBlock().getId().equals(BlockID.POWDER_SNOW);
+        return getId().equals(POWDER_SNOW_BUCKET);
     }
 
     public @Nullable String getFishEntityId() {
-        return switch (this.getBucketType()) {
-            case 2 -> EntityID.COD;
-            case 3 -> EntityID.SALMON;
-            case 4 -> EntityID.TROPICALFISH;
-            case 5 -> EntityID.PUFFERFISH;
-            case 12 -> EntityID.AXOLOTL;
-            case 13 -> EntityID.TADPOLE;
+        return switch (this.getId()) {
+            case COD_BUCKET -> EntityID.COD;
+            case SALMON_BUCKET -> EntityID.SALMON;
+            case TROPICAL_FISH_BUCKET -> EntityID.TROPICALFISH;
+            case PUFFERFISH_BUCKET -> EntityID.PUFFERFISH;
+            case AXOLOTL_BUCKET -> EntityID.AXOLOTL;
+            case TADPOLE_BUCKET -> EntityID.TADPOLE;
             default -> null;
         };
     }
 
     @Override
     public int getMaxStackSize() {
-        return getBucketType() == 0 && Objects.equals(getId(), BUCKET) ? 16 : 1;
+        return meta == 0 && Objects.equals(getId(), BUCKET) ? 16 : 1;
     }
 
     @Override
@@ -143,13 +171,18 @@ public class ItemBucket extends Item {
      * get the placed block for this bucket
      */
     public Block getTargetBlock() {
-        return Block.get(getDamageByTarget(getBucketType()));
+        return Block.get(getDamageByTarget(getId()));
     }
 
-    @SuppressWarnings("DuplicatedCode")
+
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) {
+            return false;
+        }
+        if (player.isItemCoolDownEnd(BUCKET)) {
+            player.setItemCoolDown(5,BUCKET);
+        } else {
             return false;
         }
 
@@ -170,7 +203,9 @@ public class ItemBucket extends Item {
             }
             if ((target instanceof BlockLiquid || target instanceof BlockPowderSnow) && target.isDefaultState()) {
                 Item result;
-                if (target instanceof BlockPowderSnow) {
+                if (player.isCreative()) {
+                    result = Item.get(BUCKET, 0, 1);
+                } else if (target instanceof BlockPowderSnow) {
                     result = Item.get(BUCKET, 11, 1);
                 } else if (target instanceof BlockLava) {
                     result = Item.get(BUCKET, 10, 1);
@@ -251,28 +286,16 @@ public class ItemBucket extends Item {
             boolean nether = false;
             if (!canBeUsedOnDimension(player.getLevel().getDimension())) {
                 ev.setCancelled(true);
-                nether = getBucketType() != 10;
+                nether = !isLava();
             }
 
             player.getServer().getPluginManager().callEvent(ev);
 
             if (!ev.isCancelled()) {
                 player.getLevel().setBlock(placementBlock, placementBlock.layer, targetBlock, true, true);
+                player.getLevel().sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
                 target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PLACE));
-                if (player.isSurvival()) {
-                    if (this.getCount() - 1 <= 0) {
-                        player.getInventory().setItemInHand(ev.getItem());
-                    } else {
-                        Item clone = this.clone();
-                        clone.setCount(this.getCount() - 1);
-                        player.getInventory().setItemInHand(clone);
-                        if (player.getInventory().canAddItem(ev.getItem())) {
-                            player.getInventory().addItem(ev.getItem());
-                        } else {
-                            player.dropItem(ev.getItem());
-                        }
-                    }
-                }
+                updateBucketItem(player, ev);
 
                 afterUse(level, block);
 
@@ -301,26 +324,30 @@ public class ItemBucket extends Item {
                 target.getLevel().setBlock(target, targetBlock, true, true);
                 player.getLevel().addSound(target, Sound.BUCKET_FILL_POWDER_SNOW);
 
-                if (player.isSurvival()) {
-                    if (this.getCount() - 1 <= 0) {
-                        player.getInventory().setItemInHand(ev.getItem());
-                    } else {
-                        Item clone = this.clone();
-                        clone.setCount(this.getCount() - 1);
-                        player.getInventory().setItemInHand(clone);
-                        if (player.getInventory().canAddItem(ev.getItem())) {
-                            player.getInventory().addItem(ev.getItem());
-                        } else {
-                            player.dropItem(ev.getItem());
-                        }
-                    }
-                }
+                updateBucketItem(player, ev);
 
                 target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.BLOCK_PLACE));
             }
         }
 
-        return false;
+        return true;
+    }
+
+    private void updateBucketItem(Player player, PlayerBucketEmptyEvent ev) {
+        if (player.isSurvival()) {
+            if (this.getCount() - 1 <= 0) {
+                player.getInventory().setItemInHand(ev.getItem());
+            } else {
+                Item clone = this.clone();
+                clone.setCount(this.getCount() - 1);
+                player.getInventory().setItemInHand(clone);
+                if (player.getInventory().canAddItem(ev.getItem())) {
+                    player.getInventory().addItem(ev.getItem());
+                } else {
+                    player.dropItem(ev.getItem());
+                }
+            }
+        }
     }
 
     protected boolean canBeUsedOnDimension(int dimension) {
@@ -328,11 +355,11 @@ public class ItemBucket extends Item {
             return true;
         }
 
-        return dimension != Level.DIMENSION_NETHER || (getBucketType() == 10 || getBucketType() == 1);
+        return dimension != Level.DIMENSION_NETHER || (isLava() || isMilk());
     }
 
     protected void afterUse(Level level, Block block) {
-        if (this.getBucketType() == 10) {
+        if (isLava()) {
             level.addSound(block, Sound.BUCKET_EMPTY_LAVA);
         } else {
             level.addSound(block, Sound.BUCKET_EMPTY_WATER);
@@ -352,6 +379,6 @@ public class ItemBucket extends Item {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        return Objects.equals(getId(), BUCKET) && this.getBucketType() == 1; // Milk
+        return Objects.equals(getId(), BUCKET) && isMilk(); // Milk
     }
 }

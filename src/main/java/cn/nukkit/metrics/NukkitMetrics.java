@@ -35,22 +35,6 @@ public class NukkitMetrics {
 
     private Metrics metrics;
 
-    /**
-     * Setup the nukkit metrics and starts it if it hadn't started yet.
-     *
-     * @param server The Nukkit server
-     * @deprecated Replace with {@link #startNow(Server)}
-     */
-    @SuppressWarnings({"DeprecatedIsStillUsed", "java:S1133"})
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN", replaceWith = "NukkitMetrics.startNow(Server)",
-            reason = "The original cloudburst nukkit constructor implementation behaves like a stateful static method " +
-                    "and don't comply with Java standards. Use the static method startNow(server) instead.")
-
-    public NukkitMetrics(Server server) {
-        this(server, true);
-    }
-
     private NukkitMetrics(Server server, boolean start) {
         this.server = server;
 

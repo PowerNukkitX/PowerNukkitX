@@ -3,7 +3,7 @@ package cn.nukkit.utils.collection;
 import cn.nukkit.api.DeprecationDetails;
 
 
-public interface ByteArrayWrapper extends ArrayWrapper<Byte> {
+public interface ByteArrayWrapper {
     byte[] getRawBytes();
 
     void setRawBytes(byte[] bytes);
@@ -13,39 +13,4 @@ public interface ByteArrayWrapper extends ArrayWrapper<Byte> {
 
     @ShouldThaw
     void setByte(int index, byte b);
-
-    @Override
-    @Deprecated
-    @DeprecationDetails(since = "1.19.40-r3", reason = "avoid boxing", replaceWith = "getByte")
-    default Byte get(int index) {
-        return getByte(index);
-    }
-
-    @Override
-    @Deprecated
-    @DeprecationDetails(since = "1.19.40-r3", reason = "avoid unboxing", replaceWith = "setByte")
-    default void set(int index, Byte b) {
-        setByte(index, b);
-    }
-
-    @Override
-    @Deprecated
-    @DeprecationDetails(since = "1.19.40-r3", reason = "avoid unboxing", replaceWith = "getRawBytes")
-    default Byte[] getRawData() {
-        var tmp = getRawBytes();
-        var len = tmp.length;
-        var out = new Byte[len];
-        for (int i = 0; i < len; i++) out[i] = tmp[i];
-        return out;
-    }
-
-    @Override
-    @Deprecated
-    @DeprecationDetails(since = "1.19.40-r3", reason = "avoid boxing", replaceWith = "setRawBytes")
-    default void setRawData(Byte[] data) {
-        var len = data.length;
-        var out = new byte[len];
-        for (int i = 0; i < len; i++) out[i] = data[i];
-        setRawBytes(out);
-    }
 }

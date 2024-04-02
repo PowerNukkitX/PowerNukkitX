@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+import static cn.nukkit.inventory.request.CraftCreativeActionProcessor.CRAFT_CREATIVE_KEY;
+
 @Slf4j
 public abstract class TransferItemActionProcessor<T extends TransferItemStackRequestAction> implements ItemStackRequestActionProcessor<T> {
     @Override
@@ -26,6 +28,7 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
         int destinationSlot = destination.fromNetworkSlot(action.getDestination().getSlot());
         int destinationStackNetworkId = action.getDestination().getStackNetworkId();
         int count = action.getCount();
+
         var sourItem = source.getItem(sourceSlot);
         if (sourItem.isNull()) {
             log.warn("transfer an air item is not allowed");
@@ -39,6 +42,27 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
             log.warn("transfer an item that has not enough count is not allowed");
             return context.error();
         }
+
+        if (context.has(CRAFT_CREATIVE_KEY) && (Boolean) context.get(CRAFT_CREATIVE_KEY)) {//If the player takes an item from creative mode, the destination is overridden directly
+            if (source instanceof CreativeOutputInventory) {
+                sourItem = sourItem.clone().autoAssignStackNetworkId();
+                destination.setItem(destinationSlot, sourItem, false);
+                return context.success(List.of(new ItemStackResponseContainer(
+                        destination.getSlotType(destinationSlot),
+                        Lists.newArrayList(
+                                new ItemStackResponseSlot(
+                                        destination.toNetworkSlot(destinationSlot),
+                                        destination.toNetworkSlot(destinationSlot),
+                                        sourItem.getCount(),
+                                        sourItem.getNetId(),
+                                        sourItem.getCustomName(),
+                                        sourItem.getDamage()
+                                )
+                        )
+                )));
+            }
+        }
+
         var destItem = destination.getItem(destinationSlot);
         if (!destItem.isNull() && !destItem.equals(sourItem, true, true)) {
             log.warn("transfer an item to a slot that has a different item is not allowed");
@@ -52,6 +76,7 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
             log.warn("destination stack size bigger than the max stack size!");
             return context.error();
         }
+
         Item resultSourItem;
         Item resultDestItem;
         //first case：transfer all item

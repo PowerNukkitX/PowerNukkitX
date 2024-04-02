@@ -33,12 +33,11 @@ public class PlayerArmorDamagePacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        
         int outflags = 0;
         for (PlayerArmorDamageFlag flag : this.flags) {
             outflags |= 1 << flag.ordinal();
         }
-        byteBuf.writeByte((byte) outflags);
+        byteBuf.writeByte(outflags);
 
         for (PlayerArmorDamageFlag flag : this.flags) {
             byteBuf.writeVarInt(this.damage[flag.ordinal()]);

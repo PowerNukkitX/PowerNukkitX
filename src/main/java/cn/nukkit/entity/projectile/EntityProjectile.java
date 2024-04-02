@@ -272,22 +272,6 @@ public abstract class EntityProjectile extends Entity {
 
     }
 
-    @Deprecated
-    @DeprecationDetails(
-            by = "PowerNukkit", since = "FUTURE", reason = "Bad method name", replaceWith = "getHasAge",
-            toBeRemovedAt = "1.7.0.0-PN")
-    public boolean hasAge() {
-        return getHasAge();
-    }
-
-    @Deprecated
-    @DeprecationDetails(
-            by = "PowerNukkit", since = "FUTURE", reason = "Bad method name", replaceWith = "setHasAge",
-            toBeRemovedAt = "1.7.0.0-PN")
-    public void setAge(boolean hasAge) {
-        setHasAge(hasAge);
-    }
-
     public boolean getHasAge() {
         return !this.noAge;
     }

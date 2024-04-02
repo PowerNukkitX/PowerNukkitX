@@ -51,18 +51,4 @@ public interface EntityNameable {
         }
         return false;
     }
-
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN",
-            reason = "New implementation needs a player instance, using this method may allow players to name unexpected entities",
-            by = "PowerNukkit", replaceWith = "playerApplyNameTag(Player, Item)")
-    default boolean applyNameTag(Item item) {
-        if (item.hasCustomName()) {
-            this.setNameTag(item.getCustomName());
-            this.setNameTagVisible(true);
-            return true;
-        } else {
-            return false;
-        }
-    }
 }

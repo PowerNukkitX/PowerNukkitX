@@ -2,13 +2,11 @@ package cn.nukkit.level;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.NonComputationAtomic;
 import cn.nukkit.block.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityAsyncPrepare;
 import cn.nukkit.entity.EntityID;
@@ -73,7 +71,6 @@ import cn.nukkit.utils.BlockUpdateEntry;
 import cn.nukkit.utils.GameLoop;
 import cn.nukkit.utils.Hash;
 import cn.nukkit.utils.LevelException;
-import cn.nukkit.utils.RedstoneComponent;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.collection.nb.Int2ObjectNonBlockingMap;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
@@ -934,23 +931,15 @@ public class Level implements Metadatable {
             if (this.getDimension() != DIMENSION_NETHER && this.getDimension() != DIMENSION_THE_END && gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE)) {
                 this.rainTime--;
                 if (this.rainTime <= 0) {
-                    if (!this.setRaining(!this.raining)) {
-                        if (this.raining) {
-                            setRainTime(ThreadLocalRandom.current().nextInt(12000) + 12000);
-                        } else {
-                            setRainTime(ThreadLocalRandom.current().nextInt(168000) + 12000);
-                        }
+                    if (!this.setRaining(!this.raining)) {//if raining,set false
+                        setRaining(!raining);// and if event cancel,revert raining change
                     }
                 }
 
                 this.thunderTime--;
                 if (this.thunderTime <= 0) {
                     if (!this.setThundering(!this.thundering)) {
-                        if (this.thundering) {
-                            setThunderTime(ThreadLocalRandom.current().nextInt(12000) + 3600);
-                        } else {
-                            setThunderTime(ThreadLocalRandom.current().nextInt(168000) + 12000);
-                        }
+                        setThundering(!thundering);
                     }
                 }
 
@@ -992,16 +981,11 @@ public class Level implements Metadatable {
 
             if (!this.updateEntities.isEmpty()) {
                 CompletableFuture.runAsync(() -> updateEntities.keySet()
-                        .longParallelStream().mapToObj(id -> {
+                        .longParallelStream().forEach(id -> {
                             var entity = this.updateEntities.get(id);
-                            if (entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
-                                return entityAsyncPrepare;
-                            } else {
-                                return null;
-                            }
-                        }).forEach(entityAsyncPrepare -> {
-                            if (entityAsyncPrepare != null)
+                            if (entity != null && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
                                 entityAsyncPrepare.asyncPrepare(currentTick);
+                            }
                         }), Server.getInstance().computeThreadPool).join();
                 for (long id : this.updateEntities.keySetLong()) {
                     Entity entity = this.updateEntities.get(id);
@@ -1385,14 +1369,6 @@ public class Level implements Metadatable {
 
     public void saveChunks() {
         requireProvider().saveChunks();
-    }
-
-    @Deprecated
-    @DeprecationDetails(reason = "Was moved to RedstoneComponent", since = "1.4.0.0-PN",
-            replaceWith = "RedstoneComponent#updateAroundRedstone", by = "PowerNukkit")
-    public void updateAroundRedstone(Vector3 pos, BlockFace face) {
-        Location loc = new Location(pos.x, pos.y, pos.z, this);
-        RedstoneComponent.updateAroundRedstone(loc, face);
     }
 
     public void updateComparatorOutputLevel(Vector3 v) {
@@ -2626,10 +2602,6 @@ public class Level implements Metadatable {
                 }
                 return null;
             }
-
-            if ((item instanceof ItemBucket itemBucket) && itemBucket.isWater()) {
-                player.getLevel().sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
-            }
         } else if (!target.isAir() && target.canBeActivated() && target.onActivate(item, null, face, fx, fy, fz)) {
             if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
                 item = Item.AIR;
@@ -2644,7 +2616,7 @@ public class Level implements Metadatable {
     private Item placeBlock(Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound, Block block, Block target) {
         Block hand;
         if (item.canBePlaced()) {
-            hand = item.getBlock();
+            hand = item.getBlockUnsafe();
             hand.position(block);
         } else {
             return null;

@@ -79,7 +79,6 @@ public class EnchantInventory extends ContainerInventory implements BlockEntityI
 
         clear(0);
         clear(1);
-        who.resetCraftingGridType();
     }
 
     public Item getFirst() {

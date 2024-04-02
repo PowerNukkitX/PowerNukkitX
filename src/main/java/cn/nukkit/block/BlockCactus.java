@@ -100,7 +100,7 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block down = down();
-            if (ItemTags.getItemSet(ItemTags.SAND.toString()).contains(down.getId())
+            if (!ItemTags.getItemSet(ItemTags.SAND).contains(down.getId())
                     && !(down instanceof BlockCactus)) {
                 this.getLevel().useBreakOn(this);
                 return 0;

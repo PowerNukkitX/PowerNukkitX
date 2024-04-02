@@ -1,6 +1,10 @@
 package cn.nukkit.lang;
 
 
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Nullable;
+
+@Slf4j
 public enum LangCode {
     en_US("English (United States)"),
     en_GB("English (United Kingdom)"),
@@ -41,5 +45,15 @@ public enum LangCode {
     @Override
     public String toString() {
         return this.string;
+    }
+
+    @Nullable
+    public static LangCode from(String name) {
+        try {
+            return valueOf(LangCode.class, name);
+        } catch (IllegalArgumentException illegalArgumentException) {
+            log.error("cant find LangCode for {},return null", name);
+            return null;
+        }
     }
 }

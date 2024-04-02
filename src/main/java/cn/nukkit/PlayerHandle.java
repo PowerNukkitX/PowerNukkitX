@@ -18,6 +18,7 @@ import cn.nukkit.utils.DummyBossBar;
 import cn.nukkit.utils.LoginChainData;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.collect.BiMap;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.InetSocketAddress;
@@ -28,6 +29,7 @@ import java.util.UUID;
 /**
  * A PlayerHandle is used to access a player's protected data.
  */
+
 @SuppressWarnings("ClassCanBeRecord")
 public final class PlayerHandle {
     public final @NotNull Player player;

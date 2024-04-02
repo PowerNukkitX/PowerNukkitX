@@ -200,9 +200,7 @@ public interface IHuman extends InventoryHolder {
 
         if (this.getOffhandInventory() != null) {
             Item item = this.getOffhandInventory().getItem(0);
-            if (!item.isNull()) {
-                human.namedTag.putCompound("OffInventory", NBTIO.putItemHelper(item, 0));
-            }
+            human.namedTag.putCompound("OffInventory", NBTIO.putItemHelper(item, 0));
         }
 
         human.namedTag.putList("EnderItems", new ListTag<CompoundTag>());

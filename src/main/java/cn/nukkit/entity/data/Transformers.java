@@ -7,7 +7,7 @@ import java.util.function.Function;
 
 public class Transformers {
     public static final Function<Block, Integer> BLOCK = (block -> block.getBlockState().blockStateHash());
-    public static final Function<Boolean, Byte> BOOLEAN = (b -> b ? (byte) 1 : (byte) 0);
+    public static final Function<Boolean, Byte> BOOLEAN_TO_BYTE = (b -> b ? (byte) 1 : (byte) 0);
     public static final Function<EnumSet<EntityFlag>, Long> FLAGS = (set) -> {
         long value = 0;
         int lower = 0;

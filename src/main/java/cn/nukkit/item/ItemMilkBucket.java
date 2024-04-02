@@ -20,11 +20,6 @@ public class ItemMilkBucket extends ItemBucket {
     }
 
     @Override
-    public int getBucketType() {
-        return 1;
-    }
-
-    @Override
     public boolean onUse(Player player, int ticksUsed) {
         if (ticksUsed < 31) {
             return false;

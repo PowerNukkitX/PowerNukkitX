@@ -299,7 +299,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         down.onEntityFallOn(this, fallDistance);
 
         if (fallDistance > 0.75) {//todo: moving these into their own classes (method "onEntityFallOn()")
-            if (down.getId() == Block.FARMLAND) {
+            if (down.getId().equals(Block.FARMLAND)) {
                 if (onPhysicalInteraction(down, false)) {
                     return;
                 }
@@ -337,7 +337,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         return super.canCollideWith(entity) && entity != this.getRider();
     }
 
-    public void onPlayerInput(Location clientLoc) {
+    public void onInput(Location clientLoc) {
         if (this.getRider() == null || this.getOwner() == null || this.getSaddle().isNull()) return;
         //每次输入乘骑玩家位置之前都要确保motion为0,避免onGround不更新
         this.motionX = 0;
@@ -345,7 +345,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         this.motionZ = 0;
         this.setMoveTarget(null);
         this.setLookTarget(null);
-        this.move(clientLoc.x - this.x, (clientLoc.y - 0.5) - this.y, clientLoc.z - this.z);
+        this.move(clientLoc.x - this.x, clientLoc.y - this.y, clientLoc.z - this.z);
         this.yaw = clientLoc.yaw;
         this.headYaw = clientLoc.headYaw;
         broadcastMovement();

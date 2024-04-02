@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class CraftCreativeActionProcessor implements ItemStackRequestActionProcessor<CraftCreativeAction> {
+    public static final String CRAFT_CREATIVE_KEY = "craft_creative_key";
+
     @Override
     public ItemStackRequestActionType getType() {
         return ItemStackRequestActionType.CRAFT_CREATIVE;
@@ -29,6 +31,7 @@ public class CraftCreativeActionProcessor implements ItemStackRequestActionProce
         item.setCount(item.getMaxStackSize());
         player.getCreativeOutputInventory().setItem(0, item, false);
         //从创造物品栏拿东西不需要响应
+        context.put(CRAFT_CREATIVE_KEY, true);
         return null;
     }
 }

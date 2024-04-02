@@ -128,22 +128,6 @@ public enum TextFormat {
      */
     BOLD('l', 0x11, true),
     /**
-     * Makes a line appear through the text.
-     */
-    @Deprecated
-    @DeprecationDetails(since = "1.19.80-r3",
-            reason = "Code STRIKETHROUGH has been replaced by MATERIAL_REDSTONE in Minecraft version 1.19.81",
-            replaceWith = "TextFormat.MATERIAL_REDSTONE")
-    STRIKETHROUGH('m', 0x12, true),
-    /**
-     * Makes the text appear underlined.
-     */
-    @Deprecated
-    @DeprecationDetails(since = "1.19.80-r3",
-            reason = "Code UNDERLINE has been replaced by MATERIAL_COPPER in Minecraft version 1.19.81",
-            replaceWith = "TextFormat.MATERIAL_COPPER")
-    UNDERLINE('n', 0x13, true),
-    /**
      * Makes the text italic.
      */
     ITALIC('o', 0x14, true),

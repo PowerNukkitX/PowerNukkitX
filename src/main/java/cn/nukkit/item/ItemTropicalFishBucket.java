@@ -5,8 +5,4 @@ public class ItemTropicalFishBucket extends ItemBucket {
         super(TROPICAL_FISH_BUCKET);
     }
 
-    @Override
-    public int getBucketType() {
-        return 4;
-    }
 }

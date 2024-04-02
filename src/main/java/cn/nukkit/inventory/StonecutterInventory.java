@@ -29,6 +29,5 @@ public class StonecutterInventory extends ContainerInventory implements CraftTyp
         }
 
         this.clear(0);
-        who.resetCraftingGridType();
     }
 }

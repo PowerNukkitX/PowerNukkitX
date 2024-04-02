@@ -57,6 +57,10 @@ public class NBTIO {
         if (item.hasCompoundTag()) {
             tag.putCompound("tag", item.getNamedTag());
         }
+        //ItemID same with blockID, represent this is a pure blockitem,
+        //and only blockitem need to be written `Block` to NBT,
+        //whereas for `minecraft:potato` item, the corresponding block is `minecraft:potatos`
+        //these items do not need to be written
         if (item.isBlock() && item.getBlockId().equals(item.getId())) {
             tag.putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag().copy());
         }
@@ -82,15 +86,8 @@ public class NBTIO {
 
         int damage = !tag.containsShort("Damage") ? 0 : tag.getShort("Damage");
         int amount = tag.getByte("Count");
-        Item item = Registries.ITEM.get(name);
-        if (item == null) {
-            if (tag.containsCompound("Block")) {
-                CompoundTag block = tag.getCompound("Block");
-                BlockState blockState = getBlockStateHelper(block);
-                if (blockState == null) return Item.AIR;
-                item = new ItemBlock(blockState.toBlock());
-            } else return Item.AIR;
-        } else if (tag.containsCompound("Block")) {
+        Item item = Item.get(name, damage, amount);
+        if (tag.containsCompound("Block")) {
             CompoundTag block = tag.getCompound("Block");
             //upgrade block
             if (block.contains("version")) {
@@ -102,17 +99,10 @@ public class NBTIO {
             BlockState blockState = getBlockStateHelper(block);
             if (blockState != null) item.setBlockUnsafe(blockState.toBlock());
         }
-
-        if (damage != 0) {
-            item.setDamage(damage);
-        }
-        item.setCount(amount);
-
         Tag tagTag = tag.get("tag");
         if (tagTag instanceof CompoundTag compoundTag) {
             item.setNamedTag(compoundTag);
         }
-        item.autoAssignStackNetworkId();
         return item;
     }
 

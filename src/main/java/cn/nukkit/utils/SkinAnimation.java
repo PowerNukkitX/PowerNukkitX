@@ -13,14 +13,6 @@ public class SkinAnimation {
 
     public final int expression;
 
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN",
-            reason = "The expression field was added and the constructor's signature was changed",
-            replaceWith = "SkinAnimation(SerializedImage image, int type, float frames, int expression)")
-    public SkinAnimation(SerializedImage image, int type, float frames) {
-        this(image, type, frames, 0);
-    }
-
     public SkinAnimation(SerializedImage image, int type, float frames, int expression) {
         this.image = image;
         this.type = type;

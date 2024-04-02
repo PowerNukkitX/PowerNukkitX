@@ -5,8 +5,4 @@ public class ItemAxolotlBucket extends ItemBucket {
         super(AXOLOTL_BUCKET);
     }
 
-    @Override
-    public int getBucketType() {
-        return 12;
-    }
 }

@@ -104,11 +104,6 @@ public class BlockRespawnAnchor extends Block {
         return true;
     }
 
-    @Deprecated
-    public void explode() {
-        explode(null);
-    }
-
     public void explode(Player player) {
         BlockExplosionPrimeEvent event = new BlockExplosionPrimeEvent(this, player, 5);
         event.setIncendiary(true);

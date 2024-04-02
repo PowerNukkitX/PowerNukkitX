@@ -1,7 +1,6 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFlowingWater;
 import cn.nukkit.entity.Entity;
@@ -60,9 +59,6 @@ public class EntityBoat extends EntityVehicle {
     public static final double SINKING_SPEED = 0.0005;
     public static final double SINKING_MAX_SPEED = 0.005;
     private final Set<Entity> ignoreCollision = new HashSet<>(2);
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
-            reason = "Unreliable direct field access", replaceWith = "getVariant(), setVariant(int)")
     public int woodID;
     protected boolean sinking = true;
     private int ticksInWater;
@@ -449,7 +445,7 @@ public class EntityBoat extends EntityVehicle {
 
             entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION, true);
             entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION_DEGREES, 90);
-            entity.setDataProperty(SEAT_HAS_ROTATION, this.passengers.indexOf(entity) == 1 ? -90 : 1);
+            entity.setDataProperty(SEAT_HAS_ROTATION, this.passengers.indexOf(entity) != 1);
             entity.setDataProperty(SEAT_ROTATION_OFFSET_DEGREES, -90);
             entity.setRotation(yaw, entity.pitch);
             entity.updateMovement();

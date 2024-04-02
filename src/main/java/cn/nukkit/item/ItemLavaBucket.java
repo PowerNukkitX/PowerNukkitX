@@ -6,11 +6,6 @@ public class ItemLavaBucket extends ItemBucket {
     }
 
     @Override
-    public int getBucketType() {
-        return 10;
-    }
-
-    @Override
     public void setDamage(int meta) {
     }
 }
