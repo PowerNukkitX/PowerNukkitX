@@ -209,31 +209,30 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             }
         } else if (player.riding instanceof EntityBoat boat && pk.inputData.contains(AuthInputAction.IN_CLIENT_PREDICTED_IN_VEHICLE)) {
             if (player.riding.getId() == pk.predictedVehicle && player.riding.isControlling(player)) {
-                var distance = clientLoc.distanceSquared(player);
-                var updatePosition = (float) Math.sqrt(distance) > 0.1f;
-                var updateRotation = (float) Math.abs(player.getPitch() - clientLoc.pitch) > 1
-                        || (float) Math.abs(player.getYaw() - clientLoc.yaw) > 1
-                        || (float) Math.abs(player.getHeadYaw() - clientLoc.headYaw) > 1;
-                if (updatePosition || updateRotation) {
-                    Location boatLoc = clientLoc.add(0, playerHandle.getBaseOffset(), 0);
-                    boat.onInput(boatLoc);
-                    playerHandle.handleMovement(clientLoc);
+                if (check(clientLoc, player)) {
+                    Location offsetLoc = clientLoc.add(0, playerHandle.getBaseOffset(), 0);
+                    boat.onInput(offsetLoc);
+                    playerHandle.handleMovement(offsetLoc);
                 }
                 return;
             }
         } else if (playerHandle.player.riding instanceof EntityHorse entityHorse) {
-            var distance = clientLoc.distanceSquared(player);
-            var updatePosition = (float) Math.sqrt(distance) > 0.1f;
-            var updateRotation = (float) Math.abs(player.getPitch() - clientLoc.pitch) > 1
-                    || (float) Math.abs(player.getYaw() - clientLoc.yaw) > 1
-                    || (float) Math.abs(player.getHeadYaw() - clientLoc.headYaw) > 1;
-            if (updatePosition || updateRotation) {
-                entityHorse.onPlayerInput(clientLoc);
+            if (check(clientLoc, player)) {
+                entityHorse.onInput(clientLoc);
                 playerHandle.handleMovement(clientLoc);
             }
             return;
         }
         playerHandle.offerMovementTask(clientLoc);
+    }
+
+    private static boolean check(Location clientLoc, Player player) {
+        var distance = clientLoc.distanceSquared(player);
+        var updatePosition = (float) Math.sqrt(distance) > 0.1f;
+        var updateRotation = (float) Math.abs(player.getPitch() - clientLoc.pitch) > 1
+                || (float) Math.abs(player.getYaw() - clientLoc.yaw) > 1
+                || (float) Math.abs(player.getHeadYaw() - clientLoc.headYaw) > 1;
+        return updatePosition || updateRotation;
     }
 
     @Override

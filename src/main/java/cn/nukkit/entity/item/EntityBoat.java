@@ -1,7 +1,6 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFlowingWater;
 import cn.nukkit.entity.Entity;
@@ -446,7 +445,7 @@ public class EntityBoat extends EntityVehicle {
 
             entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION, true);
             entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION_DEGREES, 90);
-            entity.setDataProperty(SEAT_HAS_ROTATION, this.passengers.indexOf(entity) == 1 ? -90 : 1);
+            entity.setDataProperty(SEAT_HAS_ROTATION, this.passengers.indexOf(entity) != 1);
             entity.setDataProperty(SEAT_ROTATION_OFFSET_DEGREES, -90);
             entity.setRotation(yaw, entity.pitch);
             entity.updateMovement();

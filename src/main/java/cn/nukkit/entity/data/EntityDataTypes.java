@@ -44,7 +44,7 @@ public interface EntityDataTypes {
     EntityDataType<Byte> CHARGE_AMOUNT = new EntityDataType<>((byte) 0, "CHARGE_AMOUNT", 22);
     EntityDataType<Block> CARRY_BLOCK_STATE = new EntityDataType<>(Block.get(Block.AIR), "CARRY_BLOCK_STATE", 23, Transformers.BLOCK);
     EntityDataType<Byte> CLIENT_EVENT = new EntityDataType<>((byte) 0, "CLIENT_EVENT", 24);
-    EntityDataType<Boolean> USING_ITEM = new EntityDataType<>(false, "USING_ITEM", 25, Transformers.BOOLEAN);
+    EntityDataType<Boolean> USING_ITEM = new EntityDataType<>(false, "USING_ITEM", 25, Transformers.BOOLEAN_TO_BYTE);
     EntityDataType<Byte> PLAYER_FLAGS = new EntityDataType<>((byte) 0, "PLAYER_FLAGS", 26);
     EntityDataType<Integer> PLAYER_INDEX = new EntityDataType<>(0, "PLAYER_INDEX", 27);
     EntityDataType<BlockVector3> BED_POSITION = new EntityDataType<>(new BlockVector3(), "BED_POSITION", 28);
@@ -77,7 +77,7 @@ public interface EntityDataTypes {
      * 1 is the default size defined by {@code EntityDataType#WIDTH} and {@code EntityDataType#HEIGHT}.
      */
     EntityDataType<Float> SCALE = new EntityDataType<>(0f, "SCALE", 38);
-    EntityDataType<Boolean> HAS_NPC = new EntityDataType<>(false, "HAS_NPC", 39, Transformers.BOOLEAN);
+    EntityDataType<Boolean> HAS_NPC = new EntityDataType<>(false, "HAS_NPC", 39, Transformers.BOOLEAN_TO_BYTE);
     EntityDataType<String> NPC_DATA = new EntityDataType<>("", "NPC_DATA", 40);
     EntityDataType<String> ACTIONS = new EntityDataType<>("", "ACTIONS", 41);
     EntityDataType<Short> AIR_SUPPLY_MAX = new EntityDataType<>((short) 0, "AIR_SUPPLY_MAX", 42);
@@ -107,9 +107,9 @@ public interface EntityDataTypes {
     EntityDataType<Float> HEIGHT = new EntityDataType<>(0f, "HEIGHT", 54);
     EntityDataType<Integer> FUSE_TIME = new EntityDataType<>(0, "FUSE_TIME", 55);
     EntityDataType<Vector3f> SEAT_OFFSET = new EntityDataType<>(new Vector3f(), "SEAT_OFFSET", 56);
-    EntityDataType<Boolean> SEAT_LOCK_RIDER_ROTATION = new EntityDataType<>(false, "SEAT_LOCK_RIDER_ROTATION", 57, Transformers.BOOLEAN);
+    EntityDataType<Boolean> SEAT_LOCK_RIDER_ROTATION = new EntityDataType<>(false, "SEAT_LOCK_RIDER_ROTATION", 57, Transformers.BOOLEAN_TO_BYTE);
     EntityDataType<Float> SEAT_LOCK_RIDER_ROTATION_DEGREES = new EntityDataType<>(0f, "SEAT_LOCK_RIDER_ROTATION_DEGREES", 58);
-    EntityDataType<Boolean> SEAT_HAS_ROTATION = new EntityDataType<>(false, "SEAT_HAS_ROTATION", 59, Transformers.BOOLEAN);
+    EntityDataType<Boolean> SEAT_HAS_ROTATION = new EntityDataType<>(false, "SEAT_HAS_ROTATION", 59, Transformers.BOOLEAN_TO_BYTE);
     EntityDataType<Float> SEAT_ROTATION_OFFSET_DEGREES = new EntityDataType<>(0f, "SEAT_ROTATION_OFFSET_DEGREES", 60);
     /**
      * Radius of Area Effect Cloud
@@ -119,7 +119,7 @@ public interface EntityDataTypes {
     EntityDataType<Integer> AREA_EFFECT_CLOUD_PARTICLE = new EntityDataType<>(0, "AREA_EFFECT_CLOUD_PARTICLE", 63);
     EntityDataType<Integer> SHULKER_PEEK_AMOUNT = new EntityDataType<>(0, "SHULKER_PEEK_AMOUNT", 64);
     EntityDataType<Integer> SHULKER_ATTACH_FACE = new EntityDataType<>(0, "SHULKER_ATTACH_FACE", 65);
-    EntityDataType<Boolean> SHULKER_ATTACHED = new EntityDataType<>(false, "SHULKER_ATTACHED", 66, Transformers.BOOLEAN);
+    EntityDataType<Boolean> SHULKER_ATTACHED = new EntityDataType<>(false, "SHULKER_ATTACHED", 66, Transformers.BOOLEAN_TO_BYTE);
     /**
      * Position a Shulker entity is attached from.
      */
@@ -132,10 +132,10 @@ public interface EntityDataTypes {
      * Previously used for the villager V1 entity.
      */
     EntityDataType<Integer> CAREER = new EntityDataType<>(0, "CAREER", 69);
-    EntityDataType<Boolean> COMMAND_BLOCK_ENABLED = new EntityDataType<>(false, "COMMAND_BLOCK_ENABLED", 70, Transformers.BOOLEAN);
+    EntityDataType<Boolean> COMMAND_BLOCK_ENABLED = new EntityDataType<>(false, "COMMAND_BLOCK_ENABLED", 70, Transformers.BOOLEAN_TO_BYTE);
     EntityDataType<String> COMMAND_BLOCK_NAME = new EntityDataType<>("", "COMMAND_BLOCK_NAME", 71);
     EntityDataType<String> COMMAND_BLOCK_LAST_OUTPUT = new EntityDataType<>("", "COMMAND_BLOCK_LAST_OUTPUT", 72);
-    EntityDataType<Boolean> COMMAND_BLOCK_TRACK_OUTPUT = new EntityDataType<>(false, "COMMAND_BLOCK_TRACK_OUTPUT", 73, Transformers.BOOLEAN);
+    EntityDataType<Boolean> COMMAND_BLOCK_TRACK_OUTPUT = new EntityDataType<>(false, "COMMAND_BLOCK_TRACK_OUTPUT", 73, Transformers.BOOLEAN_TO_BYTE);
     EntityDataType<Byte> CONTROLLING_RIDER_SEAT_INDEX = new EntityDataType<>((byte) 0, "CONTROLLING_RIDER_SEAT_INDEX", 74);
     EntityDataType<Integer> STRENGTH = new EntityDataType<>(0, "STRENGTH", 75);
     EntityDataType<Integer> STRENGTH_MAX = new EntityDataType<>(0, "STRENGTH_MAX", 76);
@@ -176,13 +176,13 @@ public interface EntityDataTypes {
     EntityDataType<Integer> SKIN_ID = new EntityDataType<>(0, "SKIN_ID", 104);
     EntityDataType<Integer> SPAWNING_FRAMES = new EntityDataType<>(0, "SPAWNING_FRAMES", 105);
     EntityDataType<Integer> COMMAND_BLOCK_TICK_DELAY = new EntityDataType<>(0, "COMMAND_BLOCK_TICK_DELAY", 106);
-    EntityDataType<Boolean> COMMAND_BLOCK_EXECUTE_ON_FIRST_TICK = new EntityDataType<>(false, "COMMAND_BLOCK_EXECUTE_ON_FIRST_TICK", 107, Transformers.BOOLEAN);
+    EntityDataType<Boolean> COMMAND_BLOCK_EXECUTE_ON_FIRST_TICK = new EntityDataType<>(false, "COMMAND_BLOCK_EXECUTE_ON_FIRST_TICK", 107, Transformers.BOOLEAN_TO_BYTE);
     EntityDataType<Float> AMBIENT_SOUND_INTERVAL = new EntityDataType<>(0f, "AMBIENT_SOUND_INTERVAL", 108);
     EntityDataType<Float> AMBIENT_SOUND_INTERVAL_RANGE = new EntityDataType<>(0f, "AMBIENT_SOUND_INTERVAL_RANGE", 109);
     EntityDataType<String> AMBIENT_SOUND_EVENT_NAME = new EntityDataType<>("", "AMBIENT_SOUND_EVENT_NAME", 110);
     EntityDataType<Float> FALL_DAMAGE_MULTIPLIER = new EntityDataType<>(0f, "FALL_DAMAGE_MULTIPLIER", 111);
     EntityDataType<String> NAME_RAW_TEXT = new EntityDataType<>("", "NAME_RAW_TEXT", 112);
-    EntityDataType<Boolean> CAN_RIDE_TARGET = new EntityDataType<>(false, "CAN_RIDE_TARGET", 113, Transformers.BOOLEAN);
+    EntityDataType<Boolean> CAN_RIDE_TARGET = new EntityDataType<>(false, "CAN_RIDE_TARGET", 113, Transformers.BOOLEAN_TO_BYTE);
     EntityDataType<Integer> LOW_TIER_CURED_TRADE_DISCOUNT = new EntityDataType<>(0, "LOW_TIER_CURED_TRADE_DISCOUNT", 114);
     EntityDataType<Integer> HIGH_TIER_CURED_TRADE_DISCOUNT = new EntityDataType<>(0, "HIGH_TIER_CURED_TRADE_DISCOUNT", 115);
     EntityDataType<Integer> NEARBY_CURED_TRADE_DISCOUNT = new EntityDataType<>(0, "NEARBY_CURED_TRADE_DISCOUNT", 116);
@@ -213,7 +213,7 @@ public interface EntityDataTypes {
      * </pre>
      */
     EntityDataType<CompoundTag> HITBOX = new EntityDataType<>(new CompoundTag(), "HITBOX", 118);
-    EntityDataType<Boolean> IS_BUOYANT = new EntityDataType<>(false, "IS_BUOYANT", 119, Transformers.BOOLEAN);
+    EntityDataType<Boolean> IS_BUOYANT = new EntityDataType<>(false, "IS_BUOYANT", 119, Transformers.BOOLEAN_TO_BYTE);
     EntityDataType<Float> FREEZING_EFFECT_STRENGTH = new EntityDataType<>(0f, "FREEZING_EFFECT_STRENGTH", 120);
     EntityDataType<String> BUOYANCY_DATA = new EntityDataType<>("", "BUOYANCY_DATA", 121);
     EntityDataType<Integer> GOAT_HORN_COUNT = new EntityDataType<>(0, "GOAT_HORN_COUNT", 122);
@@ -241,7 +241,7 @@ public interface EntityDataTypes {
     /**
      * @since v527
      */
-    EntityDataType<Boolean> PLAYER_HAS_DIED = new EntityDataType<>(false, "PLAYER_HAS_DIED", 129, Transformers.BOOLEAN);
+    EntityDataType<Boolean> PLAYER_HAS_DIED = new EntityDataType<>(false, "PLAYER_HAS_DIED", 129, Transformers.BOOLEAN_TO_BYTE);
     /**
      * @since v594
      */
