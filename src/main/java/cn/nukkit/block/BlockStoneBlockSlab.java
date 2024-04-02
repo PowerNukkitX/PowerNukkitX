@@ -59,8 +59,9 @@ public class BlockStoneBlockSlab extends BlockSlab {
     }
 
     public Item toItem() {
-        ItemBlock itemBlock = new ItemBlock(this);
-        itemBlock.setBlockUnsafe(this);
+        Block block = PROPERTIES.getBlockState(CommonBlockProperties.STONE_SLAB_TYPE.createValue(getSlabType())).toBlock();
+        ItemBlock itemBlock = new ItemBlock(block);
+        itemBlock.setBlockUnsafe(block);
         return itemBlock;
     }
 }

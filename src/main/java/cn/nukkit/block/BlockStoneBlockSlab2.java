@@ -11,7 +11,8 @@ public class BlockStoneBlockSlab2 extends BlockSlab {
     public static final BlockProperties PROPERTIES = new BlockProperties(STONE_BLOCK_SLAB2, CommonBlockProperties.MINECRAFT_VERTICAL_HALF, CommonBlockProperties.STONE_SLAB_TYPE_2);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -59,10 +60,10 @@ public class BlockStoneBlockSlab2 extends BlockSlab {
         setPropertyValue(CommonBlockProperties.STONE_SLAB_TYPE_2, type);
     }
 
-    @Override
     public Item toItem() {
-        ItemBlock itemBlock = new ItemBlock(this);
-        itemBlock.setBlockUnsafe(this);
+        Block block = PROPERTIES.getBlockState(CommonBlockProperties.STONE_SLAB_TYPE_2.createValue(getSlabType())).toBlock();
+        ItemBlock itemBlock = new ItemBlock(block);
+        itemBlock.setBlockUnsafe(block);
         return itemBlock;
     }
 }
