@@ -150,7 +150,13 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     return false;
                 }
 
-                PlayerBucketFillEvent ev = new PlayerBucketFillEvent(player, this, null, this, item, Item.get(ItemID.WATER_BUCKET, 0, 1, bucket.getCompoundTag()));
+                String newBucketID = switch (this.getCauldronLiquid()) {
+                    case POWDER_SNOW -> ItemID.POWDER_SNOW_BUCKET;
+                    case LAVA -> ItemID.LAVA_BUCKET;
+                    default -> ItemID.WATER_BUCKET;
+                };
+
+                PlayerBucketFillEvent ev = new PlayerBucketFillEvent(player, this, null, this, item, Item.get(newBucketID, 0, 1, bucket.getCompoundTag()));
                 this.level.getServer().getPluginManager().callEvent(ev);
                 if (!ev.isCancelled()) {
                     replaceBucket(bucket, player, ev.getItem());
