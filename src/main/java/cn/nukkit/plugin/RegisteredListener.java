@@ -10,8 +10,6 @@ import cn.nukkit.utils.EventException;
  * @author MagicDroidX (Nukkit Project)
  */
 public class RegisteredListener {
-
-
     public static final RegisteredListener[] EMPTY_ARRAY = new RegisteredListener[0];
 
     private final Listener listener;
