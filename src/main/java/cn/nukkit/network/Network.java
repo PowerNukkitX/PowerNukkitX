@@ -2,7 +2,6 @@ package cn.nukkit.network;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.event.server.QueryRegenerateEvent;
 import cn.nukkit.network.connection.BedrockPeer;
 import cn.nukkit.network.connection.BedrockPong;
 import cn.nukkit.network.connection.BedrockSession;
@@ -70,16 +69,6 @@ public class Network {
         } finally {
             this.hardWareNetworkInterfaces = tmpIfs;
         }
-        this.pong = new BedrockPong()
-                .edition("MCPE")
-                .motd(server.getMotd())
-                .subMotd(server.getSubMotd())
-                .playerCount(server.getOnlinePlayers().size())
-                .maximumPlayerCount(server.getMaxPlayers())
-                .gameType(Server.getGamemodeString(server.getDefaultGamemode(), true))
-                .protocolVersion(ProtocolInfo.CURRENT_PROTOCOL)
-                .ipv4Port(server.getPort())
-                .ipv6Port(server.getPort());
 
         Class<? extends DatagramChannel> oclass;
         EventLoopGroup eventloopgroup;
@@ -94,6 +83,20 @@ public class Network {
             eventloopgroup = new NioEventLoopGroup(nettyThreadNumber, threadFactory);
         }
         InetSocketAddress bindAddress = new InetSocketAddress(Strings.isNullOrEmpty(this.server.getIp()) ? "0.0.0.0" : this.server.getIp(), this.server.getPort());
+
+        this.pong = new BedrockPong()
+                .edition("MCPE")
+                .motd(server.getMotd())
+                .subMotd(server.getSubMotd())
+                .playerCount(server.getOnlinePlayers().size())
+                .maximumPlayerCount(server.getMaxPlayers())
+                .serverId(1)
+                .gameType(Server.getGamemodeString(server.getDefaultGamemode(), true))
+                .nintendoLimited(false)
+                .protocolVersion(ProtocolInfo.CURRENT_PROTOCOL)
+                .ipv4Port(server.getPort())
+                .ipv6Port(server.getPort());
+
         this.channel = (RakServerChannel) new ServerBootstrap()
                 .channelFactory(RakChannelFactory.server(oclass))
                 .option(RakChannelOption.RAK_ADVERTISEMENT, pong.toByteBuf())
@@ -132,6 +135,7 @@ public class Network {
                 .bind(bindAddress)
                 .syncUninterruptibly()
                 .channel();
+        this.pong.channel(channel);
     }
 
     record NetWorkStatisticData(long upload, long download) {
@@ -139,9 +143,9 @@ public class Network {
 
     public void shutdown() {
         this.channel.close();
+        this.pong = null;
         this.sessionMap.clear();
         this.netWorkStatisticDataList.clear();
-        this.pong = null;
     }
 
     public double getUpload() {
@@ -166,7 +170,6 @@ public class Network {
             }
         }
         netWorkStatisticDataList.add(new NetWorkStatisticData(upload, download));
-        setPong(server.getMotd());
     }
 
     public void processInterfaces() {
@@ -207,23 +210,6 @@ public class Network {
         return this.sessionMap.get(address);
     }
 
-    public void setPong(String name) {
-        QueryRegenerateEvent info = this.server.getQueryInformation();
-        String[] names = name.split("!@#");  //Split double names within the program
-        String motd = Utils.rtrim(names[0].replace(";", "\\;"), '\\');
-        String subMotd = names.length > 1 ? Utils.rtrim(names[1].replace(";", "\\;"), '\\') : "";
-        this.pong = new BedrockPong()
-                .edition("MCPE")
-                .motd(motd)
-                .subMotd(subMotd)
-                .playerCount(info.getPlayerCount())
-                .maximumPlayerCount(info.getMaxPlayerCount())
-                .gameType(Server.getGamemodeString(this.server.getDefaultGamemode(), true))
-                .protocolVersion(ProtocolInfo.CURRENT_PROTOCOL)
-                .version(info.getVersion())
-                .ipv4Port(server.getPort());
-    }
-
     public void process() {
         for (BedrockSession session : this.sessionMap.values()) {
             if (session.isDisconnected()) {
@@ -235,5 +221,9 @@ public class Network {
 
     public void onSessionDisconnect(InetSocketAddress address) {
         this.sessionMap.remove(address);
+    }
+
+    public BedrockPong getPong() {
+        return pong;
     }
 }

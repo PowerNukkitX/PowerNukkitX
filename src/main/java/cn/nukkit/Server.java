@@ -62,13 +62,10 @@ import cn.nukkit.permission.Permissible;
 import cn.nukkit.player.info.PlayerInfo;
 import cn.nukkit.player.info.XboxLivePlayerInfo;
 import cn.nukkit.plugin.InternalPlugin;
-import cn.nukkit.plugin.JSPluginLoader;
 import cn.nukkit.plugin.JavaPluginLoader;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginLoadOrder;
 import cn.nukkit.plugin.PluginManager;
-import cn.nukkit.plugin.js.JSFeatures;
-import cn.nukkit.plugin.js.JSIInitiator;
 import cn.nukkit.plugin.service.NKServiceManager;
 import cn.nukkit.plugin.service.ServiceManager;
 import cn.nukkit.positiontracking.PositionTrackingService;
@@ -770,7 +767,6 @@ public class Server {
 
         this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5);
         this.network = new Network(this);
-        this.network.setPong(this.getMotd());
 
         this.pluginManager.loadPlugins(this.pluginPath);
 
@@ -824,7 +820,7 @@ public class Server {
         }
 
         if (/*Nukkit.DEBUG < 2 && */!Boolean.parseBoolean(System.getProperty("disableWatchdog", "false"))) {
-            this.watchdog = new Watchdog(this, 60000);
+            this.watchdog = new Watchdog(this, 60000);//60s
             this.watchdog.start();
         }
         System.runFinalization();
@@ -1727,6 +1723,7 @@ public class Server {
     public void addOnlinePlayer(Player player) {
         this.playerList.put(player.getUniqueId(), player);
         this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player.getLoginChainData().getXUID());
+        this.getNetwork().getPong().playerCount(playerList.size());
     }
 
     @ApiStatus.Internal
@@ -1739,6 +1736,7 @@ public class Server {
             pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(player.getUniqueId())};
 
             Server.broadcastPacket(this.playerList.values(), pk);
+            this.getNetwork().getPong().playerCount(playerList.size());
         }
     }
 
@@ -2636,8 +2634,14 @@ public class Server {
         return maxPlayers;
     }
 
+    /**
+     * Set the players count is allowed
+     *
+     * @param maxPlayers the max players
+     */
     public void setMaxPlayers(int maxPlayers) {
         this.maxPlayers = maxPlayers;
+        this.getNetwork().getPong().maximumPlayerCount(maxPlayers);
     }
 
     /**
@@ -2727,17 +2731,13 @@ public class Server {
      * @return 游戏模式字符串<br>Game Mode String
      */
     public static String getGamemodeString(int mode, boolean direct) {
-        switch (mode) {
-            case Player.SURVIVAL:
-                return direct ? "Survival" : "%gameMode.survival";
-            case Player.CREATIVE:
-                return direct ? "Creative" : "%gameMode.creative";
-            case Player.ADVENTURE:
-                return direct ? "Adventure" : "%gameMode.adventure";
-            case Player.SPECTATOR:
-                return direct ? "Spectator" : "%gameMode.spectator";
-        }
-        return "UNKNOWN";
+        return switch (mode) {
+            case Player.SURVIVAL -> direct ? "Survival" : "%gameMode.survival";
+            case Player.CREATIVE -> direct ? "Creative" : "%gameMode.creative";
+            case Player.ADVENTURE -> direct ? "Adventure" : "%gameMode.adventure";
+            case Player.SPECTATOR -> direct ? "Spectator" : "%gameMode.spectator";
+            default -> "UNKNOWN";
+        };
     }
 
     /**
@@ -2749,30 +2749,13 @@ public class Server {
      * @return 游戏模式id<br>gamemode id
      */
     public static int getGamemodeFromString(String str) {
-        switch (str.trim().toLowerCase()) {
-            case "0":
-            case "survival":
-            case "s":
-                return Player.SURVIVAL;
-
-            case "1":
-            case "creative":
-            case "c":
-                return Player.CREATIVE;
-
-            case "2":
-            case "adventure":
-            case "a":
-                return Player.ADVENTURE;
-
-            case "3":
-            case "spectator":
-            case "spc":
-            case "view":
-            case "v":
-                return Player.SPECTATOR;
-        }
-        return -1;
+        return switch (str.trim().toLowerCase()) {
+            case "0", "survival", "s" -> Player.SURVIVAL;
+            case "1", "creative", "c" -> Player.CREATIVE;
+            case "2", "adventure", "a" -> Player.ADVENTURE;
+            case "3", "spectator", "spc", "view", "v" -> Player.SPECTATOR;
+            default -> -1;
+        };
     }
 
     /**
@@ -2879,10 +2862,30 @@ public class Server {
     }
 
     /**
+     * Set default gamemode for the server.
+     *
+     * @param defaultGamemode the default gamemode
+     */
+    public void setDefaultGamemode(int defaultGamemode) {
+        this.defaultGamemode = defaultGamemode;
+        this.getNetwork().getPong().gameType(Server.getGamemodeString(defaultGamemode, true));
+    }
+
+    /**
      * @return 得到服务器标题<br>Get server motd
      */
     public String getMotd() {
         return this.getPropertyString("motd", "PowerNukkitX Server");
+    }
+
+    /**
+     * Set the motd of server.
+     *
+     * @param motd the motd content
+     */
+    public void setMotd(String motd) {
+        this.setPropertyString("motd", motd);
+        this.getNetwork().getPong().motd(motd);
     }
 
     /**
@@ -2894,6 +2897,16 @@ public class Server {
             subMotd = "https://powernukkitx.cn"; // The client doesn't allow empty sub-motd in 1.16.210
         }
         return subMotd;
+    }
+
+    /**
+     * Set the sub motd of server.
+     *
+     * @param subMotd the sub motd
+     */
+    public void setSubMotd(String subMotd) {
+        this.setPropertyString("sub-motd", subMotd);
+        this.getNetwork().getPong().subMotd(subMotd);
     }
 
     /**
