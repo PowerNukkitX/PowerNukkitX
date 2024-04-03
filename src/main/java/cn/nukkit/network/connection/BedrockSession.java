@@ -31,6 +31,7 @@ import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.SetCommandsEnabledPacket;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import cn.nukkit.player.info.PlayerInfo;
+import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.ByteBufVarInt;
 import com.github.oxo42.stateless4j.StateMachine;
@@ -67,7 +68,6 @@ public class BedrockSession {
     private final AtomicBoolean nettyThreadOwned = new AtomicBoolean(false);
     private final AtomicReference<Consumer<DataPacket>> consumer = new AtomicReference<>(null);
     private final @NotNull StateMachine<SessionState, SessionState> machine;
-    protected String disconnectReason;
     private PlayerHandle handle;
     private PlayerInfo info;
     protected @Nullable PacketHandler packetHandler;
@@ -327,39 +327,36 @@ public class BedrockSession {
         this.logging = logging;
     }
 
-    public String getDisconnectReason() {
-        return disconnectReason;
-    }
-
     public boolean isDisconnected() {
         return this.closed.get();
     }
 
+    /**
+     * Close Network Session.
+     *
+     * @param reason the reason,when it is not null,will send a DisconnectPacket to client
+     */
     @ApiStatus.Internal
     public void close(@Nullable String reason) {
-        this.close(reason, false);
-    }
-
-    @ApiStatus.Internal
-    public void close(@Nullable String reason, boolean hideReason) {
         if (this.closed.get()) {
             return;
         }
 
-        DisconnectPacket packet = new DisconnectPacket();
-        if (reason == null || hideReason) {
-            packet.hideDisconnectionScreen = true;
-            reason = BedrockDisconnectReasons.DISCONNECTED;
+        //when a player haven't login,it only hold a BedrockSession,and Player Instance is null
+        if (reason != null) {
+            DisconnectPacket packet = new DisconnectPacket();
+            packet.message = reason;
+            this.sendPacketImmediately(packet);
         }
-        packet.message = reason;
-        this.sendPacketSync(packet);
 
-        if (isSubClient()) {
-            // FIXME: Do sub-clients send a server-bound DisconnectPacket?
-        } else {
-            // Primary sub-client controls the connection
-            this.peer.close(reason);
-        }
+        Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+            if (isSubClient()) {
+                // FIXME: Do sub-clients send a server-bound DisconnectPacket?
+            } else {
+                // Primary sub-client controls the connection
+                this.peer.close();
+            }
+        }, 5);
     }
 
     /**

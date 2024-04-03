@@ -96,6 +96,7 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.network.connection.BedrockDisconnectReasons;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.CommandOriginData;
@@ -3363,22 +3364,34 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!this.connected.compareAndSet(true, false) && this.closed) {
             return;
         }
+        //output logout infomation
+        log.info(this.getServer().getLanguage().tr("nukkit.player.logOut",
+                TextFormat.AQUA + this.getName() + TextFormat.WHITE,
+                this.getAddress(),
+                String.valueOf(this.getPort()),
+                this.getServer().getLanguage().tr(reason)));
 
-        if (!reason.isEmpty()) {
-            DisconnectPacket pk = new DisconnectPacket();
-            pk.message = reason;
-            this.getSession().sendPacketImmediately(pk);
+        //send disconnection packet
+        DisconnectPacket packet = new DisconnectPacket();
+        if (reason == null || reason.isBlank()) {
+            packet.hideDisconnectionScreen = true;
+            reason = BedrockDisconnectReasons.DISCONNECTED;
         }
+        packet.message = reason;
+        this.getSession().sendPacketSync(packet);
 
+        //handle scoreboardManager#beforePlayerQuit
         var scoreboardManager = this.getServer().getScoreboardManager();
         if (scoreboardManager != null) {
             scoreboardManager.beforePlayerQuit(this);
         }
 
+        //dismount horse
         if (this.riding instanceof EntityRideable entityRideable) {
             entityRideable.dismountEntity(this);
         }
 
+        //call quit event
         PlayerQuitEvent ev = null;
         if (this.username != null && !this.getName().isEmpty()) {
             this.server.getPluginManager().callEvent(ev = new PlayerQuitEvent(this, message, true, reason));
@@ -3409,11 +3422,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (ev != null && !Objects.equals(this.username, "") && this.spawned && !Objects.equals(ev.getQuitMessage().toString(), "")) {
             this.server.broadcastMessage(ev.getQuitMessage());
         }
-        log.info(this.getServer().getLanguage().tr("nukkit.player.logOut",
-                TextFormat.AQUA + this.getName() + TextFormat.WHITE,
-                this.getAddress(),
-                String.valueOf(this.getPort()),
-                this.getServer().getLanguage().tr(reason)));
 
         this.hasSpawned.clear();
         this.loggedIn = false;
@@ -3421,12 +3429,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.spawnPoint = null;
         this.riding = null;
         this.chunk = null;
-
-        assert this.session != null;
-        //close player network session
-        log.debug("Closing player network session");
-        log.debug(reason);
-        this.session.close(reason);
 
         if (this.perm != null) {
             this.perm.clearPermissions();
@@ -3447,6 +3449,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.playerCursorInventory != null) {
             this.playerCursorInventory = null;
         }
+
+        //close player network session
+        log.debug("Closing player network session");
+        log.debug(reason);
+        assert this.session != null;
+        this.session.close(null);
     }
 
     public void unloadAllUsedChunk() {
@@ -3554,11 +3562,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
 
     public LangCode getLanguageCode() {
-        try {
-            return LangCode.valueOf(this.getLoginChainData().getLanguageCode());
-        } catch (IllegalArgumentException ignore) {
-            return LangCode.en_US;
-        }
+        LangCode code = LangCode.from(this.getLoginChainData().getLanguageCode());
+        return code==null?LangCode.en_US:code;
     }
 
     @Override
