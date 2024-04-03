@@ -109,12 +109,14 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
 
     public void setFillLevel(int fillLevel, @Nullable Player player) {
         if (fillLevel == getFillLevel()) return;
-        setFillLevel(fillLevel);
+
         if (fillLevel > getFillLevel()) {
             this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player != null ? player : this, this.add(0.5, 0.5, 0.5), VibrationType.FLUID_PLACE));
         } else {
             this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player != null ? player : this, this.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
         }
+
+        this.setPropertyValue(FILL_LEVEL, fillLevel);
     }
 
     public CauldronLiquid getCauldronLiquid() {
@@ -139,67 +141,72 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
             return false;
         }
 
-        switch (item.getId()) {
-            case Item.BUCKET:
-                ItemBucket bucket = (ItemBucket) item;
-                if (bucket.getFishEntityId() != null) {
-                    break;
+        if (item instanceof ItemBucket bucket) {
+            if (bucket.getFishEntityId() != null) {
+                return false;
+            }
+            if (bucket.isEmpty()) {
+                if (!isFull() || cauldron.isCustomColor() || cauldron.hasPotion()) {
+                    return false;
                 }
-                if (bucket.isEmpty()) {
-                    if (!isFull() || cauldron.isCustomColor() || cauldron.hasPotion()) {
-                        break;
-                    }
 
-                    PlayerBucketFillEvent ev = new PlayerBucketFillEvent(player, this, null, this, item, Item.get(ItemID.WATER_BUCKET, 0, 1, bucket.getCompoundTag()));
-                    this.level.getServer().getPluginManager().callEvent(ev);
-                    if (!ev.isCancelled()) {
+                String newBucketID = switch (this.getCauldronLiquid()) {
+                    case POWDER_SNOW -> ItemID.POWDER_SNOW_BUCKET;
+                    case LAVA -> ItemID.LAVA_BUCKET;
+                    default -> ItemID.WATER_BUCKET;
+                };
+
+                PlayerBucketFillEvent ev = new PlayerBucketFillEvent(player, this, null, this, item, Item.get(newBucketID, 0, 1, bucket.getCompoundTag()));
+                this.level.getServer().getPluginManager().callEvent(ev);
+                if (!ev.isCancelled()) {
+                    replaceBucket(bucket, player, ev.getItem());
+                    this.setFillLevel(FILL_LEVEL.getMin(), player); // empty
+                    this.level.setBlock(this, this, true);
+                    cauldron.clearCustomColor();
+                    this.getLevel().addLevelEvent(this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_TAKE_WATER);
+                }
+            } else if (bucket.isWater() || bucket.isLava() || bucket.isPowderSnow()) {
+                if (isFull() && !cauldron.isCustomColor() && !cauldron.hasPotion() && item.getDamage() == 8) {
+                    return false;
+                }
+
+                PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, this, null, this, item, Item.get(ItemID.BUCKET, 0, 1, bucket.getCompoundTag()));
+                this.level.getServer().getPluginManager().callEvent(ev);
+                if (!ev.isCancelled()) {
+                    if (player.isSurvival() || player.isAdventure()) {
                         replaceBucket(bucket, player, ev.getItem());
-                        this.setFillLevel(FILL_LEVEL.getMin(), player);//empty
-                        this.level.setBlock(this, this, true);
+                    }
+                    if (cauldron.hasPotion()) {//if has potion
+                        clearWithFizz(cauldron, player);
+                    } else if (bucket.isWater()) { //water bucket
+                        this.setFillLevel(FILL_LEVEL.getMax(), player); // fill
+                        //default liquid type is water so we don't need to set it
                         cauldron.clearCustomColor();
-                        this.getLevel().addLevelEvent(this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_TAKE_WATER);
-                    }
-                } else if (bucket.isWater() || bucket.isLava() || bucket.isPowderSnow()) {
-                    if (isFull() && !cauldron.isCustomColor() && !cauldron.hasPotion() && item.getDamage() == 8) {
-                        break;
-                    }
-
-                    PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, this, null, this, item, Item.get(ItemID.BUCKET, 0, 1, bucket.getCompoundTag()));
-                    this.level.getServer().getPluginManager().callEvent(ev);
-                    if (!ev.isCancelled()) {
-                        if (player.isSurvival() || player.isAdventure()) {
-                            replaceBucket(bucket, player, ev.getItem());
-                        }
-                        if (cauldron.hasPotion()) {//if has potion
+                        this.level.setBlock(this, this, true);
+                        this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_FILLWATER);
+                    } else if (bucket.isPowderSnow()) { // powder snow bucket
+                        this.setFillLevel(FILL_LEVEL.getMax(), player);//fill
+                        this.setCauldronLiquid(CauldronLiquid.POWDER_SNOW);
+                        cauldron.clearCustomColor();
+                        this.level.setBlock(this, this, true);
+                        //todo: add the sound of powder snow (I can't find it)
+                    } else { // lava bucket
+                        if (isEmpty()) {
+                            this.setCauldronLiquid(CauldronLiquid.LAVA);
+                            this.setFillLevel(FILL_LEVEL.getMax(), player);
+                            this.level.setBlock(this, this, true);
+                            cauldron.clearCustomColor();
+                            cauldron.setType(BlockEntityCauldron.PotionType.LAVA);
+                            this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.BUCKET_EMPTY_LAVA);
+                        } else {
                             clearWithFizz(cauldron, player);
-                        } else if (bucket.isWater()) { //water bucket
-                            this.setFillLevel(FILL_LEVEL.getMax(), player);//fill
-                            //default liquid type is water so we don't need to set it
-                            cauldron.clearCustomColor();
-                            this.level.setBlock(this, this, true);
-                            this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_FILLWATER);
-                        } else if (bucket.isPowderSnow()) { // powder snow bucket
-                            this.setFillLevel(FILL_LEVEL.getMax(), player);//fill
-                            this.setCauldronLiquid(CauldronLiquid.POWDER_SNOW);
-                            cauldron.clearCustomColor();
-                            this.level.setBlock(this, this, true);
-                            //todo: add the sound of powder snow (I can't find it)
-                        } else { // lava bucket
-                            if (isEmpty()) {
-                                this.setCauldronLiquid(CauldronLiquid.LAVA);
-                                this.setFillLevel(FILL_LEVEL.getMax(), player);
-                                this.level.setBlock(this, this, true);
-                                cauldron.clearCustomColor();
-                                cauldron.setType(BlockEntityCauldron.PotionType.LAVA);
-                                this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.BUCKET_EMPTY_LAVA);
-                            } else {
-                                clearWithFizz(cauldron, player);
-                            }
                         }
-                        //this.update();
                     }
                 }
-                break;
+            }
+        }
+
+        switch (item.getId()) {
             case ItemID.DYE:
                 if (isEmpty() || cauldron.hasPotion()) {
                     break;
