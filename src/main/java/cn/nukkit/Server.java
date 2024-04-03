@@ -1723,7 +1723,7 @@ public class Server {
     public void addOnlinePlayer(Player player) {
         this.playerList.put(player.getUniqueId(), player);
         this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player.getLoginChainData().getXUID());
-        this.getNetwork().getPong().playerCount(playerList.size());
+        this.getNetwork().getPong().playerCount(playerList.size()).update();
     }
 
     @ApiStatus.Internal
@@ -1736,7 +1736,7 @@ public class Server {
             pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(player.getUniqueId())};
 
             Server.broadcastPacket(this.playerList.values(), pk);
-            this.getNetwork().getPong().playerCount(playerList.size());
+            this.getNetwork().getPong().playerCount(playerList.size()).update();;
         }
     }
 
@@ -2641,7 +2641,7 @@ public class Server {
      */
     public void setMaxPlayers(int maxPlayers) {
         this.maxPlayers = maxPlayers;
-        this.getNetwork().getPong().maximumPlayerCount(maxPlayers);
+        this.getNetwork().getPong().maximumPlayerCount(maxPlayers).update();;
     }
 
     /**
@@ -2868,7 +2868,7 @@ public class Server {
      */
     public void setDefaultGamemode(int defaultGamemode) {
         this.defaultGamemode = defaultGamemode;
-        this.getNetwork().getPong().gameType(Server.getGamemodeString(defaultGamemode, true));
+        this.getNetwork().getPong().gameType(Server.getGamemodeString(defaultGamemode, true)).update();;
     }
 
     /**
@@ -2885,7 +2885,7 @@ public class Server {
      */
     public void setMotd(String motd) {
         this.setPropertyString("motd", motd);
-        this.getNetwork().getPong().motd(motd);
+        this.getNetwork().getPong().motd(motd).update();;
     }
 
     /**
@@ -2906,7 +2906,7 @@ public class Server {
      */
     public void setSubMotd(String subMotd) {
         this.setPropertyString("sub-motd", subMotd);
-        this.getNetwork().getPong().subMotd(subMotd);
+        this.getNetwork().getPong().subMotd(subMotd).update();;
     }
 
     /**
