@@ -11,12 +11,6 @@ import cn.nukkit.event.HandlerList;
  */
 
 public final class VehicleDestroyByEntityEvent extends VehicleDestroyEvent {
-    private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
-
     private final Entity destroyer;
 
     /**

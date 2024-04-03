@@ -7,11 +7,6 @@ import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 
 public class PlayerGlassBottleFillEvent extends PlayerEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
     protected final Item item;
     protected final Block target;
 

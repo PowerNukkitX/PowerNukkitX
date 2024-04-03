@@ -24,63 +24,49 @@ public class ItemShulkerBox extends Item {
             case 1:
                 this.name = "Orange Shulker Box";
                 setBlockUnsafe(Block.get(BlockID.ORANGE_SHULKER_BOX));
-                this.meta = 0;
             case 2:
                 this.name = "Magenta Shulker Box";
                 setBlockUnsafe(Block.get(BlockID.MAGENTA_SHULKER_BOX));
-                this.meta = 0;
             case 3:
                 this.name = "Light Blue Shulker Box";
                 setBlockUnsafe(Block.get(BlockID.LIGHT_BLUE_SHULKER_BOX));
-                this.meta = 0;
             case 4:
                 this.name = "Yellow Shulker Box";
                 setBlockUnsafe(Block.get(BlockID.YELLOW_SHULKER_BOX));
-                this.meta = 0;
             case 5:
                 this.name = "Lime Shulker Box";
                 setBlockUnsafe(Block.get(BlockID.LIME_SHULKER_BOX));
-                this.meta = 0;
             case 6:
                 this.name = "Pink Shulker Box";
                 setBlockUnsafe(Block.get(BlockID.PINK_SHULKER_BOX));
-                this.meta = 0;
             case 7:
                 this.name = "Gray Shulker Box";
                 setBlockUnsafe(Block.get(BlockID.GRAY_SHULKER_BOX));
-                this.meta = 0;
             case 8:
                 this.name = "Light Gray Shulker Box";
                 setBlockUnsafe(Block.get(BlockID.LIGHT_GRAY_SHULKER_BOX));
-                this.meta = 0;
             case 9:
                 this.name = "Cyan Shulker Box";
                 setBlockUnsafe(Block.get(BlockID.CYAN_SHULKER_BOX));
-                this.meta = 0;
             case 10:
                 this.name = "Purple Shulker Box";
                 setBlockUnsafe(Block.get(BlockID.PURPLE_SHULKER_BOX));
-                this.meta = 0;
             case 11:
                 this.name = "Blue Shulker Box";
                 setBlockUnsafe(Block.get(BlockID.BLUE_SHULKER_BOX));
-                this.meta = 0;
             case 12:
                 this.name = "Brown Shulker Box";
                 setBlockUnsafe(Block.get(BlockID.BROWN_SHULKER_BOX));
-                this.meta = 0;
             case 13:
                 this.name = "Green Shulker Box";
                 setBlockUnsafe(Block.get(BlockID.GREEN_SHULKER_BOX));
-                this.meta = 0;
             case 14:
                 this.name = "Red Shulker Box";
                 setBlockUnsafe(Block.get(BlockID.RED_SHULKER_BOX));
-                this.meta = 0;
             case 15:
                 this.name = "Black Shulker Box";
                 setBlockUnsafe(Block.get(BlockID.BLACK_SHULKER_BOX));
-                this.meta = 0;
         }
+        this.meta = 0;
     }
 }

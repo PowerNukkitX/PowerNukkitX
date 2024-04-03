@@ -49,16 +49,16 @@ public abstract class Item implements Cloneable, ItemID {
     public static final Item[] EMPTY_ARRAY = new Item[0];
 
     public static String UNKNOWN_STR = "Unknown";
-    protected Block block = null;
     protected String id;
     protected Identifier identifier;
+    protected String name;
     protected int meta;
+    public int count;
+    protected Integer netId;
+    protected Block block = null;
     protected boolean hasMeta = true;
     private byte[] tags = EmptyArrays.EMPTY_BYTES;
     private CompoundTag cachedNBT;
-    public int count;
-    protected String name;
-    protected Integer netId;
     private static int STACK_NETWORK_ID_COUNTER = 1;
 
     private String idConvertToName() {

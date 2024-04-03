@@ -13,12 +13,6 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityDamageByEntityEvent extends EntityDamageEvent {
-    private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
-
     private @NotNull final Entity damager;
 
     private float knockBack;

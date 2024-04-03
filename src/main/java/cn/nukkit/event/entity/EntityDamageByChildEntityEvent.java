@@ -7,12 +7,6 @@ import cn.nukkit.event.HandlerList;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityDamageByChildEntityEvent extends EntityDamageByEntityEvent {
-    private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
-
     private final Entity childEntity;
 
     public EntityDamageByChildEntityEvent(Entity damager, Entity childEntity, Entity entity, DamageCause cause, float damage) {
