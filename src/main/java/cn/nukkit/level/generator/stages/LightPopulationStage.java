@@ -18,7 +18,6 @@ public class LightPopulationStage extends GenerateStage {
         if (chunk == null) {
             return;
         }
-
         chunk.recalculateHeightMap();
         chunk.populateSkyLight();
         chunk.setLightPopulated();

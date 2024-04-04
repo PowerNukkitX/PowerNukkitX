@@ -108,8 +108,8 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
                 //TODO: 未知原因的 ConcurrentModificationException
             }
 
-            chunk.recalculateHeightMap();
             if (Server.getInstance().getConfig("chunk-ticking.light-updates", true)) {
+                chunk.recalculateHeightMap();
                 chunk.populateSkyLight();
                 chunk.setLightPopulated();
             }
