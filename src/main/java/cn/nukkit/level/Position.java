@@ -249,7 +249,7 @@ public class Position extends NamedPosition {
         return (Position) super.clone();
     }
 
-    public @Nullable IChunk getChunk() {
+    public IChunk getChunk() {
         return isValid() ? level.getChunk(getChunkX(), getChunkZ()) : null;
     }
 }

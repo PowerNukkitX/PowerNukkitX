@@ -58,19 +58,7 @@ public class ItemPainting extends Item {
 
         List<EntityPainting.Motive> validMotives = new ArrayList<>();
         for (EntityPainting.Motive motive : EntityPainting.motives) {
-            boolean valid = true;
-            for (int x = 0; x < motive.width && valid; x++) {
-                for (int z = 0; z < motive.height && valid; z++) {
-                    if (target.getSide(BlockFace.fromIndex(RIGHT[face.getIndex() - 2]), x).isTransparent() ||
-                            target.up(z).isTransparent() ||
-                            block.getSide(BlockFace.fromIndex(RIGHT[face.getIndex() - 2]), x).isSolid() ||
-                            block.up(z).isSolid()) {
-                        valid = false;
-                    }
-                }
-            }
-
-            if (valid) {
+            if (motive.predicate.test(target.getLevel(), face, block, target)) {
                 validMotives.add(motive);
             }
         }

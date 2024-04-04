@@ -21,7 +21,6 @@ import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.item.EntityArmorStand;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.mob.EntityEnderDragon;
-import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.block.FarmLandDecayEvent;
@@ -491,6 +490,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if ((chunk == null || chunk.getProvider() == null)) {
             throw new ChunkException("Invalid garbage Chunk given to Entity");
         }
+        this.id = Entity.entityCount.getAndIncrement();
         this.isPlayer = this instanceof Player;
         this.temporalVector = new Vector3();
         this.justCreated = true;
@@ -556,7 +556,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             }
             this.initialized = true;
 
-            this.id = Entity.entityCount.getAndIncrement();
             this.chunk.addEntity(this);
             this.level.addEntity(this);
 
