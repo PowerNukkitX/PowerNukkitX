@@ -122,26 +122,6 @@ public class ItemPainting extends Item {
         return true;
     }
 
-    private static boolean checkPlace(Level level, BlockFace blockFace, EntityPainting.Motive motive, Vector3 vector3) {
-        int width = motive.width;
-        int height = motive.height;
-
-        for (int i = 1; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                if (blockFace.getAxis() == BlockFace.Axis.X) {
-                    if (!level.getBlock(vector3.add(i, -j)).isAir()) {
-                        return true;
-                    }
-                } else if (blockFace.getAxis() == BlockFace.Axis.Z) {
-                    if (!level.getBlock(vector3.add(0, -j, i)).isAir()) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
     private static double offset(int value) {
         return value > 1 ? 0.5 : 0;
     }
