@@ -197,6 +197,9 @@ public class HumanInventory extends BaseInventory {
             }
         } else {
             super.onSlotChange(index, before, send);
+            if (isHotbarSlot(index) && !before.equals(this.slots.get(index))) {
+                equipItem(index);
+            }
         }
     }
 

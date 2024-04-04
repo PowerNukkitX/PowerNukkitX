@@ -1257,12 +1257,11 @@ public abstract class Item implements Cloneable, ItemID {
 
     public final boolean equals(Item item, boolean checkDamage, boolean checkCompound) {
         if (!Objects.equals(this.getId(), item.getId())) return false;
-        if (checkDamage && this.hasMeta() && item.hasMeta()) {
-            if (this.getDamage() != item.getDamage()) {
-                if (this.isBlock() && item.isBlock()) {
-                    if (this.getBlockUnsafe().getBlockState() != item.getBlockUnsafe().getBlockState()) return false;
-                } else return false;
-            }
+        if (checkDamage && this.hasMeta() && item.hasMeta() && this.getDamage() != item.getDamage()) {
+            return false;
+        }
+        if (checkDamage && (this.isBlock() || item.isBlock()) && this.getBlockUnsafe().getBlockState() != item.getBlockUnsafe().getBlockState()) {
+            return false;
         }
         if (checkCompound && (this.hasCompoundTag() || item.hasCompoundTag())) {
             return Objects.equals(this.getNamedTag(), item.getNamedTag());

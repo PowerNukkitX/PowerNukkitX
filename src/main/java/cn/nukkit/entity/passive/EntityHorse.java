@@ -324,7 +324,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     public boolean onUpdate(int currentTick) {
         boolean b = super.onUpdate(currentTick);
         if (currentTick % 2 == 0) {
-            if (this.jumping.get() && this.isOnGround()) {
+            if (this.jumping!=null && this.jumping.get() && this.isOnGround()) {
                 this.setDataFlag(EntityFlag.STANDING, false);
                 this.jumping.set(false);
             }
