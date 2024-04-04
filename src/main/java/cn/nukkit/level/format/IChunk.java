@@ -141,7 +141,7 @@ public interface IChunk {
 
     void recalculateHeightMap();
 
-    int recalculateHeightMapColumn(@Range(from = 0,to = 15) int chunkX,@Range(from = 0,to = 15) int chunkZ);
+    int recalculateHeightMapColumn(@Range(from = 0,to = 15) int x,@Range(from = 0,to = 15) int z);
 
     void populateSkyLight();
 
