@@ -109,6 +109,10 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
         if (player == null) {
             return false;
         }
+            Item itemInHand = player.getInventory().getItemInHand();
+            if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
+                return false;
+            }
 
         BlockEntityFurnace furnace = getOrCreateBlockEntity();
         if (furnace.namedTag.contains("Lock") && furnace.namedTag.get("Lock") instanceof StringTag

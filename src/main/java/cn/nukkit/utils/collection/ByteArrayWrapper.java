@@ -1,7 +1,5 @@
 package cn.nukkit.utils.collection;
 
-import cn.nukkit.api.DeprecationDetails;
-
 
 public interface ByteArrayWrapper {
     byte[] getRawBytes();

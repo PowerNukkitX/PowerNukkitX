@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * @author joserobjr
@@ -53,7 +54,7 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if (player == null || item.isNull() || item.getId() != ItemID.COMPASS && item.getId() != ItemID.LODESTONE_COMPASS) {
+        if (player == null || item.isNull() || !Objects.equals(item.getId(), ItemID.COMPASS) && !Objects.equals(item.getId(), ItemID.LODESTONE_COMPASS)) {
             return false;
         }
 

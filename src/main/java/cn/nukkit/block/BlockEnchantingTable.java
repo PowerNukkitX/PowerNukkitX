@@ -117,6 +117,10 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
         if (player == null) {
             return true;
         }
+        Item itemInHand = player.getInventory().getItemInHand();
+        if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
+            return false;
+        }
 
         BlockEntityEnchantTable enchantTable = getOrCreateBlockEntity();
         if (enchantTable.namedTag.contains("Lock") && enchantTable.namedTag.get("Lock") instanceof StringTag

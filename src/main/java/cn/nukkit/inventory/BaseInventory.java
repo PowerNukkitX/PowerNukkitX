@@ -20,15 +20,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -450,15 +442,14 @@ public abstract class BaseInventory implements Inventory {
             this.sendSlot(index, this.getViewers());
         }
 
-        if (holder instanceof BlockEntity) {
-            ((BlockEntity) holder).setDirty();
+        if (holder instanceof BlockEntity blockEntity) {
+            blockEntity.setDirty();
         }
 
-        if (before.getId() == ItemID.LODESTONE_COMPASS || getUnclonedItem(index).getId() == ItemID.LODESTONE_COMPASS) {
-            if (holder instanceof Player) {
-                ((Player) holder).updateTrackingPositions(true);
+        if (Objects.equals(before.getId(), ItemID.LODESTONE_COMPASS) || Objects.equals(getUnclonedItem(index).getId(), ItemID.LODESTONE_COMPASS)) {
+            if (holder instanceof Player p) {
+                p.updateTrackingPositions(true);
             }
-
             getViewers().forEach(p -> p.updateTrackingPositions(true));
         }
 

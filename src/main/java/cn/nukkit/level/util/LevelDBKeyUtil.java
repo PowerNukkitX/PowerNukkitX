@@ -66,7 +66,11 @@ public enum LevelDBKeyUtil {
     /**
      * Stores PNX-defined extra data,BIG BYTE_ORDER NBT FORMAT
      */
-    PNX_EXTRA_DATA('|');
+    PNX_EXTRA_DATA('|'),
+    /**
+     * Stores PNX-defined extra data,blockLight and SkyLight
+     */
+    PNX_LIGHT('}');
 
     private final byte encoded;
 
@@ -139,8 +143,6 @@ public enum LevelDBKeyUtil {
     }
 
     public byte[] getKey(int chunkX, int chunkZ, int chunkSectionY, DimensionData dimension) {
-        if (this.encoded != CHUNK_SECTION_PREFIX.encoded)
-            throw new IllegalArgumentException("The method must be used with CHUNK_SECTION_PREFIX!");
         if (dimension.equals(DimensionEnum.OVERWORLD.getDimensionData())) {
             return new byte[]{
                     (byte) (chunkX & 0xff),

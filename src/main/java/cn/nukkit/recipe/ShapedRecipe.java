@@ -22,6 +22,7 @@ public class ShapedRecipe extends CraftingRecipe {
 
     private final int row;
     private final int col;
+    private final boolean mirror;
 
     public ShapedRecipe(Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
         this(null, 1, primaryResult, shape, ingredients, extraResults);
@@ -49,13 +50,14 @@ public class ShapedRecipe extends CraftingRecipe {
     }
 
     public ShapedRecipe(String recipeId, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients, Collection<Item> extraResults) {
-        this(recipeId, null, priority, primaryResult, shape, ingredients, extraResults);
+        this(recipeId, null, priority, primaryResult, shape, ingredients, extraResults, false);
     }
 
-    public ShapedRecipe(String recipeId, UUID uuid, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients, Collection<Item> extraResults) {
+    public ShapedRecipe(String recipeId, UUID uuid, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients, Collection<Item> extraResults, boolean mirror) {
         super(recipeId == null ? Registries.RECIPE.computeRecipeId(Lists.asList(primaryResult, extraResults.toArray(Item.EMPTY_ARRAY)), ingredients.values(), SHAPED) : recipeId, priority);
         this.uuid = uuid;
         this.row = shape.length;
+        this.mirror = mirror;
         if (this.row > 3 || this.row <= 0) {
             throw new RuntimeException("Shaped recipes may only have 1, 2 or 3 rows, not " + this.row);
         }
@@ -149,15 +151,56 @@ public class ShapedRecipe extends CraftingRecipe {
 
     @Override
     public boolean match(Input input) {
-        ShapedRecipe.tryShrinkMatrix(input);
         Item[][] data = input.getData();
+
+        Input mirrorInput = null;
+        Item[][] mirrorData = null;
+        if (mirror && input.getCol() == 3 && input.getRow() == 3) {
+            mirrorInput = new Input(3, 3, mirrorData = mirrorItemArray(data));
+        }
+        tryShrinkMatrix(input);
+
+        boolean checkMirror = false;
+        next:
         for (int i = 0; i < input.getRow(); i++) {
             for (int j = 0; j < input.getCol(); j++) {
                 ItemDescriptor ingredient = getIngredient(j, i);
-                if (!ingredient.match(data[i][j])) return false;
+                if (!ingredient.match(data[i][j])) {
+                    if (mirrorInput != null) {
+                        checkMirror = true;
+                        break next;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        }
+        if(checkMirror){
+            tryShrinkMatrix(mirrorInput);
+            for (int i = 0; i < mirrorInput.getRow(); i++) {
+                for (int j = 0; j < mirrorInput.getCol(); j++) {
+                    ItemDescriptor ingredient = getIngredient(j, i);
+                    if (!ingredient.match(mirrorData[i][j])) {
+                        return false;
+                    }
+                }
             }
         }
         return true;
+    }
+
+    private static Item[][] mirrorItemArray(Item[][] data) {
+        Item[][] clone = new Item[3][3];
+        System.arraycopy(data[0], 0, clone[0], 0, 3);
+        System.arraycopy(data[1], 0, clone[1], 0, 3);
+        System.arraycopy(data[2], 0, clone[2], 0, 3);
+        Item tmp;
+        for (int i = 0; i < 3; i++) {
+            tmp = clone[i][2];
+            clone[i][2] = clone[i][0];
+            clone[i][0] = tmp;
+        }
+        return clone;
     }
 
     /**

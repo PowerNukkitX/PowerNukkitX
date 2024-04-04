@@ -63,9 +63,12 @@ public class BlockCartographyTable extends BlockSolid {
     @Override
     //todo feature
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        //if (player != null) {
-        //    player.craftingType = Player.CRAFTING_CARTOGRAPHY;
-        //}
+        if (player != null) {
+            Item itemInHand = player.getInventory().getItemInHand();
+            if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
+                return false;
+            }
+        }
         return false;
     }
 }

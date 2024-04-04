@@ -125,6 +125,12 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        if (player != null) {
+            Item itemInHand = player.getInventory().getItemInHand();
+            if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
+                return false;
+            }
+        }
         if (getMode() == Mode.SUBTRACT) {
             setMode(Mode.COMPARE);
         } else {

@@ -93,7 +93,10 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
         if (player == null) {
             return false;
         }
-
+        Item itemInHand = player.getInventory().getItemInHand();
+        if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
+            return false;
+        }
         BlockEntityBeacon entity = getOrCreateBlockEntity();
         player.addWindow(entity.getInventory());
         return true;

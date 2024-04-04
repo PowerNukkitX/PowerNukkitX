@@ -93,11 +93,6 @@ public interface LevelProvider {
 
     Map<Long, IChunk> getLoadedChunks();
 
-    void doGarbageCollection();
-
-    default void doGarbageCollection(long time) {
-    }
-
     Level getLevel();
 
     void close();
