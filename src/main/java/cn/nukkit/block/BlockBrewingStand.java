@@ -99,6 +99,10 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null) {
+            Item itemInHand = player.getInventory().getItemInHand();
+            if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
+                return false;
+            }
             BlockEntity t = getLevel().getBlockEntity(this);
             BlockEntityBrewingStand brewing;
             if (t instanceof BlockEntityBrewingStand) {

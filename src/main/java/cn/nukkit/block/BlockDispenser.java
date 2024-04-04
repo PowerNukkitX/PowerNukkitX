@@ -123,6 +123,10 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
         if (player == null) {
             return false;
         }
+        Item itemInHand = player.getInventory().getItemInHand();
+        if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
+            return false;
+        }
 
         InventoryHolder blockEntity = getBlockEntity();
 

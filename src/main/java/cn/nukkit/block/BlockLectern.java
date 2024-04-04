@@ -7,14 +7,12 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityLectern;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.LecternDropBookEvent;
-import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
@@ -120,6 +118,12 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        if (player != null) {
+            Item itemInHand = player.getInventory().getItemInHand();
+            if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
+                return false;
+            }
+        }
         BlockEntityLectern lectern = getOrCreateBlockEntity();
         Item currentBook = lectern.getBook();
         if (!currentBook.isNull()) {

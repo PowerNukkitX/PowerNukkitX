@@ -134,6 +134,10 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
         if (player == null) {
             return false;
         }
+        Item itemInHand = player.getInventory().getItemInHand();
+        if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
+            return false;
+        }
 
         Block top = this.up();
         if (!top.isTransparent()) {
