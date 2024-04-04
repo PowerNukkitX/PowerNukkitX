@@ -15,6 +15,13 @@ public abstract class CraftingRecipe extends BaseRecipe {
     }
 
 
+    /**
+     * Get the priority of this recipe,
+     * the lower the value, the higher the priority.
+     * and the same output recipe will be to match the higher priority
+     *
+     * @return the priority
+     */
     public int getPriority() {
         return priority;
     }

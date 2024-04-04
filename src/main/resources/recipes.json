@@ -25317,7 +25317,8 @@
           "count": 1,
           "itemId": "minecraft:stick",
           "auxValue": 32767
-        }
+        },
+        "mirror": true
       },
       "output": [
         {
@@ -26968,7 +26969,8 @@
           "count": 1,
           "itemId": "minecraft:stick",
           "auxValue": 32767
-        }
+        },
+        "mirror": true
       },
       "output": [
         {
@@ -28998,7 +29000,8 @@
           "count": 1,
           "itemId": "minecraft:stick",
           "auxValue": 32767
-        }
+        },
+        "mirror": true
       },
       "output": [
         {
@@ -42106,7 +42109,8 @@
           "count": 1,
           "itemId": "minecraft:stick",
           "auxValue": 32767
-        }
+        },
+        "mirror": true
       },
       "output": [
         {
@@ -42140,7 +42144,8 @@
           "count": 1,
           "itemId": "minecraft:stick",
           "auxValue": 32767
-        }
+        },
+        "mirror": true
       },
       "output": [
         {
@@ -42174,7 +42179,8 @@
           "count": 1,
           "itemId": "minecraft:stick",
           "auxValue": 32767
-        }
+        },
+        "mirror": true
       },
       "output": [
         {
@@ -45454,7 +45460,8 @@
           "count": 1,
           "itemId": "minecraft:stick",
           "auxValue": 32767
-        }
+        },
+        "mirror": true
       },
       "output": [
         {
@@ -45488,7 +45495,8 @@
           "count": 1,
           "itemId": "minecraft:stick",
           "auxValue": 32767
-        }
+        },
+        "mirror": true
       },
       "output": [
         {
@@ -45522,7 +45530,8 @@
           "count": 1,
           "itemId": "minecraft:stick",
           "auxValue": 32767
-        }
+        },
+        "mirror": true
       },
       "output": [
         {
@@ -45556,7 +45565,8 @@
           "count": 1,
           "itemId": "minecraft:stick",
           "auxValue": 32767
-        }
+        },
+        "mirror": true
       },
       "output": [
         {

@@ -708,15 +708,20 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
             extraResults.add(output.toItem());
         }
 
-        Map<String, Map<String, Object>> input = (Map<String, Map<String, Object>>) recipeObject.get("input");
-        for (Map.Entry<String, Map<String, Object>> ingredientEntry : input.entrySet()) {
+        Map input = (Map) recipeObject.get("input");
+        boolean mirror = false;
+        if (input.containsKey("mirror")) {
+            mirror = Boolean.parseBoolean(input.remove("mirror").toString());
+        }
+        Map<String, Map<String, Object>> input2 = (Map<String, Map<String, Object>>) input;
+        for (Map.Entry<String, Map<String, Object>> ingredientEntry : input2.entrySet()) {
             char ingredientChar = ingredientEntry.getKey().charAt(0);
             var ingredient = ingredientEntry.getValue();
             ItemDescriptor itemDescriptor = parseRecipeItem(ingredient);
             if (itemDescriptor == null) return null;
             ingredients.put(ingredientChar, itemDescriptor);
         }
-        return new ShapedRecipe(id, uuid, priority, primaryResult.toItem(), shape, ingredients, extraResults);
+        return new ShapedRecipe(id, uuid, priority, primaryResult.toItem(), shape, ingredients, extraResults, mirror);
     }
 
     private ItemDescriptor parseRecipeItem(Map<String, Object> data) {
