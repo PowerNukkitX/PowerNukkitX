@@ -7,20 +7,22 @@ import com.google.common.base.Preconditions;
 import java.util.Arrays;
 
 public class NibbleArray implements Cloneable {
+    private final int length;
     private final ByteArrayWrapper byteArrayWrapper;
 
     public NibbleArray(int length) {
         byteArrayWrapper = FreezableArrayManager.getInstance().createByteArray(length / 2);
+        this.length = length / 2;
     }
 
     public NibbleArray(byte[] array) {
         byteArrayWrapper = FreezableArrayManager.getInstance().wrapByteArray(array);
+        this.length = array.length;
     }
 
     public byte get(int index) {
-        final byte[] rawBytes = getData();
-        Preconditions.checkElementIndex(index, rawBytes.length * 2);
-        byte val = rawBytes[index / 2];
+        Preconditions.checkElementIndex(index, length * 2);
+        byte val = byteArrayWrapper.getByte(index / 2);
         if ((index & 1) == 0) {
             return (byte) (val & 0x0f);
         } else {
@@ -29,16 +31,15 @@ public class NibbleArray implements Cloneable {
     }
 
     public void set(int index, byte value) {
-        final byte[] rawBytes = getData();
         Preconditions.checkArgument(value >= 0 && value < 16, "Nibbles must have a value between 0 and 15.");
-        Preconditions.checkElementIndex(index, rawBytes.length * 2);
+        Preconditions.checkElementIndex(index, length * 2);
         value &= 0xf;
         int half = index / 2;
-        byte previous = rawBytes[half];
+        byte previous = byteArrayWrapper.getByte(half);
         if ((index & 1) == 0) {
-            rawBytes[half] = (byte) (previous & 0xf0 | value);
+            byteArrayWrapper.setByte(half, (byte) (previous & 0xf0 | value));
         } else {
-            rawBytes[half] = (byte) (previous & 0x0f | value << 4);
+            byteArrayWrapper.setByte(half, (byte) (previous & 0x0f | value << 4));
         }
     }
 
@@ -47,6 +48,7 @@ public class NibbleArray implements Cloneable {
         value &= 0xf;
         final byte[] rawBytes = getData();
         Arrays.fill(rawBytes, (byte) ((value << 4) | value));
+        byteArrayWrapper.setRawBytes(rawBytes);
     }
 
     public void copyFrom(byte[] bytes) {
@@ -55,6 +57,7 @@ public class NibbleArray implements Cloneable {
         Preconditions.checkArgument(bytes.length == rawBytes.length, "length of provided byte array is %s but expected %s", bytes.length,
                 rawBytes.length);
         System.arraycopy(bytes, 0, rawBytes, 0, rawBytes.length);
+        byteArrayWrapper.setRawBytes(rawBytes);
     }
 
     public void copyFrom(NibbleArray array) {

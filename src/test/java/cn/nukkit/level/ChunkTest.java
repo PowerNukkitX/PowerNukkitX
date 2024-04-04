@@ -38,21 +38,49 @@ public class ChunkTest {
     }
 
     @Test
-    void test_recalculateHeightMap(LevelProvider levelDBProvider) {
+    void testSetBlockSkyLight(LevelProvider levelDBProvider) {
         IChunk chunk = levelDBProvider.getChunk(0, 0);
+        chunk.setBlockSkyLight(0, 100, 0, 10);
+        Assertions.assertEquals(10, chunk.getBlockSkyLight(0, 100, 0));
+    }
+
+    @Test
+    void testSetBlockLight(LevelProvider levelDBProvider) {
+        IChunk chunk = levelDBProvider.getChunk(0, 0);
+        chunk.setBlockLight(0, 100, 0, 10);
+        Assertions.assertEquals(10, chunk.getBlockLight(0, 100, 0));
+    }
+
+    @Test
+    void testSetBiome(LevelProvider levelDBProvider) {
+        IChunk chunk = levelDBProvider.getChunk(0, 0);
+        chunk.setBiomeId(0, 100, 0, 10);
+        Assertions.assertEquals(10, chunk.getBiomeId(0, 100, 0));
+    }
+
+    @Test
+    void test_recalculateHeightMap(LevelProvider levelDBProvider) {
+        IChunk chunk = levelDBProvider.getChunk(1000, 1000, true);
+        levelDBProvider.getLevel().syncGenerateChunk(1000, 1000);
         chunk.recalculateHeightMap();
+        Assertions.assertEquals(5, chunk.getHeightMap(0, 0));
     }
 
     @Test
     void test_recalculateHeightMapColumn(LevelProvider levelDBProvider) {
-        IChunk chunk = levelDBProvider.getChunk(0, 0);
-        chunk.recalculateHeightMapColumn(0, 0);
+        IChunk chunk = levelDBProvider.getChunk(1000, 1000, true);
+        levelDBProvider.getLevel().syncGenerateChunk(1000, 1000);
+        chunk.recalculateHeightMapColumn(1000, 1000);
+        Assertions.assertEquals(5, chunk.getHeightMap(0, 0));
     }
 
     @Test
     void test_populateSkyLight(LevelProvider levelDBProvider) {
-        IChunk chunk = levelDBProvider.getChunk(0, 0);
+        IChunk chunk = levelDBProvider.getChunk(1000, 1000, true);
+        levelDBProvider.getLevel().syncGenerateChunk(1000, 1000);
         chunk.populateSkyLight();
+        Assertions.assertEquals(15, chunk.getBlockSkyLight(0, 5, 0));
+        Assertions.assertEquals(15, chunk.getBlockSkyLight(0, 6, 0));
     }
 
     @Test

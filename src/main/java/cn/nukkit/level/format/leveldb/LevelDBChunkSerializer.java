@@ -55,9 +55,10 @@ public class LevelDBChunkSerializer {
             try {
                 writeBatch.put(LevelDBKeyUtil.VERSION.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getProvider().getDimensionData()), new byte[]{IChunk.VERSION});
                 writeBatch.put(LevelDBKeyUtil.CHUNK_FINALIZED_STATE.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getDimensionData()), Unpooled.buffer(4).writeIntLE(unsafeChunk.getChunkState().ordinal() - 1).array());
-                writeBatch.put(LevelDBKeyUtil.PNX_EXTRA_DATA.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getDimensionData()), NBTIO.write(unsafeChunk.getExtraData()));
                 serializeBlock(writeBatch, unsafeChunk);
                 serializeHeightAndBiome(writeBatch, unsafeChunk);
+                serializeLight(writeBatch, unsafeChunk);
+                writeBatch.put(LevelDBKeyUtil.PNX_EXTRA_DATA.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getDimensionData()), NBTIO.write(unsafeChunk.getExtraData()));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -90,6 +91,54 @@ public class LevelDBChunkSerializer {
         deserializeBlock(db, builder, pnxExtraData);
         deserializeHeightAndBiome(db, builder, pnxExtraData);
         deserializeTileAndEntity(db, builder, pnxExtraData);
+        deserializeLight(db, builder, pnxExtraData);
+    }
+
+    //serialize chunk section light
+    private void serializeLight(WriteBatch writeBatch, UnsafeChunk chunk) {
+        ChunkSection[] sections = chunk.getSections();
+        for (var section : sections) {
+            if (section == null) {
+                continue;
+            }
+            ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
+            try {
+                byte[] blockLights = section.blockLights().getData();
+                buffer.writeInt(blockLights.length);
+                buffer.writeBytes(blockLights);
+                byte[] skyLights = section.skyLights().getData();
+                buffer.writeInt(skyLights.length);
+                buffer.writeBytes(skyLights);
+                writeBatch.put(LevelDBKeyUtil.PNX_LIGHT.getKey(chunk.getX(), chunk.getZ(), section.y(), chunk.getProvider().getDimensionData()), Utils.convertByteBuf2Array(buffer));
+            } finally {
+                buffer.release();
+            }
+        }
+    }
+
+    private void deserializeLight(DB db, IChunkBuilder builder, CompoundTag pnxExtraData) {
+        DimensionData dimensionInfo = builder.getDimensionData();
+        var minSectionY = dimensionInfo.getMinSectionY();
+        for (int ySection = minSectionY; ySection <= dimensionInfo.getMaxSectionY(); ySection++) {
+            byte[] bytes = db.get(LevelDBKeyUtil.PNX_LIGHT.getKey(builder.getChunkX(), builder.getChunkZ(), ySection, dimensionInfo));
+            if (bytes != null) {
+                ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
+                try {
+                    byteBuf.writeBytes(bytes);
+                    int i = byteBuf.readInt();
+                    byte[] blockLights = new byte[i];
+                    byteBuf.readBytes(blockLights);
+                    int i2 = byteBuf.readInt();
+                    byte[] skyLights = new byte[i2];
+                    byteBuf.readBytes(skyLights);
+                    final ChunkSection section = builder.getSections()[ySection - minSectionY];
+                    section.blockLights().copyFrom(blockLights);
+                    section.skyLights().copyFrom(skyLights);
+                } finally {
+                    byteBuf.release();
+                }
+            }
+        }
     }
 
     //serialize chunk section
