@@ -58,19 +58,7 @@ public class ItemPainting extends Item {
 
         List<EntityPainting.Motive> validMotives = new ArrayList<>();
         for (EntityPainting.Motive motive : EntityPainting.motives) {
-            boolean valid = true;
-            for (int x = 0; x < motive.width && valid; x++) {
-                for (int z = 0; z < motive.height && valid; z++) {
-                    if (target.getSide(BlockFace.fromIndex(RIGHT[face.getIndex() - 2]), x).isTransparent() ||
-                            target.up(z).isTransparent() ||
-                            block.getSide(BlockFace.fromIndex(RIGHT[face.getIndex() - 2]), x).isSolid() ||
-                            block.up(z).isSolid()) {
-                        valid = false;
-                    }
-                }
-            }
-
-            if (valid) {
+            if (motive.predicate.test(target.getLevel(), face, block, target)) {
                 validMotives.add(motive);
             }
         }
@@ -132,6 +120,26 @@ public class ItemPainting extends Item {
         level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, position.clone(), VibrationType.ENTITY_PLACE));
 
         return true;
+    }
+
+    private static boolean checkPlace(Level level, BlockFace blockFace, EntityPainting.Motive motive, Vector3 vector3) {
+        int width = motive.width;
+        int height = motive.height;
+
+        for (int i = 1; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (blockFace.getAxis() == BlockFace.Axis.X) {
+                    if (!level.getBlock(vector3.add(i, -j)).isAir()) {
+                        return true;
+                    }
+                } else if (blockFace.getAxis() == BlockFace.Axis.Z) {
+                    if (!level.getBlock(vector3.add(0, -j, i)).isAir()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private static double offset(int value) {

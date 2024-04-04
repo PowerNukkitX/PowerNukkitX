@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
@@ -67,11 +66,6 @@ public class BlockAir extends BlockTransparent {
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
-    }
-
-    @Override
-    public AxisAlignedBB getBoundingBox() {
-        return null;
     }
 
     @Override

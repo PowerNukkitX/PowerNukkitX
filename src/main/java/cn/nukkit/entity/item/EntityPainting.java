@@ -1,6 +1,7 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHanging;
@@ -8,6 +9,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.ItemPainting;
 import cn.nukkit.level.GameRule;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Axis;
@@ -16,19 +18,76 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddPaintingPacket;
 import cn.nukkit.network.protocol.DataPacket;
+import com.google.common.collect.Sets;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityPainting extends EntityHanging {
-
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return PAINTING;
+    }
+
+
+    private static boolean checkPlacePaint(int x, int z, Level level, BlockFace face, Block block, Block target) {
+        if (target.getSide(face.rotateYCCW(), x).isAir() ||
+                target.getSide(face.rotateYCCW(), x).up(z).isAir() ||
+                target.up(z).isAir()) {
+            return true;
+        } else {
+            Block side = block.getSide(face.rotateYCCW(), x);
+            Block up = block.getSide(face.rotateYCCW(), x).up(z).getLevelBlock();
+            Block up1 = block.up(z);
+            Set<IChunk> chunks = Sets.newHashSet(side.getChunk(), up.getChunk(), up1.getChunk());
+            Collection<Entity> entities = chunks.stream().map(c -> c.getEntities().values()).reduce(new ArrayList<>(), (e1, e2) -> {
+                e1.addAll(e2);
+                return e1;
+            }, (entities1, entities2) -> {
+                entities1.addAll(entities2);
+                return entities1;
+            });
+            for (var e : entities) {
+                if (e instanceof EntityPainting painting) {
+                    if (painting.getBoundingBox().intersectsWith(side) || painting.getBoundingBox().intersectsWith(up) || painting.getBoundingBox().intersectsWith(up1)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private static final Function<Integer, PaintingPlacePredicate> predicateFor4Width = (height) -> (level, face, block, target) -> {
+        for (int x = -1; x < 3; x++) {
+            for (int z = 0; z < height; z++) {
+                if (checkPlacePaint(x, z, level, face, block, target)) return false;
+            }
+        }
+        return true;
+    };
+
+    private static final PaintingPlacePredicate predicateFor4WidthHeight = (level, face, block, target) -> {
+        for (int x = -1; x < 3; x++) {
+            for (int z = -1; z < 3; z++) {
+                if (checkPlacePaint(x, z, level, face, block, target)) return false;
+            }
+        }
+        return true;
+    };
+
+    @FunctionalInterface
+    public interface PaintingPlacePredicate {
+        boolean test(Level level, BlockFace blockFace, Block block, Block target);
     }
 
     public final static Motive[] motives = Motive.values();
@@ -61,7 +120,19 @@ public class EntityPainting extends EntityHanging {
         return height;
     }
 
-    
+    @Override
+    public boolean onUpdate(int currentTick) {
+        boolean b = super.onUpdate(currentTick);
+        if (currentTick % 20 == 0) {
+            Block[] tickCachedCollisionBlocks = level.getTickCachedCollisionBlocks(this.getBoundingBox(), false, false, bl -> !bl.isAir());
+            if (tickCachedCollisionBlocks.length != (this.getMotive().height * this.getMotive().width)) {
+                this.level.dropItem(this, new ItemPainting());
+                this.close();
+                return false;
+            }
+        }
+        return b;
+    }
 
     @Override
     protected void initEntity() {
@@ -177,12 +248,12 @@ public class EntityPainting extends EntityHanging {
         VOID("Void", 2, 2),
         SKULL_AND_ROSES("SkullAndRoses", 2, 2),
         WITHER("Wither", 2, 2),
-        FIGHTERS("Fighters", 4, 2),
-        SKELETON("Skeleton", 4, 3),
-        DONKEY_KONG("DonkeyKong", 4, 3),
-        POINTER("Pointer", 4, 4),
-        PIG_SCENE("Pigscene", 4, 4),
-        BURNING_SKULL("BurningSkull", 4, 4);
+        FIGHTERS("Fighters", 4, 2, predicateFor4Width.apply(2)),
+        SKELETON("Skeleton", 4, 3, predicateFor4Width.apply(3)),
+        DONKEY_KONG("DonkeyKong", 4, 3, predicateFor4Width.apply(3)),
+        POINTER("Pointer", 4, 4, predicateFor4WidthHeight),
+        PIG_SCENE("Pigscene", 4, 4, predicateFor4WidthHeight),
+        BURNING_SKULL("BurningSkull", 4, 4, predicateFor4WidthHeight);
 
         private static final Map<String, Motive> BY_NAME = new HashMap<>();
 
@@ -195,11 +266,27 @@ public class EntityPainting extends EntityHanging {
         public final String title;
         public final int width;
         public final int height;
+        public final PaintingPlacePredicate predicate;
 
         Motive(String title, int width, int height) {
             this.title = title;
             this.width = width;
             this.height = height;
+            this.predicate = (level, face, block, target) -> {
+                for (int x = 0; x < width; x++) {
+                    for (int z = 0; z < height; z++) {
+                        if (checkPlacePaint(x, z, level, face, block, target)) return false;
+                    }
+                }
+                return true;
+            };
+        }
+
+        Motive(String title, int width, int height, PaintingPlacePredicate predicate) {
+            this.title = title;
+            this.width = width;
+            this.height = height;
+            this.predicate = predicate;
         }
     }
 }

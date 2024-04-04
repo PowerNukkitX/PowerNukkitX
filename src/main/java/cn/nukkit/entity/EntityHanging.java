@@ -55,28 +55,29 @@ public abstract class EntityHanging extends Entity {
             return false;
         }
 
-        if (!this.isAlive()) {
+        if (!this.isPlayer) {
+            this.blocksAround = null;
+            this.collisionBlocks = null;
+        }
 
+        if (!this.isAlive()) {
             this.despawnFromAll();
             if (!this.isPlayer) {
                 this.close();
             }
-
             return true;
         }
 
+        this.checkBlockCollision();
+
         if (this.lastYaw != this.yaw || this.lastX != this.x || this.lastY != this.y || this.lastZ != this.z) {
             this.despawnFromAll();
-
             this.direction = (int) (this.yaw / 90);
-
             this.lastYaw = this.yaw;
             this.lastX = this.x;
             this.lastY = this.y;
             this.lastZ = this.z;
-
             this.spawnToAll();
-
             return true;
         }
 
