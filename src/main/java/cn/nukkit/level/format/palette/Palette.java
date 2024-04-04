@@ -186,8 +186,9 @@ public final class Palette<V> {
     public boolean isEmpty() {
         if (this.palette.size() == 1) {
             for (int word : this.bitArray.words())
-                if (Integer.toUnsignedLong(word) != 0L)
+                if (word != 0L) {
                     return false;
+                }
             return true;
         } else return false;
     }

@@ -3790,24 +3790,6 @@ public class Level implements Metadatable {
             }
         }
         this.unloadChunks();
-
-        //gcSuper
-        this.requireProvider().doGarbageCollection();
-    }
-
-    /**
-     * 在一些空闲的时间片对Level进行内存垃圾收集
-     * <p>
-     * Run memory garbage collection on Level in some free time slices
-     *
-     * @param allocatedTime free time slices
-     */
-    public void doGarbageCollection(long allocatedTime) {
-        long start = System.currentTimeMillis();
-        if (unloadChunks(start, allocatedTime, false)) {
-            allocatedTime = allocatedTime - (System.currentTimeMillis() - start);
-            requireProvider().doGarbageCollection(allocatedTime);
-        }
     }
 
     public void unloadChunks() {
@@ -3854,60 +3836,6 @@ public class Level implements Metadatable {
                     }
                 }
             }
-        }
-    }
-
-    /**
-     * @param now
-     * @param allocatedTime
-     * @param force
-     * @return true if there is allocated time remaining
-     */
-    private boolean unloadChunks(long now, long allocatedTime, boolean force) {
-        if (!this.unloadQueue.isEmpty()) {
-            boolean result = true;
-            int maxIterations = this.unloadQueue.size();
-
-            if (lastUsingUnloadingIter == null)
-                lastUsingUnloadingIter = this.unloadQueue.fastEntrySet().iterator();
-
-            var iter = lastUsingUnloadingIter;
-
-            for (int i = 0; i < maxIterations; i++) {
-                if (!iter.hasNext()) {
-                    iter = this.unloadQueue.fastEntrySet().iterator();
-                }
-                if (!iter.hasNext()) {
-                    break;
-                }
-                var entry = iter.next();
-
-                long index = entry.getLongKey();
-
-                if (isChunkInUse(index)) {
-                    continue;
-                }
-
-                if (!force) {
-                    long time = entry.getValue();
-                    if (time > (now - Server.getInstance().getChunkUnloadDelay())) {
-                        continue;
-                    }
-                }
-
-                int X = getHashX(index);
-                int Z = getHashZ(index);
-                if (this.unloadChunk(X, Z, true)) {
-                    iter.remove();
-                    if (System.currentTimeMillis() - now >= allocatedTime) {
-                        result = false;
-                        break;
-                    }
-                }
-            }
-            return result;
-        } else {
-            return true;
         }
     }
 

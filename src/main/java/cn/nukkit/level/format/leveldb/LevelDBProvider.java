@@ -187,14 +187,6 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
-    public void doGarbageCollection() {
-    }
-
-    @Override
-    public void doGarbageCollection(long time) {
-    }
-
-    @Override
     public Level getLevel() {
         return level;
     }

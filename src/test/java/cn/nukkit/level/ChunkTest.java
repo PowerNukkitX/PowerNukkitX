@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @ExtendWith({GameMockExtension.class})
 public class ChunkTest {
     @Test
@@ -137,5 +139,12 @@ public class ChunkTest {
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    @Test
+    @SneakyThrows
+    void test_SectionIsEmpty() {
+        ChunkSection chunkSection = new ChunkSection((byte) 0);
+        assertTrue(chunkSection.isEmpty());
     }
 }

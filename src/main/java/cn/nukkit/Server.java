@@ -1063,8 +1063,6 @@ public class Server {
         this.forceShutdown();
     }
 
-    private int lastLevelGC;
-
     public void tickProcessor() {
         getScheduler().scheduleDelayedTask(new Task() {
             @Override
@@ -1085,21 +1083,6 @@ public class Server {
 
                     if (next - 0.1 > current) {
                         long allocated = next - current - 1;
-
-                        { // Instead of wasting time, do something potentially useful
-                            int offset = 0;
-                            for (int i = 0; i < levelArray.length; i++) {
-                                offset = (i + lastLevelGC) % levelArray.length;
-                                Level level = levelArray[offset];
-                                level.doGarbageCollection(allocated - 1);
-                                allocated = next - System.currentTimeMillis();
-                                if (allocated <= 0) {
-                                    break;
-                                }
-                            }
-                            lastLevelGC = offset + 1;
-                        }
-
                         if (allocated > 0) {
                             //noinspection BusyWait
                             Thread.sleep(allocated, 900000);
@@ -2445,11 +2428,7 @@ public class Server {
         if (config.exists()) {
             try {
                 levelConfig = gson.fromJson(new FileReader(config), LevelConfig.class);
-                provider = LevelProviderManager.getProviderByName(levelConfig.format());
-                if (provider == null) {
-                    log.error(this.getLanguage().tr("nukkit.level.loadError", name, "Unknown provider"));
-                    return false;
-                }
+                provider = LevelProviderManager.getProvider(path);
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -2460,7 +2439,6 @@ public class Server {
                 log.error(this.getLanguage().tr("nukkit.level.loadError", name, "Unknown provider"));
                 return false;
             }
-
             Map<Integer, LevelConfig.GeneratorConfig> map = new HashMap<>();
             //todo nether the_end overworld
             map.put(0, new LevelConfig.GeneratorConfig("flat", System.currentTimeMillis(), DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
@@ -2481,6 +2459,10 @@ public class Server {
             }
             Level level;
             try {
+                if (provider == null) {
+                    log.error(this.getLanguage().tr("nukkit.level.loadError", name, "the level does not exist"));
+                    return false;
+                }
                 level = new Level(this, levelName, path, generators.size(), provider, entry.getValue());
             } catch (Exception e) {
                 log.error(this.getLanguage().tr("nukkit.level.loadError", name, e.getMessage()), e);
