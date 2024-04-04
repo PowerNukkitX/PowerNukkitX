@@ -4,6 +4,9 @@
   <a href="https://jitpack.io/#PowerNukkitX/PowerNukkitX" target="_blank">
     <img alt="JitPack" src="https://jitpack.io/v/PowerNukkitX/PowerNukkitX.svg" />
   </a>
+  <a href="https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess" target="_blank">
+    <img alt="Action" src="https://github.com/PowerNukkitX/PowerNukkitX/actions/workflows/maven.yml/badge.svg?branch=master" />
+  </a>
   <img alt="Coverage" src=".github/badges/jacoco.svg" />
   <a href="https://dev.pnx-wiki.pages.dev/" target="_blank">
     <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
