@@ -8,6 +8,7 @@ import cn.nukkit.level.DimensionData;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Range;
 
 import java.io.IOException;
 import java.util.Map;
@@ -140,7 +141,7 @@ public interface IChunk {
 
     void recalculateHeightMap();
 
-    int recalculateHeightMapColumn(int chunkX, int chunkZ);
+    int recalculateHeightMapColumn(@Range(from = 0,to = 15) int chunkX,@Range(from = 0,to = 15) int chunkZ);
 
     void populateSkyLight();
 

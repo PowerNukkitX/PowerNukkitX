@@ -70,7 +70,7 @@ public class ChunkTest {
     void test_recalculateHeightMapColumn(LevelProvider levelDBProvider) {
         IChunk chunk = levelDBProvider.getChunk(1000, 1000, true);
         levelDBProvider.getLevel().syncGenerateChunk(1000, 1000);
-        chunk.recalculateHeightMapColumn(1000, 1000);
+        chunk.recalculateHeightMapColumn(0, 0);
         Assertions.assertEquals(5, chunk.getHeightMap(0, 0));
     }
 
