@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.OptionalBoolean;
@@ -9,9 +8,10 @@ import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DATA_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DIRECTION_6;
 
 public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
-    public static final BlockProperties PROPERTIES = new BlockProperties(ACTIVATOR_RAIL, RAIL_DATA_BIT, CommonBlockProperties.RAIL_DIRECTION_6);
+    public static final BlockProperties PROPERTIES = new BlockProperties(ACTIVATOR_RAIL, RAIL_DATA_BIT, RAIL_DIRECTION_6);
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -191,5 +191,18 @@ public class BlockActivatorRail extends BlockRail implements RedstoneComponent {
     @Override
     public double getHardness() {
         return 0.5;
+    }
+
+    /**
+     * Changes the rail direction.
+     *
+     * @param orientation The new orientation
+     */
+    public void setRailDirection(Rail.Orientation orientation) {
+        setPropertyValue(RAIL_DIRECTION_6, orientation.metadata());
+    }
+
+    public Rail.Orientation getOrientation() {
+        return Rail.Orientation.byMetadata(getPropertyValue(RAIL_DIRECTION_6));
     }
 }
