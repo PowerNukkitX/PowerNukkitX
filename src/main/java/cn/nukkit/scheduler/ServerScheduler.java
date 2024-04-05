@@ -49,6 +49,37 @@ public class ServerScheduler {
         return addTask(task, 0, 0, false);
     }
 
+    public TaskHandler scheduleTask(Runnable task) {
+        return addTask(null, task, 0, 0, false);
+    }
+
+    public TaskHandler scheduleTask(Runnable task, boolean asynchronous) {
+        return addTask(null, task, 0, 0, asynchronous);
+    }
+
+    public TaskHandler scheduleAsyncTask(AsyncTask task) {
+        return addTask(null, task, 0, 0, true);
+    }
+
+    public void scheduleAsyncTaskToWorker(AsyncTask task, int worker) {
+        scheduleAsyncTask(task);
+    }
+
+    public TaskHandler scheduleDelayedTask(Runnable task, int delay, boolean asynchronous) {
+        return addTask(null, task, delay, 0, asynchronous);
+    }
+
+    public TaskHandler scheduleRepeatingTask(Runnable task, int period, boolean asynchronous) {
+        return addTask(null, task, 0, period, asynchronous);
+    }
+
+    public TaskHandler scheduleDelayedRepeatingTask(Runnable task, int delay, int period) {
+        return addTask(null, task, delay, period, false);
+    }
+
+    public TaskHandler scheduleDelayedRepeatingTask(Runnable task, int delay, int period, boolean asynchronous) {
+        return addTask(null, task, delay, period, asynchronous);
+    }
 
     /**
      * 设置一个只执行一次的任务 delay=0 period=0 asynchronous=false
