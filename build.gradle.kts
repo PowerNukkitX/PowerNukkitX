@@ -163,42 +163,18 @@ tasks.withType<AbstractCopyTask>() {
 }
 
 tasks.named<AbstractArchiveTask>("sourcesJar") {
-    dependsOn("copySomeFile")
     destinationDirectory = layout.buildDirectory
-}
-
-tasks.compileTestJava {
-    dependsOn("copySomeFile")
 }
 
 tasks.jar {
     destinationDirectory = layout.buildDirectory
-    finalizedBy("copySomeFile")
     doLast {//execution phase
         project.extra["jarfile"] = archiveFile.get()
     }
 }
 
-tasks.register<Copy>("copySomeFile") {
-    dependsOn("jar")
-    from(project.projectDir.resolve("scripts"))
-    into(layout.buildDirectory)
-    //Keep track of incremental update, and if it does, the copySomeFile task need to be updated
-    if (tasks.jar.get().isEnabled) {
-        // Input files are added only if the jar task exists
-        inputs.files(tasks.jar)
-    }
-    doLast {//execution phase
-        if (project.extra.has("jarfile")) {
-            val f: RegularFile = project.extra["jarfile"] as RegularFile
-            val tf: RegularFile = layout.buildDirectory.file("${project.description}.jar").get()
-            Files.copy(Path.of(f.asFile.absolutePath), Path.of(tf.asFile.absolutePath), StandardCopyOption.REPLACE_EXISTING)
-        }
-    }
-}
-
 tasks.shadowJar {
-    dependsOn("copyDependencies", "copySomeFile")
+    dependsOn("copyDependencies")
     manifest {
         attributes(
                 "Main-Class" to "cn.nukkit.JarStart"
@@ -216,10 +192,6 @@ tasks.register<Copy>("copyDependencies") {
     description = "Copy all dependencies to libs folder"
     from(configurations.runtimeClasspath)
     into(layout.buildDirectory.dir("libs"))
-}
-
-tasks.delombok {
-    dependsOn("copySomeFile")
 }
 
 tasks.javadoc {
