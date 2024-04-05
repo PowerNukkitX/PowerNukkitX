@@ -329,8 +329,8 @@ public enum BlockFace {
     }
 
     public enum Axis implements Predicate<BlockFace> {
-        X("x"),
         Y("y"),
+        X("x"),
         Z("z");
 
         private final String name;

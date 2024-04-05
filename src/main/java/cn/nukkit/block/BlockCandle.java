@@ -9,7 +9,6 @@ import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-
 import java.util.Objects;
 
 import static cn.nukkit.block.property.CommonBlockProperties.CANDLES;
@@ -25,7 +24,8 @@ public class BlockCandle extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(CANDLE, CANDLES, LIT);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -47,7 +47,7 @@ public class BlockCandle extends BlockFlowable {
             target.getLevel().setBlock(target, toCakeForm(), true, true);
             return true;
         }
-        if (target.up().getId().equals(getId())) {
+        if (!(target instanceof BlockCandle) && target.up() instanceof BlockCandle) {
             target = target.up();
         }
         if (target.getId().equals(getId())) {

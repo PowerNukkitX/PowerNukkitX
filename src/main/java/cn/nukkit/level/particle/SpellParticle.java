@@ -39,7 +39,7 @@ public class SpellParticle extends Particle {
     @Override
     public DataPacket[] encode() {
         LevelEventPacket pk = new LevelEventPacket();
-        pk.evid = LevelEventPacket.EVENT_PARTICLE_SPLASH;
+        pk.evid = LevelEventPacket.EVENT_PARTICLE_POTION_SPLASH;
         pk.x = (float) this.x;
         pk.y = (float) this.y;
         pk.z = (float) this.z;

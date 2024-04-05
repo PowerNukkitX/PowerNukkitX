@@ -14,610 +14,490 @@ import static cn.nukkit.utils.Utils.dynamic;
 public class LevelSoundEventPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.LEVEL_SOUND_EVENT_PACKET;
 
-    public static final int SOUND_ITEM_USE_ON = 0;
-    public static final int SOUND_HIT = 1;
-    public static final int SOUND_STEP = 2;
-    public static final int SOUND_FLY = 3;
-    public static final int SOUND_JUMP = 4;
-    public static final int SOUND_BREAK = 5;
-    public static final int SOUND_PLACE = 6;
-    public static final int SOUND_HEAVY_STEP = 7;
-    public static final int SOUND_GALLOP = 8;
-    public static final int SOUND_FALL = 9;
-    public static final int SOUND_AMBIENT = 10;
-    public static final int SOUND_AMBIENT_BABY = 11;
-    public static final int SOUND_AMBIENT_IN_WATER = 12;
-    public static final int SOUND_BREATHE = 13;
-    public static final int SOUND_DEATH = 14;
-    public static final int SOUND_DEATH_IN_WATER = 15;
-    public static final int SOUND_DEATH_TO_ZOMBIE = 16;
-    public static final int SOUND_HURT = 17;
-    public static final int SOUND_HURT_IN_WATER = 18;
-    public static final int SOUND_MAD = 19;
-    public static final int SOUND_BOOST = 20;
-    public static final int SOUND_BOW = 21;
-    public static final int SOUND_SQUISH_BIG = 22;
-    public static final int SOUND_SQUISH_SMALL = 23;
-    public static final int SOUND_FALL_BIG = 24;
-    public static final int SOUND_FALL_SMALL = 25;
-    public static final int SOUND_SPLASH = 26;
-    public static final int SOUND_FIZZ = 27;
-    public static final int SOUND_FLAP = 28;
-    public static final int SOUND_SWIM = 29;
-    public static final int SOUND_DRINK = 30;
-    public static final int SOUND_EAT = 31;
-    public static final int SOUND_TAKEOFF = 32;
-    public static final int SOUND_SHAKE = 33;
-    public static final int SOUND_PLOP = 34;
-    public static final int SOUND_LAND = 35;
-    public static final int SOUND_SADDLE = 36;
-    public static final int SOUND_ARMOR = 37;
-    public static final int SOUND_MOB_ARMOR_STAND_PLACE = 38;
-    public static final int SOUND_ADD_CHEST = 39;
-    public static final int SOUND_THROW = 40;
-    public static final int SOUND_ATTACK = 41;
-    public static final int SOUND_ATTACK_NODAMAGE = 42;
-    public static final int SOUND_ATTACK_STRONG = 43;
-    public static final int SOUND_WARN = 44;
-    public static final int SOUND_SHEAR = 45;
-    public static final int SOUND_MILK = 46;
-    public static final int SOUND_THUNDER = 47;
-    public static final int SOUND_EXPLODE = 48;
-    public static final int SOUND_FIRE = 49;
-    public static final int SOUND_IGNITE = 50;
-    public static final int SOUND_FUSE = 51;
-    public static final int SOUND_STARE = 52;
-    public static final int SOUND_SPAWN = 53;
-    public static final int SOUND_SHOOT = 54;
-    public static final int SOUND_BREAK_BLOCK = 55;
-    public static final int SOUND_LAUNCH = 56;
-    public static final int SOUND_BLAST = 57;
-    public static final int SOUND_LARGE_BLAST = 58;
-    public static final int SOUND_TWINKLE = 59;
-    public static final int SOUND_REMEDY = 60;
-    public static final int SOUND_UNFECT = 61;
-    public static final int SOUND_LEVELUP = 62;
-    public static final int SOUND_BOW_HIT = 63;
-    public static final int SOUND_BULLET_HIT = 64;
-    public static final int SOUND_EXTINGUISH_FIRE = 65;
-    public static final int SOUND_ITEM_FIZZ = 66;
-    public static final int SOUND_CHEST_OPEN = 67;
-    public static final int SOUND_CHEST_CLOSED = 68;
-    public static final int SOUND_SHULKERBOX_OPEN = 69;
-    public static final int SOUND_SHULKERBOX_CLOSED = 70;
-    public static final int SOUND_ENDERCHEST_OPEN = 71;
-    public static final int SOUND_ENDERCHEST_CLOSED = 72;
-    public static final int SOUND_POWER_ON = 73;
-    public static final int SOUND_POWER_OFF = 74;
-    public static final int SOUND_ATTACH = 75;
-    public static final int SOUND_DETACH = 76;
-    public static final int SOUND_DENY = 77;
-    public static final int SOUND_TRIPOD = 78;
-    public static final int SOUND_POP = 79;
-    public static final int SOUND_DROP_SLOT = 80;
-    public static final int SOUND_NOTE = 81;
-    public static final int SOUND_THORNS = 82;
-    public static final int SOUND_PISTON_IN = 83;
-    public static final int SOUND_PISTON_OUT = 84;
-    public static final int SOUND_PORTAL = 85;
-    public static final int SOUND_WATER = 86;
-    public static final int SOUND_LAVA_POP = 87;
-    public static final int SOUND_LAVA = 88;
-    public static final int SOUND_BURP = 89;
-    public static final int SOUND_BUCKET_FILL_WATER = 90;
-    public static final int SOUND_BUCKET_FILL_LAVA = 91;
-    public static final int SOUND_BUCKET_EMPTY_WATER = 92;
-    public static final int SOUND_BUCKET_EMPTY_LAVA = 93;
-    public static final int SOUND_ARMOR_EQUIP_CHAIN = 94;
-    public static final int SOUND_ARMOR_EQUIP_DIAMOND = 95;
-    public static final int SOUND_ARMOR_EQUIP_GENERIC = 96;
-    public static final int SOUND_ARMOR_EQUIP_GOLD = 97;
-    public static final int SOUND_ARMOR_EQUIP_IRON = 98;
-    public static final int SOUND_ARMOR_EQUIP_LEATHER = 99;
-    public static final int SOUND_ARMOR_EQUIP_ELYTRA = 100;
-    public static final int SOUND_RECORD_13 = 101;
-    public static final int SOUND_RECORD_CAT = 102;
-    public static final int SOUND_RECORD_BLOCKS = 103;
-    public static final int SOUND_RECORD_CHIRP = 104;
-    public static final int SOUND_RECORD_FAR = 105;
-    public static final int SOUND_RECORD_MALL = 106;
-    public static final int SOUND_RECORD_MELLOHI = 107;
-    public static final int SOUND_RECORD_STAL = 108;
-    public static final int SOUND_RECORD_STRAD = 109;
-    public static final int SOUND_RECORD_WARD = 110;
-    public static final int SOUND_RECORD_11 = 111;
-    public static final int SOUND_RECORD_WAIT = 112;
-    public static final int SOUND_STOP_RECORD = 113; //Not really a sound
-    public static final int SOUND_GUARDIAN_FLOP = 114;
-    public static final int SOUND_ELDERGUARDIAN_CURSE = 115;
-    public static final int SOUND_MOB_WARNING = 116;
-    public static final int SOUND_MOB_WARNING_BABY = 117;
-    public static final int SOUND_TELEPORT = 118;
-    public static final int SOUND_SHULKER_OPEN = 119;
-    public static final int SOUND_SHULKER_CLOSE = 120;
-    public static final int SOUND_HAGGLE = 121;
-    public static final int SOUND_HAGGLE_YES = 122;
-    public static final int SOUND_HAGGLE_NO = 123;
-    public static final int SOUND_HAGGLE_IDLE = 124;
-    public static final int SOUND_CHORUSGROW = 125;
-    public static final int SOUND_CHORUSDEATH = 126;
-    public static final int SOUND_GLASS = 127;
-    public static final int SOUND_POTION_BREWED = 128;
-    public static final int SOUND_CAST_SPELL = 129;
-    public static final int SOUND_PREPARE_ATTACK = 130;
-    public static final int SOUND_PREPARE_SUMMON = 131;
-    public static final int SOUND_PREPARE_WOLOLO = 132;
-    public static final int SOUND_FANG = 133;
-    public static final int SOUND_CHARGE = 134;
-    public static final int SOUND_CAMERA_TAKE_PICTURE = 135;
-    public static final int SOUND_LEASHKNOT_PLACE = 136;
-    public static final int SOUND_LEASHKNOT_BREAK = 137;
-    public static final int SOUND_GROWL = 138;
-    public static final int SOUND_WHINE = 139;
-    public static final int SOUND_PANT = 140;
-    public static final int SOUND_PURR = 141;
-    public static final int SOUND_PURREOW = 142;
-    public static final int SOUND_DEATH_MIN_VOLUME = 143;
-    public static final int SOUND_DEATH_MID_VOLUME = 144;
-    public static final int SOUND_IMITATE_BLAZE = 145;
-    public static final int SOUND_IMITATE_CAVE_SPIDER = 146;
-    public static final int SOUND_IMITATE_CREEPER = 147;
-    public static final int SOUND_IMITATE_ELDER_GUARDIAN = 148;
-    public static final int SOUND_IMITATE_ENDER_DRAGON = 149;
-    public static final int SOUND_IMITATE_ENDERMAN = 150;
-    public static final int SOUND_IMITATE_ENDERMITE = 151;
-    public static final int SOUND_IMITATE_EVOCATION_ILLAGER = 152;
-    public static final int SOUND_IMITATE_GHAST = 153;
-    public static final int SOUND_IMITATE_HUSK = 154;
-    public static final int SOUND_IMITATE_ILLUSION_ILLAGER = 155;
-    public static final int SOUND_IMITATE_MAGMA_CUBE = 156;
-    public static final int SOUND_IMITATE_POLAR_BEAR = 157;
-    public static final int SOUND_IMITATE_SHULKER = 158;
-    public static final int SOUND_IMITATE_SILVERFISH = 159;
-    public static final int SOUND_IMITATE_SKELETON = 160;
-    public static final int SOUND_IMITATE_SLIME = 161;
-    public static final int SOUND_IMITATE_SPIDER = 162;
-    public static final int SOUND_IMITATE_STRAY = 163;
-    public static final int SOUND_IMITATE_VEX = 164;
-    public static final int SOUND_IMITATE_VINDICATION_ILLAGER = 165;
-    public static final int SOUND_IMITATE_WITCH = 166;
-    public static final int SOUND_IMITATE_WITHER = 167;
-    public static final int SOUND_IMITATE_WITHER_SKELETON = 168;
-    public static final int SOUND_IMITATE_WOLF = 169;
-    public static final int SOUND_IMITATE_ZOMBIE = 170;
-    public static final int SOUND_IMITATE_ZOMBIE_PIGMAN = 171;
-    public static final int SOUND_IMITATE_ZOMBIE_VILLAGER = 172;
-    public static final int SOUND_BLOCK_END_PORTAL_FRAME_FILL = 173;
-    public static final int SOUND_BLOCK_END_PORTAL_SPAWN = 174;
-    public static final int SOUND_RANDOM_ANVIL_USE = 175;
-    public static final int SOUND_BOTTLE_DRAGONBREATH = 176;
-    public static final int SOUND_PORTAL_TRAVEL = 177;
-    public static final int SOUND_ITEM_TRIDENT_HIT = 178;
-    public static final int SOUND_ITEM_TRIDENT_RETURN = 179;
-    public static final int SOUND_ITEM_TRIDENT_RIPTIDE_1 = 180;
-    public static final int SOUND_ITEM_TRIDENT_RIPTIDE_2 = 181;
-    public static final int SOUND_ITEM_TRIDENT_RIPTIDE_3 = 182;
-    public static final int SOUND_ITEM_TRIDENT_THROW = 183;
-    public static final int SOUND_ITEM_TRIDENT_THUNDER = 184;
-    public static final int SOUND_ITEM_TRIDENT_HIT_GROUND = 185;
-    public static final int SOUND_DEFAULT = 186;
-    public static final int SOUND_BLOCK_FLETCHING_TABLE_USE = 187;
-    public static final int SOUND_ELEMCONSTRUCT_OPEN = 188;
-    public static final int SOUND_ICEBOMB_HIT = 189;
-    public static final int SOUND_BALLOONPOP = 190;
-    public static final int SOUND_LT_REACTION_ICEBOMB = 191;
-    public static final int SOUND_LT_REACTION_BLEACH = 192;
-    public static final int SOUND_LT_REACTION_EPASTE = 193;
-    public static final int SOUND_LT_REACTION_EPASTE2 = 194;
-    public static final int SOUND_LT_REACTION_GLOW_STICK = 195;
-    public static final int SOUND_LT_REACTION_GLOW_STICK_2 = 196;
-    public static final int SOUND_LT_REACTION_LUMINOL = 197;
-    public static final int SOUND_LT_REACTION_SALT = 198;
-    public static final int SOUND_LT_REACTION_FERTILIZER = 199;
-    public static final int SOUND_LT_REACTION_FIREBALL = 200;
-    public static final int SOUND_LT_REACTION_MGSALT = 201;
-    public static final int SOUND_LT_REACTION_MISCFIRE = 202;
-    public static final int SOUND_LT_REACTION_FIRE = 203;
-    public static final int SOUND_LT_REACTION_MISCEXPLOSION = 204;
-    public static final int SOUND_LT_REACTION_MISCMYSTICAL = 205;
-    public static final int SOUND_LT_REACTION_MISCMYSTICAL2 = 206;
-    public static final int SOUND_LT_REACTION_PRODUCT = 207;
-    public static final int SOUND_SPARKLER_USE = 208;
-    public static final int SOUND_GLOWSTICK_USE = 209;
-    public static final int SOUND_SPARKLER_ACTIVE = 210;
-    public static final int SOUND_CONVERT_TO_DROWNED = 211;
-    public static final int SOUND_BUCKET_FILL_FISH = 212;
-    public static final int SOUND_BUCKET_EMPTY_FISH = 213;
-    public static final int SOUND_BUBBLE_UP = 214;
-    public static final int SOUND_BUBBLE_DOWN = 215;
-    public static final int SOUND_BUBBLE_POP = 216;
-    public static final int SOUND_BUBBLE_UPINSIDE = 217;
-    public static final int SOUND_BUBBLE_DOWNINSIDE = 218;
-    public static final int SOUND_HURT_BABY = 219;
-    public static final int SOUND_DEATH_BABY = 220;
-    public static final int SOUND_STEP_BABY = 221;
-
-    public static final int SOUND_BABY_SPAWN = 222;
-    public static final int SOUND_BORN = 223;
-    public static final int SOUND_BLOCK_TURTLE_EGG_BREAK = 224;
-    public static final int SOUND_BLOCK_TURTLE_EGG_CRACK = 225;
-    public static final int SOUND_BLOCK_TURTLE_EGG_HATCH = 226;
-
-    public static final int SOUND_TURTLE_LAY_EGG = 227;
-    public static final int SOUND_BLOCK_TURTLE_EGG_ATTACK = 228;
-    public static final int SOUND_BEACON_ACTIVATE = 229;
-    public static final int SOUND_BEACON_AMBIENT = 230;
-    public static final int SOUND_BEACON_DEACTIVATE = 231;
-    public static final int SOUND_BEACON_POWER = 232;
-    public static final int SOUND_CONDUIT_ACTIVATE = 233;
-    public static final int SOUND_CONDUIT_AMBIENT = 234;
-    public static final int SOUND_CONDUIT_ATTACK = 235;
-    public static final int SOUND_CONDUIT_DEACTIVATE = 236;
-    public static final int SOUND_CONDUIT_SHORT = 237;
-    public static final int SOUND_SWOOP = 238;
-    public static final int SOUND_BLOCK_BAMBOO_SAPLING_PLACE = 239;
-    public static final int SOUND_PRESNEEZE = 240;
-    public static final int SOUND_SNEEZE = 241;
-    public static final int SOUND_AMBIENT_TAME = 242;
-    public static final int SOUND_SCARED = 243;
-    public static final int SOUND_BLOCK_SCAFFOLDING_CLIMB = 244;
-    public static final int SOUND_CROSSBOW_LOADING_START = 245;
-    public static final int SOUND_CROSSBOW_LOADING_MIDDLE = 246;
-    public static final int SOUND_CROSSBOW_LOADING_END = 247;
-    public static final int SOUND_CROSSBOW_SHOOT = 248;
-    public static final int SOUND_CROSSBOW_QUICK_CHARGE_START = 249;
-    public static final int SOUND_CROSSBOW_QUICK_CHARGE_MIDDLE = 250;
-    public static final int SOUND_CROSSBOW_QUICK_CHARGE_END = 251;
-    public static final int SOUND_AMBIENT_AGGRESSIVE = 252;
-    public static final int SOUND_AMBIENT_WORRIED = 253;
-    public static final int SOUND_CANT_BREED = 254;
-
-    public static final int SOUND_SHIELD_BLOCK = 255;
-
-    public static final int SOUND_LECTERN_BOOK_PLACE = 256;
-
-    public static final int SOUND_GRINDSTONE_USE = 257;
-
-    public static final int SOUND_BELL = 258;
-
-    public static final int SOUND_CAMPFIRE_CRACKLE = 259;
-
-    public static final int SOUND_ROAR = 260;
-
-    public static final int SOUND_STUN = 261;
-
-    public static final int SOUND_SWEET_BERRY_BUSH_HURT = 262;
-
-    public static final int SOUND_SWEET_BERRY_BUSH_PICK = 263;
-
-    public static final int SOUND_CARTOGRAPHY_TABLE_USE = 264;
-
-    public static final int SOUND_STONECUTTER_USE = 265;
-
-    public static final int SOUND_COMPOSTER_EMPTY = 266;
-
-    public static final int SOUND_COMPOSTER_FILL = 267;
-
-    public static final int SOUND_COMPOSTER_FILL_LAYER = 268;
-
-    public static final int SOUND_COMPOSTER_READY = 269;
-
-    public static final int SOUND_BARREL_OPEN = 270;
-
-    public static final int SOUND_BARREL_CLOSE = 271;
-
-    public static final int SOUND_RAID_HORN = 272;
-
-    public static final int SOUND_LOOM_USE = 273;
-
-    public static final int SOUND_AMBIENT_IN_RAID = 274;
-
-    public static final int SOUND_UI_CARTOGRAPHY_TABLE_USE = 275;
-
-    public static final int SOUND_UI_STONECUTTER_USE = 276;
-
-    public static final int SOUND_UI_LOOM_USE = 277;
-
-    public static final int SOUND_SMOKER_USE = 278;
-
-    public static final int SOUND_BLAST_FURNACE_USE = 279;
-
-    public static final int SOUND_SMITHING_TABLE_USE = 280;
-
-    public static final int SOUND_SCREECH = 281;
-
-    public static final int SOUND_SLEEP = 282;
-
-    public static final int SOUND_FURNACE_USE = 283;
-
-    public static final int SOUND_MOOSHROOM_CONVERT = 284;
-
-    public static final int SOUND_MILK_SUSPICIOUSLY = 285;
-
-    public static final int SOUND_CELEBRATE = 286;
-
-    public static final int SOUND_JUMP_PREVENT = 287;
-
-    public static final int SOUND_AMBIENT_POLLINATE = 288;
-
-    public static final int SOUND_BEEHIVE_DRIP = 289;
-
-    public static final int SOUND_BEEHIVE_ENTER = 290;
-
-    public static final int SOUND_BEEHIVE_EXIT = 291;
-
-    public static final int SOUND_BEEHIVE_WORK = 292;
-
-    public static final int SOUND_BEEHIVE_SHEAR = 293;
-
-    public static final int SOUND_HONEYBOTTLE_DRINK = 294;
-
-    public static final int SOUND_AMBIENT_CAVE = 295;
-
-    public static final int SOUND_RETREAT = 296;
-
-    public static final int SOUND_CONVERT_TO_ZOMBIFIED = 297;
-
-    public static final int SOUND_ADMIRE = 298;
-
-    public static final int SOUND_STEP_LAVA = 299;
-
-    public static final int SOUND_TEMPT = 300;
-
-    public static final int SOUND_PANIC = 301;
-
-    public static final int SOUND_ANGRY = 302;
-
-    public static final int SOUND_AMBIENT_WARPED_FOREST = 303;
-
-    public static final int SOUND_AMBIENT_SOULSAND_VALLEY = 304;
-
-    public static final int SOUND_AMBIENT_NETHER_WASTES = 305;
-
-    public static final int SOUND_AMBIENT_BASALT_DELTAS = 306;
-
-    public static final int SOUND_AMBIENT_CRIMSON_FOREST = 307;
-
-    public static final int SOUND_RESPAWN_ANCHOR_CHARGE = 308;
-
-    public static final int SOUND_RESPAWN_ANCHOR_DEPLETE = 309;
-
-    public static final int SOUND_RESPAWN_ANCHOR_SET_SPAWN = 310;
-
-    public static final int SOUND_RESPAWN_ANCHOR_AMBIENT = 311;
-
-    public static final int SOUND_SOUL_ESCAPE_QUIET = 312;
-
-    public static final int SOUND_SOUL_ESCAPE_LOUD = 313;
-
-    public static final int SOUND_RECORD_PIGSTEP = 314;
-
-    public static final int SOUND_LINK_COMPASS_TO_LODESTONE = 315;
-
-    public static final int SOUND_USE_SMITHING_TABLE = 316;
-
-    public static final int SOUND_EQUIP_NETHERITE = 317;
-
-    public static final int SOUND_AMBIENT_LOOP_WARPED_FOREST = 318;
-
-    public static final int SOUND_AMBIENT_LOOP_SOULSAND_VALLEY = 319;
-
-    public static final int SOUND_AMBIENT_LOOP_NETHER_WASTES = 320;
-
-    public static final int SOUND_AMBIENT_LOOP_BASALT_DELTAS = 321;
-
-    public static final int SOUND_AMBIENT_LOOP_CRIMSON_FOREST = 322;
-
-    public static final int SOUND_AMBIENT_ADDITION_WARPED_FOREST = 323;
-
-    public static final int SOUND_AMBIENT_ADDITION_SOULSAND_VALLEY = 324;
-
-    public static final int SOUND_AMBIENT_ADDITION_NETHER_WASTES = 325;
-
-    public static final int SOUND_AMBIENT_ADDITION_BASALT_DELTAS = 326;
-
-    public static final int SOUND_AMBIENT_ADDITION_CRIMSON_FOREST = 327;
-
-    public static final int SOUND_SCULK_SENSOR_POWER_ON = 328;
-
-    public static final int SOUND_SCULK_SENSOR_POWER_OFF = 329;
-
-    public static final int SOUND_BUCKET_FILL_POWDER_SNOW = 330;
-
-    public static final int SOUND_BUCKET_EMPTY_POWDER_SNOW = 331;
-
-    public static final int SOUND_POINTED_DRIPSTONE_CAULDRON_DRIP_LAVA = 332;
-
-    public static final int SOUND_POINTED_DRIPSTONE_CAULDRON_DRIP_WATER = 333;
-
-    public static final int SOUND_POINTED_DRIPSTONE_DRIP_LAVA = 334;
-
-    public static final int SOUND_POINTED_DRIPSTONE_DRIP_WATER = 335;
-
-    public static final int SOUND_CAVE_VINES_PICK_BERRIES = 336;
-
-    public static final int SOUND_BIG_DRIPLEAF_TILT_DOWN = 337;
-
-    public static final int SOUND_BIG_DRIPLEAF_TILT_UP = 338;
-
-    public static final int SOUND_COPPER_WAX_ON = 339;
-
-    public static final int SOUND_COPPER_WAX_OFF = 340;
-
-    public static final int SOUND_SCRAPE = 341;
-
-    public static final int SOUND_PLAYER_HURT_DROWN = 342;
-
-    public static final int SOUND_PLAYER_HURT_ON_FIRE = 343;
-
-    public static final int SOUND_PLAYER_HURT_FREEZE = 344;
-
-    public static final int SOUND_USE_SPYGLASS = 345;
-
-    public static final int SOUND_STOP_USING_SPYGLASS = 346;
-
-    public static final int SOUND_AMETHYST_BLOCK_CHIME = 347;
-
-    public static final int SOUND_AMBIENT_SCREAMER = 348;
-
-    public static final int SOUND_HURT_SCREAMER = 349;
-
-    public static final int SOUND_DEATH_SCREAMER = 350;
-
-    public static final int SOUND_MILK_SCREAMER = 351;
-
-    public static final int SOUND_JUMP_TO_BLOCK = 352;
-
-    public static final int SOUND_PRE_RAM = 353;
-
-    public static final int SOUND_PRE_RAM_SCREAMER = 354;
-
-    public static final int SOUND_RAM_IMPACT = 355;
-
-    public static final int SOUND_RAM_IMPACT_SCREAMER = 356;
-
-    public static final int SOUND_SQUID_INK_SQUIRT = 357;
-
-    public static final int SOUND_GLOW_SQUID_INK_SQUIRT = 358;
-
-    public static final int SOUND_CONVERT_TO_STRAY = 359;
-
-    public static final int SOUND_CAKE_ADD_CANDLE = 360;
-
-    public static final int SOUND_EXTINGUISH_CANDLE = 361;
-
-    public static final int SOUND_AMBIENT_CANDLE = 362;
-
-
-    public static final int SOUND_BLOCK_CLICK = 363;
-
-    public static final int SOUND_BLOCK_CLICK_FAIL = 364;
-
-    public static final int SOUND_SCULK_CATALYST_BLOOM = 365;
-
-
-    public static final int SOUND_SCULK_SHRIEKER_SHRIEK = 366;
-
-    public static final int SOUND_WARDEN_NEARBY_CLOSE = 367;
-
-    public static final int SOUND_WARDEN_NEARBY_CLOSER = 368;
-
-    public static final int SOUND_WARDEN_NEARBY_CLOSEST = 369;
-
-    public static final int SOUND_WARDEN_SLIGHTLY_ANGRY = 370;
-
-    public static final int SOUND_RECORD_OTHERSIDE = 371;
-    public static final int SOUND_TONGUE = 372;
-    public static final int SOUND_CRACK_IRON_GOLEM = 373;
-    public static final int SOUND_REPAIR_IRON_GOLEM = 374;
-    public static final int SOUND_LISTENING = 375;
-    public static final int SOUND_HEARTBEAT = 376;
-    public static final int SOUND_HORN_BREAK = 377;
-    public static final int SOUND_SCULK_PLACE = 378;
-    public static final int SOUND_SCULK_SPREAD = 379;
-    public static final int SOUND_SCULK_CHARGE = 380;
-    public static final int SOUND_SCULK_SENSOR_PLACE = 381;
-    public static final int SOUND_SCULK_SHRIEKER_PLACE = 382;
-    public static final int SOUND_GOAT_CALL_0 = 383;
-    public static final int SOUND_GOAT_CALL_1 = 384;
-    public static final int SOUND_GOAT_CALL_2 = 385;
-    public static final int SOUND_GOAT_CALL_3 = 386;
-    public static final int SOUND_GOAT_CALL_4 = 387;
-    public static final int SOUND_GOAT_CALL_5 = 388;
-    public static final int SOUND_GOAT_CALL_6 = 389;
-    public static final int SOUND_GOAT_CALL_7 = 390;
-    public static final int SOUND_GOAT_CALL_8 = 391;
-    public static final int SOUND_GOAT_CALL_9 = 392;
-    public static final int SOUND_GOAT_HARMONY_0 = 393;
-    public static final int SOUND_GOAT_HARMONY_1 = 394;
-    public static final int SOUND_GOAT_HARMONY_2 = 395;
-    public static final int SOUND_GOAT_HARMONY_3 = 396;
-    public static final int SOUND_GOAT_HARMONY_4 = 397;
-    public static final int SOUND_GOAT_HARMONY_5 = 398;
-    public static final int SOUND_GOAT_HARMONY_6 = 399;
-    public static final int SOUND_GOAT_HARMONY_7 = 400;
-    public static final int SOUND_GOAT_HARMONY_8 = 401;
-    public static final int SOUND_GOAT_HARMONY_9 = 402;
-    public static final int SOUND_GOAT_MELODY_0 = 403;
-    public static final int SOUND_GOAT_MELODY_1 = 404;
-    public static final int SOUND_GOAT_MELODY_2 = 405;
-    public static final int SOUND_GOAT_MELODY_3 = 406;
-    public static final int SOUND_GOAT_MELODY_4 = 407;
-    public static final int SOUND_GOAT_MELODY_5 = 408;
-    public static final int SOUND_GOAT_MELODY_6 = 409;
-    public static final int SOUND_GOAT_MELODY_7 = 410;
-    public static final int SOUND_GOAT_MELODY_8 = 411;
-    public static final int SOUND_GOAT_MELODY_9 = 412;
-    public static final int SOUND_GOAT_BASS_0 = 413;
-    public static final int SOUND_GOAT_BASS_1 = 414;
-    public static final int SOUND_GOAT_BASS_2 = 415;
-    public static final int SOUND_GOAT_BASS_3 = 416;
-    public static final int SOUND_GOAT_BASS_4 = 417;
-    public static final int SOUND_GOAT_BASS_5 = 418;
-    public static final int SOUND_GOAT_BASS_6 = 419;
-    public static final int SOUND_GOAT_BASS_7 = 420;
-    public static final int SOUND_GOAT_BASS_8 = 421;
-    public static final int SOUND_GOAT_BASS_9 = 422;
-
-    public static final int SOUND_IMITATE_WARDEN = 426;
-    public static final int SOUND_LISTENING_ANGRY = 427;
-    public static final int SOUND_ITEM_GIVEN = 428;
-    public static final int SOUND_ITEM_TAKEN = 429;
-    public static final int SOUND_DISAPPEARED = 430;
-    public static final int SOUND_REAPPEARED = 431;
-    public static final int SOUND_MILK_DRINK = 432;
-    public static final int SOUND_FROGSPAWN_HATCHED = 433;
-    public static final int SOUND_LAY_SPAWN = 434;
-    public static final int SOUND_FROGSPAWN_BREAK = 435;
-    public static final int SOUND_SONIC_BOOM = 436;
-    public static final int SOUND_SONIC_CHARGE = 437;
-    public static final int SOUND_ITEM_THROWN = 438;
-    public static final int SOUND_RECORD_5 = 439;
-    public static final int SOUND_CONVERT_TO_FROG = 440;
-    public static final int SOUND_RECORD_PLAYING = 441;
-    public static final int SOUND_ENCHANTING_TABLE_USE = 442;
-    public static final int SOUND_BUNDLE_DROP_CONTENTS = 445;
-    public static final int SOUND_BUNDLE_INSERT = 446;
-    public static final int SOUND_BUNDLE_REMOVE_ONE = 447;
-    public static final int SOUND_PRESSURE_PLATE_CLICK_OFF = 448;
-    public static final int SOUND_PRESSURE_PLATE_CLICK_ON = 449;
-    public static final int SOUND_BUTTON_CLICK_OFF = 450;
-    public static final int SOUND_BUTTON_CLICK_ON = 451;
-    public static final int SOUND_DOOR_OPEN = 452;
-    public static final int SOUND_DOOR_CLOSE = 453;
-    public static final int SOUND_TRAPDOOR_OPEN = 454;
-    public static final int SOUND_TRAPDOOR_CLOSE = 455;
-    public static final int SOUND_FENCE_GATE_OPEN = 456;
-    public static final int SOUND_FENCE_GATE_CLOSE = 457;
-    public static final int SOUND_INSERT = 458;
-    public static final int SOUND_PICKUP = 459;
-    public static final int SOUND_INSERT_ENCHANTED = 460;
-    public static final int SOUND_PICKUP_ENCHANTED = 461;
-    public static final int SOUND_BRUSH = 462;
-    public static final int SOUND_BRUSH_COMPLETED = 463;
-    public static final int SOUND_SHATTER_DECORATED_POT = 464;
-    public static final int SOUND_BREAK_DECORATED_POD = 465;
-    public static final int SOUND_SNIFFER_EGG_CRACK = 466;
-    public static final int SOUND_SNIFFER_EGG_HATCHED = 467;
-    public static final int SOUND_WAXED_SIGN_INTERACT_FAIL = 468;
-    public static final int SOUND_RECORD_RELIC = 469;
-    public static final int SOUND_BUMP = 470;
-    public static final int SOUND_PUMPKIN_CARVE = 471;
-    public static final int SOUND_CONVERT_HUSK_TO_ZOMBIE = 472;
-    public static final int SOUND_PIG_DEATH = 473;
-    public static final int SOUND_HOGLIN_CONVERT_TO_ZOMBIE = 474;
-    public static final int SOUND_AMBIENT_UNDERWATER_ENTER = 475;
-    public static final int SOUND_AMBIENT_UNDERWATER_EXIT = 476;
-    public static final int SOUND_BOTTLE_FILL = 477;
-    public static final int SOUND_BOTTLE_EMPTY = 478;
-    public static final int SOUND_CRAFTER_CRAFT = 479;
-    public static final int SOUND_CRAFTER_FAILED = 480;
-    public static final int SOUND_DECORATED_POT_INSERT = 481;
-    public static final int SOUND_DECORATED_POT_INSERT_FAILED = 482;
-    public static final int SOUND_CRAFTER_DISABLE_SLOT = 483;
-    public static final int SOUND_COPPER_BULB_ON = 490;
-    public static final int SOUND_COPPER_BULB_OFF = 491;
-    public static final int SOUND_UNDEFINED = dynamic(492);
+    public static final int SOUND_ITEM_USE_ON = dynamic(0);
+    public static final int SOUND_HIT = dynamic(1);
+    public static final int SOUND_STEP = dynamic(2);
+    public static final int SOUND_FLY = dynamic(3);
+    public static final int SOUND_JUMP = dynamic(4);
+    public static final int SOUND_BREAK = dynamic(5);
+    public static final int SOUND_PLACE = dynamic(6);
+    public static final int SOUND_HEAVY_STEP = dynamic(7);
+    public static final int SOUND_GALLOP = dynamic(8);
+    public static final int SOUND_FALL = dynamic(9);
+    public static final int SOUND_AMBIENT = dynamic(10);
+    public static final int SOUND_AMBIENT_BABY = dynamic(11);
+    public static final int SOUND_AMBIENT_IN_WATER = dynamic(12);
+    public static final int SOUND_BREATHE = dynamic(13);
+    public static final int SOUND_DEATH = dynamic(14);
+    public static final int SOUND_DEATH_IN_WATER = dynamic(15);
+    public static final int SOUND_DEATH_TO_ZOMBIE = dynamic(16);
+    public static final int SOUND_HURT = dynamic(17);
+    public static final int SOUND_HURT_IN_WATER = dynamic(18);
+    public static final int SOUND_MAD = dynamic(19);
+    public static final int SOUND_BOOST = dynamic(20);
+    public static final int SOUND_BOW = dynamic(21);
+    public static final int SOUND_SQUISH_BIG = dynamic(22);
+    public static final int SOUND_SQUISH_SMALL = dynamic(23);
+    public static final int SOUND_FALL_BIG = dynamic(24);
+    public static final int SOUND_FALL_SMALL = dynamic(25);
+    public static final int SOUND_SPLASH = dynamic(26);
+    public static final int SOUND_FIZZ = dynamic(27);
+    public static final int SOUND_FLAP = dynamic(28);
+    public static final int SOUND_SWIM = dynamic(29);
+    public static final int SOUND_DRINK = dynamic(30);
+    public static final int SOUND_EAT = dynamic(31);
+    public static final int SOUND_TAKEOFF = dynamic(32);
+    public static final int SOUND_SHAKE = dynamic(33);
+    public static final int SOUND_PLOP = dynamic(34);
+    public static final int SOUND_LAND = dynamic(35);
+    public static final int SOUND_SADDLE = dynamic(36);
+    public static final int SOUND_ARMOR = dynamic(37);
+    public static final int SOUND_MOB_ARMOR_STAND_PLACE = dynamic(38);
+    public static final int SOUND_ADD_CHEST = dynamic(39);
+    public static final int SOUND_THROW = dynamic(40);
+    public static final int SOUND_ATTACK = dynamic(41);
+    public static final int SOUND_ATTACK_NODAMAGE = dynamic(42);
+    public static final int SOUND_ATTACK_STRONG = dynamic(43);
+    public static final int SOUND_WARN = dynamic(44);
+    public static final int SOUND_SHEAR = dynamic(45);
+    public static final int SOUND_MILK = dynamic(46);
+    public static final int SOUND_THUNDER = dynamic(47);
+    public static final int SOUND_EXPLODE = dynamic(48);
+    public static final int SOUND_FIRE = dynamic(49);
+    public static final int SOUND_IGNITE = dynamic(50);
+    public static final int SOUND_FUSE = dynamic(51);
+    public static final int SOUND_STARE = dynamic(52);
+    public static final int SOUND_SPAWN = dynamic(53);
+    public static final int SOUND_SHOOT = dynamic(54);
+    public static final int SOUND_BREAK_BLOCK = dynamic(55);
+    public static final int SOUND_LAUNCH = dynamic(56);
+    public static final int SOUND_BLAST = dynamic(57);
+    public static final int SOUND_LARGE_BLAST = dynamic(58);
+    public static final int SOUND_TWINKLE = dynamic(59);
+    public static final int SOUND_REMEDY = dynamic(60);
+    public static final int SOUND_UNFECT = dynamic(61);
+    public static final int SOUND_LEVELUP = dynamic(62);
+    public static final int SOUND_BOW_HIT = dynamic(63);
+    public static final int SOUND_BULLET_HIT = dynamic(64);
+    public static final int SOUND_EXTINGUISH_FIRE = dynamic(65);
+    public static final int SOUND_ITEM_FIZZ = dynamic(66);
+    public static final int SOUND_CHEST_OPEN = dynamic(67);
+    public static final int SOUND_CHEST_CLOSED = dynamic(68);
+    public static final int SOUND_SHULKERBOX_OPEN = dynamic(69);
+    public static final int SOUND_SHULKERBOX_CLOSED = dynamic(70);
+    public static final int SOUND_ENDERCHEST_OPEN = dynamic(71);
+    public static final int SOUND_ENDERCHEST_CLOSED = dynamic(72);
+    public static final int SOUND_POWER_ON = dynamic(73);
+    public static final int SOUND_POWER_OFF = dynamic(74);
+    public static final int SOUND_ATTACH = dynamic(75);
+    public static final int SOUND_DETACH = dynamic(76);
+    public static final int SOUND_DENY = dynamic(77);
+    public static final int SOUND_TRIPOD = dynamic(78);
+    public static final int SOUND_POP = dynamic(79);
+    public static final int SOUND_DROP_SLOT = dynamic(80);
+    public static final int SOUND_NOTE = dynamic(81);
+    public static final int SOUND_THORNS = dynamic(82);
+    public static final int SOUND_PISTON_IN = dynamic(83);
+    public static final int SOUND_PISTON_OUT = dynamic(84);
+    public static final int SOUND_PORTAL = dynamic(85);
+    public static final int SOUND_WATER = dynamic(86);
+    public static final int SOUND_LAVA_POP = dynamic(87);
+    public static final int SOUND_LAVA = dynamic(88);
+    public static final int SOUND_BURP = dynamic(89);
+    public static final int SOUND_BUCKET_FILL_WATER = dynamic(90);
+    public static final int SOUND_BUCKET_FILL_LAVA = dynamic(91);
+    public static final int SOUND_BUCKET_EMPTY_WATER = dynamic(92);
+    public static final int SOUND_BUCKET_EMPTY_LAVA = dynamic(93);
+    public static final int SOUND_ARMOR_EQUIP_CHAIN = dynamic(94);
+    public static final int SOUND_ARMOR_EQUIP_DIAMOND = dynamic(95);
+    public static final int SOUND_ARMOR_EQUIP_GENERIC = dynamic(96);
+    public static final int SOUND_ARMOR_EQUIP_GOLD = dynamic(97);
+    public static final int SOUND_ARMOR_EQUIP_IRON = dynamic(98);
+    public static final int SOUND_ARMOR_EQUIP_LEATHER = dynamic(99);
+    public static final int SOUND_ARMOR_EQUIP_ELYTRA = dynamic(100);
+    public static final int SOUND_RECORD_13 = dynamic(101);
+    public static final int SOUND_RECORD_CAT = dynamic(102);
+    public static final int SOUND_RECORD_BLOCKS = dynamic(103);
+    public static final int SOUND_RECORD_CHIRP = dynamic(104);
+    public static final int SOUND_RECORD_FAR = dynamic(105);
+    public static final int SOUND_RECORD_MALL = dynamic(106);
+    public static final int SOUND_RECORD_MELLOHI = dynamic(107);
+    public static final int SOUND_RECORD_STAL = dynamic(108);
+    public static final int SOUND_RECORD_STRAD = dynamic(109);
+    public static final int SOUND_RECORD_WARD = dynamic(110);
+    public static final int SOUND_RECORD_11 = dynamic(111);
+    public static final int SOUND_RECORD_WAIT = dynamic(112);
+    public static final int SOUND_STOP_RECORD = dynamic(113);
+    public static final int SOUND_FLOP = dynamic(114);
+    public static final int SOUND_ELDERGUARDIAN_CURSE = dynamic(115);
+    public static final int SOUND_MOB_WARNING = dynamic(116);
+    public static final int SOUND_MOB_WARNING_BABY = dynamic(117);
+    public static final int SOUND_TELEPORT = dynamic(118);
+    public static final int SOUND_SHULKER_OPEN = dynamic(119);
+    public static final int SOUND_SHULKER_CLOSE = dynamic(120);
+    public static final int SOUND_HAGGLE = dynamic(121);
+    public static final int SOUND_HAGGLE_YES = dynamic(122);
+    public static final int SOUND_HAGGLE_NO = dynamic(123);
+    public static final int SOUND_HAGGLE_IDLE = dynamic(124);
+    public static final int SOUND_CHORUS_GROW = dynamic(125);
+    public static final int SOUND_CHORUS_DEATH = dynamic(126);
+    public static final int SOUND_GLASS = dynamic(127);
+    public static final int SOUND_POTION_BREWED = dynamic(128);
+    public static final int SOUND_CAST_SPELL = dynamic(129);
+    public static final int SOUND_PREPARE_ATTACK = dynamic(130);
+    public static final int SOUND_PREPARE_SUMMON = dynamic(131);
+    public static final int SOUND_PREPARE_WOLOLO = dynamic(132);
+    public static final int SOUND_FANG = dynamic(133);
+    public static final int SOUND_CHARGE = dynamic(134);
+    public static final int SOUND_CAMERA_TAKE_PICTURE = dynamic(135);
+    public static final int SOUND_LEASHKNOT_PLACE = dynamic(136);
+    public static final int SOUND_LEASHKNOT_BREAK = dynamic(137);
+    public static final int SOUND_GROWL = dynamic(138);
+    public static final int SOUND_WHINE = dynamic(139);
+    public static final int SOUND_PANT = dynamic(140);
+    public static final int SOUND_PURR = dynamic(141);
+    public static final int SOUND_PURREOW = dynamic(142);
+    public static final int SOUND_DEATH_MIN_VOLUME = dynamic(143);
+    public static final int SOUND_DEATH_MID_VOLUME = dynamic(144);
+    public static final int SOUND_IMITATE_BLAZE = dynamic(145);
+    public static final int SOUND_IMITATE_CAVE_SPIDER = dynamic(146);
+    public static final int SOUND_IMITATE_CREEPER = dynamic(147);
+    public static final int SOUND_IMITATE_ELDER_GUARDIAN = dynamic(148);
+    public static final int SOUND_IMITATE_ENDER_DRAGON = dynamic(149);
+    public static final int SOUND_IMITATE_ENDERMAN = dynamic(150);
+    public static final int SOUND_IMITATE_EVOCATION_ILLAGER = dynamic(152);
+    public static final int SOUND_IMITATE_GHAST = dynamic(153);
+    public static final int SOUND_IMITATE_HUSK = dynamic(154);
+    public static final int SOUND_IMITATE_ILLUSION_ILLAGER = dynamic(155);
+    public static final int SOUND_IMITATE_MAGMA_CUBE = dynamic(156);
+    public static final int SOUND_IMITATE_POLAR_BEAR = dynamic(157);
+    public static final int SOUND_IMITATE_SHULKER = dynamic(158);
+    public static final int SOUND_IMITATE_SILVERFISH = dynamic(159);
+    public static final int SOUND_IMITATE_SKELETON = dynamic(160);
+    public static final int SOUND_IMITATE_SLIME = dynamic(161);
+    public static final int SOUND_IMITATE_SPIDER = dynamic(162);
+    public static final int SOUND_IMITATE_STRAY = dynamic(163);
+    public static final int SOUND_IMITATE_VEX = dynamic(164);
+    public static final int SOUND_IMITATE_VINDICATION_ILLAGER = dynamic(165);
+    public static final int SOUND_IMITATE_WITCH = dynamic(166);
+    public static final int SOUND_IMITATE_WITHER = dynamic(167);
+    public static final int SOUND_IMITATE_WITHER_SKELETON = dynamic(168);
+    public static final int SOUND_IMITATE_WOLF = dynamic(169);
+    public static final int SOUND_IMITATE_ZOMBIE = dynamic(170);
+    public static final int SOUND_IMITATE_ZOMBIE_PIGMAN = dynamic(171);
+    public static final int SOUND_IMITATE_ZOMBIE_VILLAGER = dynamic(172);
+    public static final int SOUND_BLOCK_END_PORTAL_FRAME_FILL = dynamic(173);
+    public static final int SOUND_BLOCK_END_PORTAL_SPAWN = dynamic(174);
+    public static final int SOUND_RANDOM_ANVIL_USE = dynamic(175);
+    public static final int SOUND_BOTTLE_DRAGONBREATH = dynamic(176);
+    public static final int SOUND_PORTAL_TRAVEL = dynamic(177);
+    public static final int SOUND_ITEM_TRIDENT_HIT = dynamic(178);
+    public static final int SOUND_ITEM_TRIDENT_RETURN = dynamic(179);
+    public static final int SOUND_ITEM_TRIDENT_RIPTIDE_1 = dynamic(180);
+    public static final int SOUND_ITEM_TRIDENT_RIPTIDE_2 = dynamic(181);
+    public static final int SOUND_ITEM_TRIDENT_RIPTIDE_3 = dynamic(182);
+    public static final int SOUND_ITEM_TRIDENT_THROW = dynamic(183);
+    public static final int SOUND_ITEM_TRIDENT_THUNDER = dynamic(184);
+    public static final int SOUND_ITEM_TRIDENT_HIT_GROUND = dynamic(185);
+    public static final int SOUND_DEFAULT = dynamic(186);
+    public static final int SOUND_FLETCHING_TABLE_USE = dynamic(187);
+    public static final int SOUND_ELEMENT_CONSTRUCTOR_OPEN = dynamic(188);
+    public static final int SOUND_ICE_BOMB_HIT = dynamic(189);
+    public static final int SOUND_BALLOON_POP = dynamic(190);
+    public static final int SOUND_LT_REACTION_ICE_BOMB = dynamic(191);
+    public static final int SOUND_LT_REACTION_BLEACH = dynamic(192);
+    public static final int SOUND_LT_REACTION_E_PASTE = dynamic(193);
+    public static final int SOUND_LT_REACTION_E_PASTE2 = dynamic(194);
+    public static final int SOUND_LT_REACTION_FERTILIZER = dynamic(199);
+    public static final int SOUND_LT_REACTION_FIREBALL = dynamic(200);
+    public static final int SOUND_LT_REACTION_MG_SALT = dynamic(201);
+    public static final int SOUND_LT_REACTION_MISC_FIRE = dynamic(202);
+    public static final int SOUND_LT_REACTION_FIRE = dynamic(203);
+    public static final int SOUND_LT_REACTION_MISC_EXPLOSION = dynamic(204);
+    public static final int SOUND_LT_REACTION_MISC_MYSTICAL = dynamic(205);
+    public static final int SOUND_LT_REACTION_MISC_MYSTICAL2 = dynamic(206);
+    public static final int SOUND_LT_REACTION_PRODUCT = dynamic(207);
+    public static final int SOUND_SPARKLER_USE = dynamic(208);
+    public static final int SOUND_GLOWSTICK_USE = dynamic(209);
+    public static final int SOUND_SPARKLER_ACTIVE = dynamic(210);
+    public static final int SOUND_CONVERT_TO_DROWNED = dynamic(211);
+    public static final int SOUND_BUCKET_FILL_FISH = dynamic(212);
+    public static final int SOUND_BUCKET_EMPTY_FISH = dynamic(213);
+    public static final int SOUND_BUBBLE_UP = dynamic(214);
+    public static final int SOUND_BUBBLE_DOWN = dynamic(215);
+    public static final int SOUND_BUBBLE_POP = dynamic(216);
+    public static final int SOUND_BUBBLE_UP_INSIDE = dynamic(217);
+    public static final int SOUND_BUBBLE_DOWN_INSIDE = dynamic(218);
+    public static final int SOUND_BABY_HURT = dynamic(219);
+    public static final int SOUND_BABY_DEATH = dynamic(220);
+    public static final int SOUND_BABY_STEP = dynamic(221);
+    public static final int SOUND_BABY_SPAWN = dynamic(222);
+    public static final int SOUND_BORN = dynamic(223);
+    public static final int SOUND_BLOCK_TURTLE_EGG_BREAK = dynamic(224);
+    public static final int SOUND_BLOCK_TURTLE_EGG_CRACK = dynamic(225);
+    public static final int SOUND_BLOCK_TURTLE_EGG_HATCH = dynamic(226);
+    public static final int SOUND_TURTLE_LAY_EGG = dynamic(227);
+    public static final int SOUND_BLOCK_TURTLE_EGG_ATTACK = dynamic(228);
+    public static final int SOUND_BEACON_ACTIVATE = dynamic(229);
+    public static final int SOUND_BEACON_AMBIENT = dynamic(230);
+    public static final int SOUND_BEACON_DEACTIVATE = dynamic(231);
+    public static final int SOUND_BEACON_POWER = dynamic(232);
+    public static final int SOUND_CONDUIT_ACTIVATE = dynamic(233);
+    public static final int SOUND_CONDUIT_AMBIENT = dynamic(234);
+    public static final int SOUND_CONDUIT_ATTACK = dynamic(235);
+    public static final int SOUND_CONDUIT_DEACTIVATE = dynamic(236);
+    public static final int SOUND_CONDUIT_SHORT = dynamic(237);
+    public static final int SOUND_SWOOP = dynamic(238);
+    public static final int SOUND_BLOCK_BAMBOO_SAPLING_PLACE = dynamic(239);
+    public static final int SOUND_PRE_SNEEZE = dynamic(240);
+    public static final int SOUND_SNEEZE = dynamic(241);
+    public static final int SOUND_AMBIENT_TAME = dynamic(242);
+    public static final int SOUND_SCARED = dynamic(243);
+    public static final int SOUND_BLOCK_SCAFFOLDING_CLIMB = dynamic(244);
+    public static final int SOUND_CROSSBOW_LOADING_START = dynamic(245);
+    public static final int SOUND_CROSSBOW_LOADING_MIDDLE = dynamic(246);
+    public static final int SOUND_CROSSBOW_LOADING_END = dynamic(247);
+    public static final int SOUND_CROSSBOW_SHOOT = dynamic(248);
+    public static final int SOUND_CROSSBOW_QUICK_CHARGE_START = dynamic(249);
+    public static final int SOUND_CROSSBOW_QUICK_CHARGE_MIDDLE = dynamic(250);
+    public static final int SOUND_CROSSBOW_QUICK_CHARGE_END = dynamic(251);
+    public static final int SOUND_AMBIENT_AGGRESSIVE = dynamic(252);
+    public static final int SOUND_AMBIENT_WORRIED = dynamic(253);
+    public static final int SOUND_CANT_BREED = dynamic(254);
+    public static final int SOUND_SHIELD_BLOCK = dynamic(255);
+    public static final int SOUND_LECTERN_BOOK_PLACE = dynamic(256);
+    public static final int SOUND_GRINDSTONE_USE = dynamic(257);
+    public static final int SOUND_BELL = dynamic(258);
+    public static final int SOUND_CAMPFIRE_CRACKLE = dynamic(259);
+    public static final int SOUND_ROAR = dynamic(260);
+    public static final int SOUND_STUN = dynamic(261);
+    public static final int SOUND_SWEET_BERRY_BUSH_HURT = dynamic(262);
+    public static final int SOUND_SWEET_BERRY_BUSH_PICK = dynamic(263);
+    public static final int SOUND_CARTOGRAPHY_TABLE_USE = dynamic(264);
+    public static final int SOUND_STONECUTTER_USE = dynamic(265);
+    public static final int SOUND_COMPOSTER_EMPTY = dynamic(266);
+    public static final int SOUND_COMPOSTER_FILL = dynamic(267);
+    public static final int SOUND_COMPOSTER_FILL_LAYER = dynamic(268);
+    public static final int SOUND_COMPOSTER_READY = dynamic(269);
+    public static final int SOUND_BARREL_OPEN = dynamic(270);
+    public static final int SOUND_BARREL_CLOSE = dynamic(271);
+    public static final int SOUND_RAID_HORN = dynamic(272);
+    public static final int SOUND_LOOM_USE = dynamic(273);
+    public static final int SOUND_AMBIENT_IN_RAID = dynamic(274);
+    public static final int SOUND_UI_CARTOGRAPHY_TABLE_USE = dynamic(275);
+    public static final int SOUND_UI_STONECUTTER_USE = dynamic(276);
+    public static final int SOUND_UI_LOOM_USE = dynamic(277);
+    public static final int SOUND_SMOKER_USE = dynamic(278);
+    public static final int SOUND_BLAST_FURNACE_USE = dynamic(279);
+    public static final int SOUND_SMITHING_TABLE_USE = dynamic(280);
+    public static final int SOUND_SCREECH = dynamic(281);
+    public static final int SOUND_SLEEP = dynamic(282);
+    public static final int SOUND_FURNACE_USE = dynamic(283);
+    public static final int SOUND_MOOSHROOM_CONVERT = dynamic(284);
+    public static final int SOUND_MILK_SUSPICIOUSLY = dynamic(285);
+    public static final int SOUND_CELEBRATE = dynamic(286);
+    public static final int SOUND_JUMP_PREVENT = dynamic(287);
+    public static final int SOUND_AMBIENT_POLLINATE = dynamic(288);
+    public static final int SOUND_BEEHIVE_DRIP = dynamic(289);
+    public static final int SOUND_BEEHIVE_ENTER = dynamic(290);
+    public static final int SOUND_BEEHIVE_EXIT = dynamic(291);
+    public static final int SOUND_BEEHIVE_WORK = dynamic(292);
+    public static final int SOUND_BEEHIVE_SHEAR = dynamic(293);
+    public static final int SOUND_HONEYBOTTLE_DRINK = dynamic(294);
+    public static final int SOUND_AMBIENT_CAVE = dynamic(295);
+    public static final int SOUND_RETREAT = dynamic(296);
+    public static final int SOUND_CONVERT_TO_ZOMBIFIED = dynamic(297);
+    public static final int SOUND_ADMIRE = dynamic(298);
+    public static final int SOUND_STEP_LAVA = dynamic(299);
+    public static final int SOUND_TEMPT = dynamic(300);
+    public static final int SOUND_PANIC = dynamic(301);
+    public static final int SOUND_ANGRY = dynamic(302);
+    public static final int SOUND_AMBIENT_WARPED_FOREST = dynamic(303);
+    public static final int SOUND_AMBIENT_SOULSAND_VALLEY = dynamic(304);
+    public static final int SOUND_AMBIENT_NETHER_WASTES = dynamic(305);
+    public static final int SOUND_AMBIENT_BASALT_DELTAS = dynamic(306);
+    public static final int SOUND_AMBIENT_CRIMSON_FOREST = dynamic(307);
+    public static final int SOUND_RESPAWN_ANCHOR_CHARGE = dynamic(308);
+    public static final int SOUND_RESPAWN_ANCHOR_DEPLETE = dynamic(309);
+    public static final int SOUND_RESPAWN_ANCHOR_SET_SPAWN = dynamic(310);
+    public static final int SOUND_RESPAWN_ANCHOR_AMBIENT = dynamic(311);
+    public static final int SOUND_SOUL_ESCAPE_QUIET = dynamic(312);
+    public static final int SOUND_SOUL_ESCAPE_LOUD = dynamic(313);
+    public static final int SOUND_RECORD_PIGSTEP = dynamic(314);
+    public static final int SOUND_LINK_COMPASS_TO_LODESTONE = dynamic(315);
+    public static final int SOUND_USE_SMITHING_TABLE = dynamic(316);
+    public static final int SOUND_EQUIP_NETHERITE = dynamic(317);
+    public static final int SOUND_AMBIENT_LOOP_WARPED_FOREST = dynamic(318);
+    public static final int SOUND_AMBIENT_LOOP_SOULSAND_VALLEY = dynamic(319);
+    public static final int SOUND_AMBIENT_LOOP_NETHER_WASTES = dynamic(320);
+    public static final int SOUND_AMBIENT_LOOP_BASALT_DELTAS = dynamic(321);
+    public static final int SOUND_AMBIENT_LOOP_CRIMSON_FOREST = dynamic(322);
+    public static final int SOUND_AMBIENT_ADDITION_WARPED_FOREST = dynamic(323);
+    public static final int SOUND_AMBIENT_ADDITION_SOULSAND_VALLEY = dynamic(324);
+    public static final int SOUND_AMBIENT_ADDITION_NETHER_WASTES = dynamic(325);
+    public static final int SOUND_AMBIENT_ADDITION_BASALT_DELTAS = dynamic(326);
+    public static final int SOUND_AMBIENT_ADDITION_CRIMSON_FOREST = dynamic(327);
+    public static final int SOUND_SCULK_SENSOR_POWER_ON = dynamic(328);
+    public static final int SOUND_SCULK_SENSOR_POWER_OFF = dynamic(329);
+    public static final int SOUND_BUCKET_FILL_POWDER_SNOW = dynamic(330);
+    public static final int SOUND_BUCKET_EMPTY_POWDER_SNOW = dynamic(331);
+    public static final int SOUND_POINTED_DRIPSTONE_CAULDRON_DRIP_LAVA = dynamic(332);
+    public static final int SOUND_POINTED_DRIPSTONE_CAULDRON_DRIP_WATER = dynamic(333);
+    public static final int SOUND_POINTED_DRIPSTONE_DRIP_LAVA = dynamic(334);
+    public static final int SOUND_POINTED_DRIPSTONE_DRIP_WATER = dynamic(335);
+    public static final int SOUND_CAVE_VINES_PICK_BERRIES = dynamic(336);
+    public static final int SOUND_BIG_DRIPLEAF_TILT_DOWN = dynamic(337);
+    public static final int SOUND_BIG_DRIPLEAF_TILT_UP = dynamic(338);
+    public static final int SOUND_COPPER_WAX_ON = dynamic(339);
+    public static final int SOUND_COPPER_WAX_OFF = dynamic(340);
+    public static final int SOUND_SCRAPE = dynamic(341);
+    public static final int SOUND_PLAYER_HURT_DROWN = dynamic(342);
+    public static final int SOUND_PLAYER_HURT_ON_FIRE = dynamic(343);
+    public static final int SOUND_PLAYER_HURT_FREEZE = dynamic(344);
+    public static final int SOUND_USE_SPYGLASS = dynamic(345);
+    public static final int SOUND_STOP_USING_SPYGLASS = dynamic(346);
+    public static final int SOUND_AMETHYST_BLOCK_CHIME = dynamic(347);
+    public static final int SOUND_AMBIENT_SCREAMER = dynamic(348);
+    public static final int SOUND_HURT_SCREAMER = dynamic(349);
+    public static final int SOUND_DEATH_SCREAMER = dynamic(350);
+    public static final int SOUND_MILK_SCREAMER = dynamic(351);
+    public static final int SOUND_JUMP_TO_BLOCK = dynamic(352);
+    public static final int SOUND_PRE_RAM = dynamic(353);
+    public static final int SOUND_PRE_RAM_SCREAMER = dynamic(354);
+    public static final int SOUND_RAM_IMPACT = dynamic(355);
+    public static final int SOUND_RAM_IMPACT_SCREAMER = dynamic(356);
+    public static final int SOUND_SQUID_INK_SQUIRT = dynamic(357);
+    public static final int SOUND_GLOW_SQUID_INK_SQUIRT = dynamic(358);
+    public static final int SOUND_CONVERT_TO_STRAY = dynamic(359);
+    public static final int SOUND_CAKE_ADD_CANDLE = dynamic(360);
+    public static final int SOUND_EXTINGUISH_CANDLE = dynamic(361);
+    public static final int SOUND_AMBIENT_CANDLE = dynamic(362);
+    public static final int SOUND_BLOCK_CLICK = dynamic(363);
+    public static final int SOUND_BLOCK_CLICK_FAIL = dynamic(364);
+    public static final int SOUND_SCULK_CATALYST_BLOOM = dynamic(365);
+    public static final int SOUND_SCULK_SHRIEKER_SHRIEK = dynamic(366);
+    public static final int SOUND_WARDEN_NEARBY_CLOSE = dynamic(367);
+    public static final int SOUND_WARDEN_NEARBY_CLOSER = dynamic(368);
+    public static final int SOUND_WARDEN_NEARBY_CLOSEST = dynamic(369);
+    public static final int SOUND_WARDEN_SLIGHTLY_ANGRY = dynamic(370);
+    public static final int SOUND_RECORD_OTHERSIDE = dynamic(371);
+    public static final int SOUND_TONGUE = dynamic(372);
+    public static final int SOUND_CRACK_IRON_GOLEM = dynamic(373);
+    public static final int SOUND_REPAIR_IRON_GOLEM = dynamic(374);
+    public static final int SOUND_LISTENING = dynamic(375);
+    public static final int SOUND_HEARTBEAT = dynamic(376);
+    public static final int SOUND_HORN_BREAK = dynamic(377);
+    public static final int SOUND_SCULK_PLACE = dynamic(378);
+    public static final int SOUND_SCULK_SPREAD = dynamic(379);
+    public static final int SOUND_SCULK_CHARGE = dynamic(380);
+    public static final int SOUND_SCULK_SENSOR_PLACE = dynamic(381);
+    public static final int SOUND_SCULK_SHRIEKER_PLACE = dynamic(382);
+    public static final int SOUND_GOAT_CALL_0 = dynamic(383);
+    public static final int SOUND_GOAT_CALL_1 = dynamic(384);
+    public static final int SOUND_GOAT_CALL_2 = dynamic(385);
+    public static final int SOUND_GOAT_CALL_3 = dynamic(386);
+    public static final int SOUND_GOAT_CALL_4 = dynamic(387);
+    public static final int SOUND_GOAT_CALL_5 = dynamic(388);
+    public static final int SOUND_GOAT_CALL_6 = dynamic(389);
+    public static final int SOUND_GOAT_CALL_7 = dynamic(390);
+    public static final int SOUND_GOAT_CALL_8 = dynamic(391);
+    public static final int SOUND_GOAT_CALL_9 = dynamic(392);
+    public static final int SOUND_GOAT_HARMONY_0 = dynamic(393);
+    public static final int SOUND_GOAT_HARMONY_1 = dynamic(394);
+    public static final int SOUND_GOAT_HARMONY_2 = dynamic(395);
+    public static final int SOUND_GOAT_HARMONY_3 = dynamic(396);
+    public static final int SOUND_GOAT_HARMONY_4 = dynamic(397);
+    public static final int SOUND_GOAT_HARMONY_5 = dynamic(398);
+    public static final int SOUND_GOAT_HARMONY_6 = dynamic(399);
+    public static final int SOUND_GOAT_HARMONY_7 = dynamic(400);
+    public static final int SOUND_GOAT_HARMONY_8 = dynamic(401);
+    public static final int SOUND_GOAT_HARMONY_9 = dynamic(402);
+    public static final int SOUND_GOAT_MELODY_0 = dynamic(403);
+    public static final int SOUND_GOAT_MELODY_1 = dynamic(404);
+    public static final int SOUND_GOAT_MELODY_2 = dynamic(405);
+    public static final int SOUND_GOAT_MELODY_3 = dynamic(406);
+    public static final int SOUND_GOAT_MELODY_4 = dynamic(407);
+    public static final int SOUND_GOAT_MELODY_5 = dynamic(408);
+    public static final int SOUND_GOAT_MELODY_6 = dynamic(409);
+    public static final int SOUND_GOAT_MELODY_7 = dynamic(410);
+    public static final int SOUND_GOAT_MELODY_8 = dynamic(411);
+    public static final int SOUND_GOAT_MELODY_9 = dynamic(412);
+    public static final int SOUND_GOAT_BASS_0 = dynamic(413);
+    public static final int SOUND_GOAT_BASS_1 = dynamic(414);
+    public static final int SOUND_GOAT_BASS_2 = dynamic(415);
+    public static final int SOUND_GOAT_BASS_3 = dynamic(416);
+    public static final int SOUND_GOAT_BASS_4 = dynamic(417);
+    public static final int SOUND_GOAT_BASS_5 = dynamic(418);
+    public static final int SOUND_GOAT_BASS_6 = dynamic(419);
+    public static final int SOUND_GOAT_BASS_7 = dynamic(420);
+    public static final int SOUND_GOAT_BASS_8 = dynamic(421);
+    public static final int SOUND_GOAT_BASS_9 = dynamic(422);
+    public static final int SOUND_IMITATE_WARDEN = dynamic(426);
+    public static final int SOUND_ITEM_GIVEN = dynamic(428);
+    public static final int SOUND_ITEM_TAKEN = dynamic(429);
+    public static final int SOUND_DISAPPEARED = dynamic(430);
+    public static final int SOUND_REAPPEARED = dynamic(431);
+    public static final int SOUND_MILK_DRINK = dynamic(432);
+    public static final int SOUND_FROGSPAWN_HATCHED = dynamic(433);
+    public static final int SOUND_LAY_SPAWN = dynamic(434);
+    public static final int SOUND_FROGSPAWN_BREAK = dynamic(435);
+    public static final int SOUND_SONIC_BOOM = dynamic(436);
+    public static final int SOUND_SONIC_CHARGE = dynamic(437);
+    public static final int SOUND_ITEM_THROWN = dynamic(438);
+    public static final int SOUND_RECORD_5 = dynamic(439);
+    public static final int SOUND_CONVERT_TO_FROG = dynamic(440);
+    public static final int SOUND_RECORD_PLAYING = dynamic(441);
+    public static final int SOUND_ENCHANTING_TABLE_USE = dynamic(442);
+    public static final int SOUND_BUNDLE_DROP_CONTENTS = dynamic(445);
+    public static final int SOUND_BUNDLE_INSERT = dynamic(446);
+    public static final int SOUND_BUNDLE_REMOVE_ONE = dynamic(447);
+    public static final int SOUND_PRESSURE_PLATE_CLICK_OFF = dynamic(448);
+    public static final int SOUND_PRESSURE_PLATE_CLICK_ON = dynamic(449);
+    public static final int SOUND_BUTTON_CLICK_OFF = dynamic(450);
+    public static final int SOUND_BUTTON_CLICK_ON = dynamic(451);
+    public static final int SOUND_DOOR_OPEN = dynamic(452);
+    public static final int SOUND_DOOR_CLOSE = dynamic(453);
+    public static final int SOUND_TRAPDOOR_OPEN = dynamic(454);
+    public static final int SOUND_TRAPDOOR_CLOSE = dynamic(455);
+    public static final int SOUND_FENCE_GATE_OPEN = dynamic(456);
+    public static final int SOUND_FENCE_GATE_CLOSE = dynamic(457);
+    public static final int SOUND_INSERT = dynamic(458);
+    public static final int SOUND_PICKUP = dynamic(459);
+    public static final int SOUND_INSERT_ENCHANTED = dynamic(460);
+    public static final int SOUND_PICKUP_ENCHANTED = dynamic(461);
+    public static final int SOUND_BRUSH = dynamic(462);
+    public static final int SOUND_BRUSH_COMPLETED = dynamic(463);
+    public static final int SOUND_SHATTER_DECORATED_POT = dynamic(464);
+    public static final int SOUND_BREAK_DECORATED_POD = dynamic(465);
+    public static final int SOUND_SNIFFER_EGG_CRACK = dynamic(466);
+    public static final int SOUND_SNIFFER_EGG_HATCHED = dynamic(467);
+    public static final int SOUND_WAXED_SIGN_INTERACT_FAIL = dynamic(468);
+    public static final int SOUND_RECORD_RELIC = dynamic(469);
+    public static final int SOUND_BUMP = dynamic(470);
+    public static final int SOUND_PUMPKIN_CARVE = dynamic(471);
+    public static final int SOUND_CONVERT_HUSK_TO_ZOMBIE = dynamic(472);
+    public static final int SOUND_PIG_DEATH = dynamic(473);
+    public static final int SOUND_HOGLIN_CONVERT_TO_ZOMBIE = dynamic(474);
+    public static final int SOUND_AMBIENT_UNDERWATER_ENTER = dynamic(475);
+    public static final int SOUND_AMBIENT_UNDERWATER_EXIT = dynamic(476);
+    public static final int SOUND_BOTTLE_FILL = dynamic(477);
+    public static final int SOUND_BOTTLE_EMPTY = dynamic(478);
+    public static final int SOUND_CRAFTER_CRAFT = dynamic(479);
+    public static final int SOUND_CRAFTER_FAILED = dynamic(480);
+    public static final int SOUND_DECORATED_POT_INSERT = dynamic(481);
+    public static final int SOUND_DECORATED_POT_INSERT_FAILED = dynamic(482);
+    public static final int SOUND_CRAFTER_DISABLE_SLOT = dynamic(483);
+    public static final int SOUND_COPPER_BULB_ON = dynamic(490);
+    public static final int SOUND_COPPER_BULB_OFF = dynamic(491);
+    public static final int SOUND_AMBIENT_IN_AIR = dynamic(492);
+    public static final int SOUND_WIND_BURST = dynamic(493);
+    public static final int SOUND_IMITATE_BREEZE = dynamic(494);
+    public static final int SOUND_ARMADILLO_BRUSH = dynamic(495);
+    public static final int SOUND_ARMADILLO_SCUTE_DROP = dynamic(496);
+    public static final int SOUND_EQUIP_WOLF = dynamic(497);
+    public static final int SOUND_UNEQUIP_WOLF = dynamic(498);
+    public static final int SOUND_REFLECT = dynamic(499);
+    public static final int SOUND_UNDEFINED = dynamic(500);
 
     public int sound;
     public float x;

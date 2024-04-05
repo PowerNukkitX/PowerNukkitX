@@ -16,7 +16,7 @@ public class BlockForceFieldParticle extends GenericParticle {
     @Override
     public DataPacket[] encode() {
         LevelEventPacket pk = new LevelEventPacket();
-        pk.evid = LevelEventPacket.EVENT_PARTICLE_BLOCK_FORCE_FIELD;
+        pk.evid = LevelEventPacket.EVENT_PARTICLE_DENY_BLOCK;
         pk.x = (float) this.x;
         pk.y = (float) this.y;
         pk.z = (float) this.z;

@@ -1139,7 +1139,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 }
                 //复活图腾实现
                 if (totem) {
-                    this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_TOTEM);
+                    this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_TOTEM_USED);
                     this.getLevel().addParticleEffect(this, ParticleEffect.TOTEM);
 
                     this.extinguish();

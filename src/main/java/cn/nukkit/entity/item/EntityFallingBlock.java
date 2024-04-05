@@ -193,8 +193,8 @@ public class EntityFallingBlock extends Entity {
                             level.addParticle(new DestroyBlockParticle(pos, Block.get(blockState)));
                         }
 
-                        if (event.getTo().getId() == Block.ANVIL) {
-                            getLevel().addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_FALL);
+                        if (event.getTo().getId().equals(Block.ANVIL)) {
+                            getLevel().addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_LAND);
 
                             Entity[] e = level.getCollidingEntities(this.getBoundingBox(), this);
                             for (Entity entity : e) {

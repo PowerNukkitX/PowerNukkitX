@@ -665,7 +665,7 @@ public class Level implements Metadatable {
      * @param isGlobal   the is global,default false
      */
     public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby, boolean isGlobal) {
-        LevelSoundEventPacket pk = new LevelSoundEventPacket();
+        LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
         pk.sound = type;
         pk.extraData = data;
         pk.entityIdentifier = identifier;
@@ -2612,8 +2612,7 @@ public class Level implements Metadatable {
         return placeBlock(item, face, fx, fy, fz, player, playSound, block, target);
     }
 
-    @Nullable
-    private Item placeBlock(Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound, Block block, Block target) {
+    private Block beforePlaceBlock(Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound, Block block, Block target) {
         Block hand;
         if (item.canBePlaced()) {
             hand = item.getBlockUnsafe();
@@ -2621,8 +2620,12 @@ public class Level implements Metadatable {
         } else {
             return null;
         }
-
-        if (!(block.canBeReplaced() || (hand instanceof BlockSlab && hand.getId().equals(block.getId())))) {
+        if (
+                !(block.canBeReplaced() ||
+                        (hand instanceof BlockSlab && hand.getId().equals(block.getId())) ||
+                        hand instanceof BlockCandle//Special for candles
+                )
+        ) {
             return null;
         }
 
@@ -2638,7 +2641,13 @@ public class Level implements Metadatable {
             block = target;
             hand.position(block);
         }
+        return hand;
+    }
 
+    @Nullable
+    private Item placeBlock(Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound, Block block, Block target) {
+        final Block hand = beforePlaceBlock(item, face, fx, fy, fz, player, playSound, block, target);
+        if (hand == null) return null;
         if (!hand.canPassThrough() && hand.getBoundingBox() != null) {
             int realCount = 0;
             Entity[] entities = this.getCollidingEntities(hand.getBoundingBox());
@@ -3946,12 +3955,12 @@ public class Level implements Metadatable {
         // These numbers are from Minecraft
 
         if (raining) {
-            pk.evid = LevelEventPacket.EVENT_START_RAIN;
+            pk.evid = LevelEventPacket.EVENT_START_RAINING;
             int time = ThreadLocalRandom.current().nextInt(12000) + 12000;
             pk.data = time;
             setRainTime(time);
         } else {
-            pk.evid = LevelEventPacket.EVENT_STOP_RAIN;
+            pk.evid = LevelEventPacket.EVENT_STOP_RAINING;
             setRainTime(ThreadLocalRandom.current().nextInt(168000) + 12000);
         }
 
@@ -3989,12 +3998,12 @@ public class Level implements Metadatable {
         LevelEventPacket pk = new LevelEventPacket();
         // These numbers are from Minecraft
         if (thundering) {
-            pk.evid = LevelEventPacket.EVENT_START_THUNDER;
+            pk.evid = LevelEventPacket.EVENT_START_THUNDERSTORM;
             int time = ThreadLocalRandom.current().nextInt(12000) + 3600;
             pk.data = time;
             setThunderTime(time);
         } else {
-            pk.evid = LevelEventPacket.EVENT_STOP_THUNDER;
+            pk.evid = LevelEventPacket.EVENT_STOP_THUNDERSTORM;
             setThunderTime(ThreadLocalRandom.current().nextInt(168000) + 12000);
         }
 
@@ -4019,19 +4028,19 @@ public class Level implements Metadatable {
         LevelEventPacket pk = new LevelEventPacket();
 
         if (this.isRaining()) {
-            pk.evid = LevelEventPacket.EVENT_START_RAIN;
+            pk.evid = LevelEventPacket.EVENT_START_RAINING;
             pk.data = this.rainTime;
         } else {
-            pk.evid = LevelEventPacket.EVENT_STOP_RAIN;
+            pk.evid = LevelEventPacket.EVENT_STOP_RAINING;
         }
 
         Server.broadcastPacket(players, pk);
 
         if (this.isThundering()) {
-            pk.evid = LevelEventPacket.EVENT_START_THUNDER;
+            pk.evid = LevelEventPacket.EVENT_START_THUNDERSTORM;
             pk.data = this.thunderTime;
         } else {
-            pk.evid = LevelEventPacket.EVENT_STOP_THUNDER;
+            pk.evid = LevelEventPacket.EVENT_STOP_THUNDERSTORM;
         }
 
         Server.broadcastPacket(players, pk);
