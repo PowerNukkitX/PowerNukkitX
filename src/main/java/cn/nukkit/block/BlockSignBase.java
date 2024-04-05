@@ -7,7 +7,11 @@ import cn.nukkit.event.block.SignColorChangeEvent;
 import cn.nukkit.event.block.SignGlowEvent;
 import cn.nukkit.event.block.SignWaxedEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
-import cn.nukkit.item.*;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemDye;
+import cn.nukkit.item.ItemGlowInkSac;
+import cn.nukkit.item.ItemHoneycomb;
+import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.particle.WaxOnParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
@@ -15,7 +19,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
-import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -75,8 +78,8 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
                 case SOUTH_EAST, SOUTH_SOUTH_EAST, EAST_SOUTH_EAST -> face == BlockFace.EAST || face == BlockFace.SOUTH;
                 case SOUTH_WEST, SOUTH_SOUTH_WEST, WEST_SOUTH_WEST -> face == BlockFace.WEST || face == BlockFace.SOUTH;
             };
-            if (item instanceof ItemDye) {
-                BlockColor color = DyeColor.getByDyeData(item.getDamage()).getSignColor();
+            if (item instanceof ItemDye dye) {
+                BlockColor color = dye.getDyeColor().getColor();
                 if (color.equals(sign.getColor(front)) || sign.isEmpty(front)) {
                     player.openSignEditor(this, front);
                     return;

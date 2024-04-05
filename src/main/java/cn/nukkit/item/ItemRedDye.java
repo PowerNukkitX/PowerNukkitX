@@ -14,6 +14,5 @@ public class ItemRedDye extends ItemDye {
 
     @Override
     public void setDamage(int meta) {
-        
     }
 }
