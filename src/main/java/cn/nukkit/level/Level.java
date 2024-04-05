@@ -2612,8 +2612,7 @@ public class Level implements Metadatable {
         return placeBlock(item, face, fx, fy, fz, player, playSound, block, target);
     }
 
-    @Nullable
-    private Item placeBlock(Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound, Block block, Block target) {
+    private Block beforePlaceBlock(Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound, Block block, Block target) {
         Block hand;
         if (item.canBePlaced()) {
             hand = item.getBlockUnsafe();
@@ -2621,8 +2620,12 @@ public class Level implements Metadatable {
         } else {
             return null;
         }
-
-        if (!(block.canBeReplaced() || (hand instanceof BlockSlab && hand.getId().equals(block.getId())))) {
+        if (
+                !(block.canBeReplaced() ||
+                        (hand instanceof BlockSlab && hand.getId().equals(block.getId())) ||
+                        hand instanceof BlockCandle//Special for candles
+                )
+        ) {
             return null;
         }
 
@@ -2638,7 +2641,13 @@ public class Level implements Metadatable {
             block = target;
             hand.position(block);
         }
+        return hand;
+    }
 
+    @Nullable
+    private Item placeBlock(Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound, Block block, Block target) {
+        final Block hand = beforePlaceBlock(item, face, fx, fy, fz, player, playSound, block, target);
+        if (hand == null) return null;
         if (!hand.canPassThrough() && hand.getBoundingBox() != null) {
             int realCount = 0;
             Entity[] entities = this.getCollidingEntities(hand.getBoundingBox());
