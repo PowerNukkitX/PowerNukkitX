@@ -481,9 +481,20 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(ZOMBIE_PIGMAN_SPAWN_EGG, ItemZombiePigmanSpawnEgg.class);
             register(ZOMBIE_SPAWN_EGG, ItemZombieSpawnEgg.class);
             register(ZOMBIE_VILLAGER_SPAWN_EGG, ItemZombieVillagerSpawnEgg.class);
-
             register(BED, ItemBed.class);
             register(SKULL, ItemSkull.class);
+
+            register(BIRCH_HANGING_SIGN, ItemBirchHangingSign.class);
+            register(ACACIA_HANGING_SIGN, ItemAcaciaHangingSign.class);
+            register(BAMBOO_HANGING_SIGN, ItemBambooHangingSign.class);
+            register(CHERRY_HANGING_SIGN, ItemCherryHangingSign.class);
+            register(CRIMSON_HANGING_SIGN, ItemCrimsonHangingSign.class);
+            register(DARK_OAK_HANGING_SIGN, ItemDarkOakHangingSign.class);
+            register(JUNGLE_HANGING_SIGN, ItemJungleHangingSign.class);
+            register(MANGROVE_HANGING_SIGN, ItemMangroveHangingSign.class);
+            register(OAK_HANGING_SIGN, ItemOakHangingSign.class);
+            register(SPRUCE_HANGING_SIGN, ItemSpruceHangingSign.class);
+            register(WARPED_HANGING_SIGN, ItemWarpedHangingSign.class);
         } catch (RegisterException ignore) {
         }
     }

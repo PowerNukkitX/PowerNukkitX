@@ -30,7 +30,7 @@ public class CraftCreativeActionProcessor implements ItemStackRequestActionProce
         item = item.clone().autoAssignStackNetworkId();
         item.setCount(item.getMaxStackSize());
         player.getCreativeOutputInventory().setItem(0, item, false);
-        //从创造物品栏拿东西不需要响应
+        //Picking up something from the creation inventory does not require a response
         context.put(CRAFT_CREATIVE_KEY, true);
         return null;
     }

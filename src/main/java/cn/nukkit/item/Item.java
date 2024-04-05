@@ -164,8 +164,7 @@ public abstract class Item implements Cloneable, ItemID {
             if (tags != null) {
                 item.setCompoundTag(tags);
             }
-        }
-        if (autoAssignStackNetworkId) {
+        }else if (autoAssignStackNetworkId) {
             item.autoAssignStackNetworkId();
         }
         return item;
