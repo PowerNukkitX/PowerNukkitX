@@ -72,7 +72,7 @@ public class BlockSponge extends BlockSolid {
         if (this.getSpongeType() == WET && level.getDimension() == Level.DIMENSION_NETHER) {
             this.setSpongeType(DRY);
             level.setBlock(block, this, true, true);
-            this.getLevel().addLevelEvent(block.add(0.5, 0.875, 0.5), LevelEventPacket.EVENT_SOUND_EXPLODE);
+            this.getLevel().addLevelEvent(block.add(0.5, 0.875, 0.5), LevelEventPacket.EVENT_CAULDRON_EXPLODE);
 
             ThreadLocalRandom random = ThreadLocalRandom.current();
             for (int i = 0; i < 8; ++i) {
@@ -90,7 +90,7 @@ public class BlockSponge extends BlockSolid {
 
             for (int i = 0; i < 4; i++) {
                 LevelEventPacket packet = new LevelEventPacket();
-                packet.evid = LevelEventPacket.EVENT_PARTICLE_DESTROY;
+                packet.evid = LevelEventPacket.EVENT_PARTICLE_DESTROY_BLOCK;
                 packet.x = (float) block.getX() + 0.5f;
                 packet.y = (float) block.getY() + 1f;
                 packet.z = (float) block.getZ() + 0.5f;

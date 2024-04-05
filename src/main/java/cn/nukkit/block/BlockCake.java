@@ -7,6 +7,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -33,7 +34,8 @@ public class BlockCake extends BlockTransparent {
     }
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -100,7 +102,7 @@ public class BlockCake extends BlockTransparent {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!down().isAir()) {
+            if (down().isAir()) {
                 getLevel().setBlock(this, Block.get(BlockID.AIR), true);
 
                 return Level.BLOCK_UPDATE_NORMAL;
@@ -128,18 +130,19 @@ public class BlockCake extends BlockTransparent {
                 return false;
             }
         }
-        if (!(item.getBlock() instanceof BlockCandle)) {
+        if (item.getBlock() instanceof BlockCandle && this.getBiteCount() == 0) {
             return false;
         }
         int damage = getBiteCount();
         if (player != null && (player.getFoodData().isHungry() || player.isCreative() || player.getServer().getDifficulty() == 0)) {
-            if (damage <= 0x06) setBiteCount(damage + 1);
-            if (damage >= 0x06) {
+            if (damage < BITE_COUNTER.getMax()) setBiteCount(damage + 1);
+            if (damage >= BITE_COUNTER.getMax()) {
                 getLevel().setBlock(this, Block.get(BlockID.AIR), true);
             } else {
                 player.getFoodData().addFood(2, 0.4F);
                 getLevel().setBlock(this, this, true);
             }
+            this.level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BURP );
             this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, this.add(0.5, 0.5, 0.5), VibrationType.EAT));
             return true;
         }

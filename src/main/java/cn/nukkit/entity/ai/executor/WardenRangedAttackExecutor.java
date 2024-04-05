@@ -115,7 +115,7 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
         var relativeVector = new Vector3(to.x - from.x, to.y - from.y, to.z - from.z);
         for (int i = 1; i <= (length + 4); i++) {
             var pk = new LevelEventGenericPacket();
-            pk.eventId = LevelEventPacket.EVENT_PARTICLE_SONIC_EXPLOSION;
+            pk.eventId = LevelEventPacket.EVENT_SONIC_EXPLOSION;
             pk.tag = createVec3fTag(from.add(relativeVector.multiply(i / length)).asVector3f());
             Server.broadcastPacket(entity.getViewers().values(), pk);
         }

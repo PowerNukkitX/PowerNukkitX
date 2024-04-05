@@ -137,7 +137,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
             setMode(Mode.SUBTRACT);
         }
 
-        this.level.addLevelEvent(this.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_BUTTON_CLICK, this.getMode() == Mode.SUBTRACT ? 500 : 550);
+        this.level.addLevelEvent(this.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_ACTIVATE_BLOCK, this.getMode() == Mode.SUBTRACT ? 500 : 550);
         this.level.setBlock(this, this, true, false);
         this.level.updateComparatorOutputLevelSelective(this, true);
         //bug?
