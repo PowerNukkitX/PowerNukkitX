@@ -169,7 +169,9 @@ tasks.named<AbstractArchiveTask>("sourcesJar") {
 tasks.jar {
     destinationDirectory = layout.buildDirectory
     doLast {//execution phase
-        project.extra["jarfile"] = archiveFile.get()
+        val f: RegularFile =  archiveFile.get()
+        val tf: RegularFile = layout.buildDirectory.file("${project.description}.jar").get()
+        Files.copy(Path.of(f.asFile.absolutePath), Path.of(tf.asFile.absolutePath), StandardCopyOption.REPLACE_EXISTING)
     }
 }
 

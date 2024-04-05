@@ -1255,12 +1255,19 @@ public abstract class Item implements Cloneable, ItemID {
         return equals(item, checkDamage, true);
     }
 
+    public boolean equalItemBlock(Item item) {
+        if (this.isBlock() && item.isBlock()) {
+            return  this.getBlockUnsafe().getBlockState() == item.getBlockUnsafe().getBlockState();
+        }
+        return true;
+    }
+
     public final boolean equals(Item item, boolean checkDamage, boolean checkCompound) {
         if (!Objects.equals(this.getId(), item.getId())) return false;
         if (checkDamage && this.hasMeta() && item.hasMeta() && this.getDamage() != item.getDamage()) {
             return false;
         }
-        if (checkDamage && (this.isBlock() || item.isBlock()) && this.getBlockUnsafe().getBlockState() != item.getBlockUnsafe().getBlockState()) {
+        if (checkDamage && !equalItemBlock(item)) {
             return false;
         }
         if (checkCompound && (this.hasCompoundTag() || item.hasCompoundTag())) {

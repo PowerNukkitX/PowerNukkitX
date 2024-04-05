@@ -31,8 +31,7 @@ jobs:
     if: |#    event is push and there is a change or push or commit the first message +b +u
       (github.event_name == 'push' || 
       github.event.pull_request.head.repo.full_name != github.repository) && 
-      (contains(needs.check-files.outputs.changed-files, 'src/') || 
-      contains(needs.check-files.outputs.changed-files, 'scripts/') || 
+      (contains(needs.check-files.outputs.changed-files, 'src/') ||
       contains(needs.check-files.outputs.changed-files, '.github/workflows') || 
       (github.event_name == 'push' && 
       (contains(github.event.commits[0].message, '+b') || contains(github.event.commits[0].message, '+u'))

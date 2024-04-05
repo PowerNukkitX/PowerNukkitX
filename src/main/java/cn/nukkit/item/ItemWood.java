@@ -70,4 +70,12 @@ public class ItemWood extends Item {
         }
         this.meta = 0;
     }
+
+    @Override
+    public boolean equalItemBlock(Item item) {
+        if (this.isBlock() && item.isBlock()) {
+            return  this.getBlockUnsafe().getProperties() == item.getBlockUnsafe().getProperties();
+        }
+        return true;
+    }
 }

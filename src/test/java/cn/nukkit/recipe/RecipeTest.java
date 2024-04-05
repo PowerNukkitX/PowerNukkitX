@@ -129,4 +129,19 @@ public class RecipeTest {
         };
         Assertions.assertArrayEquals(expected, items);
     }
+
+    @Test
+    void test_tryShrinkMatrix7() {
+        Item[] item1 = List.of(Item.AIR, Item.AIR).toArray(Item.EMPTY_ARRAY);
+        Item[] item2 = List.of(Item.get(ItemID.PLANKS), Item.AIR).toArray(Item.EMPTY_ARRAY);
+        Item[][] data = new Item[][]{item1, item2};
+        Input input = new Input(2, 2, data);
+        ShapedRecipe.tryShrinkMatrix(input);
+        Item[][] items = input.getData();
+        //         row0
+        Item[][] expected = new Item[][]{
+                {Item.get(ItemID.PLANKS)}
+        };
+        Assertions.assertArrayEquals(expected, items);
+    }
 }
