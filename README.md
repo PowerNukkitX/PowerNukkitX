@@ -8,7 +8,7 @@
     <img alt="Action" src="https://github.com/PowerNukkitX/PowerNukkitX/actions/workflows/maven.yml/badge.svg?branch=master" />
   </a>
   <img alt="Coverage" src=".github/badges/jacoco.svg" />
-  <a href="https://dev.pnx-wiki.pages.dev/" target="_blank">
+  <a href="https://pnx-wiki.pages.dev" target="_blank">
     <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
   </a>
   <a href="https://www.gnu.org/licenses/lgpl-3.0.html" target="_blank">
