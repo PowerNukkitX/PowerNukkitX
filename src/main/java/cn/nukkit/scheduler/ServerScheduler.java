@@ -118,9 +118,8 @@ public class ServerScheduler {
     }
 
     /**
-     * @deprecated Use {@link #scheduleDelayedTask(Plugin, Runnable, int)}
+     * Use {@link #scheduleDelayedTask(Plugin, Runnable, int)}
      */
-    @Deprecated
     public TaskHandler scheduleDelayedTask(Runnable task, int delay) {
         return addTask(null, task, delay, 0, false);
     }
@@ -157,6 +156,10 @@ public class ServerScheduler {
 
     public TaskHandler scheduleRepeatingTask(Task task, int period, boolean asynchronous) {
         return addTask(task, 0, period, asynchronous);
+    }
+
+    public TaskHandler scheduleRepeatingTask(Runnable task, int period) {
+        return addTask(null, task, 0, period, false);
     }
 
     public TaskHandler scheduleDelayedRepeatingTask(Task task, int delay, int period) {
