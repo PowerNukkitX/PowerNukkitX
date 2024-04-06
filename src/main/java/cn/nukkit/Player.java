@@ -1024,11 +1024,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     for (int coordZ = this.getFloorZ() - radius; coordZ < this.getFloorZ() + radius + 1; coordZ++) {
                         Block block = level.getBlock(coordX, this.getFloorY() - 1, coordZ);
                         int layer = 0;
-                        if ((block.getId() != Block.WATER && (block.getId() != Block.FLOWING_WATER ||
+                        if ((!block.getId().equals(Block.WATER) && (!block.getId().equals(Block.FLOWING_WATER) ||
                                 block.getPropertyValue(CommonBlockProperties.LIQUID_DEPTH) != 0)) || !block.up().isAir()) {
                             block = block.getLevelBlockAtLayer(1);
                             layer = 1;
-                            if ((block.getId() != Block.WATER && (block.getId() != Block.FLOWING_WATER ||
+                            if ((!block.getId().equals(Block.WATER) && (!block.getId().equals(Block.FLOWING_WATER) ||
                                     block.getPropertyValue(CommonBlockProperties.LIQUID_DEPTH) != 0)) || !block.up().isAir()) {
                                 continue;
                             }
@@ -1044,17 +1044,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
 
             //处理灵魂急行附魔
+            //Handling Soul Speed Enchantment
             int soulSpeedLevel = this.getInventory().getBoots().getEnchantmentLevel(Enchantment.ID_SOUL_SPEED);
             if (soulSpeedLevel > 0) {
+                Block inBlock = this.getLevelBlock();
                 Block downBlock = this.getLevelBlock().down();
+                this.soulSpeedMultiplier = (soulSpeedLevel * 0.105f) + 1.3f;
 
-                if (this.wasInSoulSandCompatible && !downBlock.isSoulSpeedCompatible()) {
+                if (this.wasInSoulSandCompatible && (!downBlock.isSoulSpeedCompatible() && !inBlock.isSoulSpeedCompatible())) {
                     this.wasInSoulSandCompatible = false;
-                    this.soulSpeedMultiplier = 1;
-                    this.setMovementSpeed(this.getMovementSpeed());
-                } else if (!this.wasInSoulSandCompatible && downBlock.isSoulSpeedCompatible()) {
+                    this.setMovementSpeed(this.getMovementSpeed() / this.soulSpeedMultiplier);
+                } else if (!this.wasInSoulSandCompatible && (downBlock.isSoulSpeedCompatible() || inBlock.isSoulSpeedCompatible())) {
                     this.wasInSoulSandCompatible = true;
-                    this.soulSpeedMultiplier = (soulSpeedLevel * 0.105f) + 1.3f;
                     this.setMovementSpeed(this.getMovementSpeed() * this.soulSpeedMultiplier);
                 }
             }
@@ -1312,11 +1313,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return
      */
     protected boolean isValidRespawnBlock(Block block) {
-        if (block.getId() == BlockID.RESPAWN_ANCHOR && block.getLevel().getDimension() == Level.DIMENSION_NETHER) {
+        if (block.getId().equals(BlockID.RESPAWN_ANCHOR) && block.getLevel().getDimension() == Level.DIMENSION_NETHER) {
             BlockRespawnAnchor anchor = (BlockRespawnAnchor) block;
             return anchor.getCharge() > 0;
         }
-        if (block.getId() == BlockID.BED && block.getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
+        if (block.getId().equals(BlockID.BED) && block.getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
             BlockBed bed = (BlockBed) block;
             return bed.isBedValid();
         }
@@ -3563,7 +3564,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     public LangCode getLanguageCode() {
         LangCode code = LangCode.from(this.getLoginChainData().getLanguageCode());
-        return code==null?LangCode.en_US:code;
+        return code == null ? LangCode.en_US : code;
     }
 
     @Override
