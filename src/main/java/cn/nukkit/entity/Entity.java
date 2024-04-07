@@ -3,7 +3,15 @@ package cn.nukkit.entity;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.block.*;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockBubbleColumn;
+import cn.nukkit.block.BlockEndPortal;
+import cn.nukkit.block.BlockFence;
+import cn.nukkit.block.BlockFire;
+import cn.nukkit.block.BlockFlowingLava;
+import cn.nukkit.block.BlockFlowingWater;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockTurtleEgg;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.data.EntityDataMap;
@@ -33,7 +41,6 @@ import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTotemOfUndying;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.utils.PortalHelper;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
@@ -46,7 +53,6 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -69,6 +75,7 @@ import cn.nukkit.scheduler.Task;
 import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.Identifier;
+import cn.nukkit.utils.PortalHelper;
 import cn.nukkit.utils.TextFormat;
 import com.google.common.collect.Iterables;
 import org.jetbrains.annotations.ApiStatus;
@@ -81,7 +88,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.BiPredicate;
 
 /**
  * @author MagicDroidX
@@ -817,9 +823,16 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 z + radius
         );
 
-        this.getEntityDataMap().put(HEIGHT, entityHeight);
-        this.getEntityDataMap().put(WIDTH, this.getWidth());
-        if (send) {
+        boolean change = false;
+        if (this.getEntityDataMap().get(HEIGHT) != entityHeight) {
+            change = true;
+            this.getEntityDataMap().put(HEIGHT, entityHeight);
+        }
+        if (this.getEntityDataMap().get(WIDTH) != entityHeight) {
+            change = true;
+            this.getEntityDataMap().put(HEIGHT, this.getWidth());
+        }
+        if (send && change) {
             sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.entityDataMap.copy(WIDTH, HEIGHT));
         }
     }

@@ -33,6 +33,7 @@ import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityXpOrb;
+import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
@@ -71,6 +72,7 @@ import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.ChunkLoader;
+import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.utils.PortalHelper;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
@@ -2484,7 +2486,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.x += dx;
         this.y += dy;
         this.z += dz;
-        this.recalculateBoundingBox(false);
+        this.recalculateBoundingBox(true);
 
         this.checkChunks();
 
@@ -2580,10 +2582,28 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    public float getHeight() {
+        if (this.riding instanceof EntityHorse) {
+            return 1.1f;
+        }
+        return super.getHeight();
+    }
+
+    @Override
     public boolean onUpdate(int currentTick) {
         if (!this.loggedIn) {
             return false;
         }
+
+//        if (currentTick % 20 == 0) {
+//            for (double x = this.getBoundingBox().getMinX(); x < this.getBoundingBox().getMaxX(); x += 0.2) {
+//                for (double y = this.getBoundingBox().getMinY(); y < this.getBoundingBox().getMaxY(); y += 0.2) {
+//                    for (double z = this.getBoundingBox().getMinZ(); z < this.getBoundingBox().getMaxZ(); z += 0.2) {
+//                        level.addParticleEffect(new Vector3(x, y, z), ParticleEffect.ENDROD);
+//                    }
+//                }
+//            }
+//        }
 
         int tickDiff = currentTick - this.lastUpdate;
 
