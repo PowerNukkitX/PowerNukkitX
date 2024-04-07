@@ -13,8 +13,8 @@ public class EffectInstantHealth extends InstantEffect {
     }
 
     @Override
-    public void apply(Entity entity, double health) {
-        double amount = (4 << this.getAmplifier()) * health;
+    public void apply(Entity entity, double tickCount) {
+        double amount = (4 << this.getAmplifier()) * tickCount;
         if (entity.isUndead()) {
             entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.MAGIC, (float) amount));
         } else {

@@ -89,7 +89,7 @@ public class EntityFishingHook extends SlenderProjectile {
 
     @Override
     public boolean onUpdate(int currentTick) {
-        boolean hasUpdate = false;
+        boolean hasUpdate;
         long target = getDataProperty(TARGET_EID);
         if (target != 0L) {
             Entity entity = getLevel().getEntity(target);
@@ -297,6 +297,8 @@ public class EntityFishingHook extends SlenderProjectile {
         pk.entityData = entityDataMap;
         return pk;
     }
+
+
 
     @Override
     public void onCollideWithEntity(Entity entity) {

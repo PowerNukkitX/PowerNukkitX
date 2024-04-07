@@ -4,6 +4,7 @@ import cn.nukkit.block.BlockComposter;
 import cn.nukkit.command.SimpleCommandMap;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
+import cn.nukkit.entity.data.Skin;
 import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.event.server.QueryRegenerateEvent;
 import cn.nukkit.inventory.HumanEnderChestInventory;
@@ -189,7 +190,11 @@ public class GameMockExtension extends MockitoExtension {
         doNothing().when(serverSession).sendPacket(any());
         player = new Player(serverSession, info);
         player.loggedIn = true;
-        player.username = "test";
+        try {
+            FieldUtils.writeDeclaredField(player, "info", new PlayerInfo("test", UUID.nameUUIDFromBytes(new byte[]{1, 2, 3}), mock(Skin.class), mock(ClientChainData.class)), true);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
         player.temporalVector = new Vector3(0, 0, 0);
         player.setInventories(new Inventory[]{
                 new HumanInventory(player),

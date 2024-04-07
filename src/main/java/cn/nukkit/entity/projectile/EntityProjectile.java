@@ -147,6 +147,20 @@ public abstract class EntityProjectile extends Entity {
         this.motionZ *= 1 - this.getDrag();
     }
 
+    /**
+     * Filters the entities that collide with projectile
+     *
+     * @param entity the collide entity
+     * @return the boolean
+     */
+    protected boolean collideEntityFilter(Entity entity) {
+        if ((entity == this.shootingEntity && this.ticksLived < 5) ||
+                (entity instanceof Player player && player.getGamemode() == Player.SPECTATOR)
+                || (this.shootingEntity instanceof Player && this.shootingEntity.riding.equals(entity))) {
+            return false;
+        }else return true;
+    }
+
     @Override
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
@@ -177,10 +191,7 @@ public abstract class EntityProjectile extends Entity {
             Entity nearEntity = null;
 
             for (Entity entity : list) {
-                if (/*!entity.canCollideWith(this) or */
-                        (entity == this.shootingEntity && this.ticksLived < 5) ||
-                                (entity instanceof Player && ((Player) entity).getGamemode() == Player.SPECTATOR)
-                ) {
+                if (!collideEntityFilter(entity)) {
                     continue;
                 }
 

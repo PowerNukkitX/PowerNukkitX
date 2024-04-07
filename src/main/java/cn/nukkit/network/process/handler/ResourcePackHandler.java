@@ -68,8 +68,7 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
                 );
                 session.sendPacket(stackPacket);
             }
-            case ResourcePackClientResponsePacket.STATUS_COMPLETED ->
-                    this.session.getMachine().fire(SessionState.PRE_SPAWN);
+            case ResourcePackClientResponsePacket.STATUS_COMPLETED -> this.session.getMachine().fire(SessionState.PRE_SPAWN);
         }
     }
 

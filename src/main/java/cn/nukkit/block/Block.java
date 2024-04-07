@@ -267,18 +267,14 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
-     * 控制方块硬度
-     *
-     * @return 方块的硬度
+     * Define the block hardness
      */
     public double getHardness() {
         return 10;
     }
 
     /**
-     * 控制方块爆炸抗性
-     *
-     * @return 方块的爆炸抗性
+     * Defines the block explosion resistance
      */
     public double getResistance() {
         return 1;
