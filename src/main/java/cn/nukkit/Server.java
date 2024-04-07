@@ -302,8 +302,6 @@ public class Server {
     };
     private Level[] levelArray;
     private final ServiceManager serviceManager = new NKServiceManager();
-    private Level defaultLevel = null;
-    private boolean allowNether;
     private final Thread currentThread;
     private final long launchTime;
     private Watchdog watchdog;
@@ -312,10 +310,17 @@ public class Server {
     private boolean safeSpawn;
     private boolean forceSkinTrusted = false;
     private boolean checkMovement = true;
-    private boolean allowTheEnd;
     private boolean useTerra;
     private FreezableArrayManager freezableArrayManager;
     public boolean enabledNetworkEncryption;
+
+    ///default levels
+    private Level defaultLevel = null;
+    private Level defaultNether = null;
+    private Level defaultEnd = null;
+    private boolean allowNether;
+    private boolean allowTheEnd;
+    ///
 
     Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage) {
         Preconditions.checkState(instance == null, "Already initialized!");
@@ -566,9 +571,7 @@ public class Server {
                 put("network-encryption", true);
             }
         });
-        // Allow Nether? (determines if we create a nether world if one doesn't exist on startup)
         this.allowNether = this.properties.getBoolean("allow-nether", true);
-
         this.allowTheEnd = this.properties.getBoolean("allow-the_end", true);
 
         this.useTerra = this.properties.getBoolean("use-terra", false);
@@ -1719,7 +1722,8 @@ public class Server {
             pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(player.getUniqueId())};
 
             Server.broadcastPacket(this.playerList.values(), pk);
-            this.getNetwork().getPong().playerCount(playerList.size()).update();;
+            this.getNetwork().getPong().playerCount(playerList.size()).update();
+            ;
         }
     }
 
@@ -2310,22 +2314,50 @@ public class Server {
     }
 
     /**
-     * @return 获得默认游戏世界<br>Get the default world
+     * @return Get the default overworld
      */
     public Level getDefaultLevel() {
         return defaultLevel;
     }
 
     /**
-     * 设置默认游戏世界
-     * <p>
-     * Set default game world
-     *
-     * @param defaultLevel 默认游戏世界<br>default game world
+     * Set default overworld
      */
     public void setDefaultLevel(Level defaultLevel) {
         if (defaultLevel == null || (this.isLevelLoaded(defaultLevel.getName()) && defaultLevel != this.defaultLevel)) {
             this.defaultLevel = defaultLevel;
+        }
+    }
+
+    /**
+     * @return Get the default nether
+     */
+    public Level getDefaultNetherLevel() {
+        return defaultNether;
+    }
+
+    /**
+     * Set default nether
+     */
+    public void setDefaultNetherLevel(Level defaultLevel) {
+        if (defaultLevel == null || (this.isLevelLoaded(defaultLevel.getName()) && defaultLevel != this.defaultNether)) {
+            this.defaultNether = defaultLevel;
+        }
+    }
+
+    /**
+     * @return Get the default the_end level
+     */
+    public Level getDefaultEndLevel() {
+        return defaultLevel;
+    }
+
+    /**
+     * Set default the_end level
+     */
+    public void setDefaultEndLevel(Level defaultLevel) {
+        if (defaultLevel == null || (this.isLevelLoaded(defaultLevel.getName()) && defaultLevel != this.defaultEnd)) {
+            this.defaultEnd = defaultLevel;
         }
     }
 
@@ -2403,6 +2435,11 @@ public class Server {
 
     }
 
+    /**
+     * @param name the level folder name
+     * @return whether load success
+     */
+    @ApiStatus.Internal
     public boolean loadLevel(String name) {
         if (Objects.equals(name.trim(), "")) {
             throw new LevelException("Invalid empty level name");
@@ -2623,7 +2660,7 @@ public class Server {
      */
     public void setMaxPlayers(int maxPlayers) {
         this.maxPlayers = maxPlayers;
-        this.getNetwork().getPong().maximumPlayerCount(maxPlayers).update();;
+        this.getNetwork().getPong().maximumPlayerCount(maxPlayers).update();
     }
 
     /**
@@ -2850,7 +2887,7 @@ public class Server {
      */
     public void setDefaultGamemode(int defaultGamemode) {
         this.defaultGamemode = defaultGamemode;
-        this.getNetwork().getPong().gameType(Server.getGamemodeString(defaultGamemode, true)).update();;
+        this.getNetwork().getPong().gameType(Server.getGamemodeString(defaultGamemode, true)).update();
     }
 
     /**
@@ -2867,7 +2904,7 @@ public class Server {
      */
     public void setMotd(String motd) {
         this.setPropertyString("motd", motd);
-        this.getNetwork().getPong().motd(motd).update();;
+        this.getNetwork().getPong().motd(motd).update();
     }
 
     /**
@@ -2888,7 +2925,7 @@ public class Server {
      */
     public void setSubMotd(String subMotd) {
         this.setPropertyString("sub-motd", subMotd);
-        this.getNetwork().getPong().subMotd(subMotd).update();;
+        this.getNetwork().getPong().subMotd(subMotd).update();
     }
 
     /**

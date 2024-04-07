@@ -43,11 +43,6 @@ public class BlockPortal extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public boolean canPassThrough() {
-        return true;
-    }
-
-    @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return player != null && player.isCreative();
     }
@@ -104,52 +99,6 @@ public class BlockPortal extends BlockFlowable implements Faceable {
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         return this;
-    }
-
-    public static void spawnPortal(Position pos) {
-        Level lvl = pos.level; //TODO: This will generate part of the time, seems to be only when the chunk is populated
-        int x = pos.getFloorX();
-        int y = pos.getFloorY();
-        int z = pos.getFloorZ();
-
-        Block air = Block.get(AIR);
-        Block obsidian = Block.get(OBSIDIAN);
-        Block netherPortal = Block.get(PORTAL);
-        for (int xx = -1; xx < 4; xx++) {
-            for (int yy = 1; yy < 4; yy++)  {
-                for (int zz = -1; zz < 3; zz++) {
-                    lvl.setBlock(x + xx, y + yy, z + zz, air, false, true);
-                }
-            }
-        }
-
-        lvl.setBlock(x + 1, y, z, obsidian, false, true);
-        lvl.setBlock(x + 2, y, z, obsidian, false, true);
-
-        z++;
-        lvl.setBlock(x, y, z, obsidian, false, true);
-        lvl.setBlock(x + 1, y, z, obsidian, false, true);
-        lvl.setBlock(x + 2, y, z, obsidian, false, true);
-        lvl.setBlock(x + 3, y, z, obsidian, false, true);
-
-        z++;
-        lvl.setBlock(x + 1, y, z, obsidian, false, true);
-        lvl.setBlock(x + 2, y, z, obsidian, false, true);
-        z--;
-
-        for (int i = 0; i < 3; i++) {
-            y++;
-            lvl.setBlock(x, y, z, obsidian, false, true);
-            lvl.setBlock(x + 1, y, z, netherPortal, false, true);
-            lvl.setBlock(x + 2, y, z, netherPortal, false, true);
-            lvl.setBlock(x + 3, y, z, obsidian, false, true);
-        }
-
-        y++;
-        lvl.setBlock(x, y, z, obsidian, false, true);
-        lvl.setBlock(x + 1, y, z, obsidian, false, true);
-        lvl.setBlock(x + 2, y, z, obsidian, false, true);
-        lvl.setBlock(x + 3, y, z, obsidian, false, true);
     }
 
     @Override

@@ -18,7 +18,7 @@ public class EffectWither extends Effect {
     }
 
     @Override
-    public void apply(Entity entity, double health) {
+    public void apply(Entity entity, double tickCount) {
         entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.MAGIC, 1));
     }
 }

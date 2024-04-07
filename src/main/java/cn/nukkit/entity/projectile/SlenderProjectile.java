@@ -77,8 +77,7 @@ public abstract class SlenderProjectile extends EntityProjectile {
                 break;
             }
             collisionEntity = collisionEntities.stream()
-                    .filter(Predicate.not(entity -> (entity == shootEntity && ticks < 5) ||
-                            (entity instanceof Player && ((Player) entity).getGamemode() == Player.SPECTATOR)))
+                    .filter(this::collideEntityFilter)
                     .min(Comparator.comparingDouble(o -> o.distanceSquared(projectile)))
                     .orElse(null);
             if (collisionEntity != null) {

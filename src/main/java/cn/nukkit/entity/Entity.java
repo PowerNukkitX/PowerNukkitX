@@ -33,7 +33,7 @@ import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTotemOfUndying;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.EnumLevel;
+import cn.nukkit.utils.PortalHelper;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
@@ -71,6 +71,7 @@ import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.TextFormat;
 import com.google.common.collect.Iterables;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -1453,23 +1454,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             }
         }
 
-        if (this.inPortalTicks == 80) {
+        if (this.inPortalTicks == 80) {//handle portal teleport
             EntityPortalEnterEvent ev = new EntityPortalEnterEvent(this, PortalType.NETHER);
-            getServer().getPluginManager().callEvent(ev);
+            getServer().getPluginManager().callEvent(ev);//call event
 
             if (!ev.isCancelled() && (level.getDimension() == Level.DIMENSION_OVERWORLD || level.getDimension() == Level.DIMENSION_NETHER)) {
-                Position newPos = EnumLevel.convertPosBetweenNetherAndOverworld(this);
+                Position newPos = PortalHelper.convertPosBetweenNetherAndOverworld(this);
                 if (newPos != null) {
-                    /*for (int x = -1; x < 2; x++) {
-                        for (int z = -1; z < 2; z++) {
-                            int chunkX = (newPos.getFloorX() >> 4) + x, chunkZ = (newPos.getFloorZ() >> 4) + z;
-                            FullChunk chunk = newPos.level.getChunk(chunkX, chunkZ, false);
-                            if (chunk == null || !(chunk.isGenerated() || chunk.isPopulated())) {
-                                newPos.level.generateChunk(chunkX, chunkZ, true);
-                            }
-                        }
-                    }*/
-                    Position nearestPortal = getNearestValidPortal(newPos);
+                    Position nearestPortal = PortalHelper.getNearestValidPortal(newPos);
                     if (nearestPortal != null) {
                         teleport(nearestPortal.add(0.5, 0, 0.5), PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
                     } else {
@@ -1482,7 +1474,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                                     // player
                                     inPortalTicks = 81;
                                     teleport(finalPos, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
-                                    BlockPortal.spawnPortal(newPos);
+                                    PortalHelper.spawnPortal(newPos);
                                 }
                             }, 5);
                         }
@@ -1495,32 +1487,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
         return hasUpdate;
     }
-
-    private Position getNearestValidPortal(Position currentPos) {
-        AxisAlignedBB axisAlignedBB = new SimpleAxisAlignedBB(
-                new Vector3(currentPos.getFloorX() - 128.0, currentPos.level.getDimension() == Level.DIMENSION_NETHER ? 0 : -64, currentPos.getFloorZ() - 128.0),
-                new Vector3(currentPos.getFloorX() + 128.0, currentPos.level.getDimension() == Level.DIMENSION_NETHER ? 128 : 320, currentPos.getFloorZ() + 128.0));
-        BiPredicate<BlockVector3, BlockState> condition = (pos, state) -> Objects.equals(state.getIdentifier(), BlockID.PORTAL);
-        List<Block> blocks = currentPos.level.scanBlocks(axisAlignedBB, condition);
-
-        if (blocks.isEmpty()) {
-            return null;
-        }
-
-        final Vector2 currentPosV2 = new Vector2(currentPos.getFloorX(), currentPos.getFloorZ());
-        final double by = currentPos.getFloorY();
-        Comparator<Block> euclideanDistance = Comparator.comparingDouble(block -> currentPosV2.distanceSquared(block.getFloorX(), block.getFloorZ()));
-        Comparator<Block> heightDistance = Comparator.comparingDouble(block -> {
-            double ey = by - block.y;
-            return ey * ey;
-        });
-
-        return blocks.stream()
-                .filter(block -> !block.down().getId().equals(BlockID.PORTAL))
-                .min(euclideanDistance.thenComparing(heightDistance))
-                .orElse(null);
-    }
-
 
     public void updateMovement() {
         //这样做是为了向后兼容旧插件
@@ -2150,6 +2116,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return Block.LADDER.equals(b.getId());
     }
 
+    @ApiStatus.Internal
     public boolean fastMove(double dx, double dy, double dz) {
         if (dx == 0 && dy == 0 && dz == 0) {
             return true;
@@ -2443,15 +2410,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             }
         }
 
-        if (endPortal) {
+        if (endPortal) {//handle endPortal teleport
             if (!inEndPortal) {
                 inEndPortal = true;
                 if (this.getRiding() == null && this.getPassengers().isEmpty() && !(this instanceof EntityEnderDragon)) {
                     EntityPortalEnterEvent ev = new EntityPortalEnterEvent(this, PortalType.END);
                     getServer().getPluginManager().callEvent(ev);
 
-                    if (!ev.isCancelled() && (level == EnumLevel.OVERWORLD.getLevel() || level == EnumLevel.THE_END.getLevel())) {
-                        final Position newPos = EnumLevel.moveToTheEnd(this);
+                    if (!ev.isCancelled() && (level.getDimension() == Level.DIMENSION_OVERWORLD || level.getDimension() == Level.DIMENSION_THE_END)) {
+                        final Position newPos = PortalHelper.moveToTheEnd(this);
                         if (newPos != null) {
                             if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
                                 if (teleport(newPos.add(0.5, 1, 0.5), PlayerTeleportEvent.TeleportCause.END_PORTAL)) {

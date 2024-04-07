@@ -71,7 +71,7 @@ import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.ChunkLoader;
-import cn.nukkit.level.EnumLevel;
+import cn.nukkit.utils.PortalHelper;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
@@ -142,16 +142,13 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
@@ -173,7 +170,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * 一个承载玩家的空数组静态常量
      * <p>
-     * A empty array of static constants that host the player
+     * An empty array of static constants that host the player
      */
     public static final Player[] EMPTY_ARRAY = new Player[0];
     public static final int SURVIVAL = 0;
@@ -189,12 +186,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public static final int PERMISSION_MEMBER = 1;
     public static final int PERMISSION_VISITOR = 0;
     /// static fields
-
     public boolean playedBefore;
     public boolean spawned = false;
     public boolean locallyInitialized = false;
     public boolean loggedIn = false;
-
     public final HashSet<String> achievements = new HashSet<>();
     public int gamemode;
     public long lastBreak;
@@ -231,11 +226,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * Whether to remove the color character in the chat of the changed player as §c §1
      */
     protected boolean removeFormat = true;
-    protected String username;
     protected String displayName;
     protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
     protected Vector3 sleeping = null;
-
     protected int chunkLoadCount = 0;
     protected int nextChunkOrderRun = 1;
     protected Vector3 newPosition = null;
@@ -306,13 +299,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * The entity that the player attacked last.
      */
     protected Entity lastAttackEntity = null;
+
     /**
      * 玩家迷雾设置
      * <p>
      * Player Fog Settings
      */
-    @Getter
-    @Setter
     protected List<PlayerFogPacket.Fog> fogStack = new ArrayList<>();
     /**
      * 最后攻击玩家的实体.
@@ -325,7 +317,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private boolean needDimensionChangeACK = false;
     private Boolean openSignFront = null;
     protected Boolean flySneaking = false;
-
     /// lastUseItem System and item cooldown
     protected final HashMap<String, Integer> cooldownTickMap = new HashMap<>();
     protected final HashMap<String, Integer> lastUseItemMap = new HashMap<>(1);
@@ -340,22 +331,26 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected CraftingGridInventory craftingGridInventory;
     protected PlayerCursorInventory playerCursorInventory;
     protected CreativeOutputInventory creativeOutputInventory;
-    protected boolean inventoryOpen;//Player opens it own inventory
-    protected boolean enderChestOpen;//Player open it own ender chest inventory
-    protected boolean fakeInventoryOpen;//Player open a fake Inventory
+    /**
+     * Player opens it own inventory
+     */
+    protected boolean inventoryOpen;
+    /**
+     * Player open it own ender chest inventory
+     */
+    protected boolean enderChestOpen;
+    /**
+     * Player open a fake Inventory
+     */
+    protected boolean fakeInventoryOpen;
     ///
 
     private final @NotNull PlayerInfo info;
-
-    public @NotNull PlayerInfo getPlayerInfo() {
-        return this.info;
-    }
 
     @UsedByReflection
     public Player(@NotNull BedrockSession session, @NotNull PlayerInfo info) {
         super(null, new CompoundTag());
         this.info = info;
-
         this.session = session;
         this.perm = new PermissibleBase(this);
         this.server = Server.getInstance();
@@ -374,25 +369,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.lastSkinChange = -1;
         this.playerChunkManager = new PlayerChunkManager(this);
         this.creationTime = System.currentTimeMillis();
-
-        this.username = info.getUsername();
         this.displayName = info.getUsername();
-
         this.loginChainData = info.getData();
         this.uuid = info.getUniqueId();
         this.rawUUID = Binary.writeUUID(info.getUniqueId());
         this.setSkin(info.getSkin());
     }
 
-    private static InetSocketAddress uncheckedNewInetSocketAddress(String ip, int port) {
-        try {
-            return new InetSocketAddress(InetAddress.getByName(ip), port);
-        } catch (UnknownHostException exception) {
-            throw new IllegalArgumentException(exception);
-        }
-    }
-
-    public @NotNull BedrockSession getSession() {
+    /**
+     * Get the network Session for the player
+     *
+     * @return the network Session
+     */
+    @NotNull
+    public BedrockSession getSession() {
         return this.session;
     }
 
@@ -405,17 +395,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public static int toNetworkGamemode(int gamemode) {
         return gamemode != SPECTATOR ? gamemode : GameType.SPECTATOR.ordinal();
-    }
-
-    private EntityInteractable getEntityAtPosition(Entity[] nearbyEntities, int x, int y, int z) {
-        for (Entity nearestEntity : nearbyEntities) {
-            if (nearestEntity.getFloorX() == x && nearestEntity.getFloorY() == y && nearestEntity.getFloorZ() == z
-                    && nearestEntity instanceof EntityInteractable
-                    && ((EntityInteractable) nearestEntity).canDoInteraction()) {
-                return (EntityInteractable) nearestEntity;
-            }
-        }
-        return null;
     }
 
     protected void onBlockBreakContinue(Vector3 pos, BlockFace face) {
@@ -559,7 +538,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 if (Objects.equals(clone.getId(), handItem.getId()) || handItem.isNull()) {
                     inventory.setItemInHand(handItem, false);
                 } else {
-                    log.debug("Tried to set item " + handItem.getId() + " but " + this.username + " had item " + clone.getId() + " in their hand slot");
+                    log.debug("Tried to set item " + handItem.getId() + " but " + this.getName() + " had item " + clone.getId() + " in their hand slot");
                 }
                 inventory.sendHeldItem(this.getViewers().values());
             } else if (handItem == null)
@@ -792,7 +771,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         setDataFlagExtend(EntityFlag.IN_ASCENDABLE_BLOCK, scaffolding);
         setDataFlagExtend(EntityFlag.OVER_DESCENDABLE_BLOCK, scaffoldingUnder.length > 0);
 
-        if (endPortal) {
+        if (endPortal) {//handle endPortal teleport
             if (!inEndPortal) {
                 inEndPortal = true;
                 if (this.getRiding() == null && this.getPassengers().isEmpty()) {
@@ -800,7 +779,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     getServer().getPluginManager().callEvent(ev);
 
                     if (!ev.isCancelled()) {
-                        final Position newPos = EnumLevel.moveToTheEnd(this);
+                        final Position newPos = PortalHelper.moveToTheEnd(this);
                         if (newPos != null) {
                             if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
                                 if (teleport(newPos, TeleportCause.END_PORTAL)) {
@@ -1111,9 +1090,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             nbt = oldPlayer.namedTag;
             oldPlayer.close("disconnectionScreen.loggedinOtherLocation");
         } else {
-            boolean existData = Server.getInstance().hasOfflinePlayerData(this.username);
+            boolean existData = Server.getInstance().hasOfflinePlayerData(this.getName());
             if (existData) {
-                nbt = this.server.getOfflinePlayerData(this.username, false);
+                nbt = this.server.getOfflinePlayerData(this.getName(), false);
             } else {
                 nbt = this.server.getOfflinePlayerData(this.uuid, true);
             }
@@ -1129,7 +1108,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.playedBefore = (nbt.getLong("lastPlayed") - nbt.getLong("firstPlayed")) > 1;
 
 
-        nbt.putString("NameTag", this.username);
+        nbt.putString("NameTag", this.getName());
 
         int exp = nbt.getInt("EXP");
         int expLevel = nbt.getInt("expLevel");
@@ -2370,12 +2349,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 设置gamemode
+     * Set GameMode
      *
-     * @param gamemode    要设置的玩家游戏模式
-     * @param serverSide  是否只更新服务端侧玩家游戏模式。若为true，则不会向客户端发送游戏模式更新包
-     * @param newSettings 新的AdventureSettings
-     * @param forceUpdate 是否强制更新。若为true，将取消对形参'gamemode'的检查
+     * @param gamemode    The player game mode to set
+     * @param serverSide  Whether to update only the game mode of players on the server side. If true, the game mode update package will not be sent to the client
+     * @param newSettings New Adventure Settings
+     * @param forceUpdate Whether to force an update. If true, the check for the parameter 'gamemode' will be canceled
      * @return gamemode
      */
     public boolean setGamemode(int gamemode, boolean serverSide, AdventureSettings newSettings, boolean forceUpdate) {
@@ -2499,6 +2478,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    @ApiStatus.Internal
     public boolean fastMove(double dx, double dy, double dz) {
 
         this.x += dx;
@@ -2521,6 +2501,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
 
+    @ApiStatus.Internal
     public AxisAlignedBB reCalcOffsetBoundingBox() {
         float dx = this.getWidth() / 2;
         float dz = this.getWidth() / 2;
@@ -2553,7 +2534,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 pk.motionZ = (float) motion.z;
                 this.dataPacket(pk);  //Send to self
             }
-
             if (this.motionY > 0) {
                 //todo: check this
                 this.startAirTicks = (int) ((-(Math.log(this.getGravity() / (this.getGravity() + this.getDrag() * this.motionY))) / this.getDrag()) * 2 + 5);
@@ -2565,6 +2545,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return false;
     }
 
+    /**
+     * Send attributes to client
+     */
     public void sendAttributes() {
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
         pk.entityId = this.getId();
@@ -2579,15 +2562,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * 将迷雾设定发送到客户端
+     * Send the fog settings to the client
      */
-
     public void sendFogStack() {
         var pk = new PlayerFogPacket();
         pk.fogStack = this.fogStack;
         this.dataPacket(pk);
     }
 
+    /**
+     * Send camera presets to cilent
+     */
     public void sendCameraPresets() {
         var pk = new CameraPresetsPacket();
         pk.presets.addAll(CameraPreset.getPresets().values());
@@ -2787,6 +2772,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    private EntityInteractable getEntityAtPosition(Entity[] nearbyEntities, int x, int y, int z) {
+        for (Entity nearestEntity : nearbyEntities) {
+            if (nearestEntity.getFloorX() == x && nearestEntity.getFloorY() == y && nearestEntity.getFloorZ() == z
+                    && nearestEntity instanceof EntityInteractable
+                    && ((EntityInteractable) nearestEntity).canDoInteraction()) {
+                return (EntityInteractable) nearestEntity;
+            }
+        }
+        return null;
+    }
+
     /**
      * 返回玩家目前正在看的实体。
      * <p>
@@ -2960,7 +2956,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!ev.isCancelled()) {
             String message;
             if (isAdmin) {
-                if (!Server.getInstance().getNameBans().isBanned(username)) {
+                if (!Server.getInstance().getNameBans().isBanned(getName())) {
                     message = "Kicked by admin." + (!reasonString.isEmpty() ? " Reason: " + reasonString : "");
                 } else {
                     message = reasonString;
@@ -3396,7 +3392,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         //call quit event
         PlayerQuitEvent ev = null;
-        if (this.username != null && !this.getName().isEmpty()) {
+        if (this.getName() != null && !this.getName().isEmpty()) {
             this.server.getPluginManager().callEvent(ev = new PlayerQuitEvent(this, message, true, reason));
             if (this.fishing != null) {
                 this.stopFishing(false);
@@ -3422,7 +3418,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.server.getPluginManager().unsubscribeFromPermission(Server.BROADCAST_CHANNEL_USERS, this);
         this.server.getPluginManager().unsubscribeFromPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this);
         // broadcast disconnection message
-        if (ev != null && !Objects.equals(this.username, "") && this.spawned && !Objects.equals(ev.getQuitMessage().toString(), "")) {
+        if (ev != null && !Objects.equals(this.getName(), "") && this.spawned && !Objects.equals(ev.getQuitMessage().toString(), "")) {
             this.server.broadcastMessage(ev.getQuitMessage());
         }
 
@@ -3545,7 +3541,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             this.namedTag.putInt("TimeSinceRest", this.timeSinceRest);
 
-            if (!this.username.isEmpty() && this.namedTag != null) {
+            if (!this.getName().isBlank() && this.namedTag != null) {
                 this.server.saveOfflinePlayerData(this.uuid, this.namedTag, async);
             }
         }
@@ -3560,7 +3556,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @NotNull
     @Override
     public String getName() {
-        return this.username;
+        return this.info.getUsername();
     }
 
 
@@ -4825,6 +4821,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.loginChainData;
     }
 
+    @ApiStatus.Internal
     public boolean pickupEntity(Entity entity, boolean near) {
         if (!this.spawned || !this.isAlive() || !this.isOnline() || this.isSpectator() || entity.isClosed()) {
             return false;
@@ -5103,8 +5100,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param items The items to give to the player.
      */
-
-
     public void giveItem(Item... items) {
         for (Item failed : getInventory().addItem(items)) {
             getLevel().dropItem(this, failed);
@@ -5112,11 +5107,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
 
+    /**
+     * How many ticks have passed since the player last sleeped, 1 tick = 0.05 s
+     *
+     * @return the ticks
+     */
     public int getTimeSinceRest() {
         return timeSinceRest;
     }
 
 
+    /**
+     * Set the timeSinceRest ticks
+     *
+     * @see #getTimeSinceRest()
+     */
     public void setTimeSinceRest(int timeSinceRest) {
         this.timeSinceRest = timeSinceRest;
     }
@@ -5387,5 +5392,29 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     public void setFakeInventoryOpen(boolean fakeInventoryOpen) {
         this.fakeInventoryOpen = fakeInventoryOpen;
+    }
+
+    /**
+     * Gets fog stack.
+     */
+    public List<PlayerFogPacket.Fog> getFogStack() {
+        return fogStack;
+    }
+
+    /**
+     * Set the fog stack, if you want to client effect,you need {@link #sendFogStack}
+     *
+     * @param fogStack the fog stack
+     */
+    public void setFogStack(List<PlayerFogPacket.Fog> fogStack) {
+        this.fogStack = fogStack;
+    }
+
+    /**
+     * Get the player info.
+     */
+    @NotNull
+    public PlayerInfo getPlayerInfo() {
+        return this.info;
     }
 }

@@ -17,7 +17,7 @@ public class EffectHunger extends Effect {
     }
 
     @Override
-    public void apply(Entity entity, double health) {
+    public void apply(Entity entity, double tickCount) {
         if (entity instanceof Player player) {
             player.getFoodData().exhaust(0.1 * this.getLevel());
         }

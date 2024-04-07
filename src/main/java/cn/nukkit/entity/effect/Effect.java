@@ -51,24 +51,47 @@ public abstract class Effect implements Cloneable {
         return name;
     }
 
+    /**
+     * get the duration of this potion in 1 tick = 0.05 s
+     */
     public int getDuration() {
         return duration;
     }
 
+    /**
+     * set the duration of this potion , 1 tick = 0.05 s
+     *
+     * @param duration the duration
+     * @return the duration
+     */
     public Effect setDuration(int duration) {
         this.duration = duration;
         return this;
     }
 
+    /**
+     * Get amplifier.
+     */
     public int getAmplifier() {
         return amplifier;
     }
 
+    /**
+     * Sets amplifier.
+     *
+     * @param amplifier the amplifier
+     * @return the amplifier
+     */
     public Effect setAmplifier(int amplifier) {
         this.amplifier = amplifier;
         return this;
     }
 
+    /**
+     * Get the level of potion,level = amplifier + 1.
+     *
+     * @return the level
+     */
     public int getLevel() {
         return amplifier + 1;
     }
@@ -108,7 +131,7 @@ public abstract class Effect implements Cloneable {
         return false;
     }
 
-    public void apply(Entity entity, double health) {
+    public void apply(Entity entity, double tickCount) {
 
     }
 

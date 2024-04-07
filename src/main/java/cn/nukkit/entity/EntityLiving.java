@@ -305,6 +305,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return hasUpdate;
     }
 
+    /**
+     * Defines the drops after the entity's death
+     */
     public Item[] getDrops() {
         return Item.EMPTY_ARRAY;
     }

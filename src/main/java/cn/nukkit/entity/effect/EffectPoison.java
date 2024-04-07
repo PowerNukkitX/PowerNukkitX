@@ -18,7 +18,7 @@ public class EffectPoison extends Effect {
     }
 
     @Override
-    public void apply(Entity entity, double health) {
+    public void apply(Entity entity, double tickCount) {
         if (this.canTick()) {
             if (entity.getHealth() > 1) {
                 entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.MAGIC, 1));
