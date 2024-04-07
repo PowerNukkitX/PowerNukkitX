@@ -1047,14 +1047,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             //Handling Soul Speed Enchantment
             int soulSpeedLevel = this.getInventory().getBoots().getEnchantmentLevel(Enchantment.ID_SOUL_SPEED);
             if (soulSpeedLevel > 0) {
-                Block inBlock = this.getLevelBlock();
-                Block downBlock = this.getLevelBlock().down();
+                Block levelBlock = this.getLevelBlock();
                 this.soulSpeedMultiplier = (soulSpeedLevel * 0.105f) + 1.3f;
 
-                if (this.wasInSoulSandCompatible && (!downBlock.isSoulSpeedCompatible() && !inBlock.isSoulSpeedCompatible())) {
+                // levelBlock check is required because of soul sand being 1 pixel shorter than normal blocks
+                boolean isSoulSandCompatible = levelBlock.isSoulSpeedCompatible() || levelBlock.down().isSoulSpeedCompatible();
+
+                if (this.wasInSoulSandCompatible && !isSoulSandCompatible) {
                     this.wasInSoulSandCompatible = false;
                     this.setMovementSpeed(this.getMovementSpeed() / this.soulSpeedMultiplier);
-                } else if (!this.wasInSoulSandCompatible && (downBlock.isSoulSpeedCompatible() || inBlock.isSoulSpeedCompatible())) {
+                } else if (!this.wasInSoulSandCompatible && isSoulSandCompatible) {
                     this.wasInSoulSandCompatible = true;
                     this.setMovementSpeed(this.getMovementSpeed() * this.soulSpeedMultiplier);
                 }
