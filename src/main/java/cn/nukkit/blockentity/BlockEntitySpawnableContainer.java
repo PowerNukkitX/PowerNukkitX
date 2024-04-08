@@ -1,6 +1,5 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.Player;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
@@ -9,8 +8,6 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-
-import java.util.HashSet;
 
 public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
     protected ContainerInventory inventory;
@@ -38,9 +35,7 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
     @Override
     public void close() {
         if (!closed) {
-            for (Player player : new HashSet<>(this.getInventory().getViewers())) {
-                player.removeWindow(this.getInventory());
-            }
+            this.getInventory().getViewers().forEach(p -> p.removeWindow(this.getInventory()));
             super.close();
         }
     }

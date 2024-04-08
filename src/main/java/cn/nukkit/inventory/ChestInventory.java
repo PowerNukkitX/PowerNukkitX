@@ -87,7 +87,6 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
                 level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, pk);
             }
         }
-        super.onClose(who);
 
         try {
             if (this.getHolder().getBlock() instanceof BlockTrappedChest trappedChest) {
@@ -99,6 +98,7 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
             }
         } catch (LevelException ignored) {
         }
+        super.onClose(who);
     }
 
     public void setDoubleInventory(@NotNull DoubleChestInventory doubleInventory) {

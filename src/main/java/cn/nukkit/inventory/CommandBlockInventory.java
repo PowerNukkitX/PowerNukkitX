@@ -3,10 +3,10 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityCommandBlock;
 import cn.nukkit.blockentity.BlockEntityNameable;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
 import org.jetbrains.annotations.NotNull;
 
@@ -171,7 +171,7 @@ public class CommandBlockInventory implements Inventory, BlockEntityInventoryNam
 
     @Override
     public InventoryType getType() {
-        return null;
+        return InventoryType.COMMAND_BLOCK;
     }
 
     @Override
@@ -185,25 +185,25 @@ public class CommandBlockInventory implements Inventory, BlockEntityInventoryNam
             this.viewers.add(who);
             ContainerOpenPacket pk = new ContainerOpenPacket();
             pk.windowId = who.getWindowId(this);
-            pk.type = 16;
+            pk.type = getType().getNetworkType();
             InventoryHolder holder = this.getHolder();
-            if (holder instanceof Vector3) {
-                pk.x = ((Vector3) holder).getFloorX();
-                pk.y = ((Vector3) holder).getFloorY();
-                pk.z = ((Vector3) holder).getFloorZ();
+            if (holder instanceof Vector3 vector3) {
+                pk.x = vector3.getFloorX();
+                pk.y = vector3.getFloorY();
+                pk.z = vector3.getFloorZ();
             } else {
                 pk.x = pk.y = pk.z = 0;
             }
-            if (holder instanceof Entity) {
-                pk.entityId = ((Entity) holder).getId();
-            }
-
             who.dataPacket(pk);
         }
     }
 
     @Override
     public boolean open(Player who) {
+        if(who.getWindowId(this)!=-1){//todo hack, ContainerClosePacket no longer triggers for command block and struct block, finding the correct way to close them
+            who.removeWindow(this);
+        }
+
         InventoryOpenEvent ev = new InventoryOpenEvent(this, who);
         who.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
@@ -221,6 +221,10 @@ public class CommandBlockInventory implements Inventory, BlockEntityInventoryNam
 
     @Override
     public void onClose(Player who) {
+        ContainerClosePacket pk = new ContainerClosePacket();
+        pk.windowId = who.getWindowId(this);
+        pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
+        who.dataPacket(pk);
         this.viewers.remove(who);
     }
 
