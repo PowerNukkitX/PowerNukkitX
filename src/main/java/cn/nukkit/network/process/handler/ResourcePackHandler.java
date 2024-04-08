@@ -10,7 +10,9 @@ import cn.nukkit.network.protocol.ResourcePackStackPacket;
 import cn.nukkit.network.protocol.ResourcePacksInfoPacket;
 import cn.nukkit.resourcepacks.ResourcePack;
 import cn.nukkit.utils.version.Version;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ResourcePackHandler extends BedrockSessionPacketHandler {
 
     public ResourcePackHandler(BedrockSession session) {
@@ -25,8 +27,12 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
     public void handle(ResourcePackClientResponsePacket pk) {
         var server = session.getServer();
         switch (pk.responseStatus) {
-            case ResourcePackClientResponsePacket.STATUS_REFUSED -> this.session.close("disconnectionScreen.noReason");
+            case ResourcePackClientResponsePacket.STATUS_REFUSED -> {
+                log.debug("ResourcePackClientResponsePacket STATUS_REFUSED");
+                this.session.close("disconnectionScreen.noReason");
+            }
             case ResourcePackClientResponsePacket.STATUS_SEND_PACKS -> {
+                log.debug("ResourcePackClientResponsePacket STATUS_SEND_PACKS");
                 for (ResourcePackClientResponsePacket.Entry entry : pk.packEntries) {
                     ResourcePack resourcePack = server.getResourcePackManager().getPackById(entry.uuid);
                     if (resourcePack == null) {
@@ -45,6 +51,7 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
                 }
             }
             case ResourcePackClientResponsePacket.STATUS_HAVE_ALL_PACKS -> {
+                log.debug("ResourcePackClientResponsePacket STATUS_HAVE_ALL_PACKS");
                 ResourcePackStackPacket stackPacket = new ResourcePackStackPacket();
                 stackPacket.mustAccept = server.getForceResources() && !server.getForceResourcesAllowOwnPacks();
                 stackPacket.resourcePackStack = server.getResourcePackManager().getResourceStack();
@@ -68,7 +75,10 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
                 );
                 session.sendPacket(stackPacket);
             }
-            case ResourcePackClientResponsePacket.STATUS_COMPLETED -> this.session.getMachine().fire(SessionState.PRE_SPAWN);
+            case ResourcePackClientResponsePacket.STATUS_COMPLETED -> {
+                log.debug("ResourcePackClientResponsePacket STATUS_COMPLETED");
+                this.session.getMachine().fire(SessionState.PRE_SPAWN);
+            }
         }
     }
 
