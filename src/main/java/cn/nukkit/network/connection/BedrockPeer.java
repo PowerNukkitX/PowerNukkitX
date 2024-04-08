@@ -1,6 +1,5 @@
 package cn.nukkit.network.connection;
 
-import cn.nukkit.Nukkit;
 import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
 import cn.nukkit.network.connection.netty.codec.FrameIdCodec;
 import cn.nukkit.network.connection.netty.codec.batch.BedrockBatchDecoder;
@@ -99,10 +98,6 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
     }
 
     private void onRakNetDisconnect(ChannelHandlerContext ctx, RakDisconnectReason reason) {
-        if (Nukkit.DEBUG > 1) {
-            log.debug("Currently in debug mode, onRakNetDisconnect skipped.");
-            return;
-        }
         String disconnectReason = BedrockDisconnectReasons.getReason(reason);
         for (BedrockSession session : this.sessions.values()) {
             session.close(disconnectReason);
