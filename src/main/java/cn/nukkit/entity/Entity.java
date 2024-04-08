@@ -828,9 +828,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             change = true;
             this.getEntityDataMap().put(HEIGHT, entityHeight);
         }
-        if (this.getEntityDataMap().get(WIDTH) != entityHeight) {
+        if (this.getEntityDataMap().get(WIDTH) != this.getWidth()) {
             change = true;
-            this.getEntityDataMap().put(HEIGHT, this.getWidth());
+            this.getEntityDataMap().put(WIDTH, this.getWidth());
         }
         if (send && change) {
             sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.entityDataMap.copy(WIDTH, HEIGHT));
