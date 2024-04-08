@@ -495,6 +495,24 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(OAK_HANGING_SIGN, ItemOakHangingSign.class);
             register(SPRUCE_HANGING_SIGN, ItemSpruceHangingSign.class);
             register(WARPED_HANGING_SIGN, ItemWarpedHangingSign.class);
+
+            register(BIRCH_DOOR, ItemBirchDoor.class);
+            register(ACACIA_DOOR, ItemAcaciaDoor.class);
+            register(BAMBOO_DOOR, ItemBambooDoor.class);
+            register(CHERRY_DOOR, ItemCherryDoor.class);
+            register(CRIMSON_DOOR, ItemCrimsonDoor.class);
+            register(DARK_OAK_DOOR, ItemDarkOakDoor.class);
+            register(JUNGLE_DOOR, ItemJungleDoor.class);
+            register(MANGROVE_DOOR, ItemMangroveDoor.class);
+            register(SPRUCE_DOOR, ItemSpruceDoor.class);
+            register(WARPED_DOOR, ItemWarpedDoor.class);
+            register(WOODEN_DOOR, ItemWoodenDoor.class);
+            register(IRON_DOOR, ItemIronDoor.class);
+            register(CAMPFIRE, ItemCampfire.class);
+            register(CAULDRON, ItemCauldron.class);
+            register(CHAIN, ItemChain.class);
+            register(WHEAT, ItemWheat.class);
+            register(BEETROOT, ItemBeetroot.class);
         } catch (RegisterException ignore) {
         }
     }

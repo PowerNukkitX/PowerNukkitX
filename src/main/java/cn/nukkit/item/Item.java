@@ -159,7 +159,7 @@ public abstract class Item implements Cloneable, ItemID {
             if (itemBlockState == null || itemBlockState == BlockAir.STATE) {
                 return Item.AIR;
             }
-            item = new ItemBlock(Registries.BLOCK.get(itemBlockState));
+            item = itemBlockState.toItem();
             item.setCount(count);
             if (tags != null) {
                 item.setCompoundTag(tags);
